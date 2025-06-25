@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom'; // ✅ Add Navigate
 import { PlusCircle } from 'lucide-react';
 import PostCard from '@/components/PostCard';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,6 +9,11 @@ const PAGE_SIZE = 5;
 
 export default function CentralFeed() {
   const { user } = useAuth();
+
+  // ✅ Redirect if not logged in
+  if (!user) return <Navigate to="/login" replace />;
+
+  // ✅ Keep the rest of your logic here...
   const [posts, setPosts] = useState([]);
   const [profiles, setProfiles] = useState({});
   const [viewerIsAdult, setViewerIsAdult] = useState(null);
@@ -16,6 +21,9 @@ export default function CentralFeed() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
+
+  // ... continue with your feed logic below
+
 
   const refreshFeed = async () => {
     setPage(0);
