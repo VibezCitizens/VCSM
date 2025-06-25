@@ -1,0 +1,12 @@
+name = "upload-profile-worker"
+main = "src/index.js"
+compatibility_date = "2025-06-20"
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "post-media"
+preview_bucket_name = "post-media"
+
+
+[vars]
+R2_PUBLIC_DOMAIN = "https://pub-47d41a9f87d148c9a7a41a636e23cb46.r2.dev"
