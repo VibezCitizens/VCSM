@@ -1,17 +1,9 @@
-// src/features/chat/ConversationList.jsx
+// src/components/ConversationList.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-
-// **CORRECTED IMPORT PATH for ConversationListItem based on your file structure**
 import ConversationListItem from '@/components/ConversationListItem';
-// If '@/components' doesn't work, try a relative path like:
-// import ConversationListItem from '../../components/ConversationListItem';
-
-
-// Removed direct lucide-react imports from here as they are now in ConversationListItem.jsx
-// import { MoreVertical, Trash2, BellOff } from 'lucide-react';
 
 export default function ConversationList() {
   const { user } = useAuth();
@@ -25,7 +17,22 @@ export default function ConversationList() {
       if (!user?.id) return;
       setLoading(true);
 
-      const { data: rawConvos, error } = await supabase
+      // 1. Get all conversation_ids where current user is a member
+      const { data: membershipRows, error: memErr } = await supabase
+        .from('conversation_members')
+        .select('conversation_id')
+        .eq('user_id', user.id);
+
+      if (memErr || !membershipRows?.length) {
+        console.error('Error fetching memberships:', memErr);
+        setLoading(false);
+        return;
+      }
+
+      const convoIds = membershipRows.map((m) => m.conversation_id);
+
+      // 2. Fetch full conversation data
+      const { data, error } = await supabase
         .from('conversations')
         .select(`
           id,
@@ -33,13 +40,17 @@ export default function ConversationList() {
           last_message,
           last_sender_id,
           last_sent_at,
-          conversation_members!inner (
+          conversation_members (
             user_id,
-            muted
+            muted,
+            profiles (
+              id,
+              display_name,
+              photo_url
+            )
           )
         `)
-        .eq('conversation_members.user_id', user.id)
-        .order('last_sent_at', { ascending: false });
+        .in('id', convoIds);
 
       if (error) {
         console.error('Error fetching conversations:', error);
@@ -47,33 +58,10 @@ export default function ConversationList() {
         return;
       }
 
-      const allUserIds = [
-        ...new Set(rawConvos.flatMap((c) => c.conversation_members.map((m) => m.user_id))),
-      ];
-
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, display_name, photo_url')
-        .in('id', allUserIds);
-
-      if (profileError) {
-        console.error('Error fetching profiles:', profileError);
-        setLoading(false);
-        return;
-      }
-
-      const profileMap = {};
-      for (const p of profiles) profileMap[p.id] = p;
-
-      const withProfiles = rawConvos.map((c) => ({
-        ...c,
-        conversation_members: c.conversation_members.map((m) => ({
-          ...m,
-          profile: profileMap[m.user_id] || null,
-         })),
-      }));
-
-      setConversations(withProfiles);
+      const sorted = data.sort((a, b) =>
+        (b.last_sent_at || '').localeCompare(a.last_sent_at || '')
+      );
+      setConversations(sorted);
       setLoading(false);
     };
 

@@ -1,84 +1,73 @@
-// src/components/ConversationListItem.jsx
-import React from 'react';
-import { MoreVertical, Trash2, BellOff } from 'lucide-react'; // Icons are used here
+import { formatDistanceToNow } from 'date-fns';
+import UserLink from './UserLink';
 
-const ConversationListItem = React.memo(({
+export default function ConversationListItem({
   conv,
   user,
   navigate,
   menuOpenId,
   setMenuOpenId,
   handleMute,
-  handleDelete
-}) => {
-  const members = conv.conversation_members;
-  const isGroup = members.length > 2;
+  handleDelete,
+}) {
+  if (!conv || !conv.conversation_members) return null;
 
-  const otherMember = members.find((m) => m.user_id !== user.id);
+  const otherMember = conv.conversation_members.find((m) => m.user_id !== user.id);
 
-  const currentMember = members.find((m) => m.user_id === user.id);
-  const isMuted = currentMember?.muted;
+  // LOG FOR DEBUGGING: Add this to see what otherMember and its profiles contain
+  // console.log("ConversationListItem - otherMember:", otherMember);
+  // console.log("ConversationListItem - otherMember.profiles:", otherMember?.profiles);
 
-  const profile = otherMember?.profile;
-  const displayName = isGroup
-    ? `Group (${members.length} users)`
-    : profile?.display_name || 'Waiting for user...';
-
-  // **OPTIMIZATION 1 APPLIED HERE: Removed `?v=${new Date().getTime()}`**
-  const avatar = profile?.photo_url
-    ? profile.photo_url
-    : '/default-avatar.png';
+  const lastMessage = conv.last_message || 'No messages yet.';
+  const timeAgo = conv.last_sent_at
+    ? formatDistanceToNow(new Date(conv.last_sent_at), { addSuffix: true })
+    : '';
 
   return (
     <div
-      key={conv.id}
-      className={`relative flex items-center justify-between gap-3 p-4 hover:bg-neutral-800 border-b border-neutral-700 ${
-        isMuted ? 'opacity-50' : ''
-      }`}
+      className="flex items-center justify-between p-4 border-b border-neutral-800 hover:bg-neutral-900 cursor-pointer"
+      onClick={() => navigate(`/chat/${conv.id}`)}
     >
-      <div
-        className="flex items-center gap-3 cursor-pointer"
-        onClick={() => navigate(`/chat/${conv.id}`)}
-      >
-        <img
-          src={avatar}
-          alt={displayName}
-          className="w-10 h-12 rounded-md object-cover"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = '/default-avatar.png';
-          }}
-        />
+      <div className="flex items-center gap-4">
+        {/* CORRECTED LINE HERE: use otherMember?.profiles instead of otherMember?.profile */}
+        <UserLink user={otherMember?.profiles} avatarSize="w-10 h-10" textSize="text-sm" />
         <div className="flex flex-col">
-          <span className="text-white font-semibold text-sm">{displayName}</span>
-          <span className="text-gray-400 text-xs truncate max-w-[200px]">
-            {conv.last_message || 'No messages yet.'}
-          </span>
+          <p className="text-white text-sm truncate max-w-[200px]">
+            {lastMessage}
+          </p>
+          <span className="text-xs text-neutral-400">{timeAgo}</span>
         </div>
       </div>
 
       <div className="relative">
         <button
-          onClick={() => setMenuOpenId(menuOpenId === conv.id ? null : conv.id)}
-          className="p-1 hover:bg-neutral-700 rounded"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpenId(menuOpenId === conv.id ? null : conv.id);
+          }}
+          className="text-white text-lg"
         >
-          <MoreVertical size={18} />
+          ⋮
         </button>
 
         {menuOpenId === conv.id && (
-          <div className="absolute right-0 top-6 bg-neutral-900 rounded shadow-md z-50 w-32 border border-neutral-700">
+          <div className="absolute right-0 mt-2 w-32 bg-neutral-800 border border-neutral-700 rounded shadow-lg z-10">
             <button
-              onClick={() => handleMute(conv.id)}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleMute(conv.id);
+              }}
+              className="w-full px-4 py-2 text-left text-sm text-white hover:bg-neutral-700"
             >
-              <BellOff size={14} className="inline mr-2" />
               Mute
             </button>
             <button
-              onClick={() => handleDelete(conv.id)}
-              className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(conv.id);
+              }}
+              className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-neutral-700"
             >
-              <Trash2 size={14} className="inline mr-2" />
               Delete
             </button>
           </div>
@@ -86,6 +75,4 @@ const ConversationListItem = React.memo(({
       </div>
     </div>
   );
-});
-
-export default ConversationListItem;
+}

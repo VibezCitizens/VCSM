@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
 import UserLink from '@/components/UserLink';
 import CommentCard from '@/components/CommentCard';
-import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
+import { Link } from 'react-router-dom'; // Make sure Link is imported for clickable tags
 
 const useOnClickOutside = (ref, handler) => {
   useEffect(() => {
@@ -20,6 +21,23 @@ const useOnClickOutside = (ref, handler) => {
     };
   }, [ref, handler]);
 };
+
+// Helper to show "3m ago" style time
+function formatPostTime(iso) {
+  const now = new Date();
+  const postDate = new Date(iso);
+  const diff = (now - postDate) / 1000;
+
+  if (diff < 60) return `${Math.floor(diff)}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+
+  return postDate.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: now.getFullYear() !== postDate.getFullYear() ? 'numeric' : undefined,
+  });
+}
 
 export default function PostCard({ post, user = {} }) {
   const { user: currentUser } = useAuth();
@@ -118,12 +136,6 @@ export default function PostCard({ post, user = {} }) {
   const handlePostComment = async () => {
     if (!replyText.trim() || !currentUser?.id) return;
 
-    console.log('Posting comment:', {
-      post_id: post.id,
-      user_id: currentUser.id,
-      content: replyText.trim(),
-    });
-
     const { error } = await supabase.from('post_comments').insert({
       post_id: post.id,
       user_id: currentUser.id,
@@ -131,7 +143,7 @@ export default function PostCard({ post, user = {} }) {
     });
 
     if (error) {
-      console.error('Failed to post comment:', error.message);
+      console.error('[PostCard] Comment failed:', error.message);
       return;
     }
 
@@ -181,7 +193,7 @@ export default function PostCard({ post, user = {} }) {
   const handleDeletePost = async () => {
     if (currentUser?.id !== user.id) return;
     await supabase.from('posts').delete().eq('id', post.id);
-    navigate('/home');
+    navigate('/home'); // Or refresh the feed
   };
 
   const handleToggleSubscribe = async () => {
@@ -204,7 +216,12 @@ export default function PostCard({ post, user = {} }) {
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow mb-4 mx-2 relative">
       <div className="flex items-center justify-between mb-2">
-        <UserLink user={user} avatarSize="w-9 h-9 rounded-md" textSize="text-sm" />
+        <div>
+          <UserLink user={user} avatarSize="w-9 h-9 rounded-md" textSize="text-sm" />
+          {post.created_at && (
+            <p className="text-xs text-neutral-400 ml-11 -mt-2">{formatPostTime(post.created_at)}</p>
+          )}
+        </div>
         <div className="flex gap-2 items-center">
           {currentUser?.id !== user.id && (
             <>
@@ -245,8 +262,24 @@ export default function PostCard({ post, user = {} }) {
         <video src={post.media_url} controls className="w-full max-h-80 rounded-xl mb-3" />
       )}
 
+      {/* NEW SECTION: Displaying Tags from the 'tags' array */}
+      {post.tags && post.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {post.tags.map((tag, index) => (
+            <Link
+              key={index}
+              to={`/tag/${tag}`} // Link to a tag-specific page
+              className="text-xs bg-neutral-700 text-purple-400 px-2 py-1 rounded-full hover:bg-neutral-600 transition-colors"
+            >
+              #{tag}
+            </Link>
+          ))}
+        </div>
+      )}
+      {/* END NEW SECTION */}
+
       <div className="flex flex-wrap gap-3 items-center mb-2">
-        <button onClick={() => handleReact('like')} className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-blue-600' : 'bg-neutral-700'} text-white`}>
+        <button onClick={() => handleReact('like')} className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}>
           👍 {likeCount}
         </button>
         <button onClick={() => handleReact('dislike')} className={`text-sm px-2 py-1 rounded ${userReaction === 'dislike' ? 'bg-red-600' : 'bg-neutral-700'} text-white`}>
