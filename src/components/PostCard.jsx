@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import UserLink from '@/components/UserLink';
@@ -38,6 +38,21 @@ export default function PostCard({ post, user = {} }) {
 
   const vibrate = (ms = 25) => navigator.vibrate?.(ms);
 
+  const renderTextWithHashtags = (text) => {
+    const parts = text.split(/(\s+)/).map((part, i) => {
+      if (part.startsWith('#')) {
+        const tag = part.slice(1).replace(/[^a-zA-Z0-9_]/g, '');
+        return (
+          <Link key={i} to={`/tag/${tag}`} className="text-purple-400 hover:underline">
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
+    return parts;
+  };
+
   const fetchComments = async () => {
     const { data, error } = await supabase
       .from('post_comments')
@@ -46,25 +61,16 @@ export default function PostCard({ post, user = {} }) {
       .is('parent_id', null)
       .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching comments:', error.message);
-      setComments([]);
-      return;
-    }
-
-    setComments(data || []);
+    if (!error) setComments(data || []);
   };
 
   useEffect(() => {
     const fetchReactions = async () => {
       if (!currentUser?.id) return;
-
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('post_reactions')
         .select('id, type, user_id')
         .eq('post_id', post.id);
-
-      if (error) return;
 
       const likes = data.filter(r => r.type === 'like');
       const dislikes = data.filter(r => r.type === 'dislike');
@@ -80,14 +86,12 @@ export default function PostCard({ post, user = {} }) {
 
     const checkSubscription = async () => {
       if (!currentUser?.id || currentUser.id === user.id) return;
-
       const { data, error } = await supabase
         .from('followers')
         .select('id')
         .eq('follower_id', currentUser.id)
         .eq('followed_id', user.id)
         .single();
-
       if (!error) setIsSubscribed(!!data);
     };
 
@@ -113,18 +117,14 @@ export default function PostCard({ post, user = {} }) {
 
   const handlePostComment = async () => {
     if (!replyText.trim() || !currentUser?.id) return;
-
-    const { error } = await supabase.from('post_comments').insert({
+    await supabase.from('post_comments').insert({
       post_id: post.id,
       user_id: currentUser.id,
       content: replyText.trim(),
     });
-
-    if (!error) {
-      setReplyText('');
-      setShowComments(true);
-      await fetchComments();
-    }
+    setReplyText('');
+    setShowComments(true);
+    await fetchComments();
   };
 
   const handleReact = async (type) => {
@@ -173,7 +173,6 @@ export default function PostCard({ post, user = {} }) {
 
   const handleToggleSubscribe = async () => {
     if (!currentUser?.id || !user?.id || currentUser.id === user.id) return;
-
     if (isSubscribed) {
       await supabase.from('followers').delete().eq('follower_id', currentUser.id).eq('followed_id', user.id);
       setIsSubscribed(false);
@@ -196,10 +195,7 @@ export default function PostCard({ post, user = {} }) {
         <div className="flex gap-2 items-center">
           {currentUser?.id !== user.id && (
             <>
-              <button
-                onClick={handleToggleSubscribe}
-                className={`text-xs px-2 py-1 rounded ${isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
-              >
+              <button onClick={handleToggleSubscribe} className={`text-xs px-2 py-1 rounded ${isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}>
                 {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
               </button>
               <button onClick={handleMessage} className="text-xs px-2 py-1 rounded bg-neutral-700 text-white">Message</button>
@@ -220,22 +216,20 @@ export default function PostCard({ post, user = {} }) {
         </div>
       </div>
 
-      {post.text && <p className="text-white text-sm mb-3 whitespace-pre-wrap">{post.text}</p>}
-
-      {/* ✅ Media rendering */}
-      {post.media_type === 'image' && post.media_url && (
-        <img
-          src={post.media_url}
-          alt="post media"
-          className="w-full max-h-80 object-cover rounded-xl mb-3"
-        />
+      {post.text && (
+        <p className="text-white text-sm mb-3 whitespace-pre-wrap">
+          {renderTextWithHashtags(post.text)}
+        </p>
       )}
+
+      {post.media_type === 'image' && post.media_url && (
+        <div className="w-full rounded-xl overflow-hidden mb-3">
+          <img src={post.media_url} alt="post" className="w-full max-h-80 object-cover" />
+        </div>
+      )}
+
       {post.media_type === 'video' && post.media_url && (
-        <video
-          src={post.media_url}
-          controls
-          className="w-full max-h-80 rounded-xl mb-3"
-        />
+        <video src={post.media_url} controls className="w-full max-h-80 rounded-xl mb-3" />
       )}
 
       <div className="flex flex-wrap gap-3 items-center mb-2">
