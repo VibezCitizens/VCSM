@@ -117,11 +117,24 @@ export default function PostCard({ post, user = {} }) {
 
   const handlePostComment = async () => {
     if (!replyText.trim() || !currentUser?.id) return;
-    await supabase.from('post_comments').insert({
+
+    console.log('Posting comment:', {
       post_id: post.id,
       user_id: currentUser.id,
       content: replyText.trim(),
     });
+
+    const { error } = await supabase.from('post_comments').insert({
+      post_id: post.id,
+      user_id: currentUser.id,
+      content: replyText.trim(),
+    });
+
+    if (error) {
+      console.error('Failed to post comment:', error.message);
+      return;
+    }
+
     setReplyText('');
     setShowComments(true);
     await fetchComments();
