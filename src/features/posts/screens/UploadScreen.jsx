@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
 import getCroppedImg from '@/lib/cropImage';
 
-const R2_PUBLIC = 'https://pub-47d41a9f87d148c9a7a41a636e23cb46.r2.dev';
 const UPLOAD_ENDPOINT = 'https://upload-post-media-worker.olivertrest3.workers.dev';
 
 export default function UploadScreen() {
@@ -18,8 +17,6 @@ export default function UploadScreen() {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-
-  // New states
   const [tags, setTags] = useState('');
   const [visibility, setVisibility] = useState('public');
   const [postType, setPostType] = useState('photo');
@@ -46,8 +43,8 @@ export default function UploadScreen() {
       return;
     }
 
-    // 🧠 Daily image post restriction (1 per 24h)
-    const { data: recentPosts } = await supabase
+    // Daily limit: 1 image post per 24h
+    const { data: recentPosts, error: fetchErr } = await supabase
       .from('posts')
       .select('id, created_at')
       .eq('user_id', user.id)
@@ -55,45 +52,64 @@ export default function UploadScreen() {
       .order('created_at', { ascending: false })
       .limit(1);
 
+    if (fetchErr) {
+      toast.error('Error checking post history');
+      return;
+    }
+
     if (recentPosts?.length > 0) {
       const lastPostTime = new Date(recentPosts[0].created_at).getTime();
       const now = Date.now();
-      const diffHours = (now - lastPostTime) / (1000 * 60 * 60);
-      if (diffHours < 24) {
-        toast.error('You can only upload 1 image post every 24 hours.');
+      if ((now - lastPostTime) < 24 * 60 * 60 * 1000) {
+        toast.error('Only 1 image post allowed every 24 hours.');
         return;
       }
     }
 
-    const croppedBlob = await getCroppedImg(imagePreview, croppedAreaPixels);
-    const key = `posts/${user.id}/${Date.now()}-cropped.jpg`;
+    try {
+      const croppedBlob = await getCroppedImg(imagePreview, croppedAreaPixels);
+      const key = `posts/${user.id}/${Date.now()}-cropped.jpg`;
 
-    const form = new FormData();
-    form.append('file', croppedBlob);
-    form.append('key', key);
+      const form = new FormData();
+      form.append('file', croppedBlob);
+      form.append('key', key);
 
-    const res = await fetch(UPLOAD_ENDPOINT, { method: 'POST', body: form });
-    if (!res.ok) {
-      toast.error('Upload failed');
-      return;
-    }
+      const res = await fetch(UPLOAD_ENDPOINT, {
+        method: 'POST',
+        body: form,
+      });
 
-    const { url } = await res.json();
+      if (!res.ok) {
+        toast.error('Cloudflare upload failed');
+        return;
+      }
 
-    const { error } = await supabase.from('posts').insert({
-      user_id: user.id,
-      text: text.trim(),
-      media_url: url,
-      media_type: 'image',
-      tags: tags.trim(),
-      visibility,
-      post_type: postType,
-    });
+      const { url } = await res.json();
+      if (!url) {
+        toast.error('Missing uploaded URL');
+        return;
+      }
 
-    if (error) toast.error(error.message);
-    else {
+      const { error: insertError } = await supabase.from('posts').insert({
+        user_id: user.id,
+        text: text.trim(),
+        media_url: url,
+        media_type: 'image',
+        tags: tags.trim(),
+        visibility,
+        post_type: postType,
+      });
+
+      if (insertError) {
+        toast.error(insertError.message);
+        return;
+      }
+
       toast.success('Posted!');
       navigate('/');
+    } catch (err) {
+      console.error(err);
+      toast.error('Unexpected upload error');
     }
   };
 
