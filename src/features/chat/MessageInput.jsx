@@ -1,81 +1,95 @@
 import { useState } from 'react';
-import { supabase } from '@/lib/supabaseClient'; // Assuming this path is correct
+import { supabase } from '@/lib/supabaseClient';
 
 export default function MessageInput({ conversationId, currentUser, onSend }) {
-  const [text, setText] = useState('');
+  const [messageText, setMessageText] = useState('');
   const [sending, setSending] = useState(false);
 
-  const sendMessage = async () => {
-    // Basic validation to ensure message content, conversation ID, and sender ID exist
-    if (!text.trim() || !conversationId || !currentUser?.id) {
-      console.warn('MessageInput: Cannot send empty message or missing context (conversationId/currentUser).');
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const content = messageText.trim();
+    if (!content || !currentUser?.id) return;
 
-    setSending(true); // Indicate that the message is being sent
+    setSending(true);
+    const userId = currentUser.id;
 
-    // Attempt to insert the message into the 'messages' table
-    // IMPORTANT: This code assumes that 'ciphertext' and 'iv' columns
-    // in your 'public.messages' table are now NULLABLE.
-    // If they are still NOT NULL, you MUST include 'ciphertext: ""' and 'iv: {}'
-    // in the object below to satisfy the database constraints.
-    const { error } = await supabase.from('messages').insert({
-      conversation_id: conversationId, // The ID of the conversation
-      sender_id: currentUser.id,       // The ID of the user sending the message
-      text: text.trim(),               // The actual message content (now assumed to be nullable/present)
-    });
+    try {
+      // ✅ Step 1: Ensure membership
+      const { data: existingMember, error: checkError } = await supabase
+        .from('conversation_members')
+        .select('id')
+        .eq('conversation_id', conversationId)
+        .eq('user_id', userId)
+        .maybeSingle();
 
-    if (error) {
-      console.error('Failed to send message:', error);
-      // In a production application, you would replace `console.log` with a
-      // more user-friendly error display (e.g., a toast notification or a modal).
-      console.log('Failed to send message:', error.message);
-    } else {
-      setText(''); // Clear the input field upon successful message send
-      // You could optionally trigger an `onSend` prop here for optimistic UI updates
-      // if `ChatScreen` needs immediate feedback before the real-time subscription
-      // catches up, though the real-time listener should handle it.
-    }
+      if (!existingMember && !checkError) {
+        const { error: insertError } = await supabase
+          .from('conversation_members')
+          .insert([{ conversation_id: conversationId, user_id: userId }]);
 
-    setSending(false); // Reset sending state after the operation
-  };
+        if (insertError) {
+          console.error('Failed to auto-add member:', insertError.message);
+          return;
+        }
+      }
 
-  const handleKeyDown = (e) => {
-    // Detect 'Enter' key press to send the message.
-    // `!e.shiftKey` ensures that pressing Shift+Enter allows for new lines in the textarea.
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // Prevent default Enter key behavior (like adding a new line)
-      sendMessage();      // Call the sendMessage function
+      // ✅ Step 2: Send message
+      const { data, error } = await supabase
+        .from('messages')
+        .insert([
+          {
+            content,
+            conversation_id: conversationId,
+            sender_id: userId,
+          }
+        ])
+        .select('id, content, sender_id, created_at')
+        .single();
+
+      if (error) {
+        console.error('Message insert error:', error.message);
+        return;
+      }
+
+      const message = {
+        ...data,
+        sender: {
+          display_name: currentUser.profile?.display_name ||
+                        currentUser.user_metadata?.display_name || 'You',
+          photo_url: currentUser.profile?.photo_url ||
+                     currentUser.user_metadata?.photo_url || '/default-avatar.png',
+        },
+      };
+
+      onSend(message);
+      setMessageText('');
+    } catch (err) {
+      console.error('Unexpected error:', err.message);
+    } finally {
+      setSending(false);
     }
   };
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-neutral-900 border-t border-neutral-800">
-      <textarea
-        rows={1} // Start with a single row
-        value={text}
-        onChange={(e) => setText(e.target.value)} // Update state on input change
-        onKeyDown={handleKeyDown} // Handle keyboard events
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center space-x-2 px-4 py-3 border-t border-gray-700 bg-black"
+    >
+      <input
+        type="text"
+        className="flex-1 px-4 py-2 border border-gray-600 bg-black text-white rounded-full focus:outline-none"
         placeholder="Type a message..."
-        // Tailwind CSS classes for styling:
-        className="flex-1 bg-neutral-800 rounded-lg px-3 py-2 resize-none text-white
-                   focus:outline-none focus:ring-2 focus:ring-purple-600
-                   transition-all duration-200 ease-in-out"
-        disabled={sending} // Disable input while sending
-        // Style to allow vertical resizing but within limits for better UX
-        style={{ minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }}
+        value={messageText}
+        onChange={(e) => setMessageText(e.target.value)}
+        disabled={sending}
       />
       <button
-        onClick={sendMessage} // Call sendMessage on button click
-        disabled={!text.trim() || sending} // Disable if text is empty or sending
-        // Tailwind CSS classes for styling the button:
-        className="bg-purple-600 text-white px-4 py-2 rounded-lg
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   hover:bg-purple-700 transition-colors duration-200 ease-in-out
-                   shadow-md hover:shadow-lg"
+        type="submit"
+        className="px-4 py-2 bg-purple-600 text-white rounded-full disabled:opacity-50"
+        disabled={sending || !messageText.trim()}
       >
-        {sending ? 'Sending...' : 'Send'} {/* Button text changes when sending */}
+        Send
       </button>
-    </div>
+    </form>
   );
 }

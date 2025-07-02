@@ -1,15 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-import { formatDistanceToNow } from 'date-fns';
 import UserLink from '@/components/UserLink';
-import { createPrivateConversation } from '@/utils/createPrivateConversation';
+import CommentCard from '@/components/CommentCard';
+import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
+
+const useOnClickOutside = (ref, handler) => {
+  useEffect(() => {
+    const listener = (event) => {
+      if (!ref.current || ref.current.contains(event.target)) return;
+      handler(event);
+    };
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
+};
 
 export default function PostCard({ post, user = {} }) {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
-
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
   const [roseCount, setRoseCount] = useState(0);
@@ -17,231 +31,255 @@ export default function PostCard({ post, user = {} }) {
   const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [subscribeLoading, setSubscribeLoading] = useState(false);
+  const menuRef = useRef(null);
+  useOnClickOutside(menuRef, () => setShowMenu(false));
 
   const vibrate = (ms = 25) => navigator.vibrate?.(ms);
 
+  const fetchComments = async () => {
+    const { data, error } = await supabase
+      .from('post_comments')
+      .select('*, profiles(*)')
+      .eq('post_id', post.id)
+      .is('parent_id', null)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching comments:', error.message);
+      setComments([]);
+      return;
+    }
+
+    setComments(data || []);
+  };
+
   useEffect(() => {
     const fetchReactions = async () => {
-      const { data } = await supabase
+      if (!currentUser?.id) return;
+
+      const { data, error } = await supabase
         .from('post_reactions')
-        .select('type, user_id')
+        .select('id, type, user_id')
         .eq('post_id', post.id);
 
-      setLikeCount(data.filter(r => r.type === 'like').length);
-      setDislikeCount(data.filter(r => r.type === 'dislike').length);
-      setRoseCount(data.filter(r => r.type === 'rose').length);
+      if (error) return;
 
-      const mine = data.find(r => r.user_id === currentUser?.id && r.type !== 'rose');
-      setUserReaction(mine?.type || null);
+      const likes = data.filter(r => r.type === 'like');
+      const dislikes = data.filter(r => r.type === 'dislike');
+      const roses = data.filter(r => r.type === 'rose');
+
+      setLikeCount(likes.length);
+      setDislikeCount(dislikes.length);
+      setRoseCount(roses.length);
+
+      const userReact = data.find(r => r.user_id === currentUser.id && ['like', 'dislike'].includes(r.type));
+      setUserReaction(userReact?.type || null);
     };
 
-    fetchReactions();
-
-    const sub = supabase
-      .channel(`reactions-${post.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'post_reactions', filter: `post_id=eq.${post.id}` }, fetchReactions)
-      .subscribe();
-
-    return () => supabase.removeChannel(sub);
-  }, [post.id, currentUser]);
-
-  useEffect(() => {
-    const loadComments = async () => {
-      const { data } = await supabase
-        .from('post_comments')
-        .select('*, profiles:profiles!post_comments_user_id_fkey(display_name, photo_url)')
-        .eq('post_id', post.id)
-        .order('created_at', { ascending: true });
-
-      setComments(data || []);
-    };
-
-    loadComments();
-
-    const sub = supabase
-      .channel(`comments-${post.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'post_comments', filter: `post_id=eq.${post.id}` }, loadComments)
-      .subscribe();
-
-    return () => supabase.removeChannel(sub);
-  }, [post.id]);
-
-  useEffect(() => {
     const checkSubscription = async () => {
-      if (!currentUser?.id || !user?.id || currentUser.id === user.id) return;
+      if (!currentUser?.id || currentUser.id === user.id) return;
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('followers')
         .select('id')
         .eq('follower_id', currentUser.id)
         .eq('followed_id', user.id)
-        .maybeSingle();
+        .single();
 
-      setIsSubscribed(!!data);
+      if (!error) setIsSubscribed(!!data);
     };
 
+    fetchReactions();
+    fetchComments();
     checkSubscription();
-  }, [currentUser, user]);
 
-  const handleReact = async (type) => {
-    vibrate(20);
-    if (!currentUser?.id) return;
+    const reactionsSub = supabase
+      .channel(`reactions-${post.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'post_reactions', filter: `post_id=eq.${post.id}` }, fetchReactions)
+      .subscribe();
 
-    if (type === 'rose') {
-      await supabase.from('post_reactions').insert({ post_id: post.id, user_id: currentUser.id, type });
-      setRoseCount((prev) => prev + 1);
-      return;
-    }
+    const commentsSub = supabase
+      .channel(`comments-${post.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'post_comments', filter: `post_id=eq.${post.id}` }, fetchComments)
+      .subscribe();
 
-    if (userReaction === type) {
-      await supabase.from('post_reactions').delete().match({ post_id: post.id, user_id: currentUser.id, type });
-      setUserReaction(null);
-      if (type === 'like') setLikeCount((prev) => prev - 1);
-      if (type === 'dislike') setDislikeCount((prev) => prev - 1);
-    } else {
-      if (userReaction) {
-        await supabase.from('post_reactions').delete().match({ post_id: post.id, user_id: currentUser.id, type: userReaction });
-        if (userReaction === 'like') setLikeCount((prev) => prev - 1);
-        if (userReaction === 'dislike') setDislikeCount((prev) => prev - 1);
-      }
+    return () => {
+      supabase.removeChannel(reactionsSub);
+      supabase.removeChannel(commentsSub);
+    };
+  }, [post.id, currentUser?.id, user.id]);
 
-      await supabase.from('post_reactions').upsert({ post_id: post.id, user_id: currentUser.id, type });
-      setUserReaction(type);
-      if (type === 'like') setLikeCount((prev) => prev + 1);
-      if (type === 'dislike') setDislikeCount((prev) => prev + 1);
+  const handlePostComment = async () => {
+    if (!replyText.trim() || !currentUser?.id) return;
 
-      if (type === 'like' && post.user_id !== currentUser.id) {
-        await supabase.from('notifications').insert({
-          user_id: post.user_id,
-          actor_id: currentUser.id,
-          type: 'like',
-          post_id: post.id,
-        });
-      }
-    }
-  };
-
-  const handleSubscribe = async () => {
-    setSubscribeLoading(true);
-    if (isSubscribed) {
-      await supabase.from('followers').delete().match({ follower_id: currentUser.id, followed_id: user.id });
-      setIsSubscribed(false);
-    } else {
-      await supabase.from('followers').insert({ follower_id: currentUser.id, followed_id: user.id });
-      setIsSubscribed(true);
-
-      if (currentUser.id !== user.id) {
-        await supabase.from('notifications').insert({
-          user_id: user.id,
-          actor_id: currentUser.id,
-          type: 'follow',
-        });
-      }
-    }
-    setSubscribeLoading(false);
-  };
-
-  const handleReply = async () => {
-    if (!replyText.trim()) return;
-    await supabase.from('post_comments').insert({
+    const { error } = await supabase.from('post_comments').insert({
       post_id: post.id,
       user_id: currentUser.id,
       content: replyText.trim(),
     });
-    setReplyText('');
 
-    if (post.user_id !== currentUser.id) {
-      await supabase.from('notifications').insert({
-        user_id: post.user_id,
-        actor_id: currentUser.id,
-        type: 'comment',
-        post_id: post.id,
-      });
+    if (!error) {
+      setReplyText('');
+      setShowComments(true);
+      await fetchComments();
+    }
+  };
+
+  const handleReact = async (type) => {
+    vibrate();
+    const uid = currentUser?.id;
+    if (!uid) return;
+
+    if (type === 'rose') {
+      setRoseCount(prev => prev + 1);
+      const { error } = await supabase.from('post_reactions').insert({ post_id: post.id, user_id: uid, type });
+      if (error) setRoseCount(prev => prev - 1);
+      return;
+    }
+
+    const { data: existing } = await supabase
+      .from('post_reactions')
+      .select('id, type')
+      .eq('post_id', post.id)
+      .eq('user_id', uid)
+      .in('type', ['like', 'dislike']);
+
+    if (existing.length > 0) {
+      const match = existing[0];
+      if (match.type === type) {
+        setUserReaction(null);
+        type === 'like' ? setLikeCount(c => Math.max(0, c - 1)) : setDislikeCount(c => Math.max(0, c - 1));
+        await supabase.from('post_reactions').delete().eq('id', match.id);
+      } else {
+        setUserReaction(type);
+        type === 'like' ? setLikeCount(c => c + 1) : setDislikeCount(c => c + 1);
+        type === 'like' ? setDislikeCount(c => Math.max(0, c - 1)) : setLikeCount(c => Math.max(0, c - 1));
+        await supabase.from('post_reactions').update({ type }).eq('id', match.id);
+      }
+    } else {
+      setUserReaction(type);
+      type === 'like' ? setLikeCount(c => c + 1) : setDislikeCount(c => c + 1);
+      await supabase.from('post_reactions').insert({ post_id: post.id, user_id: uid, type });
+    }
+  };
+
+  const handleDeletePost = async () => {
+    if (currentUser?.id !== user.id) return;
+    await supabase.from('posts').delete().eq('id', post.id);
+    navigate('/home');
+  };
+
+  const handleToggleSubscribe = async () => {
+    if (!currentUser?.id || !user?.id || currentUser.id === user.id) return;
+
+    if (isSubscribed) {
+      await supabase.from('followers').delete().eq('follower_id', currentUser.id).eq('followed_id', user.id);
+      setIsSubscribed(false);
+    } else {
+      await supabase.from('followers').insert({ follower_id: currentUser.id, followed_id: user.id });
+      setIsSubscribed(true);
     }
   };
 
   const handleMessage = async () => {
     if (!currentUser?.id || !user?.id || currentUser.id === user.id) return;
-    try {
-      const convoId = await createPrivateConversation(currentUser.id, user.id);
-      navigate(`/chat/${convoId}`);
-    } catch {
-      alert('Could not start chat.');
-    }
+    const convo = await getOrCreatePrivateConversation(currentUser.id, user.id);
+    if (convo) navigate(`/chat/${convo}`);
   };
 
-  const mediaStyles = 'w-full rounded-lg border border-neutral-700 mb-3 max-h-72 object-cover';
-
   return (
-    <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow-md mb-4 mx-4">
+    <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow mb-4 mx-2 relative">
       <div className="flex items-center justify-between mb-2">
-        <UserLink user={user} avatarSize="w-9 h-9" textSize="text-sm" />
-        <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(post.created_at))} ago</span>
-      </div>
-
-      {currentUser?.id !== user?.id && (
-        <div className="flex gap-2 mb-2">
-          <button onClick={handleSubscribe} disabled={subscribeLoading} className="px-3 py-1 text-sm rounded bg-purple-600 text-white">
-            {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-          </button>
-          <button onClick={handleMessage} className="px-3 py-1 text-sm rounded bg-neutral-600 text-white">
-            Message
-          </button>
+        <UserLink user={user} avatarSize="w-9 h-9 rounded-md" textSize="text-sm" />
+        <div className="flex gap-2 items-center">
+          {currentUser?.id !== user.id && (
+            <>
+              <button
+                onClick={handleToggleSubscribe}
+                className={`text-xs px-2 py-1 rounded ${isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
+              >
+                {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+              </button>
+              <button onClick={handleMessage} className="text-xs px-2 py-1 rounded bg-neutral-700 text-white">Message</button>
+            </>
+          )}
+          <div ref={menuRef} className="relative">
+            <button onClick={() => setShowMenu(p => !p)}>⋯</button>
+            {showMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded shadow p-2 z-50">
+                {currentUser?.id === user.id ? (
+                  <button onClick={handleDeletePost} className="text-red-400">Delete Post</button>
+                ) : (
+                  <button className="text-yellow-400">Report Post</button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
 
       {post.text && <p className="text-white text-sm mb-3 whitespace-pre-wrap">{post.text}</p>}
 
+      {/* ✅ Media rendering */}
       {post.media_type === 'image' && post.media_url && (
         <img
           src={post.media_url}
-          alt="media"
-          className={mediaStyles}
-          onError={(e) => (e.target.style.display = 'none')}
+          alt="post media"
+          className="w-full max-h-80 object-cover rounded-xl mb-3"
         />
       )}
-
       {post.media_type === 'video' && post.media_url && (
         <video
           src={post.media_url}
           controls
-          className={mediaStyles}
-          onError={(e) => (e.target.style.display = 'none')}
+          className="w-full max-h-80 rounded-xl mb-3"
         />
       )}
 
       <div className="flex flex-wrap gap-3 items-center mb-2">
-        <button onClick={() => handleReact('like')} className="flex items-center gap-1 text-white text-sm">👍 {likeCount}</button>
-        <button onClick={() => handleReact('dislike')} className="flex items-center gap-1 text-white text-sm">👎 {dislikeCount}</button>
-        <button onClick={() => handleReact('rose')} className="flex items-center gap-1 text-white text-sm">🌹 {roseCount}</button>
-        <button onClick={() => setShowComments(!showComments)} className="text-xs text-purple-300 underline ml-auto">
-          {showComments ? 'Hide comments' : `View ${comments.length} comments`}
+        <button onClick={() => handleReact('like')} className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-blue-600' : 'bg-neutral-700'} text-white`}>
+          👍 {likeCount}
         </button>
+        <button onClick={() => handleReact('dislike')} className={`text-sm px-2 py-1 rounded ${userReaction === 'dislike' ? 'bg-red-600' : 'bg-neutral-700'} text-white`}>
+          👎 {dislikeCount}
+        </button>
+        <button onClick={() => handleReact('rose')} className="text-sm px-2 py-1 rounded bg-neutral-700 text-white">
+          🌹 {roseCount}
+        </button>
+      </div>
+
+      <div className="flex mt-2">
+        <input
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+          className="bg-neutral-900 text-white p-2 rounded-l w-full text-sm"
+          placeholder="Write a comment..."
+        />
+        <button onClick={handlePostComment} className="bg-purple-600 px-4 rounded-r text-sm">Post</button>
+      </div>
+
+      <div className="mt-2">
+        {comments.length > 0 && (
+          showComments ? (
+            <button onClick={() => setShowComments(false)} className="text-xs text-purple-400">Hide comments ({comments.length})</button>
+          ) : (
+            <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">View comments ({comments.length})</button>
+          )
+        )}
+        {comments.length === 0 && !showComments && (
+          <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">Be the first to comment!</button>
+        )}
       </div>
 
       {showComments && (
         <div className="space-y-2 mt-2">
-          {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-2 bg-neutral-900 border border-neutral-700 rounded p-2">
-              <UserLink user={comment.profiles} avatarSize="w-6 h-6" textSize="text-sm" />
-              <div>
-                <p className="text-sm text-white">{comment.content}</p>
-                <p className="text-xs text-gray-500">{formatDistanceToNow(new Date(comment.created_at))} ago</p>
-              </div>
-            </div>
-          ))}
-          <div className="flex gap-2 mt-1">
-            <input
-              type="text"
-              placeholder="Write a comment..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              className="flex-1 text-sm px-3 py-2 rounded bg-neutral-900 border border-neutral-700 text-white"
-            />
-            <button onClick={handleReply} className="px-3 py-2 bg-purple-600 text-white rounded text-sm">Post</button>
-          </div>
+          {comments.length === 0 ? (
+            <p className="text-neutral-400 text-sm text-center py-2">No comments yet.</p>
+          ) : (
+            comments.map(c => <CommentCard key={c.id} comment={c} />)
+          )}
         </div>
       )}
     </div>

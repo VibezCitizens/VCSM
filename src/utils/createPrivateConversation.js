@@ -1,61 +1,79 @@
 import { supabase } from '@/lib/supabaseClient';
 
-export async function createPrivateConversation(user1, user2) {
-  const isSelfChat = user1 === user2;
+/**
+ * Finds or creates a private conversation between two users.
+ * @param {string} user1 - Current user ID
+ * @param {string} user2 - Target user ID
+ * @returns {Promise<string|null>} conversation ID or null on failure
+ */
+export default async function getOrCreatePrivateConversation(user1, user2) {
+  if (!user1 || !user2) {
+    console.error('Both user IDs are required');
+    return null;
+  }
 
-  // Step 1: Get all private convos involving user1
-  const { data: user1Convos, error } = await supabase
-    .from('conversation_members')
-    .select('conversation_id')
-    .eq('user_id', user1);
+  if (user1 === user2) {
+    console.warn('Cannot chat with yourself');
+    return null;
+  }
 
-  if (error) throw error;
+  try {
+    // Find all conversation IDs that include user1
+    const { data: existing, error: fetchError } = await supabase
+      .from('conversation_members')
+      .select('conversation_id')
+      .eq('user_id', user1);
 
-  const convoIds = user1Convos.map((c) => c.conversation_id);
+    if (fetchError) throw fetchError;
 
-  if (convoIds.length === 0) {
+    const convoIds = existing.map((m) => m.conversation_id);
+
+    if (convoIds.length > 0) {
+      // Look for a conversation that also includes user2
+      const { data: shared, error: matchError } = await supabase
+        .from('conversation_members')
+        .select('conversation_id')
+        .in('conversation_id', convoIds)
+        .eq('user_id', user2);
+
+      if (matchError) throw matchError;
+      if (shared.length > 0) return shared[0].conversation_id;
+    }
+
+    // No shared conversation found – create a new one
     return await createNewPrivateConversation(user1, user2);
+  } catch (err) {
+    console.error('getOrCreatePrivateConversation failed:', err.message);
+    return null;
   }
-
-  // Step 2: Check if user2 is in any of the same convos
-  const { data: matchingConvos, error: matchError } = await supabase
-    .from('conversation_members')
-    .select('conversation_id')
-    .in('conversation_id', convoIds)
-    .eq('user_id', user2);
-
-  if (matchError) throw matchError;
-
-  if (matchingConvos.length > 0) {
-    // ✅ Existing private convo between both users found
-    return matchingConvos[0].conversation_id;
-  }
-
-  // 🚨 No existing convo — create new one
-  return await createNewPrivateConversation(user1, user2);
 }
 
 async function createNewPrivateConversation(user1, user2) {
-  const { data: convo, error } = await supabase
-    .from('conversations')
-    .insert([{ type: 'private' }])
-    .select('id')
-    .single();
+  try {
+    // Create a new conversation
+    const { data: convo, error: convoError } = await supabase
+      .from('conversations')
+      .insert([{ type: 'private' }])
+      .select('id')
+      .single();
 
-  if (error) throw error;
+    if (convoError) throw convoError;
 
-  const conversationId = convo.id;
+    const conversationId = convo.id;
 
-  const members = [
-    { conversation_id: conversationId, user_id: user1 },
-    { conversation_id: conversationId, user_id: user2 },
-  ];
+    // Add both users as members
+    const { error: membersError } = await supabase
+      .from('conversation_members')
+      .insert([
+        { conversation_id: conversationId, user_id: user1 },
+        { conversation_id: conversationId, user_id: user2 },
+      ]);
 
-  const { error: memberError } = await supabase
-    .from('conversation_members')
-    .insert(members);
+    if (membersError) throw membersError;
 
-  if (memberError) throw memberError;
-
-  return conversationId;
+    return conversationId;
+  } catch (err) {
+    console.error('createNewPrivateConversation failed:', err.message);
+    return null;
+  }
 }

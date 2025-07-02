@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
-import imageCompression from 'browser-image-compression';
 import PostCard from '@/components/PostCard';
 import { Plus } from 'lucide-react';
 import QRCode from '@/components/QRScanHandler';
+import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
 
-const R2_PUBLIC = 'https://pub-47d41a9f87d148c9a7a41a636.r2.dev';
+// **IMPORTANT: Import the ProfileHeader component**
+import ProfileHeader from '@/components/ProfileHeader'; // Ensure this path is correct based on your file structure
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
   const { username } = useParams();
-  const fileRef = useRef();
 
   const [currentUser, setCurrentUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -25,37 +25,46 @@ export default function ProfileScreen() {
   const [subscriberCount, setSubscriberCount] = useState(0);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const fetchUserAndProfile = async () => {
+      const { data } = await supabase.auth.getUser();
       if (data?.user) {
         setCurrentUser(data.user);
-        if (username) loadProfileByUsername(username);
-        else loadProfileData(data.user.id);
+        if (username) {
+            await loadProfileByUsername(username, data.user.id);
+        } else {
+            await loadProfileData(data.user.id, data.user.id);
+        }
       }
-    });
+    };
+    fetchUserAndProfile();
   }, [username]);
 
-  const loadProfileByUsername = async (uname) => {
+  const loadProfileByUsername = async (uname, currentUserId) => {
     const { data } = await supabase.from('profiles').select('*').eq('username', uname).single();
-    if (data) setProfileData(data);
+    if (data) setProfileData(data, currentUserId);
   };
 
-  const loadProfileData = async (userId) => {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    if (data) setProfileData(data);
+  const loadProfileData = async (profileId, currentUserId) => {
+    const { data } = await supabase.from('profiles').select('*').eq('id', profileId).single();
+    if (data) setProfileData(data, currentUserId);
   };
 
-  const setProfileData = async (userData) => {
+  const setProfileData = async (userData, currentUserId) => {
     const { count } = await supabase
       .from('followers')
       .select('*', { count: 'exact', head: true })
       .eq('followed_id', userData.id);
 
-    const { data: subData } = await supabase
-      .from('followers')
-      .select('*')
-      .eq('follower_id', currentUser?.id)
-      .eq('followed_id', userData.id)
-      .maybeSingle();
+    let subData = null;
+    if (currentUserId) {
+      const { data: fetchedSubData } = await supabase
+        .from('followers')
+        .select('*')
+        .eq('follower_id', currentUserId)
+        .eq('followed_id', userData.id)
+        .maybeSingle();
+      subData = fetchedSubData;
+    }
 
     const { data: userPosts } = await supabase
       .from('posts')
@@ -71,218 +80,161 @@ export default function ProfileScreen() {
     setSubscribed(!!subData);
   };
 
+  // Callback function for ProfileHeader when photo is changed
+  const handlePhotoChangeInHeader = () => {
+    // When the photo is successfully uploaded and the profile updated in ProfileHeader,
+    // we need to re-fetch the profile data here to update the parent component's state
+    // with the new photo_url.
+    if (profile?.id && currentUser?.id) {
+        if (username) {
+            loadProfileByUsername(username, currentUser.id);
+        } else {
+            loadProfileData(profile.id, currentUser.id);
+        }
+    }
+  };
+
   const handleSave = async () => {
     if (!profile) return;
-    await supabase
+    const { error } = await supabase
       .from('profiles')
       .update({ display_name: displayName.trim(), bio })
       .eq('id', profile.id);
-    setProfile((prev) => ({ ...prev, display_name: displayName, bio }));
+
+    if (error) {
+        toast.error('Failed to update profile details: ' + error.message);
+        return;
+    }
+
+    if (profile?.id && currentUser?.id) {
+        if (username) {
+            loadProfileByUsername(username, currentUser.id);
+        } else {
+            loadProfileData(profile.id, currentUser.id);
+        }
+    }
     setEditing(false);
     toast.success('Profile updated');
     await supabase.auth.updateUser({ data: { display_name: displayName.trim() } });
   };
 
-  const uploadToCloudflare = async (file, key) => {
-    const compressed = await imageCompression(file, {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 600,
-      useWebWorker: true,
-    });
-    const form = new FormData();
-    form.append('file', compressed);
-    form.append('key', key);
-    const res = await fetch('https://upload-profile-worker.olivertrest3.workers.dev', {
-      method: 'POST',
-      body: form,
-    });
-    if (!res.ok) throw new Error('Upload failed');
-    return `${R2_PUBLIC}/${key}`;
-  };
-
-  const handlePhotoChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !profile) return;
-    const key = `profile-pictures/${profile.id}/${Date.now()}-${file.name}`;
-    try {
-      const url = await uploadToCloudflare(file, key);
-      await supabase.from('profiles').update({ photo_url: url }).eq('id', profile.id);
-      setProfile((prev) => ({ ...prev, photo_url: url }));
-      toast.success('Photo updated');
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
-
   const handleSubscribe = async () => {
     if (!currentUser || !profile) return;
-    await supabase.from('followers').insert({
+    const { error } = await supabase.from('followers').insert({
       follower_id: currentUser.id,
       followed_id: profile.id,
     });
+    if (error) {
+        toast.error('Failed to subscribe: ' + error.message);
+        return;
+    }
     setSubscribed(true);
     setSubscriberCount((prev) => prev + 1);
   };
 
   const handleUnsubscribe = async () => {
-    await supabase
+    if (!currentUser || !profile) return;
+    const { error } = await supabase
       .from('followers')
       .delete()
       .eq('follower_id', currentUser.id)
       .eq('followed_id', profile.id);
+    if (error) {
+        toast.error('Failed to unsubscribe: ' + error.message);
+        return;
+    }
     setSubscribed(false);
     setSubscriberCount((prev) => prev - 1);
   };
 
   const handleMessage = async () => {
-    if (!currentUser || !profile) return;
+    if (!currentUser || !profile || currentUser.id === profile.id) return;
 
-    const { data: convos, error } = await supabase
-      .from('conversations')
-      .select('id, participant_ids')
-      .eq('type', 'private');
-
-    if (error) {
-      toast.error('Could not load conversations');
+    const convoId = await getOrCreatePrivateConversation(currentUser.id, profile.id);
+    if (!convoId) {
+      toast.error('Could not start conversation');
       return;
     }
 
-    const existing = convos?.find(
-      (c) =>
-        Array.isArray(c.participant_ids) &&
-        c.participant_ids.includes(currentUser.id) &&
-        c.participant_ids.includes(profile.id) &&
-        c.participant_ids.length === 2
-    );
-
-    if (existing) {
-      navigate(`/chat/${existing.id}`);
-      return;
-    }
-
-    const { data: created, error: createError } = await supabase
-      .from('conversations')
-      .insert({
-        type: 'private',
-        participant_ids: [currentUser.id, profile.id],
-        created_by: currentUser.id,
-      })
-      .select()
-      .single();
-
-    if (createError || !created) {
-      toast.error('Could not start new conversation');
-      return;
-    }
-
-    navigate(`/chat/${created.id}`);
+    navigate(`/chat/${convoId}`);
   };
 
   const isOwnProfile = currentUser?.id === profile?.id;
 
+  if (!profile) {
+    return <div className="bg-black text-white min-h-screen flex items-center justify-center">Loading profile...</div>;
+  }
+
   return (
     <div className="bg-black text-white min-h-screen">
-      {profile && (
-        <div className="text-center p-6">
-          <div className="relative group mx-auto w-36 h-24">
-            <img
-              src={profile.photo_url || '/default-avatar.png'}
-              alt="avatar"
-              className="w-36 h-24 rounded-xl object-cover border border-neutral-700 shadow-sm"
-            />
-            {isOwnProfile && (
-              <>
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileRef}
-                  onChange={handlePhotoChange}
-                  hidden
-                />
-                <button
-                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 text-xs text-white"
-                  onClick={() => fileRef.current.click()}
-                >
-                  Change
-                </button>
-              </>
-            )}
-          </div>
+      {/* **THIS IS THE KEY CHANGE:** Render the ProfileHeader component */}
+      <ProfileHeader
+        profile={profile}
+        isOwnProfile={isOwnProfile}
+        onPhotoChange={handlePhotoChangeInHeader} // Pass the callback to refresh profile data
+        onToggleQR={() => setQrOpen(!qrOpen)}
+        qrOpen={qrOpen}
+        onEdit={() => setEditing(true)}
+      />
 
-          <h1 className="text-2xl font-bold mt-3">{displayName}</h1>
-          <p className="text-gray-400 mt-1">{bio}</p>
-          <p className="mt-2 text-sm text-purple-300">Subscribers: {subscriberCount}</p>
-
-          <div className="mt-3 flex flex-wrap justify-center gap-2">
-            {isOwnProfile ? (
-              <button
-                onClick={() => setEditing(true)}
-                className="bg-purple-600 px-4 py-1 rounded-full text-sm"
-              >
-                Edit Profile
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={subscribed ? handleUnsubscribe : handleSubscribe}
-                  className="bg-purple-600 px-3 py-1 rounded-full text-sm"
-                >
-                  {subscribed ? 'Unsubscribe' : 'Subscribe'}
-                </button>
-                <button
-                  onClick={handleMessage}
-                  className="bg-purple-600 px-3 py-1 rounded-full text-sm"
-                >
-                  Message
-                </button>
-                <button className="bg-purple-600 px-3 py-1 rounded-full text-sm">Friend</button>
-              </>
-            )}
-            <button
-              onClick={() => setQrOpen(!qrOpen)}
-              className="bg-purple-600 px-3 py-1 rounded-full text-sm"
-            >
-              {qrOpen ? 'Hide QR' : 'Show QR'}
-            </button>
-          </div>
-
-          {qrOpen && (
-            <div className="mt-4 flex justify-center">
-              <QRCode value={`https://vibezcitizens.com/u/${profile.username}`} size={128} />
-            </div>
-          )}
-
-          {editing && (
-            <div className="mt-4 space-y-2 text-left max-w-sm mx-auto">
-              <input
-                className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Display Name"
-              />
-              <textarea
-                className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Bio"
-              />
-              <button
-                onClick={handleSave}
-                className="w-full bg-purple-600 text-white py-2 rounded"
-              >
-                Save
-              </button>
-            </div>
-          )}
+      {/* Conditional rendering for QR code if you still want it outside ProfileHeader's direct control */}
+      {qrOpen && (
+        <div className="mt-4 flex justify-center">
+          <QRCode value={`https://vibezcitizens.com/u/${profile.username}`} size={128} />
         </div>
       )}
 
+      {/* Editing section */}
+      {editing && (
+        <div className="mt-4 space-y-2 text-left max-w-sm mx-auto p-4">
+          <input
+            className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Display Name"
+          />
+          <textarea
+            className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Bio"
+          />
+          <button
+            onClick={handleSave}
+            className="w-full bg-purple-600 text-white py-2 rounded"
+          >
+            Save
+          </button>
+        </div>
+      )}
+
+      {/* Buttons for subscribe/message/friend are outside ProfileHeader, keep them here */}
+      {!isOwnProfile && profile && (
+        <div className="mt-3 flex flex-wrap justify-center gap-2 p-4">
+            <button
+              onClick={subscribed ? handleUnsubscribe : handleSubscribe}
+              className="bg-purple-600 px-3 py-1 rounded-full text-sm"
+            >
+              {subscribed ? 'Unsubscribe' : 'Subscribe'}
+            </button>
+            <button
+              onClick={handleMessage}
+              className="bg-purple-600 px-3 py-1 rounded-full text-sm"
+            >
+              Message
+            </button>
+            <button className="bg-purple-600 px-3 py-1 rounded-full text-sm">Friend</button>
+        </div>
+      )}
+
+      {/* Posts section */}
       <div className="mt-6 px-4 space-y-4 pb-24">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} user={profile} />
         ))}
       </div>
 
+      {/* Fixed Plus button for own profile */}
       {isOwnProfile && (
         <button
           onClick={() => navigate('/upload')}

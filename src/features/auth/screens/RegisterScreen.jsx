@@ -1,208 +1,254 @@
-﻿import { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+// Assuming '@/lib/supabaseClient' correctly points to your Supabase client initialization
+// This file should export a 'supabase' instance initialized with your Supabase URL and Anon Key.
+// Example content for src/lib/supabaseClient.js:
+// import { createClient } from '@supabase/supabase-js';
+// const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+// const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+// export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 import { supabase } from '@/lib/supabaseClient';
-import { useNavigate, Link } from 'react-router-dom';
 
-export default function RegisterScreen() {
+const App = () => {
   const navigate = useNavigate();
-
-  const [displayName, setDisplayName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [birthdate, setBirthdate] = useState('');
-  const [sex, setSex] = useState('');
-  const [interestedInKids, setInterestedInKids] = useState(null);
+  const [form, setForm] = useState({
+    display_name: '',
+    username: '',
+    email: '',
+    password: '',
+    birthdate: '',
+    sex: '', // Initialize as empty string for dropdown
+    interested_in_kids: false, // Default to false
+  });
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const calculateAge = (dob) => {
-    const birth = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-    return age;
+  // Handles changes for all input fields, including text and radio buttons
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
-  const isUsernameValid = (username) => {
-    return /^[a-zA-Z0-9_]{3,20}$/.test(username);
-  };
+  // Determines if the form is valid to enable the register button
+  const isFormValid =
+    form.display_name !== '' &&
+    form.username !== '' &&
+    form.email !== '' &&
+    form.password !== '' &&
+    form.birthdate !== '' &&
+    form.sex !== '' && // Ensure sex is selected
+    (form.interested_in_kids === true || form.interested_in_kids === false); // Ensure interested_in_kids is explicitly set
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    const age = calculateAge(birthdate);
-
-    if (age < 13) {
-      alert('You must be at least 13 years old to use this platform.');
-      return;
-    }
-
-    if (!sex) {
-      alert('Please select your sex.');
-      return;
-    }
-
-    if (interestedInKids === null) {
-      alert('Please indicate if you’re interested in Vibez Kids.');
-      return;
-    }
-
-    if (!isUsernameValid(username)) {
-      alert('Username must be 3-20 characters long and only include letters, numbers, and underscores.');
-      return;
-    }
-
+  // Handles the registration process
+  const handleRegister = async () => {
     setLoading(true);
-    try {
-      const { data: existing, error: usernameError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', username)
-        .maybeSingle();
+    setErrorMessage(''); // Clear previous errors
+    setSuccessMessage(''); // Clear previous success messages
 
-      if (existing) {
-        alert('Username already taken. Please choose another.');
+    try {
+      // Destructure form data, separating auth credentials from profile data
+      const { email, password, ...profileData } = form;
+
+      // Basic validation - this is also covered by isFormValid, but good for a final check
+      if (!isFormValid) {
+        setErrorMessage('Please fill in all required fields.');
         setLoading(false);
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({
+      // 1. Sign up the user with Supabase Auth
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            display_name: displayName,
-            username,
-            birthdate,
-            age,
-            sex,
-            is_adult: age >= 18,
-            interested_in_kids: interestedInKids,
-            photo_url: '/default-avatar.png',
-            bio: '',
-            private: false,
-          },
-        },
+        // You can add redirectTo here for email confirmation flow if needed
+        // options: {
+        //   emailRedirectTo: 'http://localhost:3000/confirm-signup',
+        // }
       });
 
-      if (error) throw error;
+      if (signUpError) {
+        throw signUpError;
+      }
 
-      const userId = data?.user?.id;
-      if (!userId) throw new Error('User not returned after signup.');
+      // Ensure user data is available after sign-up
+      if (!authData || !authData.user) {
+        setSuccessMessage('Registration initiated. Please check your email for a confirmation link.');
+        setLoading(false);
+        return;
+      }
 
-      navigate(`/u/${username}`);
+      const userId = authData.user.id;
+
+      // Calculate age for is_adult field
+      const birthYear = new Date(form.birthdate).getFullYear();
+      const currentYear = new Date().getFullYear();
+      const age = currentYear - birthYear;
+      const isAdult = age >= 18;
+
+      // 2. Insert/Upsert the user's profile into the public.profiles table
+      // The 'upsert' method is used here to handle cases where the trigger might
+      // have already created a basic profile, or to create it directly.
+      const { error: profileError } = await supabase.from('profiles').upsert({
+        id: userId,
+        display_name: profileData.display_name,
+        username: profileData.username,
+        birthdate: profileData.birthdate,
+        age: age, // Store calculated age
+        sex: profileData.sex,
+        is_adult: isAdult, // Store calculated is_adult status
+        interested_in_kids: profileData.interested_in_kids,
+        photo_url: '/default-avatar.png', // Default value, can be updated later
+        bio: '', // Default empty bio, can be updated later
+        private: false, // Default private status, can be updated later
+        created_at: new Date().toISOString(), // Ensure timestamp is correct
+        updated_at: new Date().toISOString(), // Ensure timestamp is correct
+      });
+
+      if (profileError) {
+        throw profileError;
+      }
+
+   setSuccessMessage('Registration successful! Redirecting to feed...');
+navigate('/'); // ✅ correct: goes to CentralFeed
+
+
+
     } catch (err) {
-      console.error('[Register] Error:', err);
-      alert(err.message || 'Registration failed.');
+      console.error('[Registration Error]', err);
+      // Display user-friendly error message
+      setErrorMessage(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-900 px-4">
-      <form
-        onSubmit={handleRegister}
-        className="w-full max-w-sm space-y-4 p-6 bg-neutral-800 rounded-lg shadow-md"
-      >
-        <h1 className="text-xl font-semibold text-center text-white">Create an Account</h1>
+    <div className="flex min-h-screen items-center justify-center bg-black text-white px-4 font-inter">
+      <div className="bg-zinc-900 p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-4 border border-purple-700">
+        <h1 className="text-2xl font-bold text-center mb-6">Join Vibez Citizens</h1>
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="bg-green-600 text-white p-3 rounded-md text-center">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="bg-red-600 text-white p-3 rounded-md text-center">
+            {errorMessage}
+          </div>
+        )}
 
         <input
-          type="text"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          name="display_name"
           placeholder="Display Name"
-          className="w-full p-2 bg-neutral-700 border border-neutral-600 rounded text-white"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
+          value={form.display_name}
+          onChange={handleChange}
           required
         />
-
         <input
-          type="text"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          name="username"
           placeholder="Username"
-          className="w-full p-2 bg-neutral-700 border border-neutral-600 rounded text-white"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={form.username}
+          onChange={handleChange}
           required
         />
-
         <input
+          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           type="email"
+          name="email"
           placeholder="Email"
-          className="w-full p-2 bg-neutral-700 border border-neutral-600 rounded text-white"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={handleChange}
           required
         />
-
         <input
+          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           type="password"
+          name="password"
           placeholder="Password"
-          className="w-full p-2 bg-neutral-700 border border-neutral-600 rounded text-white"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={form.password}
+          onChange={handleChange}
           required
         />
-
-        <label className="text-sm text-neutral-400">Birthdate</label>
         <input
+          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           type="date"
-          className="w-full p-2 bg-neutral-700 border border-neutral-600 rounded text-white"
-          value={birthdate}
-          onChange={(e) => setBirthdate(e.target.value)}
+          name="birthdate"
+          placeholder="Birthdate"
+          value={form.birthdate}
+          onChange={handleChange}
           required
         />
 
-        <label className="text-sm text-neutral-400">Sex</label>
+        {/* Sex Dropdown Menu */}
         <select
-          className="w-full p-2 bg-neutral-700 border border-neutral-600 rounded text-white"
-          value={sex}
-          onChange={(e) => setSex(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 text-zinc-400"
+          name="sex"
+          value={form.sex}
+          onChange={handleChange}
           required
         >
-          <option value="">Select</option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
+          <option value="">Select Sex</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
         </select>
 
-        <fieldset className="text-white">
-          <legend className="text-sm text-neutral-400 mb-1">Interested in Vibez Kids?</legend>
-          <label className="mr-4">
+        {/* Vibez Kids Yes/No Buttons (Enhanced Radio Buttons) */}
+        <div className="flex justify-center gap-4 text-sm mt-2">
+          <label className={`flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 rounded-lg border-2 transition-all duration-200
+            ${form.interested_in_kids === true ? 'bg-purple-600 border-purple-600 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'}`}>
             <input
               type="radio"
-              name="interestedInKids"
-              value="yes"
-              checked={interestedInKids === true}
-              onChange={() => setInterestedInKids(true)}
-            />{' '}
-            Yes
+              name="interested_in_kids"
+              value="true"
+              checked={form.interested_in_kids === true}
+              onChange={() => setForm({ ...form, interested_in_kids: true })}
+              className="hidden" // Hide default radio button
+            />
+            Vibez Kids: Yes
           </label>
-          <label>
+          <label className={`flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 rounded-lg border-2 transition-all duration-200
+            ${form.interested_in_kids === false ? 'bg-purple-600 border-purple-600 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'}`}>
             <input
               type="radio"
-              name="interestedInKids"
-              value="no"
-              checked={interestedInKids === false}
-              onChange={() => setInterestedInKids(false)}
-            />{' '}
+              name="interested_in_kids"
+              value="false"
+              checked={form.interested_in_kids === false}
+              onChange={() => setForm({ ...form, interested_in_kids: false })}
+              className="hidden" // Hide default radio button
+            />
             No
           </label>
-        </fieldset>
+        </div>
+
 
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-500 disabled:opacity-50"
+          onClick={handleRegister}
+          disabled={loading || !isFormValid} 
+          className="w-full bg-purple-600 hover:bg-purple-700 transition text-white font-semibold py-3 rounded-xl mt-6 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg"
         >
           {loading ? 'Registering...' : 'Register'}
         </button>
 
-        <p className="text-center text-sm text-neutral-400">
+        <p className="text-sm text-center text-zinc-400 mt-4">
           Already have an account?{' '}
-          <Link to="/login" className="text-purple-400 hover:underline">
+          <a href="/login" className="underline text-purple-300 hover:text-purple-400">
             Login here
-          </Link>
+          </a>
         </p>
-      </form>
+      </div>
     </div>
   );
-}
+};
+
+export default App;

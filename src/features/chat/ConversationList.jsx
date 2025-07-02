@@ -1,17 +1,24 @@
-// src/features/chat/components/ConversationList.jsx
-
+// src/features/chat/ConversationList.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-import { MoreVertical, Trash2, BellOff } from 'lucide-react';
+
+// **CORRECTED IMPORT PATH for ConversationListItem based on your file structure**
+import ConversationListItem from '@/components/ConversationListItem';
+// If '@/components' doesn't work, try a relative path like:
+// import ConversationListItem from '../../components/ConversationListItem';
+
+
+// Removed direct lucide-react imports from here as they are now in ConversationListItem.jsx
+// import { MoreVertical, Trash2, BellOff } from 'lucide-react';
 
 export default function ConversationList() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [menuOpenId, setMenuOpenId] = useState(null); // track open menu
+  const [menuOpenId, setMenuOpenId] = useState(null);
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -26,8 +33,12 @@ export default function ConversationList() {
           last_message,
           last_sender_id,
           last_sent_at,
-          conversation_members ( user_id )
+          conversation_members!inner (
+            user_id,
+            muted
+          )
         `)
+        .eq('conversation_members.user_id', user.id)
         .order('last_sent_at', { ascending: false });
 
       if (error) {
@@ -59,7 +70,7 @@ export default function ConversationList() {
         conversation_members: c.conversation_members.map((m) => ({
           ...m,
           profile: profileMap[m.user_id] || null,
-        })),
+         })),
       }));
 
       setConversations(withProfiles);
@@ -97,68 +108,18 @@ export default function ConversationList() {
 
   return (
     <div className="flex flex-col">
-      {conversations.map((conv) => {
-        const otherMember = conv.conversation_members.find((m) => m.user_id !== user.id);
-        const profile = otherMember?.profile;
-        const displayName = profile?.display_name || 'Unknown User';
-        const avatar = profile?.photo_url || '/default-avatar.png';
-
-        return (
-          <div
-            key={conv.id}
-            className="relative flex items-center justify-between gap-3 p-4 hover:bg-neutral-800 border-b border-neutral-700"
-          >
-            <div
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => navigate(`/chat/${conv.id}`)}
-            >
-              <img
-                src={avatar}
-                alt={displayName}
-                className="w-10 h-10 rounded-full object-cover"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/default-avatar.png';
-                }}
-              />
-              <div className="flex flex-col">
-                <span className="text-white font-semibold text-sm">{displayName}</span>
-                <span className="text-gray-400 text-xs truncate max-w-[200px]">
-                  {conv.last_message || 'No messages yet.'}
-                </span>
-              </div>
-            </div>
-
-            <div className="relative">
-              <button
-                onClick={() => setMenuOpenId(menuOpenId === conv.id ? null : conv.id)}
-                className="p-1 hover:bg-neutral-700 rounded"
-              >
-                <MoreVertical size={18} />
-              </button>
-
-              {menuOpenId === conv.id && (
-                <div className="absolute right-0 top-6 bg-neutral-900 rounded shadow-md z-50 w-32 border border-neutral-700">
-                  <button
-                    onClick={() => handleMute(conv.id)}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-800"
-                  >
-                    <BellOff size={14} className="inline mr-2" />
-                    Mute
-                  </button>
-                  <button
-                    onClick={() => handleDelete(conv.id)}
-                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-800"
-                  >
-                    <Trash2 size={14} className="inline mr-2" />
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })}
+      {conversations.map((conv) => (
+        <ConversationListItem
+          key={conv.id}
+          conv={conv}
+          user={user}
+          navigate={navigate}
+          menuOpenId={menuOpenId}
+          setMenuOpenId={setMenuOpenId}
+          handleMute={handleMute}
+          handleDelete={handleDelete}
+        />
+      ))}
     </div>
   );
 }

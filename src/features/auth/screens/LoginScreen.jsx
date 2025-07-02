@@ -60,6 +60,10 @@ function LoginScreen() {
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        
+<p className="mt-2 text-center text-sm text-purple-400">
+  <a href="/forgot-password" className="hover:underline">Forgot password?</a>
+</p>
 
         <p className="text-sm text-center text-neutral-400">
           Don’t have an account?{' '}
