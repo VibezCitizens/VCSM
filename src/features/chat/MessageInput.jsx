@@ -44,8 +44,9 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
       let media_url = null;
       if (mediaFile) {
         const compressed = await compressImageFile(mediaFile);
-        const filename = `chat/${conversationId}/${Date.now()}-${compressed.name}`;
-        const { url, error: uploadErr } = await uploadToCloudflare(compressed, filename);
+        const timestamp = Date.now();
+        const filePath = `chat/${conversationId}/${timestamp}-${compressed.name}`;
+        const { url, error: uploadErr } = await uploadToCloudflare(compressed, filePath);
         if (uploadErr) throw new Error(uploadErr);
         media_url = url;
       }
