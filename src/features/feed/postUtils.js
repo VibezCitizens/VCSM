@@ -1,25 +1,13 @@
 import { supabase } from '@/lib/supabaseClient';
 
 /**
- * Filters posts based on viewer's age group (adult or not).
- * Assumes each post has a `user` object with `is_adult` field.
- *
- * @param {Array} posts
- * @param {boolean} viewerIsAdult
- * @returns {Array}
- */
-export function filterPostsByAgeGroup(posts, viewerIsAdult) {
-  return posts.filter(post => post.user?.is_adult === viewerIsAdult);
-}
-
-/**
- * Fetches posts with user profile data, paginated and filtered by viewer's age group.
- *
+ * Fetches paginated posts with profile data, filtered by viewer's age group.
+ * 
  * @param {Object} options
- * @param {number} options.page
- * @param {number} options.pageSize
- * @param {boolean} options.viewerIsAdult
- * @param {Object} [options.profileCache={}]
+ * @param {number} options.page - Page number starting from 0
+ * @param {number} options.pageSize - Posts per page
+ * @param {boolean} options.viewerIsAdult - Filter posts based on author adult status
+ * @param {Object} [options.profileCache={}] - Optional profile cache
  * @returns {Promise<{ posts: Array, updatedProfiles: Object, hasMore: boolean }>}
  */
 export async function fetchPostsWithProfiles({
@@ -31,6 +19,7 @@ export async function fetchPostsWithProfiles({
   const from = page * pageSize;
   const to = from + pageSize - 1;
 
+  // Step 1: Fetch posts
   const { data: rawPosts, error } = await supabase
     .from('posts')
     .select('*')
@@ -39,39 +28,42 @@ export async function fetchPostsWithProfiles({
 
   if (error) throw error;
 
-  const updatedProfiles = { ...profileCache };
-  const enrichedPosts = [];
+  // Step 2: Identify unique user IDs not in cache
+  const missingUserIds = Array.from(
+    new Set(rawPosts.map(p => p.user_id).filter(uid => !profileCache[uid]))
+  );
 
-  for (const post of rawPosts) {
-    const uid = post.user_id;
+  let newProfiles = [];
+  if (missingUserIds.length > 0) {
+    const { data: fetchedProfiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, is_adult, display_name, photo_url')
+      .in('id', missingUserIds);
 
-    if (!updatedProfiles[uid]) {
-      const { data: profile, error: profileErr } = await supabase
-        .from('profiles')
-        .select('is_adult, display_name, photo_url')
-        .eq('id', uid)
-        .maybeSingle();
-
-      if (!profileErr && profile) {
-        updatedProfiles[uid] = {
-          id: uid,
-          ...profile
-        };
-      }
-    }
-
-    const author = updatedProfiles[uid];
-    if (author && author.is_adult === viewerIsAdult) {
-      enrichedPosts.push({
-        ...post,
-        user: author
-      });
-    }
+    if (profileError) throw profileError;
+    newProfiles = fetchedProfiles || [];
   }
+
+  // Step 3: Merge into profileCache
+  const updatedProfiles = { ...profileCache };
+  for (const profile of newProfiles) {
+    updatedProfiles[profile.id] = profile;
+  }
+
+  // Step 4: Enrich and filter posts
+  const enrichedPosts = rawPosts
+    .map(post => {
+      const user = updatedProfiles[post.user_id];
+      return user ? { ...post, user } : null;
+    })
+    .filter(p => p?.user?.is_adult === viewerIsAdult);
+
+  // Step 5: Determine if there are more posts
+  const hasMore = rawPosts.length === pageSize;
 
   return {
     posts: enrichedPosts,
     updatedProfiles,
-    hasMore: rawPosts.length === pageSize
+    hasMore
   };
 }

@@ -47,8 +47,44 @@ export default function UploadScreen() {
       return;
     }
 
-    if (!file || mediaType !== 'image') {
-      toast.error('Image required for photo posts.');
+    const processedTags = tags
+      .replace(/,/g, ' ')
+      .split(' ')
+      .map(tag => tag.startsWith('#') ? tag.slice(1) : tag)
+      .map(tag => tag.trim())
+      .filter(Boolean);
+
+    // TEXT-ONLY POST
+    if (!file) {
+      if (!text.trim()) {
+        toast.error('Please write something or upload an image.');
+        return;
+      }
+
+      const { error: insertError } = await supabase.from('posts').insert({
+        user_id: user.id,
+        text: text.trim(),
+        media_type: null,
+        media_url: null,
+        tags: processedTags,
+        visibility,
+        post_type: 'text',
+      });
+
+      if (insertError) {
+        console.error('Insert failed:', insertError);
+        toast.error(`Post error: ${insertError.message}`);
+      } else {
+        toast.success('Posted!');
+        navigate('/');
+      }
+
+      return;
+    }
+
+    // IMAGE POST
+    if (mediaType !== 'image') {
+      toast.error('Unsupported file type.');
       return;
     }
 
@@ -69,7 +105,7 @@ export default function UploadScreen() {
     if (recentPosts?.length > 0) {
       const lastPostTime = new Date(recentPosts[0].created_at).getTime();
       const now = Date.now();
-      const limit = 3 * 60 * 60 * 1000; // 3-hour cooldown
+      const limit = 3 * 60 * 60 * 1000;
 
       if ((now - lastPostTime) < limit) {
         const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at);
@@ -112,16 +148,9 @@ export default function UploadScreen() {
         return;
       }
 
-      const processedTags = tags
-        .replace(/,/g, ' ')
-        .split(' ')
-        .map(tag => tag.startsWith('#') ? tag.slice(1) : tag)
-        .map(tag => tag.trim())
-        .filter(Boolean);
-
       const { error: insertError } = await supabase.from('posts').insert({
         user_id: user.id,
-        text: text.trim(),
+        text: text.trim() || null,
         media_url: url,
         media_type: 'image',
         tags: processedTags,
@@ -132,11 +161,10 @@ export default function UploadScreen() {
       if (insertError) {
         console.error('Insert failed:', insertError);
         toast.error(`Post error: ${insertError.message}`);
-        return;
+      } else {
+        toast.success('Posted!');
+        navigate('/');
       }
-
-      toast.success('Posted!');
-      navigate('/');
     } catch (err) {
       console.error('Unexpected upload error:', err);
       toast.error('Unexpected error.');
@@ -166,7 +194,7 @@ export default function UploadScreen() {
         value={tags}
         onChange={(e) => setTags(e.target.value)}
         className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500"
-        placeholder="Tags (e.g. #sunset #travel)"
+        placeholder="Tags (optional)"
       />
 
       <select
@@ -181,7 +209,7 @@ export default function UploadScreen() {
       </select>
 
       <label htmlFor="file-upload" className="block w-full py-2 px-4 bg-neutral-700 text-white text-center rounded cursor-pointer hover:bg-neutral-600 transition mb-3">
-        {file ? `Selected: ${file.name}` : 'Select Image'}
+        {file ? `Selected: ${file.name}` : 'Select Image (optional)'}
       </label>
       <input
         id="file-upload"
@@ -225,7 +253,7 @@ export default function UploadScreen() {
       <button
         onClick={handleUpload}
         className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold disabled:opacity-50"
-        disabled={!user || !file || mediaType !== 'image' || imageUploadBlocked}
+        disabled={!user || imageUploadBlocked}
       >
         Post
       </button>

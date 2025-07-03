@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Link, Navigate } from 'react-router-dom'; // ✅ Add Navigate
+import { Link, Navigate } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
 import PostCard from '@/components/PostCard';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,11 +9,8 @@ const PAGE_SIZE = 5;
 
 export default function CentralFeed() {
   const { user } = useAuth();
-
-  // ✅ Redirect if not logged in
   if (!user) return <Navigate to="/login" replace />;
 
-  // ✅ Keep the rest of your logic here...
   const [posts, setPosts] = useState([]);
   const [profiles, setProfiles] = useState({});
   const [viewerIsAdult, setViewerIsAdult] = useState(null);
@@ -21,9 +18,7 @@ export default function CentralFeed() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
-
-  // ... continue with your feed logic below
-
+  const feedRef = useRef(null);
 
   const refreshFeed = async () => {
     setPage(0);
@@ -61,11 +56,13 @@ export default function CentralFeed() {
     try {
       const currentPage = reset ? 0 : page;
       const from = currentPage * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
       const { data: newPosts, error } = await supabase
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false })
-        .range(from, from + PAGE_SIZE - 1);
+        .range(from, to);
 
       if (error) throw error;
 
@@ -77,7 +74,7 @@ export default function CentralFeed() {
         if (!updatedProfiles[uid]) {
           const { data: prof } = await supabase
             .from('profiles')
-            .select('is_adult, display_name, photo_url, username') // ✅ include username
+            .select('is_adult, display_name, photo_url, username')
             .eq('id', uid)
             .maybeSingle();
           if (prof) {
@@ -86,7 +83,7 @@ export default function CentralFeed() {
               is_adult: prof.is_adult,
               display_name: prof.display_name,
               photo_url: prof.photo_url,
-              username: prof.username, // ✅ add this
+              username: prof.username,
             };
           }
         }
@@ -116,18 +113,20 @@ export default function CentralFeed() {
   }, [viewerIsAdult]);
 
   useEffect(() => {
-    function onScroll() {
-      if (
-        window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 300 &&
-        hasMore &&
-        !loadingRef.current
-      ) {
+    const el = feedRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const nearBottom = scrollTop + clientHeight >= scrollHeight - 300;
+
+      if (nearBottom && hasMore && !loadingRef.current) {
         fetchPosts();
       }
-    }
+    };
 
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
   }, [fetchPosts, hasMore]);
 
   useEffect(() => {
@@ -147,7 +146,7 @@ export default function CentralFeed() {
         if (!author) {
           const { data: prof } = await supabase
             .from('profiles')
-            .select('is_adult, display_name, photo_url, username') // ✅ include username here too
+            .select('is_adult, display_name, photo_url, username')
             .eq('id', uid)
             .maybeSingle();
 
@@ -158,7 +157,7 @@ export default function CentralFeed() {
             is_adult: prof.is_adult,
             display_name: prof.display_name,
             photo_url: prof.photo_url,
-            username: prof.username, // ✅ keep username
+            username: prof.username,
           };
 
           setProfiles(prev => ({ ...prev, [uid]: author }));
@@ -174,7 +173,10 @@ export default function CentralFeed() {
   }, [viewerIsAdult, profiles]);
 
   return (
-    <div className="space-y-6">
+    <div
+      ref={feedRef}
+      className="h-screen overflow-y-auto px-4 py-6 space-y-6 scroll-hidden"
+    >
       {!loading && posts.length === 0 && (
         <p className="text-center text-gray-400">No posts found for your age group.</p>
       )}
@@ -194,6 +196,7 @@ export default function CentralFeed() {
       {loading && posts.length > 0 && (
         <p className="text-center text-white">Loading more...</p>
       )}
+
       {!hasMore && !loading && (
         <p className="text-center text-gray-400">End of feed</p>
       )}
