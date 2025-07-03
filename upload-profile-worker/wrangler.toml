@@ -1,11 +1,11 @@
 name = "upload-worker"
-main = "worker.js"
+main = "src/index.js" 
 compatibility_date = "2025-07-02"
 
 [[r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "vibezcitizens"
-preview_bucket_name = "vibezcitizens"
+bucket_name = "post-media" 
+preview_bucket_name = "post-media"
 
 [vars]
-R2_PUBLIC_DOMAIN = "https://cdn.vibezcitizens.com" 
+R2_PUBLIC_DOMAIN = "https://cdn.vibezcitizens.com"
