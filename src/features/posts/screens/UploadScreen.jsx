@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import getCroppedImg from '@/lib/cropImage';
 import { getTimeRemaining } from '@/utils/getTimeRemaining';
 
-const UPLOAD_ENDPOINT = 'https://upload-post-media-worker.olivertrest3.workers.dev';
+const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 
 export default function UploadScreen() {
   const navigate = useNavigate();
@@ -62,21 +62,21 @@ export default function UploadScreen() {
 
     if (fetchErr) {
       console.error('Supabase fetch error:', fetchErr);
-      toast.error('Error checking post history. Please try again.');
+      toast.error('Error checking post history.');
       return;
     }
 
     if (recentPosts?.length > 0) {
       const lastPostTime = new Date(recentPosts[0].created_at).getTime();
       const now = Date.now();
-      const limit = 24 * 60 * 60 * 1000;
+      const limit = 3 * 60 * 60 * 1000; // 3-hour cooldown
 
       if ((now - lastPostTime) < limit) {
         const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at);
         setHoursRemaining(hours);
         setMinutesRemaining(minutes);
         setImageUploadBlocked(true);
-        toast.error(`You’ve already uploaded an image today. Try again in ${hours}h ${minutes}m.`);
+        toast.error(`Wait ${hours}h ${minutes}m before uploading another image.`);
         return;
       }
     }
@@ -92,7 +92,7 @@ export default function UploadScreen() {
 
       const form = new FormData();
       form.append('file', croppedBlob, key.split('/').pop());
-      form.append('key', key);
+      form.append('path', `posts/${user.id}`);
 
       const res = await fetch(UPLOAD_ENDPOINT, {
         method: 'POST',
@@ -101,25 +101,23 @@ export default function UploadScreen() {
 
       if (!res.ok) {
         const errorText = await res.text();
-        console.error('Cloudflare upload failed:', res.status, errorText);
-        toast.error(`Upload failed: ${errorText.substring(0, 100)}...`);
+        console.error('Upload failed:', res.status, errorText);
+        toast.error(`Upload failed: ${errorText.slice(0, 80)}...`);
         return;
       }
 
       const { url } = await res.json();
       if (!url) {
-        console.error('Upload URL missing.');
-        toast.error('Missing upload URL.');
+        toast.error('Upload success but no URL returned.');
         return;
       }
 
-      const rawTags = tags.trim();
-      const processedTags = rawTags
+      const processedTags = tags
         .replace(/,/g, ' ')
         .split(' ')
-        .map(tag => tag.startsWith('#') ? tag.substring(1) : tag)
+        .map(tag => tag.startsWith('#') ? tag.slice(1) : tag)
         .map(tag => tag.trim())
-        .filter(tag => tag);
+        .filter(Boolean);
 
       const { error: insertError } = await supabase.from('posts').insert({
         user_id: user.id,
@@ -132,15 +130,15 @@ export default function UploadScreen() {
       });
 
       if (insertError) {
-        console.error('Insert error:', insertError);
-        toast.error(`Post failed: ${insertError.message}`);
+        console.error('Insert failed:', insertError);
+        toast.error(`Post error: ${insertError.message}`);
         return;
       }
 
       toast.success('Posted!');
       navigate('/');
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error('Unexpected upload error:', err);
       toast.error('Unexpected error.');
     }
   };
@@ -151,14 +149,14 @@ export default function UploadScreen() {
 
       {imageUploadBlocked && (
         <div className="bg-red-600 text-white text-sm text-center p-3 rounded mb-4">
-          You’ve already uploaded an image today. Try again in {hoursRemaining}h {minutesRemaining}m.
+          Wait {hoursRemaining}h {minutesRemaining}m before posting again.
         </div>
       )}
 
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500"
         placeholder="Write a caption..."
         rows={3}
       />
@@ -167,14 +165,14 @@ export default function UploadScreen() {
         type="text"
         value={tags}
         onChange={(e) => setTags(e.target.value)}
-        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-        placeholder="Tags (e.g., #life #happy or life, happy)"
+        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500"
+        placeholder="Tags (e.g. #sunset #travel)"
       />
 
       <select
         value={visibility}
         onChange={(e) => setVisibility(e.target.value)}
-        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white"
       >
         <option value="public">Public</option>
         <option value="friends">Friends</option>
@@ -182,7 +180,7 @@ export default function UploadScreen() {
         <option value="close_friends">Close Friends</option>
       </select>
 
-      <label htmlFor="file-upload" className="block w-full py-2 px-4 bg-neutral-700 text-white text-center rounded cursor-pointer hover:bg-neutral-600 transition-colors mb-3">
+      <label htmlFor="file-upload" className="block w-full py-2 px-4 bg-neutral-700 text-white text-center rounded cursor-pointer hover:bg-neutral-600 transition mb-3">
         {file ? `Selected: ${file.name}` : 'Select Image'}
       </label>
       <input
@@ -205,10 +203,6 @@ export default function UploadScreen() {
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
               showGrid={true}
-              classes={{
-                containerClassName: 'cropper-container',
-                mediaClassName: 'cropper-image',
-              }}
             />
           </div>
 
@@ -230,7 +224,7 @@ export default function UploadScreen() {
 
       <button
         onClick={handleUpload}
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold disabled:opacity-50"
         disabled={!user || !file || mediaType !== 'image' || imageUploadBlocked}
       >
         Post

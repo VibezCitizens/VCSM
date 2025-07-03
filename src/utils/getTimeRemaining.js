@@ -2,7 +2,7 @@
 export function getTimeRemaining(lastTimestamp) {
   const now = new Date();
   const last = new Date(lastTimestamp);
-  const limitMs = 24 * 60 * 60 * 1000;
+  const limitMs = 3 * 60 * 60 * 1000; // 3 hours in ms
   const diffMs = limitMs - (now - last);
 
   if (diffMs <= 0) return { hours: 0, minutes: 0 };

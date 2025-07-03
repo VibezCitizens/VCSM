@@ -3,9 +3,9 @@ import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '@/lib/supabaseClient';
 
-const R2_PUBLIC = 'https://upload.vibezcitizens.com';
+const R2_PUBLIC = 'https://cdn.vibezcitizens.com';
+const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 
-const UPLOAD_ENDPOINT = 'https://upload-profile-worker.olivertrest3.workers.dev';
 
 export default function ProfileHeader({
   profile,

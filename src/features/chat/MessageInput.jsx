@@ -12,6 +12,7 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
+      console.log('[Debug] File selected:', file);
       setMediaFile(file);
     }
   };
@@ -26,33 +27,43 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
     const userId = currentUser.id;
 
     try {
-      // Ensure conversation membership
-      const { data: existingMember } = await supabase
+      // ✅ Ensure user is in the conversation
+      const { data: existingMember, error: memberError } = await supabase
         .from('conversation_members')
         .select('id')
         .eq('conversation_id', conversationId)
         .eq('user_id', userId)
         .maybeSingle();
 
+      if (memberError) throw new Error(`Member check failed: ${memberError.message}`);
       if (!existingMember) {
-        await supabase
+        console.log('[Debug] Adding user to conversation_members');
+        const { error: insertMemberError } = await supabase
           .from('conversation_members')
           .insert([{ conversation_id: conversationId, user_id: userId }]);
+        if (insertMemberError) throw new Error(`Member insert failed: ${insertMemberError.message}`);
       }
 
-      // Upload media if present
+      // ✅ Upload media if present
       let media_url = null;
       if (mediaFile) {
+        console.log('[Debug] Compressing media...');
         const compressed = await compressImageFile(mediaFile);
+        console.log('[Debug] Compressed file:', compressed);
+
         const timestamp = Date.now();
         const filePath = `chat/${conversationId}/${timestamp}-${compressed.name}`;
+        console.log('[Debug] Uploading to Cloudflare:', filePath);
+
         const { url, error: uploadErr } = await uploadToCloudflare(compressed, filePath);
+        console.log('[Debug] Upload result:', { url, uploadErr });
+
         if (uploadErr) throw new Error(uploadErr);
         media_url = url;
       }
 
-      // Insert message
-      const { data, error } = await supabase
+      // ✅ Insert message into Supabase
+      const { data, error: insertError } = await supabase
         .from('messages')
         .insert([{
           content: content || null,
@@ -63,13 +74,11 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
         .select('id, content, sender_id, media_url, created_at')
         .single();
 
-      if (error) {
-        console.error('Message insert error:', error.message);
-        return;
-      }
+      if (insertError) throw new Error(`Message insert error: ${insertError.message}`);
+      console.log('[Debug] Message inserted:', data);
 
-      // Update conversation metadata
-      await supabase
+      // ✅ Update conversation metadata
+      const { error: updateError } = await supabase
         .from('conversations')
         .update({
           last_message: content || '📎 Media',
@@ -78,7 +87,9 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
         })
         .eq('id', conversationId);
 
-      // Trigger new message in UI
+      if (updateError) console.warn('[Warn] Conversation metadata update failed:', updateError.message);
+
+      // ✅ Send message to UI
       onSend({
         ...data,
         sender: {
@@ -96,7 +107,7 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
       setMessageText('');
       setMediaFile(null);
     } catch (err) {
-      console.error('Send failed:', err.message);
+      console.error('[Error] Send failed:', err.message || err);
     } finally {
       setSending(false);
     }

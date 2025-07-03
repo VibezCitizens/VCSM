@@ -10,13 +10,33 @@ export async function uploadToCloudflare(file, path) {
     });
 
     if (!res.ok) {
-      const error = await res.text();
-      return { url: null, error };
+      // Try to parse JSON error (Worker may send plain text)
+      let errorText = '';
+      try {
+        errorText = await res.text();
+      } catch (e) {
+        errorText = `Unknown error (status ${res.status})`;
+      }
+
+      return {
+        url: null,
+        error: `Upload failed: ${res.status} ${errorText}`,
+      };
     }
 
-    const { url } = await res.json();
-    return { url, error: null };
+    const data = await res.json();
+    if (!data.url) {
+      return {
+        url: null,
+        error: `Upload succeeded but response missing 'url'`,
+      };
+    }
+
+    return { url: data.url, error: null };
   } catch (err) {
-    return { url: null, error: err.message };
+    return {
+      url: null,
+      error: `Upload exception: ${err.message}`,
+    };
   }
 }
