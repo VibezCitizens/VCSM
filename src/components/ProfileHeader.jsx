@@ -2,10 +2,11 @@ import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '@/lib/supabaseClient';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // This is the crucial import
 
-const R2_PUBLIC = 'https://cdn.vibezcitizens.com';
-const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
+// REMOVED: const R2_PUBLIC = 'https://cdn.vibezcitizens.com';
+// REMOVED: const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
+// These are now encapsulated within src/lib/uploadToCloudflare.js
 
 export default function ProfileHeader({
   profile,
@@ -20,6 +21,7 @@ export default function ProfileHeader({
   const [subscriberModalOpen, setSubscriberModalOpen] = useState(false);
   const [subscribers, setSubscribers] = useState([]);
 
+  // Validates profile ID to ensure it's a UUID string
   const isProfileIdValid =
     profile?.id &&
     typeof profile.id === 'string' &&
@@ -31,47 +33,61 @@ export default function ProfileHeader({
 
     if (!isProfileIdValid) {
       toast.error('Profile not fully loaded or ID is invalid.');
+      // Clear the file input to allow re-selection
       e.target.value = '';
       return;
     }
 
     setIsUploadingPhoto(true);
     try {
+      // 1. Compress the image
       const compressed = await imageCompression(file, {
-        maxSizeMB: 0.5,
-        maxWidthOrHeight: 600,
+        maxSizeMB: 0.5,           // Max size 500KB
+        maxWidthOrHeight: 600,    // Max dimension 600px
         useWebWorker: true,
       });
 
+      // 2. Define the storage key (path in R2)
+      // This ensures a predictable, unique path for each user's profile picture
       const key = `profile-pictures/${profile.id}.jpg`;
-      const form = new FormData();
-      form.append('file', compressed);
-      form.append('key', key);
 
-      const res = await fetch(UPLOAD_ENDPOINT, {
-        method: 'POST',
-        body: form,
-      });
+      // 3. Upload the compressed image using the centralized utility
+      console.log('ProfileHeader: Attempting to upload to Cloudflare with key:', key);
+      const { url: photoUrl, error: uploadError } = await uploadToCloudflare(compressed, key);
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText || 'Upload failed.');
+      if (uploadError) {
+        console.error('ProfileHeader: Cloudflare upload failed:', uploadError);
+        throw new Error(`Upload failed: ${uploadError}`);
       }
 
-      const photoUrl = `${R2_PUBLIC}/${key}`;
-      const { error } = await supabase
+      if (!photoUrl) {
+          console.error('ProfileHeader: Upload successful but no URL returned by utility/worker.');
+          throw new Error('Upload successful but no URL was returned.');
+      }
+
+      console.log('ProfileHeader: Image uploaded successfully to:', photoUrl);
+
+      // 4. Update the Supabase 'profiles' table with the new photo URL
+      console.log('ProfileHeader: Updating Supabase profile ID:', profile.id, 'with photo_url:', photoUrl);
+      const { error: supabaseError } = await supabase
         .from('profiles')
         .update({ photo_url: photoUrl })
         .eq('id', profile.id);
 
-      if (error) throw new Error(error.message);
-      toast.success('Photo updated!');
+      if (supabaseError) {
+        console.error('ProfileHeader: Supabase update failed:', supabaseError.message);
+        throw new Error(supabaseError.message);
+      }
+
+      toast.success('Profile photo updated!');
+      // Call the parent component's callback to refresh UI if needed
       onPhotoChange?.();
     } catch (err) {
-      console.error('Photo upload failed:', err);
-      toast.error(err.message || 'Failed to upload photo.');
+      console.error('ProfileHeader: Photo upload process encountered an error:', err);
+      toast.error(err.message || 'Failed to update profile photo.');
     } finally {
       setIsUploadingPhoto(false);
+      // Clear the file input regardless of success or failure
       e.target.value = '';
     }
   };
