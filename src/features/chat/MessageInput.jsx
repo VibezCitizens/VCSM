@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { compressImageFile } from '@/utils/compressImage';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // Corrected import
 import { Paperclip } from 'lucide-react';
+
 
 export default function MessageInput({ conversationId, currentUser, onSend }) {
   const [messageText, setMessageText] = useState('');
@@ -40,15 +41,18 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
         ]);
       }
 
-      // Upload media if needed
+      // Upload media if needed using the new utility function
       let media_url = null;
       if (mediaFile) {
         const compressed = await compressImageFile(mediaFile);
         const timestamp = Date.now();
+        // Ensure the key is unique and descriptive for chat media
         const path = `chat/${conversationId}/${timestamp}-${compressed.name}`;
-        const { url, error } = await uploadToCloudflare(compressed, path);
+        const { url, error } = await uploadToCloudflare(compressed, path); // Using the utility
 
-        if (error) throw new Error(error);
+        if (error) {
+          throw new Error(`Media upload error: ${error}`);
+        }
         media_url = url;
       }
 

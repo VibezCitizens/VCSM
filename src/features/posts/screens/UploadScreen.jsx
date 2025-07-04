@@ -5,8 +5,9 @@ import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
 import getCroppedImg from '@/lib/cropImage';
 import { getTimeRemaining } from '@/utils/getTimeRemaining';
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // Corrected import
 
-const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
+// Removed UPLOAD_ENDPOINT as it's now encapsulated in uploadToCloudflare.js
 
 export default function UploadScreen() {
   const navigate = useNavigate();
@@ -105,7 +106,7 @@ export default function UploadScreen() {
     if (recentPosts?.length > 0) {
       const lastPostTime = new Date(recentPosts[0].created_at).getTime();
       const now = Date.now();
-      const limit = 3 * 60 * 60 * 1000;
+      const limit = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
       if ((now - lastPostTime) < limit) {
         const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at);
@@ -124,25 +125,18 @@ export default function UploadScreen() {
         return;
       }
 
+      // Define the key (path) for R2 storage
       const key = `posts/${user.id}/${Date.now()}-cropped.jpg`;
 
-      const form = new FormData();
-      form.append('file', croppedBlob, key.split('/').pop());
-      form.append('path', `posts/${user.id}`);
+      // Use the centralized uploadToCloudflare utility
+      const { url, error: uploadError } = await uploadToCloudflare(croppedBlob, key);
 
-      const res = await fetch(UPLOAD_ENDPOINT, {
-        method: 'POST',
-        body: form,
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Upload failed:', res.status, errorText);
-        toast.error(`Upload failed: ${errorText.slice(0, 80)}...`);
+      if (uploadError) {
+        console.error('Upload failed:', uploadError);
+        toast.error(`Upload failed: ${uploadError.slice(0, 80)}...`); // Show a truncated error
         return;
       }
 
-      const { url } = await res.json();
       if (!url) {
         toast.error('Upload success but no URL returned.');
         return;

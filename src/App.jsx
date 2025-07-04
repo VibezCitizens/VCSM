@@ -12,7 +12,7 @@ import UploadScreen from '@/features/posts/screens/UploadScreen';
 
 import Layout from '@/components/Layout';
 import ChatRoutes from '@/features/chat/ChatRoutes';
-
+import SettingsScreen from '@/features/settings/screens/SettingsScreen'
 export default function App() {
   const { user, loading } = useAuth();
 
@@ -23,7 +23,7 @@ export default function App() {
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/reset" element={<ResetPasswordScreen />} />
-
+     
       {user ? (
         <>
           <Route path="/" element={<Layout><CentralFeed /></Layout>} />
@@ -31,6 +31,7 @@ export default function App() {
           <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/upload" element={<Layout title="New Post"><UploadScreen /></Layout>} />
           <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
+           <Route path="/settings" element={<SettingsScreen />} />
         </>
       ) : (
         <Route path="*" element={<Navigate to="/login" replace />} />
