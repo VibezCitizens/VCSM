@@ -201,13 +201,7 @@ export default function CentralFeed() {
         <p className="text-center text-gray-400">End of feed</p>
       )}
 
-      <Link
-        to="/upload"
-        className="fixed bottom-6 right-6 bg-black rounded-full p-4 z-50 hover:bg-neutral-800"
-        title="Create Post"
-      >
-        <PlusCircle size={28} color="#fff" />
-      </Link>
+      
     </div>
   );
 }

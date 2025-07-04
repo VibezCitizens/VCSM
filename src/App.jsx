@@ -1,5 +1,4 @@
-﻿// src/App.jsx
-import { Routes, Route, Navigate } from 'react-router-dom';
+﻿import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
 import LoginScreen from '@/features/auth/screens/LoginScreen';
@@ -9,10 +8,13 @@ import ResetPasswordScreen from '@/features/auth/screens/ResetPasswordScreen';
 import CentralFeed from '@/features/feed/screens/CentralFeed';
 import ProfileScreen from '@/features/profile/screens/ProfileScreen';
 import UploadScreen from '@/features/posts/screens/UploadScreen';
+import ChatRoutes from '@/features/chat/ChatRoutes';
+import SettingsScreen from '@/features/settings/screens/SettingsScreen';
+
+import VoidScreen from '@/TheVoid/VoidScreen';
 
 import Layout from '@/components/Layout';
-import ChatRoutes from '@/features/chat/ChatRoutes';
-import SettingsScreen from '@/features/settings/screens/SettingsScreen'
+
 export default function App() {
   const { user, loading } = useAuth();
 
@@ -20,20 +22,26 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Public Auth Routes */}
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/reset" element={<ResetPasswordScreen />} />
-     
+
+      {/* Protected Routes */}
       {user ? (
         <>
           <Route path="/" element={<Layout><CentralFeed /></Layout>} />
-          <Route path="/me" element={<Layout title={false}><ProfileScreen /></Layout>} />
+          <Route path="/me" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
-          <Route path="/upload" element={<Layout title="New Post"><UploadScreen /></Layout>} />
+          <Route path="/upload" element={<Layout><UploadScreen /></Layout>} />
           <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
-           <Route path="/settings" element={<SettingsScreen />} />
+          <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
+
+          {/* The Void */}
+          <Route path="/void" element={<Layout><VoidScreen /></Layout>} />
         </>
       ) : (
+        // Redirect if not authenticated
         <Route path="*" element={<Navigate to="/login" replace />} />
       )}
     </Routes>
