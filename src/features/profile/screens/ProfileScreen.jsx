@@ -4,16 +4,15 @@ import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
 import PostCard from '@/components/PostCard';
 import QRCode from 'react-qr-code';
-import QRScanHandler from '@/components/QRScanHandler'; // Assuming this is used elsewhere or for future features
 import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
 import ProfileHeader from '@/components/ProfileHeader';
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
-  const { username } = useParams(); // This will be undefined for /me route, and the username for /u/:username
+  const { username } = useParams();
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const [profileData, setProfileData] = useState(null); // Renamed from 'profile' to avoid confusion with the setProfileData function
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [profileData, setProfileData] = useState(null);
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -21,122 +20,121 @@ export default function ProfileScreen() {
   const [qrOpen, setQrOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Helper function to fetch profile and related data
-  // Use useCallback to memoize this function, preventing unnecessary re-renders when passed down
-  const fetchAndSetProfileData = useCallback(async (profileToLoad, currentUserId) => {
-    if (!profileToLoad) {
-      setProfileData(null);
-      setPosts([]);
-      setSubscriberCount(0);
-      setSubscribed(false);
-      return;
-    }
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        const user = authData?.user || null;
+        setCurrentUser(user);
+
+        if (!user) {
+          setError('Please log in to view your profile.');
+          setLoading(false);
+          return;
+        }
+
+        if (!username) {
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError || !profileData?.username) {
+            setError('Your profile could not be found.');
+            setLoading(false);
+            return;
+          }
+
+          navigate(`/u/${profileData.username}`, { replace: true });
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Unexpected error during initialization.');
+        setLoading(false);
+      }
+    };
+
+    initialize();
+  }, [username, navigate]);
+
+  const fetchAndSetProfileData = useCallback(async (identifier, currentUserId) => {
+    setLoading(true);
+    setError(null);
+    setProfileData(null);
 
     try {
-      const { data: userData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq(typeof profileToLoad === 'string' ? 'username' : 'id', profileToLoad)
-        .maybeSingle(); // Use maybeSingle for robustness
+      let query = supabase.from('profiles').select('*');
+      query = typeof identifier === 'string'
+        ? query.eq('username', identifier)
+        : query.eq('id', identifier);
+
+      const { data: userData, error: profileError } = await query.single();
 
       if (profileError || !userData) {
         setError(profileError?.message || 'Profile not found.');
-        setLoading(false);
-        setProfileData(null);
         return;
       }
 
-      // Fetch subscriber count
-      const { count: fetchedSubscriberCount } = await supabase
+      const { data: subscriberRows, count: fetchedSubscriberCount } = await supabase
         .from('followers')
-        .select('*', { count: 'exact', head: true })
+        .select('follower_id, profiles:profiles!follower_id(*)', { count: 'exact' })
         .eq('followed_id', userData.id);
 
-      // Check subscription status
+      const subscribers = (subscriberRows || []).map(row => row.profiles).filter(Boolean);
+
       let isSubscribed = false;
       if (currentUserId) {
-        const { data: fetchedSubData } = await supabase
+        const { data: subData } = await supabase
           .from('followers')
           .select('*')
           .eq('follower_id', currentUserId)
           .eq('followed_id', userData.id)
           .maybeSingle();
-        isSubscribed = !!fetchedSubData;
+        isSubscribed = !!subData;
       }
 
-      // Fetch user's posts
-      const { data: userPosts, error: postsError } = await supabase
+      const { data: userPosts } = await supabase
         .from('posts')
         .select('*')
         .eq('user_id', userData.id)
         .order('created_at', { ascending: false });
 
-      if (postsError) {
-        toast.error('Failed to load posts: ' + postsError.message);
-        // Continue displaying profile even if posts fail
-      }
+      setProfileData({
+        ...userData,
+        subscriber_count: fetchedSubscriberCount ?? 0,
+        subscribers,
+      });
 
-      setProfileData({ ...userData, subscriber_count: fetchedSubscriberCount ?? 0 });
       setBio(userData.bio || '');
       setDisplayName(userData.display_name || '');
       setPosts(userPosts || []);
       setSubscriberCount(fetchedSubscriberCount ?? 0);
       setSubscribed(isSubscribed);
-      setError(null); // Clear any previous errors
     } catch (err) {
-      console.error("Error fetching profile data:", err);
-      setError('An unexpected error occurred while loading profile.');
-      setProfileData(null);
+      console.error("Unexpected profile fetch error:", err);
+      setError('Failed to load profile.');
     } finally {
       setLoading(false);
     }
-  }, []); // No dependencies for fetchAndSetProfileData itself, as its arguments provide dynamism
+  }, []);
 
-  // Main useEffect to load profile based on URL or current user
   useEffect(() => {
-    setLoading(true); // Set loading true on every username or currentUser change
-    setError(null);   // Clear error on new load attempt
-
-    const authenticateAndLoad = async () => {
-      const { data: authData } = await supabase.auth.getUser();
-      const authenticatedUser = authData?.user;
-      setCurrentUser(authenticatedUser);
-
-      if (username) {
-        // If username exists in URL, load that profile
-        await fetchAndSetProfileData(username, authenticatedUser?.id);
-      } else if (authenticatedUser) {
-        // If no username in URL, but user is logged in, load current user's profile
-        await fetchAndSetProfileData(authenticatedUser.id, authenticatedUser.id);
-      } else {
-        // No username in URL and no logged-in user - handle as you deem appropriate (e.g., redirect to login)
-        // For now, it will show "Profile not found." if profileData remains null
-        setLoading(false);
-        setProfileData(null);
-        setError("Please log in to view your profile.");
-      }
-    };
-
-    authenticateAndLoad();
-  }, [username, fetchAndSetProfileData]); // Dependency on username and the memoized fetch function
-
-  // Function to refresh profile data (e.g., after photo change or save)
-  const refreshProfile = useCallback(() => {
-    if (profileData?.id && currentUser?.id) {
-      if (username) {
-        fetchAndSetProfileData(username, currentUser.id);
-      } else {
-        fetchAndSetProfileData(currentUser.id, currentUser.id);
-      }
-    } else if (username) {
-       // If no current user, but a username is in the URL, try fetching that public profile
-       fetchAndSetProfileData(username, null);
+    if (currentUser && username) {
+      fetchAndSetProfileData(username, currentUser.id);
     }
-  }, [profileData, currentUser, username, fetchAndSetProfileData]);
+  }, [username, currentUser, fetchAndSetProfileData]);
 
+  const refreshProfile = useCallback(() => {
+    if (username) {
+      fetchAndSetProfileData(username, currentUser?.id);
+    } else if (currentUser) {
+      fetchAndSetProfileData(currentUser.id, currentUser.id);
+    }
+  }, [username, currentUser, fetchAndSetProfileData]);
 
   const handleSave = async () => {
     if (!profileData || !currentUser || profileData.id !== currentUser.id) {
@@ -144,78 +142,74 @@ export default function ProfileScreen() {
       return;
     }
 
-    const { error: updateError } = await supabase
+    const { error } = await supabase
       .from('profiles')
       .update({ display_name: displayName.trim(), bio })
       .eq('id', profileData.id);
 
-    if (updateError) {
-      toast.error('Failed to update profile details: ' + updateError.message);
+    if (error) {
+      toast.error('Failed to update: ' + error.message);
       return;
     }
 
     toast.success('Profile updated');
     setEditing(false);
-    // Refresh the profile data after a successful save
     refreshProfile();
-    // Also update Supabase auth user metadata if display_name is part of it
     await supabase.auth.updateUser({ data: { display_name: displayName.trim() } });
   };
 
   const handleSubscribe = async () => {
     if (!currentUser || !profileData) return;
     if (currentUser.id === profileData.id) {
-        toast.error("You cannot subscribe to your own profile.");
-        return;
+      toast.error("You can't subscribe to yourself.");
+      return;
     }
-    const { error: subscribeError } = await supabase.from('followers').insert({
+
+    const { error } = await supabase.from('followers').insert({
       follower_id: currentUser.id,
       followed_id: profileData.id,
     });
-    if (subscribeError) {
-      toast.error('Failed to subscribe: ' + subscribeError.message);
+
+    if (error) {
+      toast.error('Failed to subscribe: ' + error.message);
       return;
     }
+
     setSubscribed(true);
     setSubscriberCount((prev) => prev + 1);
-    toast.success(`Subscribed to ${profileData.display_name || profileData.username}!`);
   };
 
   const handleUnsubscribe = async () => {
     if (!currentUser || !profileData) return;
-    const { error: unsubscribeError } = await supabase
+
+    const { error } = await supabase
       .from('followers')
       .delete()
       .eq('follower_id', currentUser.id)
       .eq('followed_id', profileData.id);
-    if (unsubscribeError) {
-      toast.error('Failed to unsubscribe: ' + unsubscribeError.message);
+
+    if (error) {
+      toast.error('Failed to unsubscribe: ' + error.message);
       return;
     }
+
     setSubscribed(false);
     setSubscriberCount((prev) => prev - 1);
-    toast.success(`Unsubscribed from ${profileData.display_name || profileData.username}.`);
   };
 
   const handleMessage = async () => {
-    if (!currentUser || !profileData || currentUser.id === profileData.id) {
-        toast.error('Cannot message yourself or invalid profile.');
-        return;
-    }
+    if (!currentUser || !profileData || currentUser.id === profileData.id) return;
+
     const convoId = await getOrCreatePrivateConversation(currentUser.id, profileData.id);
-    if (!convoId) {
-      toast.error('Could not start conversation');
-      return;
-    }
-    navigate(`/chat/${convoId}`);
+    if (convoId) navigate(`/chat/${convoId}`);
   };
 
   const isOwnProfile = currentUser?.id === profileData?.id;
 
-  if (loading) {
+  if (currentUser === undefined || loading) {
     return (
       <div className="bg-black text-white min-h-screen flex items-center justify-center">
-        Loading profile...
+        Loading...
       </div>
     );
   }
@@ -239,9 +233,10 @@ export default function ProfileScreen() {
   return (
     <div className="bg-black text-white min-h-screen">
       <ProfileHeader
-        profile={{ ...profileData, subscriber_count: subscriberCount }} // Pass subscriberCount from state
+        profile={{ ...profileData, subscriber_count: subscriberCount }}
+        subscribers={profileData?.subscribers || []}
         isOwnProfile={isOwnProfile}
-        onPhotoChange={refreshProfile} // Use the new refreshProfile for consistency
+        onPhotoChange={refreshProfile}
         onToggleQR={() => setQrOpen(!qrOpen)}
         qrOpen={qrOpen}
         onEdit={() => setEditing((prev) => !prev)}
@@ -253,7 +248,7 @@ export default function ProfileScreen() {
         </div>
       )}
 
-      {editing && isOwnProfile && ( // Ensure only own profile can be edited
+      {editing && isOwnProfile && (
         <div className="mt-4 space-y-2 text-left max-w-sm mx-auto p-4">
           <input
             className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
@@ -267,37 +262,23 @@ export default function ProfileScreen() {
             onChange={(e) => setBio(e.target.value)}
             placeholder="Bio"
           />
-          <button
-            onClick={handleSave}
-            className="w-full bg-purple-600 text-white py-2 rounded"
-          >
+          <button onClick={handleSave} className="w-full bg-purple-600 text-white py-2 rounded">
             Save
           </button>
-          <button
-            onClick={() => setEditing(false)}
-            className="w-full bg-neutral-700 text-white py-2 rounded"
-          >
+          <button onClick={() => setEditing(false)} className="w-full bg-neutral-700 text-white py-2 rounded">
             Cancel
           </button>
         </div>
       )}
 
-      {!isOwnProfile && profileData && currentUser && ( // Only show interaction buttons if not own profile AND current user exists
+      {!isOwnProfile && currentUser && (
         <div className="mt-3 flex flex-wrap justify-center gap-2 p-4">
-          <button
-            onClick={subscribed ? handleUnsubscribe : handleSubscribe}
-            className="bg-purple-600 px-3 py-1 rounded-full text-sm"
-          >
+          <button onClick={subscribed ? handleUnsubscribe : handleSubscribe} className="bg-purple-600 px-3 py-1 rounded-full text-sm">
             {subscribed ? 'Unsubscribe' : 'Subscribe'}
           </button>
-          <button
-            onClick={handleMessage}
-            className="bg-purple-600 px-3 py-1 rounded-full text-sm"
-          >
+          <button onClick={handleMessage} className="bg-purple-600 px-3 py-1 rounded-full text-sm">
             Message
           </button>
-          {/* Add a "Friend" button if you have friend functionality, but ensure it's distinct from subscribe */}
-          <button className="bg-purple-600 px-3 py-1 rounded-full text-sm">Friend</button>
         </div>
       )}
 
@@ -310,11 +291,6 @@ export default function ProfileScreen() {
           <p className="text-center text-neutral-500">No posts found.</p>
         )}
       </div>
-
-      {/* If QRScanHandler is meant for something else or a future feature, keep it. */}
-      {/* If it's part of a QR code scanning feature not directly tied to profile display,
-          you might render it conditionally or in a different part of your app. */}
-      {/* <QRScanHandler /> */}
     </div>
   );
 }
