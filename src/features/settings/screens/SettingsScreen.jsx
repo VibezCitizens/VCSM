@@ -1,42 +1,19 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabaseClient';
+// src/features/settings/screens/SettingsScreen.jsx
+
 import { useAuth } from '@/hooks/useAuth';
-import toast from 'react-hot-toast';
 
 export default function SettingsScreen() {
-  const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
-
-  useEffect(() => {
-    if (!currentUser) navigate('/login');
-  }, [currentUser]);
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error('Logout failed');
-      return;
-    }
-    logout();
-    toast.success('Logged out');
-    navigate('/login');
-  };
+  const { logout } = useAuth();
 
   return (
-    <div className="p-4 text-white min-h-screen bg-neutral-900">
-      <h1 className="text-xl font-semibold mb-4">Settings</h1>
-
-      <div className="bg-neutral-800 rounded-xl p-4 space-y-4 shadow-md">
-        <div className="text-sm text-gray-400">Account</div>
-
-        <button
-          onClick={handleLogout}
-          className="w-full text-left text-red-400 font-medium py-2 px-3 rounded-lg bg-neutral-700 hover:bg-neutral-600 transition-all"
-        >
-          Log Out
-        </button>
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
+      <h1 className="text-2xl font-bold mb-8">Settings</h1>
+      <button
+        onClick={logout}
+        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-all"
+      >
+        Log Out
+      </button>
     </div>
   );
 }

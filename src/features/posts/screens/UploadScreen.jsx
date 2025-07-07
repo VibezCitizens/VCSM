@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
 import getCroppedImg from '@/lib/cropImage';
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
 import { getTimeRemaining } from '@/utils/getTimeRemaining';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // Corrected import
 
-// Removed UPLOAD_ENDPOINT as it's now encapsulated in uploadToCloudflare.js
-
-export default function UploadScreen() {
+export default function UnifiedUploadScreen() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [text, setText] = useState('');
   const [file, setFile] = useState(null);
-  const [mediaType, setMediaType] = useState('');
+  const [mediaType, setMediaType] = useState(''); // 'image' or 'video'
   const [imagePreview, setImagePreview] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [title, setTitle] = useState(''); // For videos
+  const [description, setDescription] = useState(''); // Renamed from 'text'
+  const [category, setCategory] = useState(''); // For videos
   const [tags, setTags] = useState('');
   const [visibility, setVisibility] = useState('public');
-  const [postType, setPostType] = useState('photo');
+  const [loading, setLoading] = useState(false);
   const [imageUploadBlocked, setImageUploadBlocked] = useState(false);
   const [hoursRemaining, setHoursRemaining] = useState(0);
   const [minutesRemaining, setMinutesRemaining] = useState(0);
@@ -32,14 +32,37 @@ export default function UploadScreen() {
     });
   }, []);
 
-  const onCropComplete = (_, croppedPixels) => setCroppedAreaPixels(croppedPixels);
+  const parseTags = (input) =>
+    input
+      .replace(/,/g, ' ')
+      .split(' ')
+      .map(tag => tag.startsWith('#') ? tag.slice(1) : tag)
+      .map(tag => tag.trim())
+      .filter(Boolean);
+
+  const onCropComplete = useCallback((_, croppedPixels) => {
+    setCroppedAreaPixels(croppedPixels);
+  }, []);
 
   const handleFileChange = (e) => {
     const selected = e.target.files?.[0];
-    if (!selected) return;
+    if (!selected) {
+      setFile(null);
+      setMediaType('');
+      setImagePreview(null);
+      return;
+    }
     setFile(selected);
-    setMediaType(selected.type.startsWith('image/') ? 'image' : '');
-    setImagePreview(URL.createObjectURL(selected));
+    const type = selected.type.startsWith('image/') ? 'image' :
+                 selected.type.startsWith('video/') ? 'video' : '';
+    setMediaType(type);
+    if (type === 'image') {
+      setImagePreview(URL.createObjectURL(selected));
+    } else if (type === 'video') {
+      setImagePreview(URL.createObjectURL(selected)); // This will be used to render the video preview
+    } else {
+      setImagePreview(null);
+    }
   };
 
   const handleUpload = async () => {
@@ -48,153 +71,222 @@ export default function UploadScreen() {
       return;
     }
 
-    const processedTags = tags
-      .replace(/,/g, ' ')
-      .split(' ')
-      .map(tag => tag.startsWith('#') ? tag.slice(1) : tag)
-      .map(tag => tag.trim())
-      .filter(Boolean);
+    const processedTags = parseTags(tags);
+    setLoading(true);
 
-    // TEXT-ONLY POST
+    // No file: text-only post (This logic remains largely the same)
     if (!file) {
-      if (!text.trim()) {
-        toast.error('Please write something or upload an image.');
+      if (!description.trim()) {
+        toast.error('Please add a caption or media.');
+        setLoading(false);
         return;
       }
 
-      const { error: insertError } = await supabase.from('posts').insert({
+      const { error } = await supabase.from('posts').insert({
         user_id: user.id,
-        text: text.trim(),
-        media_type: null,
+        text: description.trim(),
         media_url: null,
+        media_type: null,
         tags: processedTags,
         visibility,
         post_type: 'text',
       });
 
-      if (insertError) {
-        console.error('Insert failed:', insertError);
-        toast.error(`Post error: ${insertError.message}`);
-      } else {
+      if (error) toast.error(`Post error: ${error.message}`);
+      else {
         toast.success('Posted!');
-        navigate('/');
+        setTimeout(() => navigate('/'), 1000);
+      }
+
+      setLoading(false);
+      return;
+    }
+
+    // Image upload flow
+    if (mediaType === 'image') {
+      // Check cooldown for image posts
+      const { data: recentPosts, error: fetchErr } = await supabase
+        .from('posts')
+        .select('id, created_at')
+        .eq('user_id', user.id)
+        .eq('media_type', 'image')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (fetchErr) {
+        toast.error('Error checking post history.');
+        setLoading(false);
+        return;
+      }
+
+      if (recentPosts?.length > 0) {
+        const lastPostTime = new Date(recentPosts[0].created_at).getTime();
+        const now = Date.now();
+        const limit = 3 * 60 * 60 * 1000;
+
+        if ((now - lastPostTime) < limit) {
+          const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at);
+          setHoursRemaining(hours);
+          setMinutesRemaining(minutes);
+          setImageUploadBlocked(true);
+          toast.error(`Wait ${hours}h ${minutes}m before uploading another image.`);
+          setLoading(false);
+          return;
+        }
+      }
+
+      try {
+        const croppedBlob = await getCroppedImg(imagePreview, croppedAreaPixels);
+        const key = `posts/${user.id}/${Date.now()}-cropped.jpg`;
+        const { url, error: uploadError } = await uploadToCloudflare(croppedBlob, key);
+        if (uploadError) throw new Error(uploadError);
+
+        const { error } = await supabase.from('posts').insert({
+          user_id: user.id,
+          text: description.trim() || null,
+          media_url: url,
+          media_type: 'image',
+          tags: processedTags,
+          visibility,
+          post_type: 'photo',
+        });
+
+        if (error) toast.error(`Post error: ${error.message}`);
+        else {
+          toast.success('Photo posted!');
+          setTimeout(() => navigate('/'), 1000);
+        }
+
+      } catch (err) {
+        toast.error('Image upload failed.');
+      } finally {
+        setLoading(false);
       }
 
       return;
     }
 
-    // IMAGE POST
-    if (mediaType !== 'image') {
-      toast.error('Unsupported file type.');
+    // VIDEO upload flow
+    if (mediaType === 'video') {
+        if (!title.trim()) {
+            toast.error('Video title is required.');
+            setLoading(false);
+            return;
+        }
+      try {
+        const key = `posts/${user.id}/${Date.now()}-${file.name}`;
+        const { url, error: uploadError } = await uploadToCloudflare(file, key);
+        if (uploadError) throw new Error(uploadError);
+
+        const { error } = await supabase.from('posts').insert({
+          user_id: user.id,
+          title: title.trim(), // Video title
+          text: description.trim() || null, // Video description
+          media_url: url,
+          media_type: 'video',
+          category: category.trim() || null, // Video category
+          tags: processedTags,
+          visibility,
+          post_type: 'video',
+        });
+
+        if (error) toast.error(`Post error: ${error.message}`);
+        else {
+          toast.success('Video posted!');
+          setTimeout(() => navigate('/'), 1000);
+        }
+
+      } catch (err) {
+        toast.error('Video upload failed.');
+        setLoading(false);
+      }
+
       return;
     }
 
-    const { data: recentPosts, error: fetchErr } = await supabase
-      .from('posts')
-      .select('id, created_at')
-      .eq('user_id', user.id)
-      .eq('media_type', 'image')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (fetchErr) {
-      console.error('Supabase fetch error:', fetchErr);
-      toast.error('Error checking post history.');
-      return;
-    }
-
-    if (recentPosts?.length > 0) {
-      const lastPostTime = new Date(recentPosts[0].created_at).getTime();
-      const now = Date.now();
-      const limit = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
-
-      if ((now - lastPostTime) < limit) {
-        const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at);
-        setHoursRemaining(hours);
-        setMinutesRemaining(minutes);
-        setImageUploadBlocked(true);
-        toast.error(`Wait ${hours}h ${minutes}m before uploading another image.`);
-        return;
-      }
-    }
-
-    try {
-      const croppedBlob = await getCroppedImg(imagePreview, croppedAreaPixels);
-      if (!croppedBlob) {
-        toast.error('Failed to crop image.');
-        return;
-      }
-
-      // Define the key (path) for R2 storage
-      const key = `posts/${user.id}/${Date.now()}-cropped.jpg`;
-
-      // Use the centralized uploadToCloudflare utility
-      const { url, error: uploadError } = await uploadToCloudflare(croppedBlob, key);
-
-      if (uploadError) {
-        console.error('Upload failed:', uploadError);
-        toast.error(`Upload failed: ${uploadError.slice(0, 80)}...`); // Show a truncated error
-        return;
-      }
-
-      if (!url) {
-        toast.error('Upload success but no URL returned.');
-        return;
-      }
-
-      const { error: insertError } = await supabase.from('posts').insert({
-        user_id: user.id,
-        text: text.trim() || null,
-        media_url: url,
-        media_type: 'image',
-        tags: processedTags,
-        visibility,
-        post_type: postType,
-      });
-
-      if (insertError) {
-        console.error('Insert failed:', insertError);
-        toast.error(`Post error: ${insertError.message}`);
-      } else {
-        toast.success('Posted!');
-        navigate('/');
-      }
-    } catch (err) {
-      console.error('Unexpected upload error:', err);
-      toast.error('Unexpected error.');
-    }
+    toast.error('Unsupported file type.');
+    setLoading(false);
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-neutral-900 min-h-screen text-white">
-      <h1 className="text-xl font-bold mb-4 text-white">Upload a Photo</h1>
+    <div className="min-h-screen bg-black text-white p4 flex flex-col items-center justify-start">
+      <h1 className="text-xl font-bold mb4 mt6">Upload to Vibez</h1>
 
       {imageUploadBlocked && (
-        <div className="bg-red-600 text-white text-sm text-center p-3 rounded mb-4">
-          Wait {hoursRemaining}h {minutesRemaining}m before posting again.
+        <div className="bg-red-600 text-white text-sm text-center p-3 rounded mb-4 w-full max-w-md">
+          Wait {hoursRemaining}h {minutesRemaining}m before posting another image.
         </div>
       )}
 
+      {/* Unified File Upload Area */}
+      <label
+        htmlFor="file-upload"
+        className="w-full max-w-md cursor-pointer border-dashed border-2 border-white/20 rounded-2xl p4 text-center hover:border-white transition-all mb4"
+      >
+        <input
+          id="file-upload"
+          type="file"
+          accept="image/*,video/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        {file ? (
+          mediaType === 'image' && imagePreview ? (
+            <img src={imagePreview} alt="Preview" className="rounded-xl w-full h-48 object-cover" />
+          ) : mediaType === 'video' && imagePreview ? (
+            <video
+              src={imagePreview}
+              controls
+              className="rounded-xl w-full h-48 object-cover"
+            />
+          ) : (
+            <span className="text-sm text-white/60">Selected: {file.name}</span>
+          )
+        ) : (
+          <span className="text-sm text-white/60">Click to select an image or video</span>
+        )}
+      </label>
+
+      {/* Conditional fields for video uploads */}
+      {mediaType === 'video' && (
+        <input
+          type="text"
+          placeholder="Title"
+          className="bg-white/10 text-white p3 rounded-xl w-full max-w-md mb-3"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      )}
+
       <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500"
-        placeholder="Write a caption..."
-        rows={3}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="bg-white/10 text-white p3 rounded-xl w-full max-w-md h-20 mb-3 placeholder:text-white/60"
+        placeholder={mediaType === 'video' ? "Description (optional)" : "Write a caption..."}
       />
+
+      {mediaType === 'video' && (
+        <input
+          type="text"
+          placeholder="Category (e.g. Dance, Comedy)"
+          className="bg-white/10 text-white p3 rounded-xl w-full max-w-md mb-3 placeholder:text-white/60"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+      )}
 
       <input
         type="text"
         value={tags}
         onChange={(e) => setTags(e.target.value)}
-        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white placeholder-neutral-500"
-        placeholder="Tags (optional)"
+        className="bg-white/10 text-white p3 rounded-xl w-full max-w-md mb-3 placeholder:text-white/60"
+        placeholder="Tags (comma-separated)"
       />
 
       <select
         value={visibility}
         onChange={(e) => setVisibility(e.target.value)}
-        className="w-full p-3 rounded bg-neutral-800 border border-neutral-700 mb-3 text-white"
+        className="bg-white/10 text-white p3 rounded-xl w-full max-w-md mb-4"
       >
         <option value="public">Public</option>
         <option value="friends">Friends</option>
@@ -202,20 +294,9 @@ export default function UploadScreen() {
         <option value="close_friends">Close Friends</option>
       </select>
 
-      <label htmlFor="file-upload" className="block w-full py-2 px-4 bg-neutral-700 text-white text-center rounded cursor-pointer hover:bg-neutral-600 transition mb-3">
-        {file ? `Selected: ${file.name}` : 'Select Image (optional)'}
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="hidden"
-      />
-
-      {imagePreview && (
+      {mediaType === 'image' && imagePreview && (
         <>
-          <div className="relative w-full aspect-square bg-black mb-3 rounded overflow-hidden">
+          <div className="relative w-full max-w-md aspect-square bg-black mb-4 rounded-xl overflow-hidden">
             <Cropper
               image={imagePreview}
               crop={crop}
@@ -228,8 +309,8 @@ export default function UploadScreen() {
             />
           </div>
 
-          <div className="mb-3 flex items-center">
-            <label htmlFor="zoom-slider" className="mr-2 text-sm text-neutral-400">Zoom:</label>
+          <div className="mb-4 flex items-center w-full max-w-md">
+            <label htmlFor="zoom-slider" className="mr-2 text-sm text-white/60">Zoom:</label>
             <input
               type="range"
               id="zoom-slider"
@@ -246,10 +327,10 @@ export default function UploadScreen() {
 
       <button
         onClick={handleUpload}
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold disabled:opacity-50"
-        disabled={!user || imageUploadBlocked}
+        className="mt6 bg-purple-500 text-white px5 py3 rounded-2xl shadow-md text-sm font-semibold disabled:opacity-50 w-full max-w-md"
+        disabled={!user || loading || (mediaType === 'image' && imageUploadBlocked) || (mediaType === 'video' && !title.trim())}
       >
-        Post
+        {loading ? 'Posting...' : mediaType === 'video' ? 'Upload Video' : 'Post'}
       </button>
     </div>
   );

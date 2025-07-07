@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { compressImageFile } from '@/utils/compressImage';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // Corrected import
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
 import { Paperclip } from 'lucide-react';
-
 
 export default function MessageInput({ conversationId, currentUser, onSend }) {
   const [messageText, setMessageText] = useState('');
@@ -27,7 +26,6 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
     const userId = currentUser.id;
 
     try {
-      // Ensure user is in the conversation
       const { data: existingMember } = await supabase
         .from('conversation_members')
         .select('id')
@@ -41,22 +39,16 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
         ]);
       }
 
-      // Upload media if needed using the new utility function
       let media_url = null;
       if (mediaFile) {
         const compressed = await compressImageFile(mediaFile);
         const timestamp = Date.now();
-        // Ensure the key is unique and descriptive for chat media
         const path = `chat/${conversationId}/${timestamp}-${compressed.name}`;
-        const { url, error } = await uploadToCloudflare(compressed, path); // Using the utility
-
-        if (error) {
-          throw new Error(`Media upload error: ${error}`);
-        }
+        const { url, error } = await uploadToCloudflare(compressed, path);
+        if (error) throw new Error(`Media upload error: ${error}`);
         media_url = url;
       }
 
-      // Insert message into Supabase
       const { data: newMessage, error: insertError } = await supabase
         .from('messages')
         .insert([
@@ -72,7 +64,6 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
 
       if (insertError) throw new Error(`Message insert error: ${insertError.message}`);
 
-      // Update conversation metadata
       await supabase
         .from('conversations')
         .update({
@@ -82,7 +73,6 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
         })
         .eq('id', conversationId);
 
-      // Notify parent
       onSend({
         ...newMessage,
         sender: {
@@ -109,29 +99,31 @@ export default function MessageInput({ conversationId, currentUser, onSend }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center space-x-2 px-4 py-3 border-t border-gray-700 bg-black"
+      className="px-4 py-3 bg-black border-t border-gray-800"
     >
-      <label className="cursor-pointer text-gray-400 hover:text-white">
-        <Paperclip size={18} />
-        <input type="file" accept="image/*" onChange={handleFileChange} hidden />
-      </label>
+      <div className="flex items-center gap-2 rounded-full border border-purple-700 focus-within:ring-2 focus-within:ring-purple-500 px-4 py-2 bg-gray-900 transition">
+        <label className="cursor-pointer text-gray-400 hover:text-white">
+          <Paperclip size={18} />
+          <input type="file" accept="image/*" onChange={handleFileChange} hidden />
+        </label>
 
-      <input
-        type="text"
-        className="flex-1 px-4 py-2 border border-gray-600 bg-black text-white rounded-full focus:outline-none"
-        placeholder="Type a message..."
-        value={messageText}
-        onChange={(e) => setMessageText(e.target.value)}
-        disabled={sending}
-      />
+        <input
+          type="text"
+          className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none"
+          placeholder="Type a message..."
+          value={messageText}
+          onChange={(e) => setMessageText(e.target.value)}
+          disabled={sending}
+        />
 
-      <button
-        type="submit"
-        className="px-4 py-2 bg-purple-600 text-white rounded-full disabled:opacity-50"
-        disabled={sending || (!messageText.trim() && !mediaFile)}
-      >
-        Send
-      </button>
+        <button
+          type="submit"
+          className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 py-1 rounded-full disabled:opacity-50"
+          disabled={sending || (!messageText.trim() && !mediaFile)}
+        >
+          Send
+        </button>
+      </div>
     </form>
   );
 }

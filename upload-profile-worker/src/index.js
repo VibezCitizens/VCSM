@@ -24,7 +24,7 @@ export default {
           });
         }
 
-        if (file.size > 10 * 1024 * 1024) {
+        if (file.size > 100 * 1024 * 1024) {
           return new Response('File too large', {
             status: 413,
             headers: { ...corsHeaders, 'Content-Type': 'text/plain' },

@@ -1,17 +1,18 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   Plus,
   User,
-  Search,
+  Compass,
   MessageCircle,
   Bell,
   Settings,
 } from 'lucide-react';
-import React from 'react';
 
 function BottomNavBar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isInVoid = location.pathname.startsWith('/void');
 
   return (
@@ -19,20 +20,20 @@ function BottomNavBar() {
       <div className="max-w-[600px] mx-auto h-16 flex items-center justify-between px-6 text-white">
         {/* Left group */}
         {isInVoid ? <BlockedIcon /> : <NavItem to="/" icon={<Home size={22} />} label="Home" />}
-        {isInVoid ? <BlockedIcon /> : <NavItem to="/explore" icon={<Search size={22} />} label="Explore" />}
+        {isInVoid ? <BlockedIcon /> : <NavItem to="/explore" icon={<Compass size={22} />} label="Explore" />}
         {isInVoid ? <BlockedIcon /> : <NavItem to="/chat" icon={<MessageCircle size={22} />} label="Chat" />}
 
-        {/* Center button */}
+        {/* Center action */}
         {isInVoid ? (
           <BlockedIcon isCenter />
         ) : (
-          <NavLink
-            to="/upload"
-            aria-label="New Post"
+          <button
+            aria-label="New Upload"
+            onClick={() => navigate('/upload')}
             className="bg-white text-black w-12 h-12 rounded-full flex items-center justify-center shadow hover:scale-95 transition-transform -mt-4"
           >
             <Plus size={24} />
-          </NavLink>
+          </button>
         )}
 
         {/* Right group */}

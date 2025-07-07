@@ -38,17 +38,18 @@ const MessageItem = React.memo(({ msg, isMe, sender }) => {
         <div className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-[75%] md:max-w-[55%]`}> {/* Align items-end for better vertical alignment, and added md:max-w for larger screens */}
 
           {/* Sender Avatar (Conditional based on isMe) */}
-          {(!isMe || (isMe && !sender.photo_url)) && ( // Only show avatar for others, or if it's me and I don't have a photo (fallback)
-             <img
-              src={avatarSrc}
-              alt={sender.display_name || 'User'}
-              className="w-8 h-8 object-cover rounded-full shadow-sm shrink-0" // Changed to rounded-full for typical avatar look
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/default-avatar.png';
-              }}
-            />
-          )}
+         {(!isMe || (isMe && !sender.photo_url)) && (
+  <img
+    src={avatarSrc}
+    alt={sender.display_name || 'User'}
+    className="w-10 h-14 object-cover rounded-md shadow-sm shrink-0"
+    onError={(e) => {
+      e.target.onerror = null;
+      e.target.src = '/default-avatar.png';
+    }}
+  />
+)}
+
 
           <div className={`
               ${bubbleBgClass}
