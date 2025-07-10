@@ -1,64 +1,31 @@
-// src/lib/compressVideo.js
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 
-let ffmpegInstance = null;
-let isLoadingFFmpeg = false;
-
-async function getFFmpeg() {
-  if (ffmpegInstance) return ffmpegInstance;
-
-  if (isLoadingFFmpeg) {
-    return new Promise(resolve => {
-      const interval = setInterval(() => {
-        if (ffmpegInstance) {
-          clearInterval(interval);
-          resolve(ffmpegInstance);
-        }
-      }, 100);
-    });
-  }
-
-  isLoadingFFmpeg = true;
-  try {
-    console.log('Loading ffmpeg...');
-    ffmpegInstance = new FFmpeg({
-      log: true,
-      corePath: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
-    });
-
-    await ffmpegInstance.load();
-    console.log('ffmpeg loaded.');
-    return ffmpegInstance;
-  } catch (error) {
-    console.error('❌ Failed to load ffmpeg:', error);
-    ffmpegInstance = null;
-    throw error;
-  } finally {
-    isLoadingFFmpeg = false;
-  }
-}
+const ffmpeg = new FFmpeg();
+let isLoaded = false;
 
 export async function compressVideo(file, onProgress = () => {}) {
-  if (typeof onProgress !== 'function') {
-    console.warn('onProgress is not a function, using noop');
-    onProgress = () => {};
+  if (!isLoaded) {
+    console.log('[ffmpeg] loading...');
+    await ffmpeg.load({
+      corePath: 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/ffmpeg-core.js',
+    });
+    console.log('[ffmpeg] loaded');
+    isLoaded = true;
   }
 
-  const ffmpeg = await getFFmpeg();
   const inputName = 'input.mp4';
   const outputName = 'output.mp4';
+  const inputData = new Uint8Array(await file.arrayBuffer());
+
+  ffmpeg.FS('writeFile', inputName, inputData);
+
+  ffmpeg.setProgress(({ ratio }) => {
+    if (typeof onProgress === 'function' && ratio >= 0) {
+      onProgress(Math.floor(ratio * 100));
+    }
+  });
 
   try {
-    ffmpeg.setProgress(({ ratio }) => {
-      if (ratio >= 0 && ratio <= 1) {
-        onProgress(Math.floor(ratio * 100));
-      }
-    });
-
-    console.log('Writing file to virtual FS...');
-    await ffmpeg.writeFile(inputName, file);
-
-    console.log('Running ffmpeg...');
     await ffmpeg.run(
       '-i', inputName,
       '-vcodec', 'libx264',
@@ -68,18 +35,19 @@ export async function compressVideo(file, onProgress = () => {}) {
       outputName
     );
 
-    console.log('Reading output...');
-    const data = await ffmpeg.readFile(outputName);
+    const outputData = ffmpeg.FS('readFile', outputName);
+    const blob = new Blob([outputData.buffer], { type: 'video/mp4' });
 
-    return new File([data.buffer], `compressed-${file.name}`, {
+    // Return a File compatible with your upload system
+    return new File([blob], `compressed-${Date.now()}-${file.name}`, {
       type: 'video/mp4',
+      lastModified: Date.now(),
     });
+  } catch (err) {
+    console.error('[ffmpeg compress error]', err);
+    throw err;
   } finally {
-    try {
-      ffmpeg.deleteFile(inputName);
-      ffmpeg.deleteFile(outputName);
-    } catch (cleanupError) {
-      console.warn('Cleanup error:', cleanupError);
-    }
+    ffmpeg.FS('unlink', inputName);
+    ffmpeg.FS('unlink', outputName);
   }
 }
