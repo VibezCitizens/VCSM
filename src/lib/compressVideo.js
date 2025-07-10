@@ -7,7 +7,7 @@ export async function compressVideo(file, onProgress = () => {}) {
   if (!isLoaded) {
     console.log('[ffmpeg] loading...');
     await ffmpeg.load({
-      corePath: 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/ffmpeg-core.js',
+      corePath: 'https://unpkg.com/@ffmpeg/core@0.12.15/dist/umd/ffmpeg-core.js',
     });
     console.log('[ffmpeg] loaded');
     isLoaded = true;
@@ -15,9 +15,10 @@ export async function compressVideo(file, onProgress = () => {}) {
 
   const inputName = 'input.mp4';
   const outputName = 'output.mp4';
-  const inputData = new Uint8Array(await file.arrayBuffer());
 
-  ffmpeg.FS('writeFile', inputName, inputData);
+  // ✅ Use new API: writeFile
+ ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
+
 
   ffmpeg.setProgress(({ ratio }) => {
     if (typeof onProgress === 'function' && ratio >= 0) {
@@ -35,10 +36,9 @@ export async function compressVideo(file, onProgress = () => {}) {
       outputName
     );
 
-    const outputData = ffmpeg.FS('readFile', outputName);
+    const outputData = await ffmpeg.readFile(outputName); // ✅ Use new API
     const blob = new Blob([outputData.buffer], { type: 'video/mp4' });
 
-    // Return a File compatible with your upload system
     return new File([blob], `compressed-${Date.now()}-${file.name}`, {
       type: 'video/mp4',
       lastModified: Date.now(),
@@ -47,7 +47,8 @@ export async function compressVideo(file, onProgress = () => {}) {
     console.error('[ffmpeg compress error]', err);
     throw err;
   } finally {
-    ffmpeg.FS('unlink', inputName);
-    ffmpeg.FS('unlink', outputName);
+    // ✅ Use deleteFile instead of unlink
+    await ffmpeg.deleteFile(inputName);
+    await ffmpeg.deleteFile(outputName);
   }
 }
