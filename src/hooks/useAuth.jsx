@@ -1,4 +1,3 @@
-// src/hooks/useAuth.js
 import { useEffect, useState, useContext, createContext } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -27,7 +26,13 @@ export function AuthProvider({ children }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // ✅ Use Presence Tracking (embedded here globally)
+  // ✅ Logout function
+  const logout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/'; // Or navigate('/login')
+  };
+
+  // ✅ Presence tracking
   useEffect(() => {
     if (!user?.id) return;
 
@@ -40,8 +45,8 @@ export function AuthProvider({ children }) {
       }).eq('id', user.id);
     };
 
-    updatePresence(); // Initial ping
-    interval = setInterval(updatePresence, 30000); // Ping every 30 seconds
+    updatePresence();
+    interval = setInterval(updatePresence, 30000);
 
     const handleUnload = async () => {
       await supabase.from('profiles').update({
@@ -55,12 +60,12 @@ export function AuthProvider({ children }) {
     return () => {
       clearInterval(interval);
       window.removeEventListener('beforeunload', handleUnload);
-      handleUnload(); // Cleanup ping
+      handleUnload();
     };
   }, [user?.id]);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading }}>
+    <AuthContext.Provider value={{ user, session, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

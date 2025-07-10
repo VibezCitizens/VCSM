@@ -133,7 +133,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
 
         {/* Success Message */}
         {successMessage && (
-          <div className="bg-green-600 text-white p-3 rounded-md text-center">
+          <div className="bg-green-200 text-white p-3 rounded-md text-center">
             {successMessage}
           </div>
         )}
@@ -146,7 +146,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
         )}
 
         <input
-          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           name="display_name"
           placeholder="Display Name"
           value={form.display_name}
@@ -154,7 +154,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
           required
         />
         <input
-          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           name="username"
           placeholder="Username"
           value={form.username}
@@ -162,7 +162,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
           required
         />
         <input
-          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           type="email"
           name="email"
           placeholder="Email"
@@ -171,7 +171,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
           required
         />
         <input
-          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           type="password"
           name="password"
           placeholder="Password"
@@ -180,7 +180,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
           required
         />
         <input
-          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           type="date"
           name="birthdate"
           placeholder="Birthdate"
@@ -191,7 +191,7 @@ navigate('/'); // ✅ correct: goes to CentralFeed
 
         {/* Sex Dropdown Menu */}
         <select
-          className="w-full px-4 py-2 rounded-lg bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-500 text-zinc-400"
+          className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-zinc-400"
           name="sex"
           value={form.sex}
           onChange={handleChange}
