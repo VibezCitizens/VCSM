@@ -38,4 +38,12 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  optimizeDeps: {
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'],
+  },
+  build: {
+    rollupOptions: {
+      external: ['@ffmpeg/core'],
+    },
+  },
 })

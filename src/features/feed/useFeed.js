@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { fetchPostsWithProfiles } from './postUtils'; // ✅ central call
 
 const PAGE_SIZE = 5;
 
@@ -12,7 +13,7 @@ export function useFeed(userId) {
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
 
-  // Fetch viewer's age group
+  // Load viewer age group once
   useEffect(() => {
     async function loadViewer() {
       if (!userId) return setViewerIsAdult(null);
@@ -40,48 +41,18 @@ export function useFeed(userId) {
     setLoading(true);
 
     try {
-      const from = page * PAGE_SIZE;
-      const { data: newPosts, error } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .range(from, from + PAGE_SIZE - 1);
-
-      if (error) throw error;
-
-      const updatedProfiles = { ...profiles };
-      const filteredPosts = [];
-
-      for (const post of newPosts || []) {
-        const uid = post.user_id;
-
-        if (!updatedProfiles[uid]) {
-          const { data: prof, error: profErr } = await supabase
-            .from('profiles')
-            .select('is_adult, display_name, photo_url')
-            .eq('id', uid)
-            .maybeSingle();
-
-          if (!profErr && prof) {
-            updatedProfiles[uid] = {
-              id: uid,
-              is_adult: prof.is_adult,
-              display_name: prof.display_name,
-              photo_url: prof.photo_url,
-            };
-          }
-        }
-
-        const author = updatedProfiles[uid];
-        if (author && author.is_adult === viewerIsAdult) {
-          filteredPosts.push(post);
-        }
-      }
+      const { posts: newPosts, updatedProfiles, hasMore: more } =
+        await fetchPostsWithProfiles({
+          page,
+          pageSize: PAGE_SIZE,
+          viewerIsAdult,
+          profileCache: profiles
+        });
 
       setProfiles(updatedProfiles);
-      setPosts(prev => [...prev, ...filteredPosts]);
+      setPosts(prev => [...prev, ...newPosts]);
       setPage(prev => prev + 1);
-      setHasMore(newPosts.length === PAGE_SIZE);
+      setHasMore(more);
     } catch (err) {
       console.error('Fetch posts error:', err);
     } finally {

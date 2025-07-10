@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabaseClient';
 
 /**
+ * ✅ fetchPostsWithProfiles.js
+ * 
  * Fetches paginated posts with profile data, filtered by viewer's age group.
  * 
  * @param {Object} options
@@ -19,16 +21,17 @@ export async function fetchPostsWithProfiles({
   const from = page * pageSize;
   const to = from + pageSize - 1;
 
-  // Step 1: Fetch posts
+  // ✅ Only fetch non-video posts
   const { data: rawPosts, error } = await supabase
     .from('posts')
     .select('*')
+    .not('media_type', 'eq', 'video')
     .order('created_at', { ascending: false })
     .range(from, to);
 
   if (error) throw error;
 
-  // Step 2: Identify unique user IDs not in cache
+  // Identify uncached user IDs
   const missingUserIds = Array.from(
     new Set(rawPosts.map(p => p.user_id).filter(uid => !profileCache[uid]))
   );
@@ -44,13 +47,13 @@ export async function fetchPostsWithProfiles({
     newProfiles = fetchedProfiles || [];
   }
 
-  // Step 3: Merge into profileCache
+  // Merge profile data
   const updatedProfiles = { ...profileCache };
   for (const profile of newProfiles) {
     updatedProfiles[profile.id] = profile;
   }
 
-  // Step 4: Enrich and filter posts
+  // Filter and enrich posts
   const enrichedPosts = rawPosts
     .map(post => {
       const user = updatedProfiles[post.user_id];
@@ -58,7 +61,7 @@ export async function fetchPostsWithProfiles({
     })
     .filter(p => p?.user?.is_adult === viewerIsAdult);
 
-  // Step 5: Determine if there are more posts
+  // Check if more posts exist
   const hasMore = rawPosts.length === pageSize;
 
   return {

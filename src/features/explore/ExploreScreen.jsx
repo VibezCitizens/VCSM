@@ -1,10 +1,11 @@
 // src/features/explore/ExploreScreen.jsx
-import { useState } from 'react'
-import StoriesScreen from './StoriesScreen'
-import SearchScreen from './SearchScreen'
-import VDropScreen from './VDropScreen'
+import { useState } from 'react';
+import StoriesScreen from './stories/StoriesScreen';
+import SearchScreen from "./search/SearchScreen";
 
-// matching icons from lucide-react
+import VDropScreen from './vdrop/VDropScreen'
+
+
 import { Search, BookOpen, Video } from 'lucide-react'
 
 export default function ExploreScreen() {
@@ -23,7 +24,7 @@ export default function ExploreScreen() {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full w-full flex flex-col bg-black">
       <div className="flex justify-around border-b border-gray-700 text-white bg-black">
         {Object.keys(TABS).map((key) => (
           <button
@@ -37,7 +38,10 @@ export default function ExploreScreen() {
           </button>
         ))}
       </div>
-      <div className="p-2">{TABS[tab]}</div>
+
+      <div className="flex-1 overflow-hidden">
+        {TABS[tab]}
+      </div>
     </div>
   )
 }

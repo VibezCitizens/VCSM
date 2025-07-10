@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Link, Navigate } from 'react-router-dom';
-import { PlusCircle } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 import PostCard from '@/components/PostCard';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -30,7 +29,6 @@ export default function CentralFeed() {
 
   useEffect(() => {
     async function loadViewerProfile() {
-      if (!user?.id) return setViewerIsAdult(null);
       const { data, error } = await supabase
         .from('profiles')
         .select('is_adult')
@@ -45,7 +43,7 @@ export default function CentralFeed() {
       setViewerIsAdult(data?.is_adult ?? null);
     }
 
-    loadViewerProfile();
+    if (user?.id) loadViewerProfile();
   }, [user]);
 
   const fetchPosts = useCallback(async (reset = false) => {
@@ -61,6 +59,7 @@ export default function CentralFeed() {
       const { data: newPosts, error } = await supabase
         .from('posts')
         .select('*')
+        .not('media_type', 'eq', 'video') // ✅ exclude videos
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -71,12 +70,14 @@ export default function CentralFeed() {
 
       for (const post of newPosts || []) {
         const uid = post.user_id;
+
         if (!updatedProfiles[uid]) {
           const { data: prof } = await supabase
             .from('profiles')
             .select('is_adult, display_name, photo_url, username')
             .eq('id', uid)
             .maybeSingle();
+
           if (prof) {
             updatedProfiles[uid] = {
               id: uid,
@@ -89,7 +90,7 @@ export default function CentralFeed() {
         }
 
         const author = updatedProfiles[uid];
-        if (author && author.is_adult === viewerIsAdult) {
+        if (author?.is_adult === viewerIsAdult) {
           filteredPosts.push(post);
         }
       }
@@ -107,9 +108,7 @@ export default function CentralFeed() {
   }, [page, viewerIsAdult, hasMore, profiles]);
 
   useEffect(() => {
-    if (viewerIsAdult !== null) {
-      refreshFeed();
-    }
+    if (viewerIsAdult !== null) refreshFeed();
   }, [viewerIsAdult]);
 
   useEffect(() => {
@@ -119,7 +118,6 @@ export default function CentralFeed() {
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = el;
       const nearBottom = scrollTop + clientHeight >= scrollHeight - 300;
-
       if (nearBottom && hasMore && !loadingRef.current) {
         fetchPosts();
       }
@@ -140,6 +138,8 @@ export default function CentralFeed() {
         table: 'posts',
       }, async (payload) => {
         const newPost = payload.new;
+        if (newPost.media_type === 'video') return; // ✅ prevent video from showing
+
         const uid = newPost.user_id;
         let author = profiles[uid];
 
@@ -200,8 +200,6 @@ export default function CentralFeed() {
       {!hasMore && !loading && (
         <p className="text-center text-gray-400">End of feed</p>
       )}
-
-      
     </div>
   );
 }

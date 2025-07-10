@@ -1,6 +1,7 @@
 // src/features/explore/SearchScreen.jsx
 import { useState } from 'react';
-import SearchTab from './components/SearchTabs';
+import SearchTab from "./components/SearchTabs";
+
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
