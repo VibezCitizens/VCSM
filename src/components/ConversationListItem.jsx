@@ -14,9 +14,7 @@ export default function ConversationListItem({
 
   const otherMember = conv.conversation_members.find((m) => m.user_id !== user.id);
 
-  // LOG FOR DEBUGGING: Add this to see what otherMember and its profiles contain
-  // console.log("ConversationListItem - otherMember:", otherMember);
-  // console.log("ConversationListItem - otherMember.profiles:", otherMember?.profiles);
+
 
   const lastMessage = conv.last_message || 'No messages yet.';
   const timeAgo = conv.last_sent_at

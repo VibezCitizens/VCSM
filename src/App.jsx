@@ -13,10 +13,7 @@ import UploadScreen from '@/features/posts/screens/UploadScreen';
 import ChatRoutes from '@/features/chat/ChatRoutes';
 import SettingsScreen from '@/features/settings/screens/SettingsScreen';
 import VoidScreen from '@/TheVoid/VoidScreen.jsx';
-
 import ExploreScreen from '@/features/explore/ExploreScreen';
-import UploadVideoScreen from '@/features/explore/components/UploadVideoScreen';
-
 
 // Layout
 import Layout from '@/components/Layout';
@@ -47,7 +44,6 @@ export default function App() {
           <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/profile/:userId" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/upload" element={<Layout><UploadScreen /></Layout>} />
-          <Route path="/upload/video" element={<Layout><UploadVideoScreen /></Layout>} /> {/* ✅ NEW */}
           <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
           <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
           <Route path="/explore" element={<Layout><ExploreScreen /></Layout>} />

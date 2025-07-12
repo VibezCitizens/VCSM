@@ -1,174 +1,282 @@
-import { useRef, useState } from 'react';
+// (Your unchanged imports remain)
+import { useRef, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '@/lib/supabaseClient';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // This is the crucial import
-
-// REMOVED: const R2_PUBLIC = 'https://cdn.vibezcitizens.com';
-// REMOVED: const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
-// These are now encapsulated within src/lib/uploadToCloudflare.js
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate, Link } from 'react-router-dom';
+import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
+import VisibleQRCode from './VisibleQRCode';
 
 export default function ProfileHeader({
   profile,
   isOwnProfile = false,
   onPhotoChange,
-  onToggleQR,
-  qrOpen = false,
-  onEdit,
 }) {
+  const navigate = useNavigate();
   const fileRef = useRef();
-  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-  const [subscriberModalOpen, setSubscriberModalOpen] = useState(false);
-  const [subscribers, setSubscribers] = useState([]);
+  const { user } = useAuth();
 
-  // Validates profile ID to ensure it's a UUID string
-  const isProfileIdValid =
-    profile?.id &&
-    typeof profile.id === 'string' &&
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(profile.id);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscriberCount, setSubscriberCount] = useState(profile?.subscriber_count || 0);
+  const [subscriberList, setSubscriberList] = useState([]);
+  const [showSubscriberModal, setShowSubscriberModal] = useState(false);
+
+  const {
+    id: profileId,
+    display_name: profileDisplayName,
+    bio: profileBio,
+    photo_url: profilePhotoUrl,
+  } = profile || {};
+
+  const isProfileIdValid = profileId && /^[0-9a-fA-F-]{36}$/.test(profileId);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({ displayName: '', bio: '' });
+
+  useEffect(() => {
+
+    if (profile) {
+      setEditFormData({
+        displayName: profile.display_name || '',
+        bio: profile.bio || '',
+      });
+      setSubscriberCount(profile.subscriber_count || 0);
+    }
+  }, [profile, profileId, user?.id, isOwnProfile]);
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!user?.id || !profile?.id || user.id === profile.id) return;
+      const { data, error } = await supabase
+        .from('followers')
+        .select('id')
+        .eq('follower_id', user.id)
+        .eq('followed_id', profile.id)
+        .maybeSingle();
+      if (!error) setIsSubscribed(!!data);
+    };
+    checkSubscription();
+  }, [user?.id, profile?.id]);
+
+  const handleSubscribe = async () => {
+    if (!user?.id || !profile?.id || user.id === profile.id) return;
+    try {
+      if (isSubscribed) {
+        await supabase
+          .from('followers')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('followed_id', profile.id);
+        setIsSubscribed(false);
+        setSubscriberCount((prev) => Math.max(prev - 1, 0));
+      } else {
+        await supabase.from('followers').insert([
+          { follower_id: user.id, followed_id: profile.id },
+        ]);
+        setIsSubscribed(true);
+        setSubscriberCount((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Subscription failed.');
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!user?.id || !profile?.id || user.id === profile.id) return;
+    const convoId = await getOrCreatePrivateConversation(user.id, profile.id);
+    if (convoId) {
+      navigate(`/chat/${convoId}`);
+    } else {
+      toast.error('Failed to start chat.');
+    }
+  };
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
     if (!isProfileIdValid) {
-      toast.error('Profile not fully loaded or ID is invalid.');
-      // Clear the file input to allow re-selection
-      e.target.value = '';
+      toast.error('Profile ID invalid.');
       return;
     }
 
     setIsUploadingPhoto(true);
     try {
-      // 1. Compress the image
       const compressed = await imageCompression(file, {
-        maxSizeMB: 0.5,           // Max size 500KB
-        maxWidthOrHeight: 600,    // Max dimension 600px
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 600,
         useWebWorker: true,
       });
 
-      // 2. Define the storage key (path in R2)
-      // This ensures a predictable, unique path for each user's profile picture
-      const key = `profile-pictures/${profile.id}.jpg`;
-
-      // 3. Upload the compressed image using the centralized utility
-      console.log('ProfileHeader: Attempting to upload to Cloudflare with key:', key);
+      const key = `profile-pictures/${profileId}.jpg`;
       const { url: photoUrl, error: uploadError } = await uploadToCloudflare(compressed, key);
 
-      if (uploadError) {
-        console.error('ProfileHeader: Cloudflare upload failed:', uploadError);
-        throw new Error(`Upload failed: ${uploadError}`);
-      }
+      if (uploadError || !photoUrl) throw new Error('Upload failed.');
 
-      if (!photoUrl) {
-          console.error('ProfileHeader: Upload successful but no URL returned by utility/worker.');
-          throw new Error('Upload successful but no URL was returned.');
-      }
-
-      console.log('ProfileHeader: Image uploaded successfully to:', photoUrl);
-
-      // 4. Update the Supabase 'profiles' table with the new photo URL
-      console.log('ProfileHeader: Updating Supabase profile ID:', profile.id, 'with photo_url:', photoUrl);
       const { error: supabaseError } = await supabase
         .from('profiles')
         .update({ photo_url: photoUrl })
-        .eq('id', profile.id);
+        .eq('id', profileId);
 
-      if (supabaseError) {
-        console.error('ProfileHeader: Supabase update failed:', supabaseError.message);
-        throw new Error(supabaseError.message);
-      }
+      if (supabaseError) throw new Error(supabaseError.message);
 
       toast.success('Profile photo updated!');
-      // Call the parent component's callback to refresh UI if needed
       onPhotoChange?.();
     } catch (err) {
-      console.error('ProfileHeader: Photo upload process encountered an error:', err);
-      toast.error(err.message || 'Failed to update profile photo.');
+      console.error(err);
+      toast.error(err.message || 'Failed to upload photo.');
     } finally {
       setIsUploadingPhoto(false);
-      // Clear the file input regardless of success or failure
-      e.target.value = '';
     }
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!profileId || !editFormData.displayName.trim()) {
+      toast.error('Invalid form data.');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          display_name: editFormData.displayName,
+          bio: editFormData.bio,
+        })
+        .eq('id', profileId);
+
+      if (error) throw error;
+
+      toast.success('Profile updated!');
+      setIsEditing(false);
+      onPhotoChange?.();
+    } catch (err) {
+      toast.error(err.message || 'Update failed.');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditFormData({
+      displayName: profileDisplayName || '',
+      bio: profileBio || '',
+    });
   };
 
   const loadSubscribers = async () => {
-    if (!profile?.id) {
-      toast.error('Profile ID is missing.');
-      return;
-    }
-
+  
     const { data, error } = await supabase
       .from('followers')
-      .select('follower_id, profiles!follower_id(*)')
-      .eq('followed_id', profile.id);
+
+      .select('follower_id, profiles!fk_follower(display_name, photo_url, username)')
+      .eq('followed_id', profileId)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error loading subscribers:', error);
-      toast.error('Failed to load subscribers.');
-      return;
+      return toast.error('Failed to load subscribers.');
     }
 
-    const cleanSubscribers = (data || [])
-      .map((d) => d.profiles)
-      .filter(Boolean)
-      .sort((a, b) => (a.display_name || '').localeCompare(b.display_name || ''));
+  
+    setSubscriberList(data);
 
-    setSubscribers(cleanSubscribers);
-    setSubscriberModalOpen(true);
   };
+
+  const qrCodeValue = profileId ? `${window.location.origin}/u/${profileId}` : '';
+
+  useEffect(() => {
+
+  }, [showSubscriberModal, subscriberList.length]);
+
 
   return (
     <>
       <div className="bg-neutral-900 rounded-xl mx-4 mt-6 p-5 flex items-center justify-between shadow-md min-h-[140px]">
-        <div className="flex flex-col justify-center space-y-1 text-left max-w-[70%]">
-          <h1 className="text-xl font-semibold leading-tight">
-            {profile.display_name || 'Unnamed'}
-          </h1>
-          <p className="text-sm text-gray-400 leading-snug">
-            {profile.bio || 'No bio yet.'}
-          </p>
-
-          {typeof profile.subscriber_count === 'number' ? (
-            profile.subscriber_count > 0 ? (
-              isOwnProfile ? (
-                <button
-                  onClick={loadSubscribers}
-                  className="text-sm text-purple-400 hover:underline text-left"
-                >
-                  {profile.subscriber_count} Subscriber
-                  {profile.subscriber_count !== 1 && 's'}
-                </button>
-              ) : (
-                <p className="text-sm text-purple-400">
-                  {profile.subscriber_count} Subscriber
-                  {profile.subscriber_count !== 1 && 's'}
-                </p>
-              )
-            ) : (
-              <p className="text-sm text-purple-400">0 Subscribers</p>
-            )
+        <div className="flex flex-col justify-center space-y-2 text-left max-w-[70%]">
+          {isEditing ? (
+            <form onSubmit={handleEditSubmit} className="space-y-3">
+              <input
+                type="text"
+                name="displayName"
+                value={editFormData.displayName}
+                onChange={handleEditChange}
+                placeholder="Display Name"
+                className="text-sm px-3 py-2 bg-neutral-800 text-white rounded w-full"
+              />
+              <textarea
+                name="bio"
+                value={editFormData.bio}
+                onChange={handleEditChange}
+                placeholder="Bio"
+                rows="2"
+                className="text-sm px-3 py-2 bg-neutral-800 text-white rounded resize-y w-full"
+              />
+              <div className="flex gap-2">
+                <button type="button" onClick={handleCancelEdit} className="text-sm text-neutral-400 hover:underline">Cancel</button>
+                <button type="submit" className="text-sm text-purple-500 hover:underline">Save</button>
+              </div>
+            </form>
           ) : (
-            <p className="text-sm text-purple-400">Subscribers loading...</p>
-          )}
+            <>
+              <h1 className="text-xl font-semibold text-white">{profileDisplayName || 'Unnamed'}</h1>
+              <p className="text-sm text-neutral-300">{profileBio || 'No bio yet.'}</p>
 
-          {isOwnProfile && (
-            <div className="flex gap-4 mt-1">
-              <button onClick={onToggleQR} className="text-xs text-purple-400 hover:underline">
-                {qrOpen ? 'Hide QR Code' : 'Show QR Code'}
-              </button>
-              <button onClick={onEdit} className="text-xs text-purple-400 hover:underline">
-                Edit Profile
-              </button>
-            </div>
+              {typeof subscriberCount === 'number' && (
+                <button
+                  className="text-sm text-purple-400 text-left hover:underline"
+                  onClick={() => {
+                    if (isOwnProfile) {
+                      loadSubscribers();
+                      setShowSubscriberModal(true);
+                     
+                    }
+                  }}
+                >
+                  {subscriberCount} Subscriber{subscriberCount !== 1 && 's'}
+                </button>
+              )}
+
+              {isOwnProfile ? (
+                <div className="flex gap-3 mt-1">
+                  <button onClick={() => setQrCodeModalOpen(true)} className="text-sm text-purple-400 hover:underline">Show QR</button>
+                  <button onClick={() => setIsEditing(true)} className="text-sm text-purple-400 hover:underline">Edit Profile</button>
+                </div>
+              ) : (
+                <div className="flex gap-3 mt-2">
+                  <button
+                    onClick={handleSubscribe}
+                    className="bg-purple-600 text-white rounded-xl px-4 py-1 text-sm hover:bg-purple-700 transition-colors"
+                  >
+                    {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+                  </button>
+                  <button
+                    onClick={handleMessage}
+                    className="bg-neutral-800 text-white rounded-xl px-4 py-1 text-sm hover:bg-neutral-700 transition-colors"
+                  >
+                    Message
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
         <div className="relative group w-24 h-24 shrink-0 ml-4">
           <img
-            src={profile.photo_url || '/default-avatar.png'}
-            alt={profile.display_name || 'User profile picture'}
-            className="w-full h-full object-cover rounded-xl border border-neutral-700 shadow-sm"
+            src={profilePhotoUrl || '/default-avatar.png'}
+            alt={profileDisplayName || 'User avatar'}
+            className="w-full h-full object-cover rounded-xl border border-neutral-700"
           />
           {isOwnProfile && (
             <>
@@ -182,83 +290,95 @@ export default function ProfileHeader({
               />
               <button
                 type="button"
-                onClick={() =>
-                  !isUploadingPhoto && isProfileIdValid && fileRef.current?.click()
-                }
-                className={`absolute inset-0 flex items-center justify-center bg-black/50 text-white text-xs rounded-xl transition ${
-                  isUploadingPhoto || !isProfileIdValid
-                    ? 'opacity-100 cursor-not-allowed'
-                    : 'opacity-0 group-hover:opacity-100'
-                }`}
-                disabled={isUploadingPhoto || !isProfileIdValid}
+                onClick={() => !isUploadingPhoto && fileRef.current?.click()}
+                className={`absolute inset-0 flex items-center justify-center bg-black/50 text-white text-xs rounded-xl ${
+                  isUploadingPhoto ? 'cursor-not-allowed' : 'hover:opacity-100 opacity-0 group-hover:opacity-100'
+                } transition-opacity duration-200`}
               >
-                {isUploadingPhoto ? (
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                ) : (
-                  'Change'
-                )}
+                {isUploadingPhoto ? 'Uploading...' : 'Change'}
               </button>
             </>
           )}
         </div>
       </div>
 
-      {subscriberModalOpen && (
+      {/* Modal to show subscribers */}
+      {isOwnProfile && showSubscriberModal && subscriberList.length > 0 && (
         <div
           className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
-          onClick={() => setSubscriberModalOpen(false)}
+          onClick={() => setShowSubscriberModal(false)}
         >
           <div
-            className="bg-neutral-900 rounded-lg p-5 w-full max-w-sm max-h-[70vh] overflow-y-auto text-white relative"
+            className="bg-neutral-900 rounded-xl p-6 max-w-sm w-full text-white overflow-y-auto max-h-[70vh] shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-lg font-semibold">Your Subscribers</h2>
-              <button
-                onClick={() => setSubscriberModalOpen(false)}
-                className="text-sm text-purple-400 hover:underline"
-              >
-                Close
-              </button>
-            </div>
-            {subscribers.length > 0 ? (
-              <ul className="space-y-3">
-                {subscribers.map((user) => (
-                  <li key={user.id} className="flex items-center gap-3">
-                    <img
-                      src={user.photo_url || '/default-avatar.png'}
-                      alt={user.display_name || 'Subscriber avatar'}
-                      className="w-8 h-8 rounded-lg object-cover border border-neutral-700"
-                    />
-                    <div>
-                      <p className="text-sm font-medium">{user.display_name || 'Unnamed'}</p>
-                      <p className="text-xs text-gray-400">@{user.username}</p>
+            <h3 className="text-lg font-semibold mb-3 text-purple-400">Your Subscribers</h3>
+            <ul className="space-y-2 list-none">
+              {subscriberList.map((s) => (
+                <li key={s.follower_id}>
+                  {s.profiles?.username ? ( // Conditional rendering based on username existence
+                    <Link
+                      to={`/u/${s.profiles.username}`} // ✅ CORRECTED: Use s.profiles.username
+                      onClick={() => setShowSubscriberModal(false)}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-neutral-800 transition-colors duration-200 no-underline hover:underline"
+                    >
+                      <img
+                        src={s.profiles?.photo_url || '/default-avatar.png'}
+                        className="w-7 h-7 rounded object-cover"
+                        alt={s.profiles?.display_name || 'User avatar'}
+                      />
+                      <span>{s.profiles?.display_name || 'Unnamed'}</span>
+                    </Link>
+                  ) : (
+                    // Fallback for users without a username, if you wish to display them
+                    // This will not be clickable, or you could make it link to /profile/:userId
+                    <div className="flex items-center gap-3 p-2 text-neutral-500">
+                      <img
+                        src={s.profiles?.photo_url || '/default-avatar.png'}
+                        className="w-7 h-7 rounded object-cover"
+                        alt={s.profiles?.display_name || 'User avatar'}
+                      />
+                      <span>{s.profiles?.display_name || 'Unnamed'} (No Username)</span>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setShowSubscriberModal(false)}
+              className="mt-4 text-sm text-purple-400 hover:underline"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      {qrCodeModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+          onClick={() => setQrCodeModalOpen(false)}
+        >
+          <div
+            className="bg-neutral-900 rounded-lg p-6 w-full max-w-xs text-white relative flex flex-col items-center gap-4 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-semibold mb-2">Scan My Profile</h2>
+            {qrCodeValue ? (
+              <div className="p-2 bg-white rounded-md">
+                <VisibleQRCode value={qrCodeValue} size={200} />
+              </div>
             ) : (
-              <p className="text-sm text-neutral-400">No subscribers found.</p>
+              <p className="text-sm text-neutral-400">Loading QR code...</p>
             )}
+            <button
+              type="button"
+              onClick={() => setQrCodeModalOpen(false)}
+              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

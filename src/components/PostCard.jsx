@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
 import UserLink from '@/components/UserLink';
 import CommentCard from '@/components/CommentCard';
-import { Link } from 'react-router-dom'; // Make sure Link is imported for clickable tags
+import { Link } from 'react-router-dom';
 
 const useOnClickOutside = (ref, handler) => {
   useEffect(() => {
@@ -22,7 +22,6 @@ const useOnClickOutside = (ref, handler) => {
   }, [ref, handler]);
 };
 
-// Helper to show "3m ago" style time
 function formatPostTime(iso) {
   const now = new Date();
   const postDate = new Date(iso);
@@ -78,7 +77,6 @@ export default function PostCard({ post, user = {} }) {
       .eq('post_id', post.id)
       .is('parent_id', null)
       .order('created_at', { ascending: true });
-
     if (!error) setComments(data || []);
   };
 
@@ -135,28 +133,22 @@ export default function PostCard({ post, user = {} }) {
 
   const handlePostComment = async () => {
     if (!replyText.trim() || !currentUser?.id) return;
-
     const { error } = await supabase.from('post_comments').insert({
       post_id: post.id,
       user_id: currentUser.id,
       content: replyText.trim(),
     });
-
-    if (error) {
-      console.error('[PostCard] Comment failed:', error.message);
-      return;
+    if (!error) {
+      setReplyText('');
+      setShowComments(true);
+      await fetchComments();
     }
-
-    setReplyText('');
-    setShowComments(true);
-    await fetchComments();
   };
 
   const handleReact = async (type) => {
     vibrate();
     const uid = currentUser?.id;
     if (!uid) return;
-
     if (type === 'rose') {
       setRoseCount(prev => prev + 1);
       const { error } = await supabase.from('post_reactions').insert({ post_id: post.id, user_id: uid, type });
@@ -193,7 +185,7 @@ export default function PostCard({ post, user = {} }) {
   const handleDeletePost = async () => {
     if (currentUser?.id !== user.id) return;
     await supabase.from('posts').delete().eq('id', post.id);
-    navigate('/home'); // Or refresh the feed
+    navigate('/home');
   };
 
   const handleToggleSubscribe = async () => {
@@ -215,13 +207,16 @@ export default function PostCard({ post, user = {} }) {
 
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow mb-4 mx-2 relative">
+      {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <div>
-          <UserLink user={user} avatarSize="w-9 h-9 rounded-md" textSize="text-sm" />
-          {post.created_at && (
-            <p className="text-xs text-neutral-400 ml-11 -mt-2">{formatPostTime(post.created_at)}</p>
-          )}
-        </div>
+        <UserLink
+          user={user}
+          avatarSize="w-9 h-9"
+          avatarShape="rounded-md"
+          textSize="text-sm"
+          showTimestamp={true}
+          timestamp={formatPostTime(post.created_at)}
+        />
         <div className="flex gap-2 items-center">
           {currentUser?.id !== user.id && (
             <>
@@ -246,38 +241,35 @@ export default function PostCard({ post, user = {} }) {
         </div>
       </div>
 
+      {/* Post Text */}
       {post.text && (
         <p className="text-white text-sm mb-3 whitespace-pre-wrap">
           {renderTextWithHashtags(post.text)}
         </p>
       )}
 
+      {/* Media */}
       {post.media_type === 'image' && post.media_url && (
         <div className="w-full rounded-xl overflow-hidden mb-3">
           <img src={post.media_url} alt="post" className="w-full max-h-80 object-cover" />
         </div>
       )}
-
       {post.media_type === 'video' && post.media_url && (
         <video src={post.media_url} controls className="w-full max-h-80 rounded-xl mb-3" />
       )}
 
-      {/* NEW SECTION: Displaying Tags from the 'tags' array */}
+      {/* Tags */}
       {post.tags && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
           {post.tags.map((tag, index) => (
-            <Link
-              key={index}
-              to={`/tag/${tag}`} // Link to a tag-specific page
-              className="text-xs bg-neutral-700 text-purple-400 px-2 py-1 rounded-full hover:bg-neutral-600 transition-colors"
-            >
+            <Link key={index} to={`/tag/${tag}`} className="text-xs bg-neutral-700 text-purple-400 px-2 py-1 rounded-full hover:bg-neutral-600 transition-colors">
               #{tag}
             </Link>
           ))}
         </div>
       )}
-      {/* END NEW SECTION */}
 
+      {/* Reactions */}
       <div className="flex flex-wrap gap-3 items-center mb-2">
         <button onClick={() => handleReact('like')} className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}>
           👍 {likeCount}
@@ -290,6 +282,7 @@ export default function PostCard({ post, user = {} }) {
         </button>
       </div>
 
+      {/* Comment Input */}
       <div className="flex mt-2">
         <input
           value={replyText}
@@ -297,9 +290,10 @@ export default function PostCard({ post, user = {} }) {
           className="bg-neutral-900 text-white p-2 rounded-l w-full text-sm"
           placeholder="Write a comment..."
         />
-        <button onClick={handlePostComment} className="bg-purple-600 px-4 rounded-r text-sm">Post</button>
+        <button onClick={handlePostComment} className="bg-purple-600 px-4 rounded-r text-smbg-purple-600 px-4 rounded-r text-sm text-white">Post</button>
       </div>
 
+      {/* Toggle Comments */}
       <div className="mt-2">
         {comments.length > 0 && (
           showComments ? (
@@ -313,6 +307,7 @@ export default function PostCard({ post, user = {} }) {
         )}
       </div>
 
+      {/* Comment List */}
       {showComments && (
         <div className="space-y-2 mt-2">
           {comments.length === 0 ? (

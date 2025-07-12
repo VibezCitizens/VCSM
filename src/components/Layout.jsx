@@ -15,13 +15,13 @@ export default function Layout({ children, actions }) {
   return (
     <div
       {...swipeHandlers}
-      className="min-h-screen w-full max-w-[600px] mx-auto bg-black text-white relative"
+      className="min-h-[100dvh] flex flex-col w-full max-w-[600px] mx-auto bg-black text-white"
     >
-      {/* Top Bar */}
+      {/* Top Navigation */}
       <TopNav actions={actions} />
 
-      {/* Main Content Area */}
-      <main className="px-4 pb-28">
+      {/* Main Content Area with scroll enabled */}
+      <main className="flex-1 overflow-y-auto px-4 pb-28">
         {children || (
           <div className="text-center text-neutral-500 py-10">
             <p>No content to display.</p>

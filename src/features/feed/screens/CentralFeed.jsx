@@ -175,7 +175,7 @@ export default function CentralFeed() {
   return (
     <div
       ref={feedRef}
-      className="h-screen overflow-y-auto px-4 py-6 space-y-6 scroll-hidden"
+       className="h-screen overflow-y-auto px-0 py-4 space-y-1 scroll-hidden"
     >
       {!loading && posts.length === 0 && (
         <p className="text-center text-gray-400">No posts found for your age group.</p>

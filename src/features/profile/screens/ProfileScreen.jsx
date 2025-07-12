@@ -2,98 +2,114 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
-import PostCard from '@/components/PostCard';
-import QRCode from 'react-qr-code';
-import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
+
 import ProfileHeader from '@/components/ProfileHeader';
+import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
+
+import PostList from '@/features/profile/tabs/PostList';
+import PhotoGrid from '@/features/profile/tabs/PhotoGrid';
+import VideoFeed from '@/features/profile/tabs/VideoFeed';
+import FriendsList from '@/features/profile/tabs/FriendsList';
+import FriendsListEditor from '@/features/profile/tabs/FriendsListEditor';
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
-  const { username } = useParams();
+  const { username: urlUsername, userId: urlUserId } = useParams();
 
   const [currentUser, setCurrentUser] = useState(undefined);
   const [profileData, setProfileData] = useState(null);
-  const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [posts, setPosts] = useState([]);
-  const [qrOpen, setQrOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('POST');
 
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        const { data: authData } = await supabase.auth.getUser();
-        const user = authData?.user || null;
-        setCurrentUser(user);
+    const checkAuthAndRedirect = async () => {
+      setLoading(true);
+      setError(null);
 
-        if (!user) {
-          setError('Please log in to view your profile.');
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user || null;
+      setCurrentUser(user);
+
+      if (!user) {
+        setError('Please log in to view profiles.');
+        setLoading(false);
+        return;
+      }
+
+      if (!urlUsername && !urlUserId && user) {
+        const { data: userProfile, error: profileError } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !userProfile?.username) {
+          setError('Your profile username could not be found. Please update your profile.');
           setLoading(false);
           return;
         }
 
-        if (!username) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('id', user.id)
-            .single();
-
-          if (profileError || !profileData?.username) {
-            setError('Your profile could not be found.');
-            setLoading(false);
-            return;
-          }
-
-          navigate(`/u/${profileData.username}`, { replace: true });
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Unexpected error during initialization.');
-        setLoading(false);
+        navigate(`/u/${userProfile.username}`, { replace: true });
+        return;
       }
+
+      setLoading(false);
     };
 
-    initialize();
-  }, [username, navigate]);
+    checkAuthAndRedirect();
+  }, [navigate, urlUsername, urlUserId]);
 
-  const fetchAndSetProfileData = useCallback(async (identifier, currentUserId) => {
+  const fetchAndSetProfileData = useCallback(async (identifier, type, currentUserId) => {
     setLoading(true);
     setError(null);
     setProfileData(null);
 
     try {
       let query = supabase.from('profiles').select('*');
-      query = typeof identifier === 'string'
-        ? query.eq('username', identifier)
-        : query.eq('id', identifier);
+
+      if (type === 'username') {
+        query = query.eq('username', identifier);
+      } else if (type === 'userId') {
+        const isUUID = /^[0-9a-fA-F-]{36}$/.test(identifier);
+        if (!isUUID) {
+          setLoading(false);
+          return;
+        }
+        query = query.eq('id', identifier);
+      } else {
+        setLoading(false);
+        return;
+      }
 
       const { data: userData, error: profileError } = await query.single();
-
       if (profileError || !userData) {
         setError(profileError?.message || 'Profile not found.');
+        setLoading(false);
         return;
       }
 
       const { data: subscriberRows, count: fetchedSubscriberCount } = await supabase
         .from('followers')
-        .select('follower_id, profiles:profiles!follower_id(*)', { count: 'exact' })
+        .select('follower_id, profiles!fk_follower(display_name, photo_url, username)', { count: 'exact' })
         .eq('followed_id', userData.id);
 
       const subscribers = (subscriberRows || []).map(row => row.profiles).filter(Boolean);
 
       let isSubscribed = false;
-      if (currentUserId) {
+      if (currentUserId && currentUserId !== userData.id) {
         const { data: subData } = await supabase
           .from('followers')
-          .select('*')
+          .select('id')
           .eq('follower_id', currentUserId)
           .eq('followed_id', userData.id)
           .maybeSingle();
+
         isSubscribed = !!subData;
       }
 
@@ -114,8 +130,9 @@ export default function ProfileScreen() {
       setPosts(userPosts || []);
       setSubscriberCount(fetchedSubscriberCount ?? 0);
       setSubscribed(isSubscribed);
+
     } catch (err) {
-      console.error("Unexpected profile fetch error:", err);
+      if (import.meta.env.DEV) console.error('[ProfileScreen] Unexpected fetch error:', err);
       setError('Failed to load profile.');
     } finally {
       setLoading(false);
@@ -123,85 +140,32 @@ export default function ProfileScreen() {
   }, []);
 
   useEffect(() => {
-    if (currentUser && username) {
-      fetchAndSetProfileData(username, currentUser.id);
+    if (currentUser !== undefined) {
+      if (urlUsername) {
+        fetchAndSetProfileData(urlUsername, 'username', currentUser?.id);
+      } else if (urlUserId) {
+        fetchAndSetProfileData(urlUserId, 'userId', currentUser?.id);
+      } else if (currentUser) {
+        // This will likely never hit since we redirect `/me` earlier
+        if (import.meta.env.DEV) console.warn('[ProfileScreen] No profile identifier found in URL.');
+      }
     }
-  }, [username, currentUser, fetchAndSetProfileData]);
+  }, [urlUsername, urlUserId, currentUser, fetchAndSetProfileData]);
 
   const refreshProfile = useCallback(() => {
-    if (username) {
-      fetchAndSetProfileData(username, currentUser?.id);
+    if (urlUsername) {
+      fetchAndSetProfileData(urlUsername, 'username', currentUser?.id);
+    } else if (urlUserId) {
+      fetchAndSetProfileData(urlUserId, 'userId', currentUser?.id);
     } else if (currentUser) {
-      fetchAndSetProfileData(currentUser.id, currentUser.id);
+      fetchAndSetProfileData(currentUser.id, 'userId', currentUser.id);
     }
-  }, [username, currentUser, fetchAndSetProfileData]);
-
-  const handleSave = async () => {
-    if (!profileData || !currentUser || profileData.id !== currentUser.id) {
-      toast.error('You can only edit your own profile.');
-      return;
-    }
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ display_name: displayName.trim(), bio })
-      .eq('id', profileData.id);
-
-    if (error) {
-      toast.error('Failed to update: ' + error.message);
-      return;
-    }
-
-    toast.success('Profile updated');
-    setEditing(false);
-    refreshProfile();
-    await supabase.auth.updateUser({ data: { display_name: displayName.trim() } });
-  };
-
-  const handleSubscribe = async () => {
-    if (!currentUser || !profileData) return;
-    if (currentUser.id === profileData.id) {
-      toast.error("You can't subscribe to yourself.");
-      return;
-    }
-
-    const { error } = await supabase.from('followers').insert({
-      follower_id: currentUser.id,
-      followed_id: profileData.id,
-    });
-
-    if (error) {
-      toast.error('Failed to subscribe: ' + error.message);
-      return;
-    }
-
-    setSubscribed(true);
-    setSubscriberCount((prev) => prev + 1);
-  };
-
-  const handleUnsubscribe = async () => {
-    if (!currentUser || !profileData) return;
-
-    const { error } = await supabase
-      .from('followers')
-      .delete()
-      .eq('follower_id', currentUser.id)
-      .eq('followed_id', profileData.id);
-
-    if (error) {
-      toast.error('Failed to unsubscribe: ' + error.message);
-      return;
-    }
-
-    setSubscribed(false);
-    setSubscriberCount((prev) => prev - 1);
-  };
+  }, [urlUsername, urlUserId, currentUser, fetchAndSetProfileData]);
 
   const handleMessage = async () => {
     if (!currentUser || !profileData || currentUser.id === profileData.id) return;
-
     const convoId = await getOrCreatePrivateConversation(currentUser.id, profileData.id);
-    if (convoId) navigate(`/chat/${convoId}`);
+    convoId ? navigate(`/chat/${convoId}`) : toast.error('Failed to start chat.');
   };
 
   const isOwnProfile = currentUser?.id === profileData?.id;
@@ -234,62 +198,36 @@ export default function ProfileScreen() {
     <div className="bg-black text-white min-h-screen">
       <ProfileHeader
         profile={{ ...profileData, subscriber_count: subscriberCount }}
-        subscribers={profileData?.subscribers || []}
         isOwnProfile={isOwnProfile}
         onPhotoChange={refreshProfile}
-        onToggleQR={() => setQrOpen(!qrOpen)}
-        qrOpen={qrOpen}
-        onEdit={() => setEditing((prev) => !prev)}
       />
 
-      {qrOpen && (
-        <div className="mt-4 flex justify-center">
-          <QRCode value={`https://vibezcitizens.com/u/${profileData.username}`} size={128} />
-        </div>
-      )}
+      <div className="sticky top-0 z-10 bg-black border-b border-neutral-800 flex justify-around text-xs font-semibold mt-4">
+        {['POST', 'PHOTOS', 'VIDEOS', 'FRIENDS'].map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 py-3 ${
+              activeTab === tab
+                ? 'text-white border-b-2 border-purple-500'
+                : 'text-gray-500'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-      {editing && isOwnProfile && (
-        <div className="mt-4 space-y-2 text-left max-w-sm mx-auto p-4">
-          <input
-            className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Display Name"
-          />
-          <textarea
-            className="w-full px-3 py-2 rounded bg-neutral-800 text-white"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Bio"
-          />
-          <button onClick={handleSave} className="w-full bg-purple-600 text-white py-2 rounded">
-            Save
-          </button>
-          <button onClick={() => setEditing(false)} className="w-full bg-neutral-700 text-white py-2 rounded">
-            Cancel
-          </button>
-        </div>
-      )}
-
-      {!isOwnProfile && currentUser && (
-        <div className="mt-3 flex flex-wrap justify-center gap-2 p-4">
-          <button onClick={subscribed ? handleUnsubscribe : handleSubscribe} className="bg-purple-600 px-3 py-1 rounded-full text-sm">
-            {subscribed ? 'Unsubscribe' : 'Subscribe'}
-          </button>
-          <button onClick={handleMessage} className="bg-purple-600 px-3 py-1 rounded-full text-sm">
-            Message
-          </button>
-        </div>
-      )}
-
-      <div className="mt-6 px-4 space-y-4 pb-24">
-        {posts.length > 0 ? (
-          posts.map((post) => (
-            <PostCard key={post.id} post={post} user={profileData} />
-          ))
-        ) : (
-          <p className="text-center text-neutral-500">No posts found.</p>
-        )}
+      <div className="mt-4 px-4 pb-24 space-y-4">
+        {activeTab === 'POST' && <PostList posts={posts} user={profileData} />}
+        {activeTab === 'PHOTOS' && <PhotoGrid posts={posts} />}
+        {activeTab === 'VIDEOS' && <VideoFeed posts={posts} />}
+        {activeTab === 'FRIENDS' &&
+          (isOwnProfile
+            ? <FriendsListEditor userId={profileData.id} />
+            : <FriendsList userId={profileData.id} />
+          )
+        }
       </div>
     </div>
   );

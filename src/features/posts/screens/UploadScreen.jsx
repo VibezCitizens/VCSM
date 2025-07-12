@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import getCroppedImg from '@/lib/cropImage';
 import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
 import { getTimeRemaining } from '@/utils/getTimeRemaining';
-import { compressVideo } from '@/lib/compressVideo'; // Your client-side compression function
+import { compressVideo } from '@/utils/compressVideo'; // Your client-side compression function
 
 export default function UnifiedUploadScreen() {
   const navigate = useNavigate();
