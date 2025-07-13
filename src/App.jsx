@@ -14,6 +14,7 @@ import ChatRoutes from '@/features/chat/ChatRoutes';
 import SettingsScreen from '@/features/settings/screens/SettingsScreen';
 import VoidScreen from '@/TheVoid/VoidScreen.jsx';
 import ExploreScreen from '@/features/explore/ExploreScreen';
+import SingleVideoEntryScreen from '@/features/profile/tabs/SingleVideoEntryScreen';
 
 // Layout
 import Layout from '@/components/Layout';
@@ -48,6 +49,8 @@ export default function App() {
           <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
           <Route path="/explore" element={<Layout><ExploreScreen /></Layout>} />
           <Route path="/void" element={<Layout><VoidScreen /></Layout>} />
+          <Route path="/video/:videoId" element={<SingleVideoEntryScreen />} />
+
         </>
       ) : (
         <Route path="*" element={<Navigate to="/login" replace />} />

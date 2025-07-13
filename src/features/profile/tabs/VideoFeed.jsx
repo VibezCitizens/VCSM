@@ -1,5 +1,9 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function VideoFeed({ posts }) {
-  // Filter for video posts (e.g., .mp4)
+  const navigate = useNavigate();
+
+  // Filter for .mp4 video posts
   const videoPosts = posts.filter(post => {
     const url = post.media_url || '';
     return url.endsWith('.mp4');
@@ -14,7 +18,8 @@ export default function VideoFeed({ posts }) {
       {videoPosts.map(post => (
         <div
           key={post.id}
-          className="aspect-square relative overflow-hidden rounded bg-black"
+          onClick={() => navigate(`/video/${post.id}`)} // ✅ make video open fullscreen
+          className="aspect-square relative overflow-hidden rounded bg-black cursor-pointer hover:scale-[1.02] transition"
         >
           <video
             src={post.media_url}
