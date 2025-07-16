@@ -18,7 +18,7 @@ const App = () => {
     password: '',
     birthdate: '',
     sex: '', // Initialize as empty string for dropdown
-    interested_in_kids: false, // Default to false
+    // Removed: interested_in_kids: false,
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -40,8 +40,8 @@ const App = () => {
     form.email !== '' &&
     form.password !== '' &&
     form.birthdate !== '' &&
-    form.sex !== '' && // Ensure sex is selected
-    (form.interested_in_kids === true || form.interested_in_kids === false); // Ensure interested_in_kids is explicitly set
+    form.sex !== ''; // Ensure sex is selected
+    // Removed: (form.interested_in_kids === true || form.interested_in_kids === false);
 
   // Handles the registration process
   const handleRegister = async () => {
@@ -51,6 +51,7 @@ const App = () => {
 
     try {
       // Destructure form data, separating auth credentials from profile data
+      // Removed interested_in_kids from profileData destructuring
       const { email, password, ...profileData } = form;
 
       // Basic validation - this is also covered by isFormValid, but good for a final check
@@ -100,7 +101,7 @@ const App = () => {
         age: age, // Store calculated age
         sex: profileData.sex,
         is_adult: isAdult, // Store calculated is_adult status
-        interested_in_kids: profileData.interested_in_kids,
+        // Removed: interested_in_kids: profileData.interested_in_kids,
         photo_url: '/default-avatar.png', // Default value, can be updated later
         bio: '', // Default empty bio, can be updated later
         private: false, // Default private status, can be updated later
@@ -112,9 +113,8 @@ const App = () => {
         throw profileError;
       }
 
-   setSuccessMessage('Registration successful! Redirecting to feed...');
-navigate('/'); // ✅ correct: goes to CentralFeed
-
+    setSuccessMessage('Registration successful! Redirecting to feed...');
+    navigate('/'); // ✅ correct: goes to CentralFeed
 
 
     } catch (err) {
@@ -203,38 +203,11 @@ navigate('/'); // ✅ correct: goes to CentralFeed
           <option value="Other">Other</option>
         </select>
 
-        {/* Vibez Kids Yes/No Buttons (Enhanced Radio Buttons) */}
-        <div className="flex justify-center gap-4 text-sm mt-2">
-          <label className={`flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 rounded-lg border-2 transition-all duration-200
-            ${form.interested_in_kids === true ? 'bg-purple-600 border-purple-600 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'}`}>
-            <input
-              type="radio"
-              name="interested_in_kids"
-              value="true"
-              checked={form.interested_in_kids === true}
-              onChange={() => setForm({ ...form, interested_in_kids: true })}
-              className="hidden" // Hide default radio button
-            />
-            Vibez Kids: Yes
-          </label>
-          <label className={`flex-1 flex items-center justify-center gap-2 cursor-pointer p-2 rounded-lg border-2 transition-all duration-200
-            ${form.interested_in_kids === false ? 'bg-purple-600 border-purple-600 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'}`}>
-            <input
-              type="radio"
-              name="interested_in_kids"
-              value="false"
-              checked={form.interested_in_kids === false}
-              onChange={() => setForm({ ...form, interested_in_kids: false })}
-              className="hidden" // Hide default radio button
-            />
-            No
-          </label>
-        </div>
-
+      
 
         <button
           onClick={handleRegister}
-          disabled={loading || !isFormValid} 
+          disabled={loading || !isFormValid}
           className="w-full bg-purple-600 hover:bg-purple-700 transition text-white font-semibold py-3 rounded-xl mt-6 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg"
         >
           {loading ? 'Registering...' : 'Register'}
