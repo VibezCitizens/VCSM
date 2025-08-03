@@ -1,148 +1,153 @@
-// CommentCard.jsx
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDistanceToNow } from 'date-fns';
-import UserLink from './UserLink'; // Assuming UserLink is in the same directory or adjust path
+import UserLink from './UserLink';
 
-export default function CommentCard({ comment }) {
+export default function CommentCard({ comment, onDelete }) {
   const { user: currentUser } = useAuth();
   const [replies, setReplies] = useState([]);
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.content);
 
   useEffect(() => {
-    // Function to load replies for this specific comment
     const loadReplies = async () => {
       const { data } = await supabase
         .from('post_comments')
-        .select('*, profiles(*)') // Select profile data for replies
-        .eq('parent_id', comment.id) // Get replies for this comment.id
+        .select('*, profiles(*)')
+        .eq('parent_id', comment.id)
         .order('created_at', { ascending: true });
       setReplies(data || []);
     };
 
-    // Function to load likes for this specific comment by the current user
     const loadLikes = async () => {
-      if (!currentUser?.id) { // Only load likes if a user is logged in
-        setLikeCount(0);
-        setLiked(false);
-        return;
-      }
+      if (!currentUser?.id) return;
       const { data, count } = await supabase
         .from('comment_likes')
-        .select('*', { count: 'exact' }) // Get total count of likes
-        .eq('comment_id', comment.id); // For this specific comment
-
-      // Check if the current user has liked this comment
+        .select('*', { count: 'exact' })
+        .eq('comment_id', comment.id);
       const userHasLiked = data?.some(like => like.user_id === currentUser.id);
-
-      setLikeCount(count || 0); // Total count
-      setLiked(userHasLiked); // If current user has liked it
+      setLikeCount(count || 0);
+      setLiked(userHasLiked);
     };
 
     loadReplies();
     loadLikes();
-    // Dependencies: comment.id ensures re-fetch if the comment prop changes
-    // currentUser.id ensures re-fetch of like status if the logged-in user changes
-  }, [comment.id, currentUser?.id]); // Add currentUser?.id to dependencies for like status
+  }, [comment.id, currentUser?.id]);
 
   const handleReply = async () => {
-    if (!replyText.trim()) return;
-    if (!currentUser) return; // Ensure user is logged in to reply
+    if (!replyText.trim() || !currentUser) return;
 
-    const { data: newReply, error } = await supabase.from('post_comments').insert({
-      post_id: comment.post_id, // Link reply to the original post
-      parent_id: comment.id,    // This comment is the parent of the reply
-      user_id: currentUser.id,
-      content: replyText,
-    }).select('*, profiles(*)').single(); // Get the inserted data including profile for optimistic update
+    const { data: newReply, error } = await supabase
+      .from('post_comments')
+      .insert({
+        post_id: comment.post_id,
+        parent_id: comment.id,
+        user_id: currentUser.id,
+        content: replyText,
+      })
+      .select('*, profiles(*)')
+      .single();
 
-    if (error) {
-      console.error('Failed to send reply:', error);
-      // toast.error('Failed to send reply'); // You might want a toast here
-    } else {
-      setReplies((prevReplies) => [...prevReplies, newReply]); // Optimistic UI update
+    if (!error) {
+      setReplies((prev) => [...prev, newReply]);
       setReplyText('');
       setShowReplyInput(false);
     }
   };
 
   const handleLike = async () => {
-    if (!currentUser) return; // Ensure user is logged in to like
+    if (!currentUser) return;
 
-    let newLikeCount = likeCount;
-    let newLikedStatus = liked;
-
-    if (liked) { // If currently liked, unlike it
-      const { error } = await supabase
+    if (liked) {
+      await supabase
         .from('comment_likes')
         .delete()
         .eq('comment_id', comment.id)
         .eq('user_id', currentUser.id);
-      if (!error) {
-        newLikeCount = Math.max(0, likeCount - 1); // Decrement, ensure not negative
-        newLikedStatus = false;
-      }
-    } else { // If not liked, like it
-      const { error } = await supabase
-        .from('comment_likes')
-        .insert({ comment_id: comment.id, user_id: currentUser.id }); // Insert new like
-      if (!error) {
-        newLikeCount = likeCount + 1;
-        newLikedStatus = true;
-      }
+      setLikeCount((c) => Math.max(0, c - 1));
+      setLiked(false);
+    } else {
+      await supabase.from('comment_likes').insert({
+        comment_id: comment.id,
+        user_id: currentUser.id,
+      });
+      setLikeCount((c) => c + 1);
+      setLiked(true);
     }
+  };
 
-    setLikeCount(newLikeCount);
-    setLiked(newLikedStatus);
+  const handleDeleteComment = async () => {
+    if (!currentUser || currentUser.id !== comment.user_id) return;
+
+    const { error } = await supabase
+      .from('post_comments')
+      .delete()
+      .eq('id', comment.id)
+      .eq('user_id', currentUser.id);
+
+    if (!error && typeof onDelete === 'function') {
+      onDelete(comment.id); // Signal parent to remove this comment from state
+    }
+  };
+
+  const handleEditComment = async () => {
+    if (!editText.trim()) return;
+
+    const { error } = await supabase
+      .from('post_comments')
+      .update({ content: editText })
+      .eq('id', comment.id)
+      .eq('user_id', currentUser.id);
+
+    if (!error) {
+      comment.content = editText;
+      setIsEditing(false);
+    }
   };
 
   return (
     <div className="ml-2 mt-2">
       <div className="bg-neutral-700 p-3 rounded-xl text-white text-sm">
         <div className="flex items-center justify-between">
-          {/* UserLink component to display user profile */}
           <UserLink user={comment.profiles} textSize="text-sm" avatarClass="w-6 h-6" />
         </div>
 
-        <p className="mt-1 whitespace-pre-line">{comment.content}</p>
+        {!isEditing ? (
+          <p className="mt-1 whitespace-pre-line">{comment.content}</p>
+        ) : (
+          <div className="flex flex-col gap-2 mt-2">
+            <textarea
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              className="bg-neutral-800 text-white p-2 text-sm rounded-md border border-neutral-600 resize-none"
+              rows={2}
+            />
+            <div className="flex gap-2">
+              <button onClick={handleEditComment} className="bg-purple-600 px-3 py-1 rounded-md text-sm hover:bg-purple-700">Save</button>
+              <button onClick={() => { setIsEditing(false); setEditText(comment.content); }} className="text-gray-400 hover:underline text-sm">Cancel</button>
+            </div>
+          </div>
+        )}
 
         <div className="text-xs text-gray-400 flex gap-4 mt-2 items-center">
-          {/* Display time since comment was created */}
           <span>{formatDistanceToNow(new Date(comment.created_at))} ago</span>
-
-          {/* Like button with dynamic styling and count */}
-          <button
-            onClick={handleLike}
-            className={`hover:opacity-80 transition ${liked ? 'text-red-400' : ''}`}
-            disabled={!currentUser} // Disable if not logged in
-          >
-            ❤️ {likeCount}
-          </button>
-
-          {/* Reply button to toggle reply input */}
-          <button
-            onClick={() => setShowReplyInput((v) => !v)}
-            className="hover:underline"
-            disabled={!currentUser} // Disable if not logged in
-          >
-            Reply
-          </button>
-
-          {/* Edit and Delete buttons (only for current user's comments) */}
-          {currentUser?.id === comment.user_id && (
+          <button onClick={handleLike} className={`hover:opacity-80 transition ${liked ? 'text-red-400' : ''}`} disabled={!currentUser}>❤️ {likeCount}</button>
+          <button onClick={() => setShowReplyInput(v => !v)} className="hover:underline" disabled={!currentUser}>Reply</button>
+          {currentUser?.id === comment.user_id && !isEditing && (
             <>
-              <button className="text-yellow-400 hover:underline">Edit</button>
-              <button className="text-red-400 hover:underline">Delete</button>
+              <button onClick={() => setIsEditing(true)} className="text-yellow-400 hover:underline">Edit</button>
+              <button onClick={handleDeleteComment} className="text-red-400 hover:underline">Delete</button>
             </>
           )}
         </div>
       </div>
 
-      {showReplyInput && currentUser && ( // Show reply input only if logged in
+      {showReplyInput && currentUser && (
         <div className="flex mt-2 ml-2">
           <input
             value={replyText}
@@ -150,21 +155,14 @@ export default function CommentCard({ comment }) {
             className="bg-neutral-800 text-white p-2 text-sm flex-1 rounded-l-md border border-neutral-600"
             placeholder="Write a reply..."
           />
-          <button
-            onClick={handleReply}
-            className="bg-purple-600 px-3 rounded-r-md text-sm hover:bg-purple-700"
-            disabled={!replyText.trim()} // Disable if reply is empty
-          >
-            Post
-          </button>
+          <button onClick={handleReply} className="bg-purple-600 px-3 rounded-r-md text-sm hover:bg-purple-700" disabled={!replyText.trim()}>Post</button>
         </div>
       )}
 
-      {/* Recursively render replies */}
       {replies.length > 0 && (
         <div className="ml-4 mt-2 space-y-2">
           {replies.map((r) => (
-            <CommentCard key={r.id} comment={r} /> // Recursive call for nested replies
+            <CommentCard key={r.id} comment={r} />
           ))}
         </div>
       )}

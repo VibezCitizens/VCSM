@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-/**
- * StoryProgressBar
- * - Shows N progress bars (count)
- * - Fills the current one over `duration` ms
- * - Fills previous instantly, future are empty
- */
-export default function StoryProgressBar({ count, activeIndex, duration = 4000 }) {
+export default function StoryProgressBar({ count, activeIndex, duration = 15000 }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     let frame;
     let start = null;
 
-    // Animate current bar
     const animate = (timestamp) => {
       if (!start) start = timestamp;
       const elapsed = timestamp - start;
@@ -25,7 +18,7 @@ export default function StoryProgressBar({ count, activeIndex, duration = 4000 }
       }
     };
 
-    setProgress(0); // Reset on index change
+    setProgress(0);
     frame = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(frame);

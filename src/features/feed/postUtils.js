@@ -1,15 +1,13 @@
 import { supabase } from '@/lib/supabaseClient';
 
 /**
- * ✅ fetchPostsWithProfiles.js
- * 
  * Fetches paginated posts with profile data, filtered by viewer's age group.
- * 
+ *
  * @param {Object} options
  * @param {number} options.page - Page number starting from 0
  * @param {number} options.pageSize - Posts per page
- * @param {boolean} options.viewerIsAdult - Filter posts based on author adult status
- * @param {Object} [options.profileCache={}] - Optional profile cache
+ * @param {boolean} options.viewerIsAdult - Whether the viewer is an adult
+ * @param {Object} [options.profileCache={}] - Cached profiles
  * @returns {Promise<{ posts: Array, updatedProfiles: Object, hasMore: boolean }>}
  */
 export async function fetchPostsWithProfiles({
@@ -21,17 +19,20 @@ export async function fetchPostsWithProfiles({
   const from = page * pageSize;
   const to = from + pageSize - 1;
 
-  // ✅ Only fetch non-video posts
+  // ✅ Only fetch non-video posts and exclude soft-deleted ones
   const { data: rawPosts, error } = await supabase
     .from('posts')
     .select('*')
-    .not('media_type', 'eq', 'video')
+    .eq('deleted', false) // ✅ Soft-delete support
+    .neq('media_type', 'video')
     .order('created_at', { ascending: false })
     .range(from, to);
 
   if (error) throw error;
 
-  // Identify uncached user IDs
+  console.log('[🔍 fetchPostsWithProfiles] Raw posts:', rawPosts);
+
+  // 🔎 Get uncached profile IDs
   const missingUserIds = Array.from(
     new Set(rawPosts.map(p => p.user_id).filter(uid => !profileCache[uid]))
   );
@@ -47,26 +48,41 @@ export async function fetchPostsWithProfiles({
     newProfiles = fetchedProfiles || [];
   }
 
-  // Merge profile data
+  console.log('[👤 Profiles] Fetched:', newProfiles);
+
+  // 🧠 Merge profile cache
   const updatedProfiles = { ...profileCache };
   for (const profile of newProfiles) {
     updatedProfiles[profile.id] = profile;
   }
 
-  // Filter and enrich posts
+  // 🧩 Enrich + Filter by age gate
   const enrichedPosts = rawPosts
     .map(post => {
       const user = updatedProfiles[post.user_id];
-      return user ? { ...post, user } : null;
+      return {
+        ...post,
+        user: user || {
+          id: post.user_id,
+          display_name: 'Unknown',
+          photo_url: '/avatar.jpg',
+          is_adult: true // assume adult if profile missing
+        }
+      };
     })
-    .filter(p => p?.user?.is_adult === viewerIsAdult);
+    .filter(p => {
+      const allowed =
+        viewerIsAdult === true || (viewerIsAdult === false && p.user?.is_adult === false);
 
-  // Check if more posts exist
-  const hasMore = rawPosts.length === pageSize;
+      console.log(`[🧪 Filter] Post ${p.id} | viewer: ${viewerIsAdult} | author: ${p.user?.is_adult} | allowed: ${allowed}`);
+      return allowed;
+    });
+
+  console.log('[✅ Final Posts]', enrichedPosts);
 
   return {
     posts: enrichedPosts,
     updatedProfiles,
-    hasMore
+    hasMore: rawPosts.length === pageSize
   };
 }

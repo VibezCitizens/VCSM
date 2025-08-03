@@ -90,7 +90,7 @@ export default function Dashboard() {
             {profiles.map((profile) => (
               <div key={profile.id} className="flex items-center p-3 border rounded-lg shadow-sm bg-gray-50">
                 <img
-                  src={profile.photo_url || '/default-avatar.png'}
+                  src={profile.photo_url || '/avatar.jpg'}
                   alt={profile.display_name || 'User'}
                   className="w-10 h-10 rounded-full mr-3 object-cover"
                 />

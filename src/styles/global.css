@@ -29,6 +29,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   overscroll-behavior-y: none; /* ✅ Prevent scroll bounce on mobile */
+
+  /* Prevent iOS Safari auto-zoom on small text fields */
+  -webkit-text-size-adjust: 100%;
 }
 
 input,
@@ -69,4 +72,9 @@ button {
 
 .animate-slideUp {
   animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Only bump the comment input up to 16px so Safari won’t auto-zoom it */
+input.comment-input {
+  font-size: 16px;
 }

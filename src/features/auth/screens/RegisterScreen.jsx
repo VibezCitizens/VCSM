@@ -102,7 +102,7 @@ const App = () => {
         sex: profileData.sex,
         is_adult: isAdult, // Store calculated is_adult status
         // Removed: interested_in_kids: profileData.interested_in_kids,
-        photo_url: '/default-avatar.png', // Default value, can be updated later
+        photo_url: '/avatar.jpg', // Default value, can be updated later
         bio: '', // Default empty bio, can be updated later
         private: false, // Default private status, can be updated later
         created_at: new Date().toISOString(), // Ensure timestamp is correct

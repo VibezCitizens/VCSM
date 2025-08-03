@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import { Share2 } from 'lucide-react';
+import VDropCommentModal from './VDropCommentModal'; // ⬅️ import modal
 
 export default function VDropActions({ postId, mediaUrl, title }) {
   const { user } = useAuth();
@@ -10,6 +11,7 @@ export default function VDropActions({ postId, mediaUrl, title }) {
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
   const [roseCount, setRoseCount] = useState(0);
+  const [showComments, setShowComments] = useState(false); // ⬅️ control modal
 
   const loadReactions = async () => {
     const { data, error } = await supabase
@@ -34,7 +36,6 @@ export default function VDropActions({ postId, mediaUrl, title }) {
 
     const opposite = type === 'like' ? 'dislike' : 'like';
 
-    // Remove opposite reaction
     await supabase
       .from('post_reactions')
       .delete()
@@ -42,7 +43,6 @@ export default function VDropActions({ postId, mediaUrl, title }) {
       .eq('user_id', user.id)
       .eq('type', opposite);
 
-    // Toggle current reaction
     const alreadyReacted = (type === 'like' ? like : dislike);
     if (alreadyReacted) {
       await supabase
@@ -62,11 +62,9 @@ export default function VDropActions({ postId, mediaUrl, title }) {
 
   const sendRose = async () => {
     if (!user) return;
-
     await supabase
       .from('post_reactions')
       .insert({ post_id: postId, user_id: user.id, type: 'rose' });
-
     loadReactions();
   };
 
@@ -91,30 +89,42 @@ export default function VDropActions({ postId, mediaUrl, title }) {
   }, [postId]);
 
   return (
-    <div className="flex flex-col items-center space-y-5 text-white text-xl">
-      {/* Like */}
-      <button onClick={() => toggleReaction('like')} title="Like" className="flex flex-col items-center">
-        <div className="text-2xl">{like ? '👍' : '👍'}</div>
-        <span className="text-xs text-white">{likeCount}</span>
-      </button>
+    <>
+      {showComments && (
+        <VDropCommentModal postId={postId} onClose={() => setShowComments(false)} />
+      )}
 
-      {/* Dislike */}
-      <button onClick={() => toggleReaction('dislike')} title="Dislike" className="flex flex-col items-center">
-        <div className="text-2xl">{dislike ? '👎' : '👎'}</div>
-        <span className="text-xs text-white">{dislikeCount}</span>
-      </button>
+      <div className="flex flex-col items-center space-y-5 text-white text-xl">
+        {/* Like */}
+        <button onClick={() => toggleReaction('like')} title="Like" className="flex flex-col items-center">
+          <div className="text-2xl">{like ? '👍' : '👍'}</div>
+          <span className="text-xs text-white">{likeCount}</span>
+        </button>
 
-      {/* Rose */}
-      <button onClick={sendRose} title="Send a rose" className="flex flex-col items-center">
-        <div className="text-2xl">🌹</div>
-        <span className="text-xs text-white">{roseCount}</span>
-      </button>
+        {/* Dislike */}
+        <button onClick={() => toggleReaction('dislike')} title="Dislike" className="flex flex-col items-center">
+          <div className="text-2xl">{dislike ? '👎' : '👎'}</div>
+          <span className="text-xs text-white">{dislikeCount}</span>
+        </button>
 
-      {/* Share */}
-      <button onClick={handleShare} title="Share" className="flex flex-col items-center">
-        <Share2 className="w-5 h-5" />
-        <span className="text-xs text-white">Share</span>
-      </button>
-    </div>
+        {/* Rose */}
+        <button onClick={sendRose} title="Send a rose" className="flex flex-col items-center">
+          <div className="text-2xl">🌹</div>
+          <span className="text-xs text-white">{roseCount}</span>
+        </button>
+
+        {/* Comment */}
+        <button onClick={() => setShowComments(true)} title="Comments" className="flex flex-col items-center">
+          <div className="text-2xl">💬</div>
+          <span className="text-xs text-white">Comments</span>
+        </button>
+
+        {/* Share */}
+        <button onClick={handleShare} title="Share" className="flex flex-col items-center">
+          <Share2 className="w-5 h-5" />
+          <span className="text-xs text-white">Share</span>
+        </button>
+      </div>
+    </>
   );
 }

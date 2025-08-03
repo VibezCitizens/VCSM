@@ -11,7 +11,7 @@ export default function AuthPage() {
   const handleAuth = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setMessage('');
+    
 
     let authResponse;
     if (isSignUp) {

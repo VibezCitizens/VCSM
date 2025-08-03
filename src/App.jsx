@@ -1,4 +1,5 @@
-﻿import { Routes, Route, Navigate } from 'react-router-dom';
+﻿// src/App.jsx
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
 // Public Screens
@@ -15,6 +16,11 @@ import SettingsScreen from '@/features/settings/screens/SettingsScreen';
 import VoidScreen from '@/TheVoid/VoidScreen.jsx';
 import ExploreScreen from '@/features/explore/ExploreScreen';
 import SingleVideoEntryScreen from '@/features/profile/tabs/SingleVideoEntryScreen';
+
+import Notifications from '@/features/notificationcenter/Notifications';
+import NotiViewStoryScreen from '@/features/notificationcenter/NotiViewStoryScreen';
+import NotiViewPostScreen from '@/features/notificationcenter/NotiViewPostScreen';
+import NotiViewMessageScreen from '@/features/notificationcenter/NotiViewMessageScreen';
 
 // Layout
 import Layout from '@/components/Layout';
@@ -45,14 +51,36 @@ export default function App() {
           <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/profile/:userId" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/upload" element={<Layout><UploadScreen /></Layout>} />
+
+          {/* Chat: conversation list and chat screen */}
           <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
+
           <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
           <Route path="/explore" element={<Layout><ExploreScreen /></Layout>} />
           <Route path="/void" element={<Layout><VoidScreen /></Layout>} />
-          <Route path="/video/:videoId" element={<SingleVideoEntryScreen />} />
+          <Route path="/video/:videoId" element={<Layout><SingleVideoEntryScreen /></Layout>} />
 
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={<Layout><Notifications /></Layout>}
+          />
+          <Route
+            path="/noti/story/:storyId"
+            element={<Layout><NotiViewStoryScreen /></Layout>}
+          />
+          <Route
+            path="/noti/post/:postId"
+            element={<Layout><NotiViewPostScreen /></Layout>}
+          />
+          {/* ← Changed param name here to match your useParams in NotiViewMessageScreen */}
+          <Route
+            path="/noti/message/:conversationId"
+            element={<Layout><NotiViewMessageScreen /></Layout>}
+          />
         </>
       ) : (
+        /* Redirect any unknown route to login */
         <Route path="*" element={<Navigate to="/login" replace />} />
       )}
     </Routes>

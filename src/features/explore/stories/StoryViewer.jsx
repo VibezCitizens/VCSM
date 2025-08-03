@@ -1,66 +1,143 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
+
+import { supabase } from '@/lib/supabaseClient';
 import StoryItem from './components/StoryItem';
 import StoryProgressBar from './components/StoryProgressBar';
+import Viewby from './components/Viewby';
 
-/**
- * Full-screen story/24Drop viewer component
- * - Displays one story at a time with auto-advance
- * - Supports click-to-skip (next/prev)
- * - Custom close button
- */
 export default function StoryViewer({ stories, onClose }) {
-  const [current, setCurrent] = useState(0);
+  const containerRef = useRef(null);
   const timeoutRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
 
+  const scrollToIndex = useCallback((index) => {
+    if (containerRef.current?.children[index]) {
+      containerRef.current.children[index].scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  // 👁️ Log the view into story_views
+  const logView = useCallback(async (storyId) => {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      console.error('Auth error while logging view:', error.message);
+      return;
+    }
+
+    const { error: insertError } = await supabase.from('story_views').upsert(
+      {
+        story_id: storyId,
+        user_id: user.id,
+      },
+      { onConflict: 'user_id, story_id' }
+    );
+
+    if (insertError) {
+      console.error('View log insert error:', insertError.message);
+    } else {
+      console.log('✅ Logged view for story:', storyId);
+    }
+  }, []);
+
+  // 🕒 Auto-advance every 15 seconds
   useEffect(() => {
-    // Guard clause
-    if (!stories.length) return;
-
-    // Auto advance to next story every 4s
     timeoutRef.current = setTimeout(() => {
-      if (current < stories.length - 1) {
-        setCurrent(current + 1);
+      if (currentIndex < stories.length - 1) {
+        setCurrentIndex((i) => i + 1);
+        scrollToIndex(currentIndex + 1);
       } else {
-        onClose(); // Exit after last story
+        onClose?.();
       }
-    }, 4000);
+    }, 15000);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [current, stories]);
+  }, [currentIndex, stories.length, scrollToIndex]);
 
-  const handleNext = () => {
-    clearTimeout(timeoutRef.current);
-    if (current < stories.length - 1) {
-      setCurrent((prev) => prev + 1);
-    } else {
-      onClose();
+  // 👁️ Log a view whenever active story changes
+  useEffect(() => {
+    const currentStory = stories[currentIndex];
+    if (currentStory?.id) {
+      logView(currentStory.id);
+    }
+  }, [currentIndex, logView, stories]);
+
+  // Handle vertical swipe gestures
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    touchEndY.current = e.changedTouches[0].clientY;
+    const deltaY = touchStartY.current - touchEndY.current;
+
+    if (Math.abs(deltaY) > 50) {
+      if (deltaY > 0 && currentIndex < stories.length - 1) {
+        setCurrentIndex((i) => i + 1);
+      } else if (deltaY < 0 && currentIndex > 0) {
+        setCurrentIndex((i) => i - 1);
+      }
     }
   };
 
-  const handlePrev = () => {
-    clearTimeout(timeoutRef.current);
-    if (current > 0) {
-      setCurrent((prev) => prev - 1);
+  const handleScroll = () => {
+    const scrollY = containerRef.current.scrollTop;
+    const height = window.innerHeight;
+    const newIndex = Math.round(scrollY / height);
+
+    if (newIndex !== currentIndex) {
+      setCurrentIndex(newIndex);
+      clearTimeout(timeoutRef.current);
     }
+  };
+
+  const handleMuteToggle = () => {
+    setIsMuted((prev) => !prev);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-95 flex justify-center items-center z-50">
-      
-      {/* Background click area to skip forward */}
-      <div className="absolute inset-0" onClick={handleNext} />
+    <div className="fixed inset-0 bg-black z-50 overflow-hidden">
+      {/* Progress bar */}
+      <StoryProgressBar
+        count={stories.length}
+        activeIndex={currentIndex}
+        duration={15000}
+      />
 
-      {/* Progress bar at the top */}
-      <StoryProgressBar count={stories.length} activeIndex={current} />
+      {/* Story container */}
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="h-full overflow-y-scroll snap-y snap-mandatory"
+      >
+        {stories.map((story, index) => (
+          <div
+            key={story.id}
+            className="relative snap-start h-screen w-full flex flex-col items-center justify-center"
+          >
+            <StoryItem
+              story={story}
+              isMuted={isMuted}
+              isActive={index === currentIndex}
+              onMuteToggle={handleMuteToggle}
+            />
 
-      {/* Center story content */}
-      <div className="relative z-10 w-full max-w-md">
-        <StoryItem story={stories[current]} />
+            {/* 👁️ View & Reaction Tracker */}
+            {index === currentIndex && (
+              <Viewby key={`${story.id}-${currentIndex}`} storyId={story.id} />
+            )}
+          </div>
+        ))}
       </div>
-
-      {/* Optional click zones for manual navigation */}
-      <div className="absolute left-0 top-0 bottom-0 w-1/2 z-20" onClick={handlePrev} />
-      <div className="absolute right-0 top-0 bottom-0 w-1/2 z-20" onClick={handleNext} />
 
       {/* Close button */}
       <button

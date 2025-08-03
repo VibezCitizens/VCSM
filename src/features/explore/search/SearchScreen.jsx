@@ -1,12 +1,10 @@
 // src/features/explore/SearchScreen.jsx
 import { useState } from 'react';
-import SearchTab from "./components/SearchTabs";
-
+import SearchTabs from './components/SearchTabs';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
-
   const filters = ['all', 'users', 'posts', 'videos', 'groups'];
 
   return (
@@ -37,8 +35,8 @@ export default function SearchScreen() {
         ))}
       </div>
 
-      {/* Search Results */}
-      <SearchTab query={query.trim()} typeFilter={filter} />
+      {/* Results */}
+      <SearchTabs query={query.trim()} typeFilter={filter} />
     </div>
   );
 }

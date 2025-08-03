@@ -12,12 +12,12 @@ export default function ChatHeader() {
   useEffect(() => {
     const fetchMembers = async () => {
       const { data, error } = await supabase
-        .from('conversation_members')
-        .select('user_id, profiles(id, display_name, photo_url, is_online, last_seen)')
+        .from('safe_conversation_members_with_profiles')
+        .select('*')
         .eq('conversation_id', conversationId);
 
       if (error) {
-        console.error('Failed to fetch members:', error);
+        console.error('[ChatHeader] ❌ Failed to fetch members:', error);
         return;
       }
 
@@ -25,23 +25,31 @@ export default function ChatHeader() {
       setLoading(false);
     };
 
-    fetchMembers();
+    if (conversationId) fetchMembers();
   }, [conversationId]);
 
-  if (loading) return null;
+  if (loading || !user?.id) return null;
 
-  // Exclude the current user from the list
-  const other = members.find((m) => m.user_id !== user?.id);
+  const other = members.find((m) => m.user_id !== user.id);
+  if (!other) return null;
 
-  if (!other?.profiles) return null;
+  const displayName = other.display_name || other.username || 'Unknown';
+  const avatarUrl = other.photo_url || '/default.png';
 
-  const profile = other.profiles;
+  const lastSeenText = other.is_online
+    ? 'Online'
+    : other.last_seen
+    ? `Last seen at ${new Date(other.last_seen).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}`
+    : 'Offline';
 
   return (
     <div className="flex items-center gap-3 p-4 border-b border-white/10 bg-black">
       <img
-        src={profile.photo_url || '/default.png'}
-        alt={profile.display_name || 'User'}
+        src={avatarUrl}
+        alt={displayName}
         className="w-10 h-14 object-cover rounded-md shadow-sm shrink-0"
         onError={(e) => {
           e.target.onerror = null;
@@ -50,17 +58,10 @@ export default function ChatHeader() {
       />
       <div className="flex flex-col">
         <span className="text-white font-semibold leading-tight">
-          {profile.display_name || 'Unknown'}
+          {displayName}
         </span>
         <span className="text-xs text-gray-400 leading-tight">
-          {profile.is_online
-            ? 'Online'
-            : profile.last_seen
-              ? `Last seen at ${new Date(profile.last_seen).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}`
-              : 'Offline'}
+          {lastSeenText}
         </span>
       </div>
     </div>

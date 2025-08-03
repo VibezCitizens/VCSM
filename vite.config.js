@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import Unocss from 'unocss/vite'
@@ -37,6 +36,7 @@ export default defineConfig({
     alias: {
       '@': '/src',
     },
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'], // ✅ add this
   },
   optimizeDeps: {
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'],

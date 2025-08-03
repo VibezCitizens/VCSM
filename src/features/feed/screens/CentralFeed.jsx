@@ -12,7 +12,6 @@ export default function CentralFeed() {
 
   const [posts, setPosts] = useState([]);
   const [profiles, setProfiles] = useState({});
-  const [viewerIsAdult, setViewerIsAdult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -27,27 +26,8 @@ export default function CentralFeed() {
     await fetchPosts(true);
   };
 
-  useEffect(() => {
-    async function loadViewerProfile() {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_adult')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error loading viewer profile:', error);
-        return setViewerIsAdult(null);
-      }
-
-      setViewerIsAdult(data?.is_adult ?? null);
-    }
-
-    if (user?.id) loadViewerProfile();
-  }, [user]);
-
   const fetchPosts = useCallback(async (reset = false) => {
-    if (loadingRef.current || !hasMore || viewerIsAdult === null) return;
+    if (loadingRef.current || !hasMore) return;
     loadingRef.current = true;
     setLoading(true);
 
@@ -59,6 +39,7 @@ export default function CentralFeed() {
       const { data: newPosts, error } = await supabase
         .from('posts')
         .select('*')
+        .eq('deleted', false) // ✅ exclude soft-deleted
         .not('media_type', 'eq', 'video') // ✅ exclude videos
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -66,7 +47,7 @@ export default function CentralFeed() {
       if (error) throw error;
 
       const updatedProfiles = reset ? {} : { ...profiles };
-      const filteredPosts = [];
+      const enrichedPosts = [];
 
       for (const post of newPosts || []) {
         const uid = post.user_id;
@@ -74,14 +55,13 @@ export default function CentralFeed() {
         if (!updatedProfiles[uid]) {
           const { data: prof } = await supabase
             .from('profiles')
-            .select('is_adult, display_name, photo_url, username')
+            .select('display_name, photo_url, username')
             .eq('id', uid)
             .maybeSingle();
 
           if (prof) {
             updatedProfiles[uid] = {
               id: uid,
-              is_adult: prof.is_adult,
               display_name: prof.display_name,
               photo_url: prof.photo_url,
               username: prof.username,
@@ -89,14 +69,11 @@ export default function CentralFeed() {
           }
         }
 
-        const author = updatedProfiles[uid];
-        if (author?.is_adult === viewerIsAdult) {
-          filteredPosts.push(post);
-        }
+        enrichedPosts.push(post);
       }
 
       setProfiles(updatedProfiles);
-      setPosts(prev => reset ? filteredPosts : [...prev, ...filteredPosts]);
+      setPosts(prev => reset ? enrichedPosts : [...prev, ...enrichedPosts]);
       setPage(prev => reset ? 1 : prev + 1);
       setHasMore(newPosts.length === PAGE_SIZE);
     } catch (err) {
@@ -105,11 +82,11 @@ export default function CentralFeed() {
       loadingRef.current = false;
       setLoading(false);
     }
-  }, [page, viewerIsAdult, hasMore, profiles]);
+  }, [page, hasMore, profiles]);
 
   useEffect(() => {
-    if (viewerIsAdult !== null) refreshFeed();
-  }, [viewerIsAdult]);
+    refreshFeed();
+  }, []);
 
   useEffect(() => {
     const el = feedRef.current;
@@ -128,8 +105,6 @@ export default function CentralFeed() {
   }, [fetchPosts, hasMore]);
 
   useEffect(() => {
-    if (viewerIsAdult === null) return;
-
     const sub = supabase
       .channel('public:posts')
       .on('postgres_changes', {
@@ -138,7 +113,7 @@ export default function CentralFeed() {
         table: 'posts',
       }, async (payload) => {
         const newPost = payload.new;
-        if (newPost.media_type === 'video') return; // ✅ prevent video from showing
+        if (newPost.media_type === 'video' || newPost.deleted) return;
 
         const uid = newPost.user_id;
         let author = profiles[uid];
@@ -146,7 +121,7 @@ export default function CentralFeed() {
         if (!author) {
           const { data: prof } = await supabase
             .from('profiles')
-            .select('is_adult, display_name, photo_url, username')
+            .select('display_name, photo_url, username')
             .eq('id', uid)
             .maybeSingle();
 
@@ -154,7 +129,6 @@ export default function CentralFeed() {
 
           author = {
             id: uid,
-            is_adult: prof.is_adult,
             display_name: prof.display_name,
             photo_url: prof.photo_url,
             username: prof.username,
@@ -163,26 +137,29 @@ export default function CentralFeed() {
           setProfiles(prev => ({ ...prev, [uid]: author }));
         }
 
-        if (author.is_adult === viewerIsAdult) {
-          setPosts(prev => [newPost, ...prev]);
-        }
+        setPosts(prev => [newPost, ...prev]);
       })
       .subscribe();
 
     return () => supabase.removeChannel(sub);
-  }, [viewerIsAdult, profiles]);
+  }, [profiles]);
 
   return (
     <div
       ref={feedRef}
-       className="h-screen overflow-y-auto px-0 py-4 space-y-1 scroll-hidden"
+      className="h-screen overflow-y-auto px-0 py-4 space-y-1 scroll-hidden"
     >
       {!loading && posts.length === 0 && (
-        <p className="text-center text-gray-400">No posts found for your age group.</p>
+        <p className="text-center text-gray-400">No posts found.</p>
       )}
 
       {posts.map(post => (
-        <PostCard key={post.id} post={post} user={profiles[post.user_id] || {}} />
+        <PostCard
+          key={post.id}
+          post={post}
+          user={profiles[post.user_id] || {}}
+          onDelete={(id) => setPosts(prev => prev.filter(p => p.id !== id))} // ✅ supports soft-delete removal
+        />
       ))}
 
       {loading && posts.length === 0 && (

@@ -4,7 +4,8 @@ import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
 
 import ProfileHeader from '@/components/ProfileHeader';
-import { getOrCreatePrivateConversation } from '@/lib/getOrCreatePrivateConversation';
+import { getOrCreatePrivateConversation } from '@/utils/conversations';
+
 
 import PostList from '@/features/profile/tabs/PostList';
 import PhotoGrid from '@/features/profile/tabs/PhotoGrid';
