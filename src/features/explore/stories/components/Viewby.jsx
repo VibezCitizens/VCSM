@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useStoryViewData } from '@/hooks/useStoryViewData';
-import UserLink from '@/components/userlink';
+import UserLink from '@/components/UserLink';
 
 const REACTIONS = ['🔥', '😂', '😍', '👏', '💯'];
 
