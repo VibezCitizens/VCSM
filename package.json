@@ -18,7 +18,7 @@
     "@ffmpeg/util": "^0.12.2",
     "@headlessui/react": "^2.2.4",
     "@supabase/supabase-js": "^2.50.0",
-    "@supabase/ui": "^0.36.5",
+  
     "@tsparticles/react": "^3.0.0",
     "@unocss/preset-wind3": "^66.2.3",
     "browser-image-compression": "^2.0.2",
