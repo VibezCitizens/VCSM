@@ -16,11 +16,13 @@ import SettingsScreen from '@/features/settings/screens/SettingsScreen';
 import VoidScreen from '@/TheVoid/VoidScreen.jsx';
 import ExploreScreen from '@/features/explore/ExploreScreen';
 import SingleVideoEntryScreen from '@/features/profile/tabs/SingleVideoEntryScreen';
-
 import Notifications from '@/features/notificationcenter/Notifications';
 import NotiViewStoryScreen from '@/features/notificationcenter/NotiViewStoryScreen';
 import NotiViewPostScreen from '@/features/notificationcenter/NotiViewPostScreen';
 import NotiViewMessageScreen from '@/features/notificationcenter/NotiViewMessageScreen';
+
+// VGrid (map) Screen
+import VGridScreen from '@/features/vgrid/VGridScreen';
 
 // Layout
 import Layout from '@/components/Layout';
@@ -46,13 +48,14 @@ export default function App() {
       {/* Protected Routes */}
       {user ? (
         <>
+          {/* Core App Screens */}
           <Route path="/" element={<Layout><CentralFeed /></Layout>} />
           <Route path="/me" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/profile/:userId" element={<Layout><ProfileScreen /></Layout>} />
           <Route path="/upload" element={<Layout><UploadScreen /></Layout>} />
 
-          {/* Chat: conversation list and chat screen */}
+          {/* Chat */}
           <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
 
           <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
@@ -61,26 +64,16 @@ export default function App() {
           <Route path="/video/:videoId" element={<Layout><SingleVideoEntryScreen /></Layout>} />
 
           {/* Notifications */}
-          <Route
-            path="/notifications"
-            element={<Layout><Notifications /></Layout>}
-          />
-          <Route
-            path="/noti/story/:storyId"
-            element={<Layout><NotiViewStoryScreen /></Layout>}
-          />
-          <Route
-            path="/noti/post/:postId"
-            element={<Layout><NotiViewPostScreen /></Layout>}
-          />
-          {/* ← Changed param name here to match your useParams in NotiViewMessageScreen */}
-          <Route
-            path="/noti/message/:conversationId"
-            element={<Layout><NotiViewMessageScreen /></Layout>}
-          />
+          <Route path="/notifications" element={<Layout><Notifications /></Layout>} />
+          <Route path="/noti/story/:storyId" element={<Layout><NotiViewStoryScreen /></Layout>} />
+          <Route path="/noti/post/:postId" element={<Layout><NotiViewPostScreen /></Layout>} />
+          <Route path="/noti/message/:conversationId" element={<Layout><NotiViewMessageScreen /></Layout>} />
+
+          {/* VGrid Map */}
+          <Route path="/vgrid" element={<Layout><VGridScreen /></Layout>} />
         </>
       ) : (
-        /* Redirect any unknown route to login */
+        // If not authenticated, redirect everything to login
         <Route path="*" element={<Navigate to="/login" replace />} />
       )}
     </Routes>

@@ -6,6 +6,13 @@ import App from './App'
 // UnoCSS
 import 'uno.css'
 
+// Leaflet styles (ensure marker icons & tiles render correctly)
+import 'leaflet/dist/leaflet.css'
+
+// ✅ Add plugin CSS
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
+import 'leaflet-geosearch/dist/geosearch.css'
+
 // Global styles
 import '@/styles/global.css'
 

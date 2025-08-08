@@ -1,3 +1,4 @@
+// src/components/ChatHeader.jsx
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -5,11 +6,13 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function ChatHeader() {
   const { user } = useAuth();
-  const { conversationId } = useParams();
+  const { id: conversationId } = useParams();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!conversationId) return;
+
     const fetchMembers = async () => {
       const { data, error } = await supabase
         .from('safe_conversation_members_with_profiles')
@@ -17,25 +20,23 @@ export default function ChatHeader() {
         .eq('conversation_id', conversationId);
 
       if (error) {
-        console.error('[ChatHeader] ❌ Failed to fetch members:', error);
-        return;
+        console.error('[ChatHeader] Failed to fetch members:', error);
+      } else {
+        setMembers(data || []);
       }
-
-      setMembers(data || []);
       setLoading(false);
     };
 
-    if (conversationId) fetchMembers();
+    fetchMembers();
   }, [conversationId]);
 
   if (loading || !user?.id) return null;
 
-  const other = members.find((m) => m.user_id !== user.id);
+  const other = members.find(m => m.user_id !== user.id);
   if (!other) return null;
 
   const displayName = other.display_name || other.username || 'Unknown';
   const avatarUrl = other.photo_url || '/default.png';
-
   const lastSeenText = other.is_online
     ? 'Online'
     : other.last_seen
@@ -50,19 +51,12 @@ export default function ChatHeader() {
       <img
         src={avatarUrl}
         alt={displayName}
-        className="w-10 h-14 object-cover rounded-md shadow-sm shrink-0"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = '/default.png';
-        }}
+        className="w-10 h-10 rounded-full object-cover shadow-sm"
+        onError={e => { e.currentTarget.src = '/default.png'; }}
       />
       <div className="flex flex-col">
-        <span className="text-white font-semibold leading-tight">
-          {displayName}
-        </span>
-        <span className="text-xs text-gray-400 leading-tight">
-          {lastSeenText}
-        </span>
+        <span className="text-white font-semibold">{displayName}</span>
+        <span className="text-xs text-gray-400">{lastSeenText}</span>
       </div>
     </div>
   );

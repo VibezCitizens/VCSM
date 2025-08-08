@@ -9,11 +9,11 @@ export default function ConversationList() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
+  const [loaded, setLoaded] = useState(false); // NEW: track if first fetch finished
 
   useEffect(() => {
     if (!user) return;
 
-    // Initial load
     const fetchConvos = async () => {
       const { data, error } = await supabase
         .from('conversation_members')
@@ -22,19 +22,19 @@ export default function ConversationList() {
 
       if (error) {
         console.error('Failed to load conversations:', error);
-        return;
+      } else {
+        const convos = (data || []).map(cm => ({
+          id: cm.conversation_id,
+          created_at: cm.conversations?.created_at,
+        }));
+        setConversations(convos);
       }
-
-      const convos = (data || []).map(cm => ({
-        id: cm.conversation_id,
-        created_at: cm.conversations?.created_at,
-      }));
-      setConversations(convos);
+      setLoaded(true); // mark loaded after fetch
     };
 
     fetchConvos();
 
-    // Realtime SUBSCRIBE for INSERT and DELETE
+    // Realtime updates
     const channel = supabase
       .channel(`conv-list-${user.id}`)
       .on(
@@ -46,10 +46,13 @@ export default function ConversationList() {
           filter: `user_id=eq.${user.id}`,
         },
         ({ new: payload }) => {
-          setConversations(prev => [
-            ...prev,
-            { id: payload.conversation_id, created_at: new Date().toISOString() },
-          ]);
+          setConversations(prev => {
+            if (prev.some(c => c.id === payload.conversation_id)) return prev;
+            return [
+              ...prev,
+              { id: payload.conversation_id, created_at: new Date().toISOString() },
+            ];
+          });
         }
       )
       .on(
@@ -74,7 +77,9 @@ export default function ConversationList() {
   }, [user]);
 
   if (!user) return null;
-  if (conversations.length === 0) {
+
+  // Only show the empty message *after* we know there are no conversations
+  if (loaded && conversations.length === 0) {
     return <p className="p-4 text-gray-500">No conversations yet.</p>;
   }
 
