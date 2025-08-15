@@ -1,37 +1,88 @@
-// src/features/notificationcenter/Notifications.jsx
+// File: src/features/notificationcenter/Notifications.jsx
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
 import NotificationItem from '@/features/notificationcenter/NotificationItem';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export default function Notifications() {
   const { user } = useAuth();
   const userId = user?.id;
-  const { notifications, unreadCount, markAsRead } = useNotifications(userId);
+
+  const { notifications = [], unreadCount = 0, markAsRead } = useNotifications(userId);
   const navigate = useNavigate();
+
+  const items = useMemo(() => notifications || [], [notifications]);
 
   const handleClick = useCallback(
     async (notif) => {
-      await markAsRead(notif.id);
+      // Mark read, but don't block navigation if it fails
+      try {
+        await markAsRead(notif.id);
+      } catch (e) {
+        if (import.meta.env.DEV) console.warn('[Notifications] markAsRead failed:', e);
+      }
 
-      const { type, metadata } = notif;
+      const { type, metadata = {} } = notif;
+
+      // Prefer new schema columns; fall back to legacy metadata keys
+      const sourceId =
+        notif.source_id ??
+        metadata.post_id ??
+        metadata.story_id ??
+        metadata.source_id ??
+        null;
+
+      const actorId =
+        notif.actor_id ??
+        metadata.follower_id ??
+        metadata.sender_id ??
+        null;
+
+      // Route helpers
+      const goPost = (id) => id && navigate(`/noti/post/${id}`);
+      const goStory = (id) => id && navigate(`/noti/story/${id}`);
+      const goMessage = (id) => id && navigate(`/noti/message/${id}`);
+      const goProfile = (id) => id && navigate(`/profile/${id}`);
+
       switch (type) {
+        // POSTS
         case 'post_reaction':
         case 'post_rose':
-          metadata?.post_id && navigate(`/noti/post/${metadata.post_id}`);
+        case 'post_like':
+        case 'post_dislike':
+        case 'comment_like': {
+          goPost(sourceId || metadata.post_id);
           break;
-        case 'story_reaction':
-          metadata?.story_id && navigate(`/noti/story/${metadata.story_id}`);
+        }
+
+        // STORIES
+        case 'story_reaction': {
+          goStory(sourceId || metadata.story_id);
           break;
-        case 'message':
-          metadata?.conversation_id && navigate(`/noti/message/${metadata.conversation_id}`);
+        }
+
+        // MESSAGES
+        case 'message': {
+          const convoId = metadata.conversation_id || sourceId;
+          goMessage(convoId);
           break;
-        case 'follow':
-          metadata?.follower_id && navigate(`/profile/${metadata.follower_id}`);
+        }
+
+        // SOCIAL
+        case 'follow': {
+          goProfile(actorId || metadata.follower_id);
           break;
-        default:
-          console.warn('[Notifications] ❌ Unhandled type:', type, metadata);
+        }
+
+        default: {
+          if (import.meta.env.DEV) {
+            console.warn('[Notifications] ❌ Unhandled type:', type, {
+              notif,
+              derived: { sourceId, actorId },
+            });
+          }
+        }
       }
     },
     [markAsRead, navigate]
@@ -43,11 +94,11 @@ export default function Notifications() {
         Notifications {unreadCount > 0 && <span>({unreadCount})</span>}
       </h1>
 
-      {notifications.length === 0 ? (
+      {items.length === 0 ? (
         <p className="text-neutral-500">No notifications yet.</p>
       ) : (
         <ul className="space-y-4">
-          {notifications.map((notif) => (
+          {items.map((notif) => (
             <NotificationItem
               key={notif.id}
               notif={notif}

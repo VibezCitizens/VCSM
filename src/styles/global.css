@@ -1,43 +1,83 @@
-/* Reset */
+/* --- RESET --- */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Global scrollbar hiding */
-::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-}
+/* ===========================
+   SCROLLBARS
+   =========================== */
 
+/* Firefox — black thumb and track */
 * {
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE/Edge */
+  scrollbar-width: thin;          /* thin scrollbar */
+  scrollbar-color: #000 #000;     /* thumb black, track black */
 }
 
-html,
-body {
+/* Chromium/WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #000;               /* black track */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #000;         /* black thumb */
+  border-radius: 4px;
+  border: none;                   /* no border to avoid outline */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #000;         /* stays black on hover */
+}
+
+/* --- CORE ELEMENTS --- */
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100dvh; /* ✅ Use dynamic viewport height */
+  min-height: 100dvh;
   font-family: 'Inter', sans-serif;
   background-color: #000;
   color: #e5e7eb;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior-y: none; /* ✅ Prevent scroll bounce on mobile */
-
-  /* Prevent iOS Safari auto-zoom on small text fields */
   -webkit-text-size-adjust: 100%;
 }
 
-input,
-button,
-textarea,
-select {
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* iOS momentum scroll for custom containers */
+.scroll-y-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe 100dvh helper */
+:root { --vh: 1vh; }
+@supports (height: 100dvh) {
+  :root { --vh: 1dvh; }
+}
+
+/* Main scrollable container */
+.vc-screen {
+  min-height: calc(var(--vh, 1vh) * 100);
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+/* Inputs/buttons reset */
+input, button, textarea, select {
   font: inherit;
   margin: 0;
   padding: 0;
@@ -52,29 +92,16 @@ button {
   cursor: pointer;
 }
 
-#root {
-  width: 100%;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Animations */
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0%);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0%);   opacity: 1; }
 }
-
 .animate-slideUp {
   animation: slideUp 0.3s ease-out forwards;
 }
 
-/* Only bump the comment input up to 16px so Safari won’t auto-zoom it */
+/* Prevent iOS zoom on comment inputs */
 input.comment-input {
   font-size: 16px;
 }

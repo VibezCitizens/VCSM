@@ -24,15 +24,19 @@ import NotiViewMessageScreen from '@/features/notificationcenter/NotiViewMessage
 // VGrid (map) Screen
 import VGridScreen from '@/features/vgrid/VGridScreen';
 
+// VPort Page
+import VPortPage from '@/features/vgrid/VPortPage';
+
 // Layout
 import Layout from '@/components/Layout';
 
 export default function App() {
   const { user, loading } = useAuth();
 
+  // IMPORTANT: do NOT use h-screen here; let the page grow + scroll
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-black text-white text-lg">
+      <div className="bg-black text-white min-h-[100dvh] overflow-y-auto flex items-center justify-center">
         Loading...
       </div>
     );
@@ -71,6 +75,9 @@ export default function App() {
 
           {/* VGrid Map */}
           <Route path="/vgrid" element={<Layout><VGridScreen /></Layout>} />
+
+          {/* VPort Profile */}
+          <Route path="/vport/:id" element={<Layout><VPortPage /></Layout>} />
         </>
       ) : (
         // If not authenticated, redirect everything to login

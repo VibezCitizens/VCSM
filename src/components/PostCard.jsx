@@ -1,3 +1,4 @@
+// File: src/components/PostCard.jsx
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
@@ -5,6 +6,16 @@ import { supabase } from '@/lib/supabaseClient';
 import { getOrCreateConversation } from '@/features/chat/utils/getOrCreateConversation';
 import UserLink from '@/components/UserLink';
 import CommentCard from '@/components/CommentCard';
+
+// ✅ Helpers aligned to the rebuilt schema
+import {
+  fetchReactionState,   // -> { likeCount, dislikeCount, roseCount, myReaction }
+  setReaction,          // setReaction(postId, 'like'|'dislike'|null)
+  giveRoses,            // giveRoses(postId, qty)
+  subscribePostCounters // subscribePostCounters(postId, patch => {likeCount?,dislikeCount?,roseCount?})
+} from '@/lib/reactions';
+
+/* --------------------------------- utils --------------------------------- */
 
 const useOnClickOutside = (ref, handler) => {
   useEffect(() => {
@@ -25,11 +36,9 @@ function formatPostTime(iso) {
   const now = new Date();
   const postDate = new Date(iso);
   const diff = (now - postDate) / 1000;
-
   if (diff < 60) return `${Math.floor(diff)}s ago`;
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-
   return postDate.toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -37,128 +46,162 @@ function formatPostTime(iso) {
   });
 }
 
-export default function PostCard({ post, user = {}, onSubscriptionChange, onDelete }) {
+const vibrate = (ms = 25) => navigator.vibrate?.(ms);
+
+// tiny logger helpers
+const gstart = (label, extra = {}) =>
+  console.groupCollapsed(`%c[PostCard] ${label}`, 'color:#a78bfa;font-weight:bold', extra);
+const gend = () => console.groupEnd();
+const logSupa = (label, { data, error, count } = {}) => {
+  if (error) console.error('%c[PostCard]', 'color:#ef4444', `${label} -> ERROR`, error);
+  else console.log('%c[PostCard]', 'color:#a78bfa', `${label} -> OK`, {
+    rows: Array.isArray(data) ? data.length : data ? 1 : 0, count, data
+  });
+};
+
+/* ------------------------------- component ------------------------------- */
+
+export default function PostCard({ post, user = null, onSubscriptionChange, onDelete }) {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
-  // -- DEBUG: log on every render
-  console.log('PostCard render:', { postId: post.id, currentUser });
+  // Author resolution
+  const authorId = user?.id ?? post?.user_id ?? null;
+  const author = user ?? {
+    id: authorId,
+    display_name: post?.profiles?.display_name ?? null,
+    username: post?.profiles?.username ?? null,
+    photo_url: post?.profiles?.photo_url ?? null,
+  };
 
-  const [likeCount, setLikeCount] = useState(0);
-  const [dislikeCount, setDislikeCount] = useState(0);
-  const [roseCount, setRoseCount] = useState(0);
-  const [userReaction, setUserReaction] = useState(null);
+  // Reaction counters + my reaction (init with denorm counts when available)
+  const [likeCount, setLikeCount] = useState(post?.like_count ?? 0);
+  const [dislikeCount, setDislikeCount] = useState(post?.dislike_count ?? 0);
+  const [roseCount, setRoseCount] = useState(post?.rose_count ?? 0);
+  const [userReaction, setUserReaction] = useState(null); // 'like'|'dislike'|null
+
+  // Comments
   const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [replyText, setReplyText] = useState('');
+
+  // UI state
   const [showMenu, setShowMenu] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [authorExists, setAuthorExists] = useState(true);
 
   useOnClickOutside(menuRef, () => setShowMenu(false));
 
-  const vibrate = (ms = 25) => navigator.vibrate?.(ms);
-
-  const renderTextWithHashtags = (text) =>
+  const renderTextWithHashtags = (text = '') =>
     text.split(/(\s+)/).map((part, i) => {
       if (part.startsWith('#')) {
         const tag = part.slice(1).replace(/[^a-zA-Z0-9_]/g, '');
         return (
-          <Link key={i} to={`/tag/${tag}`} className="text-purple-400 hover:underline">
+          <Link key={`${part}-${i}`} to={`/tag/${tag}`} className="text-purple-400 hover:underline">
             {part}
           </Link>
         );
       }
-      return part;
+      return <span key={i}>{part}</span>;
     });
 
+  /* ----------------------------- data fetching ----------------------------- */
+
   const fetchComments = async () => {
+    gstart('fetchComments', { postId: post?.id });
     try {
-      const { data, error } = await supabase
+      const res = await supabase
         .from('post_comments')
         .select(`
           id, content, created_at, user_id, parent_id,
-          profiles(id, display_name, username, photo_url)
+          profiles!post_comments_user_id_fkey ( id, display_name, username, photo_url )
         `)
         .eq('post_id', post.id)
         .is('parent_id', null)
         .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setComments(data || []);
-      console.log('fetched comments:', data);
-    } catch (err) {
-      console.error('fetchComments error:', err);
+      logSupa('post_comments.select', res);
+      if (res.error) throw res.error;
+      setComments(res.data || []);
+    } catch (e) {
+      console.error('fetchComments error', e);
+    } finally {
+      gend();
     }
   };
 
-  const fetchReactions = async () => {
+  const fetchReactionSnapshot = async () => {
+    gstart('fetchReactionSnapshot', { postId: post?.id, viewer: currentUser?.id });
     try {
-      if (!currentUser?.id) {
-        console.log('skip fetchReactions: no currentUser.id');
-        return;
-      }
-      const { data, error } = await supabase
-        .from('post_reactions')
-        .select('id, type, user_id')
-        .eq('post_id', post.id);
-
-      if (error) throw error;
-
-      const likes = data.filter((r) => r.type === 'like');
-      const dislikes = data.filter((r) => r.type === 'dislike');
-      const roses = data.filter((r) => r.type === 'rose');
-
-      setLikeCount(likes.length);
-      setDislikeCount(dislikes.length);
-      setRoseCount(roses.length);
-
-      const userReact = data.find(
-        (r) => r.user_id === currentUser.id && ['like', 'dislike'].includes(r.type)
-      );
-      setUserReaction(userReact?.type || null);
-
-      console.log('fetched reactions:', { likes, dislikes, roses, userReact });
-    } catch (err) {
-      console.error('fetchReactions error:', err);
+      const s = await fetchReactionState(post.id);
+      setLikeCount(s.likeCount ?? 0);
+      setDislikeCount(s.dislikeCount ?? 0);
+      setRoseCount(s.roseCount ?? 0);
+      setUserReaction(s.myReaction ?? null);
+    } catch (e) {
+      console.error('fetchReactionSnapshot error', e);
+    } finally {
+      gend();
     }
   };
 
   const checkSubscription = async () => {
+    gstart('checkSubscription', { viewer: currentUser?.id, authorId });
     try {
-      if (!currentUser?.id || currentUser.id === user.id) {
-        console.log('skip checkSubscription');
+      if (!currentUser?.id || !authorId || currentUser.id === authorId) {
+        setIsSubscribed(false);
         return;
       }
-      const { data, error } = await supabase
+      const res = await supabase
         .from('followers')
         .select('id')
         .eq('follower_id', currentUser.id)
-        .eq('followed_id', user.id)
-        .single();
+        .eq('followed_id', authorId)
+        .maybeSingle();
+      logSupa('followers.select maybeSingle', res);
+      if (res.error && res.error.code !== 'PGRST116') throw res.error;
+      setIsSubscribed(Boolean(res.data));
+    } catch (e) {
+      console.error('checkSubscription error', e);
+    } finally {
+      gend();
+    }
+  };
 
-      if (error && error.code !== 'PGRST116') throw error;
-      setIsSubscribed(!!data);
-      console.log('subscription status:', !!data);
-    } catch (err) {
-      console.error('checkSubscription error:', err);
+  const verifyAuthorExists = async () => {
+    gstart('verifyAuthorExists', { authorId });
+    try {
+      if (!authorId) {
+        setAuthorExists(false);
+        return;
+      }
+      const res = await supabase.from('profiles').select('id').eq('id', authorId).maybeSingle();
+      logSupa('profiles.exists maybeSingle', res);
+      setAuthorExists(Boolean(res.data));
+    } catch (e) {
+      console.error('verifyAuthorExists error', e);
+      setAuthorExists(false);
+    } finally {
+      gend();
     }
   };
 
   useEffect(() => {
-    fetchReactions();
+    gstart('mount/useEffect', { postId: post?.id, viewer: currentUser?.id, authorId });
+
+    fetchReactionSnapshot();
     fetchComments();
     checkSubscription();
+    verifyAuthorExists();
 
-    const reactionsSub = supabase
-      .channel(`reactions-${post.id}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'post_reactions', filter: `post_id=eq.${post.id}` },
-        fetchReactions
-      )
-      .subscribe();
+    // Realtime counters via triggers to posts.{like_count,dislike_count,rose_count}
+    const unsubscribeCounters = subscribePostCounters(post.id, (patch) => {
+      if (patch.likeCount !== undefined) setLikeCount(patch.likeCount);
+      if (patch.dislikeCount !== undefined) setDislikeCount(patch.dislikeCount);
+      if (patch.roseCount !== undefined) setRoseCount(patch.roseCount);
+    });
 
+    // Realtime comments
     const commentsSub = supabase
       .channel(`comments-${post.id}`)
       .on(
@@ -168,142 +211,166 @@ export default function PostCard({ post, user = {}, onSubscriptionChange, onDele
       )
       .subscribe();
 
+    gend();
+
     return () => {
-      supabase.removeChannel(reactionsSub);
+      unsubscribeCounters?.();
       supabase.removeChannel(commentsSub);
     };
-  }, [post.id, currentUser?.id, user.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post.id, currentUser?.id, authorId]);
+
+  /* -------------------------------- actions -------------------------------- */
 
   const handlePostComment = async () => {
+    gstart('handlePostComment');
     try {
-      if (!replyText.trim() || !currentUser?.id) {
-        console.log('skip handlePostComment');
-        return;
-      }
-      const { error } = await supabase.from('post_comments').insert({
-        post_id: post.id,
-        user_id: currentUser.id,
-        content: replyText.trim(),
-      });
-      if (error) throw error;
+      const uid = currentUser?.id;
+      const text = replyText.trim();
+      if (!uid || !text) return;
+
+      const res = await supabase
+        .from('post_comments')
+        .insert({ post_id: post.id, user_id: uid, content: text })
+        .select('*')
+        .single();
+      logSupa('post_comments.insert', res);
+      if (res.error) throw res.error;
+
       setReplyText('');
       setShowComments(true);
       await fetchComments();
-      console.log('comment posted');
-    } catch (err) {
-      console.error('handlePostComment error:', err);
+    } catch (e) {
+      alert(`Failed to comment: ${e?.message || e}`);
+    } finally {
+      gend();
     }
   };
 
   const handleReact = async (type) => {
+    gstart('handleReact', { type });
     try {
-      console.log('handleReact called:', { type, postId: post.id, currentUserId: currentUser?.id });
       vibrate();
       const uid = currentUser?.id;
-      if (!uid) {
-        console.log('handleReact early exit: no uid');
-        return;
-      }
+      if (!uid) return;
 
       if (type === 'rose') {
-        await supabase.from('post_reactions').insert({ post_id: post.id, user_id: uid, type });
-        console.log('rose reaction inserted');
+        // 🌹 multi-rose: 1 per tap (server clamps 1..100 if you add quick buttons later)
+        setRoseCount((c) => c + 1); // optimistic
+        try {
+          await giveRoses(post.id, 1);
+        } catch (roseErr) {
+          setRoseCount((c) => Math.max(0, c - 1));
+          throw roseErr;
+        }
       } else {
-        const { data: existingReactions, error: fetchError } = await supabase
-          .from('post_reactions')
-          .select('id, type')
-          .eq('post_id', post.id)
-          .eq('user_id', uid)
-          .in('type', ['like', 'dislike'])
-          .limit(1);
+        // 👍/👎 single reaction per user (toggle or switch)
+        const prev = userReaction; // 'like'|'dislike'|null
+        const next =
+          type === 'like' ? (prev === 'like' ? null : 'like') : (prev === 'dislike' ? null : 'dislike');
 
-        if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
-
-        const existing = existingReactions?.[0];
-        if (existing) {
-          if (existing.type === type) {
-            await supabase.from('post_reactions').delete().eq('id', existing.id);
-            console.log(`removed existing ${type}`);
-          } else {
-            await supabase.from('post_reactions').update({ type }).eq('id', existing.id);
-            console.log(`updated reaction to ${type}`);
-          }
+        // optimistic counters
+        if (next === 'like') {
+          if (prev === 'dislike') setDislikeCount((c) => Math.max(0, c - 1));
+          if (prev !== 'like') setLikeCount((c) => c + 1);
+        } else if (next === 'dislike') {
+          if (prev === 'like') setLikeCount((c) => Math.max(0, c - 1));
+          if (prev !== 'dislike') setDislikeCount((c) => c + 1);
         } else {
-          await supabase.from('post_reactions').insert({ post_id: post.id, user_id: uid, type });
-          console.log(`inserted new ${type}`);
+          if (prev === 'like') setLikeCount((c) => Math.max(0, c - 1));
+          if (prev === 'dislike') setDislikeCount((c) => Math.max(0, c - 1));
+        }
+        setUserReaction(next);
+
+        try {
+          await setReaction(post.id, next); // RPC set_post_reaction
+        } catch (tErr) {
+          // reset from server truth on failure
+          await fetchReactionSnapshot();
+          throw tErr;
         }
       }
 
-      await fetchReactions();
-    } catch (err) {
-      console.error('handleReact error:', err);
+      // final sync with server state
+      await fetchReactionSnapshot();
+    } catch (e) {
+      alert(`Failed to react: ${e?.message || e}`);
+    } finally {
+      gend();
     }
   };
 
   const handleDeletePost = async () => {
+    gstart('handleDeletePost');
     try {
-      if (currentUser?.id !== user.id) {
-        console.log('skip delete: not author');
-        return;
-      }
-      const { error } = await supabase.from('posts').update({ deleted: true }).eq('id', post.id);
-      if (error) throw error;
+      if (!currentUser?.id || currentUser.id !== authorId) return;
+      const res = await supabase.from('posts').update({ deleted: true }).eq('id', post.id).select('*').single();
+      logSupa('posts.update deleted=true', res);
+      if (res.error) throw res.error;
       onDelete?.(post.id);
-      console.log('post marked deleted');
-    } catch (err) {
-      console.error('handleDeletePost error:', err);
-      alert('Failed to delete post');
+    } catch (e) {
+      alert(`Failed to delete: ${e?.message || e}`);
+    } finally {
+      gend();
     }
   };
 
   const handleToggleSubscribe = async () => {
+    gstart('handleToggleSubscribe', { viewer: currentUser?.id, authorId, isSubscribed, authorExists });
     try {
-      if (!currentUser?.id || currentUser.id === user.id) {
-        console.log('skip toggleSubscribe');
-        return;
-      }
+      const uid = currentUser?.id;
+      if (!uid || !authorId || !authorExists || uid === authorId) return;
+
       if (isSubscribed) {
-        await supabase
+        const del = await supabase
           .from('followers')
           .delete()
-          .eq('follower_id', currentUser.id)
-          .eq('followed_id', user.id);
-        console.log('unsubscribed');
+          .eq('follower_id', uid)
+          .eq('followed_id', authorId)
+          .select('*');
+        logSupa('followers.delete', del);
+        if (del.error) throw del.error;
       } else {
-        await supabase.from('followers').insert({ follower_id: currentUser.id, followed_id: user.id });
-        console.log('subscribed');
+        const ins = await supabase
+          .from('followers')
+          .insert({ follower_id: uid, followed_id: authorId })
+          .select('*')
+          .single();
+        logSupa('followers.insert', ins);
+        if (ins.error) throw ins.error;
       }
+
       await checkSubscription();
       onSubscriptionChange?.();
-    } catch (err) {
-      console.error('handleToggleSubscribe error:', err);
+    } catch (e) {
+      alert(`Failed to follow/unfollow: ${e?.message || e}`);
+    } finally {
+      gend();
     }
   };
 
   const handleMessage = async () => {
+    gstart('handleMessage');
     try {
-      if (!currentUser?.id || !user?.id || currentUser.id === user.id) {
-        console.log('skip message: invalid users');
-        return;
-      }
-      const convo = await getOrCreateConversation(user.id);
-      if (convo?.id) {
-        navigate(`/chat/${convo.id}`);
-        console.log('navigated to convo', convo.id);
-      } else {
-        console.error('could not open/create conversation');
-      }
-    } catch (err) {
-      console.error('handleMessage error:', err);
+      const uid = currentUser?.id;
+      if (!uid || !authorId || uid === authorId) return;
+      const convo = await getOrCreateConversation(authorId);
+      if (convo?.id) navigate(`/chat/${convo.id}`);
+    } catch (e) {
+      // no-op
+    } finally {
+      gend();
     }
   };
+
+  /* ---------------------------------- UI ---------------------------------- */
 
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow mb-4 mx-2 relative">
       {/* Header: author + actions */}
       <div className="flex items-center justify-between mb-2">
         <UserLink
-          user={user}
+          user={author}
           avatarSize="w-9 h-9"
           avatarShape="rounded-md"
           textSize="text-sm"
@@ -311,13 +378,11 @@ export default function PostCard({ post, user = {}, onSubscriptionChange, onDele
           timestamp={formatPostTime(post.created_at)}
         />
         <div className="flex gap-2 items-center">
-          {currentUser?.id !== user.id && (
+          {currentUser?.id && authorId && authorExists && currentUser.id !== authorId && (
             <>
               <button
                 onClick={handleToggleSubscribe}
-                className={`text-xs px-2 py-1 rounded ${
-                  isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'
-                } text-white`}
+                className={`text-xs px-2 py-1 rounded ${isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
               >
                 {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
               </button>
@@ -329,11 +394,12 @@ export default function PostCard({ post, user = {}, onSubscriptionChange, onDele
               </button>
             </>
           )}
+
           <div ref={menuRef} className="relative">
-            <button onClick={() => setShowMenu((p) => !p)}>⋯</button>
+            <button onClick={() => setShowMenu((p) => !p)} aria-label="Post menu">⋯</button>
             {showMenu && (
               <div className="absolute right-0 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded shadow p-2 z-50">
-                {currentUser?.id === user.id ? (
+                {currentUser?.id === authorId ? (
                   <button onClick={handleDeletePost} className="text-red-400">
                     Delete Post
                   </button>
@@ -352,19 +418,22 @@ export default function PostCard({ post, user = {}, onSubscriptionChange, onDele
           {renderTextWithHashtags(post.text)}
         </p>
       )}
+
       {post.media_type === 'image' && post.media_url && (
         <div className="w-full rounded-xl overflow-hidden mb-3">
           <img src={post.media_url} alt="post" className="w-full max-h-80 object-cover" />
         </div>
       )}
+
       {post.media_type === 'video' && post.media_url && (
         <video src={post.media_url} controls className="w-full max-h-80 rounded-xl mb-3" />
       )}
-      {post.tags?.length > 0 && (
+
+      {Array.isArray(post.tags) && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
           {post.tags.map((tag, i) => (
             <Link
-              key={i}
+              key={`${tag}-${i}`}
               to={`/tag/${tag}`}
               className="text-xs bg-neutral-700 text-purple-400 px-2 py-1 rounded-full hover:bg-neutral-600 transition-colors"
             >
@@ -378,23 +447,22 @@ export default function PostCard({ post, user = {}, onSubscriptionChange, onDele
       <div className="flex flex-wrap gap-3 items-center mb-2">
         <button
           onClick={() => handleReact('like')}
-          className={`text-sm px-2 py-1 rounded ${
-            userReaction === 'like' ? 'bg-purple-600' : 'bg-neutral-700'
-          } text-white`}
+          className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
+          aria-pressed={userReaction === 'like'}
         >
           👍 {likeCount}
         </button>
         <button
           onClick={() => handleReact('dislike')}
-          className={`text-sm px-2 py-1 rounded ${
-            userReaction === 'dislike' ? 'bg-red-600' : 'bg-neutral-700'
-          } text-white`}
+          className={`text-sm px-2 py-1 rounded ${userReaction === 'dislike' ? 'bg-red-600' : 'bg-neutral-700'} text-white`}
+          aria-pressed={userReaction === 'dislike'}
         >
           👎 {dislikeCount}
         </button>
         <button
           onClick={() => handleReact('rose')}
           className="text-sm px-2 py-1 rounded bg-neutral-700 text-white"
+          title="Send a rose"
         >
           🌹 {roseCount}
         </button>
@@ -418,30 +486,22 @@ export default function PostCard({ post, user = {}, onSubscriptionChange, onDele
 
       {/* View/hide comments */}
       <div className="mt-2">
-        {comments.length > 0 && (
+        {comments.length > 0 ? (
           showComments ? (
-            <button
-              onClick={() => setShowComments(false)}
-              className="text-xs text-purple-400"
-            >
+            <button onClick={() => setShowComments(false)} className="text-xs text-purple-400">
               Hide comments ({comments.length})
             </button>
           ) : (
-            <button
-              onClick={() => setShowComments(true)}
-              className="text-xs text-purple-400"
-            >
+            <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">
               View comments ({comments.length})
             </button>
           )
-        )}
-        {comments.length === 0 && !showComments && (
-          <button
-            onClick={() => setShowComments(true)}
-            className="text-xs text-purple-400"
-          >
-            Be the first to comment!
-          </button>
+        ) : (
+          !showComments && (
+            <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">
+              Be the first to comment!
+            </button>
+          )
         )}
       </div>
 

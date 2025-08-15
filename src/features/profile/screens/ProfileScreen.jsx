@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 import ProfileHeader from '@/components/ProfileHeader';
 import { getOrCreatePrivateConversation } from '@/utils/conversations';
 
-
 import PostList from '@/features/profile/tabs/PostList';
 import PhotoGrid from '@/features/profile/tabs/PhotoGrid';
 import VideoFeed from '@/features/profile/tabs/VideoFeed';
@@ -43,7 +42,7 @@ export default function ProfileScreen() {
         return;
       }
 
-      if (!urlUsername && !urlUserId && user) {
+      if (!urlUsername && !urlUserId) {
         const { data: userProfile, error: profileError } = await supabase
           .from('profiles')
           .select('username')
@@ -147,7 +146,6 @@ export default function ProfileScreen() {
       } else if (urlUserId) {
         fetchAndSetProfileData(urlUserId, 'userId', currentUser?.id);
       } else if (currentUser) {
-        // This will likely never hit since we redirect `/me` earlier
         if (import.meta.env.DEV) console.warn('[ProfileScreen] No profile identifier found in URL.');
       }
     }
@@ -171,9 +169,12 @@ export default function ProfileScreen() {
 
   const isOwnProfile = currentUser?.id === profileData?.id;
 
+  // Single-container scroll; let the page grow and scroll.
+  const containerCls = 'bg-black text-white vc-screen scroll-y-touch';
+
   if (currentUser === undefined || loading) {
     return (
-      <div className="bg-black text-white min-h-screen flex items-center justify-center">
+      <div className={`${containerCls} flex items-center justify-center pt-px`}>
         Loading...
       </div>
     );
@@ -181,26 +182,27 @@ export default function ProfileScreen() {
 
   if (error) {
     return (
-      <div className="bg-black text-white min-h-screen flex items-center justify-center text-red-500">
-        Error: {error}
+      <div className={`${containerCls} flex items-center justify-center pt-px`}>
+        <span className="text-red-500">Error: {error}</span>
       </div>
     );
   }
 
   if (!profileData) {
     return (
-      <div className="bg-black text-white min-h-screen flex items-center justify-center">
+      <div className={`${containerCls} flex items-center justify-center pt-px`}>
         Profile not found.
       </div>
     );
   }
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className={`${containerCls} pt-px`}>
       <ProfileHeader
         profile={{ ...profileData, subscriber_count: subscriberCount }}
         isOwnProfile={isOwnProfile}
         onPhotoChange={refreshProfile}
+        onMessage={handleMessage}
       />
 
       <div className="sticky top-0 z-10 bg-black border-b border-neutral-800 flex justify-around text-xs font-semibold mt-4">
@@ -208,11 +210,7 @@ export default function ProfileScreen() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 ${
-              activeTab === tab
-                ? 'text-white border-b-2 border-purple-500'
-                : 'text-gray-500'
-            }`}
+            className={`flex-1 py-3 ${activeTab === tab ? 'text-white border-b-2 border-purple-500' : 'text-gray-500'}`}
           >
             {tab}
           </button>
@@ -223,12 +221,10 @@ export default function ProfileScreen() {
         {activeTab === 'POST' && <PostList posts={posts} user={profileData} />}
         {activeTab === 'PHOTOS' && <PhotoGrid posts={posts} />}
         {activeTab === 'VIDEOS' && <VideoFeed posts={posts} />}
-        {activeTab === 'FRIENDS' &&
-          (isOwnProfile
-            ? <FriendsListEditor userId={profileData.id} />
-            : <FriendsList userId={profileData.id} />
-          )
-        }
+        {activeTab === 'FRIENDS' && (isOwnProfile
+          ? <FriendsListEditor userId={profileData.id} />
+          : <FriendsList userId={profileData.id} />
+        )}
       </div>
     </div>
   );

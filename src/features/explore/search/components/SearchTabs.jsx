@@ -1,7 +1,29 @@
-// src/features/explore/components/SearchTabs.jsx
+// src/features/explore/search/components/SearchTabs.jsx
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useNavigate } from 'react-router-dom'
+
+// helper: detect "relation does not exist" (42P01)
+const isUndefinedTable = (err) =>
+  String(err?.code || err?.message || '').includes('42P01') ||
+  String(err?.message || '').toLowerCase().includes('does not exist')
+
+// generic safe wrapper: never throw, always return []
+const safe = async (fn, { optional = false } = {}) => {
+  try {
+    const { data, error } = await fn()
+    if (error) {
+      if (optional && isUndefinedTable(error)) return []
+      console.warn('[search] error:', error)
+      return []
+    }
+    return data || []
+  } catch (e) {
+    if (optional && isUndefinedTable(e)) return []
+    console.warn('[search] exception:', e)
+    return []
+  }
+}
 
 export default function SearchTabs({ query, typeFilter }) {
   const [results, setResults] = useState([])
@@ -15,93 +37,103 @@ export default function SearchTabs({ query, typeFilter }) {
       return
     }
 
+    const q = query.trim()
     setLoading(true)
     setError(null)
 
-    // build queries
-    const calls = []
+    // USERS
+    const doUsers = async () =>
+      (await safe(() =>
+        supabase
+          .from('profiles')
+          .select('id, username, display_name, photo_url')
+          .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+          .limit(20)
+      )).map(u => ({
+        result_type: 'user',
+        user_id: u.id,
+        username: u.username,
+        display_name: u.display_name,
+        photo_url: u.photo_url
+      }))
 
-    const doUsers = () =>
-      supabase
-        .from('profiles')
-        .select('id, username, display_name, photo_url')
-        .ilike('username', `%${query}%`)
-        .or(`display_name.ilike.%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          // rename `id` → `user_id` in JS
-          return data.map((u) => ({
-            user_id: u.id,
-            username: u.username,
-            display_name: u.display_name,
-            photo_url: u.photo_url,
-            result_type: 'user',
-          }))
-        })
+    // POSTS (text/image/etc.)
+    const doPosts = async () =>
+      (await safe(() =>
+        supabase
+          .from('posts')
+          .select('id, user_id, title, text, media_url, media_type, created_at, visibility, deleted')
+          .eq('visibility', 'public')
+          .eq('deleted', false)
+          .or(`title.ilike.%${q}%,text.ilike.%${q}%`)
+          .order('created_at', { ascending: false })
+          .limit(20)
+      )).map(p => ({
+        result_type: 'post',
+        post_id: p.id,
+        user_id: p.user_id,
+        title: p.title,
+        text: p.text,
+        media_url: p.media_url,
+        media_type: p.media_type,
+        created_at: p.created_at
+      }))
 
-    const doPosts = () =>
-      supabase
-        .from('posts')
-        .select('id, content, user_id')
-        .ilike('content', `%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          return data.map((p) => ({
-            post_id: p.id,
-            content: p.content,
-            user_id: p.user_id,
-            result_type: 'post',
-          }))
-        })
+    // VIDEOS = posts where media_type = 'video'
+    const doVideos = async () =>
+      (await safe(() =>
+        supabase
+          .from('posts')
+          .select('id, user_id, title, text, media_url, media_type, created_at, visibility, deleted')
+          .eq('media_type', 'video')
+          .eq('visibility', 'public')
+          .eq('deleted', false)               // ✅ fixed
+          .or(`title.ilike.%${q}%,text.ilike.%${q}%`)
+          .order('created_at', { ascending: false })
+          .limit(20)
+      )).map(v => ({
+        result_type: 'video',
+        video_id: v.id,
+        user_id: v.user_id,
+        title: v.title,
+        description: v.text,
+        media_url: v.media_url,
+        created_at: v.created_at
+      }))
 
-    const doVideos = () =>
-      supabase
-        .from('videos')
-        .select('id, title, description, user_id')
-        .ilike('title', `%${query}%`)
-        .or(`description.ilike.%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          return data.map((v) => ({
-            video_id:   v.id,
-            title:      v.title,
-            description:v.description,
-            user_id:    v.user_id,
-            result_type:'video',
-          }))
-        })
+    // GROUPS (optional; skip if table is missing)
+    const doGroups = async () =>
+      (await safe(() =>
+        supabase
+          .from('groups') // if this table doesn't exist, we skip without crashing
+          .select('id, name, description, created_at')
+          .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
+          .order('created_at', { ascending: false })
+          .limit(20)
+      , { optional: true })).map(g => ({
+        result_type: 'group',
+        group_id: g.id,
+        group_name: g.name,
+        description: g.description
+      }))
 
-    const doGroups = () =>
-      supabase
-        .from('groups')
-        .select('id, group_name, description')
-        .ilike('group_name', `%${query}%`)
-        .or(`description.ilike.%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          return data.map((g) => ({
-            group_id:    g.id,
-            group_name:  g.group_name,
-            description: g.description,
-            result_type: 'group',
-          }))
-        })
+    const tasks = []
+    if (typeFilter === 'users')       tasks.push(doUsers())
+    else if (typeFilter === 'posts')  tasks.push(doPosts())
+    else if (typeFilter === 'videos') tasks.push(doVideos())
+    else if (typeFilter === 'groups') tasks.push(doGroups())
+    else                               tasks.push(doUsers(), doPosts(), doVideos(), doGroups())
 
-    if (typeFilter === 'users')      calls.push(doUsers())
-    else if (typeFilter === 'posts') calls.push(doPosts())
-    else if (typeFilter === 'videos')calls.push(doVideos())
-    else if (typeFilter === 'groups')calls.push(doGroups())
-    else                              calls.push(doUsers(), doPosts(), doVideos(), doGroups())
-
-    Promise.all(calls)
-      .then((all) => setResults(all.flat()))
+    Promise.allSettled(tasks)
+      .then((settled) => {
+        const flat = settled
+          .filter(s => s.status === 'fulfilled')
+          .flatMap(s => s.value || [])
+        setResults(flat)
+      })
       .catch((err) => {
         console.error('Search error', err)
-        setError(err.message || 'Search failed')
+        setError(err?.message || 'Search failed')
       })
       .finally(() => setLoading(false))
   }, [query, typeFilter])
@@ -146,7 +178,7 @@ export default function SearchTabs({ query, typeFilter }) {
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200 whitespace-pre-line">
-                  {item.content}
+                  {item.title ? `${item.title}\n` : ''}{item.text || '(no text)'}
                 </div>
               </div>
             )
@@ -159,7 +191,7 @@ export default function SearchTabs({ query, typeFilter }) {
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200">
-                  {item.title}
+                  {item.title || '(untitled video)'}
                 </div>
               </div>
             )
@@ -168,7 +200,7 @@ export default function SearchTabs({ query, typeFilter }) {
             return (
               <div
                 key={item.group_id}
-                onClick={() => navigate(`/groups/${item.group_id}`)}
+                onClick={() => navigate(`/groups/${item.group_id}`)}   
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200">

@@ -1,13 +1,14 @@
 // src/components/NotificationItem.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import UserLink from '@/components/UserLink';
 import useProfile from '@/hooks/useProfile';
 
 const emojiMap = {
-  rose:  '🌹',
-  like:  '❤️',
+  rose: '🌹',
+  like: '❤️',
+  dislike: '👎',
   laugh: '😂',
-  fire:  '🔥',
+  fire: '🔥',
 };
 
 function NewBadge() {
@@ -18,45 +19,61 @@ function NewBadge() {
   );
 }
 
+function formatTimestamp(ts) {
+  try {
+    return new Date(ts).toLocaleString();
+  } catch {
+    return '';
+  }
+}
+
 export default function NotificationItem({ notif, onClick }) {
-  // figure out who the actor is (for roses we used `purchaser`, for reactions `reactor_id`, etc.)
-  const reactorId =
-    notif.metadata?.reactor_id ||
-    notif.metadata?.purchaser   ||  // <-- fallback for "post_rose"
-    notif.metadata?.sender_id   ||
-    notif.metadata?.follower_id;
+  // Prefer column-based actor_id; fall back to legacy metadata keys
+  const actorId = useMemo(() => {
+    const m = notif?.metadata || {};
+    return (
+      notif?.actor_id ||
+      m.reactor_id ||
+      m.purchaser ||
+      m.sender_id ||
+      m.follower_id ||
+      null
+    );
+  }, [notif]);
 
-  // fetch that user's profile
-  const { profile: sender, isLoading, error } = useProfile(reactorId);
+  // Load actor's profile
+  const { profile: actor, isLoading, error } = useProfile(actorId);
 
-  // debug log on every render
   useEffect(() => {
+    // Helpful for debugging mismatches
     console.debug('NotificationItem render:', {
-      notifId: notif.id,
-      type: notif.type,
-      reactorId,
-      sender,
+      notifId: notif?.id,
+      type: notif?.type,
+      actorId,
+      hasActorFromColumn: Boolean(notif?.actor_id),
       isLoading,
-      profileError: error,
+      profileLoaded: Boolean(actor),
+      profileError: error?.message,
     });
-  }, [notif.id, notif.type, reactorId, sender, isLoading, error]);
+  }, [notif?.id, notif?.type, actorId, actor, isLoading, error]);
 
-  // helper to render either a loading placeholder, "Someone", or the real UserLink
   const ActorLink = () => {
     if (isLoading) {
       return (
         <span className="inline-block w-5 h-5 bg-neutral-700 rounded-full animate-pulse" />
       );
     }
-    if (!sender) {
+    if (!actor) {
       return <span className="text-neutral-400 italic">Someone</span>;
     }
-    return <UserLink user={sender} avatarSize="w-5 h-5" textSize="text-sm" />;
+    return <UserLink user={actor} avatarSize="w-5 h-5" textSize="text-sm" />;
   };
 
-  // build the line of text and emoji
   let message;
-  switch (notif.type) {
+  const meta = notif?.metadata || {};
+
+  switch (notif?.type) {
+    // POSTS
     case 'post_rose':
       message = (
         <>
@@ -68,21 +85,45 @@ export default function NotificationItem({ notif, onClick }) {
     case 'post_reaction':
       message = (
         <>
-          {emojiMap[notif.metadata?.reaction_type] || '🔔'}{' '}
-          <ActorLink /> reacted to your post
+          {emojiMap[meta.reaction_type] || '🔔'} <ActorLink /> reacted to your post
         </>
       );
       break;
 
+    case 'post_like':
+      message = (
+        <>
+          ❤️ <ActorLink /> liked your post
+        </>
+      );
+      break;
+
+    case 'post_dislike':
+      message = (
+        <>
+          👎 <ActorLink /> disliked your post
+        </>
+      );
+      break;
+
+    case 'comment_like':
+      message = (
+        <>
+          ❤️ <ActorLink /> liked your comment
+        </>
+      );
+      break;
+
+    // STORIES
     case 'story_reaction':
       message = (
         <>
-          {emojiMap[notif.metadata?.reaction_type] || '🔔'}{' '}
-          <ActorLink /> reacted to your story
+          {emojiMap[meta.reaction_type] || '🔔'} <ActorLink /> reacted to your story
         </>
       );
       break;
 
+    // FOLLOW
     case 'follow':
       message = (
         <>
@@ -91,8 +132,9 @@ export default function NotificationItem({ notif, onClick }) {
       );
       break;
 
+    // MESSAGES
     case 'message': {
-      const preview = notif.metadata?.message_preview || 'Sent you a message';
+      const preview = meta.message_preview || 'Sent you a message';
       message = (
         <>
           📨 <ActorLink /> {preview}
@@ -113,10 +155,10 @@ export default function NotificationItem({ notif, onClick }) {
       <div>
         <div className="text-sm">{message}</div>
         <div className="text-xs text-neutral-400">
-          {new Date(notif.created_at).toLocaleString()}
+          {formatTimestamp(notif?.created_at)}
         </div>
       </div>
-      {!notif.read && <NewBadge />}
+      {!notif?.read && <NewBadge />}
     </li>
   );
 }

@@ -7,10 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { getOrCreatePrivateConversation } from '@/utils/conversations';
 import useSubscriptionHandler from "../features/profile/useSubscriptionHandler.js";
-
-
-
-
 import VisibleQRCode from './VisibleQRCode';
 
 export default function ProfileHeader({
@@ -217,19 +213,19 @@ export default function ProfileHeader({
       {isOwnProfile && showSubscriberModal && subscriberList.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setShowSubscriberModal(false)}>
           <div className="bg-neutral-900 rounded-xl p-6 max-w-sm w-full text-white overflow-y-auto max-h-[70vh] shadow-lg" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold mb-3 text-purple-400">Your Subscribers</h3>
+            <h3 className="text-lg font-semibold mb-3 text-white">Your Subscribers</h3>
             <ul className="space-y-2 list-none">
               {subscriberList.map((s) => (
                 <li key={s.follower_id}>
                   {s.profiles?.username ? (
-                    <Link to={`/u/${s.profiles.username}`} onClick={() => setShowSubscriberModal(false)} className="flex items-center gap-3 p-2 rounded-lg hover:bg-neutral-800 transition-colors duration-200 no-underline hover:underline">
+                    <Link to={`/u/${s.profiles.username}`} onClick={() => setShowSubscriberModal(false)} className="flex items-center gap-3 p-2 rounded-lg hover:bg-neutral-800 transition-colors duration-200 no-underline hover:underline text-white">
                       <img src={s.profiles?.photo_url || '/avatar.jpg'} className="w-7 h-7 rounded object-cover" alt={s.profiles?.display_name || 'User avatar'} />
                       <span>{s.profiles?.display_name || 'Unnamed'}</span>
                     </Link>
                   ) : (
                     <div className="flex items-center gap-3 p-2 text-neutral-500">
                       <img src={s.profiles?.photo_url || '/avatar.jpg'} className="w-7 h-7 rounded object-cover" alt={s.profiles?.display_name || 'User avatar'} />
-                      <span>{s.profiles?.display_name || 'Unnamed'} (No Username)</span>
+                      <span className="text-white">{s.profiles?.display_name || 'Unnamed'} (No Username)</span>
                     </div>
                   )}
                 </li>

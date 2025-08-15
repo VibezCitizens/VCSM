@@ -4,16 +4,28 @@ import VDropActions from './components/VDropActions';
 import UserLink from '@/components/UserLink';
 
 export default function VDropCard({ video, isActive, muted }) {
-  const videoRef = useRef();
+  const videoRef = useRef(null);
+
+  // prefer new alias `author`, fallback to legacy `profiles`
+  const author =
+    video?.author ||
+    video?.profiles || // legacy
+    {
+      id: video?.user_id,
+      display_name: '',
+      username: '',
+      photo_url: '/avatar.jpg',
+    };
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = muted;
-      if (isActive) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
+    const el = videoRef.current;
+    if (!el) return;
+
+    el.muted = Boolean(muted);
+    if (isActive) {
+      el.play().catch(() => {});
+    } else {
+      el.pause();
     }
   }, [isActive, muted]);
 
@@ -31,12 +43,14 @@ export default function VDropCard({ video, isActive, muted }) {
 
       {/* Top Left: User info */}
       <div className="absolute top-4 left-4 z-10">
-        <UserLink user={video.profiles} avatarSize="w-10 h-10" textSize="text-sm" />
+        <UserLink user={author} avatarSize="w-10 h-10" textSize="text-sm" />
       </div>
 
       {/* Bottom Left: Caption */}
       <div className="absolute bottom-24 left-4 z-10 max-w-[65%] text-white space-y-1">
-        <div className="text-sm leading-snug opacity-90">{video.title}</div>
+        {video?.title ? (
+          <div className="text-sm leading-snug opacity-90">{video.title}</div>
+        ) : null}
       </div>
 
       {/* Bottom Right: Reactions + Share */}
