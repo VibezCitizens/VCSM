@@ -1,37 +1,47 @@
 ﻿// src/main.jsx
-
-// ⬅️ make React globally available first
-import * as React from 'react';
-if (!window.React) window.React = React;
-
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from 'react-router-dom';
+
 import App from './App';
 
-// UnoCSS
+// ✅ CSS order matters
 import 'uno.css';
-
-// Leaflet styles
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-geosearch/dist/geosearch.css';
-
-// Global styles
 import '@/styles/global.css';
 
-// Auth context provider
 import { AuthProvider } from '@/hooks/useAuth';
 
-// PWA runtime
 import { registerSW } from 'virtual:pwa-register';
 registerSW();
 
+// Define router and enable v7 flags
+const router = createBrowserRouter(
+  [
+    {
+      path: '/*',
+      element: (
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      ),
+    },
+  ],
+  {
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    },
+  }
+);
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

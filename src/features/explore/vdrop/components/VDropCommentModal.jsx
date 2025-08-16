@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom/client';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import UserLink from '@/components/UserLink';
@@ -95,5 +95,5 @@ export default function VDropCommentModal({ postId, onClose }) {
     </>
   );
 
-  return ReactDOM.createPortal(modalContent, document.body);
+  return createPortal(modalContent, document.body);
 }
