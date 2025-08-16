@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 import Unocss from 'unocss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Small helper to safely read env in both dev/prod
 const withEnv = (mode) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
@@ -18,7 +17,7 @@ export default defineConfig(({ mode }) => {
   const ENV = withEnv(mode)
 
   return {
-    base: ENV.BASE, // e.g. '/' or '/app/'
+    base: ENV.BASE,
     plugins: [
       react(),
       Unocss(),
@@ -26,64 +25,53 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         injectRegister: 'auto',
         workbox: {
-          // ---- SW update & cache hygiene ----
-          skipWaiting: true,              // <— ensure new SW activates immediately
-          clientsClaim: true,             // <— take control without manual reload
+          // ensure new SW takes control immediately (prevents stale vendor*)
+          skipWaiting: true,
+          clientsClaim: true,
           cleanupOutdatedCaches: true,
-
           navigateFallback: '/index.html',
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
-
           runtimeCaching: [
-            // Cache your public CDN assets (Cloudflare R2)
             {
-              urlPattern: new RegExp(`^https://(${ENV.CDN_HOST.replace(/\./g, '\\.')})/.*`),
+              urlPattern: new RegExp(`^https://${ENV.CDN_HOST.replace(/\./g, '\\.')}\\/.*`),
               handler: 'CacheFirst',
               options: {
                 cacheName: 'cdn-assets',
-                expiration: { maxEntries: 1000, maxAgeSeconds: 60 * 60 * 24 * 30 }, // 30d
+                expiration: { maxEntries: 1000, maxAgeSeconds: 60 * 60 * 24 * 30 },
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
-            // Cache Supabase storage objects (public buckets)
             {
               urlPattern: new RegExp(`^${ENV.SUPABASE_URL.replace(/\./g, '\\.').replace(/\//g, '\\/')}\\/storage\\/v1\\/object\\/public\\/.*`),
               handler: 'CacheFirst',
               options: {
                 cacheName: 'supabase-storage',
-                expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 14 }, // 14d
+                expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 14 },
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
-            // Supabase API calls: network first, fallback to cache
             {
               urlPattern: new RegExp(`^${ENV.SUPABASE_URL.replace(/\./g, '\\.').replace(/\//g, '\\/')}\\/.*`),
               handler: 'NetworkFirst',
               options: {
                 cacheName: 'supabase-api',
                 networkTimeoutSeconds: 6,
-                expiration: { maxEntries: 200, maxAgeSeconds: 60 * 10 }, // 10m
+                expiration: { maxEntries: 200, maxAgeSeconds: 60 * 10 },
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
-            // Google Fonts
             {
               urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
               handler: 'CacheFirst',
               options: {
                 cacheName: 'google-fonts',
-                expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 }, // 1y
+                expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
           ],
         },
-        includeAssets: [
-          'favicon.svg',
-          'favicon.ico',
-          'robots.txt',
-          'apple-touch-icon.png',
-        ],
+        includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
         manifest: {
           id: '/?source=pwa',
           scope: '/',
@@ -124,30 +112,28 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: { '@': '/src' },
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
-
-      // 🔑 Make sure only ONE copy of React is used, and that it gets bundled.
-      dedupe: ['react', 'react-dom'], // <— ADD THIS
+      // guarantee single React instance across the graph
+      dedupe: ['react', 'react-dom'],
     },
 
     optimizeDeps: {
-      // 🔑 Pre-bundle React so it’s guaranteed in your vendor chunk.
-      include: ['react', 'react-dom'], // <— ADD THIS
+      // prebundle so React is definitely in vendor
+      include: ['react', 'react-dom'],
       exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'],
     },
 
     build: {
       target: 'es2020',
+      // turn on source maps once to pinpoint offending module if needed
       sourcemap: mode === 'development' ? true : false,
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
-        // DO NOT externalize react/react-dom (root cause of React=undefined)
-        external: ['@ffmpeg/core'], // keep only ffmpeg external
-
+        // keep ffmpeg WASM external if you prefer; do NOT add react/react-dom here
+        external: ['@ffmpeg/core'],
         output: {
-          // sensible vendor/code-splitting for faster loads + better caching
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react'       // bundles react/* here
+              if (id.includes('react')) return 'vendor-react'
               if (id.includes('supabase')) return 'vendor-supabase'
               if (id.includes('maplibre') || id.includes('leaflet') || id.includes('mapbox')) return 'vendor-maps'
               return 'vendor'
@@ -157,30 +143,14 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    server: {
-      port: 5173,
-      strictPort: true,
-      host: '0.0.0.0',
-      // If you ever need SharedArrayBuffer (e.g., for ffmpeg WASM), uncomment:
-      // headers: {
-      //   'Cross-Origin-Opener-Policy': 'same-origin',
-      //   'Cross-Origin-Embedder-Policy': 'require-corp',
-      // },
-    },
-
-    preview: {
-      port: 4173,
-      strictPort: true,
-    },
+    server: { port: 5173, strictPort: true, host: '0.0.0.0' },
+    preview: { port: 4173, strictPort: true },
 
     define: {
-      // minimal shim for libs that expect process.env
       'process.env': {},
       __APP_ENV__: JSON.stringify(mode),
     },
 
-    esbuild: {
-      jsx: 'automatic',
-    },
+    esbuild: { jsx: 'automatic' },
   }
 })
