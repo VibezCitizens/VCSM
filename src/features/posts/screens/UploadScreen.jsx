@@ -1,24 +1,27 @@
+// src/features/posts/screens/UnifiedUploadScreen.jsx
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
-import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
+
+import { supabase } from '@/lib/supabaseClient';
 import getCroppedImg from '@/lib/cropImage';
 import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
+
 import { getTimeRemaining } from '@/utils/getTimeRemaining';
-import { compressVideo } from '@/utils/compressVideo'; // Video compressor
+import { compressVideo } from '@/utils/compressVideo';
 
 export default function UnifiedUploadScreen() {
   const navigate = useNavigate();
 
   // ------------------------ //
-  // USER + UPLOAD MODE LOGIC
+  // USER + MODE
   // ------------------------ //
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState('POST'); // POST | 24DROP | VDROP
 
   // ------------------------ //
-  // MEDIA + FORM STATES
+  // MEDIA + FORM STATE
   // ------------------------ //
   const [file, setFile] = useState(null);
   const [mediaType, setMediaType] = useState('');
@@ -26,7 +29,7 @@ export default function UnifiedUploadScreen() {
 
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null); // This will be null until crop is complete
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -38,69 +41,72 @@ export default function UnifiedUploadScreen() {
   const [processingMessage, setProcessingMessage] = useState('');
   const [compressionProgress, setCompressionProgress] = useState(0);
 
+  // Image post cool-down banner (POST + image only)
   const [imageUploadBlocked, setImageUploadBlocked] = useState(false);
   const [hoursRemaining, setHoursRemaining] = useState(0);
   const [minutesRemaining, setMinutesRemaining] = useState(0);
 
   const videoPreviewRef = useRef(null);
 
-  // --- Effects ---
-
+  // ------------------------ //
+  // EFFECTS
+  // ------------------------ //
   useEffect(() => {
-    // Fetch user on component mount
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) setUser(data.user);
     });
   }, []);
 
+  // revoke object URLs on unmount / when file changes
   useEffect(() => {
-    // Cleanup object URLs when component unmounts or file changes
     return () => {
-      if (filePreviewUrl) {
-        URL.revokeObjectURL(filePreviewUrl);
-      }
+      if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
     };
   }, [filePreviewUrl]);
 
-  // --- Utility Functions ---
-
+  // ------------------------ //
+  // HELPERS
+  // ------------------------ //
   const parseTags = (input) =>
-    input.replace(/,/g, ' ') // Replace commas with spaces
+    input
+      .replace(/,/g, ' ')
       .split(' ')
-      .map((tag) => (tag.startsWith('#') ? tag.slice(1) : tag)) // Remove leading '#'
-      .map((tag) => tag.trim()) // Trim whitespace
-      .filter(Boolean); // Remove empty strings
+      .map((t) => (t.startsWith('#') ? t.slice(1) : t))
+      .map((t) => t.trim())
+      .filter(Boolean);
 
-  const onCropComplete = useCallback((_, croppedPixels) => {
-    // This callback is crucial for setting croppedAreaPixels
-    setCroppedAreaPixels(croppedPixels);
+  const onCropComplete = useCallback((_, pixels) => {
+    setCroppedAreaPixels(pixels);
   }, []);
 
-  // ------------------------ //
-  // FILE HANDLING
-  // ------------------------ //
+  const resetFileState = () => {
+    setFile(null);
+    setMediaType('');
+    if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
+    setFilePreviewUrl(null);
+    setCroppedAreaPixels(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+  };
+
   const handleFileChange = (e) => {
     const selected = e.target.files?.[0];
     if (!selected) {
-      setFile(null);
-      setMediaType('');
-      if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
-      setFilePreviewUrl(null);
-      setCroppedAreaPixels(null); // Reset cropped area when no file or new file
+      resetFileState();
       return;
     }
 
     setFile(selected);
-    const type = selected.type.startsWith('image/')
+    const t = selected.type.startsWith('image/')
       ? 'image'
       : selected.type.startsWith('video/')
       ? 'video'
       : '';
-    setMediaType(type);
+    setMediaType(t);
 
-    if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl); // Clean up previous URL
-    setFilePreviewUrl(URL.createObjectURL(selected)); // Create new URL for preview
-    setCroppedAreaPixels(null); // Reset cropped area for new file, will be set by Cropper if applicable
+    if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
+    setFilePreviewUrl(URL.createObjectURL(selected));
+    setCroppedAreaPixels(null);
   };
 
   // ------------------------ //
@@ -114,101 +120,98 @@ export default function UnifiedUploadScreen() {
 
     const processedTags = parseTags(tags);
     setLoading(true);
-    setProcessingMessage('Starting upload...');
+    setProcessingMessage('Starting upload…');
 
     try {
-      // ========== MODE: 24DROP ==========
+      // ========== 24DROP (story: image or video) ==========
       if (mode === '24DROP') {
         if (!file || (mediaType !== 'image' && mediaType !== 'video')) {
           throw new Error('Media (image or video) is required for 24DROP.');
         }
 
-        setProcessingMessage(`Preparing ${mediaType} for 24DROP...`);
+        setProcessingMessage(`Preparing ${mediaType} for 24DROP…`);
+
         let uploadFile = file;
         if (mediaType === 'video') {
-          setProcessingMessage('Compressing video for 24DROP...');
-          uploadFile = await compressVideo(file, (progress) => {
-            setCompressionProgress(progress);
-            setProcessingMessage(`Compressing video: ${progress}%`);
+          setProcessingMessage('Compressing video for 24DROP…');
+          setCompressionProgress(0);
+          uploadFile = await compressVideo(file, (p) => {
+            setCompressionProgress(p);
+            setProcessingMessage(`Compressing video: ${p}%`);
           });
-          if (uploadFile.size > 25 * 1024 * 1024) { // Max size for story video
+          if (uploadFile.size > 25 * 1024 * 1024) {
             throw new Error('Compressed video for 24DROP is too large (max 25MB).');
           }
-        } else if (mediaType === 'image') {
-          // No cropping for 24DROP images, upload original
-          // If you want cropping for 24DROP images, you'd need a separate cropper instance or logic
         }
 
-        const uploadKey = `stories/${user.id}/${Date.now()}-${uploadFile.name}`;
-        setProcessingMessage('Uploading media to Cloudflare...');
-        const { url, error } = await uploadToCloudflare(uploadFile, uploadKey);
+        const key = `stories/${user.id}/${Date.now()}-${uploadFile.name}`;
+        setProcessingMessage('Uploading media to Cloudflare…');
+        const { url, error } = await uploadToCloudflare(uploadFile, key);
         if (error) throw new Error(error);
 
-        setProcessingMessage('Saving 24DROP details...');
-        const { error: insertErr } = await supabase.from('stories').insert({
+        setProcessingMessage('Saving 24DROP…');
+        const { error: dbErr } = await supabase.from('stories').insert({
           user_id: user.id,
           media_url: url,
           media_type: mediaType,
           caption: description.trim() || null,
         });
+        if (dbErr) throw new Error(dbErr.message);
 
-        if (insertErr) throw new Error(insertErr.message);
         toast.success('24DROP uploaded!');
-        setTimeout(() => navigate('/'), 1000); // Navigate after a short delay
+        setTimeout(() => navigate('/'), 800);
         return;
       }
 
-      // ========== MODE: VDROP (VIDEO POST) ==========
+      // ========== VDROP (video post) ==========
       if (mode === 'VDROP') {
-        if (mediaType !== 'video' || !file) throw new Error('Video file is required for VDROP.');
+        if (mediaType !== 'video' || !file) throw new Error('Video is required for VDROP.');
         if (!title.trim()) throw new Error('Title is required for VDROP.');
-        if (file.size > 100 * 1024 * 1024) { // Initial client-side video size limit
-          throw new Error('Max video size before compression is 100MB.');
-        }
+        if (file.size > 100 * 1024 * 1024) throw new Error('Max video size before compression is 100MB.');
 
-        setProcessingMessage('Compressing video for VDROP... This may take a while.');
-        setCompressionProgress(0); // Reset progress
-
-        const compressed = await compressVideo(file, (progress) => {
-          setCompressionProgress(progress);
-          setProcessingMessage(`Compressing video: ${progress}%`);
+        setProcessingMessage('Compressing video for VDROP…');
+        setCompressionProgress(0);
+        const compressed = await compressVideo(file, (p) => {
+          setCompressionProgress(p);
+          setProcessingMessage(`Compressing video: ${p}%`);
         });
-
-        if (compressed.size > 25 * 1024 * 1024) { // Final compressed size limit
-          throw new Error(`Compressed video is still too large (${(compressed.size / (1024 * 1024)).toFixed(2)}MB). Max 25MB.`);
+        if (compressed.size > 25 * 1024 * 1024) {
+          throw new Error(
+            `Compressed video is still too large (${(compressed.size / (1024 * 1024)).toFixed(2)}MB). Max 25MB.`
+          );
         }
 
         const key = `videos/${user.id}/${Date.now()}-${compressed.name}`;
-        setProcessingMessage('Uploading compressed video...');
+        setProcessingMessage('Uploading compressed video…');
         const { url, error } = await uploadToCloudflare(compressed, key);
         if (error) throw new Error(error);
 
-        setProcessingMessage('Saving VDROP details...');
+        setProcessingMessage('Saving VDROP…');
         const { error: dbErr } = await supabase.from('posts').insert({
           user_id: user.id,
           media_url: url,
           media_type: 'video',
           title: title.trim(),
           category: category.trim() || null,
-          tags: processedTags.length > 0 ? processedTags : null,
+          tags: processedTags.length ? processedTags : null,
           visibility,
-          text: description.trim() || null, // Description is optional for VDROP
+          text: description.trim() || null,
           post_type: 'video',
           created_at: new Date().toISOString(),
         });
-
         if (dbErr) throw new Error(dbErr.message);
+
         toast.success('VDROP posted!');
-        setTimeout(() => navigate('/'), 1000);
+        setTimeout(() => navigate('/'), 800);
         return;
       }
 
-      // ========== MODE: POST (TEXT or IMAGE) ==========
+      // ========== POST (text or image) ==========
       if (mode === 'POST') {
+        // TEXT ONLY
         if (!file) {
-          // TEXT-ONLY POST
           if (!description.trim()) throw new Error('Caption is required for text-only posts.');
-          setProcessingMessage('Saving text post...');
+          setProcessingMessage('Saving text post…');
           const { error } = await supabase.from('posts').insert({
             user_id: user.id,
             text: description.trim(),
@@ -219,15 +222,16 @@ export default function UnifiedUploadScreen() {
             post_type: 'text',
           });
           if (error) throw new Error(error.message);
+
           toast.success('Text post published!');
-          setTimeout(() => navigate('/'), 1000);
+          setTimeout(() => navigate('/'), 800);
           return;
         }
 
-        // IMAGE POST (requires cropping)
+        // IMAGE POST
         if (mediaType !== 'image') throw new Error('Only images can be uploaded in POST mode with media.');
 
-        // Cooldown check for image posts
+        // DB-driven cool-down (3h) — only for image posts
         const { data: recentPosts, error: fetchErr } = await supabase
           .from('posts')
           .select('id, created_at')
@@ -239,12 +243,12 @@ export default function UnifiedUploadScreen() {
         if (fetchErr) throw new Error(fetchErr.message);
 
         if (recentPosts?.length > 0) {
-          const lastPostTime = new Date(recentPosts[0].created_at).getTime();
-          const now = Date.now();
-          const limit = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+          const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at, 3 * 60); // 3h window
+          const nowMs = Date.now();
+          const lastMs = new Date(recentPosts[0].created_at).getTime();
+          const limitMs = 3 * 60 * 60 * 1000;
 
-          if (now - lastPostTime < limit) {
-            const { hours, minutes } = getTimeRemaining(recentPosts[0].created_at);
+          if (nowMs - lastMs < limitMs) {
             setHoursRemaining(hours);
             setMinutesRemaining(minutes);
             setImageUploadBlocked(true);
@@ -252,20 +256,19 @@ export default function UnifiedUploadScreen() {
           }
         }
 
-        setProcessingMessage('Cropping image...');
-        // Crucial check: croppedAreaPixels must be available for image cropping
-        if (!croppedAreaPixels) {
-          throw new Error('Please crop the image before uploading.');
-        }
+        // Crop is required for POST+image
+        if (!croppedAreaPixels) throw new Error('Please crop the image before uploading.');
+
+        setProcessingMessage('Cropping image…');
         const croppedBlob = await getCroppedImg(filePreviewUrl, croppedAreaPixels);
+
         const key = `images/${user.id}/${Date.now()}-cropped.jpg`;
+        setProcessingMessage('Uploading image…');
+        const { url, error: uploadErr } = await uploadToCloudflare(croppedBlob, key);
+        if (uploadErr) throw new Error(uploadErr);
 
-        setProcessingMessage('Uploading image...');
-        const { url, error: uploadError } = await uploadToCloudflare(croppedBlob, key);
-        if (uploadError) throw new Error(uploadError);
-
-        setProcessingMessage('Saving post details...');
-        const { error: dbError } = await supabase.from('posts').insert({
+        setProcessingMessage('Saving post…');
+        const { error: dbErr } = await supabase.from('posts').insert({
           user_id: user.id,
           text: description.trim() || null,
           media_url: url,
@@ -274,16 +277,14 @@ export default function UnifiedUploadScreen() {
           visibility,
           post_type: 'photo',
         });
+        if (dbErr) throw new Error(dbErr.message);
 
-        if (dbError) throw new Error(dbError.message);
         toast.success('Photo posted!');
-        setTimeout(() => navigate('/'), 1000);
+        setTimeout(() => navigate('/'), 800);
         return;
       }
 
-      // Fallback for unexpected mode
       throw new Error('Invalid upload mode selected.');
-
     } catch (err) {
       console.error('[Upload Error]', err);
       toast.error(err.message || 'Upload failed.');
@@ -294,23 +295,21 @@ export default function UnifiedUploadScreen() {
     }
   };
 
-  // --- Render Logic ---
-
+  // ------------------------ //
+  // RENDER HELPERS
+  // ------------------------ //
   const renderFilePreview = () => {
     if (!filePreviewUrl) {
       return <span className="text-sm text-zinc-400">Click to upload image or video</span>;
     }
 
     if (mediaType === 'image') {
-      // For POST mode, image will be handled by Cropper.
-      // For 24DROP, we show a simple preview.
-      if (mode === 'POST') {
-        // The Cropper component itself will render the image
-        return null; // Don't render a separate <img> here if Cropper is active
-      } else {
-        return <img src={filePreviewUrl} alt="Preview" className="rounded-xl w-full h-48 object-cover" />;
-      }
-    } else if (mediaType === 'video') {
+      // For POST we render the Cropper instead of a static <img>
+      if (mode === 'POST') return null;
+      return <img src={filePreviewUrl} alt="Preview" className="rounded-xl w-full h-48 object-cover" />;
+    }
+
+    if (mediaType === 'video') {
       return (
         <video
           ref={videoPreviewRef}
@@ -319,36 +318,33 @@ export default function UnifiedUploadScreen() {
           className="rounded-xl w-full h-48 object-cover"
         />
       );
-    } else {
-      return <span className="text-sm text-zinc-400">Selected: {file.name} (Unsupported preview)</span>;
     }
+
+    return <span className="text-sm text-zinc-400">Selected: {file?.name} (Unsupported preview)</span>;
   };
 
-
   // ------------------------ //
-  // UI RENDER LOGIC
+  // UI
   // ------------------------ //
   return (
     <div className="min-h-screen bg-black text-white p-4 flex flex-col items-center">
       <h1 className="text-2xl font-bold my-6">Upload to Vibez</h1>
 
-      {/* --- Tab Switcher: POST / 24DROP / VDROP --- */}
+      {/* Mode switch */}
       <div className="flex mb-4 space-x-2">
         {['POST', '24DROP', 'VDROP'].map((type) => (
           <button
             key={type}
             onClick={() => {
               setMode(type);
-              // Reset file and preview when changing mode to avoid confusion
-              setFile(null);
-              setMediaType('');
-              if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
-              setFilePreviewUrl(null);
-              setCroppedAreaPixels(null); // Crucial: Reset cropped area
+              resetFileState();
               setTitle('');
               setDescription('');
               setCategory('');
               setTags('');
+              setImageUploadBlocked(false);
+              setHoursRemaining(0);
+              setMinutesRemaining(0);
             }}
             className={`px-4 py-2 rounded-full font-semibold text-sm ${
               mode === type ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400'
@@ -360,33 +356,32 @@ export default function UnifiedUploadScreen() {
         ))}
       </div>
 
-      {/* Upload Blocked Message (Image Cooldown) */}
+      {/* Cool-down banner (POST + image only) */}
       {imageUploadBlocked && (
         <div className="bg-red-600 text-white text-sm text-center p-3 rounded mb-4 w-full max-w-md">
           Wait {hoursRemaining}h {minutesRemaining}m before posting another image.
         </div>
       )}
 
-      {/* Loading/Processing Message */}
+      {/* Processing banner + (optional) progress */}
       {loading && processingMessage && (
         <div className="bg-blue-600 text-white text-sm text-center p-3 rounded mb-4 w-full max-w-md">
           {processingMessage}
           {mediaType === 'video' && compressionProgress > 0 && compressionProgress < 100 && (
-            <div className="mt-2 w-full bg-blue-200 rounded-full h-2.5 dark:bg-blue-700">
-              <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${compressionProgress}%` }}></div>
+            <div className="mt-2 w-full bg-blue-200 rounded-full h-2.5">
+              <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${compressionProgress}%` }} />
             </div>
           )}
         </div>
       )}
 
-      {/* --- File Upload Input & Preview --- */}
-      {/* Only show the file input if not in a loading state */}
+      {/* File input + preview */}
       {!loading && (
         <label className="w-full max-w-md mb-4 border-2 border-dashed border-zinc-700 rounded-xl p-4 text-center cursor-pointer hover:border-white">
           <input
             type="file"
-            id="file-upload-input" // Added ID for better accessibility
-            accept={mode === 'VDROP' ? 'video/*' : 'image/*,video/*'} // Restrict file types based on mode
+            id="file-upload-input"
+            accept={mode === 'VDROP' ? 'video/*' : 'image/*,video/*'}
             onChange={handleFileChange}
             className="hidden"
             disabled={loading}
@@ -395,7 +390,7 @@ export default function UnifiedUploadScreen() {
         </label>
       )}
 
-      {/* Image Cropper - ONLY for POST mode and image media */}
+      {/* Cropper (POST + image) */}
       {mode === 'POST' && mediaType === 'image' && filePreviewUrl && (
         <>
           <div className="relative w-full max-w-md aspect-square bg-black mb-4 rounded-xl overflow-hidden">
@@ -403,12 +398,12 @@ export default function UnifiedUploadScreen() {
               image={filePreviewUrl}
               crop={crop}
               zoom={zoom}
-              aspect={1} // Assuming square crop for posts
+              aspect={1}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
-              showGrid={true}
-              objectFit="contain" // Added for better fit within the crop area
+              showGrid
+              objectFit="contain"
             />
           </div>
 
@@ -431,7 +426,7 @@ export default function UnifiedUploadScreen() {
         </>
       )}
 
-      {/* Conditional fields for video uploads (VDROP mode) */}
+      {/* VDROP only fields */}
       {mode === 'VDROP' && (
         <>
           <input
@@ -444,7 +439,7 @@ export default function UnifiedUploadScreen() {
           />
           <input
             type="text"
-            placeholder="Category (e.g. Dance, Comedy)"
+            placeholder="Category (e.g., Dance, Comedy)"
             className="bg-zinc-800 text-white p-3 rounded-xl w-full max-w-md mb-3 placeholder:text-zinc-400"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -453,7 +448,7 @@ export default function UnifiedUploadScreen() {
         </>
       )}
 
-      {/* Description/Caption - always present */}
+      {/* Caption / Description */}
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
@@ -463,12 +458,12 @@ export default function UnifiedUploadScreen() {
             ? 'Description (optional for VDROP)'
             : mode === '24DROP'
             ? 'Caption (optional for 24DROP)'
-            : 'Write a caption...' // POST mode
+            : 'Write a caption…'
         }
         disabled={loading}
       />
 
-      {/* Tags Input - always present */}
+      {/* Tags */}
       <input
         type="text"
         value={tags}
@@ -478,7 +473,7 @@ export default function UnifiedUploadScreen() {
         disabled={loading}
       />
 
-      {/* Visibility Selector - always present */}
+      {/* Visibility */}
       <select
         value={visibility}
         onChange={(e) => setVisibility(e.target.value)}
@@ -491,18 +486,18 @@ export default function UnifiedUploadScreen() {
         <option value="close_friends">Close Friends</option>
       </select>
 
-      {/* Upload Button */}
+      {/* Upload */}
       <button
         onClick={handleUpload}
         className="mt-6 bg-purple-600 text-white px-5 py-3 rounded-2xl shadow-md text-base font-semibold disabled:opacity-50 w-full max-w-md hover:bg-purple-700 transition-colors"
         disabled={
           !user ||
-          loading || // Disable if any processing is ongoing
-          (mode === 'POST' && mediaType === 'image' && imageUploadBlocked) || // Image cooldown for POST mode
-          (mode === 'VDROP' && (!file || mediaType !== 'video' || !title.trim())) || // VDROP requires video and title
-          (mode === '24DROP' && (!file || (mediaType !== 'image' && mediaType !== 'video'))) || // 24DROP requires media
-          (mode === 'POST' && !file && !description.trim()) || // Text-only POST requires description
-          (mode === 'POST' && mediaType === 'image' && !croppedAreaPixels) // Image POST requires cropping to be done
+          loading ||
+          (mode === 'POST' && mediaType === 'image' && imageUploadBlocked) ||
+          (mode === 'VDROP' && (!file || mediaType !== 'video' || !title.trim())) ||
+          (mode === '24DROP' && (!file || (mediaType !== 'image' && mediaType !== 'video'))) ||
+          (mode === 'POST' && !file && !description.trim()) ||
+          (mode === 'POST' && mediaType === 'image' && !croppedAreaPixels)
         }
       >
         {loading ? processingMessage : `Post to ${mode}`}

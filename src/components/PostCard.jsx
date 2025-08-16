@@ -48,7 +48,6 @@ function formatPostTime(iso) {
 
 const vibrate = (ms = 25) => navigator.vibrate?.(ms);
 
-// tiny logger helpers
 const gstart = (label, extra = {}) =>
   console.groupCollapsed(`%c[PostCard] ${label}`, 'color:#a78bfa;font-weight:bold', extra);
 const gend = () => console.groupEnd();
@@ -61,10 +60,40 @@ const logSupa = (label, { data, error, count } = {}) => {
 
 /* ------------------------------- component ------------------------------- */
 
-export default function PostCard({ post, user = null, onSubscriptionChange, onDelete }) {
+/**
+ * PostCard
+ *
+ * Props:
+ * - post (required)
+ * - user (optional author object)
+ * - onSubscriptionChange, onDelete (callbacks)
+ * - simple (boolean): when true, hide author/reactions/comments/etc and skip those queries.
+ * - showAuthor, enableReactions, enableComments, enableMessaging, enableSubscribe (advanced toggles)
+ */
+export default function PostCard({
+  post,
+  user = null,
+  onSubscriptionChange,
+  onDelete,
+
+  // 🔽 new knobs (keep defaults for legacy screens)
+  simple = false,
+  showAuthor = true,
+  enableReactions = true,
+  enableComments = true,
+  enableMessaging = true,
+  enableSubscribe = true,
+}) {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
+
+  // Resolve effective flags (simple mode forces most things off)
+  const SHOW_AUTHOR      = simple ? false : showAuthor;
+  const ENABLE_REACTIONS = simple ? false : enableReactions;
+  const ENABLE_COMMENTS  = simple ? false : enableComments;
+  const ENABLE_MSG       = simple ? false : enableMessaging;
+  const ENABLE_SUBSCRIBE = simple ? false : enableSubscribe;
 
   // Author resolution
   const authorId = user?.id ?? post?.user_id ?? null;
@@ -75,11 +104,11 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
     photo_url: post?.profiles?.photo_url ?? null,
   };
 
-  // Reaction counters + my reaction (init with denorm counts when available)
+  // Reaction counters + my reaction
   const [likeCount, setLikeCount] = useState(post?.like_count ?? 0);
   const [dislikeCount, setDislikeCount] = useState(post?.dislike_count ?? 0);
   const [roseCount, setRoseCount] = useState(post?.rose_count ?? 0);
-  const [userReaction, setUserReaction] = useState(null); // 'like'|'dislike'|null
+  const [userReaction, setUserReaction] = useState(null);
 
   // Comments
   const [comments, setComments] = useState([]);
@@ -109,6 +138,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   /* ----------------------------- data fetching ----------------------------- */
 
   const fetchComments = async () => {
+    if (!ENABLE_COMMENTS) return;
     gstart('fetchComments', { postId: post?.id });
     try {
       const res = await supabase
@@ -131,6 +161,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   const fetchReactionSnapshot = async () => {
+    if (!ENABLE_REACTIONS) return;
     gstart('fetchReactionSnapshot', { postId: post?.id, viewer: currentUser?.id });
     try {
       const s = await fetchReactionState(post.id);
@@ -146,6 +177,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   const checkSubscription = async () => {
+    if (!ENABLE_SUBSCRIBE) return;
     gstart('checkSubscription', { viewer: currentUser?.id, authorId });
     try {
       if (!currentUser?.id || !authorId || currentUser.id === authorId) {
@@ -169,6 +201,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   const verifyAuthorExists = async () => {
+    // still needed to allow delete by owner
     gstart('verifyAuthorExists', { authorId });
     try {
       if (!authorId) {
@@ -187,42 +220,47 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   useEffect(() => {
-    gstart('mount/useEffect', { postId: post?.id, viewer: currentUser?.id, authorId });
+    gstart('mount/useEffect', { postId: post?.id, viewer: currentUser?.id, authorId, simple });
 
     fetchReactionSnapshot();
     fetchComments();
     checkSubscription();
     verifyAuthorExists();
 
-    // Realtime counters via triggers to posts.{like_count,dislike_count,rose_count}
-    const unsubscribeCounters = subscribePostCounters(post.id, (patch) => {
-      if (patch.likeCount !== undefined) setLikeCount(patch.likeCount);
-      if (patch.dislikeCount !== undefined) setDislikeCount(patch.dislikeCount);
-      if (patch.roseCount !== undefined) setRoseCount(patch.roseCount);
-    });
+    // Realtime counters
+    const unsubscribeCounters = ENABLE_REACTIONS
+      ? subscribePostCounters(post.id, (patch) => {
+          if (patch.likeCount !== undefined) setLikeCount(patch.likeCount);
+          if (patch.dislikeCount !== undefined) setDislikeCount(patch.dislikeCount);
+          if (patch.roseCount !== undefined) setRoseCount(patch.roseCount);
+        })
+      : () => {};
 
     // Realtime comments
-    const commentsSub = supabase
-      .channel(`comments-${post.id}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'post_comments', filter: `post_id=eq.${post.id}` },
-        fetchComments
-      )
-      .subscribe();
+    const commentsSub = ENABLE_COMMENTS
+      ? supabase
+          .channel(`comments-${post.id}`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'post_comments', filter: `post_id=eq.${post.id}` },
+            fetchComments
+          )
+          .subscribe()
+      : null;
 
     gend();
 
     return () => {
       unsubscribeCounters?.();
-      supabase.removeChannel(commentsSub);
+      if (commentsSub) supabase.removeChannel(commentsSub);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [post.id, currentUser?.id, authorId]);
+  }, [post.id, currentUser?.id, authorId, ENABLE_REACTIONS, ENABLE_COMMENTS, ENABLE_SUBSCRIBE, simple]);
 
   /* -------------------------------- actions -------------------------------- */
 
   const handlePostComment = async () => {
+    if (!ENABLE_COMMENTS) return;
     gstart('handlePostComment');
     try {
       const uid = currentUser?.id;
@@ -248,6 +286,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   const handleReact = async (type) => {
+    if (!ENABLE_REACTIONS) return;
     gstart('handleReact', { type });
     try {
       vibrate();
@@ -255,7 +294,6 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
       if (!uid) return;
 
       if (type === 'rose') {
-        // 🌹 multi-rose: 1 per tap (server clamps 1..100 if you add quick buttons later)
         setRoseCount((c) => c + 1); // optimistic
         try {
           await giveRoses(post.id, 1);
@@ -264,7 +302,6 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
           throw roseErr;
         }
       } else {
-        // 👍/👎 single reaction per user (toggle or switch)
         const prev = userReaction; // 'like'|'dislike'|null
         const next =
           type === 'like' ? (prev === 'like' ? null : 'like') : (prev === 'dislike' ? null : 'dislike');
@@ -285,13 +322,11 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
         try {
           await setReaction(post.id, next); // RPC set_post_reaction
         } catch (tErr) {
-          // reset from server truth on failure
           await fetchReactionSnapshot();
           throw tErr;
         }
       }
 
-      // final sync with server state
       await fetchReactionSnapshot();
     } catch (e) {
       alert(`Failed to react: ${e?.message || e}`);
@@ -316,6 +351,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   const handleToggleSubscribe = async () => {
+    if (!ENABLE_SUBSCRIBE) return;
     gstart('handleToggleSubscribe', { viewer: currentUser?.id, authorId, isSubscribed, authorExists });
     try {
       const uid = currentUser?.id;
@@ -350,6 +386,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
   };
 
   const handleMessage = async () => {
+    if (!ENABLE_MSG) return;
     gstart('handleMessage');
     try {
       const uid = currentUser?.id;
@@ -367,50 +404,66 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
 
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow mb-4 mx-2 relative">
-      {/* Header: author + actions */}
-      <div className="flex items-center justify-between mb-2">
-        <UserLink
-          user={author}
-          avatarSize="w-9 h-9"
-          avatarShape="rounded-md"
-          textSize="text-sm"
-          showTimestamp
-          timestamp={formatPostTime(post.created_at)}
-        />
-        <div className="flex gap-2 items-center">
-          {currentUser?.id && authorId && authorExists && currentUser.id !== authorId && (
-            <>
-              <button
-                onClick={handleToggleSubscribe}
-                className={`text-xs px-2 py-1 rounded ${isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
-              >
-                {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-              </button>
-              <button
-                onClick={handleMessage}
-                className="text-xs px-2 py-1 rounded bg-neutral-700 text-white"
-              >
-                Message
-              </button>
-            </>
-          )}
-
-          <div ref={menuRef} className="relative">
-            <button onClick={() => setShowMenu((p) => !p)} aria-label="Post menu">⋯</button>
-            {showMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded shadow p-2 z-50">
-                {currentUser?.id === authorId ? (
-                  <button onClick={handleDeletePost} className="text-red-400">
-                    Delete Post
+      {/* Header */}
+      {SHOW_AUTHOR ? (
+        <div className="flex items-center justify-between mb-2">
+          <UserLink
+            user={author}
+            avatarSize="w-9 h-9"
+            avatarShape="rounded-md"
+            textSize="text-sm"
+            showTimestamp
+            timestamp={formatPostTime(post.created_at)}
+          />
+          <div className="flex gap-2 items-center">
+            {currentUser?.id && authorId && authorExists && currentUser.id !== authorId && (
+              <>
+                {ENABLE_SUBSCRIBE && (
+                  <button
+                    onClick={handleToggleSubscribe}
+                    className={`text-xs px-2 py-1 rounded ${isSubscribed ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
+                  >
+                    {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
                   </button>
-                ) : (
-                  <button className="text-yellow-400">Report Post</button>
                 )}
-              </div>
+                {ENABLE_MSG && (
+                  <button
+                    onClick={handleMessage}
+                    className="text-xs px-2 py-1 rounded bg-neutral-700 text-white"
+                  >
+                    Message
+                  </button>
+                )}
+              </>
             )}
+
+            <div ref={menuRef} className="relative">
+              <button onClick={() => setShowMenu((p) => !p)} aria-label="Post menu">⋯</button>
+              {showMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded shadow p-2 z-50">
+                  {currentUser?.id === authorId ? (
+                    <button onClick={handleDeletePost} className="text-red-400">
+                      Delete Post
+                    </button>
+                  ) : !simple ? (
+                    <button className="text-yellow-400">Report Post</button>
+                  ) : null}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        // Minimal header (timestamp only + delete if owner)
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-white/60">{formatPostTime(post.created_at)}</span>
+          {currentUser?.id === authorId && (
+            <button onClick={handleDeletePost} className="text-xs px-2 py-1 rounded bg-neutral-700 text-white">
+              Delete
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Body: text, media, tags */}
       {post.text && (
@@ -429,7 +482,7 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
         <video src={post.media_url} controls className="w-full max-h-80 rounded-xl mb-3" />
       )}
 
-      {Array.isArray(post.tags) && post.tags.length > 0 && (
+      {!simple && Array.isArray(post.tags) && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
           {post.tags.map((tag, i) => (
             <Link
@@ -444,76 +497,80 @@ export default function PostCard({ post, user = null, onSubscriptionChange, onDe
       )}
 
       {/* Reactions */}
-      <div className="flex flex-wrap gap-3 items-center mb-2">
-        <button
-          onClick={() => handleReact('like')}
-          className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
-          aria-pressed={userReaction === 'like'}
-        >
-          👍 {likeCount}
-        </button>
-        <button
-          onClick={() => handleReact('dislike')}
-          className={`text-sm px-2 py-1 rounded ${userReaction === 'dislike' ? 'bg-red-600' : 'bg-neutral-700'} text-white`}
-          aria-pressed={userReaction === 'dislike'}
-        >
-          👎 {dislikeCount}
-        </button>
-        <button
-          onClick={() => handleReact('rose')}
-          className="text-sm px-2 py-1 rounded bg-neutral-700 text-white"
-          title="Send a rose"
-        >
-          🌹 {roseCount}
-        </button>
-      </div>
-
-      {/* Quick comment input */}
-      <div className="flex mt-2">
-        <input
-          value={replyText}
-          onChange={(e) => setReplyText(e.target.value)}
-          className="bg-neutral-900 text-white p-2 rounded-l w-full text-sm"
-          placeholder="Write a comment..."
-        />
-        <button
-          onClick={handlePostComment}
-          className="bg-purple-600 px-4 rounded-r text-sm text-white"
-        >
-          Post
-        </button>
-      </div>
-
-      {/* View/hide comments */}
-      <div className="mt-2">
-        {comments.length > 0 ? (
-          showComments ? (
-            <button onClick={() => setShowComments(false)} className="text-xs text-purple-400">
-              Hide comments ({comments.length})
-            </button>
-          ) : (
-            <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">
-              View comments ({comments.length})
-            </button>
-          )
-        ) : (
-          !showComments && (
-            <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">
-              Be the first to comment!
-            </button>
-          )
-        )}
-      </div>
-
-      {/* Render comments */}
-      {showComments && (
-        <div className="space-y-2 mt-2">
-          {comments.length === 0 ? (
-            <p className="text-neutral-400 text-sm text-center py-2">No comments yet.</p>
-          ) : (
-            comments.map((c) => <CommentCard key={c.id} comment={c} />)
-          )}
+      {ENABLE_REACTIONS && (
+        <div className="flex flex-wrap gap-3 items-center mb-2">
+          <button
+            onClick={() => handleReact('like')}
+            className={`text-sm px-2 py-1 rounded ${userReaction === 'like' ? 'bg-purple-600' : 'bg-neutral-700'} text-white`}
+            aria-pressed={userReaction === 'like'}
+          >
+            👍 {likeCount}
+          </button>
+          <button
+            onClick={() => handleReact('dislike')}
+            className={`text-sm px-2 py-1 rounded ${userReaction === 'dislike' ? 'bg-red-600' : 'bg-neutral-700'} text-white`}
+            aria-pressed={userReaction === 'dislike'}
+          >
+            👎 {dislikeCount}
+          </button>
+          <button
+            onClick={() => handleReact('rose')}
+            className="text-sm px-2 py-1 rounded bg-neutral-700 text-white"
+            title="Send a rose"
+          >
+            🌹 {roseCount}
+          </button>
         </div>
+      )}
+
+      {/* Comments */}
+      {ENABLE_COMMENTS && (
+        <>
+          <div className="flex mt-2">
+            <input
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              className="bg-neutral-900 text-white p-2 rounded-l w-full text-sm"
+              placeholder="Write a comment..."
+            />
+            <button
+              onClick={handlePostComment}
+              className="bg-purple-600 px-4 rounded-r text-sm text-white"
+            >
+              Post
+            </button>
+          </div>
+
+          <div className="mt-2">
+            {comments.length > 0 ? (
+              showComments ? (
+                <button onClick={() => setShowComments(false)} className="text-xs text-purple-400">
+                  Hide comments ({comments.length})
+                </button>
+              ) : (
+                <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">
+                  View comments ({comments.length})
+                </button>
+              )
+            ) : (
+              !showComments && (
+                <button onClick={() => setShowComments(true)} className="text-xs text-purple-400">
+                  Be the first to comment!
+                </button>
+              )
+            )}
+          </div>
+
+          {showComments && (
+            <div className="space-y-2 mt-2">
+              {comments.length === 0 ? (
+                <p className="text-neutral-400 text-sm text-center py-2">No comments yet.</p>
+              ) : (
+                comments.map((c) => <CommentCard key={c.id} comment={c} />)
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
