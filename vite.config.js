@@ -1,3 +1,4 @@
+// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import Unocss from 'unocss/vite'
@@ -9,7 +10,7 @@ export default defineConfig({
     Unocss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt'],
+      includeAssets: ['favicon.ico', 'robots.txt'], // ✅ use .ico
       manifest: {
         name: 'Vibez Citizens',
         short_name: 'Vibez',
@@ -30,13 +31,16 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        navigateFallback: '/index.html', // ✅ for SPA routing
+      },
     }),
   ],
   resolve: {
     alias: {
       '@': '/src',
     },
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'], // ✅ add this
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
   },
   optimizeDeps: {
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'],
