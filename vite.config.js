@@ -26,10 +26,14 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         injectRegister: 'auto',
         workbox: {
+          // ---- SW update & cache hygiene ----
+          skipWaiting: true,              // <— ensure new SW activates immediately
+          clientsClaim: true,             // <— take control without manual reload
           cleanupOutdatedCaches: true,
-          clientsClaim: true,
+
           navigateFallback: '/index.html',
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+
           runtimeCaching: [
             // Cache your public CDN assets (Cloudflare R2)
             {
@@ -41,7 +45,7 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
-            // Cache Supabase storage objects (public buckets) if you serve them directly
+            // Cache Supabase storage objects (public buckets)
             {
               urlPattern: new RegExp(`^${ENV.SUPABASE_URL.replace(/\./g, '\\.').replace(/\//g, '\\/')}\\/storage\\/v1\\/object\\/public\\/.*`),
               handler: 'CacheFirst',
@@ -51,7 +55,7 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
-            // API calls to Supabase REST/GraphQL: prefer network, fallback to cache
+            // Supabase API calls: network first, fallback to cache
             {
               urlPattern: new RegExp(`^${ENV.SUPABASE_URL.replace(/\./g, '\\.').replace(/\//g, '\\/')}\\/.*`),
               handler: 'NetworkFirst',
@@ -62,7 +66,7 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
-            // Google Fonts (optional but common)
+            // Google Fonts
             {
               urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
               handler: 'CacheFirst',
@@ -93,55 +97,22 @@ export default defineConfig(({ mode }) => {
           theme_color: '#a855f7',
           categories: ['social', 'productivity', 'navigation'],
           icons: [
-            {
-              src: '/icon-192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/icon-192-maskable.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'maskable',
-            },
-            {
-              src: '/icon-512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/icon-512-maskable.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable',
-            },
+            { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: '/icon-192-maskable.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+            { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: '/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           ],
           screenshots: [
-            {
-              src: '/screenshots/home-1080x1920.png',
-              sizes: '1080x1920',
-              type: 'image/png',
-              form_factor: 'narrow',
-              label: 'Home feed',
-            },
-            {
-              src: '/screenshots/map-1920x1080.png',
-              sizes: '1920x1080',
-              type: 'image/png',
-              form_factor: 'wide',
-              label: 'VGrid map',
-            },
+            { src: '/screenshots/home-1080x1920.png', sizes: '1080x1920', type: 'image/png', form_factor: 'narrow', label: 'Home feed' },
+            { src: '/screenshots/map-1920x1080.png', sizes: '1920x1080', type: 'image/png', form_factor: 'wide', label: 'VGrid map' },
           ],
           shortcuts: [
             { name: 'Open Feed', short_name: 'Feed', url: '/feed' },
             { name: 'VGrid', short_name: 'VGrid', url: '/grid' },
             { name: 'Messages', short_name: 'DMs', url: '/messages' },
           ],
-          handle_links: 'preferred', // deep-link handling on some platforms
+          handle_links: 'preferred',
         },
-        // Enable dev service worker for local PWA testing only when explicitly set
         devOptions: {
           enabled: process.env.VITE_PWA_DEV === 'true',
           suppressWarnings: true,
@@ -149,26 +120,34 @@ export default defineConfig(({ mode }) => {
         },
       }),
     ],
+
     resolve: {
-      alias: {
-        '@': '/src',
-      },
+      alias: { '@': '/src' },
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+
+      // 🔑 Make sure only ONE copy of React is used, and that it gets bundled.
+      dedupe: ['react', 'react-dom'], // <— ADD THIS
     },
+
     optimizeDeps: {
+      // 🔑 Pre-bundle React so it’s guaranteed in your vendor chunk.
+      include: ['react', 'react-dom'], // <— ADD THIS
       exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'],
     },
+
     build: {
       target: 'es2020',
       sourcemap: mode === 'development' ? true : false,
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
-        external: ['@ffmpeg/core'],
+        // DO NOT externalize react/react-dom (root cause of React=undefined)
+        external: ['@ffmpeg/core'], // keep only ffmpeg external
+
         output: {
           // sensible vendor/code-splitting for faster loads + better caching
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react'
+              if (id.includes('react')) return 'vendor-react'       // bundles react/* here
               if (id.includes('supabase')) return 'vendor-supabase'
               if (id.includes('maplibre') || id.includes('leaflet') || id.includes('mapbox')) return 'vendor-maps'
               return 'vendor'
@@ -177,24 +156,29 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+
     server: {
       port: 5173,
       strictPort: true,
+      host: '0.0.0.0',
       // If you ever need SharedArrayBuffer (e.g., for ffmpeg WASM), uncomment:
       // headers: {
       //   'Cross-Origin-Opener-Policy': 'same-origin',
       //   'Cross-Origin-Embedder-Policy': 'require-corp',
       // },
     },
+
     preview: {
       port: 4173,
       strictPort: true,
     },
+
     define: {
       // minimal shim for libs that expect process.env
       'process.env': {},
       __APP_ENV__: JSON.stringify(mode),
     },
+
     esbuild: {
       jsx: 'automatic',
     },
