@@ -1,48 +1,45 @@
 // src/lib/postReactions.js
-import { supabase } from '@/lib/supabaseClient';
+import { db } from '@/data/data';
 
-export async function toggleReaction(postId, userId, type) {
-  if (!userId) return;
+/**
+ * Toggle/switch a like/dislike for a *user post* via the DAL.
+ * - Passing the same type again removes it (toggle off)
+ * - Passing the other type switches it
+ *
+ * @param {string} postId
+ * @param {string} userId
+ * @param {'like'|'dislike'} type
+ * @param {Object} [opts]
+ * @param {'user'|'vport'} [opts.authorType='user']  // change if you ever call this for vport posts
+ * @param {boolean} [opts.actingAsVport=false]
+ * @param {string|null} [opts.vportId=null]
+ */
+export async function toggleReaction(postId, userId, type, opts = {}) {
+  const {
+    authorType = 'user',
+    actingAsVport = false,
+    vportId = null,
+  } = opts;
 
-  const { data: existing } = await supabase
-    .from('post_reactions')
-    .select('*')
-    .eq('post_id', postId)
-    .eq('user_id', userId)
-    .eq('type', type)
-    .maybeSingle();
+  if (!postId || !userId || !type) throw new Error('Missing params');
 
-  if (existing) {
-    // If a reaction of the same type exists, delete it (toggle off)
-    await supabase.from('post_reactions').delete().eq('id', existing.id);
-  } else {
-    // If no reaction of the same type exists, proceed to insert/update
-
-    // If the new reaction is 'like' or 'dislike', delete any existing 'like' or 'dislike' from the user for this post
-    if (type === 'like' || type === 'dislike') {
-      await supabase
-        .from('post_reactions')
-        .delete()
-        .eq('post_id', postId)
-        .eq('user_id', userId)
-        .in('type', ['like', 'dislike']); // Deletes either 'like' or 'dislike' if present
-    }
-
-    // Insert the new reaction
-    await supabase.from('post_reactions').insert({
-      post_id: postId,
-      user_id: userId,
-      type,
-    });
-  }
+  return db.reactions.setForPost({
+    authorType,
+    postId,
+    kind: type,
+    userId,
+    actingAsVport,
+    vportId,
+  });
 }
 
-export async function sendRose(postId, userId) {
-  if (!userId) return;
-  // Simply insert a new rose reaction. Roses are not mutually exclusive with likes/dislikes
-  await supabase.from('post_reactions').insert({
-    post_id: postId,
-    user_id: userId,
-    type: 'rose',
-  });
+/**
+ * Give roses (unlimited) to a *user post* via the DAL.
+ * @param {string} postId
+ * @param {string} userId
+ * @param {number} [qty=1]
+ */
+export async function sendRose(postId, userId, qty = 1) {
+  if (!postId || !userId) throw new Error('Missing params');
+  return db.roses.give({ postId, fromUserId: userId, qty });
 }

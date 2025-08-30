@@ -1,31 +1,63 @@
 ﻿// src/App.jsx
+import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-
-// Public Screens
-import LoginScreen from '@/features/auth/screens/LoginScreen';
-import RegisterScreen from '@/features/auth/screens/RegisterScreen';
-import ResetPasswordScreen from '@/features/auth/screens/ResetPasswordScreen';
-
-// Main Screens
-import CentralFeed from '@/features/feed/screens/CentralFeed';
-import ProfileScreen from '@/features/profile/screens/ProfileScreen';
-import UploadScreen from '@/features/posts/screens/UploadScreen';
-import ChatRoutes from '@/features/chat/ChatRoutes';
-import SettingsScreen from '@/features/settings/screens/SettingsScreen';
-import VoidScreen from '@/TheVoid/VoidScreen.jsx';
-import ExploreScreen from '@/features/explore/ExploreScreen';
-import SingleVideoEntryScreen from '@/features/profile/tabs/SingleVideoEntryScreen';
-import Notifications from '@/features/notificationcenter/Notifications';
-import NotiViewStoryScreen from '@/features/notificationcenter/NotiViewStoryScreen';
-import NotiViewPostScreen from '@/features/notificationcenter/NotiViewPostScreen';
-import NotiViewMessageScreen from '@/features/notificationcenter/NotiViewMessageScreen';
-
-// VGrid (map) Screen
-import VGridScreen from '@/features/vgrid/VGridScreen';
-
-// Layout
 import Layout from '@/components/Layout';
+
+/* Lazy screens */
+// Public
+const LoginScreen            = lazy(() => import('@/features/auth/screens/LoginScreen'));
+const RegisterScreen         = lazy(() => import('@/features/auth/screens/RegisterScreen'));
+const ResetPasswordScreen    = lazy(() => import('@/features/auth/screens/ResetPasswordScreen'));
+
+// Main
+const CentralFeed            = lazy(() => import('@/features/feed/screens/CentralFeed'));
+const ProfileScreen          = lazy(() => import('@/features/profile/screens/ProfileScreen'));
+const UploadScreen           = lazy(() => import('@/features/posts/screens/UploadScreen'));
+const ChatRoutes             = lazy(() => import('@/features/chat/ChatRoutes'));
+const SettingsScreen         = lazy(() => import('@/features/settings/screens/SettingsScreen'));
+const VoidScreen             = lazy(() => import('@/TheVoid/VoidScreen.jsx'));
+const ExploreScreen          = lazy(() => import('@/features/explore/ExploreScreen'));
+const SingleVideoEntryScreen = lazy(() => import('@/features/profile/tabs/SingleVideoEntryScreen'));
+
+// Notifications
+const Notifications          = lazy(() => import('@/features/notificationcenter/Notifications'));
+const NotiViewStoryScreen    = lazy(() => import('@/features/notificationcenter/NotiViewStoryScreen'));
+const NotiViewPostScreen     = lazy(() => import('@/features/notificationcenter/NotiViewPostScreen'));
+const NotiViewMessageScreen  = lazy(() => import('@/features/notificationcenter/NotiViewMessageScreen'));
+
+// VGrid / VPort
+const VGridScreen            = lazy(() => import('@/features/vgrid/VGridScreen'));
+const VportProfileScreen     = lazy(() => import('@/features/profile/screens/VportProfileScreen'));
+
+// VPORT chat
+const VChatRoutes            = lazy(() => import('@/features/chat/vport/VChatRoutes'));
+
+/* Light placeholders */
+function VPortsHomePlaceholder() {
+  return (
+    <div className="min-h-[100dvh] bg-black text-white p-6">
+      <h1 className="text-2xl font-bold">VPORTs</h1>
+      <p className="text-zinc-400 mt-2">Manage your VPORTs here. (Placeholder)</p>
+    </div>
+  );
+}
+function CreateVPortPlaceholder() {
+  return (
+    <div className="min-h-[100dvh] bg-black text-white p-6">
+      <h1 className="text-2xl font-bold">Create a VPORT</h1>
+      <p className="text-zinc-400 mt-2">Form coming soon. (Placeholder)</p>
+    </div>
+  );
+}
+function SettingsSubPlaceholder({ title }) {
+  return (
+    <div className="min-h-[100dvh] bg-black text-white p-6">
+      <h1 className="text-2xl font-bold">{title}</h1>
+      <p className="text-zinc-400 mt-2">This page is a placeholder. Build me later.</p>
+    </div>
+  );
+}
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -39,43 +71,87 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<LoginScreen />} />
-      <Route path="/register" element={<RegisterScreen />} />
-      <Route path="/reset" element={<ResetPasswordScreen />} />
+    <Suspense fallback={<div className="text-center text-neutral-500 py-10">Loading…</div>}>
+      <Routes>
+        {/* Public */}
+        <Route path="/login" element={<LoginScreen />} />
+        <Route path="/register" element={<RegisterScreen />} />
+        <Route path="/reset" element={<ResetPasswordScreen />} />
 
-      {/* Protected Routes */}
-      {user ? (
-        <>
-          {/* Core App Screens */}
-          <Route path="/" element={<Layout><CentralFeed /></Layout>} />
-          <Route path="/me" element={<Layout><ProfileScreen /></Layout>} />
-          <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
-          <Route path="/profile/:userId" element={<Layout><ProfileScreen /></Layout>} />
-          <Route path="/upload" element={<Layout><UploadScreen /></Layout>} />
+        {/* Protected */}
+        {user ? (
+          <>
+            {/* Make CentralFeed the index + keep explicit "/" for clarity */}
+            <Route
+              index
+              element={
+                <Layout>
+                  <CentralFeed />
+                </Layout>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <Layout>
+                  <CentralFeed />
+                </Layout>
+              }
+            />
 
-          {/* Chat */}
-          <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
+            {/* USER profiles */}
+            <Route path="/me" element={<Layout><ProfileScreen /></Layout>} />
+            <Route path="/u/:username" element={<Layout><ProfileScreen /></Layout>} />
+            <Route path="/profile/:userId" element={<Layout><ProfileScreen /></Layout>} />
+            <Route path="/uid/:userId" element={<Layout><ProfileScreen /></Layout>} />
 
-          <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
-          <Route path="/explore" element={<Layout><ExploreScreen /></Layout>} />
-          <Route path="/void" element={<Layout><VoidScreen /></Layout>} />
-          <Route path="/video/:videoId" element={<Layout><SingleVideoEntryScreen /></Layout>} />
+            {/* VPORT profiles */}
+            <Route path="/v/:vportId" element={<Layout><ProfileScreen isVportRoute /></Layout>} />
+            <Route path="/vp/:vportSlug" element={<Layout><ProfileScreen isVportRoute isSlug /></Layout>} />
 
-          {/* Notifications */}
-          <Route path="/notifications" element={<Layout><Notifications /></Layout>} />
-          <Route path="/noti/story/:storyId" element={<Layout><NotiViewStoryScreen /></Layout>} />
-          <Route path="/noti/post/:postId" element={<Layout><NotiViewPostScreen /></Layout>} />
-          <Route path="/noti/message/:conversationId" element={<Layout><NotiViewMessageScreen /></Layout>} />
+            {/* Upload */}
+            <Route path="/upload" element={<Layout><UploadScreen /></Layout>} />
 
-          {/* VGrid Map */}
-          <Route path="/vgrid" element={<Layout><VGridScreen /></Layout>} />
-        </>
-      ) : (
-        // If not authenticated, redirect everything to login
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      )}
-    </Routes>
+            {/* Chat */}
+            <Route path="/chat/*" element={<Layout><ChatRoutes /></Layout>} />
+            <Route path="/vchat/*" element={<Layout><VChatRoutes /></Layout>} />
+
+            {/* Settings */}
+            <Route path="/settings" element={<Layout><SettingsScreen /></Layout>} />
+            <Route path="/settings/account" element={<Layout><SettingsSubPlaceholder title="Account" /></Layout>} />
+            <Route path="/settings/privacy" element={<Layout><SettingsSubPlaceholder title="Privacy & Security" /></Layout>} />
+            <Route path="/settings/notifications" element={<Layout><SettingsSubPlaceholder title="Notifications" /></Layout>} />
+            <Route path="/settings/account-settings" element={<Layout><SettingsSubPlaceholder title="Account Settings" /></Layout>} />
+
+            {/* Explore / Void / Single video */}
+            <Route path="/explore" element={<Layout><ExploreScreen /></Layout>} />
+            <Route path="/void" element={<Layout><VoidScreen /></Layout>} />
+            <Route path="/video/:videoId" element={<Layout><SingleVideoEntryScreen /></Layout>} />
+
+            {/* Notifications */}
+            <Route path="/notifications" element={<Layout><Notifications /></Layout>} />
+            <Route path="/noti/story/:storyId" element={<Layout><NotiViewStoryScreen /></Layout>} />
+            <Route path="/noti/post/:postId" element={<Layout><NotiViewPostScreen /></Layout>} />
+            <Route path="/noti/message/:conversationId" element={<Layout><NotiViewMessageScreen /></Layout>} />
+
+            {/* VGrid Map */}
+            <Route path="/vgrid" element={<Layout><VGridScreen /></Layout>} />
+
+            {/* VPORTs hub & create (placeholders) */}
+            <Route path="/vports" element={<Layout><VPortsHomePlaceholder /></Layout>} />
+            <Route path="/vports/new" element={<Layout><CreateVPortPlaceholder /></Layout>} />
+
+            {/* Existing VPort page (map detail) */}
+            <Route path="/vport/:id" element={<Layout><VportProfileScreen /></Layout>} />
+
+            {/* Authenticated catch-all -> home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        ) : (
+          // Not logged in -> login
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        )}
+      </Routes>
+    </Suspense>
   );
 }

@@ -4,8 +4,6 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import SortableFriend from './components/SortableFriend';
 
-
-
 export default function FriendsListEditor({ userId }) {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,42 +12,36 @@ export default function FriendsListEditor({ userId }) {
     const fetchRankedFriends = async () => {
       setLoading(true);
       try {
-        // Get who I follow
         const { data: following } = await supabase
           .from('followers')
           .select('followed_id')
           .eq('follower_id', userId);
 
-        // Get who follows me
         const { data: followers } = await supabase
           .from('followers')
           .select('follower_id')
           .eq('followed_id', userId);
 
-        // Get mutual friend IDs
-        const mutualIds = following
+        const mutualIds = (following || [])
           .map(f => f.followed_id)
-          .filter(id => followers.map(f => f.follower_id).includes(id));
+          .filter(id => (followers || []).map(f => f.follower_id).includes(id));
 
-        // Get existing ranks
         const { data: ranks } = await supabase
           .from('friend_ranks')
           .select('friend_id, rank')
           .eq('user_id', userId);
 
         const rankMap = {};
-        ranks?.forEach(r => {
+        (ranks || []).forEach(r => {
           rankMap[r.friend_id] = r.rank;
         });
 
-        // Get profile data for mutual friends
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, username, display_name, photo_url')
           .in('id', mutualIds);
 
-        // Sort by rank or fallback
-        const sorted = [...profiles].sort((a, b) => {
+        const sorted = [...(profiles || [])].sort((a, b) => {
           const rankA = rankMap[a.id] ?? 999;
           const rankB = rankMap[b.id] ?? 999;
           return rankA - rankB;
@@ -63,7 +55,7 @@ export default function FriendsListEditor({ userId }) {
       }
     };
 
-    fetchRankedFriends();
+    if (userId) fetchRankedFriends();
   }, [userId]);
 
   const handleDragEnd = async (event) => {

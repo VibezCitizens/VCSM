@@ -1,60 +1,44 @@
 // src/utils/conversations.js
+// Centralized helpers. No direct table inserts. Uses DAL (data/chat.js) which calls SECURITY DEFINER RPCs.
+
 import { supabase } from '@/lib/supabaseClient';
+import { chat } from '@/data/chat';
 
-export async function getOrCreatePrivateConversation(userId1, userId2) {
-  // Step 1: Get all conversation IDs for user1
-  const { data: user1Convos, error: err1 } = await supabase
-    .from('conversation_members')
-    .select('conversation_id')
-    .eq('user_id', userId1);
+/**
+ * Get or create a private 1:1 conversation between the authed user and the other user.
+ * - Uses RPC via DAL (getOrCreateDirectVisible) → creates if needed, unarchives your membership,
+ *   and stamps partner_user_id. Optionally restores history.
+ *
+ * @param {string|null} userId1 - usually currentUser.id (ignored; auth determines "me")
+ * @param {string} userId2      - the other user's id (or the target if userId1 is me)
+ * @param {{ restoreHistory?: boolean }} [opts]
+ * @returns {Promise<string|null>} conversation id or null
+ */
+export async function getOrCreatePrivateConversation(userId1, userId2, opts = {}) {
+  const { data: auth, error } = await supabase.auth.getUser();
+  if (error || !auth?.user?.id) {
+    console.error('[getOrCreatePrivateConversation] not authenticated', error);
+    return null;
+  }
+  const me = auth.user.id;
 
-  if (err1) throw err1;
+  // Determine the other participant robustly
+  let otherUserId = null;
+  if (userId1 && userId1 !== me) otherUserId = userId1;
+  if (!otherUserId && userId2 && userId2 !== me) otherUserId = userId2;
 
-  const user1Ids = user1Convos.map(c => c.conversation_id);
-
-  // Step 2: Get all conversation IDs for user2
-  const { data: user2Convos, error: err2 } = await supabase
-    .from('conversation_members')
-    .select('conversation_id')
-    .eq('user_id', userId2);
-
-  if (err2) throw err2;
-
-  const user2Ids = user2Convos.map(c => c.conversation_id);
-
-  // Step 3: Find intersection
-  const mutualConvoId = user1Ids.find(id => user2Ids.includes(id));
-
-  if (mutualConvoId) {
-    // Return full convo record
-    const { data: convo, error: convoFetchErr } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('id', mutualConvoId)
-      .single();
-
-    if (convoFetchErr) throw convoFetchErr;
-    return convo;
+  if (!otherUserId || otherUserId === me) {
+    console.error('[getOrCreatePrivateConversation] invalid otherUserId', { me, userId1, userId2 });
+    return null;
   }
 
-  // Step 4: Create new conversation
-  const { data: newConvo, error: insertError } = await supabase
-    .from('conversations')
-    .insert({})
-    .select()
-    .single();
-
-  if (insertError) throw insertError;
-
-  // Step 5: Add both users
-  const { error: memberError } = await supabase
-    .from('conversation_members')
-    .insert([
-      { conversation_id: newConvo.id, user_id: userId1 },
-      { conversation_id: newConvo.id, user_id: userId2 },
-    ]);
-
-  if (memberError) throw memberError;
-
-  return newConvo;
+  try {
+    const { id } = await chat.getOrCreateDirectVisible(otherUserId, {
+      restoreHistory: !!opts.restoreHistory,
+    });
+    return id || null;
+  } catch (e) {
+    console.error('[getOrCreatePrivateConversation] DAL error', e);
+    return null;
+  }
 }

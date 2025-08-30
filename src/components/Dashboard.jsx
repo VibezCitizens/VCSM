@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-import { getOrCreatePrivateConversation } from '@/lib/chatUtils';
+
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {

@@ -1,5 +1,6 @@
+// src/features/explore/stories/components/Viewby.jsx
 import React, { useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { db } from '@/data/data';                 // ✅ use centralized DAL
 import { useStoryViewData } from '@/hooks/useStoryViewData';
 import UserLink from '@/components/UserLink';
 
@@ -15,56 +16,43 @@ export default function Viewby({ storyId }) {
     userId,
     viewers,
     emojiCounts,
-    storyOwnerId, // ✅ must be added in useStoryViewData
+    storyOwnerId,
+    isVportStory = false,       // ✅ add this in your hook; defaults to user story
   } = useStoryViewData(storyId);
 
   const handleReact = async (emoji) => {
     if (!userId || !storyId || isOwner || cooldown) return;
 
-    const currentReaction = viewers.find(v => v.user_id === userId)?.reaction;
+    // what the viewer has on this story right now (if anything)
+    const currentReaction = viewers.find(v => v.user_id === userId)?.reaction || null;
 
     setCooldown(true);
     setTimeout(() => setCooldown(false), 1000);
 
-    if (currentReaction === emoji) {
-      const { error } = await supabase
-        .from('story_reactions')
-        .delete()
-        .match({ story_id: storyId, user_id: userId });
+    try {
+      // Toggle logic lives in DAL:
+      // - if same emoji -> toggle off
+      // - if different -> replace
+      const nextEmoji = currentReaction === emoji ? null : emoji;
 
-      if (error) console.error('❌ Remove reaction error:', error.message);
-      else console.log(`🗑️ Removed reaction: ${emoji}`);
-    } else {
-      const { error } = await supabase
-        .from('story_reactions')
-        .upsert(
-          { story_id: storyId, user_id: userId, emoji },
-          { onConflict: 'story_id, user_id' }
-        );
+      await db.stories.setStoryReaction({
+        isVport: isVportStory,
+        storyId,
+        userId,
+        emoji: nextEmoji,
+      });
 
-      if (error) {
-        console.error('❌ Reaction error:', error.message);
-      } else {
-        console.log(`✅ Reacted with: ${emoji}`);
-
-        // ✅ Send notification to story owner
-        if (storyOwnerId && storyOwnerId !== userId) {
-          const { error: notifError } = await supabase
-            .from('notifications')
-            .insert({
-              user_id: storyOwnerId,
-              actor_id: userId,
-              type: 'story_reaction',
-              post_id: storyId,
-            });
-
-          if (notifError) {
-            console.error('❌ Notification insert error:', notifError.message);
-          } else {
-            console.log('📨 Notification sent to story owner');
-          }
-        }
+      // Fire a notification only when adding (not removing) and not self
+      if (nextEmoji && storyOwnerId && storyOwnerId !== userId) {
+        await db.stories.notifyStoryReaction({
+          isVport: isVportStory,
+          storyId,
+          actorUserId: userId,
+          emoji: nextEmoji,
+        });
       }
+    } catch (e) {
+      console.error('Reaction failed:', e?.message || e);
     }
   };
 
@@ -75,10 +63,10 @@ export default function Viewby({ storyId }) {
       {/* 👁️ Eye Icon */}
       {isOwner && viewers.length > 0 && (
         <div
-          className="fixed top-1/2 right-2 transform -translate-y-1/2 z-50 bg-black bg-opacity-60 px-3 py-1 rounded-full cursor-pointer"
+          className="fixed top-1/2 right-2 -translate-y-1/2 z-50 bg-black/60 px-3 py-1 rounded-full cursor-pointer"
           onClick={() => setShowModal(true)}
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <span className="text-white text-lg">👁️</span>
             <span className="text-white text-sm">{viewers.length}</span>
           </div>
@@ -87,8 +75,8 @@ export default function Viewby({ storyId }) {
 
       {/* 🧡 Emoji Reaction Bar */}
       {!isOwner && (
-        <div className="fixed top-1/2 right-2 transform -translate-y-1/2 z-50 pointer-events-auto">
-          <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-full px-3 py-3 flex flex-col gap-4 shadow-lg">
+        <div className="fixed top-1/2 right-2 -translate-y-1/2 z-50 pointer-events-auto">
+          <div className="bg-black/70 backdrop-blur-sm rounded-full px-3 py-3 flex flex-col gap-4 shadow-lg">
             {REACTIONS.map((emoji) => (
               <button
                 key={emoji}
@@ -107,7 +95,7 @@ export default function Viewby({ storyId }) {
 
       {/* 📊 Viewer Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col items-center p-6 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center p-6 overflow-y-auto">
           <button
             className="text-white text-sm mb-4 self-end"
             onClick={() => setShowModal(false)}
@@ -134,10 +122,7 @@ export default function Viewby({ storyId }) {
 
           <div className="space-y-4 w-full">
             {viewers.map((viewer) => (
-              <div
-                key={viewer.user_id}
-                className="bg-zinc-800 p-2 rounded-lg"
-              >
+              <div key={viewer.user_id} className="bg-zinc-800 p-2 rounded-lg">
                 <UserLink
                   user={{ ...viewer, id: viewer.user_id }}
                   avatarSize="w-8 h-8"

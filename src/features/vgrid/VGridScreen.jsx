@@ -25,7 +25,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 })
 
-const DEFAULT_CENTER = [27.5067, -99.5075]
+const DEFAULT_CENTER = [27.5067, -99.5075] // fallback only
 const NAV_SAFE_GAP = 88
 const UNITS = 'mi'
 
@@ -118,24 +118,54 @@ function CandidateFromClick({ setCandidate }) {
   return null
 }
 
-// Live location bubble and hand-off to "start" for routing
+/**
+ * Live location bubble with "auto-center on first GPS fix"
+ * - Always centers the map once when we get the first accurate location (street level)
+ * - If `follow` is true, keeps the map locked to you while moving
+ */
 function LiveLocation({ setStart, follow }) {
   const map = useMap()
   const [pos, setPos] = useState(null)
+  const hasCenteredOnce = useRef(false)
 
   useEffect(() => {
     function onFound(e) {
       setPos(e.latlng)
       setStart(e.latlng)
+
+      // Center once on first GPS fix even if follow=false
+      if (!hasCenteredOnce.current) {
+        const targetZoom = Math.max(map.getZoom() || 0, 17) // street-level zoom
+        map.setView(e.latlng, targetZoom, { animate: true })
+        hasCenteredOnce.current = true
+      }
+
+      // If in follow/Driving mode, keep locking to user position
       if (follow) {
-        const targetZoom = Math.max(map.getZoom(), 17) // street level
+        const targetZoom = Math.max(map.getZoom() || 0, 17)
         map.setView(e.latlng, targetZoom, { animate: true })
       }
     }
+
+    function onError(err) {
+      // Keep quiet but avoid spamming; you can surface a toast if needed
+      // console.warn('Geolocation error:', err)
+    }
+
     map.on('locationfound', onFound)
-    map.locate({ watch: true, enableHighAccuracy: true })
+    map.on('locationerror', onError)
+
+    // High accuracy + continuous updates
+    map.locate({
+      watch: true,
+      enableHighAccuracy: true,
+      maximumAge: 10_000, // accept recent fixes to feel snappy
+      timeout: 20_000,
+    })
+
     return () => {
       map.off('locationfound', onFound)
+      map.off('locationerror', onError)
       map.stopLocate()
     }
   }, [map, setStart, follow])
@@ -285,7 +315,7 @@ export default function BasicSearchRouteMap() {
       `}</style>
 
       <MapContainer
-        center={DEFAULT_CENTER}
+        center={DEFAULT_CENTER}  // will auto-center to GPS on first fix
         zoom={10}
         scrollWheelZoom
         className="absolute inset-0 z-0"
@@ -301,7 +331,7 @@ export default function BasicSearchRouteMap() {
         <GeoSearch onPick={setCandidate} />
         <CandidateFromClick setCandidate={setCandidate} />
 
-        {/* Live location bubble; follow = driving mode */}
+        {/* Live location bubble; ALWAYS centers once on first GPS fix; follow = driving mode */}
         <LiveLocation setStart={setStart} follow={driving} />
 
         {/* Candidate pin */}

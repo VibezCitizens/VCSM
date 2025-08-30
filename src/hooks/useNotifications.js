@@ -1,74 +1,67 @@
-// File: src/hooks/useNotifications.js
-import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+// src/hooks/useNotifications.js
+import { useEffect, useMemo, useState } from 'react';
+import { db } from '@/data/data';
 
 /**
- * Fetches and manages notifications for a given user with polling and refresh-on-focus.
- * @param {string} userId
- * @returns {{ notifications: any[], unreadCount: number, markAsRead: (id: string) => Promise<void> }}
+ * Simple notifications hook backed by the DAL.
+ * - No realtime subscription (by request).
+ * - Tolerates multiple DB schemas via notifications.js normalization.
  */
-export function useNotifications(userId) {
+export function useNotifications(userId, { limit = 50 } = {}) {
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch notifications from Supabase
-  const fetchNotifications = useCallback(async () => {
+  const load = async () => {
     if (!userId) return;
-
-    const { data, error } = await supabase
-      .from('notifications')
-      // explicitly pull metadata JSONB plus the fields you need
-      .select(`
-        id,
-        type,
-        metadata,
-        created_at,
-        read
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching notifications:', error);
-      return;
+    setLoading(true);
+    try {
+      const rows = await db.notifications.listForUser({ userId, limit });
+      setNotifications(rows);
+    } catch (err) {
+      console.warn('[useNotifications] load error:', err);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setNotifications(data);
-    setUnreadCount(data.filter(n => !n.read).length);
-  }, [userId]);
-
-  // Initial fetch + polling every 30 seconds
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, [fetchNotifications]);
+    setNotifications([]);
+    if (userId) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, limit]);
 
-  // Refresh on window focus
-  useEffect(() => {
-    const handleFocus = () => fetchNotifications();
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [fetchNotifications]);
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.read).length,
+    [notifications]
+  );
 
-  // Mark one notification as read
-  const markAsRead = useCallback(async (id) => {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ read: true })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error marking notification read:', error);
-      return;
+  const markAsRead = async (id) => {
+    if (!userId || !id) return;
+    try {
+      const ok = await db.notifications.markAsRead({ id, userId });
+      if (ok) {
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+        );
+      }
+    } catch (err) {
+      console.warn('[useNotifications] markAsRead error:', err);
     }
+  };
 
-    // update local state immediately
-    setNotifications(prev =>
-      prev.map(n => (n.id === id ? { ...n, read: true } : n))
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
-  }, []);
+  const markAllSeen = async () => {
+    if (!userId) return;
+    try {
+      await db.notifications.markAllSeen({ userId });
+      // We don't change the read state here (only "seen").
+      // If you want a local effect, you could mark a separate flag.
+    } catch (err) {
+      console.warn('[useNotifications] markAllSeen error:', err);
+    }
+  };
 
-  return { notifications, unreadCount, markAsRead };
+  return { notifications, unreadCount, loading, reload: load, markAsRead, markAllSeen };
 }
+
+export default useNotifications;

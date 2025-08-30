@@ -1,4 +1,4 @@
-import PostCard from '@/components/PostCard';
+import PostCard from '@/features/posts/components/PostCard';
 
 export default function PostList({ posts, user }) {
   // Only show posts that have text but no media

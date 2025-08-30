@@ -1,37 +1,62 @@
-import { useEffect, useState, useRef } from 'react';
+// src/features/noti/NotiViewStoryScreen.jsx
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
-import Viewby from '@/features/explore/stories/components/Viewby';
-import Spinner from '@/components/Spinner'; // Your loading spinner component
+import Spinner from '@/components/Spinner';
+import StoryViewer from '@/features/explore/stories/StoryViewer';
+import VportStoryViewer from '@/features/explore/stories/VportStoryViewer';
 
 export default function NotiViewStoryScreen() {
-  const { storyId } = useParams(); // from route /noti/story/:storyId
+  const { storyId } = useParams();
   const navigate = useNavigate();
-  const [story, setStory] = useState(null);
+
   const [loading, setLoading] = useState(true);
-
-  const fetchStory = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('stories')
-      .select('*, profiles(*)')
-      .eq('id', storyId)
-      .single();
-
-    if (error) {
-      console.error('Error fetching story:', error);
-      navigate('/'); // fallback to home
-      return;
-    }
-
-    setStory(data);
-    setLoading(false);
-  };
+  const [kind, setKind] = useState(null);   // 'user' | 'vport' | null
+  const [story, setStory] = useState(null); // the row we found
 
   useEffect(() => {
-    if (storyId) {
-      fetchStory();
-    }
+    let cancelled = false;
+    if (!storyId) return;
+
+    (async () => {
+      setLoading(true);
+
+      // 1) Try user stories
+      const u = await supabase
+        .from('stories')
+        .select('id, user_id, media_url, media_type, caption, created_at, is_active, deleted')
+        .eq('id', storyId)
+        .maybeSingle();
+
+      if (!cancelled && u.data && !u.error) {
+        setKind('user');
+        setStory(u.data);
+        setLoading(false);
+        return;
+      }
+
+      // 2) Fallback to VPORT stories
+      const v = await supabase
+        .from('vport_stories')
+        .select('id, vport_id, created_by, media_url, media_type, caption, created_at, is_active, deleted')
+        .eq('id', storyId)
+        .maybeSingle();
+
+      if (!cancelled && v.data && !v.error) {
+        setKind('vport');
+        setStory(v.data);
+        setLoading(false);
+        return;
+      }
+
+      if (!cancelled) {
+        setKind(null);
+        setStory(null);
+        setLoading(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [storyId]);
 
   if (loading) {
@@ -42,7 +67,7 @@ export default function NotiViewStoryScreen() {
     );
   }
 
-  if (!story) {
+  if (!story || !kind) {
     return (
       <div className="w-full h-screen flex items-center justify-center text-white bg-black">
         Story not found.
@@ -52,13 +77,17 @@ export default function NotiViewStoryScreen() {
 
   return (
     <div className="w-full h-screen bg-black overflow-hidden">
-      <Viewby
-        initialStory={story}
-        onClose={() => navigate(-1)}
-        showCloseButton={true}
-        showMuteToggle={true}
-        fromNotification={true}
-      />
+      {kind === 'user' ? (
+        <StoryViewer
+          stories={[story]}
+          onClose={() => navigate(-1)}
+        />
+      ) : (
+        <VportStoryViewer
+          stories={[story]}
+          onClose={() => navigate(-1)}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,7 @@
+// src/hooks/useAuth.jsx
 import { useEffect, useState, useContext, createContext } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { usePresence } from '@/features/chat/hooks/usePresence';
 
 const AuthContext = createContext();
 
@@ -8,61 +10,35 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Init session + listen for auth changes
   useEffect(() => {
-    const init = async () => {
+    let unsub = () => {};
+
+    (async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
-    };
 
-    init();
+      const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+      });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-    });
+      unsub = () => listener.subscription.unsubscribe();
+    })();
 
-    return () => listener.subscription.unsubscribe();
+    return () => unsub();
   }, []);
 
-  // ✅ Logout function
+  // Presence heartbeat (last_seen only)
+  usePresence(user);
+
+  // Logout
   const logout = async () => {
     await supabase.auth.signOut();
-    window.location.href = '/'; // Or navigate('/login')
+    window.location.href = '/';
   };
-
-  // ✅ Presence tracking
-  useEffect(() => {
-    if (!user?.id) return;
-
-    let interval;
-
-    const updatePresence = async () => {
-      await supabase.from('profiles').update({
-        is_online: true,
-        last_seen: new Date().toISOString(),
-      }).eq('id', user.id);
-    };
-
-    updatePresence();
-    interval = setInterval(updatePresence, 30000);
-
-    const handleUnload = async () => {
-      await supabase.from('profiles').update({
-        is_online: false,
-        last_seen: new Date().toISOString(),
-      }).eq('id', user.id);
-    };
-
-    window.addEventListener('beforeunload', handleUnload);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('beforeunload', handleUnload);
-      handleUnload();
-    };
-  }, [user?.id]);
 
   return (
     <AuthContext.Provider value={{ user, session, loading, logout }}>

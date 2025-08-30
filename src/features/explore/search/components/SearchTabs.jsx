@@ -1,115 +1,116 @@
-// src/features/explore/components/SearchTabs.jsx
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
-import { useNavigate } from 'react-router-dom'
+// src/features/explore/search/components/SearchTabs.jsx
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { db } from '@/data/data';
 
 export default function SearchTabs({ query, typeFilter }) {
-  const [results, setResults] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const navigate = useNavigate()
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState(null);
+  const navigate = useNavigate();
+
+  // Normalize items from the DAL into a single consistent shape
+  const normalize = (item) => {
+    if (!item) return null;
+    const t = item.result_type || item.type || item.kind;
+
+    switch (t) {
+      case 'user':
+        return {
+          result_type: 'user',
+          id: item.id ?? item.user_id,
+          username: item.username ?? '',
+          display_name: item.display_name ?? '',
+          photo_url: item.photo_url ?? '',
+        };
+
+      case 'post':
+        return {
+          result_type: 'post',
+          id: item.id ?? item.post_id,
+          title: item.title ?? '',
+          text: item.text ?? '',
+        };
+
+      case 'video':
+        return {
+          result_type: 'video',
+          id: item.id ?? item.video_id,
+          title: item.title ?? '',
+        };
+
+      case 'group':
+        return {
+          result_type: 'group',
+          id: item.id ?? item.group_id,
+          name: item.name ?? item.group_name ?? '',
+          description: item.description ?? '',
+        };
+
+      default:
+        return null;
+    }
+  };
 
   useEffect(() => {
-    if (!query) {
-      setResults([])
-      return
-    }
+    let cancelled = false;
 
-    setLoading(true)
-    setError(null)
+    const run = async () => {
+      const raw = query?.trim() || '';
+      if (!raw) {
+        setResults([]);
+        return;
+      }
 
-    // build queries
-    const calls = []
+      setLoading(true);
+      setError(null);
 
-    const doUsers = () =>
-      supabase
-        .from('profiles')
-        .select('id, username, display_name, photo_url')
-        .ilike('username', `%${query}%`)
-        .or(`display_name.ilike.%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          // rename `id` → `user_id` in JS
-          return data.map((u) => ({
-            user_id: u.id,
-            username: u.username,
-            display_name: u.display_name,
-            photo_url: u.photo_url,
-            result_type: 'user',
-          }))
-        })
+      try {
+        // Optionally allow 1-char searches:
+        const opts = { minLength: 1 };
 
-    const doPosts = () =>
-      supabase
-        .from('posts')
-        .select('id, content, user_id')
-        .ilike('content', `%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          return data.map((p) => ({
-            post_id: p.id,
-            content: p.content,
-            user_id: p.user_id,
-            result_type: 'post',
-          }))
-        })
+        const tasks = [];
+        if (typeFilter === 'users') {
+          tasks.push(db.search.users(raw, opts));
+        } else if (typeFilter === 'posts') {
+          tasks.push(db.search.posts(raw, opts));
+        } else if (typeFilter === 'videos') {
+          tasks.push(db.search.videos(raw, opts));
+        } else if (typeFilter === 'groups') {
+          tasks.push(db.search.groups(raw, opts));
+        } else {
+          // "All"
+          tasks.push(
+            db.search.users(raw, opts),
+            db.search.posts(raw, opts),
+            db.search.videos(raw, opts),
+            db.search.groups(raw, opts)
+          );
+        }
 
-    const doVideos = () =>
-      supabase
-        .from('videos')
-        .select('id, title, description, user_id')
-        .ilike('title', `%${query}%`)
-        .or(`description.ilike.%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          return data.map((v) => ({
-            video_id:   v.id,
-            title:      v.title,
-            description:v.description,
-            user_id:    v.user_id,
-            result_type:'video',
-          }))
-        })
+        const settled = await Promise.allSettled(tasks);
+        const flat = settled
+          .filter((s) => s.status === 'fulfilled')
+          .flatMap((s) => Array.isArray(s.value) ? s.value : [])
+          .map(normalize)
+          .filter(Boolean);
 
-    const doGroups = () =>
-      supabase
-        .from('groups')
-        .select('id, group_name, description')
-        .ilike('group_name', `%${query}%`)
-        .or(`description.ilike.%${query}%`)
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) throw error
-          return data.map((g) => ({
-            group_id:    g.id,
-            group_name:  g.group_name,
-            description: g.description,
-            result_type: 'group',
-          }))
-        })
+        if (!cancelled) setResults(flat);
+      } catch (e) {
+        if (!cancelled) setError(e?.message || 'Search failed');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
 
-    if (typeFilter === 'users')      calls.push(doUsers())
-    else if (typeFilter === 'posts') calls.push(doPosts())
-    else if (typeFilter === 'videos')calls.push(doVideos())
-    else if (typeFilter === 'groups')calls.push(doGroups())
-    else                              calls.push(doUsers(), doPosts(), doVideos(), doGroups())
+    run();
+    return () => { cancelled = true; };
+  }, [query, typeFilter]);
 
-    Promise.all(calls)
-      .then((all) => setResults(all.flat()))
-      .catch((err) => {
-        console.error('Search error', err)
-        setError(err.message || 'Search failed')
-      })
-      .finally(() => setLoading(false))
-  }, [query, typeFilter])
-
-  if (loading) return <div className="p-4 text-center text-white">Searching…</div>
-  if (error)   return <div className="p-4 text-center text-red-400">{error}</div>
+  if (loading) return <div className="p-4 text-center text-white">Searching…</div>;
+  if (error)   return <div className="p-4 text-center text-red-400">{error}</div>;
   if (!results.length)
-    return <div className="p-4 text-center text-neutral-400">No results found</div>
+    return <div className="p-4 text-center text-neutral-400">No results found</div>;
 
   return (
     <div className="px-4 py-2 space-y-4">
@@ -118,8 +119,8 @@ export default function SearchTabs({ query, typeFilter }) {
           case 'user':
             return (
               <div
-                key={item.user_id}
-                onClick={() => navigate(`/u/${item.username}`)}
+                key={`user:${item.id}`}
+                onClick={() => item.username && navigate(`/u/${item.username}`)}
                 className="flex items-center gap-3 p-3 bg-neutral-800 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-700 transition"
               >
                 <img
@@ -136,51 +137,51 @@ export default function SearchTabs({ query, typeFilter }) {
                   </span>
                 </div>
               </div>
-            )
+            );
 
           case 'post':
             return (
               <div
-                key={item.post_id}
-                onClick={() => navigate(`/noti/post/${item.post_id}`)}
+                key={`post:${item.id}`}
+                onClick={() => navigate(`/post/${item.id}`)}  // adjust route if needed
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200 whitespace-pre-line">
-                  {item.content}
+                  {item.title ? `${item.title}\n` : ''}{item.text || '(no text)'}
                 </div>
               </div>
-            )
+            );
 
           case 'video':
             return (
               <div
-                key={item.video_id}
-                onClick={() => navigate(`/video/${item.video_id}`)}
+                key={`video:${item.id}`}
+                onClick={() => navigate(`/video/${item.id}`)}
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200">
-                  {item.title}
+                  {item.title || '(untitled video)'}
                 </div>
               </div>
-            )
+            );
 
           case 'group':
             return (
               <div
-                key={item.group_id}
-                onClick={() => navigate(`/groups/${item.group_id}`)}
+                key={`group:${item.id}`}
+                onClick={() => navigate(`/groups/${item.id}`)}
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200">
-                  {item.group_name}
+                  {item.name}
                 </div>
               </div>
-            )
+            );
 
           default:
-            return null
+            return null;
         }
       })}
     </div>
-  )
+  );
 }

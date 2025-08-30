@@ -1,3 +1,4 @@
+// src/lib/uploadToCloudflare.js
 const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 const R2_PUBLIC = 'https://cdn.vibezcitizens.com'; // Your public R2 domain
 
@@ -18,10 +19,7 @@ export async function uploadToCloudflare(file, key) {
     form.append('key', key);     // Full key used by Worker to name object
     form.append('path', path);   // Folder prefix used by Worker
 
-    const res = await fetch(UPLOAD_ENDPOINT, {
-      method: 'POST',
-      body: form,
-    });
+    const res = await fetch(UPLOAD_ENDPOINT, { method: 'POST', body: form });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -30,10 +28,12 @@ export async function uploadToCloudflare(file, key) {
 
     const result = await res.json();
     const url = result.url || `${R2_PUBLIC}/${key}`;
-
     return { url, error: null };
   } catch (err) {
     console.error('Error uploading to Cloudflare:', err);
     return { url: null, error: err.message || 'Unexpected upload error.' };
   }
 }
+
+// allow default imports too
+export default uploadToCloudflare;

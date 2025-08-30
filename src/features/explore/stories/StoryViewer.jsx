@@ -1,11 +1,6 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
-
-import { supabase } from '@/lib/supabaseClient';
+// src/features/explore/stories/StoryViewer.jsx
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+// ❌ remove: import { supabase } from '@/lib/supabaseClient';
 import StoryItem from './components/StoryItem';
 import StoryProgressBar from './components/StoryProgressBar';
 import Viewby from './components/Viewby';
@@ -19,55 +14,24 @@ export default function StoryViewer({ stories, onClose }) {
   const touchEndY = useRef(0);
 
   const scrollToIndex = useCallback((index) => {
-    if (containerRef.current?.children[index]) {
-      containerRef.current.children[index].scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
-
-  // 👁️ Log the view into story_views
-  const logView = useCallback(async (storyId) => {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error || !user) {
-      console.error('Auth error while logging view:', error.message);
-      return;
-    }
-
-    const { error: insertError } = await supabase.from('story_views').upsert(
-      {
-        story_id: storyId,
-        user_id: user.id,
-      },
-      { onConflict: 'user_id, story_id' }
-    );
-
-    if (insertError) {
-      console.error('View log insert error:', insertError.message);
-    } else {
-      console.log('✅ Logged view for story:', storyId);
-    }
+    const el = containerRef.current?.children?.[index];
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   // 🕒 Auto-advance every 15 seconds
   useEffect(() => {
     timeoutRef.current = setTimeout(() => {
-      if (currentIndex < stories.length - 1) {
-        setCurrentIndex((i) => i + 1);
-        scrollToIndex(currentIndex + 1);
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < stories.length) {
+        setCurrentIndex(nextIndex);
+        scrollToIndex(nextIndex);
       } else {
         onClose?.();
       }
     }, 15000);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [currentIndex, stories.length, scrollToIndex]);
-
-  // 👁️ Log a view whenever active story changes
-  useEffect(() => {
-    const currentStory = stories[currentIndex];
-    if (currentStory?.id) {
-      logView(currentStory.id);
-    }
-  }, [currentIndex, logView, stories]);
+  }, [currentIndex, stories.length, scrollToIndex, onClose]);
 
   // Handle vertical swipe gestures
   const handleTouchStart = (e) => {
@@ -88,30 +52,23 @@ export default function StoryViewer({ stories, onClose }) {
   };
 
   const handleScroll = () => {
-    const scrollY = containerRef.current.scrollTop;
-    const height = window.innerHeight;
+    const wrap = containerRef.current;
+    if (!wrap) return;
+    const scrollY = wrap.scrollTop;
+    const height = window.innerHeight || 1;
     const newIndex = Math.round(scrollY / height);
-
-    if (newIndex !== currentIndex) {
+    if (Number.isFinite(newIndex) && newIndex !== currentIndex) {
       setCurrentIndex(newIndex);
       clearTimeout(timeoutRef.current);
     }
   };
 
-  const handleMuteToggle = () => {
-    setIsMuted((prev) => !prev);
-  };
+  const handleMuteToggle = () => setIsMuted((prev) => !prev);
 
   return (
     <div className="fixed inset-0 bg-black z-50 overflow-hidden">
-      {/* Progress bar */}
-      <StoryProgressBar
-        count={stories.length}
-        activeIndex={currentIndex}
-        duration={15000}
-      />
+      <StoryProgressBar count={stories.length} activeIndex={currentIndex} duration={15000} />
 
-      {/* Story container */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
@@ -131,7 +88,6 @@ export default function StoryViewer({ stories, onClose }) {
               onMuteToggle={handleMuteToggle}
             />
 
-            {/* 👁️ View & Reaction Tracker */}
             {index === currentIndex && (
               <Viewby key={`${story.id}-${currentIndex}`} storyId={story.id} />
             )}
@@ -139,7 +95,6 @@ export default function StoryViewer({ stories, onClose }) {
         ))}
       </div>
 
-      {/* Close button */}
       <button
         className="absolute top-4 right-4 text-white text-xs bg-zinc-800 px-3 py-1 rounded z-50"
         onClick={onClose}

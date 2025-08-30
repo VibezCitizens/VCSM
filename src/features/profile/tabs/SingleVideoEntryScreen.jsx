@@ -42,7 +42,6 @@ export default function SingleVideoEntryScreen() {
     fetchInitialVideo();
   }, [videoId]);
 
-  // Auto-load VDRop feed when user scrolls down
   const loadGlobalFeed = async () => {
     const { data, error } = await supabase
       .from('posts')
@@ -63,7 +62,6 @@ export default function SingleVideoEntryScreen() {
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      // Avoid duplicate first video
       const filtered = data.filter((v) => v.id !== videoId);
       setVideos((prev) => [...prev, ...filtered]);
     }
@@ -72,10 +70,10 @@ export default function SingleVideoEntryScreen() {
   useEffect(() => {
     const container = containerRef.current;
     const handleScroll = () => {
+      if (!container) return;
       const index = Math.round(container.scrollTop / window.innerHeight);
       setCurrentIndex(index);
 
-      // If user scrolls to second video, load full VDRop feed
       if (videos.length === 1 && index >= 1) {
         loadGlobalFeed();
       }
@@ -95,7 +93,7 @@ export default function SingleVideoEntryScreen() {
       ref={containerRef}
       className="fixed top-0 left-0 w-full h-[100dvh] overflow-y-scroll snap-y snap-mandatory bg-black z-50"
     >
-      {/* 🔈 Mute Toggle */}
+      {/* Mute Toggle */}
       <div className="fixed top-4 right-3 z-[100]">
         <button
           onClick={() => setIsMuted((prev) => !prev)}

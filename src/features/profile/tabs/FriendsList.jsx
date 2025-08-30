@@ -20,8 +20,8 @@ export default function FriendsList({ userId }) {
           .select('follower_id')
           .eq('followed_id', userId);
 
-        const followingIds = following.map(f => f.followed_id);
-        const followerIds = followers.map(f => f.follower_id);
+        const followingIds = (following || []).map(f => f.followed_id);
+        const followerIds  = (followers || []).map(f => f.follower_id);
 
         const mutualIds = followingIds.filter(id => followerIds.includes(id));
 
@@ -56,7 +56,7 @@ export default function FriendsList({ userId }) {
           key={friend.id}
           user={friend}
           avatarSize="w-10 h-10"
-          avatarShape="rounded" // circle
+          avatarShape="rounded"
           textSize="text-sm"
           withUsername={true}
         />
