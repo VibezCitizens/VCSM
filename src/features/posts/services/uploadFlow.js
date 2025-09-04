@@ -1,7 +1,8 @@
 // src/features/posts/services/uploadFlow.js
 import { supabase } from '@/lib/supabaseClient';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // ensure casing matches file name
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // keep as-is for fallback
 import { compressVideo } from '@/utils/compressVideo';
+import { enqueueUpload } from '@/utils/bgUpload'; // ← NEW
 
 /** Product limits */
 const MAX_IMAGE_BYTES = 25 * 1024 * 1024; // 25MB
@@ -81,8 +82,48 @@ function readVideoDuration(file) {
   });
 }
 
+/** Timeout guard to prevent indefinite hangs */
+function withTimeout(promise, ms, label = 'Operation') {
+  let t;
+  return new Promise((resolve, reject) => {
+    t = setTimeout(() => reject(Object.assign(new Error(`${label} timed out after ${ms}ms`), { code: 'TIMEOUT' })), ms);
+    promise.then(
+      v => { clearTimeout(t); resolve(v); },
+      e => { clearTimeout(t); reject(e); }
+    );
+  });
+}
+
 /**
- * Main upload flow. Returns { ok: true, id? } on success; throws on error.
+ * Try to enqueue a background upload via SW using an adapter from uploadToCloudflare.
+ * This EXPECTS your uploadToCloudflare to optionally expose:
+ *   - getBackgroundJob(file, key) -> { url, method, headers, fields, filename, contentType, publicUrl }
+ * If it isn't present, this will return null and the caller should fall back to direct upload.
+ */
+async function tryEnqueueBackgroundUpload(fileToSend, key) {
+  // no SW available → opt out
+  if (!('serviceWorker' in navigator)) return null;
+  if (typeof uploadToCloudflare.getBackgroundJob !== 'function') return null;
+
+  const job = await uploadToCloudflare.getBackgroundJob(fileToSend, key);
+  if (!job || !job.url) return null;
+
+  await enqueueUpload({
+    url: job.url,
+    method: job.method || 'POST',
+    headers: job.headers || {},
+    fields: job.fields || { key },
+    fileBlob: fileToSend,
+    filename: job.filename || fileToSend.name,
+    contentType: job.contentType || fileToSend.type || 'application/octet-stream',
+  });
+
+  // Return the public URL we can write to DB immediately (deterministic from key)
+  return job.publicUrl || null;
+}
+
+/**
+ * Main upload flow. Returns { ok: true, id?, enqueued? } on success; throws on error.
  */
 export async function runUpload({
   mode,                 // 'POST' | '24DROP' | 'VDROP'
@@ -122,19 +163,40 @@ export async function runUpload({
     }
   }
 
-  // 3) Video handling
+  // 3) Video handling (compression still happens in-page)
   let uploadFile = file;
   if (inferredType === 'video') {
     if (typeof setProgress === 'function') setProgress('Analyzing video…');
     const duration = await readVideoDuration(file);
+
+    // Timeouts to avoid indefinite hangs during ffmpeg/wrapper operations
+    const TRIM_TIMEOUT_MS = 120_000; // 2 minutes
+    const OPT_TIMEOUT_MS  = 90_000;  // 1.5 minutes
+
     if (mode === '24DROP' && duration > MAX_24DROP_SECONDS + 0.25) {
       if (typeof setProgress === 'function') setProgress('Trimming to 15s…');
       try {
-        uploadFile = await compressVideo(file, {
-          maxDurationSeconds: MAX_24DROP_SECONDS,
-          onProgress: setCompressionProgress,
-        });
-      } catch {
+        const trimmed = await withTimeout(
+          compressVideo(file, {
+            maxDurationSeconds: MAX_24DROP_SECONDS,
+            onProgress: setCompressionProgress,
+          }),
+          TRIM_TIMEOUT_MS,
+          'Trimming'
+        );
+        if (!(trimmed instanceof Blob)) {
+          const err = new Error('Video trimmer returned no file.');
+          err.code = 'TRIM_RETURN_INVALID';
+          throw err;
+        }
+        uploadFile = trimmed;
+        if (typeof setProgress === 'function') setProgress('Trim complete. Preparing upload…');
+      } catch (e) {
+        if (e?.code === 'TIMEOUT') {
+          const err = new Error('Video trimming is taking too long. Please try a shorter clip or different file.');
+          err.code = 'TRIM_TIMEOUT';
+          throw err;
+        }
         const err = new Error('24DROP videos must be 15 seconds or shorter.');
         err.code = 'VIDEO_TOO_LONG';
         throw err;
@@ -142,9 +204,16 @@ export async function runUpload({
     } else {
       if (typeof setProgress === 'function') setProgress('Optimizing video…');
       try {
-        uploadFile = await compressVideo(file, { onProgress: setCompressionProgress });
+        const optimized = await withTimeout(
+          compressVideo(file, { onProgress: setCompressionProgress }),
+          OPT_TIMEOUT_MS,
+          'Video optimization'
+        );
+        if (optimized instanceof Blob) uploadFile = optimized;
       } catch {
-        /* keep original on compression failure */
+        // keep original on compression failure
+      } finally {
+        if (typeof setProgress === 'function') setProgress('Preparing upload…');
       }
     }
   }
@@ -187,8 +256,7 @@ export async function runUpload({
     }
   }
 
-  // 5) Upload file to Cloudflare
-  if (typeof setProgress === 'function') setProgress('Uploading media…');
+  // 5) Compute storage key (used by both paths)
   const { key } = getStorageKey({
     mode,
     isActingAsVPort,
@@ -196,19 +264,120 @@ export async function runUpload({
     actorVportId,
     filename: uploadFile?.name,
   });
+
+  // 6) Try background upload via SW first (non-blocking UI)
+  if (typeof setProgress === 'function') setProgress('Queuing upload…');
+  let mediaUrlFromBg = null;
+  try {
+    mediaUrlFromBg = await tryEnqueueBackgroundUpload(uploadFile, key);
+  } catch (_) {
+    // ignore; fall back to direct upload below
+  }
+
+  // 7) If background enqueued successfully AND we have a deterministic public URL,
+  //    write the DB row now and return (UI is free to navigate away).
+  if (mediaUrlFromBg) {
+    const url = mediaUrlFromBg;
+    if (mode === '24DROP') {
+      const row = isActingAsVPort
+        ? {
+            vport_id: actorVportId,
+            created_by: userId,
+            media_url: url,
+            media_type: inferredType,
+            caption: (description || '').trim(),
+          }
+        : {
+            user_id: actorUserId,
+            media_url: url,
+            media_type: inferredType,
+            caption: (description || '').trim(),
+          };
+      const { error } = await supabase
+        .from(isActingAsVPort ? 'vport_stories' : 'stories')
+        .insert([row]);
+      if (error) throw new Error(error.message);
+      return { ok: true, enqueued: true };
+    }
+
+    if (mode === 'VDROP') {
+      const row = isActingAsVPort
+        ? {
+            vport_id: actorVportId,
+            created_by: userId,
+            title: (title || '').trim() || null,
+            body: (description || '').trim(),
+            media_url: url,
+            media_type: 'video',
+          }
+        : {
+            user_id: actorUserId,
+            title: (title || '').trim() || null,
+            text: (description || '').trim(),
+            tags: parseTags(tags),
+            visibility: visibility || 'public',
+            media_url: url,
+            media_type: 'video',
+            category: (category || '').trim() || null,
+          };
+      const table = isActingAsVPort ? 'vport_posts' : 'posts';
+      const { data, error } = await supabase.from(table).insert([row]).select('id').single();
+      if (error) throw new Error(error.message);
+      return { ok: true, id: data?.id, enqueued: true };
+    }
+
+    // mode === 'POST' with file
+    if (isActingAsVPort) {
+      const row = {
+        vport_id: actorVportId,
+        created_by: userId,
+        title: (title || '').trim() || null,
+        body: (description || '').trim(),
+        media_url: url,
+        media_type: inferredType === 'video' ? 'video' : 'image',
+      };
+      const { data, error } = await supabase
+        .from('vport_posts')
+        .insert([row])
+        .select('id')
+        .single();
+      if (error) throw new Error(error.message);
+      return { ok: true, id: data?.id, enqueued: true };
+    } else {
+      const row = {
+        user_id: actorUserId,
+        title: (title || '').trim() || null,
+        text: (description || '').trim(),
+        tags: parseTags(tags),
+        visibility: visibility || 'public',
+        media_url: url,
+        media_type: inferredType === 'video' ? 'video' : 'image',
+        category: (category || '').trim() || null,
+      };
+      const { data, error } = await supabase
+        .from('posts')
+        .insert([row])
+        .select('id')
+        .single();
+      if (error) throw new Error(error.message);
+      return { ok: true, id: data?.id, enqueued: true };
+    }
+  }
+
+  // 8) Fallback: direct upload (original behavior)
+  if (typeof setProgress === 'function') setProgress('Uploading media…');
   const { url, error: uploadErr } = await uploadToCloudflare(uploadFile, key);
   if (uploadErr) throw new Error(uploadErr);
   if (!url) throw new Error('Upload returned no URL.');
 
-  // 6) Insert into the correct table per mode
+  // 9) Insert into the correct table per mode (same as before)
   if (mode === '24DROP') {
-    // stories tables
     const row = isActingAsVPort
       ? {
           vport_id: actorVportId,
-          created_by: userId,                   // auth.users.id
+          created_by: userId,
           media_url: url,
-          media_type: inferredType,             // 'image' | 'video'
+          media_type: inferredType,
           caption: (description || '').trim(),
         }
       : {
@@ -226,11 +395,10 @@ export async function runUpload({
   }
 
   if (mode === 'VDROP') {
-    // Route VDROP into existing posts/vport_posts (no vdrops tables required)
     const row = isActingAsVPort
       ? {
           vport_id: actorVportId,
-          created_by: userId,                   // auth.users.id
+          created_by: userId,
           title: (title || '').trim() || null,
           body: (description || '').trim(),
           media_url: url,
@@ -239,7 +407,7 @@ export async function runUpload({
       : {
           user_id: actorUserId,
           title: (title || '').trim() || null,
-          text: (description || '').trim(),     // posts.text
+          text: (description || '').trim(),
           tags: parseTags(tags),
           visibility: visibility || 'public',
           media_url: url,
@@ -257,7 +425,7 @@ export async function runUpload({
   if (isActingAsVPort) {
     const row = {
       vport_id: actorVportId,
-      created_by: userId,                       // auth.users.id
+      created_by: userId,
       title: (title || '').trim() || null,
       body: (description || '').trim(),
       media_url: url,
@@ -274,7 +442,7 @@ export async function runUpload({
     const row = {
       user_id: actorUserId,
       title: (title || '').trim() || null,
-      text: (description || '').trim(),         // posts.text
+      text: (description || '').trim(),
       tags: parseTags(tags),
       visibility: visibility || 'public',
       media_url: url,

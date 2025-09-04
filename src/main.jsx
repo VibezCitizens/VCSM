@@ -17,7 +17,7 @@ import '@/styles/global.css';
 
 // Auth + Identity providers
 import { AuthProvider } from '@/hooks/useAuth';
-import { IdentityProvider } from '@/state/identityContext';
+import IdentityMount from '@/state/IdentityMount'; // ⬅️ use the mount wrapper
 
 // PWA runtime
 import { registerSW } from 'virtual:pwa-register';
@@ -27,9 +27,9 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <IdentityProvider>
+        <IdentityMount>
           <App />
-        </IdentityProvider>
+        </IdentityMount>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

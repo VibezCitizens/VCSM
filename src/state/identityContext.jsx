@@ -85,7 +85,7 @@ async function fetchAccountsFromSupabase() {
     .eq("id", userId)
     .single();
 
-  // 2a) VPORTs owned by the user (created_by = auth.users.id)
+  // 2) VPORTs owned by the user (created_by = auth.users.id)
   let owned = [];
   let ownedErr = null;
   try {
@@ -99,24 +99,9 @@ async function fetchAccountsFromSupabase() {
     ownedErr = e;
   }
 
-  // 2b) VPORTs managed by the user via vport_managers.manager_user_id
-  //     Use explicit FK alias in select to avoid PostgREST ambiguity.
-  let managed = [];
-  let managedErr = null;
-  try {
-    const { data, error } = await supabase
-      .from("vport_managers")
-      .select(
-        "vport_id, vports:vports!vport_managers_vport_id_fkey(id,name,avatar_url)"
-      )
-      .eq("manager_user_id", userId);
-    managed = (data || []).map((r) => r.vports).filter(Boolean);
-    managedErr = error || null;
-  } catch (e) {
-    managedErr = e;
-  }
+  // Managers concept removed: no managed vports.
+  const vportsAll = dedupeById([...(owned || [])]);
 
-  const vportsAll = dedupeById([...(owned || []), ...(managed || [])]);
   const accounts = [
     ...(profile ? [normalizeCitizen(profile)] : []),
     ...vportsAll.map(normalizeVport),
@@ -125,7 +110,7 @@ async function fetchAccountsFromSupabase() {
   return {
     userId,
     accounts,
-    error: profileErr || ownedErr || managedErr || null,
+    error: profileErr || ownedErr || null,
   };
 }
 
@@ -267,7 +252,7 @@ function ProviderImpl({ children }) {
     if (activeAccount.type === "citizen") {
       return { type: "user", userId: activeAccount.sourceId };
     }
-    // NOTE: ownerId == authUserId in your current model
+    // ownerId == authUserId in this model
     return {
       type: "vport",
       userId: authUserId || null,

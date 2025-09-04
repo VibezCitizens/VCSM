@@ -3,31 +3,53 @@ import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide-react';
 import { useIdentity } from '@/state/identityContext';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useVportNotifications } from '@/hooks/useVportNotifications';
 
 export default function BottomNavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { identity } = useIdentity();
 
+  const userId = identity?.userId ?? null;
+
+  // unread counts (both hooks; we’ll display the relevant one)
+  const { unread: userUnread = 0 } = useNotifications(userId);
+  const { unread: vportUnread = 0 } = useVportNotifications(userId, 50);
+
   // Profile tab destination (user vs VPORT)
   const profileHref =
     identity?.type === 'vport' && identity?.vportId ? `/vport/${identity.vportId}` : '/me';
 
-  // ✅ Chat tab destination (user vs VPORT)
+  // Chat tab destination (user vs VPORT)
   const chatHref =
     identity?.type === 'vport' && identity?.vportId ? '/vchat' : '/chat';
+
+  // Notifications tab destination (user vs VPORT)
+  const notificationsHref =
+    identity?.type === 'vport' ? '/vnotifications' : '/notifications';
 
   // Active-state helpers
   const isProfileActive =
     location.pathname.startsWith('/me') ||
     location.pathname.startsWith('/u/') ||
     location.pathname.startsWith('/profile/') ||
-    location.pathname.startsWith('/vport/');
+    location.pathname.startsWith('/vport/') ||
+    location.pathname.startsWith('/v/') ||        // NEW
+    location.pathname.startsWith('/vp/');         // NEW
 
-  // ✅ Consider both /chat and /vchat as active states for the tab
   const isChatActive =
     location.pathname.startsWith('/chat') ||
     location.pathname.startsWith('/vchat');
+
+  const isNotificationsActive =
+    location.pathname.startsWith('/notifications') ||
+    location.pathname.startsWith('/noti/') ||      // user noti detail pages
+    location.pathname.startsWith('/vnotifications') ||
+    location.pathname.startsWith('/vnoti/');       // vport noti detail pages
+
+  const notifCount = identity?.type === 'vport' ? vportUnread : userUnread;
+  const notifBadge = notifCount > 0 ? (notifCount > 99 ? '99+' : notifCount) : undefined;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-neutral-800 pb-[max(0px,env(safe-area-inset-bottom))]" role="navigation" aria-label="Primary">
@@ -35,7 +57,7 @@ export default function BottomNavBar() {
         <Tab to="/" label="Home" icon={<Home size={22} />} end />
         <Tab to="/explore" label="Explore" icon={<Compass size={22} />} />
 
-        {/* ✅ Use chatHref + isChatActive */}
+        {/* chat (user/vport aware) */}
         <Tab to={chatHref} label="Chat" icon={<MessageCircle size={22} />} isActiveOverride={isChatActive} />
 
         <button
@@ -46,7 +68,15 @@ export default function BottomNavBar() {
           <Plus size={24} />
         </button>
 
-        <Tab to="/notifications" label="Notifications" icon={<Bell size={22} />} />
+        {/* notifications (user/vport aware) */}
+        <Tab
+          to={notificationsHref}
+          label="Notifications"
+          icon={<Bell size={22} />}
+          badge={notifBadge}
+          isActiveOverride={isNotificationsActive}
+        />
+
         <Tab to={profileHref} label="Profile" icon={<User size={22} />} isActiveOverride={isProfileActive} />
         <Tab to="/settings" label="Settings" icon={<Settings size={22} />} />
       </div>

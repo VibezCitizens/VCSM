@@ -1,6 +1,7 @@
+// src/features/posts/components/CommentCard.jsx
 /**
- * @fileoverview Renders a single comment (user or VPORT author) with
- * reply / like / edit / delete. Uses the centralized DAL in @/data.
+ * Renders a single comment (user or VPORT author) with reply / like / edit / delete.
+ * Uses the centralized DAL in @/data.
  */
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -31,6 +32,7 @@ export default function CommentCard({
         avatar_url: comment?.vport?.avatar_url || null,
       };
     }
+    // user comment → DAL attached {profiles:{display_name, username, avatar_url, ...}}
     return comment?.profiles || null;
   }, [isAsVport, comment?.vport, comment?.actor_vport_id, comment?.profiles, postVportId]);
 
@@ -103,6 +105,33 @@ export default function CommentCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comment.id, currentUser?.id, isVportPost]);
 
+  /* ------------ VPORT id used for auth (edit/delete when as_vport) ---------- */
+  const commentVportId = useMemo(
+    () => comment?.actor_vport_id ?? comment?.vport?.id ?? postVportId ?? null,
+    [comment?.actor_vport_id, comment?.vport?.id, postVportId]
+  );
+
+  /* ---------------------------- AuthZ: who can edit/delete ------------------ */
+  const canEditDelete = useMemo(() => {
+    if (!currentUser?.id) return false;
+
+    // When the comment was posted AS a VPORT, allow anyone currently acting
+    // as that same VPORT to edit/delete.
+    if (comment?.as_vport === true) {
+      return identity?.type === 'vport' && identity?.vportId === commentVportId;
+    }
+
+    // Otherwise (normal user comment): only the author can edit/delete.
+    return currentUser.id === comment?.user_id;
+  }, [
+    currentUser?.id,
+    comment?.user_id,
+    comment?.as_vport,
+    commentVportId,
+    identity?.type,
+    identity?.vportId,
+  ]);
+
   /* --------------------------------- Actions -------------------------------- */
 
   const handleReply = async () => {
@@ -131,7 +160,8 @@ export default function CommentCard({
         setReplyText('');
         setShowReplyInput(false);
       } else {
-        const vportPostId = comment?.vport_post_id ?? null;
+        // Not threaded in DB; this will add another top-level vport comment.
+        const vportPostId = comment?.vport_post_id ?? postVportId ?? null;
         if (!vportPostId) throw new Error('Missing vport_post_id for reply.');
 
         await db.comments.create({
@@ -173,16 +203,18 @@ export default function CommentCard({
   };
 
   const handleDeleteComment = async () => {
-    if (!currentUser || deleteBusy) return;
+    if (!currentUser || deleteBusy || !canEditDelete) return;
 
     try {
       setDeleteBusy(true);
-      if (!isVportPost && currentUser.id !== comment.user_id) return; // matches your RLS
       await db.comments.remove({
         authorType: isVportPost ? 'vport' : 'user',
         id: comment.id,
         userId: currentUser.id,
+        actingAsVport: comment?.as_vport === true,
+        vportId: commentVportId,
       });
+
       onDelete?.(comment.id);
     } catch (e) {
       alert(e?.message || 'Failed to delete comment.');
@@ -193,7 +225,7 @@ export default function CommentCard({
 
   const handleEditComment = async () => {
     const text = (editText || '').trim();
-    if (!text || !currentUser || editBusy) return;
+    if (!text || !currentUser || editBusy || !canEditDelete) return;
 
     try {
       setEditBusy(true);
@@ -202,6 +234,8 @@ export default function CommentCard({
         id: comment.id,
         userId: currentUser.id,
         content: text,
+        actingAsVport: comment?.as_vport === true,
+        vportId: commentVportId,
       });
       comment.content = text; // optimistic
       setIsEditing(false);
@@ -264,16 +298,15 @@ export default function CommentCard({
         <div className="text-xs text-gray-400 flex gap-4 mt-2 items-center">
           <span>{createdAtSafe ? `${formatDistanceToNow(createdAtSafe)} ago` : ''}</span>
 
-          {!isVportPost && (
-            <button
-              onClick={handleLike}
-              className={`hover:opacity-80 transition ${liked ? 'text-red-400' : ''} disabled:opacity-60`}
-              disabled={!currentUser || likeBusy}
-              title={liked ? 'Unlike' : 'Like'}
-            >
-              ❤️ {likeCount}
-            </button>
-          )}
+          {/* Likes are disabled on VPORT posts */}
+          <button
+            onClick={handleLike}
+            className={`hover:opacity-80 transition ${liked ? 'text-red-400' : ''} disabled:opacity-60`}
+            disabled={!currentUser || likeBusy || isVportPost}
+            title={liked ? 'Unlike' : 'Like'}
+          >
+            ❤️ {likeCount}
+          </button>
 
           <button
             onClick={() => setShowReplyInput((v) => !v)}
@@ -283,10 +316,10 @@ export default function CommentCard({
             Reply
           </button>
 
-          {currentUser?.id === comment?.user_id && !isEditing && (
+          {canEditDelete && !isEditing && (
             <>
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={handleEditComment}
                 className="text-yellow-400 hover:underline disabled:opacity-60"
                 disabled={editBusy}
               >
@@ -327,7 +360,12 @@ export default function CommentCard({
       {!isVportPost && replies.length > 0 && (
         <div className="ml-4 mt-2 space-y-2">
           {replies.map((r) => (
-            <CommentCard key={r.id} comment={r} postAuthorType="user" onDelete={onDelete} />
+            <CommentCard
+              key={r.id}
+              comment={r}
+              postAuthorType="user"
+              onDelete={(id) => setReplies((prev) => prev.filter((x) => x.id !== id))}
+            />
           ))}
         </div>
       )}

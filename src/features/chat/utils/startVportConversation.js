@@ -1,24 +1,27 @@
 // src/features/chat/utils/startVportConversation.js
-import { supabase } from '@/lib/supabaseClient';
+// Use the centralized DAL — no direct Supabase calls here.
+import { db } from '@/data/data';
 
 /**
- * Ensure a vport conversation exists between the acting vport and a user.
- * Returns the vport_conversations.id
+ * Ensure a VPORT conversation exists between the acting VPORT and a user.
+ * Returns the conversation id (string) or null on failure.
+ *
+ * Kept the same function name/signature for drop-in replacement.
  */
 export async function startVportConversation(vportId, receiverUserId) {
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    console.error('[startVportConversation] not authenticated', authError);
+  try {
+    if (!vportId || !receiverUserId) return null;
+
+    // chat DAL should encapsulate auth + RPC/SQL details.
+    const res = await db.chat.getOrCreateVport(vportId, receiverUserId);
+
+    // Accept either a plain id or an object with { id }.
+    const cid = typeof res === 'string' ? res : res?.id;
+    return cid ?? null;
+  } catch (err) {
+    console.error('[startVportConversation] failed:', err);
     return null;
   }
-  const { data, error } = await supabase.rpc('get_or_create_vport_conversation', {
-    vport: vportId,
-    user_b: receiverUserId,
-    manager: user.id, // optional; default is auth.uid() in RPC
-  });
-  if (error) {
-    console.error('[startVportConversation] rpc error', error);
-    return null;
-  }
-  return data;
 }
+
+export default startVportConversation;

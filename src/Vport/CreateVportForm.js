@@ -1,9 +1,8 @@
 // src/Vport/CreateVportForm.js
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-import { useIdentity } from '@/state/identityContext';
 
 const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -23,7 +22,6 @@ function cx(...xs) { return xs.filter(Boolean).join(' '); }
 export default function CreateVportForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { identity } = useIdentity(); // available if you want to auto-switch later
 
   const [name, setName] = useState('');
   const [type, setType] = useState('business');
@@ -78,35 +76,36 @@ export default function CreateVportForm() {
     setError('');
 
     try {
+      // 1) upload avatar if needed
       let finalAvatarUrl = avatarUrl;
       if (!finalAvatarUrl && avatarFile) {
         finalAvatarUrl = await uploadAvatar();
         setAvatarUrl(finalAvatarUrl);
       }
 
-      const { data, error: insertErr } = await supabase
+      // 2) validate and normalize type
+      const normalizedType = String(type).toLowerCase();
+      if (!TYPE_OPTIONS.includes(normalizedType)) {
+        throw new Error('Invalid Vport type.');
+      }
+
+      // 3) create vport
+      const { data: vport, error: insertErr } = await supabase
         .from('vports')
         .insert({
-          created_by: user.id,              // << matches your schema
+          created_by: user.id,
           name: name.trim(),
-          type: String(type).toLowerCase(), // << satisfy lower(type) CHECK
+          type: normalizedType,
           avatar_url: finalAvatarUrl || null,
-          description: description.trim() || null,
+          description: (description || '').trim() || null,
         })
         .select('id')
         .single();
 
       if (insertErr) throw insertErr;
 
-      // Make current user the owner in vport_managers (non-fatal if it fails)
-      await supabase
-        .from('vport_managers')
-        .insert({ vport_id: data.id, user_id: user.id, role: 'owner' })
-        .select('vport_id')
-        .single()
-        .catch(() => null);
-
-      navigate(`/vport/${data.id}`);
+      // 4) go to the vport page (no manager rows created)
+      navigate(`/vport/${vport.id}`);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Failed to create Vport.');
@@ -142,7 +141,7 @@ export default function CreateVportForm() {
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              cclassName="w-full rounded-xl bg-white border border-zinc-300 text-black px-3 py-2 outline-none focus:ring-2 focus:ring-violet-600"
+              className="w-full rounded-xl bg-white border border-zinc-300 text-black px-3 py-2 outline-none focus:ring-2 focus:ring-violet-600"
               required
             >
               {TYPE_OPTIONS.map((t) => (
@@ -189,7 +188,7 @@ export default function CreateVportForm() {
                 >
                   Choose image
                 </button>
-                {avatarFile || avatarUrl ? (
+                {(avatarFile || avatarUrl) && (
                   <button
                     type="button"
                     onClick={() => { setAvatarFile(null); setAvatarUrl(''); }}
@@ -197,7 +196,7 @@ export default function CreateVportForm() {
                   >
                     Remove
                   </button>
-                ) : null}
+                )}
                 <span className="text-xs text-zinc-500">PNG/JPG up to 5MB.</span>
               </div>
             </div>

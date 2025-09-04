@@ -1,10 +1,9 @@
 // src/features/explore/stories/components/UploadStory.jsx
 import React, { useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // ✅ fixed path
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // single source of truth
 import { compressVideo } from '@/utils/compressVideo';
 import { useIdentity } from '@/state/identityContext';
-import { db } from '@/data/data'; // ← use centralized data layer
+import { db } from '@/data/data';
 
 const MAX_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
 const MAX_DURATION_SEC = 15;
@@ -17,7 +16,7 @@ function inferMediaType(file) {
   if (mime.startsWith('image/')) return 'image';
   if (/\.(mp4|mov|webm|mkv|m4v)$/i.test(name)) return 'video';
   if (/\.(png|jpe?g|gif|webp|avif)$/i.test(name)) return 'image';
-  return 'image'; // stories only support image/video -> default
+  return 'image';
 }
 
 /** Read client-side video duration in seconds. */
@@ -85,9 +84,9 @@ export default function UploadStory({ onUpload }) {
     setSuccess('');
 
     try {
-      const { data: authData, error: authErr } = await supabase.auth.getUser();
-      if (authErr || !authData?.user) throw new Error('You must be logged in.');
-      const userId = authData.user.id;
+      const user = await db.auth.getAuthUser();
+      if (!user?.id) throw new Error('You must be logged in.');
+      const userId = user.id;
 
       // 1) Decide media type
       const mediaType = inferMediaType(file); // 'image' | 'video'
@@ -97,14 +96,19 @@ export default function UploadStory({ onUpload }) {
       if (mediaType === 'video') {
         const duration = await getVideoDuration(file);
         if (duration > MAX_DURATION_SEC + 0.25) {
+          // Your current compressVideo signature is (file, onProgress?), so no options object:
           try {
-            uploadFile = await compressVideo(file, { maxDurationSeconds: MAX_DURATION_SEC });
+            uploadFile = await compressVideo(file);
           } catch {
             throw new Error('Video must be 15 seconds or shorter.');
           }
         } else {
-          // optional recompress to control bitrate/size; ignore failures
-          uploadFile = await compressVideo(file).catch(() => file);
+          // Optional recompress to control bitrate/size; ignore failures
+          try {
+            uploadFile = await compressVideo(file);
+          } catch {
+            /* keep original on compression failure */
+          }
         }
       }
 
@@ -118,21 +122,21 @@ export default function UploadStory({ onUpload }) {
       if (uploadErr) throw new Error(uploadErr);
       if (!url) throw new Error('Upload returned no URL.');
 
-      // 4) Insert via DAL (centralized DB writes)
+      // 4) Insert via DAL (use the DAL’s expected field names)
       if (isActingAsVPort) {
         await db.stories.createVportStory({
           vportId,
-          createdBy: userId,           // field exists in your schema (nullable ok)
-          media_url: url,
-          media_type: mediaType,
+          createdBy: userId,     // matches DAL param
+          mediaUrl: url,         // camelCase per DAL
+          mediaType,             // camelCase per DAL
           caption: caption ?? '',
         });
         setSuccess('VPORT story uploaded!');
       } else {
         await db.stories.createUserStory({
           userId,
-          media_url: url,
-          media_type: mediaType,
+          mediaUrl: url,         // camelCase per DAL
+          mediaType,             // camelCase per DAL
           caption: caption ?? '',
         });
         setSuccess('Story uploaded successfully!');

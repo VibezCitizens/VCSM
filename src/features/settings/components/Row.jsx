@@ -1,23 +1,61 @@
 // src/features/settings/components/Row.jsx
 import { Link } from 'react-router-dom';
 
-export default function Row({ to, onClick, left, right }) {
-  const Component = to ? Link : 'button';
+export default function Row({
+  to,
+  onClick,
+  title,
+  subtitle,
+  left,          // optional custom node; if provided it replaces the title/subtitle block
+  right,         // trailing control (e.g. a button or switch)
+  className = '',
+}) {
+  const hasAction = !!(to || onClick);
+  const Interactive = to ? Link : 'button';
+
   return (
-    <Component
-      to={to}
-      onClick={onClick}
-      className="w-full text-left group flex items-center justify-between gap-3 rounded-xl px-3 py-3 hover:bg-zinc-800/70 transition-colors"
+    <section
+      className={[
+        'rounded-2xl bg-zinc-900/80 border border-zinc-800 p-3',
+        hasAction ? 'hover:bg-zinc-900 transition-colors' : '',
+        className,
+      ].join(' ')}
     >
-      <div className="flex min-w-0 items-center gap-3">{left}</div>
-      <div className="flex items-center gap-2 shrink-0 text-zinc-400">
-        {right}
-        {(to || onClick) ? (
-          <svg viewBox="0 0 20 20" className="h-5 w-5 group-hover:translate-x-0.5 transition-transform" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"/>
-          </svg>
-        ) : null}
+      <div className="w-full flex items-center justify-between gap-3">
+        {/* LEFT SIDE (text or custom) */}
+        <div className="min-w-0">
+          {left ? (
+            left
+          ) : hasAction ? (
+            <Interactive
+              to={to}
+              onClick={onClick}
+              className="block text-left no-underline"
+            >
+              <div className="text-sm font-semibold text-white truncate">
+                {title}
+              </div>
+              {subtitle ? (
+                <div className="text-xs text-zinc-400 truncate">{subtitle}</div>
+              ) : null}
+            </Interactive>
+          ) : (
+            <>
+              <div className="text-sm font-semibold text-white truncate">
+                {title}
+              </div>
+              {subtitle ? (
+                <div className="text-xs text-zinc-400 truncate">{subtitle}</div>
+              ) : null}
+            </>
+          )}
+        </div>
+
+        {/* RIGHT SIDE (control) */}
+        <div className="shrink-0">
+          {right}
+        </div>
       </div>
-    </Component>
+    </section>
   );
 }

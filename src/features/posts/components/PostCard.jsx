@@ -1,10 +1,8 @@
 // src/features/posts/components/PostCard.jsx
 /**
- * @fileoverview Post card: renders a post, reactions, and comments UI.
- * @module features/posts/components/PostCard
- * @remarks All database access goes through @/data/db (no direct Supabase here).
+ * Post card: renders a post, reactions, and comments UI.
+ * All database access goes through @/data/data (DAL).
  */
-
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
@@ -53,7 +51,6 @@ const gstart = (label, extra = {}) => {
   if (DEV) console.groupCollapsed(`%c[PostCard] ${label}`, 'color:#a78bfa;font-weight:bold', extra);
 };
 const gend = () => { if (DEV) console.groupEnd(); };
-const log = (...a) => { if (DEV) console.log('%c[PostCard]', 'color:#a78bfa', ...a); };
 const err = (...a) => { if (DEV) console.error('%c[PostCard]', 'color:#ef4444', ...a); };
 
 const renderTextWithHashtags = (text = '') =>
@@ -138,10 +135,13 @@ export default function PostCard({
     const src = hasUserProp(user) ? user : post?.profiles ?? {};
     return {
       id: authorId,
+      // provide both, so UserLink can display something even if one is missing
+      name: src?.display_name || src?.username || undefined,
       display_name: src?.display_name ?? undefined,
       username: src?.username ?? undefined,
       email: src?.email ?? undefined,
-      photo_url: src?.photo_url ?? undefined,
+      photo_url: src?.photo_url ?? src?.avatar_url ?? undefined,
+      avatar_url: src?.avatar_url ?? src?.photo_url ?? undefined,
       type: 'user',
     };
   }, [authorType, user, authorId, postVportId, post?.profiles, post?.vport]);
@@ -166,21 +166,16 @@ export default function PostCard({
 
   const fetchComments = useCallback(async () => {
     if (!post?.id) return;
-    gstart('fetchComments', { postId: post?.id, authorType });
     try {
       const list = await db.comments.listTopLevel({ authorType, postId: post.id });
       setComments(list);
     } catch (e) {
-      err('fetchComments error', e);
-    } finally {
-      gend();
+      if (DEV) err('fetchComments error', e);
     }
   }, [post?.id, authorType]);
 
   const fetchReactions = useCallback(async () => {
     if (!post?.id) return;
-    gstart('fetchReactions', { postId: post?.id, authorType, viewer: currentUser?.id, actor: identity?.vportId });
-
     try {
       const rows = await db.reactions.listForPost({ authorType, postId: post.id });
       const likes = rows.filter((r) => r.reaction === 'like').length;
@@ -218,9 +213,7 @@ export default function PostCard({
         setUserReaction(mine?.reaction ?? null);
       }
     } catch (e) {
-      err('fetchReactions error', e);
-    } finally {
-      gend();
+      if (DEV) err('fetchReactions error', e);
     }
   }, [post?.id, authorType, currentUser?.id, canActAsVport, identity?.vportId]);
 
@@ -233,7 +226,7 @@ export default function PostCard({
       const following = await isFollowing(authorId);
       setIsSubscribed(!!following);
     } catch (e) {
-      err('checkSubscription error', e);
+      if (DEV) err('checkSubscription error', e);
     }
   }, [currentUser?.id, authorId, authorType]);
 
@@ -242,7 +235,6 @@ export default function PostCard({
       setAuthorExists(true);
       return;
     }
-    gstart('verifyAuthorExists', { authorId, authorType });
     try {
       if (!authorId) {
         setAuthorExists(false);
@@ -251,21 +243,17 @@ export default function PostCard({
       const exists = await db.profiles.exists(authorId);
       setAuthorExists(Boolean(exists));
     } catch (e) {
-      err('verifyAuthorExists error', e);
+      if (DEV) err('verifyAuthorExists error', e);
       setAuthorExists(false);
-    } finally {
-      gend();
     }
   }, [authorId, authorType]);
 
   useEffect(() => {
     if (!post?.id) return;
-    gstart('mount/useEffect', { postId: post?.id, viewer: currentUser?.id, authorId, authorType });
     fetchReactions();
     fetchComments();
     checkSubscription();
     verifyAuthorExists();
-    gend();
   }, [
     post?.id,
     authorType,
@@ -281,7 +269,6 @@ export default function PostCard({
   /* -------------------------------- actions -------------------------------- */
 
   const handlePostComment = async () => {
-    gstart('handlePostComment', { authorType, canActAsVport, postVportId });
     try {
       const uid = currentUser?.id;
       const text = replyText.trim();
@@ -290,7 +277,7 @@ export default function PostCard({
       const newRow = await db.comments.create({
         authorType,
         postId: post.id,
-        vportPostId: post.id,
+        vportPostId: post.id, // accepted by DAL for vport posts
         userId: uid,
         content: text,
         asVport: !!canActAsVport,
@@ -300,23 +287,19 @@ export default function PostCard({
       setReplyText('');
       setShowComments(true);
 
-      // Optimistic add for user posts (DAL returns full comment row). For vport posts, refetch.
       if (authorType === 'user' && newRow?.id) {
-        setComments((prev) => [...prev, newRow]);
+        setComments((prev) => [...prev, newRow]); // optimistic for user posts
       } else {
-        await fetchComments();
+        await fetchComments(); // vport posts → refetch list
       }
     } catch (e) {
-      err('handlePostComment error', e);
+      if (DEV) err('handlePostComment error', e);
       alert(`Failed to comment: ${e?.message || e}`);
-    } finally {
-      gend();
     }
   };
 
   const handleReact = async (kind) => {
     if (reactionBusy) return;
-    gstart('handleReact', { kind, authorType, canActAsVport, vportId: identity?.vportId });
     try {
       setReactionBusy(true);
       vibrate();
@@ -330,27 +313,35 @@ export default function PostCard({
         return;
       }
 
-      await db.reactions.setForPost({
-        authorType,
-        postId: post.id,
-        kind,
-        userId: uid,
-        vportId: identity?.vportId,
-        actingAsVport: canActAsVport,
-      });
+      if (userReaction === kind) {
+        await db.reactions.clearForPost({
+          authorType,
+          postId: post.id,
+          userId: uid,
+          vportId: identity?.vportId,
+          actingAsVport: canActAsVport,
+        });
+      } else {
+        await db.reactions.setForPost({
+          authorType,
+          postId: post.id,
+          kind,
+          userId: uid,
+          vportId: identity?.vportId,
+          actingAsVport: canActAsVport,
+        });
+      }
 
       await fetchReactions();
     } catch (e) {
-      err('handleReact error', e);
+      if (DEV) err('handleReact error', e);
       alert(`Failed to react: ${e?.message || e}`);
     } finally {
       setReactionBusy(false);
-      gend();
     }
   };
 
   const handleDeletePost = async () => {
-    gstart('handleDeletePost', { authorType, canDelete, postVportId });
     try {
       if (!canDelete) return;
 
@@ -361,10 +352,8 @@ export default function PostCard({
       }
       onDelete?.(post.id);
     } catch (e) {
-      err('handleDeletePost error', e);
+      if (DEV) err('handleDeletePost error', e);
       alert(`Failed to delete: ${e?.message || e}`);
-    } finally {
-      gend();
     }
   };
 
@@ -384,7 +373,7 @@ export default function PostCard({
       onSubscriptionChange?.();
     } catch (e) {
       setIsSubscribed(prev);
-      err('handleToggleSubscribe error', e);
+      if (DEV) err('handleToggleSubscribe error', e);
       alert(`Failed to follow/unfollow: ${e?.message || e}`);
     } finally {
       setFollowBusy(false);
@@ -392,7 +381,6 @@ export default function PostCard({
   };
 
   const handleMessage = async () => {
-    gstart('handleMessage', { authorType });
     try {
       if (authorType !== 'user') return;
       const uid = currentUser?.id;
@@ -400,15 +388,13 @@ export default function PostCard({
       const convo = await getOrCreateConversation(authorId);
       if (convo?.id) navigate(`/chat/${convo.id}`);
     } catch (e) {
-      err('handleMessage error', e);
-    } finally {
-      gend();
+      if (DEV) err('handleMessage error', e);
     }
   };
 
   /* ---------------------------------- UI ---------------------------------- */
 
-  const textContent = authorType === 'vport' ? post.body : post.text;
+  const textContent = authorType === 'vport' ? (post.text ?? post.body) : post.text;
 
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 shadow mb-4 mx-2 relative">
@@ -579,7 +565,7 @@ export default function PostCard({
                 comment={c}
                 postAuthorType={authorType}
                 postVportId={postVportId}
-                onDelete={(id) => setComments((prev) => prev.filter((x) => x.id !== id))} // ✅ optimistic remove
+                onDelete={(id) => setComments((prev) => prev.filter((x) => x.id !== id))}
               />
             ))
           )}

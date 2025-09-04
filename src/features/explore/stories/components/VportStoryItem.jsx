@@ -1,6 +1,5 @@
 // src/features/explore/stories/components/VportStoryItem.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { db } from '@/data/data';
 
 export default function VportStoryItem({ story, isMuted, onMuteToggle, isActive }) {
@@ -17,8 +16,8 @@ export default function VportStoryItem({ story, isMuted, onMuteToggle, isActive 
 
     const logView = async () => {
       try {
-        const { data } = await supabase.auth.getUser();
-        const userId = data?.user?.id;
+        const user = await db.auth.getAuthUser();
+        const userId = user?.id;
         if (!userId || !storyId) return;
 
         await db.stories.logVportStoryView({ storyId, userId });
@@ -104,11 +103,7 @@ export default function VportStoryItem({ story, isMuted, onMuteToggle, isActive 
         )}
       </div>
 
-      {caption && (
-        <div className="absolute bottom-8 w-full text-center px-4">
-          <p className="text-sm text-zinc-300">{caption}</p>
-        </div>
-      )}
+     
     </div>
   );
 }

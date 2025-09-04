@@ -36,32 +36,40 @@ export default function CreateVportInline({ user, onCreated, onCancel }) {
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit || submitting) return;
     setSubmitting(true);
     setErr('');
+
     try {
-      const avatar_url = await uploadAvatar().catch(() => '');
+      // optional avatar upload – failure does not block vport creation
+      let avatar_url = '';
+      try { avatar_url = await uploadAvatar(); } catch { avatar_url = ''; }
+
+      const normalizedType = String(type).toLowerCase();
+      if (!TYPE_OPTIONS.includes(normalizedType)) {
+        throw new Error('Invalid Vport type.');
+      }
+
       const { data, error } = await supabase
         .from('vports')
         .insert({
+          // Ownership only (no managers):
           created_by: user.id,
           name: name.trim(),
-          type: String(type).toLowerCase(),
+          type: normalizedType,
           avatar_url: avatar_url || null,
-          description: desc.trim() || null,
+          description: (desc || '').trim() || null,
         })
         .select('id, name, avatar_url')
         .single();
+
       if (error) throw error;
 
-      // best-effort: become owner in managers table
-      await supabase.from('vport_managers').insert({
-        vport_id: data.id, user_id: user.id, role: 'owner'
-      }).select('vport_id').single().catch(() => {});
-
+      // No manager trigger anymore — caller should refresh owned vports (created_by = user.id).
       onCreated?.(data);
     } catch (e) {
-      setErr(e.message || 'Failed to create Vport.');
+      const msg = e instanceof Error ? e.message : String(e);
+      setErr(msg || 'Failed to create Vport.');
     } finally {
       setSubmitting(false);
     }
@@ -122,8 +130,13 @@ export default function CreateVportInline({ user, onCreated, onCancel }) {
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (!f) return;
-              if (!f.type.startsWith('image/')) return;
-              if (f.size > MAX_IMAGE_BYTES) return;
+              if (!f.type.startsWith('image/')) {
+                setErr('Please choose an image file.'); return;
+              }
+              if (f.size > MAX_IMAGE_BYTES) {
+                setErr(`Image is too large (max ${(MAX_IMAGE_BYTES/1024/1024).toFixed(1)}MB).`); return;
+              }
+              setErr('');
               setFile(f);
             }}
           />

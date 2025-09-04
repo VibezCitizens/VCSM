@@ -20,11 +20,16 @@ const VoidScreen             = lazy(() => import('@/TheVoid/VoidScreen.jsx'));
 const ExploreScreen          = lazy(() => import('@/features/explore/ExploreScreen'));
 const SingleVideoEntryScreen = lazy(() => import('@/features/profile/tabs/SingleVideoEntryScreen'));
 
-// Notifications
+// Notifications (USER)
 const Notifications          = lazy(() => import('@/features/notificationcenter/Notifications'));
 const NotiViewStoryScreen    = lazy(() => import('@/features/notificationcenter/NotiViewStoryScreen'));
 const NotiViewPostScreen     = lazy(() => import('@/features/notificationcenter/NotiViewPostScreen'));
 const NotiViewMessageScreen  = lazy(() => import('@/features/notificationcenter/NotiViewMessageScreen'));
+
+// Notifications (VPORT) — NEW
+const VNotifications         = lazy(() => import('@/features/notificationcenter/VNotifications'));
+const VNotiViewPostScreen    = lazy(() => import('@/features/notificationcenter/VNotiViewPostScreen'));
+const VNotiViewMessageScreen = lazy(() => import('@/features/notificationcenter/VNotiViewMessageScreen'));
 
 // VGrid / VPort
 const VGridScreen            = lazy(() => import('@/features/vgrid/VGridScreen'));
@@ -60,15 +65,7 @@ function SettingsSubPlaceholder({ title }) {
 }
 
 export default function App() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-black text-white text-lg">
-        Loading...
-      </div>
-    );
-  }
+  const { user } = useAuth(); // IdentityMount handles loading; we just branch on user
 
   return (
     <Suspense fallback={<div className="text-center text-neutral-500 py-10">Loading…</div>}>
@@ -128,11 +125,16 @@ export default function App() {
             <Route path="/void" element={<Layout><VoidScreen /></Layout>} />
             <Route path="/video/:videoId" element={<Layout><SingleVideoEntryScreen /></Layout>} />
 
-            {/* Notifications */}
+            {/* USER Notifications */}
             <Route path="/notifications" element={<Layout><Notifications /></Layout>} />
             <Route path="/noti/story/:storyId" element={<Layout><NotiViewStoryScreen /></Layout>} />
             <Route path="/noti/post/:postId" element={<Layout><NotiViewPostScreen /></Layout>} />
             <Route path="/noti/message/:conversationId" element={<Layout><NotiViewMessageScreen /></Layout>} />
+
+            {/* VPORT Notifications — NEW */}
+            <Route path="/vnotifications" element={<Layout><VNotifications /></Layout>} />
+            <Route path="/vnoti/post/:postId" element={<Layout><VNotiViewPostScreen /></Layout>} />
+            <Route path="/vnoti/message/:conversationId" element={<Layout><VNotiViewMessageScreen /></Layout>} />
 
             {/* VGrid Map */}
             <Route path="/vgrid" element={<Layout><VGridScreen /></Layout>} />

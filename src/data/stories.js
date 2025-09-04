@@ -1,4 +1,3 @@
-// src/data/stories.js
 /**
  * Stories DAL (Data Access Layer)
  * Owns all DB reads/writes for:
@@ -14,37 +13,42 @@ import { supabase } from '@/lib/supabaseClient';
  * =======================================================================================*/
 const nowISO = () => new Date().toISOString();
 
-const isUndefinedTable = (err) =>
-  String(err?.code || err?.message || '').includes('42P01') ||
-  String(err?.message || '').toLowerCase().includes('does not exist');
+const isUndefinedTable = (err) => {
+  const msg = String(err?.code || err?.message || '').toLowerCase();
+  // 42P01 = undefined_table
+  return msg.includes('42p01') || msg.includes('does not exist');
+};
 
-const isUndefinedFunction = (err) =>
-  String(err?.message || '').toLowerCase().includes('function') &&
-  String(err?.message || '').toLowerCase().includes('does not exist');
+// catches typical PostgREST “schema cache” function-missing errors as well
+const isUndefinedFunction = (err) => {
+  const code = String(err?.code || '').toLowerCase();
+  const msg  = String(err?.message || '').toLowerCase();
+  // 42883 = undefined_function (postgres)
+  return (
+    code.includes('42883') ||
+    msg.includes('does not exist') ||
+    msg.includes('could not find the function') ||
+    msg.includes('schema cache')
+  );
+};
 
 /** Resolve table / RPC names by story kind */
 function t(isVport) {
   return {
-    stories: isVport ? 'vport_stories' : 'stories',
-    viewEvents: isVport ? 'vport_story_view_events' : 'story_view_events',
-    views: isVport ? 'vport_story_views' : 'story_views',
-    reactions: isVport ? 'vport_story_reactions' : 'story_reactions',
+    stories:       isVport ? 'vport_stories'             : 'stories',
+    viewEvents:    isVport ? 'vport_story_view_events'   : 'story_view_events',
+    views:         isVport ? 'vport_story_views'         : 'story_views',
+    reactions:     isVport ? 'vport_story_reactions'     : 'story_reactions',
     rpcInsertUniqueView: isVport
       ? 'insert_unique_vport_story_view'
       : 'insert_unique_story_view',
-    notifications: isVport ? 'vport_notifications' : 'notifications',
-    vportManagers: 'vport_managers',
+    notifications: isVport ? 'vport_notifications'       : 'notifications',
   };
 }
 
 /* =========================================================================================
  * CREATE
  * =======================================================================================*/
-/**
- * Create a story (image or video).
- * @param {{isVport:boolean,userId?:string,vportId?:string,createdBy?:string,mediaUrl:string,mediaType:'image'|'video',caption?:string}} p
- * @returns {Promise<string>} story id
- */
 export async function createStory({
   isVport,
   userId,
@@ -65,7 +69,13 @@ export async function createStory({
     if (!vportId) throw new Error('vportId required for VPORT stories');
     const { data, error } = await supabase
       .from(tables.stories)
-      .insert([{ vport_id: vportId, created_by: createdBy || null, media_url: mediaUrl, media_type: mediaType, caption }])
+      .insert([{
+        vport_id:   vportId,
+        created_by: createdBy || null,
+        media_url:  mediaUrl,
+        media_type: mediaType,
+        caption,
+      }])
       .select('id')
       .single();
     if (error) throw error;
@@ -75,24 +85,24 @@ export async function createStory({
   if (!userId) throw new Error('userId required for user stories');
   const { data, error } = await supabase
     .from(tables.stories)
-    .insert([{ user_id: userId, media_url: mediaUrl, media_type: mediaType, caption }])
+    .insert([{
+      user_id:    userId,
+      media_url:  mediaUrl,
+      media_type: mediaType,
+      caption,
+    }])
     .select('id')
     .single();
   if (error) throw error;
   return data.id;
 }
 
-/** Back-compat wrappers */
-export const createUserStory = (p) => createStory({ isVport: false, ...p });
-export const createVportStory = (p) => createStory({ isVport: true, ...p });
+export const createUserStory  = (p) => createStory({ isVport: false, ...p });
+export const createVportStory = (p) => createStory({ isVport: true,  ...p });
 
 /* =========================================================================================
  * LIST
  * =======================================================================================*/
-/**
- * List stories for a user or VPORT.
- * @param {{isVport:boolean,userId?:string,vportId?:string,includeExpired?:boolean,includeDeleted?:boolean,limit?:number}} p
- */
 export async function listStories({
   isVport,
   userId,
@@ -121,17 +131,12 @@ export async function listStories({
   return data || [];
 }
 
-/** Back-compat wrappers */
-export const listUserStories = (p) => listStories({ isVport: false, ...p });
-export const listVportStories = (p) => listStories({ isVport: true, ...p });
+export const listUserStories  = (p) => listStories({ isVport: false, ...p });
+export const listVportStories = (p) => listStories({ isVport: true,  ...p });
 
 /* =========================================================================================
  * DELETE (soft)
  * =======================================================================================*/
-/**
- * Soft-delete a story (RLS-safe).
- * For VPORT stories we use created_by; adjust if your RLS uses vport ownership.
- */
 export async function softDeleteStory({ isVport, id, userId, createdBy }) {
   const tables = t(isVport);
   if (isVport) {
@@ -153,39 +158,36 @@ export async function softDeleteStory({ isVport, id, userId, createdBy }) {
   }
 }
 
-/** Back-compat wrappers */
-export const softDeleteUserStory = (p) => softDeleteStory({ isVport: false, ...p });
-export const softDeleteVportStory = (p) => softDeleteStory({ isVport: true, ...p });
+export const softDeleteUserStory  = (p) => softDeleteStory({ isVport: false, ...p });
+export const softDeleteVportStory = (p) => softDeleteStory({ isVport: true,  ...p });
 
 /* =========================================================================================
- * VIEWS (log view + unique viewer record)
+ * VIEWS (RPC-first, then fallback)
  * =======================================================================================*/
-/**
- * Log a view (event + unique viewer via RPC fallback).
- * @param {{isVport:boolean,storyId:string,userId:string}} p
- */
 export async function logStoryView({ isVport, storyId, userId }) {
   const tables = t(isVport);
 
-  // 1) fire-and-forget event
+  // 1) Prefer the RPC (it handles event insert + summary upsert server-side)
   try {
-    const { error } = await supabase.from(tables.viewEvents).insert({ story_id: storyId, user_id: userId });
-    if (error && !isUndefinedTable(error)) throw error;
+    const { error: rpcErr } = await supabase.rpc(
+      tables.rpcInsertUniqueView,
+      { uid: userId, sid: storyId },
+    );
+    if (!rpcErr) return true;                          // RPC succeeded → done
+    if (!isUndefinedFunction(rpcErr)) throw rpcErr;    // other error → surface it
   } catch (e) {
-    if (!isUndefinedTable(e)) throw e;
+    if (!isUndefinedFunction(e)) throw e;              // not a "missing function" error
   }
 
-  // 2) RPC preferred
+  // 2) Fallback (no RPC): event insert + manual upsert in summary table
   try {
-    const { error: rpcErr } = await supabase.rpc(tables.rpcInsertUniqueView, { uid: userId, sid: storyId });
-    if (!rpcErr) return true;
-    if (!isUndefinedFunction(rpcErr)) throw rpcErr;
-  } catch (e) {
-    if (!isUndefinedFunction(e)) throw e;
-  }
+    // event row (raw log)
+    const ev = await supabase
+      .from(tables.viewEvents)
+      .insert({ story_id: storyId, user_id: userId });
+    if (ev.error && !isUndefinedTable(ev.error)) throw ev.error;
 
-  // 3) fallback manual "upsert-ish"
-  try {
+    // upsert-ish counter
     const sel = await supabase
       .from(tables.views)
       .select('count')
@@ -193,7 +195,10 @@ export async function logStoryView({ isVport, storyId, userId }) {
       .eq('user_id', userId)
       .maybeSingle();
 
-    if (sel.error && !String(sel.error?.code).includes('PGRST116')) throw sel.error;
+    // PGRST116 = result not found (maybeSingle)
+    if (sel.error && !String(sel.error?.code || '').includes('PGRST116')) {
+      throw sel.error;
+    }
 
     if (sel.data) {
       const curr = Number(sel.data.count || 0);
@@ -204,12 +209,14 @@ export async function logStoryView({ isVport, storyId, userId }) {
         .eq('user_id', userId);
       if (upd.error) throw upd.error;
     } else {
-      const ins = await supabase.from(tables.views).insert({
-        story_id: storyId,
-        user_id: userId,
-        count: 1,
-        viewed_at: nowISO(),
-      });
+      const ins = await supabase
+        .from(tables.views)
+        .insert({
+          story_id: storyId,
+          user_id:  userId,
+          count:    1,
+          viewed_at: nowISO(),
+        });
       if (ins.error) throw ins.error;
     }
   } catch (e) {
@@ -219,11 +226,12 @@ export async function logStoryView({ isVport, storyId, userId }) {
   return true;
 }
 
-/** Back-compat wrappers */
-export const logUserStoryView = (p) => logStoryView({ isVport: false, ...p });
-export const logVportStoryView = (p) => logStoryView({ isVport: true, ...p });
+export const logUserStoryView  = (p) => logStoryView({ isVport: false, ...p });
+export const logVportStoryView = (p) => logStoryView({ isVport: true,  ...p });
 
-/** Get unique viewer count (rows in *views table). */
+/* =========================================================================================
+ * UNIQUE VIEWERS
+ * =======================================================================================*/
 export async function getUniqueViewerCount({ isVport, storyId }) {
   const { views } = t(isVport);
   const { count, error } = await supabase
@@ -234,33 +242,25 @@ export async function getUniqueViewerCount({ isVport, storyId }) {
   return count ?? 0;
 }
 
-/** Back-compat wrappers */
-export const getUserStoryUniqueViewers = (id) => getUniqueViewerCount({ isVport: false, storyId: id });
-export const getVportStoryUniqueViewers = (id) => getUniqueViewerCount({ isVport: true, storyId: id });
+export const getUserStoryUniqueViewers  = (id) => getUniqueViewerCount({ isVport: false, storyId: id });
+export const getVportStoryUniqueViewers = (id) => getUniqueViewerCount({ isVport: true,  storyId: id });
 
 /* =========================================================================================
- * REACTIONS (emoji)
+ * REACTIONS
  * =======================================================================================*/
-/**
- * Toggle / set story reaction for a viewer.
- * - If the same emoji already exists -> remove (toggle off)
- * - Else replace any existing with new emoji
- * Pass `emoji=null` to just remove any existing reaction.
- * @param {{isVport:boolean,storyId:string,userId:string,emoji:string|null}} p
- */
 export async function setStoryReaction({ isVport, storyId, userId, emoji }) {
   const tables = t(isVport);
 
-  // get current (if any)
   const { data: existing, error: selErr } = await supabase
     .from(tables.reactions)
     .select('emoji')
     .eq('story_id', storyId)
     .eq('user_id', userId)
     .maybeSingle();
-  if (selErr && !String(selErr?.code).includes('PGRST116')) throw selErr;
+  // PGRST116 = no row; ignore
+  if (selErr && !String(selErr?.code || '').includes('PGRST116')) throw selErr;
 
-  // always clear existing
+  // clear existing (if any)
   if (existing) {
     const { error: delErr } = await supabase
       .from(tables.reactions)
@@ -270,10 +270,9 @@ export async function setStoryReaction({ isVport, storyId, userId, emoji }) {
     if (delErr) throw delErr;
   }
 
-  // if same or null -> done (toggled off)
+  // if same or null -> toggled off
   if (!emoji || existing?.emoji === emoji) return { toggledOff: true };
 
-  // otherwise insert new
   const { error: insErr } = await supabase
     .from(tables.reactions)
     .insert({ story_id: storyId, user_id: userId, emoji });
@@ -281,7 +280,6 @@ export async function setStoryReaction({ isVport, storyId, userId, emoji }) {
   return { toggledOff: false };
 }
 
-/** List reactions for a story. */
 export async function listStoryReactions({ isVport, storyId }) {
   const tables = t(isVport);
   const { data, error } = await supabase
@@ -293,28 +291,20 @@ export async function listStoryReactions({ isVport, storyId }) {
   return data || [];
 }
 
-/** Back-compat wrappers */
-export const reactToUserStory = (p) => setStoryReaction({ isVport: false, ...p });
-export const reactToVportStory = (p) => setStoryReaction({ isVport: true, ...p });
-export const listUserStoryReactions = (id) => listStoryReactions({ isVport: false, storyId: id });
-export const listVportStoryReactions = (id) => listStoryReactions({ isVport: true, storyId: id });
+export const reactToUserStory            = (p) => setStoryReaction({ isVport: false, ...p });
+export const reactToVportStory           = (p) => setStoryReaction({ isVport: true,  ...p });
+export const listUserStoryReactions      = (id) => listStoryReactions({ isVport: false, storyId: id });
+export const listVportStoryReactions     = (id) => listStoryReactions({ isVport: true,  storyId: id });
 
 /* =========================================================================================
  * NOTIFICATIONS
  * =======================================================================================*/
-/**
- * Notify the appropriate owner(s) about a reaction.
- * - user story → 1 row in `notifications`
- * - VPORT story → 1 row per manager in `vport_notifications`
- * Safe-noop if tables aren’t present.
- * @param {{isVport:boolean,storyId:string,actorUserId:string,emoji:string|null}} p
- */
 export async function notifyStoryReaction({ isVport, storyId, actorUserId, emoji }) {
   const tables = t(isVport);
 
   try {
     if (isVport) {
-      // find vport_id
+      // 1) find vport_id from story
       const { data: storyRow, error: sErr } = await supabase
         .from(tables.stories)
         .select('vport_id')
@@ -323,30 +313,33 @@ export async function notifyStoryReaction({ isVport, storyId, actorUserId, emoji
       if (sErr || !storyRow?.vport_id) return;
       const vportId = storyRow.vport_id;
 
-      // find managers
-      const { data: managers, error: mErr } = await supabase
-        .from(tables.vportManagers)
-        .select('manager_user_id')
-        .eq('vport_id', vportId);
-      if (mErr || !managers?.length) return;
+      // 2) find VPORT owner (created_by)
+      const { data: vp, error: vErr } = await supabase
+        .from('vports')
+        .select('created_by')
+        .eq('id', vportId)
+        .maybeSingle();
+      if (vErr || !vp?.created_by) return;
 
-      const rows = managers.map((m) => ({
-        recipient_user_id: m.manager_user_id,
-        vport_id: vportId,
-        actor_id: actorUserId,
-        kind: 'story_reaction',
-        object_type: 'vport_story',
-        object_id: storyId,
-        link_path: `/vport-stories/${storyId}`,
-        context: { emoji },
-      }));
+      // avoid notifying the actor themselves if they are owner
+      if (vp.created_by === actorUserId) return;
 
-      const { error: nErr } = await supabase.from(tables.notifications).insert(rows);
+      // 3) insert one vport_notification
+      const { error: nErr } = await supabase.from(tables.notifications).insert({
+        recipient_user_id: vp.created_by,
+        vport_id:          vportId,
+        actor_user_id:     actorUserId,
+        kind:              'story_reaction',
+        object_type:       'vport_story',
+        object_id:         storyId,
+        link_path:         `/vport-stories/${storyId}`,
+        context:           { emoji },
+      });
       if (nErr) throw nErr;
       return;
     }
 
-    // user story
+    // user story → notify owner in notifications
     const { data: s, error: sErr } = await supabase
       .from(tables.stories)
       .select('user_id')
@@ -356,13 +349,13 @@ export async function notifyStoryReaction({ isVport, storyId, actorUserId, emoji
     if (s.user_id === actorUserId) return;
 
     const { error: nErr } = await supabase.from(tables.notifications).insert({
-      user_id: s.user_id,
-      actor_id: actorUserId,
-      kind: 'story_reaction',
-      object_type: 'story',
-      object_id: storyId,
-      link_path: `/stories/${storyId}`,
-      context: { emoji },
+      user_id:    s.user_id,
+      actor_id:   actorUserId,
+      kind:       'story_reaction',
+      object_type:'story',
+      object_id:  storyId,
+      link_path:  `/stories/${storyId}`,
+      context:    { emoji },
     });
     if (nErr) throw nErr;
   } catch (e) {

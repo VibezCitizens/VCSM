@@ -1,13 +1,8 @@
-// src/data/notifications.js
 /**
  * Notifications DAL
  * - Normalizes writes for both "user notifications" and "VPORT notifications"
- * - Tolerates column differences (type vs kind, read vs read_at, etc.)
- *
- * Tables we *may* have (code is tolerant if some are missing):
- *   notifications
- *   vport_notifications
- *   vport_managers(vport_id, manager_user_id)
+ * - Tolerates column differences (type vs kind, read vs read_at, actor_id vs actor_user_id)
+
  */
 
 import { supabase } from '@/lib/supabaseClient';
@@ -16,13 +11,15 @@ import { supabase } from '@/lib/supabaseClient';
  * helpers
  * ============================================================ */
 
-const isUndefinedTable = (e) =>
-  String(e?.code || e?.message || '').includes('42P01') ||
-  String(e?.message || '').toLowerCase().includes('does not exist');
+const isUndefinedTable = (e) => {
+  const s = String(e?.code || e?.message || '').toLowerCase();
+  return s.includes('42p01') || s.includes('does not exist');
+};
 
-const isUndefinedColumn = (e) =>
-  String(e?.code || e?.message || '').includes('42703') ||
-  String(e?.message || '').toLowerCase().includes('column');
+const isUndefinedColumn = (e) => {
+  const s = String(e?.code || e?.message || '').toLowerCase();
+  return s.includes('42703') || s.includes('column');
+};
 
 async function tryInsert(table, rowOrRows) {
   const { error } = await supabase.from(table).insert(rowOrRows);
@@ -68,8 +65,8 @@ async function insertUserNotification({
   }
 }
 
-/** Notify all managers in `vport_notifications`; silent no-op if tables missing. */
-async function insertVportManagerNotifications({
+/** Insert ONE owner notification into `vport_notifications` (no managers). */
+async function insertVportOwnerNotification({
   vportId,
   actorUserId,
   kind,
@@ -79,45 +76,42 @@ async function insertVportManagerNotifications({
   context = {},
 }) {
   try {
-    const { data: managers, error: mErr } = await supabase
-      .from('vport_managers')
-      .select('manager_user_id')
-      .eq('vport_id', vportId);
+    // 1) Resolve owner
+    const { data: vp, error: vErr } = await supabase
+      .from('vports')
+      .select('created_by')
+      .eq('id', vportId)
+      .maybeSingle();
+    if (vErr || !vp?.created_by) return false;
 
-    if (mErr) {
-      if (isUndefinedTable(mErr)) return false;
-      throw mErr;
-    }
-    if (!managers?.length) return false;
+    // Don't notify yourself
+    if (vp.created_by === actorUserId) return true;
 
-    // Try extended schema first
+    // 2) Preferred (extended) schema
     try {
-      const rows = managers.map((m) => ({
-        recipient_user_id: m.manager_user_id,
+      await tryInsert('vport_notifications', {
+        recipient_user_id: vp.created_by,
         vport_id: vportId,
-        actor_id: actorUserId,
+        actor_user_id: actorUserId,  // ← extended column name
         kind,
         object_type: objectType ?? null,
         object_id: objectId ?? null,
         link_path: linkPath ?? null,
         context: Object.keys(context || {}).length ? context : null,
-      }));
-      await tryInsert('vport_notifications', rows);
+      });
       return true;
     } catch (e) {
-      if (!isUndefinedColumn(e)) {
-        if (isUndefinedTable(e)) return false;
-        throw e;
-      }
-      // Basic fallback
-      const rows = managers.map((m) => ({
-        recipient_user_id: m.manager_user_id,
+      if (isUndefinedTable(e)) return false;
+      if (!isUndefinedColumn(e)) throw e;
+
+      // 3) Fallback (basic) schema
+      await tryInsert('vport_notifications', {
+        recipient_user_id: vp.created_by,
         vport_id: vportId,
-        actor_id: actorUserId,
+        actor_id: actorUserId,       // ← basic column name
         type: kind,
         post_id: objectId ?? null,
-      }));
-      await tryInsert('vport_notifications', rows);
+      });
       return true;
     }
   } catch (e) {
@@ -132,8 +126,8 @@ async function insertVportManagerNotifications({
 
 /**
  * High-level story reaction notifier:
- * - user story → 1 row in `notifications` to the story owner
- * - vport story → 1 row per manager in `vport_notifications`
+ * - user story  → 1 row in `notifications` to the story owner
+ * - vport story → 1 row in `vport_notifications` to the VPORT owner (created_by)
  */
 export async function notifyStoryReaction({
   isVportStory,
@@ -141,48 +135,49 @@ export async function notifyStoryReaction({
   actorUserId,
   emoji,
 }) {
-  try {
-    if (isVportStory) {
+    try {
+      if (isVportStory) {
+        // Find the VPORT for this story
+        const { data: s, error: sErr } = await supabase
+          .from('vport_stories')
+          .select('vport_id')
+          .eq('id', storyId)
+          .maybeSingle();
+        if (sErr || !s?.vport_id) return false;
+
+        return insertVportOwnerNotification({
+          vportId: s.vport_id,
+          actorUserId,
+          kind: 'story_reaction',
+          objectType: 'vport_story',
+          objectId: storyId,
+          linkPath: `/vport-stories/${storyId}`,
+          context: { emoji },
+        });
+      }
+
+      // user story → notify the user owner
       const { data: s, error: sErr } = await supabase
-        .from('vport_stories')
-        .select('vport_id')
+        .from('stories')
+        .select('user_id')
         .eq('id', storyId)
         .maybeSingle();
-      if (sErr || !s?.vport_id) return false;
+      if (sErr || !s?.user_id) return false;
+      if (s.user_id === actorUserId) return true; // don't notify yourself
 
-      return insertVportManagerNotifications({
-        vportId: s.vport_id,
+      return insertUserNotification({
+        recipientUserId: s.user_id,
         actorUserId,
         kind: 'story_reaction',
-        objectType: 'vport_story',
+        objectType: 'story',
         objectId: storyId,
-        linkPath: `/vport-stories/${storyId}`,
+        linkPath: `/stories/${storyId}`,
         context: { emoji },
       });
+    } catch (e) {
+      if (isUndefinedTable(e)) return false;
+      throw e;
     }
-
-    // user story → notify owner
-    const { data: s, error: sErr } = await supabase
-      .from('stories')
-      .select('user_id')
-      .eq('id', storyId)
-      .maybeSingle();
-    if (sErr || !s?.user_id) return false;
-    if (s.user_id === actorUserId) return true; // don't notify yourself
-
-    return insertUserNotification({
-      recipientUserId: s.user_id,
-      actorUserId,
-      kind: 'story_reaction',
-      objectType: 'story',
-      objectId: storyId,
-      linkPath: `/stories/${storyId}`,
-      context: { emoji },
-    });
-  } catch (e) {
-    if (isUndefinedTable(e)) return false;
-    throw e;
-  }
 }
 
 /**
@@ -204,7 +199,6 @@ export async function listForUser({ userId, limit = 50 }) {
       const type = r.kind || r.type || 'unknown';
       const metadata = {
         ...(r.context || {}),
-        // common fields your UI looks for:
         post_id: r.object_id ?? r.post_id ?? null,
         story_id: r.story_id ?? null,
         conversation_id: r.conversation_id ?? null,

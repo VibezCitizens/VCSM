@@ -9,9 +9,9 @@ const REACTIONS = ['🔥', '😂', '😍', '👏', '💯'];
 export default function VportViewby({ storyId }) {
   const [me, setMe] = useState(null);
   const [story, setStory] = useState(null); // { id, vport_id, created_by }
-  const [isManager, setIsManager] = useState(false);
+  const [isOwner, setIsOwner] = useState(false); // owner-only eye count
 
-  const [viewers, setViewers] = useState([]);      // [{ user_id, count, profiles:{...}, reaction? }]
+  const [viewers, setViewers] = useState([]);        // [{ user_id, count, profiles:{...}, reaction? }]
   const [emojiCounts, setEmojiCounts] = useState({}); // { '🔥': 3, ... }
 
   const [showModal, setShowModal] = useState(false);
@@ -29,16 +29,14 @@ export default function VportViewby({ storyId }) {
     return data;
   };
 
-  const fetchIsManager = async (vportId, userId) => {
-    // manager_user_id is the field we standardized on
-    const { data, error } = await supabase
-      .from('vport_managers')
-      .select('manager_user_id')
-      .eq('vport_id', vportId)
-      .eq('manager_user_id', userId)
-      .maybeSingle();
-    if (error && String(error?.code) !== 'PGRST116') throw error;
-    return Boolean(data);
+  // owner check via vports.created_by === auth.uid() (no managers)
+  const fetchIsOwner = async (vportId) => {
+    try {
+      const ok = await db.vports?.isOwner?.(vportId);
+      return Boolean(ok);
+    } catch {
+      return false;
+    }
   };
 
   const fetchViewers = async (sid) => {
@@ -58,8 +56,20 @@ export default function VportViewby({ storyId }) {
     }));
   };
 
+  // robust fetch: prefer db.stories.listVportStoryReactions, fall back to generic
+  const fetchReactions = async (sid) => {
+    if (typeof db.stories?.listVportStoryReactions === 'function') {
+      return db.stories.listVportStoryReactions(sid);
+    }
+    if (typeof db.stories?.listStoryReactions === 'function') {
+      return db.stories.listStoryReactions({ isVport: true, storyId: sid });
+    }
+    // final fallback: try notifications or return empty
+    return [];
+  };
+
   const fetchReactionsAndMerge = async (sid, baseViewers) => {
-    const reactions = await db.stories.listVportStoryReactions(sid);
+    const reactions = await fetchReactions(sid);
     const counts = {};
     const vmap = new Map(baseViewers.map(v => [v.user_id, { ...v }]));
 
@@ -90,9 +100,9 @@ export default function VportViewby({ storyId }) {
         setStory(meta);
 
         if (meta?.vport_id) {
-          const mgr = await fetchIsManager(meta.vport_id, authUser.id);
+          const owner = await fetchIsOwner(meta.vport_id);
           if (cancelled) return;
-          setIsManager(mgr);
+          setIsOwner(owner);
         }
 
         const base = await fetchViewers(storyId);
@@ -130,7 +140,7 @@ export default function VportViewby({ storyId }) {
     const nextEmoji = myReaction === emoji ? null : emoji;
 
     try {
-      // Use centralized DAL: toggles for us
+      // Centralized DAL shim (handles vport/user choice)
       await db.stories.setStoryReaction({
         isVport: true,
         storyId,
@@ -138,18 +148,18 @@ export default function VportViewby({ storyId }) {
         emoji: nextEmoji,
       });
 
-      // Fire-and-forget notify managers about reaction change
-      db.stories.notifyStoryReaction({
+      // Fire-and-forget notification
+      db.notifications.notifyStoryReaction({
         isVport: true,
         storyId,
         actorUserId: me.id,
         emoji: nextEmoji,
       }).catch(() => {});
 
-      // Refresh counts from DAL, update my row locally
-      const reactions = await db.stories.listVportStoryReactions(storyId);
+      // Refresh counts, update my row locally
+      const reactions = await fetchReactions(storyId);
       const counts = {};
-      (reactions || []).forEach(({ emoji }) => { counts[emoji] = (counts[emoji] || 0) + 1; });
+      (reactions || []).forEach(({ emoji: e }) => { counts[e] = (counts[e] || 0) + 1; });
       setEmojiCounts(counts);
 
       setViewers((prev) => {
@@ -157,7 +167,6 @@ export default function VportViewby({ storyId }) {
         const updated = prev.map((v) =>
           v.user_id === me.id ? { ...v, reaction: nextEmoji } : v
         );
-        // if I'm not in viewers yet (edge-case), add a minimal row
         return exists
           ? updated
           : [{ user_id: me.id, count: 1, reaction: nextEmoji, profiles: { id: me.id } }, ...updated];
@@ -173,8 +182,8 @@ export default function VportViewby({ storyId }) {
 
   return (
     <>
-      {/* Eye count only for managers */}
-      {isManager && viewers.length > 0 && (
+      {/* Eye count only for owner */}
+      {isOwner && viewers.length > 0 && (
         <div
           className="fixed top-1/2 right-2 -translate-y-1/2 z-50 bg-black/60 px-3 py-1 rounded-full cursor-pointer"
           onClick={() => setShowModal(true)}
@@ -205,7 +214,7 @@ export default function VportViewby({ storyId }) {
         </div>
       </div>
 
-      {/* Manager modal */}
+      {/* Owner modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center p-6 overflow-y-auto">
           <button
@@ -215,7 +224,7 @@ export default function VportViewby({ storyId }) {
             Close
           </button>
 
-          {isManager && (
+          {isOwner && (
             <div className="flex gap-4 mb-6 flex-wrap justify-center">
               {Object.entries(emojiCounts).map(([emoji, count]) => (
                 <div key={emoji} className="text-white text-sm bg-zinc-800 px-3 py-1 rounded-full">

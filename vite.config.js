@@ -10,6 +10,11 @@ export default defineConfig({
     Unocss(),
     VitePWA({
       registerType: 'autoUpdate',
+      strategies: 'injectManifest',   // ✅ use your custom SW
+      srcDir: 'src',                  // ✅ where sw.js lives
+      filename: 'sw.js',              // ✅ name of your SW file
+      // (optional) control what Workbox precaches
+      workbox: { globPatterns: ['**/*.{js,css,html,ico,png,svg}'] },
       includeAssets: ['favicon.svg', 'robots.txt'],
       manifest: {
         name: 'Vibez Citizens',
@@ -28,7 +33,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@ui': path.resolve(__dirname, 'src/ui'),   // ← new global UI alias
+      '@ui': path.resolve(__dirname, 'src/ui'),
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
   },

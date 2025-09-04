@@ -19,6 +19,28 @@ const nowIso = () => new Date().toISOString();
 
 /* ============================== USER DMs =============================== */
 
+
+/**
+ * DAL wrapper that ensures a vport↔user DM exists (no managers).
+ * Uses SECURITY DEFINER RPC: public.get_or_create_vport_conversation(vport uuid)
+ * Returns the conversation id as a string.
+ */
+export async function startVportConversation(vportId) {
+  await requireAuthUserId(); // still assert auth; RPC uses auth.uid()
+  if (!vportId) throw new Error('Invalid parameters for startVportConversation');
+
+  const { data, error } = await supabase.rpc('get_or_create_vport_conversation', {
+    vport: vportId,
+  });
+  if (error) throw error;
+
+  // RPC returns uuid directly; normalize to string
+  const conversationId = typeof data === 'string' ? data : data?.id || data;
+  if (!conversationId) throw new Error('RPC did not return conversation id');
+  return conversationId;
+}
+
+
 /**
  * Get or create a direct 1:1 conversation between the current user and another user.
  * Uses SECURITY DEFINER RPC: public.get_or_create_private_conversation(user_id_1 uuid, user_id_2 uuid)
@@ -39,13 +61,6 @@ export async function getOrCreateDirect(otherUserId) {
   return { id: conversationId };
 }
 
-/**
- * Ensure the direct conversation exists and is *visible* for me.
- * - Creates the convo if needed (via getOrCreateDirect / RPC)
- * - Unarchives *my* membership, stamps partner_user_id
- * - Optionally restores history (cleared_before = null) when { restoreHistory: true }
- * Returns: { id, members: Array<{ user_id }> }
- */
 export async function getOrCreateDirectVisible(otherUserId, { restoreHistory = false } = {}) {
   const me = await requireAuthUserId();
   if (!otherUserId || otherUserId === me) throw new Error('Invalid otherUserId');
@@ -375,23 +390,6 @@ export async function getVportConversationHeader(conversationId) {
   };
 }
 
-/**
- * DAL wrapper that uses your Postgres RPC to ensure a vport↔user DM.
- * Returns the vport_conversations.id (string) or throws on error.
- */
-export async function startVportConversation(vportId, receiverUserId) {
-  const me = await requireAuthUserId();
-  if (!vportId || !receiverUserId || receiverUserId === me) {
-    throw new Error('Invalid parameters for startVportConversation');
-  }
-  const { data, error } = await supabase.rpc('get_or_create_vport_conversation', {
-    vport: vportId,
-    user_b: receiverUserId,
-    manager: me,
-  });
-  if (error) throw error;
-  return (typeof data === 'string' ? data : data?.id) || null;
-}
 
 /** List messages in a vport conversation (oldest first). */
 export async function listVportMessages(conversationId, { limit = 50, before = null } = {}) {

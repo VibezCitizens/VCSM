@@ -103,12 +103,23 @@ export default function UploadScreen() {
       });
 
       if (result?.ok) {
+        // Toast depends on whether we enqueued to SW or completed in-foreground
         toast.success(
-          mode === '24DROP' ? '24DROP uploaded!' :
-          mode === 'VDROP'   ? 'VDROP posted!'   :
-                               (file ? 'Photo posted!' : 'Text post published!')
+          result.enqueued
+            ? 'Uploading in background. You can keep browsing ✨'
+            : mode === '24DROP'
+            ? '24DROP uploaded!'
+            : mode === 'VDROP'
+            ? 'VDROP posted!'
+            : file
+            ? 'Photo posted!'
+            : 'Text post published!'
         );
-        setTimeout(() => navigate('/'), 800);
+
+        // Immediately leave this screen on success (your request)
+        resetAll();
+        navigate('/');
+        return;
       }
     } catch (err) {
       if (err?.code === 'IMAGE_COOLDOWN') {
@@ -134,7 +145,6 @@ export default function UploadScreen() {
       );
     }
     if (mediaType === 'image') {
-      // In POST mode, the Cropper handles the image preview instead.
       if (mode === 'POST') return null;
       return <img src={filePreviewUrl} alt="Preview" className="rounded-xl w-full h-48 object-cover" />;
     }
@@ -171,7 +181,7 @@ export default function UploadScreen() {
 
       <ProgressBanner
         message={processingMessage}
-        showBar={mediaType === 'video'}
+        showBar={mediaType === 'video' && loading}
         progress={compressionProgress}
       />
 

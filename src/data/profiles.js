@@ -50,43 +50,31 @@ function _parseUsernameInput(s) {
 ============================================================================= */
 
 export const users = {
-  /**
-   * Get a user profile by id.
-   * @param {string} id
-   * @returns {Promise<null|{id:string,display_name?:string,username?:string,photo_url?:string,email?:string}>}
-   */
+  /** Get a user profile by id. */
   async getById(id) {
     if (!id) return null;
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, display_name, username, photo_url, email')
+      .select('id, display_name, username, photo_url, email, private, created_at, updated_at')
       .eq('id', id)
       .maybeSingle();
     if (error) throw error;
     return data ?? null;
   },
 
-  /**
-   * Batch get by ids (best-effort; preserves no specific order).
-   * @param {string[]} ids
-   * @returns {Promise<Array<{id:string,display_name?:string,username?:string,photo_url?:string,email?:string}>>}
-   */
+  /** Batch get by ids (best-effort; preserves no specific order). */
   async getByIds(ids = []) {
     const list = (ids || []).filter(Boolean);
     if (!list.length) return [];
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, display_name, username, photo_url, email')
+      .select('id, display_name, username, photo_url, email, private')
       .in('id', list);
     if (error) throw error;
     return data ?? [];
   },
 
-  /**
-   * Check if a user profile exists.
-   * @param {string} id
-   * @returns {Promise<boolean>}
-   */
+  /** Check if a user profile exists. */
   async exists(id) {
     if (!id) return false;
     const { data, error } = await supabase
@@ -98,56 +86,40 @@ export const users = {
     return !!data;
   },
 
-  /**
-   * Get a user profile by username (case-sensitive exact).
-   * @param {string} username
-   * @returns {Promise<null|{id:string,display_name?:string,username?:string,photo_url?:string,email?:string}>}
-   */
+  /** Get a user profile by username (case-sensitive exact). */
   async getByUsername(username) {
     const u = (username || '').trim();
     if (!u) return null;
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, display_name, username, photo_url, email')
+      .select('id, display_name, username, photo_url, email, private')
       .eq('username', u)
       .maybeSingle();
     if (error) throw error;
     return data ?? null;
   },
 
-  /**
-   * Get a user profile by username (case-insensitive).
-   * @param {string} username
-   * @returns {Promise<null|{id:string,display_name?:string,username?:string,photo_url?:string,email?:string}>}
-   */
+  /** Get a user profile by username (case-insensitive). */
   async getByUsernameCI(username) {
     const u = (username || '').trim();
     if (!u) return null;
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, display_name, username, photo_url, email')
+      .select('id, display_name, username, photo_url, email, private')
       .ilike('username', u)
       .maybeSingle();
     if (error) throw error;
     return data ?? null;
   },
 
-  /**
-   * Parse common inputs (@username, /u/username, URL) and fetch user by username (CI).
-   * @param {string} input
-   * @returns {Promise<null|{id:string,display_name?:string,username?:string,photo_url?:string,email?:string}>}
-   */
+  /** Parse common inputs (@username, /u/username, URL) and fetch user by username (CI). */
   async getByUsernameInput(input) {
     const uname = _parseUsernameInput(input);
     if (!uname) return null;
     return users.getByUsernameCI(uname);
   },
 
-  /**
-   * Search users by display_name or username (CI).
-   * @param {{ q:string, limit?:number }} params
-   * @returns {Promise<Array<{id:string,display_name?:string,username?:string,photo_url?:string}>>}
-   */
+  /** Search users by display_name or username (CI). */
   async search({ q, limit = 10 }) {
     const term = (q || '').trim();
     if (!term) return [];
@@ -161,13 +133,7 @@ export const users = {
     return data ?? [];
   },
 
-  /**
-   * Update a user profile (RLS must allow; user must be owner).
-   * Only pass the fields you intend to update.
-   * @param {string} id
-   * @param {Partial<{display_name:string, username:string, photo_url:string, bio:string, private:boolean}>} patch
-   * @returns {Promise<boolean>}
-   */
+  /** Update a user profile (RLS must allow; user must be owner). */
   async update(id, patch) {
     if (!id) throw new Error('Missing profile id.');
     const clean = Object.fromEntries(
@@ -179,25 +145,16 @@ export const users = {
     return true;
   },
 
-  /**
-   * Touch presence: sets profiles.last_seen to server time (RPC) or client ISO fallback.
-   * Use this from non-realtime heartbeats (e.g., your usePresence hook).
-   * @returns {Promise<boolean>}
-   */
+  /** Touch presence: sets profiles.last_seen to server time (RPC) or client ISO fallback. */
   async touchLastSeen() {
     const me = await requireAuthUserId();
 
-    // Preferred: RPC for server-time write (create it with SECURITY DEFINER).
-    // SQL suggestion:
-    //   create or replace function touch_last_seen()
-    //   returns void language sql security definer as $$
-    //     update profiles set last_seen = now() where id = auth.uid();
-    //   $$;
+    // Preferred: SECURITY DEFINER RPC
     try {
       const { error } = await supabase.rpc('touch_last_seen');
       if (!error) return true;
     } catch {
-      // fall through to client-time
+      /* fallback below */
     }
 
     // Fallback: client timestamp
@@ -208,6 +165,19 @@ export const users = {
     if (updErr) throw updErr;
     return true;
   },
+
+  /** NEW: Toggle profile privacy flag. */
+  async setPrivacy({ userId, isPrivate }) {
+    if (!userId || typeof isPrivate !== 'boolean') {
+      throw new Error('setPrivacy requires { userId, isPrivate:boolean }');
+    }
+    const { error } = await supabase
+      .from('profiles')
+      .update({ private: isPrivate })
+      .eq('id', userId);
+    if (error) throw error;
+    return true;
+  },
 };
 
 /* =============================================================================
@@ -215,11 +185,7 @@ export const users = {
 ============================================================================= */
 
 export const vports = {
-  /**
-   * Get a VPORT by id.
-   * @param {string} id
-   * @returns {Promise<null|{id:string,name:string,avatar_url?:string,type?:string,city?:string,state?:string}>}
-   */
+  /** Get a VPORT by id. */
   async getById(id) {
     if (!id) return null;
     const { data, error } = await supabase
@@ -231,11 +197,7 @@ export const vports = {
     return data ?? null;
   },
 
-  /**
-   * Batch get by ids.
-   * @param {string[]} ids
-   * @returns {Promise<Array<{id:string,name:string,avatar_url?:string,type?:string,city?:string,state?:string}>>}
-   */
+  /** Batch get by ids. */
   async getByIds(ids = []) {
     const list = (ids || []).filter(Boolean);
     if (!list.length) return [];
@@ -247,11 +209,7 @@ export const vports = {
     return data ?? [];
   },
 
-  /**
-   * Check if a VPORT exists.
-   * @param {string} id
-   * @returns {Promise<boolean>}
-   */
+  /** Check if a VPORT exists. */
   async exists(id) {
     if (!id) return false;
     const { data, error } = await supabase
@@ -263,11 +221,7 @@ export const vports = {
     return !!data;
   },
 
-  /**
-   * Search VPORTs by name or city (CI).
-   * @param {{ q:string, limit?:number }} params
-   * @returns {Promise<Array<{id:string,name:string,avatar_url?:string,type?:string,city?:string,state?:string}>>}
-   */
+  /** Search VPORTs by name or city (CI). */
   async search({ q, limit = 10 }) {
     const term = (q || '').trim();
     if (!term) return [];
@@ -281,12 +235,7 @@ export const vports = {
     return data ?? [];
   },
 
-  /**
-   * Update a VPORT (only if your RLS/permissions allow managers/owners).
-   * @param {string} id
-   * @param {Partial<{name:string, avatar_url:string, description:string, is_published:boolean}>} patch
-   * @returns {Promise<boolean>}
-   */
+  /** Update a VPORT (RLS should allow owner only). */
   async update(id, patch) {
     if (!id) throw new Error('Missing vport id.');
     const clean = Object.fromEntries(
@@ -297,10 +246,31 @@ export const vports = {
     if (error) throw error;
     return true;
   },
+
+  /**
+   * List VPORTs owned by a specific user id (created_by = userId).
+   * Manager tables are not used.
+   */
+  async listOwned(userId) {
+    if (!userId) return [];
+    const { data, error } = await supabase
+      .from('vports')
+      .select('id, name, avatar_url, type')
+      .eq('created_by', userId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+
+  /** List VPORTs owned by the current user (auth.uid()). */
+  async listOwnedByMe() {
+    const me = await requireAuthUserId();
+    return vports.listOwned(me);
+  },
 };
 
 /* =============================================================================
-   Followers / Subscribers (centralized here to keep “profiles” concerns together)
+   Followers / Subscribers
 ============================================================================= */
 
 export const followers = {
@@ -343,24 +313,15 @@ export const vportSubscribers = {
 };
 
 /* =============================================================================
-   Convenience helpers
+   Convenience + compatibility helpers
 ============================================================================= */
 
-/**
- * Exists helper that dispatches based on kind.
- * @param {string} id
- * @param {'user'|'vport'} [kind='user']
- * @returns {Promise<boolean>}
- */
+/** Exists helper that dispatches based on kind. */
 export async function exists(id, kind = 'user') {
   return kind === 'vport' ? vports.exists(id) : users.exists(id);
 }
 
-/**
- * Unified fetch for author meta used by UI components like PostCard / UserLink.
- * @param {{ kind:'user'|'vport', id:string }} param0
- * @returns {Promise<null|object>} A normalized object with type-discriminant
- */
+/** Unified fetch for author meta used by UI components like PostCard / UserLink. */
 export async function getAuthor({ kind, id }) {
   if (kind === 'vport') {
     const v = await vports.getById(id);
@@ -381,14 +342,15 @@ export async function getAuthor({ kind, id }) {
     : null;
 }
 
-/**
- * Public helper: parse common username inputs.
- * @param {string} input
- * @returns {string} normalized username (may be empty string)
- */
+/** Public helper: parse common username inputs. */
 export function parseUsernameInput(input) {
   return _parseUsernameInput(input);
 }
+
+/* ----- Compatibility wrappers for data.js bindings ----- */
+export async function getUser(id) { return users.getById(id); }
+export async function getVport(id) { return vports.getById(id); }
+export async function setPrivacy(args) { return users.setPrivacy(args); }
 
 export default {
   users,
@@ -398,4 +360,8 @@ export default {
   exists,
   getAuthor,
   parseUsernameInput,
+  // compat
+  getUser,
+  getVport,
+  setPrivacy,
 };

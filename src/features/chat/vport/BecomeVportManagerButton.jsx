@@ -1,6 +1,5 @@
 // src/features/chat/vport/BecomeVportManagerButton.jsx
 import { useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { ensureVportManager } from '@/features/chat/utils/ensureVportManager';
 
 export default function BecomeVportManagerButton({ vportId, onBecameManager, className = '' }) {

@@ -1,29 +1,75 @@
-# dependencies
+# -----------------------
+# dependencies / artifacts
+# -----------------------
 node_modules/
-
-# build output
 dist/
+.vite/
+coverage/
+*.tsbuildinfo
+.parcel-cache/
+.turbo/
 
-# environment variables
+# Next/Storybook (safe to keep even if unused)
+.next/
+storybook-static/
+
+# Cypress / Playwright (if used)
+cypress/screenshots/
+cypress/videos/
+playwright-report/
+test-results/
+blob-report/
+
+# -----------------------
+# environment & secrets
+# -----------------------
 .env
+.env.local
 .env.*.local
+.envrc
+*.pem
 
-# system folders
+# Cloudflare local env for Pages/Workers (KEEP OUT OF GIT)
+.dev.vars
+
+# Keep the example env in git
+!.env.example
+
+# -----------------------
+# editors / system junk
+# -----------------------
 .vscode/
 .idea/
 __ignored/
-
-# OS junk
 .DS_Store
 Thumbs.db
+.eslintcache
 
+# -----------------------
 # logs
+# -----------------------
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+*.log
 
-# editor junk
-*.swp
-*.swo
-*.bak
+# -----------------------
+# hosting providers
+# -----------------------
+.vercel/
+.netlify/
 
+# Cloudflare (Workers/Pages/Miniflare)
+.wrangler/           # wrangler state/cache
+node_modules/.mf/    # Miniflare v3 state
+.mf/                 # older Miniflare state (just in case)
+.cloudflare/         # any local CF tooling cache (if created)
+
+# -----------------------
+# Supabase local ephemeral (do NOT ignore migrations/config)
+# -----------------------
+supabase/.temp/
+supabase/.branches/
+supabase/studio/
+supabase/docker/volumes/

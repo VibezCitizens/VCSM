@@ -67,16 +67,13 @@ export default function ConversationList() {
       if (pk.startsWith('vpc:')) vpcIdByConv.set(c.id, pk.slice(4));
     }
 
-    // 2b) which VPORTs do *I* own/manage? (so we can HIDE those in citizen inbox)
-    const [ownedResp, managedResp] = await Promise.all([
-      supabase.from('vports').select('id').eq('created_by', user.id),
-      supabase.from('vport_managers').select('vport_id').eq('manager_user_id', user.id),
-    ]);
+    // 2b) which VPORTs do *I* own? (managers removed)
+    const ownedResp = await supabase
+      .from('vports')
+      .select('id')
+      .eq('created_by', user.id);
 
-    const myVportIds = new Set([
-      ...(ownedResp.data?.map(r => r.id) || []),
-      ...(managedResp.data?.map(r => r.vport_id) || []),
-    ]);
+    const myVportIds = new Set(ownedResp.data?.map(r => r.id) || []);
 
     // 3) recent messages across those conversations
     const { data: msgs, error: msgErr } = await supabase
@@ -122,7 +119,7 @@ export default function ConversationList() {
     const cutByConv = new Map(mems.map(m => [m.conversation_id, m.cleared_before || null]));
     const visibleIdsRaw = new Set(mems.filter(m => !m.archived_at).map(m => m.conversation_id));
 
-    // 5a) HIDE VPORT-shadow convs where the VPORT belongs to me (owned/managed)
+    // 5a) HIDE VPORT-shadow convs where the VPORT belongs to me (owned VPORTs only)
     const visibleIds = Array.from(visibleIdsRaw).filter(id => {
       const vpcId = vpcIdByConv.get(id);
       if (!vpcId) return true;           // normal citizen DM

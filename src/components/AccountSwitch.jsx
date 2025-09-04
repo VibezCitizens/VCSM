@@ -9,33 +9,39 @@ export default function AccountSwitch() {
   const [vports, setVports] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    let cancel = false;
-    (async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("vport_managers")
-        .select("vport_id, role, vports(name, id, avatar_url)")
-        .eq("user_id", identity?.userId || identity?.ownerId)   // <-- scope to me
-        .order("added_at", { ascending: false });
-      setLoading(false);
-      if (error) {
-        console.error(error);
-        return;
-      }
-      if (!cancel) {
-        setVports(
-          (data || []).map((row) => ({
-            id: row.vport_id,
-            role: row.role,
-            name: row.vports?.name || "VPORT",
-            avatar: row.vports?.avatar_url || "/avatar.jpg",
-          }))
-        );
-      }
-    })();
-    return () => { cancel = true; };
-  }, [identity?.userId, identity?.ownerId]);
+  // replace the entire useEffect with this
+useEffect(() => {
+  let cancel = false;
+  (async () => {
+    if (!identity?.userId) return;
+    setLoading(true);
+
+    // Fetch VPORTs you own (no managers table anymore)
+    const { data, error } = await supabase
+      .from('vports')
+      .select('id, name, avatar_url')
+      .eq('created_by', identity.userId)
+      .order('created_at', { ascending: false });
+
+    setLoading(false);
+    if (error) {
+      console.error(error);
+      return;
+    }
+    if (!cancel) {
+      setVports(
+        (data || []).map(v => ({
+          id: v.id,
+          role: 'owner',                 // static label now
+          name: v.name || 'VPORT',
+          avatar: v.avatar_url || '/avatar.jpg',
+        }))
+      );
+    }
+  })();
+  return () => { cancel = true; };
+}, [identity?.userId]);
+
 
   const currentLabel = isVport ? "Acting as VPORT" : "Acting as You";
 

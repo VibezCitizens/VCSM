@@ -27,7 +27,7 @@ const normalizeUrl = (url) => {
   }
 }
 
-const formatTime = (t) => (t ? t.toString().slice(0,5) : '--:--')
+const formatTime = (t) => (t ? t.toString().slice(0, 5) : '--:--')
 
 // ---------------- data hook ----------------
 function useVPortData(id) {
@@ -50,7 +50,7 @@ function useVPortData(id) {
         { data: rv, error: e4 },
       ] = await Promise.all([
         supabase.from('vports').select('*').eq('id', id).single(),
-        supabase.from('vport_hours').select('*').eq('vport_id', id).order('weekday', { ascending: true }),
+        supabase.from('vport_hours').select('*').eq('vport_id', id).order('day_of_week', { ascending: true }),
         supabase.from('vport_photos').select('*').eq('vport_id', id).order('created_at', { ascending: true }),
         supabase.from('vport_reviews').select('*').eq('vport_id', id).order('created_at', { ascending: false }),
       ])
@@ -98,8 +98,8 @@ function HoursTable({ hours }) {
     <div className="text-sm">
       <div className="grid grid-cols-2 gap-y-1">
         {hours.map(h => (
-          <React.Fragment key={h.id ?? h.weekday}>
-            <div className="text-gray-600">{days[h.weekday]}</div>
+          <React.Fragment key={h.id ?? h.day_of_week}>
+            <div className="text-gray-600">{days[h.day_of_week]}</div>
             <div className="font-medium">
               {h.is_24h ? 'Open 24 hours' : `${formatTime(h.open_time)} – ${formatTime(h.close_time)}`}
             </div>
@@ -235,7 +235,7 @@ function ClaimBanner({ vportId }) {
     <div className="rounded-lg border border-amber-300 bg-amber-50 p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm">
-          Are you the owner or manager of this place? Request verification/ownership.
+          Are you the owner of this place? Request verification/ownership.
         </div>
         <button
           disabled={busy}
@@ -360,7 +360,7 @@ export default function VPortPage() {
           </div>
         </div>
 
-        {/* View in VGrid (NEW) */}
+        {/* View in VGrid */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => nav('/vgrid', {

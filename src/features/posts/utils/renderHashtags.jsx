@@ -1,3 +1,4 @@
+// src/features/posts/utils/renderHashtags.jsx
 import { Link } from 'react-router-dom';
 
 export function renderTextWithHashtags(text = '') {
@@ -13,3 +14,5 @@ export function renderTextWithHashtags(text = '') {
     return <span key={i}>{part}</span>;
   });
 }
+
+export default renderTextWithHashtags;

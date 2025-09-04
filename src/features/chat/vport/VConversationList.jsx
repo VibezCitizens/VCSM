@@ -78,37 +78,8 @@ export default function VConversationList() {
         if (!firstMsgByConv.has(m.conversation_id)) firstMsgByConv.set(m.conversation_id, m);
       }
 
-      // 3) If acting as the VPORT, fetch the *other user* profile via RPC
-      const convIdsNeedingPartner =
-        viewerVportId
-          ? convIds.filter((id) => convById.get(id)?.vport_id === viewerVportId)
-          : [];
-
-      const partnerByConv = new Map();
-
-      if (convIdsNeedingPartner.length) {
-        const results = await Promise.allSettled(
-          convIdsNeedingPartner.map((cid) =>
-            supabase.rpc('get_vport_chat_partner_profile', {
-              conv_id: cid,
-              requester: user.id,
-            })
-          )
-        );
-
-        results.forEach((res, idx) => {
-          const cid = convIdsNeedingPartner[idx];
-          if (res.status === 'fulfilled') {
-            const { data, error } = res.value || {};
-            if (!error) {
-              const row = Array.isArray(data) ? (data[0] || null) : data;
-              if (row && row.id) partnerByConv.set(cid, row);
-            }
-          }
-        });
-      }
-
-      // 3b) Fallback: guess partner from messages and fetch profiles
+      // 3) Resolve partner WITHOUT RPC (managerless)
+      // Guess partner from messages: first message by a different user
       const guessedPartnerIdByConv = new Map();
       for (const m of msgsResp.data || []) {
         if (
@@ -120,10 +91,8 @@ export default function VConversationList() {
         }
       }
 
-      const convsMissingPartner = convIdsNeedingPartner.filter((cid) => !partnerByConv.has(cid));
-      const fallbackIds = Array.from(
-        new Set(convsMissingPartner.map((cid) => guessedPartnerIdByConv.get(cid)).filter(Boolean))
-      );
+      const fallbackIds = Array.from(new Set([...guessedPartnerIdByConv.values()].filter(Boolean)));
+      const partnerByConv = new Map();
 
       if (fallbackIds.length) {
         const { data: profs } = await supabase
@@ -133,8 +102,7 @@ export default function VConversationList() {
 
         if (profs?.length) {
           const profById = new Map(profs.map((p) => [p.id, p]));
-          for (const cid of convsMissingPartner) {
-            const pid = guessedPartnerIdByConv.get(cid);
+          for (const [cid, pid] of guessedPartnerIdByConv.entries()) {
             const prof = profById.get(pid);
             if (prof) partnerByConv.set(cid, prof);
           }
@@ -148,6 +116,7 @@ export default function VConversationList() {
 
         let partner;
         if (viewerVportId && conv?.vport_id === viewerVportId) {
+          // acting as the VPORT, show the user partner
           const prof = partnerByConv.get(id);
           partner = prof
             ? {
@@ -163,6 +132,7 @@ export default function VConversationList() {
                 partner_type: 'user',
               };
         } else {
+          // not acting as that VPORT — show the VPORT itself
           partner = {
             id: conv?.vport?.id || conv?.vport_id,
             display_name: conv?.vport?.name || 'VPORT',
@@ -192,7 +162,7 @@ export default function VConversationList() {
       setRows([]);
       setLoading(false);
     }
-  }, [user?.id, viewerVportId]);
+  }, [user?.id, viewerVportId, supabase]);
 
   useEffect(() => {
     load();
