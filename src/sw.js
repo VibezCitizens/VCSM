@@ -1,6 +1,11 @@
 /* src/sw.js */
 /* eslint-disable no-restricted-globals */
-self.__WB_DISABLE_DEV_LOGS = true;
+precacheAndRoute(self.__WB_MANIFEST || []);
+
+// ---- Workbox precache injection (required for injectManifest) ----
+import { precacheAndRoute } from 'workbox-precaching';
+precacheAndRoute(self.__WB_MANIFEST);
+// ------------------------------------------------------------------
 
 // ---------- tiny IndexedDB helper ----------
 const DB_NAME = 'vcs-upload-db';
