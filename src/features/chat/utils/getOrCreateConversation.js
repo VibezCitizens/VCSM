@@ -1,4 +1,3 @@
-// src/features/chat/utils/getOrCreateConversation.js
 // Thin wrappers around the centralized DAL. No Supabase calls here.
 import { chat } from '@/data/chat';
 
@@ -20,3 +19,6 @@ export async function getOrCreateConversation(otherUserId, { restoreHistory = fa
 export async function startVportConversation(vportId, receiverUserId) {
   return chat.startVportConversation(vportId, receiverUserId);
 }
+
+// Optional: also export a default so callers can do default or named imports.
+export default { getOrCreateConversation, startVportConversation };

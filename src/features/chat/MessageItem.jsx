@@ -1,27 +1,33 @@
-// C:\Users\vibez\OneDrive\Desktop\VCSM\src\features\chat\MessageItem.jsx
+// src/features/chat/MessageItem.jsx
 import { useAuth } from '@/hooks/useAuth';
 
 export default function MessageItem({ message }) {
   const { user } = useAuth();
-  const isMine = message.sender_id === user?.id;
+
+  // Support both legacy user-only messages and unified actor/vport variants
+  const isMine =
+    message?.sender_id === user?.id ||
+    message?.sender_user_id === user?.id ||
+    (user?.actor_id && message?.actor_id === user.actor_id);
 
   const timeText = new Date(message.created_at).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   });
 
-  // media (image/video/file preview baseline)
-  if (message.media_url) {
-    const isImage = message.media_type === 'image';
-    const isVideo = message.media_type === 'video';
+  const mt = (message.media_type || '').toLowerCase();
+  const isImage = mt === 'image' || mt.startsWith('image/');
+  const isVideo = mt === 'video' || mt.startsWith('video/');
 
+  if (message.media_url) {
     return (
       <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} px-4 py-2`}>
         <div className="relative max-w-[70%]">
           {isImage && (
             <img
               src={message.media_url}
-              alt=""
+              alt={message.alt || ''}
+              loading="lazy"
               className={`w-auto max-w-full h-auto rounded-2xl border ${
                 isMine ? 'border-purple-400' : 'border-neutral-600'
               } shadow-md object-contain`}
@@ -64,7 +70,6 @@ export default function MessageItem({ message }) {
     );
   }
 
-  // text message
   return (
     <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} px-4 py-2`}>
       <div

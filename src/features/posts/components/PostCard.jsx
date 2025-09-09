@@ -3,15 +3,16 @@
  * Post card: renders a post, reactions, and comments UI.
  * All database access goes through @/data/data (DAL).
  */
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useIdentity } from '@/state/identityContext';
 import { db } from '@/data/data';
 import { getOrCreateConversation } from '@/features/chat/utils/getOrCreateConversation';
 import UserLink from '@/components/UserLink';
 import CommentCard from './CommentCard';
-import { useIdentity } from '@/state/identityContext';
 import { isFollowing, followUser, unfollowUser } from '@/utils/social';
+import { getCurrentActorId } from '@/lib/actors'; // <-- changed import
 
 /* --------------------------------- utils --------------------------------- */
 
@@ -47,31 +48,14 @@ function formatPostTime(iso) {
 const vibrate = (ms = 25) => navigator.vibrate?.(ms);
 const DEV = import.meta.env?.DEV;
 
-const gstart = (label, extra = {}) => {
-  if (DEV) console.groupCollapsed(`%c[PostCard] ${label}`, 'color:#a78bfa;font-weight:bold', extra);
-};
-const gend = () => { if (DEV) console.groupEnd(); };
-const err = (...a) => { if (DEV) console.error('%c[PostCard]', 'color:#ef4444', ...a); };
-
-const renderTextWithHashtags = (text = '') =>
-  text.split(/(\s+)/).map((part, i) => {
-    if (part.startsWith('#')) {
-      const tag = part.slice(1).replace(/[^a-zA-Z0-9_]/g, '');
-      return (
-        <Link key={`${part}-${i}`} to={`/tag/${tag}`} className="text-purple-400 hover:underline">
-          {part}
-        </Link>
-      );
-    }
-    return <span key={i}>{part}</span>;
-  });
+const logErr = (...a) => { if (DEV) console.error('%c[PostCard]', 'color:#ef4444', ...a); };
 
 /* ------------------------------- component ------------------------------- */
 
 export default function PostCard({
   post,
   user = null,
-  authorType = 'user',
+  authorType = 'user', // 'user' | 'vport'
   onSubscriptionChange,
   onDelete,
 }) {
@@ -95,6 +79,7 @@ export default function PostCard({
     [identity?.type, identity?.vportId]
   );
 
+  // Permission to delete
   const canDelete = useMemo(() => {
     if (!post?.id) return false;
     if (authorType === 'user') {
@@ -108,20 +93,11 @@ export default function PostCard({
       if (createdBy && currentUser?.id && createdBy === currentUser.id) return true;
     }
     return false;
-  }, [
-    authorType,
-    currentUser?.id,
-    authorId,
-    canActAsVport,
-    identity?.vportId,
-    postVportId,
-    post?.id,
-    post?.raw,
-    post?.created_by,
-  ]);
+  }, [authorType, currentUser?.id, authorId, canActAsVport, identity?.vportId, postVportId, post?.id, post?.raw, post?.created_by]);
 
   const hasUserProp = (u) => !!(u && Object.keys(u).length);
 
+  // Shape for UserLink
   const author = useMemo(() => {
     if (authorType === 'vport') {
       const src = hasUserProp(user) ? user : post?.vport ?? {};
@@ -135,7 +111,6 @@ export default function PostCard({
     const src = hasUserProp(user) ? user : post?.profiles ?? {};
     return {
       id: authorId,
-      // provide both, so UserLink can display something even if one is missing
       name: src?.display_name || src?.username || undefined,
       display_name: src?.display_name ?? undefined,
       username: src?.username ?? undefined,
@@ -170,50 +145,34 @@ export default function PostCard({
       const list = await db.comments.listTopLevel({ authorType, postId: post.id });
       setComments(list);
     } catch (e) {
-      if (DEV) err('fetchComments error', e);
+      logErr('fetchComments error', e);
     }
   }, [post?.id, authorType]);
 
   const fetchReactions = useCallback(async () => {
     if (!post?.id) return;
     try {
-      const rows = await db.reactions.listForPost({ authorType, postId: post.id });
-      const likes = rows.filter((r) => r.reaction === 'like').length;
-      const dislikes = rows.filter((r) => r.reaction === 'dislike').length;
-      setLikeCount(likes);
-      setDislikeCount(dislikes);
+      // Unified reactions rows: { id, post_id, actor_id, type, created_at, updated_at }
+      const rows = await db.reactions.listForPost({ postId: post.id });
 
-      if (authorType === 'user') {
-        setRoseCount(await db.roses.count(post.id));
+      setLikeCount(rows.filter(r => r.reaction === 'like').length);
+      setDislikeCount(rows.filter(r => r.reaction === 'dislike').length);
 
-        const uid = currentUser?.id;
-        let mine = null;
-        if (canActAsVport) {
-          mine = rows.find(
-            (r) =>
-              r.as_vport === true &&
-              r.actor_vport_id === identity.vportId &&
-              (r.reaction === 'like' || r.reaction === 'dislike')
-          );
-        } else if (uid) {
-          mine = rows.find(
-            (r) =>
-              r.as_vport === false &&
-              r.user_id === uid &&
-              (r.reaction === 'like' || r.reaction === 'dislike')
-          );
-        }
-        setUserReaction(mine?.reaction ?? null);
-      } else {
-        setRoseCount(0);
-        const uid = currentUser?.id;
-        const mine = uid
-          ? rows.find((r) => r.user_id === uid && (r.reaction === 'like' || r.reaction === 'dislike'))
-          : null;
-        setUserReaction(mine?.reaction ?? null);
-      }
+      setRoseCount(authorType === 'user' ? await db.roses.count(post.id) : 0);
+
+      const uid = currentUser?.id;
+      if (!uid) { setUserReaction(null); return; }
+
+      // ⬇️ resolve actor with the correct parameter names
+      const myActorId = await getCurrentActorId({
+        userId: uid,
+        activeVportId: canActAsVport ? identity?.vportId : null,
+      });
+
+      const mine = rows.find(r => r.actor_id === myActorId && (r.reaction === 'like' || r.reaction === 'dislike'));
+      setUserReaction(mine?.reaction ?? null);
     } catch (e) {
-      if (DEV) err('fetchReactions error', e);
+      logErr('fetchReactions error', e);
     }
   }, [post?.id, authorType, currentUser?.id, canActAsVport, identity?.vportId]);
 
@@ -226,7 +185,7 @@ export default function PostCard({
       const following = await isFollowing(authorId);
       setIsSubscribed(!!following);
     } catch (e) {
-      if (DEV) err('checkSubscription error', e);
+      logErr('checkSubscription error', e);
     }
   }, [currentUser?.id, authorId, authorType]);
 
@@ -243,7 +202,7 @@ export default function PostCard({
       const exists = await db.profiles.exists(authorId);
       setAuthorExists(Boolean(exists));
     } catch (e) {
-      if (DEV) err('verifyAuthorExists error', e);
+      logErr('verifyAuthorExists error', e);
       setAuthorExists(false);
     }
   }, [authorId, authorType]);
@@ -282,6 +241,7 @@ export default function PostCard({
         content: text,
         asVport: !!canActAsVport,
         actorVportId: canActAsVport ? identity.vportId : null,
+        parentId: null,
       });
 
       setReplyText('');
@@ -293,7 +253,7 @@ export default function PostCard({
         await fetchComments(); // vport posts → refetch list
       }
     } catch (e) {
-      if (DEV) err('handlePostComment error', e);
+      logErr('handlePostComment error', e);
       alert(`Failed to comment: ${e?.message || e}`);
     }
   };
@@ -308,33 +268,48 @@ export default function PostCard({
 
       if (kind === 'rose') {
         if (authorType !== 'user') return;
-        await db.roses.give({ postId: post.id, fromUserId: uid, qty: 1 });
+
+        // ⬇️ resolve an owned actor_id (vport if acting as vport, else user)
+        const actorId = await getCurrentActorId({
+          userId: uid,
+          activeVportId: canActAsVport ? identity?.vportId : null,
+        });
+        if (!actorId) throw new Error('No actor_id found for current user');
+
+        // Pass actorId to DAL so INSERT satisfies RLS (owns_actor(actor_id))
+        await db.roses.give({
+          postId: post.id,
+          qty: 1,
+          profileId: uid,
+          actingAsVport: !!canActAsVport,
+          vportId: canActAsVport ? identity?.vportId : null,
+          actorId, // <-- NEW: must be forwarded into the insert values
+        });
+
         await fetchReactions();
         return;
       }
 
       if (userReaction === kind) {
         await db.reactions.clearForPost({
-          authorType,
           postId: post.id,
           userId: uid,
-          vportId: identity?.vportId,
-          actingAsVport: canActAsVport,
+          actingAsVport: !!canActAsVport,
+          vportId: canActAsVport ? identity?.vportId : null,
         });
       } else {
         await db.reactions.setForPost({
-          authorType,
           postId: post.id,
           kind,
           userId: uid,
-          vportId: identity?.vportId,
-          actingAsVport: canActAsVport,
+          actingAsVport: !!canActAsVport,
+          vportId: canActAsVport ? identity?.vportId : null,
         });
       }
 
       await fetchReactions();
     } catch (e) {
-      if (DEV) err('handleReact error', e);
+      logErr('handleReact error', e);
       alert(`Failed to react: ${e?.message || e}`);
     } finally {
       setReactionBusy(false);
@@ -352,7 +327,7 @@ export default function PostCard({
       }
       onDelete?.(post.id);
     } catch (e) {
-      if (DEV) err('handleDeletePost error', e);
+      logErr('handleDeletePost error', e);
       alert(`Failed to delete: ${e?.message || e}`);
     }
   };
@@ -373,7 +348,7 @@ export default function PostCard({
       onSubscriptionChange?.();
     } catch (e) {
       setIsSubscribed(prev);
-      if (DEV) err('handleToggleSubscribe error', e);
+      logErr('handleToggleSubscribe error', e);
       alert(`Failed to follow/unfollow: ${e?.message || e}`);
     } finally {
       setFollowBusy(false);
@@ -388,7 +363,7 @@ export default function PostCard({
       const convo = await getOrCreateConversation(authorId);
       if (convo?.id) navigate(`/chat/${convo.id}`);
     } catch (e) {
-      if (DEV) err('handleMessage error', e);
+      logErr('handleMessage error', e);
     }
   };
 
@@ -448,10 +423,20 @@ export default function PostCard({
       </div>
 
       {/* Body */}
-      {post.title && <h3 className="text-white font-semibold text-base mb-1">{post.title}</h3>}
+      {post.title && <h3 className="text-white font-semibold text/base mb-1">{post.title}</h3>}
 
       {textContent && (
-        <p className="text-white text-sm mb-3 whitespace-pre-wrap">{renderTextWithHashtags(textContent)}</p>
+        <p className="text-white text-sm mb-3 whitespace-pre-wrap">
+          {textContent.split(/(\s+)/).map((part, i) =>
+            part.startsWith('#') ? (
+              <Link key={`${part}-${i}`} to={`/tag/${part.slice(1).replace(/[^a-zA-Z0-9_]/g, '')}`} className="text-purple-400 hover:underline">
+                {part}
+              </Link>
+            ) : (
+              <span key={i}>{part}</span>
+            )
+          )}
+        </p>
       )}
 
       {post.media_type === 'image' && post.media_url && (

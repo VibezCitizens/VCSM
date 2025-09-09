@@ -10,27 +10,37 @@ import * as chatDAL from './chat';
 import * as search from './search';
 import * as blocks from './blocks';       // ✅ NEW: user blocks
 
-// ---- Resolve possible export shapes (named, namespaced, default) ----
-const NS_COMMENTS   = postsDAL.comments           ?? postsDAL.default?.comments           ?? {};
-const NS_REACTIONS  = postsDAL.reactions          ?? postsDAL.default?.reactions          ?? {};
-const NS_ROSES      = postsDAL.roses              ?? postsDAL.default?.roses              ?? {};
+// -------- Normalize module shapes (no .default probing) --------
+const PROFILES = profiles;
+const FEED = feed;
+const NOTI = notifications;
+const CHAT = chatDAL;
+const SEARCH = search;
+const BLOCKS = blocks;
+const STORIES = stories;
+const VDW = vdrops;
+const AUTH = auth;
 
-// Prefer named exports when present; fallback to namespace; then default root.
-const comments_listTopLevel = postsDAL.listTopLevel ?? NS_COMMENTS.listTopLevel ?? postsDAL.default?.listTopLevel;
-const comments_listReplies  = postsDAL.listReplies  ?? NS_COMMENTS.listReplies  ?? postsDAL.default?.listReplies;
-const comments_create       = postsDAL.create       ?? NS_COMMENTS.create       ?? postsDAL.default?.create;
-const comments_update       = postsDAL.update       ?? NS_COMMENTS.update       ?? postsDAL.default?.update;
-const comments_remove       = postsDAL.remove       ?? NS_COMMENTS.remove       ?? postsDAL.default?.remove;
-// AFTER
-const comments_likes_get    = postsDAL.getLikes     ?? NS_COMMENTS.getLikes     ?? postsDAL.default?.getLikes;
-const comments_likes_set    = postsDAL.setLike      ?? NS_COMMENTS.setLike      ?? postsDAL.default?.setLike;
+// ---- Resolve possible export shapes (named, namespaced, default-like) ----
+const NS_COMMENTS   = postsDAL.comments           ?? {};
+const NS_REACTIONS  = postsDAL.reactions          ?? {};
+const NS_ROSES      = postsDAL.roses              ?? {};
 
-const reactions_listForPost = postsDAL.listForPost  ?? NS_REACTIONS.listForPost ?? postsDAL.default?.listForPost;
-const reactions_setForPost  = postsDAL.setForPost   ?? NS_REACTIONS.setForPost  ?? postsDAL.default?.setForPost;
-const reactions_clearForPost= postsDAL.clearForPost ?? NS_REACTIONS.clearForPost?? postsDAL.default?.clearForPost;
+// Prefer named exports when present; fallback to namespace.
+const comments_listTopLevel = postsDAL.listTopLevel ?? NS_COMMENTS.listTopLevel;
+const comments_listReplies  = postsDAL.listReplies  ?? NS_COMMENTS.listReplies;
+const comments_create       = postsDAL.create       ?? NS_COMMENTS.create;
+const comments_update       = postsDAL.update       ?? NS_COMMENTS.update;
+const comments_remove       = postsDAL.remove       ?? NS_COMMENTS.remove;
+const comments_likes_get    = postsDAL.getLikes     ?? NS_COMMENTS.getLikes;
+const comments_likes_set    = postsDAL.setLike      ?? NS_COMMENTS.setLike;
 
-const roses_count           = postsDAL.count        ?? NS_ROSES.count           ?? postsDAL.default?.count;
-const roses_give            = postsDAL.give         ?? NS_ROSES.give            ?? postsDAL.default?.give;
+const reactions_listForPost  = postsDAL.listForPost   ?? NS_REACTIONS.listForPost;
+const reactions_setForPost   = postsDAL.setForPost    ?? NS_REACTIONS.setForPost;
+const reactions_clearForPost = postsDAL.clearForPost  ?? NS_REACTIONS.clearForPost;
+
+const roses_count = postsDAL.count ?? NS_ROSES.count;
+const roses_give  = postsDAL.give  ?? NS_ROSES.give;
 
 if (import.meta?.env?.DEV) {
   const missing = [];
@@ -38,6 +48,8 @@ if (import.meta?.env?.DEV) {
   if (!reactions_listForPost) missing.push('reactions.listForPost');
   if (!reactions_setForPost)  missing.push('reactions.setForPost');
   if (!roses_count)           missing.push('roses.count');
+  if (!CHAT?.sendMessage)     missing.push('chat.sendMessage');          // ✨ helpful dev warning
+  if (!NOTI?.listForUser)     missing.push('notifications.listForUser'); // ✨ helpful dev warning
   if (missing.length) {
     // eslint-disable-next-line no-console
     console.warn('[data] Missing DAL bindings:', missing.join(', '));
@@ -51,45 +63,45 @@ if (import.meta?.env?.DEV) {
 export const db = {
   /* ------------------------------ Auth ------------------------------ */
   auth: {
-    getAuthUser: auth.getAuthUser,
-    signInWithPassword: auth.signInWithPassword,
-    signOut: auth.signOut,
+    getAuthUser: AUTH.getAuthUser,
+    signInWithPassword: AUTH.signInWithPassword,
+    signOut: AUTH.signOut,
   },
 
   /* ---------------------------- Profiles ---------------------------- */
   profiles: {
     // granular namespaces
-    users: profiles.users,
-    vports: profiles.vports,
-    followers: profiles.followers,
-    vportSubscribers: profiles.vportSubscribers,
+    users: PROFILES.users,
+    vports: PROFILES.vports,
+    followers: PROFILES.followers,
+    vportSubscribers: PROFILES.vportSubscribers,
 
     // convenience helpers already in your module
-    exists: profiles.exists,
-    getAuthor: profiles.getAuthor,
+    exists: PROFILES.exists,
+    getAuthor: PROFILES.getAuthor,
 
     // tiny shim used by PrivacyToggle; delegates to users.update
     async setPrivacy({ userId, isPrivate }) {
-      return profiles.users.update(userId, { private: !!isPrivate });
+      return PROFILES.users.update(userId, { private: !!isPrivate });
     },
   },
 
   /* ------------------------------ Blocks ---------------------------- */
   // ✅ NEW: expose block/unblock APIs for PrivacyTab
   blocks: {
-    list: blocks.listBlockedByMe,
-    blockByUserId: blocks.blockByUserId,
-    blockByUsername: blocks.blockByUsername,
-    unblock: blocks.unblock,
-    isBlocked: blocks.isBlocked, // optional helper for feed/search filters
+    list: BLOCKS.listBlockedByMe,
+    blockByUserId: BLOCKS.blockByUserId,
+    blockByUsername: BLOCKS.blockByUsername,
+    unblock: BLOCKS.unblock,
+    isBlocked: BLOCKS.isBlocked, // optional helper for feed/search filters
   },
 
   /* ------------------------------ Posts ----------------------------- */
   posts: {
-    createUserPost: postsDAL.createUserPost ?? postsDAL.default?.createUserPost,
-    createVportPost: postsDAL.createVportPost ?? postsDAL.default?.createVportPost,
-    softDeleteUserPost: postsDAL.softDeleteUserPost ?? postsDAL.default?.softDeleteUserPost,
-    hardDeleteVportPost: postsDAL.hardDeleteVportPost ?? postsDAL.default?.hardDeleteVportPost,
+    createUserPost: postsDAL.createUserPost,
+    createVportPost: postsDAL.createVportPost,
+    softDeleteUserPost: postsDAL.softDeleteUserPost,
+    hardDeleteVportPost: postsDAL.hardDeleteVportPost,
   },
 
   /* ----------------------------- Comments --------------------------- */
@@ -120,85 +132,99 @@ export const db = {
 
   /* ------------------------------ Stories --------------------------- */
   stories: {
-    createUserStory: stories.createUserStory,
-    createVportStory: stories.createVportStory,
-    listUserStories: stories.listUserStories,
-    listVportStories: stories.listVportStories,
-    softDeleteUserStory: stories.softDeleteUserStory,
-    softDeleteVportStory: stories.softDeleteVportStory,
-    logUserStoryView: stories.logUserStoryView,
-    logVportStoryView: stories.logVportStoryView,
-    getUserStoryUniqueViewers: stories.getUserStoryUniqueViewers,
-    getVportStoryUniqueViewers: stories.getVportStoryUniqueViewers,
-    reactToUserStory: stories.reactToUserStory,
-    reactToVportStory: stories.reactToVportStory,
+    createUserStory: STORIES.createUserStory,
+    createVportStory: STORIES.createVportStory,
+    listUserStories: STORIES.listUserStories,
+    listVportStories: STORIES.listVportStories,
+    softDeleteUserStory: STORIES.softDeleteUserStory,
+    softDeleteVportStory: STORIES.softDeleteVportStory,
+    logUserStoryView: STORIES.logUserStoryView,
+    logVportStoryView: STORIES.logVportStoryView,
+    getUserStoryUniqueViewers: STORIES.getUserStoryUniqueViewers,
+    getVportStoryUniqueViewers: STORIES.getVportStoryUniqueViewers,
+    reactToUserStory: STORIES.reactToUserStory,
+    reactToVportStory: STORIES.reactToVportStory,
 
     // expose reaction list APIs used by Viewby / VportViewby
-    listUserStoryReactions: stories.listUserStoryReactions,
-    listVportStoryReactions: stories.listVportStoryReactions,
+    listUserStoryReactions: STORIES.listUserStoryReactions,
+    listVportStoryReactions: STORIES.listVportStoryReactions,
 
     // unified shims
     async setStoryReaction({ storyId, emoji, isVport = false, ...rest }) {
       return isVport
-        ? stories.reactToVportStory({ storyId, emoji, ...rest })
-        : stories.reactToUserStory({ storyId, emoji, ...rest });
+        ? STORIES.reactToVportStory({ storyId, emoji, ...rest })
+        : STORIES.reactToUserStory({ storyId, emoji, ...rest });
     },
     async logStoryView({ storyId, isVport = false, userId }) {
       return isVport
-        ? stories.logVportStoryView({ storyId, userId })
-        : stories.logUserStoryView({ storyId, userId });
+        ? STORIES.logVportStoryView({ storyId, userId })
+        : STORIES.logUserStoryView({ storyId, userId });
     },
   },
 
   /* ------------------------------- VDROP ---------------------------- */
   vdrops: {
-    createUserVdrop: vdrops.createUserVdrop,
-    createVportVdrop: vdrops.createVportVdrop,
+    createUserVdrop: VDW.createUserVdrop,
+    createVportVdrop: VDW.createVportVdrop,
   },
 
   /* ------------------------------- Feed ----------------------------- */
   feed: {
-    fetchPage: feed.fetchPage,
-    getViewerIsAdult: feed.getViewerIsAdult,
+    fetchPage: FEED.fetchPage,
+    getViewerIsAdult: FEED.getViewerIsAdult,
   },
 
   /* --------------------------- Notifications ------------------------ */
   notifications: {
-    listForUser: notifications.listForUser,
-    markAsRead: notifications.markAsRead,
-    remove: notifications.remove,
-    notifyStoryReaction: notifications.notifyStoryReaction,
+    // reads/mutations
+    listForUser: NOTI.listForUser,
+    markAsRead: NOTI.markAsRead,
+    markAllSeen: NOTI.markAllSeen,   // <-- add
+    markAllRead: NOTI.markAllRead,   // <-- add (used by BottomNavBar)
+    remove: NOTI.remove,
+
+    // creators
+    notifyStoryReaction: NOTI.notifyStoryReaction,
+    notifyPostReaction:  NOTI.notifyPostReaction,
+    notifyPostLike:      NOTI.notifyPostLike,
+    notifyPostDislike:   NOTI.notifyPostDislike,
+    notifyFollow:        NOTI.notifyFollow,
+    notifyPostReported:  NOTI.notifyPostReported,
   },
 
   /* -------------------------------- Chat ---------------------------- */
   chat: {
-    getOrCreateDirect: chatDAL.getOrCreateDirect,
-    listConversations: chatDAL.listConversations,
-    listMessages: chatDAL.listMessages,
-    sendMessage: chatDAL.sendMessage,
-    setMuted: chatDAL.setMuted,
-    setArchived: chatDAL.setArchived,
-    clearHistoryBefore: chatDAL.clearHistoryBefore,
+    getOrCreateDirect: CHAT.getOrCreateDirect,
+    listConversations: CHAT.listConversations,
+    listMessages: CHAT.listMessages,
+    sendMessage: CHAT.sendMessage,
+    setMuted: CHAT.setMuted,
+    setArchived: CHAT.setArchived,
+    clearHistoryBefore: CHAT.clearHistoryBefore,
 
-    getOrCreateVport: chatDAL.getOrCreateVport,
-    listVportConversations: chatDAL.listVportConversations,
-    listVportMessages: chatDAL.listVportMessages,
-    sendVportMessage: chatDAL.sendVportMessage,
+    getOrCreateVport: CHAT.getOrCreateVport,
+    listVportConversations: CHAT.listVportConversations,
+    listVportMessages: CHAT.listVportMessages,
+    sendVportMessage: CHAT.sendVportMessage,
+    markConversationRead: CHAT.markConversationRead,
+    markAllConversationsRead: CHAT.markAllConversationsRead,
   },
 
   /* -------------------------------- Search -------------------------- */
   search: {
-    users:  search.searchUsers,
-    posts:  search.searchPosts,
-    videos: search.searchVideos,
-    groups: search.searchGroups,
-    all:    search.searchAll,
+    users:   SEARCH.searchUsers,
+    vports:  SEARCH.searchVports,
+    posts:   SEARCH.searchPosts,
+    videos:  SEARCH.searchVideos,
+    groups:  SEARCH.searchGroups,
+    all:     SEARCH.searchAll,
 
     // aliases
-    searchUsers:  search.searchUsers,
-    searchPosts:  search.searchPosts,
-    searchVideos: search.searchVideos,
-    searchGroups: search.searchGroups,
+    searchUsers:   SEARCH.searchUsers,
+    searchVports:  SEARCH.searchVports,
+    searchPosts:   SEARCH.searchPosts,
+    searchVideos:  SEARCH.searchVideos,
+    searchGroups:  SEARCH.searchGroups,
   },
 };
 
@@ -206,14 +232,14 @@ export default db;
 
 // Also export raw modules for occasional direct use.
 export {
-  auth,
+  auth as auth,                // keep original star import available
   postsDAL as posts,
-  stories,
-  vdrops,
-  profiles,
-  blocks,   // ✅ NEW
-  feed,
-  notifications,
-  chatDAL as chat,
-  search,
+  stories as storiesRaw,
+  vdrops as vdropsRaw,
+  profiles as profilesRaw,
+  blocks as blocksRaw,         // ✅ NEW
+  feed as feedRaw,
+  notifications as notificationsRaw,
+  chatDAL as chatRaw,
+  search as searchRaw,
 };

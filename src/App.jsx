@@ -64,16 +64,61 @@ function SettingsSubPlaceholder({ title }) {
   );
 }
 
-export default function App() {
-  const { user } = useAuth(); // IdentityMount handles loading; we just branch on user
-
+/** Splash while auth initializes and while lazy routes load.
+ *  Place your image at: public/VCSM.jpg  (URL: /VCSM.jpg)
+ */
+function SplashFallback() {
   return (
-    <Suspense fallback={<div className="text-center text-neutral-500 py-10">Loading…</div>}>
+    <div className="h-[100dvh] w-[100dvw] bg-black flex items-center justify-center">
+      <img
+        src="/VCSM.jpg"
+        alt="Vibez Citizens"
+        className="max-w-[80%] max-h-[80%] object-contain"
+        loading="eager"
+      />
+    </div>
+  );
+}
+
+export default function App() {
+  // assume useAuth() returns { user, loading }; if not, loading defaults false
+  const { user, loading } = useAuth() || {};
+
+  // 1) Show splash while auth/session initializes (before we know user)
+  if (loading) {
+    return <SplashFallback />;
+  }
+
+  // 2) After auth is ready, keep showing splash during lazy chunk loads
+  return (
+    <Suspense fallback={<SplashFallback />}>
       <Routes>
         {/* Public */}
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/reset" element={<ResetPasswordScreen />} />
+<Route
+  path="/login"
+  element={
+    <Suspense fallback={<SplashFallback />}>
+      <LoginScreen />
+    </Suspense>
+  }
+/>
+<Route
+  path="/register"
+  element={
+    <Suspense fallback={<SplashFallback />}>
+      <RegisterScreen />
+    </Suspense>
+  }
+/>
+<Route
+  path="/reset"
+  element={
+    <Suspense fallback={<SplashFallback />}>
+      <ResetPasswordScreen />
+    </Suspense>
+  }
+/>
+
 
         {/* Protected */}
         {user ? (

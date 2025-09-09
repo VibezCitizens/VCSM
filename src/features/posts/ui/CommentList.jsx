@@ -9,44 +9,53 @@ function CommentList({
   comments = [],
   expanded = false,
   onToggle = () => {},
-  postAuthorType = 'user',  // 'user' | 'vport'
+  postAuthorType = 'user', // 'user' | 'vport'
   postVportId = null,
   onDeleteComment = () => {},
 }) {
+  const count = comments.length;
+  const hasComments = count > 0;
+
   return (
     <div className="mt-2">
-      {comments.length > 0 ? (
-        expanded ? (
-          <button onClick={() => onToggle(false)} className="text-xs text-purple-400">
-            Hide comments ({comments.length})
-          </button>
-        ) : (
-          <button onClick={() => onToggle(true)} className="text-xs text-purple-400">
-            View comments ({comments.length})
-          </button>
-        )
+      {/* Toggle / Empty-CTA */}
+      {hasComments ? (
+        <button
+          type="button"
+          onClick={() => onToggle(!expanded)}
+          className="text-xs text-purple-400"
+          aria-expanded={expanded}
+        >
+          {expanded ? `Hide comments (${count})` : `View comments (${count})`}
+        </button>
       ) : (
         !expanded && (
-          <button onClick={() => onToggle(true)} className="text-xs text-purple-400">
+          <button
+            type="button"
+            onClick={() => onToggle(true)}
+            className="text-xs text-purple-400"
+            aria-expanded={false}
+          >
             Be the first to comment!
           </button>
         )
       )}
 
+      {/* Comments list */}
       {expanded && (
         <div className="space-y-2 mt-2">
-          {comments.length === 0 ? (
-            <p className="text-neutral-400 text-sm text-center py-2">No comments yet.</p>
-          ) : (
+          {hasComments ? (
             comments.map((c) => (
               <CommentCard
                 key={c.id}
                 comment={c}
                 postAuthorType={postAuthorType}
                 postVportId={postVportId}
-                onDelete={(id) => onDeleteComment(id)} // parent handles optimistic removal
+                onDelete={(id) => onDeleteComment(id)}
               />
             ))
+          ) : (
+            <p className="text-neutral-400 text-sm text-center py-2">No comments yet.</p>
           )}
         </div>
       )}

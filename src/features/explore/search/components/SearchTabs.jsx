@@ -6,7 +6,7 @@ import { db } from '@/data/data';
 export default function SearchTabs({ query, typeFilter }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Normalize items from the DAL into a single consistent shape
@@ -47,6 +47,15 @@ export default function SearchTabs({ query, typeFilter }) {
           description: item.description ?? '',
         };
 
+      case 'vport':
+        return {
+          result_type: 'vport',
+          id: item.id,
+          name: item.name ?? '',
+          description: item.description ?? '',
+          avatar_url: item.avatar_url ?? '',
+        };
+
       default:
         return null;
     }
@@ -78,20 +87,23 @@ export default function SearchTabs({ query, typeFilter }) {
           tasks.push(db.search.videos(raw, opts));
         } else if (typeFilter === 'groups') {
           tasks.push(db.search.groups(raw, opts));
+        } else if (typeFilter === 'vports') {
+          tasks.push(db.search.vports(raw, opts));
         } else {
           // "All"
           tasks.push(
             db.search.users(raw, opts),
             db.search.posts(raw, opts),
             db.search.videos(raw, opts),
-            db.search.groups(raw, opts)
+            db.search.groups(raw, opts),
+            db.search.vports(raw, opts),
           );
         }
 
         const settled = await Promise.allSettled(tasks);
         const flat = settled
           .filter((s) => s.status === 'fulfilled')
-          .flatMap((s) => Array.isArray(s.value) ? s.value : [])
+          .flatMap((s) => (Array.isArray(s.value) ? s.value : []))
           .map(normalize)
           .filter(Boolean);
 
@@ -104,11 +116,13 @@ export default function SearchTabs({ query, typeFilter }) {
     };
 
     run();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [query, typeFilter]);
 
   if (loading) return <div className="p-4 text-center text-white">Searching…</div>;
-  if (error)   return <div className="p-4 text-center text-red-400">{error}</div>;
+  if (error) return <div className="p-4 text-center text-red-400">{error}</div>;
   if (!results.length)
     return <div className="p-4 text-center text-neutral-400">No results found</div>;
 
@@ -143,11 +157,12 @@ export default function SearchTabs({ query, typeFilter }) {
             return (
               <div
                 key={`post:${item.id}`}
-                onClick={() => navigate(`/post/${item.id}`)}  // adjust route if needed
+                onClick={() => navigate(`/post/${item.id}`)}
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
                 <div className="text-sm text-neutral-200 whitespace-pre-line">
-                  {item.title ? `${item.title}\n` : ''}{item.text || '(no text)'}
+                  {item.title ? `${item.title}\n` : ''}
+                  {item.text || '(no text)'}
                 </div>
               </div>
             );
@@ -172,8 +187,29 @@ export default function SearchTabs({ query, typeFilter }) {
                 onClick={() => navigate(`/groups/${item.id}`)}
                 className="p-3 bg-neutral-900 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-800 transition"
               >
-                <div className="text-sm text-neutral-200">
-                  {item.name}
+                <div className="text-sm text-neutral-200">{item.name}</div>
+              </div>
+            );
+
+          case 'vport':
+            return (
+              <div
+                key={`vport:${item.id}`}
+                onClick={() => navigate(`/vport/${item.id}`)}
+                className="flex items-center gap-3 p-3 bg-neutral-800 rounded-xl border border-neutral-700 cursor-pointer hover:bg-neutral-700 transition"
+              >
+                <img
+                  src={item.avatar_url || '/avatar.jpg'}
+                  alt={item.name}
+                  className="w-10 h-10 object-cover rounded-full"
+                />
+                <div className="flex flex-col">
+                  <span className="text-white font-semibold">
+                    {item.name || 'Unnamed Vport'}
+                  </span>
+                  <span className="text-sm text-neutral-400">
+                    {item.description || 'No description'}
+                  </span>
                 </div>
               </div>
             );

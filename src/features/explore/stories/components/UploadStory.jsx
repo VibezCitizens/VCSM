@@ -1,6 +1,6 @@
 // src/features/explore/stories/components/UploadStory.jsx
-import React, { useState } from 'react';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare'; // single source of truth
+import React, { useState, useEffect } from 'react';
+import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
 import { compressVideo } from '@/utils/compressVideo';
 import { useIdentity } from '@/state/identityContext';
 import { db } from '@/data/data';
@@ -8,7 +8,6 @@ import { db } from '@/data/data';
 const MAX_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
 const MAX_DURATION_SEC = 15;
 
-/** Infer media type robustly from MIME, then filename. */
 function inferMediaType(file) {
   const mime = (file?.type || '').toLowerCase();
   const name = (file?.name || '').toLowerCase();
@@ -19,7 +18,6 @@ function inferMediaType(file) {
   return 'image';
 }
 
-/** Read client-side video duration in seconds. */
 function getVideoDuration(file) {
   return new Promise((resolve, reject) => {
     try {
@@ -59,6 +57,28 @@ export default function UploadStory({ onUpload }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // ★ Resolve actorId once
+  const [actorId, setActorId] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const user = await db.auth.getAuthUser();
+        const profileId = user?.id ?? null;
+        if (!profileId) return;
+        const aId = await db.actors.resolveActorId({
+          profileId,
+          actingAsVport: !!vportId,
+          vportId: vportId ?? null,
+        });
+        if (!cancelled) setActorId(aId);
+      } catch {
+        if (!cancelled) setActorId(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [vportId]);
+
   const handleFile = (e) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
@@ -78,37 +98,31 @@ export default function UploadStory({ onUpload }) {
       setError('Select a file.');
       return;
     }
+    if (!actorId) {
+      setError('No active identity.');
+      return;
+    }
 
     setLoading(true);
     setError('');
     setSuccess('');
 
     try {
-      const user = await db.auth.getAuthUser();
-      if (!user?.id) throw new Error('You must be logged in.');
-      const userId = user.id;
-
       // 1) Decide media type
-      const mediaType = inferMediaType(file); // 'image' | 'video'
+      const mediaType = inferMediaType(file);
       let uploadFile = file;
 
       // 2) Video duration + optional compress/trim
       if (mediaType === 'video') {
         const duration = await getVideoDuration(file);
         if (duration > MAX_DURATION_SEC + 0.25) {
-          // Your current compressVideo signature is (file, onProgress?), so no options object:
           try {
             uploadFile = await compressVideo(file);
           } catch {
             throw new Error('Video must be 15 seconds or shorter.');
           }
         } else {
-          // Optional recompress to control bitrate/size; ignore failures
-          try {
-            uploadFile = await compressVideo(file);
-          } catch {
-            /* keep original on compression failure */
-          }
+          try { uploadFile = await compressVideo(file); } catch { /* ignore */ }
         }
       }
 
@@ -116,32 +130,22 @@ export default function UploadStory({ onUpload }) {
       const ts = Date.now();
       const key = isActingAsVPort
         ? `vport_stories/${vportId}/${sanitizeFilename(uploadFile.name, ts)}`
-        : `stories/${userId}/${sanitizeFilename(uploadFile.name, ts)}`;
+        : `stories/${actorId}/${sanitizeFilename(uploadFile.name, ts)}`; // actor-based when user
 
       const { url, error: uploadErr } = await uploadToCloudflare(uploadFile, key);
       if (uploadErr) throw new Error(uploadErr);
       if (!url) throw new Error('Upload returned no URL.');
 
-      // 4) Insert via DAL (use the DAL’s expected field names)
-      if (isActingAsVPort) {
-        await db.stories.createVportStory({
-          vportId,
-          createdBy: userId,     // matches DAL param
-          mediaUrl: url,         // camelCase per DAL
-          mediaType,             // camelCase per DAL
-          caption: caption ?? '',
-        });
-        setSuccess('VPORT story uploaded!');
-      } else {
-        await db.stories.createUserStory({
-          userId,
-          mediaUrl: url,         // camelCase per DAL
-          mediaType,             // camelCase per DAL
-          caption: caption ?? '',
-        });
-        setSuccess('Story uploaded successfully!');
-      }
+      // 4) Unified DAL write (actor-first)
+      await db.stories.createStory({
+        actorId,             // ★ single source of identity
+        mediaUrl: url,
+        mediaType,
+        caption: caption ?? '',
+        vportId: isActingAsVPort ? vportId : null, // optional hint for backend routing
+      });
 
+      setSuccess(isActingAsVPort ? 'VPORT story uploaded!' : 'Story uploaded successfully!');
       setFile(null);
       setCaption('');
       onUpload?.();

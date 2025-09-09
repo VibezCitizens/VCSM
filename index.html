@@ -5,9 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Vibez Citizens</title>
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <style>
+      /* Fullscreen splash */
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      #splash img {
+        max-width: 80%;
+        max-height: 80%;
+        object-fit: contain;
+      }
+    </style>
   </head>
   <body>
+    <!-- Splash shown before React mounts -->
+    <div id="splash">
+      <img src="/VCSM.jpg" alt="Vibez Citizens Splash" />
+    </div>
+
+    <!-- React root -->
     <div id="root"></div>
+
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Remove splash once React takes over
+      window.addEventListener("DOMContentLoaded", () => {
+        const splash = document.getElementById("splash");
+        if (splash) splash.remove();
+      });
+    </script>
   </body>
 </html>

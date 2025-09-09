@@ -1,12 +1,14 @@
 // src/features/chat/MessageInput.jsx
 import { useEffect, useRef, useState } from 'react';
-import { chat } from '@/data/chat';
 import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
+import { useAuth } from '@/hooks/useAuth';
 
 const MAX_TEXT_LEN = 4000;
 const MAX_FILE_MB = 25;
 
 export default function MessageInput({ conversationId, onSend, className = '' }) {
+  const { user } = useAuth() || {};
+
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -14,13 +16,21 @@ export default function MessageInput({ conversationId, onSend, className = '' })
   const [errorMsg, setErrorMsg] = useState('');
 
   const fileInputRef = useRef(null);
-  const textareaRef = useRef(null);
+  const textareaRef  = useRef(null);
 
-  const trimmed = (text || '').trim();
-  const disabled = uploading || sending;
-  const canSend = !!conversationId && (trimmed.length > 0 || !!file);
+  const normalizeText = (input) =>
+    (input ?? '')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-  // Autosize textarea
+  const disabled     = uploading || sending;
+  const finalContent = normalizeText(text) || null; // keep caption even with media
+  const canSend      = !!conversationId && (finalContent || file);
+
+  // autosize textarea
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -30,11 +40,8 @@ export default function MessageInput({ conversationId, onSend, className = '' })
 
   const mediaType = (mime) =>
     mime?.startsWith('image/') ? 'image'
-    : mime?.startsWith('video/') ? 'video'
-    : 'file';
-
-  const normalizeErr = (err) =>
-    err?.message || err?.error_description || 'Something went wrong. Please try again.';
+      : mime?.startsWith('video/') ? 'video'
+      : 'file';
 
   const setPickedFile = (f) => {
     if (!f) return;
@@ -42,15 +49,12 @@ export default function MessageInput({ conversationId, onSend, className = '' })
       setErrorMsg(`File too large (>${MAX_FILE_MB}MB).`);
       return;
     }
-    setFile(f);
-    setText('');
+    setFile(f); // DO NOT clear text; allow caption + media
   };
 
   const clearFile = () => {
     setFile(null);
-    try {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    } catch {}
+    try { if (fileInputRef.current) fileInputRef.current.value = ''; } catch {}
   };
 
   const send = async () => {
@@ -59,11 +63,14 @@ export default function MessageInput({ conversationId, onSend, className = '' })
     setErrorMsg('');
     setSending(true);
 
-    let media_url = null;
+    let media_url  = null;
     let media_type = null;
+    let media_mime = null;
 
     try {
-      // 1) Upload attachment (if any)
+      if (!user?.id) throw new Error('Not authenticated');
+
+      // 1) upload attachment if any
       if (file) {
         setUploading(true);
         try {
@@ -71,34 +78,29 @@ export default function MessageInput({ conversationId, onSend, className = '' })
           const key = `chat/${conversationId}/${crypto.randomUUID()}.${ext}`;
           const { url, error: upErr } = await uploadToCloudflare(file, key);
           if (upErr || !url) throw upErr || new Error('Upload failed.');
-          media_url = url;
+          media_url  = url;
           media_type = mediaType(file.type);
+          media_mime = file.type || null;
         } finally {
           setUploading(false);
         }
       }
 
-      // 2) Compose content (text when no media)
-      const content = media_url ? null : (trimmed || null);
-      if (!content && !media_url) return;
-
-      // 3) Persist via DAL (returns full row incl. id, sender_id, created_at)
-      const msg = await chat.sendMessage(conversationId, {
-        content,
+      // 2) hand off to parent (ChatScreen does optimistic + DB write)
+      onSend?.({
+        content: finalContent,
         media_url,
         media_type,
+        media_mime,
       });
 
-      // 4) Bubble full message to parent so it renders immediately (correct side + timestamp)
-      onSend?.(msg);
-
-      // 5) Cleanup + refocus
+      // 3) reset local UI
       setText('');
       clearFile();
       textareaRef.current?.focus();
     } catch (err) {
       console.error('[MessageInput] send error:', err);
-      setErrorMsg(normalizeErr(err));
+      setErrorMsg(err?.message || 'Something went wrong. Please try again.');
     } finally {
       setSending(false);
     }
@@ -107,7 +109,7 @@ export default function MessageInput({ conversationId, onSend, className = '' })
   return (
     <div className={`sticky bottom-0 z-20 bg-black/85 backdrop-blur border-t border-neutral-800 p-2 ${className}`}>
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <label className="p-2 bg-neutral-800 border border-neutral-700 rounded cursor-pointer hover:bg-neutral-700">
             📎
             <input
@@ -125,22 +127,16 @@ export default function MessageInput({ conversationId, onSend, className = '' })
               ref={textareaRef}
               rows={1}
               className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-700 text-white placeholder:text-white/40 focus:outline-none focus:border-neutral-500 resize-none"
-              value={file ? '' : text}
+              value={text}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val.length <= MAX_TEXT_LEN) setText(val);
               }}
-              placeholder={file ? `Attachment: ${file.name}` : 'Type a message…'}
+              placeholder={file ? `Add a caption for ${file.name}…` : 'Type a message…'}
               disabled={disabled}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  send();
-                }
-                if (e.key === 'Escape' && file) {
-                  e.preventDefault();
-                  clearFile();
-                }
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+                if (e.key === 'Escape' && file) { e.preventDefault(); clearFile(); }
               }}
             />
             <div className="px-1 pt-1 text-[10px] text-white/40 select-none">

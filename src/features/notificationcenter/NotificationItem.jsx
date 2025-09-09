@@ -4,10 +4,11 @@ import UserLink from '@/components/UserLink';
 import useProfile from '@/hooks/useProfile';
 
 const emojiMap = {
-  rose:  '🌹',
-  like:  '❤️',
-  laugh: '😂',
-  fire:  '🔥',
+  rose:     '🌹',
+  like:     '❤️',
+  dislike:  '👎',
+  laugh:    '😂',
+  fire:     '🔥',
 };
 
 function NewBadge() {
@@ -19,17 +20,22 @@ function NewBadge() {
 }
 
 export default function NotificationItem({ notif, onClick }) {
-  // figure out who the actor is (for roses we used `purchaser`, for reactions `reactor_id`, etc.)
+  // Try to standardize the “actor” (who triggered the notif)
   const reactorId =
-    notif.metadata?.reactor_id ||
-    notif.metadata?.purchaser   ||  // <-- fallback for "post_rose"
-    notif.metadata?.sender_id   ||
-    notif.metadata?.follower_id;
+    notif?.metadata?.actor_user_id ??
+    notif?.metadata?.reactor_id ??
+    notif?.metadata?.liker_id ??
+    notif?.metadata?.disliker_id ??
+    notif?.metadata?.purchaser ??          // for post_rose fallback
+    notif?.metadata?.sender_id ??
+    notif?.metadata?.follower_id ??
+    notif?.metadata?.reporter_id ??        // for post_reported
+    null;
 
-  // fetch that user's profile
+  // fetch that user's profile (if any)
   const { profile: sender, isLoading, error } = useProfile(reactorId);
 
-  // debug log on every render
+  // debug
   useEffect(() => {
     console.debug('NotificationItem render:', {
       notifId: notif.id,
@@ -38,8 +44,9 @@ export default function NotificationItem({ notif, onClick }) {
       sender,
       isLoading,
       profileError: error,
+      metadata: notif?.metadata,
     });
-  }, [notif.id, notif.type, reactorId, sender, isLoading, error]);
+  }, [notif?.id, notif?.type, reactorId, sender, isLoading, error, notif?.metadata]);
 
   // helper to render either a loading placeholder, "Someone", or the real UserLink
   const ActorLink = () => {
@@ -57,10 +64,26 @@ export default function NotificationItem({ notif, onClick }) {
   // build the line of text and emoji
   let message;
   switch (notif.type) {
+    case 'post_like':
+      message = (
+        <>
+          {emojiMap.like} <ActorLink /> liked your post
+        </>
+      );
+      break;
+
+    case 'post_dislike':
+      message = (
+        <>
+          {emojiMap.dislike} <ActorLink /> disliked your post
+        </>
+      );
+      break;
+
     case 'post_rose':
       message = (
         <>
-          🌹 <ActorLink /> sent you a rose
+          {emojiMap.rose} <ActorLink /> sent you a rose
         </>
       );
       break;
@@ -91,11 +114,45 @@ export default function NotificationItem({ notif, onClick }) {
       );
       break;
 
+    case 'friend_request':
+      message = (
+        <>
+          👥 <ActorLink /> sent you a friend request
+        </>
+      );
+      break;
+
     case 'message': {
       const preview = notif.metadata?.message_preview || 'Sent you a message';
       message = (
         <>
           📨 <ActorLink /> {preview}
+        </>
+      );
+      break;
+    }
+
+    // support a couple of possible strings for the “reported” event
+    case 'post_reported':
+    case 'post_report':
+    case 'report_post': {
+      const reason =
+        notif.metadata?.reason ||
+        notif.metadata?.report_reason ||
+        null;
+
+      // Only show "by <actor>" if we have an actor id
+      const byActor = reactorId ? (<><ActorLink /> reported your post</>) : (<>Your post was reported</>);
+
+      message = (
+        <>
+          🚩 {byActor}
+          {reason ? (
+            <>
+              {': '}
+              <span className="italic text-white/80">“{reason}”</span>
+            </>
+          ) : null}
         </>
       );
       break;

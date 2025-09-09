@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
 
 const MAX_TEXT_LEN = 4000;
-const MAX_FILE_MB  = 25;
+const MAX_FILE_MB = 25;
 
 export default function VMessageInput({ conversationId, forceVportId = null, onSent }) {
   const { user } = useAuth();
@@ -17,11 +17,20 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
   const [errorMsg, setErrorMsg] = useState('');
 
   const fileInputRef = useRef(null);
-  const textareaRef  = useRef(null);
+  const textareaRef = useRef(null);
 
+  const normalizeText = (input) =>
+    (input ?? '')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const finalContent = normalizeText(text) || null;
   const disabled = uploading || sending;
-  const trimmed  = (text || '').trim();
-  const canSend  = !!conversationId && (trimmed.length > 0 || !!file) && (!!user?.id || !!forceVportId);
+  const canSend =
+    !!conversationId && (finalContent || !!file) && (!!user?.id || !!forceVportId);
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -37,16 +46,22 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
       return;
     }
     setFile(f);
-    setText('');
+    // keep any caption the user already typed (do NOT clear text)
   };
 
   const clearFile = () => {
     setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    try {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch {}
   };
 
   const mediaType = (mime) =>
-    mime?.startsWith('image/') ? 'image' : mime?.startsWith('video/') ? 'video' : 'file';
+    mime?.startsWith('image/')
+      ? 'image'
+      : mime?.startsWith('video/')
+      ? 'video'
+      : 'file';
 
   const normalizeErr = (err) =>
     err?.message || err?.error_description || 'Something went wrong. Please try again.';
@@ -61,6 +76,7 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
     let media_type = null;
 
     try {
+      // Upload if file picked
       if (file) {
         setUploading(true);
         try {
@@ -75,19 +91,35 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
         }
       }
 
+      // Guard: require text or media
+      if (!finalContent && !media_url) {
+        setErrorMsg('Nothing to send (no text or attachment).');
+        return;
+      }
+
       const actingAsVport = !!forceVportId;
-      const base = {
+
+      const rowBase = {
         conversation_id: conversationId,
-        content: media_url ? null : (trimmed || null),
+        content: finalContent, // keep caption even with media
         media_url,
         media_type,
       };
 
       const row = actingAsVport
-        ? { ...base, sender_user_id: null,     sender_vport_id: forceVportId }
-        : { ...base, sender_user_id: user?.id, sender_vport_id: null };
+        ? { ...rowBase, sender_user_id: null, sender_vport_id: forceVportId }
+        : { ...rowBase, sender_user_id: user?.id, sender_vport_id: null };
 
-      if (!row.media_url && !row.content) return;
+      // Debug payload to verify why guards might trip
+      console.log('[VMessageInput] will insert', {
+        content_len: row.content ? row.content.length : 0,
+        preview: row.content ? row.content.slice(0, 60) : null,
+        has_media_url: !!row.media_url,
+        media_type: row.media_type,
+        as: actingAsVport ? `vport:${forceVportId}` : `user:${user?.id}`,
+        conversationId,
+        filePicked: !!file,
+      });
 
       const { data, error } = await supabase
         .from('vport_messages')
@@ -102,6 +134,7 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
         throw error;
       }
 
+      // Best-effort unarchive me in this convo (if present)
       await supabase
         .from('vport_conversation_members')
         .update({ archived_at: null })
@@ -111,6 +144,7 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
 
       onSent?.(data);
 
+      // Cleanup
       setText('');
       clearFile();
       textareaRef.current?.focus();
@@ -146,12 +180,12 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
             ref={textareaRef}
             rows={1}
             className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-700 text-white placeholder:text-white/40 focus:outline-none focus:border-neutral-500 resize-none"
-            value={file ? '' : text}
+            value={text} // do not blank when file is selected
             onChange={(e) => {
               const val = e.target.value;
               if (val.length <= MAX_TEXT_LEN) setText(val);
             }}
-            placeholder={file ? `Attachment: ${file.name}` : 'Type a message…'}
+            placeholder={file ? `Add a caption for ${file.name}…` : 'Type a message…'}
             disabled={disabled}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -174,7 +208,7 @@ export default function VMessageInput({ conversationId, forceVportId = null, onS
           disabled={!canSend || disabled}
           className="px-4 h-10 rounded bg-purple-600 text-white font-medium disabled:opacity-50 active:scale-95"
         >
-          {uploading ? 'Uploading…' : (sending ? 'Sending…' : 'Send')}
+          {uploading ? 'Uploading…' : sending ? 'Sending…' : 'Send'}
         </button>
       </div>
 

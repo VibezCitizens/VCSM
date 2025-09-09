@@ -1,68 +1,63 @@
 // src/features/vgrid/useRoadReports.js
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
-export default function useRoadReports() {
+/**
+ * useRoadReports (no Realtime)
+ * - Initial fetch on mount
+ * - Optional polling with `pollMs` (default: off)
+ * - Local prune of expired rows every minute
+ */
+export default function useRoadReports({ pollMs = 0 } = {}) {
   const [reports, setReports] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const subRef = useRef(null)
+  const [lastFetched, setLastFetched] = useState(null)
 
-  const fetchCurrent = useCallback(async () => {
+  const pruneExpired = useCallback(() => {
+    const now = Date.now()
+    setReports(prev => prev.filter(r => new Date(r.expires_at).getTime() > now))
+  }, [])
+
+  const refresh = useCallback(async () => {
     setLoading(true)
+    setError(null)
     const { data, error } = await supabase
       .from('road_reports')
       .select('id, kind, lat, lng, description, created_at, expires_at, confidence')
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false })
       .limit(500)
+
     if (error) setError(error)
-    else setReports(data || [])
+    else {
+      setReports(data || [])
+      setLastFetched(new Date())
+    }
     setLoading(false)
   }, [])
 
   useEffect(() => {
-    fetchCurrent()
+    refresh()
+  }, [refresh])
 
-    // Realtime: INSERT/UPDATE/DELETE
-    const channel = supabase
-      .channel('road_reports_stream')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'road_reports' },
-        (payload) => {
-          setReports(prev => {
-            if (payload.eventType === 'INSERT') {
-              const r = payload.new
-              if (new Date(r.expires_at) <= new Date()) return prev
-              return [r, ...prev]
-            }
-            if (payload.eventType === 'UPDATE') {
-              const r = payload.new
-              if (new Date(r.expires_at) <= new Date()) {
-                return prev.filter(x => x.id !== r.id)
-              }
-              return prev.map(x => x.id === r.id ? r : x)
-            }
-            if (payload.eventType === 'DELETE') {
-              const id = payload.old?.id
-              return prev.filter(x => x.id !== id)
-            }
-            return prev
-          })
-        }
-      )
-      .subscribe()
-    subRef.current = channel
+  // Optional polling (off by default)
+  useEffect(() => {
+    if (!pollMs) return
+    const id = setInterval(refresh, pollMs)
+    return () => clearInterval(id)
+  }, [pollMs, refresh])
 
-    return () => {
-      if (subRef.current) supabase.removeChannel(subRef.current)
-    }
-  }, [fetchCurrent])
+  // Periodic local prune to drop newly expired items without a refetch
+  useEffect(() => {
+    const id = setInterval(pruneExpired, 60_000)
+    return () => clearInterval(id)
+  }, [pruneExpired])
 
   const submitReport = useCallback(async ({ kind, lat, lng, description = '' }) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Must be logged in')
+
     const { data, error } = await supabase
       .from('road_reports')
       .insert({
@@ -71,13 +66,26 @@ export default function useRoadReports() {
         lat,
         lng,
         description,
-        // expires_at auto 60m by default; you can override by adding expires_at here
+        // expires_at: you can pass one to override the DB default (60m)
       })
       .select()
       .single()
+
     if (error) throw error
+
+    // Optimistic add (only if still valid)
+    if (new Date(data.expires_at) > new Date()) {
+      setReports(prev => [data, ...prev])
+    }
     return data
   }, [])
 
-  return { reports, loading, error, refresh: fetchCurrent, submitReport }
+  return {
+    reports,
+    loading,
+    error,
+    lastFetched,
+    refresh,
+    submitReport,
+  }
 }

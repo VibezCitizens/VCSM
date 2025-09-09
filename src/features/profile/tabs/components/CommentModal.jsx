@@ -1,19 +1,16 @@
 // src/features/posts/components/CommentModal.jsx
-import { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/lib/supabaseClient'; // realtime only
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/data/data';
 import toast from 'react-hot-toast';
 
 import CommentCard from '@/features/posts/components/CommentCard';
 
-export default function CommentModal({ postId, onClose }) {
+export default function CommentModal({ postId, onClose, pollMs = 0 }) {
   const { user: currentUser } = useAuth();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const channelRef = useRef(null);
 
-  // Load comments (user-posts)
   const fetchComments = async () => {
     if (!postId) {
       setComments([]);
@@ -29,64 +26,37 @@ export default function CommentModal({ postId, onClose }) {
   };
 
   useEffect(() => {
+    let timer;
     fetchComments();
-
-    // Realtime subscribe (optional, keeps list fresh if others comment/delete)
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
-    }
-    if (postId) {
-      const ch = supabase
-        .channel(`post_comments:${postId}`)
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'post_comments', filter: `post_id=eq.${postId}` },
-          () => {
-            // For simplicity & correctness, just refetch on any insert/update/delete.
-            fetchComments();
-          }
-        )
-        .subscribe();
-      channelRef.current = ch;
+    if (pollMs > 0) {
+      timer = setInterval(fetchComments, pollMs);
     }
     return () => {
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-      }
+      if (timer) clearInterval(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId]);
+  }, [postId, pollMs]);
 
   const handlePostComment = async () => {
     const content = newComment.trim();
-    if (!content) {
-      toast.error('Comment cannot be empty.');
-      return;
-    }
-    if (!currentUser?.id) {
-      toast.error('You must be logged in.');
-      return;
-    }
+    if (!content) return toast.error('Comment cannot be empty.');
+    if (!currentUser?.id) return toast.error('You must be logged in.');
 
     try {
-      // Create via DAL (user posts)
       const created = await db.comments.create({
         authorType: 'user',
         postId,
-        vportPostId: postId, // unused for user posts; harmless
         userId: currentUser.id,
         content,
         asVport: false,
         actorVportId: null,
       });
 
-      // Optimistic append (created already includes profiles via DAL select)
+      // Optimistic add
       setComments((prev) => [...prev, created]);
       setNewComment('');
       toast.success('Comment posted!');
-      // Ensure fully in sync (and hydrate anything missing)
+      // Ensure fully synced
       fetchComments();
     } catch (error) {
       console.error('Error posting comment:', error);
@@ -94,8 +64,7 @@ export default function CommentModal({ postId, onClose }) {
     }
   };
 
-  // Called when a child CommentCard deletes a comment successfully
-  const handleLocalRemove = (id) => {
+  const handleLocalDelete = (id) => {
     setComments((prev) => prev.filter((c) => c.id !== id));
   };
 
@@ -103,9 +72,22 @@ export default function CommentModal({ postId, onClose }) {
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col">
       <div className="flex justify-between items-center p-4">
         <h2 className="text-white text-lg font-bold">Comments</h2>
-        <button onClick={onClose} className="text-gray-300 text-xl hover:text-white" aria-label="Close">
-          ×
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchComments}
+            className="text-sm text-purple-300 hover:text-white"
+            title="Refresh"
+          >
+            Refresh
+          </button>
+          <button
+            onClick={onClose}
+            className="text-gray-300 text-xl hover:text-white"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 space-y-4 pb-4">
@@ -115,7 +97,7 @@ export default function CommentModal({ postId, onClose }) {
               key={comment.id}
               comment={comment}
               postAuthorType="user"
-              onRemove={() => handleLocalRemove(comment.id)}
+              onDelete={() => handleLocalDelete(comment.id)} // ✅ correct prop name
             />
           ))
         ) : (

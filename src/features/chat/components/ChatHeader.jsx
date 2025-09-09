@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, MoreHorizontal } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { createPortal } from 'react-dom';
 
 /**
  * ChatHeader
@@ -29,8 +30,15 @@ export default function ChatHeader({
 
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
-  const [data, setData] = React.useState(null); // { muted, archived_at, cleared_before, partner_user_id, partner?:{...} }
+  // { muted, archived_at, cleared_before, partner_user_id, partner?:{...} }
+  const [data, setData] = React.useState(null);
   const [meId, setMeId] = React.useState(null);
+
+  // report modal state
+  const [reportOpen, setReportOpen] = React.useState(false);
+  const [reportText, setReportText] = React.useState('');
+  const [reporting, setReporting] = React.useState(false);
+  const [reportErr, setReportErr] = React.useState(null);
 
   const handleBack = () => {
     if (onBack) return onBack();
@@ -50,7 +58,7 @@ export default function ChatHeader({
       if (!me) throw new Error('Not authenticated');
       setMeId(me);
 
-      // 1) fetch my membership row (NO shorthand join; get partner_user_id)
+      // 1) fetch my membership row (get partner_user_id explicitly)
       const memRes = await supabase
         .from('conversation_members')
         .select('muted, archived_at, cleared_before, partner_user_id')
@@ -137,6 +145,38 @@ export default function ChatHeader({
     }
   };
 
+  const submitReport = async () => {
+    if (!meId || reporting) return;
+    setReporting(true);
+    setReportErr(null);
+    try {
+      // Basic abuse_reports insert; adjust table/columns to your schema
+      const { error } = await supabase.from('abuse_reports').insert({
+        reporter_id: meId,
+        conversation_id: conversationId,
+        partner_user_id: data?.partner_user_id ?? null,
+        reason: reportText?.trim() || null,
+      });
+      if (error) throw error;
+
+      setReportOpen(false);
+      setReportText('');
+    } catch (e) {
+      console.error('[ChatHeader] report error:', e);
+      setReportErr(e?.message || 'Failed to submit report.');
+    } finally {
+      setReporting(false);
+    }
+  };
+
+  // lock body scroll while modal is open
+  React.useEffect(() => {
+    if (!reportOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [reportOpen]);
+
   const avatarSrc = data?.partner?.photo_url || '/img/avatar-fallback.png';
 
   // Compute title & subtitle with de-duplication
@@ -145,7 +185,6 @@ export default function ChatHeader({
     title ||
     (loading ? 'Loading…' : p?.display_name || p?.username || p?.email || 'Chat');
 
-  // prefer @username as subtitle; only show if actually different from primary
   let secondary = '';
   if (!subtitle && !loading && p) {
     const handle = p.username ? `@${p.username}` : (p.email || '');
@@ -155,71 +194,132 @@ export default function ChatHeader({
   }
 
   return (
-    <div
-      className={[
-        'sticky top-0 z-10 bg-black/80 backdrop-blur border-b border-neutral-800',
-        className,
-      ].join(' ')}
-    >
-      <div className="h-12 flex items-center px-3 gap-3">
-        {showBack && (
-          <button
-            onClick={handleBack}
-            className="p-2 rounded-full hover:bg-neutral-900 active:scale-95 transition"
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-5 h-5 text-white" />
-          </button>
-        )}
+    <>
+      <div
+        className={[
+          'sticky top-0 z-10 bg-black/80 backdrop-blur border-b border-neutral-800',
+          className,
+        ].join(' ')}
+      >
+        <div className="h-12 flex items-center px-3 gap-3">
+          {showBack && (
+            <button
+              onClick={handleBack}
+              className="p-2 rounded-full hover:bg-neutral-900 active:scale-95 transition"
+              aria-label="Back"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+          )}
 
-        <img
-          src={avatarSrc}
-          alt={primary}
-          className="w-7 h-7 rounded-full object-cover border border-neutral-800"
-          draggable={false}
-        />
+          <img
+            src={avatarSrc}
+            alt={primary}
+            className="w-7 h-7 rounded-full object-cover border border-neutral-800"
+            draggable={false}
+          />
 
-        <div className="flex-1 min-w-0">
-          <div className="text-white font-semibold truncate flex items-center gap-1">
-            <span className="truncate">{primary}</span>
-            {data?.muted && (
-              <span className="ml-1 text-[11px] px-1.5 py-0.5 rounded bg-neutral-800 text-white/70 shrink-0">
-                Muted
-              </span>
-            )}
-            {data?.archived_at && (
-              <span className="ml-1 text-[11px] px-1.5 py-0.5 rounded bg-neutral-800 text-white/70 shrink-0">
-                Archived
-              </span>
+          <div className="flex-1 min-w-0">
+            <div className="text-white font-semibold truncate flex items-center gap-1">
+              <span className="truncate">{primary}</span>
+              {data?.muted && (
+                <span className="ml-1 text-[11px] px-1.5 py-0.5 rounded bg-neutral-800 text-white/70 shrink-0">
+                  Muted
+                </span>
+              )}
+              {data?.archived_at && (
+                <span className="ml-1 text-[11px] px-1.5 py-0.5 rounded bg-neutral-800 text-white/70 shrink-0">
+                  Archived
+                </span>
+              )}
+            </div>
+
+            {secondary ? (
+              <div className="text-[12px] text-white/60 truncate">{secondary}</div>
+            ) : null}
+
+            {err && (
+              <div className="text-[12px] text-red-400 truncate">
+                {String(err?.message || err)}
+              </div>
             )}
           </div>
 
-          {secondary ? (
-            <div className="text-[12px] text-white/60 truncate">{secondary}</div>
-          ) : null}
-
-          {err && (
-            <div className="text-[12px] text-red-400 truncate">
-              {String(err?.message || err)}
-            </div>
-          )}
+          <HeaderMenu
+            partner={p}
+            muted={!!data?.muted}
+            archived={!!data?.archived_at}
+            onToggleMute={toggleMute}
+            onToggleArchive={toggleArchive}
+            onClearHistory={clearHistory}
+            onOpenReport={() => { setReportErr(null); setReportOpen(true); }}
+          />
         </div>
-
-        <HeaderMenu
-          partner={p}
-          muted={!!data?.muted}
-          archived={!!data?.archived_at}
-          onToggleMute={toggleMute}
-          onToggleArchive={toggleArchive}
-          onClearHistory={clearHistory}
-        />
       </div>
-    </div>
+
+      {/* Centered Report Modal via portal */}
+      {reportOpen && createPortal(
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 grid place-items-center p-4"
+          onClick={() => setReportOpen(false)}
+          aria-modal="true"
+          role="dialog"
+        >
+          <div
+            className="w-full max-w-md rounded-xl border border-neutral-800 bg-neutral-900 text-white p-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold mb-2">Report chat</h3>
+            <p className="text-sm text-white/70 mb-3">
+              Tell us what’s wrong. A brief reason helps us review faster.
+            </p>
+            <textarea
+              value={reportText}
+              onChange={(e) => setReportText(e.target.value)}
+              rows={4}
+className="w-full rounded bg-white border border-neutral-300 text-neutral-900 placeholder:text-neutral-500 px-3 py-2 focus:outline-none focus:border-neutral-500"              placeholder="Reason (optional)"
+            />
+            {reportErr && <div className="text-sm text-red-400 mt-2">{reportErr}</div>}
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setReportOpen(false)}
+                className="px-3 py-2 rounded border border-neutral-700 hover:bg-neutral-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitReport}
+                disabled={reporting}
+                className="px-3 py-2 rounded bg-purple-600 hover:bg-purple-700 disabled:opacity-60"
+              >
+                {reporting ? 'Submitting…' : 'Submit report'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
-function HeaderMenu({ partner, muted, archived, onToggleMute, onToggleArchive, onClearHistory }) {
+function HeaderMenu({
+  partner,
+  muted,
+  archived,
+  onToggleMute,
+  onToggleArchive,
+  onClearHistory,
+  onOpenReport,
+}) {
   const [open, setOpen] = React.useState(false);
+
+  // close menu on route changes or escape
+  React.useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <div className="relative">
@@ -245,6 +345,9 @@ function HeaderMenu({ partner, muted, archived, onToggleMute, onToggleArchive, o
           </MenuItem>
           <MenuItem onClick={() => { onClearHistory?.(); setOpen(false); }}>
             Clear history (for me)
+          </MenuItem>
+          <MenuItem onClick={() => { setOpen(false); onOpenReport?.(); }}>
+            Report chat…
           </MenuItem>
           <div className="h-px bg-neutral-800" />
           <MenuLink

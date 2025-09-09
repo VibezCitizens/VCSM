@@ -126,6 +126,7 @@ async function tryEnqueueBackgroundUpload(fileToSend, key) {
  * Main upload flow. Returns { ok: true, id?, enqueued? } on success; throws on error.
  */
 export async function runUpload({
+  actorId, 
   mode,                 // 'POST' | '24DROP' | 'VDROP'
   isActingAsVPort,
   actorUserId,
@@ -141,7 +142,8 @@ export async function runUpload({
   visibility,
   setProgress,
   setCompressionProgress,
-}) {
+}) 
+{
   // 0) auth sanity
   const { data: authData, error: authErr } = await supabase.auth.getUser();
   if (authErr || !authData?.user) throw new Error('You must be logged in.');

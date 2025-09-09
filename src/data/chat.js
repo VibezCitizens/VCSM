@@ -1,4 +1,3 @@
-// src/data/chat.js
 /**
  * Chat DAL (Data Access Layer)
  * All reads/writes for conversations & messages live here.
@@ -17,8 +16,17 @@ async function requireAuthUserId() {
 }
 const nowIso = () => new Date().toISOString();
 
-/* ============================== USER DMs =============================== */
+// Normalize text so whitespace/HTML/zero-width doesn't pass validation
+function cleanContent(s) {
+  return (s ?? '')
+    .replace(/<[^>]*>/g, '')                // strip tags
+    .replace(/\u00A0/g, ' ')                // NBSP -> space
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')  // zero-width chars
+    .replace(/\s+/g, ' ')                   // collapse whitespace
+    .trim();
+}
 
+/* ============================== USER DMs =============================== */
 
 /**
  * DAL wrapper that ensures a vport↔user DM exists (no managers).
@@ -39,7 +47,6 @@ export async function startVportConversation(vportId) {
   if (!conversationId) throw new Error('RPC did not return conversation id');
   return conversationId;
 }
-
 
 /**
  * Get or create a direct 1:1 conversation between the current user and another user.
@@ -95,13 +102,13 @@ export async function getOrCreateDirectVisible(otherUserId, { restoreHistory = f
 export async function listConversations({ limit = 50, offset = 0 } = {}) {
   const me = await requireAuthUserId();
 
-  // 1) pull conversation rows + my membership flags, INCLUDING partner_user_id (no relationship shorthand)
+  // 1) pull conversation rows + my membership flags, INCLUDING partner_user_id
   const res = await supabase
     .from('conversation_members')
     .select(`
       conversation_id,
       partner_user_id,
-      muted, archived_at, cleared_before,
+      muted, archived_at, cleared_before, last_read_at,
       conversation:conversation_id (
         id, updated_at, last_message_at, last_message_preview, last_message_sender
       )
@@ -132,6 +139,7 @@ export async function listConversations({ limit = 50, offset = 0 } = {}) {
     muted: row.muted,
     archived_at: row.archived_at,
     cleared_before: row.cleared_before,
+    last_read_at: row.last_read_at ?? null,
     last_message_at: row.conversation?.last_message_at,
     last_message_preview: row.conversation?.last_message_preview,
     last_message_sender: row.conversation?.last_message_sender,
@@ -143,11 +151,11 @@ export async function listConversations({ limit = 50, offset = 0 } = {}) {
 export async function getConversationHeader(conversationId) {
   const me = await requireAuthUserId();
 
-  // 1) fetch my membership row incl partner_user_id (no relationship shorthand)
+  // 1) fetch my membership row incl partner_user_id
   const res = await supabase
     .from('conversation_members')
     .select(`
-      partner_user_id, muted, archived_at, cleared_before,
+      partner_user_id, muted, archived_at, cleared_before, last_read_at,
       conversation:conversation_id (
         id, updated_at, last_message_at, last_message_preview, last_message_sender
       )
@@ -176,6 +184,7 @@ export async function getConversationHeader(conversationId) {
     muted: res.data.muted,
     archived_at: res.data.archived_at,
     cleared_before: res.data.cleared_before,
+    last_read_at: res.data.last_read_at ?? null,
     last_message_at: res.data.conversation?.last_message_at,
     last_message_preview: res.data.conversation?.last_message_preview,
     last_message_sender: res.data.conversation?.last_message_sender,
@@ -183,22 +192,33 @@ export async function getConversationHeader(conversationId) {
   };
 }
 
-/** Fetch messages in a conversation (oldest first). Supports "before" cursor for paging up. */
+/** Fetch messages in a conversation (oldest first). Respects my cleared_before. Supports "before" cursor. */
 export async function listMessages(conversationId, { limit = 50, before = null } = {}) {
-  await requireAuthUserId();
+  const me = await requireAuthUserId();
+  if (!conversationId) throw new Error('conversationId required');
+
+  // Get my cleared_before to avoid resurfacing cleared history
+  const member = await supabase
+    .from('conversation_members')
+    .select('cleared_before')
+    .eq('conversation_id', conversationId)
+    .eq('user_id', me)
+    .maybeSingle();
+  if (member.error) throw member.error;
+  const cutoff = member.data?.cleared_before || null;
+
   let q = supabase
     .from('messages')
-    .select(
-      `
+    .select(`
       id, conversation_id, sender_id, content, media_url, media_type, created_at,
       sender:sender_id ( id, display_name, username, photo_url )
-    `
-    )
+    `)
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true })
     .limit(limit);
 
   if (before) q = q.lt('created_at', before);
+  if (cutoff) q = q.gte('created_at', cutoff);
 
   const res = await q;
   if (res.error) throw res.error;
@@ -206,26 +226,32 @@ export async function listMessages(conversationId, { limit = 50, before = null }
 }
 
 /** Send a text/media message to a conversation and update conversation metadata. */
-export async function sendMessage(conversationId, { content = '', media_url = null, media_type = null } = {}) {
+export async function sendMessage(
+  conversationId,
+  { content = '', media_url = null, media_type = null } = {}
+) {
   const me = await requireAuthUserId();
   if (!conversationId) throw new Error('conversationId required');
-  if (!content && !media_url) throw new Error('Message must have content or media');
+
+  const body = cleanContent(content);
+  // silently no-op if empty
+  if (!body && !media_url) return null;
 
   const ins = await supabase
     .from('messages')
     .insert({
       conversation_id: conversationId,
       sender_id: me,
-      content: content || null,
+      content: body || null,
       media_url: media_url || null,
       media_type: media_type || null,
     })
-    .select('id, created_at')
+    // return the full row for instant render
+    .select('id, conversation_id, sender_id, content, media_url, media_type, created_at')
     .single();
   if (ins.error) throw ins.error;
 
-  // best-effort update of conversation last message fields
-  const preview = content ? content.slice(0, 140) : media_type ? `[${media_type}]` : '';
+  const preview = body ? body.slice(0, 140) : (media_type ? `[${media_type}]` : '');
   const upd = await supabase
     .from('conversations')
     .update({
@@ -277,12 +303,34 @@ export async function clearHistoryBefore(conversationId, isoTimestamp = nowIso()
   return true;
 }
 
+/** Mark a single DM as read for the current user (drives unread badge). */
+export async function markConversationRead(conversationId) {
+  const me = await requireAuthUserId();
+  if (!conversationId) throw new Error('conversationId required');
+
+  const res = await supabase
+    .from('conversation_members')
+    .update({ last_read_at: nowIso() })
+    .eq('conversation_id', conversationId)
+    .eq('user_id', me);
+
+  if (res.error) throw res.error;
+  return true;
+}
+
+/** Bulk mark all my DMs as read (optional helper). */
+export async function markAllConversationsRead() {
+  const me = await requireAuthUserId();
+  const res = await supabase
+    .from('conversation_members')
+    .update({ last_read_at: nowIso() })
+    .eq('user_id', me);
+  if (res.error) throw res.error;
+  return true;
+}
+
 /* ============================== VPORT DMs ============================== */
 
-/**
- * Get or create a vport conversation between *me* and a specific vport.
- * Ensures vport_conversations row + membership in vport_conversation_members.
- */
 export async function getOrCreateVport({ vportId }) {
   const me = await requireAuthUserId();
   if (!vportId) throw new Error('vportId required');
@@ -390,24 +438,34 @@ export async function getVportConversationHeader(conversationId) {
   };
 }
 
-
-/** List messages in a vport conversation (oldest first). */
+/** List messages in a vport conversation (oldest first). Respects my cleared_before. */
 export async function listVportMessages(conversationId, { limit = 50, before = null } = {}) {
-  await requireAuthUserId();
+  const me = await requireAuthUserId();
+  if (!conversationId) throw new Error('conversationId required');
+
+  // Apply my cleared_before for this vport DM
+  const member = await supabase
+    .from('vport_conversation_members')
+    .select('cleared_before')
+    .eq('conversation_id', conversationId)
+    .eq('user_id', me)
+    .maybeSingle();
+  if (member.error) throw member.error;
+  const cutoff = member.data?.cleared_before || null;
+
   let q = supabase
     .from('vport_messages')
-    .select(
-      `
+    .select(`
       id, conversation_id, sender_user_id, sender_vport_id, content, media_url, media_type, created_at,
       user:sender_user_id ( id, display_name, username, photo_url ),
       vport:sender_vport_id ( id, name, avatar_url )
-    `
-    )
+    `)
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true })
     .limit(limit);
 
   if (before) q = q.lt('created_at', before);
+  if (cutoff) q = q.gte('created_at', cutoff);
 
   const res = await q;
   if (res.error) throw res.error;
@@ -415,27 +473,32 @@ export async function listVportMessages(conversationId, { limit = 50, before = n
 }
 
 /** Send a message in a vport conversation (as user by default; support as vport if needed). */
-export async function sendVportMessage(conversationId, {
-  content = '',
-  media_url = null,
-  media_type = null,
-  asVport = false,
-  vportId = null,
-} = {}) {
+export async function sendVportMessage(
+  conversationId,
+  { content = '', media_url = null, media_type = null, asVport = false, vportId = null } = {}
+) {
   const me = await requireAuthUserId();
   if (!conversationId) throw new Error('conversationId required');
-  if (!content && !media_url) throw new Error('Message must have content or media');
+
+  const body = cleanContent(content);
+  // silently no-op if empty
+  if (!body && !media_url) return null;
 
   const payload = {
     conversation_id: conversationId,
-    content: content || null,
+    content: body || null,
     media_url: media_url || null,
     media_type: media_type || null,
     sender_user_id: asVport ? null : me,
     sender_vport_id: asVport ? vportId : null,
   };
 
-  const ins = await supabase.from('vport_messages').insert(payload).select('id, created_at').single();
+  const ins = await supabase
+    .from('vport_messages')
+    .insert(payload)
+    // return full row for instant render
+    .select('id, conversation_id, sender_user_id, sender_vport_id, content, media_url, media_type, created_at')
+    .single();
   if (ins.error) throw ins.error;
 
   const upd = await supabase
@@ -445,6 +508,42 @@ export async function sendVportMessage(conversationId, {
   if (upd.error) throw upd.error;
 
   return ins.data;
+}
+
+/* -------- VPORT member controls -------- */
+
+export async function setVportMuted(conversationId, muted = true) {
+  const me = await requireAuthUserId();
+  const res = await supabase
+    .from('vport_conversation_members')
+    .update({ muted })
+    .eq('conversation_id', conversationId)
+    .eq('user_id', me);
+  if (res.error) throw res.error;
+  return true;
+}
+
+export async function setVportArchived(conversationId, archive = true) {
+  const me = await requireAuthUserId();
+  const patch = archive ? { archived_at: nowIso() } : { archived_at: null };
+  const res = await supabase
+    .from('vport_conversation_members')
+    .update(patch)
+    .eq('conversation_id', conversationId)
+    .eq('user_id', me);
+  if (res.error) throw res.error;
+  return true;
+}
+
+export async function clearVportHistoryBefore(conversationId, isoTimestamp = nowIso()) {
+  const me = await requireAuthUserId();
+  const res = await supabase
+    .from('vport_conversation_members')
+    .update({ cleared_before: isoTimestamp })
+    .eq('conversation_id', conversationId)
+    .eq('user_id', me);
+  if (res.error) throw res.error;
+  return true;
 }
 
 /* ------------------------------ export -------------------------------- */
@@ -460,6 +559,8 @@ export const chat = {
   setMuted,
   setArchived,
   clearHistoryBefore,
+  markConversationRead,       // <-- added
+  markAllConversationsRead,   // <-- added
   // vport DMs
   getOrCreateVport,
   listVportConversations,
@@ -467,6 +568,10 @@ export const chat = {
   startVportConversation,
   listVportMessages,
   sendVportMessage,
+  // vport member controls
+  setVportMuted,
+  setVportArchived,
+  clearVportHistoryBefore,
 };
 
 export default chat;

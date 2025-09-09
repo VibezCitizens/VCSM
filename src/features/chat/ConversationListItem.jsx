@@ -1,15 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+// src/features/chat/ConversationListItem.jsx
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import { Bell, BellOff, Trash2 } from 'lucide-react';
 
 const DEFAULT_AVATAR = '/default.png';
-
-// ----- flip to false when you're done -----
-const DEBUG = true;
+const DEBUG = false;
 const dlog = (...a) => DEBUG && console.log('[ConversationListItem]', ...a);
-// ------------------------------------------
 
 function timeAgo(iso) {
   if (!iso) return '';
@@ -25,17 +23,24 @@ function timeAgo(iso) {
 
 export default function ConversationListItem({
   conversationId,
-  createdAt,      // last activity time (from list query)
-  lastMessage,    // optional preview (from list query)
+  createdAt,              // last activity time (from list query)
+  lastMessage,            // optional preview (from list query)
+  partner: partnerProp,   // parent-provided partner (user or vport)
   onClick,
   onRemove,
 }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [partner, setPartner] = useState(null);   // { type: 'user'|'vport', display_name, photo_url }
+  const loadedOnceRef = useRef(false);
+  const [loading, setLoading] = useState(!partnerProp);
+  const [partner, setPartner] = useState(partnerProp ?? null); // { type:'user'|'vport', display_name, photo_url }
   const [isMuted, setIsMuted] = useState(false);
+
+  // keep local partner synced with parent updates (prevents extra fetch + flicker)
+  useEffect(() => {
+    if (partnerProp) setPartner(partnerProp);
+  }, [partnerProp]);
 
   useEffect(() => {
     let alive = true;
@@ -46,7 +51,8 @@ export default function ConversationListItem({
           if (alive) setLoading(false);
           return;
         }
-        setLoading(true);
+        // show skeleton only on very first load if we don't already have partner
+        if (!loadedOnceRef.current && !partnerProp) setLoading(true);
 
         // 1) My membership (and quick state)
         const { data: me, error: meErr } = await supabase
@@ -68,25 +74,27 @@ export default function ConversationListItem({
 
         setIsMuted(!!me.muted);
 
-        // 2) Detect if this convo contains mirrored VPORT messages (shadow_of_vpm != null)
-        const { data: shadowMsg, error: shErr } = await supabase
-          .from('messages')
-          .select('id, shadow_of_vpm')
-          .eq('conversation_id', conversationId)
-          .not('shadow_of_vpm', 'is', null)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (!alive) return;
+        // 2) Detect mirrored VPORT messages only if parent didn't already tell us it's a VPORT
+        let shadowMsg = null, shErr = null;
+        if (!partnerProp || partnerProp?.type !== 'vport') {
+          const probe = await supabase
+            .from('messages')
+            .select('id, shadow_of_vpm')
+            .eq('conversation_id', conversationId)
+            .not('shadow_of_vpm', 'is', null)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          shadowMsg = probe.data;
+          shErr = probe.error;
+        }
 
         if (shErr) dlog('shadow probe error (non-fatal):', shErr);
         dlog('shadow message probe:', shadowMsg);
 
         // --- VPORT PATH ---
-        if (shadowMsg?.shadow_of_vpm) {
-          // Get the VPORT behind this shadow message.
-          // Step A: find the VPORT conversation for that vport_message id
+        if (shadowMsg?.shadow_of_vpm && (!partnerProp || partnerProp?.type !== 'vport')) {
+          // find the VPORT from the mirrored vport_message
           const { data: vm, error: vmErr } = await supabase
             .from('vport_messages')
             .select('id, conversation_id')
@@ -96,7 +104,6 @@ export default function ConversationListItem({
           if (!alive) return;
 
           if (!vmErr && vm?.conversation_id) {
-            // Step B: get the VPORT itself (name + avatar)
             const { data: vc, error: vcErr } = await supabase
               .from('vport_conversations')
               .select('vport_id, vport:vports ( id, name, avatar_url )')
@@ -109,7 +116,7 @@ export default function ConversationListItem({
 
             const v = vc?.vport;
             if (v?.id) {
-              if (alive) {
+              if (alive && !partnerProp) {
                 setPartner({
                   type: 'vport',
                   id: v.id,
@@ -117,20 +124,35 @@ export default function ConversationListItem({
                   photo_url: v.avatar_url || DEFAULT_AVATAR,
                 });
                 setLoading(false);
+                loadedOnceRef.current = true;
               }
               return;
             }
           } else {
             dlog('vport_messages lookup failed or not allowed', vmErr);
           }
-          // If any of that failed (RLS, etc.), we’ll fall through to the user path.
+          // if any of that failed, fall through to user path
         }
 
         // --- USER PATH (fallback) ---
         let partnerId = me.partner_user_id || null;
 
         if (!partnerId) {
-          // latest message not from me
+          // Prefer to discover partner from membership (no dependency on direct_conversation_pairs)
+          const { data: others, error: othersErr } = await supabase
+            .from('conversation_members')
+            .select('user_id')
+            .eq('conversation_id', conversationId)
+            .neq('user_id', user.id)
+            .is('archived_at', null)
+            .limit(1);
+
+          if (othersErr) dlog('other member lookup error (non-fatal):', othersErr);
+          partnerId = others?.[0]?.user_id ?? null;
+        }
+
+        if (!partnerId) {
+          // Fallback to latest message not from me
           const { data: msg } = await supabase
             .from('messages')
             .select('sender_id')
@@ -142,24 +164,7 @@ export default function ConversationListItem({
           partnerId = msg?.sender_id ?? null;
         }
 
-        if (!partnerId) {
-          // try direct_conversation_pairs
-          const { data: pair } = await supabase
-            .from('direct_conversation_pairs')
-            .select('user_a, user_b')
-            .eq('conversation_id', conversationId)
-            .maybeSingle();
-          if (pair) {
-            partnerId =
-              pair.user_a === user.id
-                ? pair.user_b
-                : pair.user_b === user.id
-                ? pair.user_a
-                : null;
-          }
-        }
-
-        if (partnerId) {
+        if (partnerId && !partnerProp) {
           // best-effort: save pointer for future reads
           supabase
             .from('conversation_members')
@@ -169,31 +174,30 @@ export default function ConversationListItem({
             .then(() => {}, () => {});
         }
 
-        if (!partnerId) {
-          if (alive) {
-            setPartner({ type: 'user', display_name: 'Unknown', photo_url: DEFAULT_AVATAR });
-            setLoading(false);
-          }
-          return;
-        }
-
-        const { data: p } = await supabase
-          .from('profiles')
-          .select('id, username, display_name, photo_url')
-          .eq('id', partnerId)
-          .maybeSingle();
+        // only fetch profile if parent didn't pass partner
+        const { data: p } = partnerProp
+          ? { data: null }
+          : await supabase
+              .from('profiles')
+              .select('id, username, display_name, photo_url')
+              .eq('id', partnerId)
+              .maybeSingle();
 
         if (!alive) return;
 
         dlog('user partner profile:', p);
 
-        setPartner({
-          type: 'user',
-          id: p?.id,
-          display_name: p?.display_name || p?.username || 'User',
-          photo_url: p?.photo_url || DEFAULT_AVATAR,
-        });
+        if (!partnerProp) {
+          setPartner({
+            type: 'user',
+            id: p?.id ?? partnerId,
+            display_name: p?.display_name || p?.username || 'User',
+            photo_url: p?.photo_url || DEFAULT_AVATAR,
+          });
+        }
+
         setLoading(false);
+        loadedOnceRef.current = true;
       } catch (err) {
         console.error('[ConversationListItem] load error', err);
         if (alive) {
@@ -204,10 +208,8 @@ export default function ConversationListItem({
     };
 
     load();
-    return () => {
-      alive = false;
-    };
-  }, [conversationId, user?.id, onRemove]);
+    return () => { alive = false; };
+  }, [conversationId, user?.id, onRemove, partnerProp]);
 
   const handleMute = async (e) => {
     e.stopPropagation();
@@ -294,7 +296,11 @@ export default function ConversationListItem({
         <div className="ml-3 flex items-center gap-3 shrink-0">
           <div className="text-gray-500 text-[11px]">{timeAgo(createdAt)}</div>
 
-          <button onClick={handleMute} title={isMuted ? 'Unmute' : 'Mute'} aria-label={isMuted ? 'Unmute' : 'Mute'}>
+          <button
+            onClick={handleMute}
+            title={isMuted ? 'Unmute' : 'Mute'}
+            aria-label={isMuted ? 'Unmute' : 'Mute'}
+          >
             {isMuted
               ? <BellOff className="w-5 h-5 text-gray-400 hover:text-white" />
               : <Bell className="w-5 h-5 text-gray-400 hover:text-white" />

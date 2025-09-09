@@ -1,18 +1,11 @@
 // src/data/search.js
-/**
- * Centralized search DAL.
- * All search-related DB reads go through here so schema tweaks are localized.
- */
 import { supabase } from '@/lib/supabaseClient';
 
-/* ------------------------------- helpers -------------------------------- */
-
-/** Detect "relation does not exist" (missing table) so we can fail softly. */
+/* ---------------- helpers ---------------- */
 const isUndefinedTable = (err) =>
   String(err?.code || err?.message || '').includes('42P01') ||
   String(err?.message || '').toLowerCase().includes('does not exist');
 
-/** Safe wrapper: returns [] on error. If `optional` and table is missing, also []. */
 const safe = async (fn, { optional = false } = {}) => {
   try {
     const { data, error } = await fn();
@@ -29,27 +22,12 @@ const safe = async (fn, { optional = false } = {}) => {
   }
 };
 
-/**
- * Build a PostgREST `.or()` pattern for `ilike` safely.
- * - Strip commas/parentheses (they break `.or()` grammar).
- * - Collapse whitespace.
- * - Use `*term*` wildcard (PostgREST style).
- */
 const toLikePat = (q = '') => {
-  const cleaned = q
-    .trim()
-    .replace(/[(),]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .slice(0, 120); // keep it sane
+  const cleaned = q.trim().replace(/[(),]/g, ' ').replace(/\s+/g, ' ').slice(0, 120);
   return cleaned ? `*${cleaned}*` : '*';
 };
 
-/* --------------------------------- API ---------------------------------- */
-
-/**
- * Search user profiles by username/display_name.
- * @returns Array<{type:'user', id, username, display_name, photo_url}>
- */
+/* ---------------- API ---------------- */
 export async function searchUsers(q, { limit = 20, minLength = 2 } = {}) {
   if (!q || q.trim().length < minLength) return [];
   const pat = toLikePat(q);
@@ -71,10 +49,6 @@ export async function searchUsers(q, { limit = 20, minLength = 2 } = {}) {
   }));
 }
 
-/**
- * Search posts (public, not deleted) by title/text.
- * @returns Array<{type:'post', id, user_id, title, text, media_url, media_type, created_at}>
- */
 export async function searchPosts(q, { limit = 20, minLength = 2 } = {}) {
   if (!q || q.trim().length < minLength) return [];
   const pat = toLikePat(q);
@@ -102,10 +76,6 @@ export async function searchPosts(q, { limit = 20, minLength = 2 } = {}) {
   }));
 }
 
-/**
- * Search videos (subset of posts where media_type='video').
- * @returns Array<{type:'video', id, user_id, title, text, media_url, created_at}>
- */
 export async function searchVideos(q, { limit = 20, minLength = 2 } = {}) {
   if (!q || q.trim().length < minLength) return [];
   const pat = toLikePat(q);
@@ -133,11 +103,6 @@ export async function searchVideos(q, { limit = 20, minLength = 2 } = {}) {
   }));
 }
 
-/**
- * Search groups by name/description.
- * Optional: returns [] if the `groups` table doesn't exist.
- * @returns Array<{type:'group', id, name, description}>
- */
 export async function searchGroups(q, { limit = 20, minLength = 2 } = {}) {
   if (!q || q.trim().length < minLength) return [];
   const pat = toLikePat(q);
@@ -161,13 +126,35 @@ export async function searchGroups(q, { limit = 20, minLength = 2 } = {}) {
   }));
 }
 
-/**
- * Convenience: run multiple searches in parallel and flatten.
- * @param {{q: string, types?: Array<'users'|'posts'|'videos'|'groups'>}} params
- */
-export async function searchAll({ q, types = ['users', 'posts', 'videos', 'groups'] } = {}) {
+/** ✅ NEW: VPORT search (no is_published filter) */
+export async function searchVports(q, { limit = 20, minLength = 2 } = {}) {
+  if (!q || q.trim().length < minLength) return [];
+  const pat = toLikePat(q);
+
+  const rows = await safe(
+    () =>
+      supabase
+        .from('vports')
+        .select('id, name, description, avatar_url')
+        .or(`name.ilike.${pat},description.ilike.${pat}`)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+    { optional: true }
+  );
+
+  return rows.map((v) => ({
+    type: 'vport',
+    id: v.id,
+    name: v.name,
+    description: v.description,
+    avatar_url: v.avatar_url,
+  }));
+}
+
+export async function searchAll({ q, types = ['users', 'vports', 'posts', 'videos', 'groups'] } = {}) {
   const tasks = [];
   if (types.includes('users')) tasks.push(searchUsers(q));
+  if (types.includes('vports')) tasks.push(searchVports(q));
   if (types.includes('posts')) tasks.push(searchPosts(q));
   if (types.includes('videos')) tasks.push(searchVideos(q));
   if (types.includes('groups')) tasks.push(searchGroups(q));
@@ -178,11 +165,12 @@ export async function searchAll({ q, types = ['users', 'posts', 'videos', 'group
     .flatMap((s) => s.value || []);
 }
 
-/* Namespace export if you like `db.search.*` style */
+/* Namespace export */
 export const search = {
   users: searchUsers,
   posts: searchPosts,
   videos: searchVideos,
   groups: searchGroups,
+  vports: searchVports, // ✅ make sure this is here
   all: searchAll,
 };

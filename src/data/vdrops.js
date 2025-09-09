@@ -104,6 +104,12 @@ export async function hardDeleteVportVDrop(postId) {
   return true;
 }
 
+/* ========= back-compat aliases expected by data.js ========= */
+// data.js imports createUserVdrop/createVportVdrop (lowercase "d")
+export { createUserVDrop as createUserVdrop, createVportVDrop as createVportVdrop };
+
+/* ========= default aggregate (optional consumers) ========= */
+
 export const vdrops = {
   createUserVDrop,
   createVportVDrop,

@@ -1,12 +1,5 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Assuming '@/lib/supabaseClient' correctly points to your Supabase client initialization
-// This file should export a 'supabase' instance initialized with your Supabase URL and Anon Key.
-// Example content for src/lib/supabaseClient.js:
-// import { createClient } from '@supabase/supabase-js';
-// const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-// const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-// export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 import { supabase } from '@/lib/supabaseClient';
 
 const App = () => {
@@ -17,14 +10,12 @@ const App = () => {
     email: '',
     password: '',
     birthdate: '',
-    sex: '', // Initialize as empty string for dropdown
-    // Removed: interested_in_kids: false,
+    sex: '',
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Handles changes for all input fields, including text and radio buttons
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
@@ -33,49 +24,35 @@ const App = () => {
     }));
   };
 
-  // Determines if the form is valid to enable the register button
   const isFormValid =
     form.display_name !== '' &&
-    form.username !== '' &&
+    form.username !== '' &&      // user can still type a base; we’ll append the number
     form.email !== '' &&
     form.password !== '' &&
     form.birthdate !== '' &&
-    form.sex !== ''; // Ensure sex is selected
-    // Removed: (form.interested_in_kids === true || form.interested_in_kids === false);
+    form.sex !== '';
 
-  // Handles the registration process
   const handleRegister = async () => {
     setLoading(true);
-    setErrorMessage(''); // Clear previous errors
-    setSuccessMessage(''); // Clear previous success messages
+    setErrorMessage('');
+    setSuccessMessage('');
 
     try {
-      // Destructure form data, separating auth credentials from profile data
-      // Removed interested_in_kids from profileData destructuring
       const { email, password, ...profileData } = form;
 
-      // Basic validation - this is also covered by isFormValid, but good for a final check
       if (!isFormValid) {
         setErrorMessage('Please fill in all required fields.');
         setLoading(false);
         return;
       }
 
-      // 1. Sign up the user with Supabase Auth
+      // 1) Sign up
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        // You can add redirectTo here for email confirmation flow if needed
-        // options: {
-        //   emailRedirectTo: 'http://localhost:3000/confirm-signup',
-        // }
       });
+      if (signUpError) throw signUpError;
 
-      if (signUpError) {
-        throw signUpError;
-      }
-
-      // Ensure user data is available after sign-up
       if (!authData || !authData.user) {
         setSuccessMessage('Registration initiated. Please check your email for a confirmation link.');
         setLoading(false);
@@ -84,42 +61,43 @@ const App = () => {
 
       const userId = authData.user.id;
 
-      // Calculate age for is_adult field
+      // 2) Compute adult flag
       const birthYear = new Date(form.birthdate).getFullYear();
       const currentYear = new Date().getFullYear();
       const age = currentYear - birthYear;
       const isAdult = age >= 18;
 
-      // 2. Insert/Upsert the user's profile into the public.profiles table
-      // The 'upsert' method is used here to handle cases where the trigger might
-      // have already created a basic profile, or to create it directly.
+      // 3) ★ Generate username with a unique enrollment number (server-side)
+      const { data: genUname, error: genErr } = await supabase.rpc('generate_username', {
+        _display_name: profileData.display_name,
+        _username: profileData.username, // user-typed base; RPC will sanitize and append number
+      });
+      if (genErr) throw genErr;
+      const finalUsername = genUname; // e.g., "john-doe1001"
+
+      // 4) Upsert profile (now with auto-numbered username)
       const { error: profileError } = await supabase.from('profiles').upsert({
         id: userId,
         display_name: profileData.display_name,
-        username: profileData.username,
+        username: finalUsername,       // ★ use the generated username
         birthdate: profileData.birthdate,
-        age: age, // Store calculated age
+        age,
         sex: profileData.sex,
-        is_adult: isAdult, // Store calculated is_adult status
-        // Removed: interested_in_kids: profileData.interested_in_kids,
-        photo_url: '/avatar.jpg', // Default value, can be updated later
-        bio: '', // Default empty bio, can be updated later
-        private: false, // Default private status, can be updated later
-        created_at: new Date().toISOString(), // Ensure timestamp is correct
-        updated_at: new Date().toISOString(), // Ensure timestamp is correct
+        is_adult: isAdult,
+        photo_url: '/avatar.jpg',
+        bio: '',
+        private: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        email,                         // optional: keep your email in profiles
       });
+      if (profileError) throw profileError;
 
-      if (profileError) {
-        throw profileError;
-      }
-
-    setSuccessMessage('Registration successful! Redirecting to feed...');
-    navigate('/'); // ✅ correct: goes to CentralFeed
-
+      setSuccessMessage('Registration successful! Redirecting to feed...');
+      navigate('/');
 
     } catch (err) {
       console.error('[Registration Error]', err);
-      // Display user-friendly error message
       setErrorMessage(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
@@ -131,14 +109,12 @@ const App = () => {
       <div className="bg-zinc-900 p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-4 border border-purple-700">
         <h1 className="text-2xl font-bold text-center mb-6">Join Vibez Citizens</h1>
 
-        {/* Success Message */}
         {successMessage && (
           <div className="bg-green-200 text-white p-3 rounded-md text-center">
             {successMessage}
           </div>
         )}
 
-        {/* Error Message */}
         {errorMessage && (
           <div className="bg-red-600 text-white p-3 rounded-md text-center">
             {errorMessage}
@@ -156,7 +132,7 @@ const App = () => {
         <input
           className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-zinc-500"
           name="username"
-          placeholder="Username"
+          placeholder="Username (base, number auto-added)"
           value={form.username}
           onChange={handleChange}
           required
@@ -189,7 +165,6 @@ const App = () => {
           required
         />
 
-        {/* Sex Dropdown Menu */}
         <select
           className="w-full px-4 py-2 rounded-lg bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-zinc-400"
           name="sex"
@@ -202,8 +177,6 @@ const App = () => {
           <option value="Female">Female</option>
           <option value="Other">Other</option>
         </select>
-
-      
 
         <button
           onClick={handleRegister}
