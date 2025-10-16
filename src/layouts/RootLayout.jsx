@@ -1,17 +1,29 @@
 // src/layouts/RootLayout.jsx
-import { Outlet } from "react-router-dom";
-import BottomNavBar from "@/ui/components/BottomNavBar";
+import { Outlet, useLocation } from 'react-router-dom'
+import TopNav from '@/ui/components/TopNav'
+import BottomNavBar from '@/ui/components/BottomNavBar'
+import PageContainer from '@/ui/components/PageContainer'
 
 export default function RootLayout() {
-  return (
-    <div className="min-h-[100dvh] flex flex-col bg-black text-white">
-      {/* content area; keep space for fixed bottom bar (h-16) + safe-area */}
-      <main className="flex-1 pb-[calc(64px+env(safe-area-inset-bottom))]">
-        <Outlet />
-      </main>
+  const { pathname } = useLocation()
+  const isChat = pathname.startsWith('/chat/')
+  const hideChrome =
+    isChat ||
+    ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
 
-      {/* fixed bottom nav */}
-      <BottomNavBar />
+  // shell does NOT scroll; child screens handle their own scrolling
+  const mainClass = hideChrome ? 'flex-1 overflow-hidden' : 'flex-1 pt-12 pb-[64px] overflow-hidden'
+
+  return (
+    <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
+      {!hideChrome && <TopNav />}
+      <main className={mainClass}>
+        {/* keep width constraints; the child (e.g. CentralFeed) will scroll */}
+        <PageContainer noScroll>
+          <Outlet />
+        </PageContainer>
+      </main>
+      {!hideChrome && <BottomNavBar />}
     </div>
-  );
+  )
 }

@@ -11,26 +11,45 @@ export default function AccountTab() {
   const [err, setErr] = useState('');
 
   const logout = async () => {
-    try { await db.auth.signOut(); } finally { /* no-op */ }
+    try {
+      // 1) Supabase sign out (clears local session)
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      if (error) throw error;
+
+      // 2) Optional app-level cleanup (safe no-op if not present)
+      try { await db?.auth?.signOut?.(); } catch {}
+
+      // 3) Clear any actor state your UI uses
+      try {
+        localStorage.removeItem('actor_kind');
+        localStorage.removeItem('actor_vport_id');
+        localStorage.setItem('actor_touch', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('actor:changed', { detail: { kind: 'profile', id: null } }));
+      } catch {}
+
+      // 4) Optional: close realtime channels
+      try { supabase.getChannels?.().forEach(ch => supabase.removeChannel(ch)); } catch {}
+
+      // 5) Redirect to login (not central feed)
+      window.location.replace('/login');
+    } catch (e) {
+      setErr(e?.message || 'Could not sign out.');
+    }
   };
 
   const deleteAccount = async () => {
     setBusy(true);
     setErr('');
     try {
-      // 1) Try SECURITY DEFINER RPC (best practice)
+      // SECURITY DEFINER RPC you create on the DB side
       const { error: rpcErr } = await supabase.rpc('delete_my_account');
       if (rpcErr) {
-        // If you haven't set up the RPC yet, surface a helpful message.
-        // (Keep this catch so the UI doesn’t look broken.)
-        throw new Error(
-          'Server deletion not available. Please configure the `delete_my_account` RPC.'
-        );
+        throw new Error('Server deletion not available. Please configure the `delete_my_account` RPC.');
       }
 
-      // 2) If RPC succeeded, sign out and redirect home
-      await supabase.auth.signOut();
-      window.location.replace('/');
+      // Sign out locally after deletion and go to login
+      await supabase.auth.signOut({ scope: 'local' });
+      window.location.replace('/login');
     } catch (e) {
       setErr(e?.message || 'Could not delete your account.');
     } finally {

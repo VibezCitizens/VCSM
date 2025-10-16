@@ -1,8 +1,9 @@
+// src/components/UserLink.jsx
 import { Link } from 'react-router-dom';
 
 /**
  * UserLink
- * - Public profile link (never edit)
+ * - Public profile link
  * - Works with both "user" (profiles) and "vport" shapes
  *
  * Props:
@@ -24,88 +25,93 @@ export default function UserLink({
 }) {
   if (!user) return null;
 
-  // ---- infer vport vs user if authorType not provided
-  // heuristics: vports typically have "name"/"avatar_url" and no "photo_url".
-  // If parent passes authorType, that wins.
+  // ---------- helpers ----------
+  const safe = (s) => encodeURIComponent(String(s));
+  function firstNonEmpty(arr) {
+    for (const v of arr) {
+      if (v === undefined || v === null) continue;
+      if (typeof v === 'string' && v.trim() === '') continue;
+      return v;
+    }
+    return undefined;
+  }
+  function has(obj, key) {
+    return obj && Object.prototype.hasOwnProperty.call(obj, key);
+  }
+
+  // ---------- infer or trust authorType ----------
   const inferredIsVport =
     authorType === 'vport' ||
     (!authorType &&
       (
-        has(user, 'name') ||
-        (has(user, 'avatar_url') && !has(user, 'photo_url')) ||
+        has(user, 'name') ||                                    // vport has name
+        (has(user, 'avatar_url') && !has(user, 'photo_url')) || // vport avatar key
         (typeof user?.type === 'string' && user.type.toLowerCase().includes('vport'))
       )
     );
 
   const isVport = !!inferredIsVport;
 
-  // ---- display name + username
-  const displayName = firstNonEmpty(
-    isVport
-      ? [user?.name, user?.display_name, 'VPort']         // vport order of preference
-      : [user?.display_name, user?.username, 'User']      // user order of preference
-  );
+  // ---------- normalize shape ----------
+  const norm = isVport
+    ? {
+        id: firstNonEmpty([user?.id]),
+        displayName: firstNonEmpty([user?.name, user?.display_name, 'VPORT']),
+        username: null,
+        avatarUrl: firstNonEmpty([user?.avatar_url, user?.photo_url, '/avatar.jpg']),
+        slug: user?.slug,
+      }
+    : {
+        id: firstNonEmpty([user?.id, user?.user_id]),
+        displayName: firstNonEmpty([user?.display_name, user?.full_name, user?.username, 'User']),
+        username: firstNonEmpty([user?.username]),
+        avatarUrl: firstNonEmpty([user?.photo_url, user?.avatar_url, '/avatar.jpg']),
+      };
 
-  const username = isVport ? null : (user?.username ?? null);
-
-  // ---- avatar
-  const avatarUrl = firstNonEmpty(
-    isVport ? [user?.avatar_url, '/avatar.jpg'] : [user?.photo_url, '/avatar.jpg']
-  );
-
-  // ---- destination (public routes only)
-  const safe = (s) => encodeURIComponent(String(s));
+  // ---------- destination (public routes only) ----------
   let to = '/me';
 
   if (toOverride) {
     to = toOverride;
   } else if (isVport) {
-    const id = user?.id;
-    to = id ? `/vport/${safe(id)}` : '/vports';
+    to = norm?.slug
+      ? `/vport/slug/${safe(norm.slug)}`
+      : (norm.id ? `/vport/${safe(norm.id)}` : '/vports');
   } else {
-    if (user?.username) to = `/u/${safe(user.username)}`;
-    else if (user?.id)  to = `/profile/${safe(user.id)}`;
+    if (norm.username)      to = `/u/${safe(norm.username)}`;
+    else if (norm.id)       to = `/profile/${safe(norm.id)}`;
   }
 
+  // ---------- render ----------
   return (
     <Link
       to={to}
       className={`flex items-center gap-2 no-underline hover:no-underline ${className}`}
-      aria-label={`${displayName} profile`}
+      aria-label={`${norm.displayName} profile`}
     >
       <img
-        src={avatarUrl}
-        alt={displayName}
+        src={norm.avatarUrl}
+        alt={norm.displayName}
         loading="lazy"
-        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/avatar.jpg'; }}
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = '/avatar.jpg';
+        }}
         className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
       />
       <div className="flex flex-col leading-tight">
         <span className={`${textSize} text-white font-medium`}>
-          {displayName}
+          {norm.displayName}
         </span>
-        {showUsername && username && (
-          <span className="text-xs text-gray-400">@{username}</span>
+
+        {showUsername && !isVport && norm.username && (
+          <span className="text-xs text-gray-400">@{norm.username}</span>
         )}
+
         {showTimestamp && timestamp && (
           <span className="text-[11px] text-neutral-400">{timestamp}</span>
         )}
       </div>
     </Link>
   );
-}
-
-/* ----------------------------- helpers ----------------------------- */
-
-function firstNonEmpty(arr) {
-  for (const v of arr) {
-    if (v === undefined || v === null) continue;
-    if (typeof v === 'string' && v.trim() === '') continue;
-    return v;
-  }
-  return undefined;
-}
-
-function has(obj, key) {
-  return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }

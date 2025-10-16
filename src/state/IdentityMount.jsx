@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { IdentityProvider } from "@/state/identityContext";
 
 export default function IdentityMount({ children }) {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -14,6 +14,5 @@ export default function IdentityMount({ children }) {
     );
   }
 
-  // If user is not logged in, we still mount provider with user = null
-  return <IdentityProvider user={user}>{children}</IdentityProvider>;
+  return <IdentityProvider>{children}</IdentityProvider>;
 }

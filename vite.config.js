@@ -1,34 +1,46 @@
 // vite.config.js
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'          // keep/remove based on your stack
-import UnoCSS from 'unocss/vite'                  // keep/remove if you use UnoCSS
+import react from '@vitejs/plugin-react'
+import UnoCSS from 'unocss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
+// NOTE: CSP removed for dev per request.
+
 export default defineConfig({
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)), // <-- alias @ => /src
-    },
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+
+  optimizeDeps: {
+    entries: [],
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
+  },
+
+  build: { target: 'esnext' },
+
+  // Make the dev server reachable from your phone
+  server: {
+    host: true,
+    port: 5173,
+    hmr: { clientPort: 5173 },
+    // headers: {}  // ← no CSP or security headers in dev
+  },
+
   plugins: [
     react(),
     UnoCSS(),
     VitePWA({
       registerType: 'autoUpdate',
       strategies: 'injectManifest',
-
-      // Source SW is src/sw.js, output will be dist/sw.js (default).
-      // Making the injection point explicit avoids false negatives.
       srcDir: 'src',
       filename: 'sw.js',
       injectManifest: {
         injectionPoint: 'self.__WB_MANIFEST',
         globDirectory: 'dist',
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        // DO NOT set swDest here — plugin emits dist/sw.js automatically.
       },
-
+      devOptions: { enabled: false },
       includeAssets: ['favicon.svg', 'robots.txt'],
       manifest: {
         name: 'Vibez Citizens',

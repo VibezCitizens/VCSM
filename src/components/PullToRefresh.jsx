@@ -1,13 +1,17 @@
-import { useRef, useState } from 'react';
+// src/components/PullToRefresh.jsx
+import { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
-export default function PullToRefresh({
+function PullToRefreshImpl({
   onRefresh,
   threshold = 70,
   maxPull = 120,
   className = '',
   children,
-}) {
-  const ref = useRef(null);
+  ...rest
+}, ref) {
+  const localRef = useRef(null);
+  useImperativeHandle(ref, () => localRef.current);
+
   const [pull, setPull] = useState(0);
   const [status, setStatus] = useState('idle'); // idle|pulling|ready|refreshing
   const startY = useRef(null);
@@ -19,7 +23,7 @@ export default function PullToRefresh({
   };
 
   const canStart = () => {
-    const el = ref.current;
+    const el = localRef.current;
     return el && el.scrollTop <= 0 && status !== 'refreshing';
   };
 
@@ -68,7 +72,8 @@ export default function PullToRefresh({
 
   return (
     <div
-      ref={ref}
+      ref={localRef}
+      data-ptr-root="1"
       className={`relative overflow-auto overscroll-contain select-none ${className}`}
       style={{ touchAction: 'pan-y' }}
       onTouchStart={(e) => onStart(e.touches[0].clientY)}
@@ -79,6 +84,7 @@ export default function PullToRefresh({
       onPointerMove={(e) => onMove(e.clientY, e)}
       onPointerUp={onEnd}
       onPointerCancel={onEnd}
+      {...rest}
     >
       <div
         style={{
@@ -89,8 +95,10 @@ export default function PullToRefresh({
       >
         {pull > 0 && (
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full border-2 border-gray-400 border-t-transparent animate-spin"
-                 style={{ animationPlayState: status === 'refreshing' ? 'running' : 'paused' }} />
+            <div
+              className="w-4 h-4 rounded-full border-2 border-gray-400 border-t-transparent animate-spin"
+              style={{ animationPlayState: status === 'refreshing' ? 'running' : 'paused' }}
+            />
             <span>{indicatorText}</span>
           </div>
         )}
@@ -107,3 +115,6 @@ export default function PullToRefresh({
     </div>
   );
 }
+
+const PullToRefresh = forwardRef(PullToRefreshImpl);
+export default PullToRefresh;

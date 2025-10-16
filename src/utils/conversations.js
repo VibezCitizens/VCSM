@@ -1,44 +1,45 @@
 // src/utils/conversations.js
-// Centralized helpers. No direct table inserts. Uses DAL (data/chat.js) which calls SECURITY DEFINER RPCs.
-
 import { supabase } from '@/lib/supabaseClient';
-import { chat } from '@/data/chat';
 
 /**
- * Get or create a private 1:1 conversation between the authed user and the other user.
- * - Uses RPC via DAL (getOrCreateDirectVisible) → creates if needed, unarchives your membership,
- *   and stamps partner_user_id. Optionally restores history.
- *
- * @param {string|null} userId1 - usually currentUser.id (ignored; auth determines "me")
- * @param {string} userId2      - the other user's id (or the target if userId1 is me)
- * @param {{ restoreHistory?: boolean }} [opts]
- * @returns {Promise<string|null>} conversation id or null
+ * Get or create a private conversation between two users.
+ * Returns conversation id.
  */
-export async function getOrCreatePrivateConversation(userId1, userId2, opts = {}) {
-  const { data: auth, error } = await supabase.auth.getUser();
-  if (error || !auth?.user?.id) {
-    console.error('[getOrCreatePrivateConversation] not authenticated', error);
-    return null;
-  }
-  const me = auth.user.id;
+export async function getOrCreatePrivateConversation(userId, targetUserId) {
+  if (!userId || !targetUserId) return null;
 
-  // Determine the other participant robustly
-  let otherUserId = null;
-  if (userId1 && userId1 !== me) otherUserId = userId1;
-  if (!otherUserId && userId2 && userId2 !== me) otherUserId = userId2;
+  // Check if conversation exists
+  const { data: existing, error: fetchError } = await supabase
+    .from('conversations')
+    .select('id')
+    .eq('is_group', false)
+    .contains('member_ids', [userId, targetUserId])
+    .maybeSingle();
 
-  if (!otherUserId || otherUserId === me) {
-    console.error('[getOrCreatePrivateConversation] invalid otherUserId', { me, userId1, userId2 });
+  if (fetchError) {
+    console.error('Error fetching conversation:', fetchError);
     return null;
   }
 
-  try {
-    const { id } = await chat.getOrCreateDirectVisible(otherUserId, {
-      restoreHistory: !!opts.restoreHistory,
-    });
-    return id || null;
-  } catch (e) {
-    console.error('[getOrCreatePrivateConversation] DAL error', e);
+  if (existing) return existing.id;
+
+  // Create new conversation
+  const { data: inserted, error: insertError } = await supabase
+    .from('conversations')
+    .insert([
+      {
+        is_group: false,
+        member_ids: [userId, targetUserId],
+        created_at: new Date().toISOString(),
+      },
+    ])
+    .select('id')
+    .single();
+
+  if (insertError) {
+    console.error('Error creating conversation:', insertError);
     return null;
   }
+
+  return inserted.id;
 }

@@ -69,5 +69,8 @@ button { cursor: pointer; }
 }
 .animate-slideUp { animation: slideUp 0.3s ease-out forwards; }
 
-/* Prevent iOS zoom on comment input */
-input.comment-input { font-size: 16px; }
+/* iOS only */
+@supports (-webkit-touch-callout: none) {
+  input, textarea, select { font-size: 14px; }   /* your normal size */
+  input:focus, textarea:focus, select:focus { font-size: 18px; } /* typing size */
+}

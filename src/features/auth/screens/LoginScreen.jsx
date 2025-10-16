@@ -1,6 +1,7 @@
-﻿import { useState } from 'react';
+﻿// src/features/auth/screens/LoginScreen.jsx
+import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { db } from '@/data/data'; // ✅ use DAL, not supabase directly
+import { supabase } from '@/lib/supabaseClient';
 
 function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -19,10 +20,21 @@ function LoginScreen() {
       const normalizedEmail = email.trim().toLowerCase();
       const pwd = password.trim();
 
-      await db.auth.signInWithPassword({ email: normalizedEmail, password: pwd });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password: pwd,
+      });
 
-      // If a protected route redirected here, go back there; else home
-      const dest = location.state?.from?.pathname || '/';
+      console.log('[Login] result', data, error);
+
+      if (error) throw error;
+
+      const from = location.state?.from?.pathname;
+      const dest =
+        from && !['/login', '/register', '/reset', '/forgot-password'].includes(from)
+          ? from
+          : '/feed';
+
       navigate(dest, { replace: true });
     } catch (err) {
       setError(err?.message || 'Failed to sign in.');
@@ -49,7 +61,7 @@ function LoginScreen() {
           required
           autoComplete="email"
           inputMode="email"
-          className="w-full px-4 py-2 bg-neutral-800 text-white placeholder:text-neutral-400 border border-neutral-700 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150"
+          className="w-full px-4 py-2 bg-neutral-800 text-white placeholder:text-neutral-400 border border-neutral-700 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
         />
 
         <input
@@ -59,7 +71,7 @@ function LoginScreen() {
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="current-password"
-          className="w-full px-4 py-2 bg-neutral-800 text-white placeholder:text-neutral-400 border border-neutral-700 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150"
+          className="w-full px-4 py-2 bg-neutral-800 text-white placeholder:text-neutral-400 border border-neutral-700 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
         />
 
         {error && <p className="text-red-400 text-sm text-center">{error}</p>}
@@ -90,3 +102,4 @@ function LoginScreen() {
 }
 
 export default LoginScreen;
+

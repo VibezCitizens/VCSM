@@ -1,0 +1,13 @@
+name = "upload-worker"
+main = "worker.js"
+compatibility_date = "2025-09-29"
+
+routes = [
+  { pattern = "upload.vibezcitizens.com", custom_domain = true }
+]
+
+
+# 👇 Bind your R2 bucket
+[[r2_buckets]]
+binding = "R2_BUCKET"          # must match env.R2_BUCKET in worker.js
+bucket_name = "post-media"  # ⚠️ replace with your actual R2 bucket name

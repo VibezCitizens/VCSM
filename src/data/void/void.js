@@ -1,0 +1,2 @@
+// void DAL (stub)
+export {};

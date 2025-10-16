@@ -23,9 +23,11 @@ function timeAgo(iso) {
 
 export default function ConversationListItem({
   conversationId,
-  createdAt,              // last activity time (from list query)
-  lastMessage,            // optional preview (from list query)
-  partner: partnerProp,   // parent-provided partner (user or vport)
+  createdAt,            // last activity time (from list query)
+  lastMessage,          // optional preview (from list query)
+  partner: partnerProp, // parent-provided partner (user or vport)
+  isActive = false,     // hide right unread badge when viewing this convo
+  unreadCount = 0,      // right-side unread badge count
   onClick,
   onRemove,
 }) {
@@ -56,6 +58,7 @@ export default function ConversationListItem({
 
         // 1) My membership (and quick state)
         const { data: me, error: meErr } = await supabase
+          .schema('vc')
           .from('conversation_members')
           .select('muted, partner_user_id')
           .eq('conversation_id', conversationId)
@@ -78,6 +81,7 @@ export default function ConversationListItem({
         let shadowMsg = null, shErr = null;
         if (!partnerProp || partnerProp?.type !== 'vport') {
           const probe = await supabase
+            .schema('vc')
             .from('messages')
             .select('id, shadow_of_vpm')
             .eq('conversation_id', conversationId)
@@ -96,6 +100,7 @@ export default function ConversationListItem({
         if (shadowMsg?.shadow_of_vpm && (!partnerProp || partnerProp?.type !== 'vport')) {
           // find the VPORT from the mirrored vport_message
           const { data: vm, error: vmErr } = await supabase
+            .schema('vc')
             .from('vport_messages')
             .select('id, conversation_id')
             .eq('id', shadowMsg.shadow_of_vpm)
@@ -105,6 +110,7 @@ export default function ConversationListItem({
 
           if (!vmErr && vm?.conversation_id) {
             const { data: vc, error: vcErr } = await supabase
+              .schema('vc')
               .from('vport_conversations')
               .select('vport_id, vport:vports ( id, name, avatar_url )')
               .eq('id', vm.conversation_id)
@@ -140,6 +146,7 @@ export default function ConversationListItem({
         if (!partnerId) {
           // Prefer to discover partner from membership (no dependency on direct_conversation_pairs)
           const { data: others, error: othersErr } = await supabase
+            .schema('vc')
             .from('conversation_members')
             .select('user_id')
             .eq('conversation_id', conversationId)
@@ -154,6 +161,7 @@ export default function ConversationListItem({
         if (!partnerId) {
           // Fallback to latest message not from me
           const { data: msg } = await supabase
+            .schema('vc')
             .from('messages')
             .select('sender_id')
             .eq('conversation_id', conversationId)
@@ -167,6 +175,7 @@ export default function ConversationListItem({
         if (partnerId && !partnerProp) {
           // best-effort: save pointer for future reads
           supabase
+            .schema('vc')
             .from('conversation_members')
             .update({ partner_user_id: partnerId })
             .eq('conversation_id', conversationId)
@@ -178,7 +187,7 @@ export default function ConversationListItem({
         const { data: p } = partnerProp
           ? { data: null }
           : await supabase
-              .from('profiles')
+              .from('profiles') // public schema
               .select('id, username, display_name, photo_url')
               .eq('id', partnerId)
               .maybeSingle();
@@ -191,7 +200,7 @@ export default function ConversationListItem({
           setPartner({
             type: 'user',
             id: p?.id ?? partnerId,
-            display_name: p?.display_name || p?.username || 'User',
+            display_name: (p?.display_name || p?.username || 'User')?.trim(),
             photo_url: p?.photo_url || DEFAULT_AVATAR,
           });
         }
@@ -218,6 +227,7 @@ export default function ConversationListItem({
     const next = !isMuted;
     setIsMuted(next); // optimistic
     const { error } = await supabase
+      .schema('vc')
       .from('conversation_members')
       .update({ muted: next })
       .eq('conversation_id', conversationId)
@@ -236,6 +246,7 @@ export default function ConversationListItem({
 
     const nowIso = new Date().toISOString();
     const { error } = await supabase
+      .schema('vc')
       .from('conversation_members')
       .update({ archived_at: nowIso, cleared_before: nowIso })
       .eq('conversation_id', conversationId)
@@ -270,11 +281,12 @@ export default function ConversationListItem({
   return (
     <div
       onClick={onClick}
-      className="flex items-center p-2 hover:bg-neutral-800 rounded cursor-pointer"
+      className="relative flex items-center p-2 pr-9 hover:bg-neutral-800 rounded cursor-pointer"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
     >
+      {/* Avatar — no left dot overlay */}
       <img
         src={photo}
         alt={displayName}
@@ -312,6 +324,16 @@ export default function ConversationListItem({
           </button>
         </div>
       </div>
+
+      {/* RIGHT unread badge — shown only when NOT active; row padded with pr-9 to avoid overlap */}
+      {(!isActive && Number(unreadCount) > 0) && (
+        <span
+          className="absolute top-1.5 right-3 min-w-[18px] h-[18px] px-1.5 rounded-full
+                     bg-red-500 text-white text-[10px] leading-[18px] text-center font-medium shadow"
+        >
+          {Number(unreadCount) > 99 ? '99+' : String(unreadCount)}
+        </span>
+      )}
     </div>
   );
 }

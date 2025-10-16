@@ -2,54 +2,60 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
-import { db } from '@/data/data';
-// Use the clean, title-less form in the modal:
-import CreateVportForm from '@/Vport/CreateVportForm.jsx';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabaseClient';
 import { Plus, X } from 'lucide-react';
 
+// data-layer for vc.vports
+import { listMyVports } from '@/data/vport/vprofile/vport.js';
+import CreateVportForm from '@/features/vport/CreateVportForm.jsx';
+
+// ✅ unified actor helpers (legacy store used by other parts like Upload)
+import {
+  getActor,
+  onActorChange,
+  setProfileMode,
+  setVportMode,
+} from '@/lib/actors/actor';
+
+// ✅ Identity context used by navbar/routing
+import { useIdentity } from '@/state/identityContext';
+
 export default function VportsTab() {
   const { user } = useAuth() || {};
+  const { actAsUser, actAsVport } = useIdentity(); // ← bridge to IdentityContext
   const [items, setItems] = useState([]);
-  const [activeActor, setActiveActor] = useState(null); // 'profile' | `vport:${id}`
+  const [activeActor, setActiveActor] = useState('profile'); // 'profile' | `vport:${id}`
   const [busy, setBusy] = useState(false);
   const [showCreator, setShowCreator] = useState(false);
   const navigate = useNavigate();
 
-  // notify app-wide (actor picker)
-  const broadcastActor = (detail) => {
-    try {
-      window.dispatchEvent(new CustomEvent('actor:changed', { detail }));
-      localStorage.setItem('actor_touch', String(Date.now()));
-    } catch {}
-  };
-
   useEffect(() => {
+    let alive = true;
+
+    // load owned vports
     (async () => {
-      const list = await db.profiles.vports.listOwnedByMe();
-      setItems(list ?? []);
+      try {
+        const list = await listMyVports();
+        if (alive) setItems(list ?? []);
+      } catch (e) {
+        console.error('Failed to load vports:', e);
+        if (alive) setItems([]);
+      }
     })();
 
-    const kind = localStorage.getItem('actor_kind');
-    const vid  = localStorage.getItem('actor_vport_id');
-    setActiveActor(kind === 'vport' && vid ? `vport:${vid}` : 'profile');
+    // hydrate current actor from legacy unified API
+    const current = getActor();
+    setActiveActor(current?.kind === 'vport' ? `vport:${current.id}` : 'profile');
 
-    const onChanged = (e) => {
-      const a = e.detail;
-      if (!a || a.kind === 'profile') setActiveActor('profile');
-      else setActiveActor(`vport:${a.id}`);
-    };
-    const onStorage = () => {
-      const k = localStorage.getItem('actor_kind');
-      const id = localStorage.getItem('actor_vport_id');
-      setActiveActor(k === 'vport' && id ? `vport:${id}` : 'profile');
-    };
-    window.addEventListener('actor:changed', onChanged);
-    window.addEventListener('storage', onStorage);
+    // subscribe to actor changes (covers same-tab & cross-tab)
+    const unsub = onActorChange((a) => {
+      setActiveActor(a?.kind === 'vport' ? `vport:${a.id}` : 'profile');
+    });
+
     return () => {
-      window.removeEventListener('actor:changed', onChanged);
-      window.removeEventListener('storage', onStorage);
+      alive = false;
+      try { unsub?.(); } catch {}
     };
   }, []);
 
@@ -67,14 +73,17 @@ export default function VportsTab() {
     setBusy(true);
     try {
       const meId = await getAuthedUserId();
-      if (db?.session?.setActor) {
-        await db.session.setActor({ kind: 'profile', id: meId });
-      }
-      localStorage.setItem('actor_kind', 'profile');
-      localStorage.removeItem('actor_vport_id');
+
+      // 1) legacy store (keeps upload/etc happy)
+      setProfileMode();
+
+      // 2) IdentityContext (keeps navbar/routing happy)
+      actAsUser();
+
       setActiveActor('profile');
-      broadcastActor({ kind: 'profile', id: meId });
-      navigate(`/inbox?actor=profile:${meId}&tab=notifications`);
+
+      // 👉 route to user inbox
+      navigate(`/notifications?actor=profile:${meId}`);
     } finally {
       setBusy(false);
     }
@@ -83,14 +92,16 @@ export default function VportsTab() {
   const switchToVport = async (v) => {
     setBusy(true);
     try {
-      if (db?.session?.setActor) {
-        await db.session.setActor({ kind: 'vport', id: v.id });
-      }
-      localStorage.setItem('actor_kind', 'vport');
-      localStorage.setItem('actor_vport_id', String(v.id));
+      // 1) legacy store
+      setVportMode(v.id);
+
+      // 2) IdentityContext
+      actAsVport(v.id); // v.id is vc.vports.id (uuid)
+
       setActiveActor(`vport:${v.id}`);
-      broadcastActor({ kind: 'vport', id: v.id });
-      navigate(`/inbox?actor=vport:${v.id}&tab=notifications`);
+
+      // 👉 route to vport inbox
+      navigate(`/vport/notifications?actor=vport:${v.id}`);
     } finally {
       setBusy(false);
     }
@@ -170,7 +181,9 @@ export default function VportsTab() {
                     />
                     <div className="min-w-0">
                       <div className="text-sm text-white truncate">{v.name}</div>
-                      <div className="text-[11px] text-white/50 truncate">VPORT</div>
+                      <div className="text-[11px] text-white/50 truncate">
+                       
+                      </div>
                     </div>
                   </div>
 
@@ -194,7 +207,7 @@ export default function VportsTab() {
         )}
       </Card>
 
-      {/* Modal: Create VPORT (uses CreateVportForm with no internal title) */}
+      {/* Modal: Create VPORT */}
       {showCreator && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
@@ -213,7 +226,16 @@ export default function VportsTab() {
               </button>
             </div>
             <div className="p-4">
-              <CreateVportForm />
+              <CreateVportForm
+                onCreated={() => {
+                  setBusy(true);
+                  listMyVports()
+                    .then(setItems)
+                    .catch((e) => console.error('refresh vports failed', e))
+                    .finally(() => setBusy(false));
+                  setShowCreator(false);
+                }}
+              />
             </div>
           </div>
         </div>

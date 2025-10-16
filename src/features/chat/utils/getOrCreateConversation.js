@@ -1,5 +1,6 @@
 // Thin wrappers around the centralized DAL. No Supabase calls here.
-import { chat } from '@/data/chat';
+import chat from "@/data/user/chat/chat.js";
+
 
 /**
  * Finds (or creates) a private 1:1 conversation and makes it visible to the authed user.

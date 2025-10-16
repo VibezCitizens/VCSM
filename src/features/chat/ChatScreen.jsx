@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import ChatHeader from '@/features/chat/components/ChatHeader';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';
-import { chat } from '@/data/chat';
+import chat from '@/data/user/chat/chat'; // default import
 
 // helpers
 const byCreatedAsc = (a, b) => new Date(a.created_at) - new Date(b.created_at);
@@ -16,7 +16,6 @@ const dedupeById = (arr) => {
 const applyCut = (arr, cut) =>
   cut ? arr.filter(m => new Date(m.created_at) > new Date(cut)) : arr;
 
-// sensible defaults; we’ll auto-measure anyway
 const DEFAULT_HEADER_H = 56;
 const DEFAULT_INPUT_H  = 84;
 
@@ -31,8 +30,8 @@ export default function ChatScreen() {
   const [conversationData, setConversationData] = useState(null);
   const [lastSeen, setLastSeen] = useState(null);
 
-  const bottomRef  = useRef(null);
-  const headerRef  = useRef(null);
+  const bottomRef    = useRef(null);
+  const headerRef    = useRef(null);
   const inputWrapRef = useRef(null);
 
   const [padTop, setPadTop] = useState(DEFAULT_HEADER_H);
@@ -42,7 +41,7 @@ export default function ChatScreen() {
     bottomRef.current?.scrollIntoView({ behavior, block: 'end' });
   }, []);
 
-  // auto-measure header & input heights so the scroll area never overlaps them
+  // auto-measure header & input heights
   useEffect(() => {
     const ro = new ResizeObserver(() => {
       setPadTop(headerRef.current?.offsetHeight ?? DEFAULT_HEADER_H);
@@ -53,7 +52,7 @@ export default function ChatScreen() {
     return () => ro.disconnect();
   }, []);
 
-  // initial load (header + history) + STAMP last_read_at
+  // initial load (header + history) + mark read
   useEffect(() => {
     let cancelled = false;
     if (!conversationId || !user?.id) return;
@@ -61,21 +60,24 @@ export default function ChatScreen() {
     (async () => {
       setLoading(true);
       setErrText(null);
+
+      const headerP = chat.getConversationHeader(conversationId).catch(() => null);
+      const msgsP = chat.listMessages(conversationId, { limit: 1000 });
+
       try {
-        const hdr = await chat.getConversationHeader(conversationId);
+        const [hdr, listRaw] = await Promise.all([headerP, msgsP]);
         if (cancelled) return;
-        setConversationData(hdr);
 
-        const cut = hdr.cleared_before || null;
-        let data = await chat.listMessages(conversationId, { limit: 1000 });
-        data = applyCut(data || [], cut).sort(byCreatedAsc);
+        setConversationData(hdr || null);
 
-        if (cancelled) return;
-        setMessages(data);
-        const latestAt = data.length ? data[data.length - 1].created_at : cut;
+        const cut = hdr?.cleared_before || null;
+        const list = applyCut(listRaw || [], cut).sort(byCreatedAsc);
+
+        setMessages(list);
+
+        const latestAt = list.length ? list[list.length - 1].created_at : cut;
         setLastSeen(latestAt);
 
-        // <<< stamp as read so unread badge clears >>>
         try { await chat.markConversationRead(conversationId); } catch {}
       } catch (e) {
         if (cancelled) return;
@@ -99,7 +101,7 @@ export default function ChatScreen() {
     };
   }, [conversationId, user?.id, scrollToBottom]);
 
-  // catch-up on focus/visibility (no realtime) + STAMP last_read_at
+  // catch-up on focus/visibility (no realtime) + mark read
   useEffect(() => {
     if (!conversationId || !user?.id) return;
 
@@ -113,7 +115,6 @@ export default function ChatScreen() {
         all = applyCut(all || [], cut).sort(byCreatedAsc);
         const newer = all.filter(m => new Date(m.created_at) > new Date(since));
         if (!newer.length) {
-          // still stamp read on refocus, so badge clears even if you had unread==0 locally
           try { await chat.markConversationRead(conversationId); } catch {}
           return;
         }
@@ -125,11 +126,9 @@ export default function ChatScreen() {
         });
 
         setTimeout(() => scrollToBottom('smooth'), 0);
-
-        // <<< re-stamp as read after consuming new messages >>>
         try { await chat.markConversationRead(conversationId); } catch {}
       } catch {
-        // best-effort
+        // non-fatal
       }
     };
 
@@ -142,12 +141,9 @@ export default function ChatScreen() {
     };
   }, [conversationId, user?.id, conversationData?.cleared_before, lastSeen, scrollToBottom]);
 
-  const handleUpdateHeader = useCallback((patch) => {
-    setConversationData(prev => ({ ...(prev || {}), ...(patch || {}) }));
-  }, []);
-
-  // optimistic send (no realtime)
   const handleOptimisticSend = useCallback((payload) => {
+    if (!user?.id || !conversationId) return;
+
     const tempId = `temp-${Date.now()}`;
     const nowIso = new Date().toISOString();
 
@@ -159,7 +155,7 @@ export default function ChatScreen() {
       actor_id: user.actor_id || null,
       content: payload.content ?? null,
       media_url: payload.media_url ?? null,
-      media_type: payload.media_type ?? null,
+      media_type: payload.media_type ?? 'text',
       created_at: nowIso,
       _temp: true,
     };
@@ -175,8 +171,6 @@ export default function ChatScreen() {
           return dedupeById(replaced).sort(byCreatedAsc);
         });
         setLastSeen(saved.created_at);
-
-        // sending implies I’ve seen the latest → stamp read
         try { await chat.markConversationRead(conversationId); } catch {}
       } catch {
         setMessages(prev => prev.filter(m => m.id !== tempId));
@@ -187,26 +181,15 @@ export default function ChatScreen() {
   if (!user) return null;
 
   return (
-    // lock viewport and prevent body scroll; only the messages list scrolls
     <div className="h-[100dvh] bg-black overflow-hidden">
-
-      {/* FIXED, CENTERED TOP BAR (matches pic #2) */}
+      {/* Fixed Header */}
       <div className="fixed inset-x-0 top-0 z-40 bg-black/90 backdrop-blur border-b border-neutral-800">
-        <div
-          ref={headerRef}
-          className="h-14 max-w-2xl mx-auto px-3 flex items-stretch"
-        >
-          <ChatHeader
-            conversationId={conversationId}
-            loading={loading}
-            error={errText}
-            conversationData={conversationData}
-            onUpdateHeader={handleUpdateHeader}
-          />
+        <div ref={headerRef} className="h-14 max-w-2xl mx-auto px-3 flex items-stretch">
+          <ChatHeader conversationId={conversationId} />
         </div>
       </div>
 
-      {/* SCROLLABLE MESSAGES AREA (centered to same column) */}
+      {/* Messages Area */}
       <div
         className="h-full overflow-y-auto"
         style={{
@@ -228,6 +211,11 @@ export default function ChatScreen() {
                 {errText}
               </div>
             )}
+            {messages.length === 0 && !errText && (
+              <div className="px-3 py-6 text-center text-white/60 text-sm">
+                No messages yet — say hi 👋
+              </div>
+            )}
             {messages.map(m => (
               <MessageItem key={m.id} message={m} currentUserId={user.id} />
             ))}
@@ -236,10 +224,9 @@ export default function ChatScreen() {
         )}
       </div>
 
-      {/* FIXED, CENTERED BOTTOM INPUT (wrapper measured for padding) */}
+      {/* Fixed Input */}
       <div ref={inputWrapRef} className="fixed inset-x-0 bottom-0 z-50">
         <div className="max-w-2xl mx-auto px-3">
-          {/* neutralize internal sticky by forcing static; wrapper is fixed */}
           <MessageInput
             conversationId={conversationId}
             onSend={handleOptimisticSend}
