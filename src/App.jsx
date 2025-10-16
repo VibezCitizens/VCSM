@@ -11,7 +11,7 @@ const ResetPasswordScreen = lazy(() => import('@/features/auth/screens/ResetPass
 const OnboardingScreen    = lazy(() => import('@/features/auth/screens/Onboarding'));
 
 /* App screens */
-const CentralFeed = lazy(() => import('@/features/feed/screens/centralfeed'));
+const CentralFeed         = lazy(() => import('@/features/feed/screens/CentralFeed.jsx'));
 
 const ExploreScreen       = lazy(() => import('@/features/explore/ExploreScreen'));
 const ConversationList    = lazy(() => import('@/features/chat/ConversationList')); // user inbox
