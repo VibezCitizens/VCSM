@@ -77,52 +77,47 @@ export default function ConversationListItem({
 
         setIsMuted(!!me.muted);
 
-        // 2) Detect mirrored VPORT messages only if parent didn't already tell us it's a VPORT
-        let shadowMsg = null, shErr = null;
+        // 2) VPORT PATH (actor-based): if latest message actor is VPORT, override partner to that VPORT.
+        // We override even if parent passed a user partner; we only skip if parent already says VPORT.
         if (!partnerProp || partnerProp?.type !== 'vport') {
-          const probe = await supabase
+          // latest message -> actor_id
+          const { data: latestMsg, error: latestErr } = await supabase
             .schema('vc')
             .from('messages')
-            .select('id, shadow_of_vpm')
+            .select('actor_id')
             .eq('conversation_id', conversationId)
-            .not('shadow_of_vpm', 'is', null)
             .order('created_at', { ascending: false })
             .limit(1)
             .maybeSingle();
-          shadowMsg = probe.data;
-          shErr = probe.error;
-        }
-
-        if (shErr) dlog('shadow probe error (non-fatal):', shErr);
-        dlog('shadow message probe:', shadowMsg);
-
-        // --- VPORT PATH ---
-        if (shadowMsg?.shadow_of_vpm && (!partnerProp || partnerProp?.type !== 'vport')) {
-          // find the VPORT from the mirrored vport_message
-          const { data: vm, error: vmErr } = await supabase
-            .schema('vc')
-            .from('vport_messages')
-            .select('id, conversation_id')
-            .eq('id', shadowMsg.shadow_of_vpm)
-            .maybeSingle();
 
           if (!alive) return;
+          if (latestErr) dlog('latest message actor probe error (non-fatal):', latestErr);
 
-          if (!vmErr && vm?.conversation_id) {
-            const { data: vc, error: vcErr } = await supabase
+          const actorId = latestMsg?.actor_id ?? null;
+          if (actorId) {
+            // STEP 1: get actor (kind, vport_id)
+            const { data: actorRow, error: actErr } = await supabase
               .schema('vc')
-              .from('vport_conversations')
-              .select('vport_id, vport:vports ( id, name, avatar_url )')
-              .eq('id', vm.conversation_id)
+              .from('actors')
+              .select('id, kind, vport_id')
+              .eq('id', actorId)
               .maybeSingle();
-
             if (!alive) return;
+            if (actErr) dlog('actor lookup error (non-fatal):', actErr);
 
-            dlog('vport convo join:', { vm, vc, vcErr });
+            if (actorRow?.kind === 'vport' && actorRow?.vport_id) {
+              // STEP 2: fetch the vport row (separate query = schema-safe)
+              const { data: v, error: vErr } = await supabase
+                .schema('vc')
+                .from('vports')
+                .select('id, name, avatar_url')
+                .eq('id', actorRow.vport_id)
+                .maybeSingle();
+              if (!alive) return;
+              if (vErr) dlog('vport lookup error (non-fatal):', vErr);
 
-            const v = vc?.vport;
-            if (v?.id) {
-              if (alive && !partnerProp) {
+              if (v?.id) {
+                // ✅ override even if parent gave us a user partner
                 setPartner({
                   type: 'vport',
                   id: v.id,
@@ -131,13 +126,10 @@ export default function ConversationListItem({
                 });
                 setLoading(false);
                 loadedOnceRef.current = true;
+                return; // done
               }
-              return;
             }
-          } else {
-            dlog('vport_messages lookup failed or not allowed', vmErr);
           }
-          // if any of that failed, fall through to user path
         }
 
         // --- USER PATH (fallback) ---

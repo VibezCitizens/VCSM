@@ -80,14 +80,14 @@ export default function PostReactionsPanel({ postId, initialKind = 'rose' }) {
       .rpc('post_reactors_summary_one', { post_id: postId });
     setSummary(s ?? []);
 
-    // list (per post, current tab)
+    // list (per post, current tab) — switch to per-post RPC
     const { data: l } = await supabase
       .schema('vc')
-      .rpc('post_reactors_list', {
-        post_id: postId,
-        kind: tab,
-        limit_i: PAGE + 1,
-        offset_i: 0,
+      .rpc('post_reactors_for_post', {
+        p_post_id: postId,
+        p_kind: tab,          // 'rose' | 'like' | 'dislike'
+        p_limit: PAGE + 1,
+        p_offset: 0,
       });
 
     const rows = Array.isArray(l) ? l : [];
@@ -107,11 +107,11 @@ export default function PostReactionsPanel({ postId, initialKind = 'rose' }) {
 
     const { data: l } = await supabase
       .schema('vc')
-      .rpc('post_reactors_list', {
-        post_id: postId,
-        kind: tab,
-        limit_i: PAGE + 1,
-        offset_i: offset,
+      .rpc('post_reactors_for_post', {
+        p_post_id: postId,
+        p_kind: tab,
+        p_limit: PAGE + 1,
+        p_offset: offset,
       });
 
     const rows = Array.isArray(l) ? l : [];
@@ -170,7 +170,7 @@ export default function PostReactionsPanel({ postId, initialKind = 'rose' }) {
         <>
           <ul className="divide-y divide-zinc-800 rounded-xl overflow-hidden bg-zinc-900/40">
             {list.map((r) => (
-              <li key={`${r.kind_out}-${r.profile_id}`} className="flex items-center gap-3 p-3">
+              <li key={r.profile_id} className="flex items-center gap-3 p-3">
                 <UserLink
                   user={{
                     id: r.profile_id,
@@ -187,7 +187,7 @@ export default function PostReactionsPanel({ postId, initialKind = 'rose' }) {
                 <div className="text-xs text-zinc-400 mr-2">
                   <span className="tabular-nums font-medium">{r.qty}</span>
                   {' '}
-                  {r.kind_out}{r.qty > 1 ? 's' : ''}
+                  {REACTIONS[tab].label}{r.qty > 1 ? 's' : ''}
                   {' • '}
                   {new Date(r.last_at).toLocaleString()}
                 </div>

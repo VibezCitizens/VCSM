@@ -5,15 +5,22 @@ import blocks from './user/blocks/blocks';
 import * as vport from './vport/vprofile/vport.js'; // VPORT profile CRUD (createVport, listMyVports, etc.)
 import * as voidData from './void/void';
 
-import * as comments from './user/post/comments';    // user/profile comments
-import * as reactions from './user/post/reactions';  // user/profile reactions (👍/👎)
-import * as roses from './user/post/roses';          // user/profile roses
+import * as comments from './user/post/comments';       // user/profile comments
+import * as reactions from './user/post/reactions';     // user/profile reactions (👍/👎)
+import * as roses from './user/post/roses';             // user/profile roses
+
+// ✅ NEW: user/profile comment-like API (❤️ on comments)
+import * as commentLikes from './user/post/commentLikes';
+
 import search from './user/search/search';
 
 // VPORT-scoped post modules
-import vpostReactions from './vport/vpost/reactions'; // default export
-import vpostComments  from './vport/vpost/comments';  // default export
-import vpostRoses     from './vport/vpost/roses';     // default export
+import vpostReactions from './vport/vpost/reactions';   // default export
+import vpostComments  from './vport/vpost/comments';    // default export
+import vpostRoses     from './vport/vpost/roses';       // default export
+
+// ✅ NEW: vport-scoped comment-like API (❤️ on comments acting as vport)
+import vpostCommentLikes from './vport/vpost/commentLikes'; // default export
 
 function freezeDeep(obj) {
   Object.freeze(obj);
@@ -30,17 +37,22 @@ export const db = freezeDeep({
   vport: {
     ...vport,             // vport profile CRUD (create/list/get/update)
     post: {
-      reactions: vpostReactions, // db.vport.post.reactions.setForPost/clearForPost/getMyReactionForPost/listForPost
-      comments : vpostComments,  // db.vport.post.comments.create/listTopLevel/remove/update
-      roses    : vpostRoses,     // db.vport.post.roses.give/count (give-only; cannot receive)
+      reactions: vpostReactions,     // db.vport.post.reactions.setForPost/clearForPost/...
+      comments : vpostComments,      // db.vport.post.comments.create/listTopLevel/...
+      roses    : vpostRoses,         // db.vport.post.roses.give/count
+      // ✅ NEW: like/unlike a COMMENT while acting as a VPORT
+      commentLikes: vpostCommentLikes // { likeComment({commentId,vportId}), unlikeComment({commentId,vportId}), isCommentLiked({commentId}) }
     },
   },
   void: { ...voidData },
 
   // User/profile-scoped post APIs
-  comments : { ...comments },
-  reactions: { ...reactions },
-  roses    : { ...roses },
+  comments     : { ...comments },
+  reactions    : { ...reactions },
+  roses        : { ...roses },
+
+  // ✅ NEW: like/unlike a COMMENT while acting as USER
+  commentLikes : { ...commentLikes }, // { likeComment({commentId}), unlikeComment({commentId}), isCommentLiked({commentId}) }
 
   search,
 });

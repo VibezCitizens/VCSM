@@ -84,8 +84,8 @@ export default function NotificationsScreen() {
             .eq('blocked_id', userId),
         ]);
       if (!active) return;
-      if (e1) console.error(e1);
-      if (e2) console.error(e2);
+      if (e1) console.error('[notifs] load myBlocks error', e1);
+      if (e2) console.error('[notifs] load blockedBy error', e2);
       iBlockedRef.current = new Set((myBlocks ?? []).map((r) => r.blocked_id));
       blockedMeRef.current = new Set(
         (blockedBy ?? []).map((r) => r.blocker_id)
@@ -116,7 +116,7 @@ export default function NotificationsScreen() {
       if (!userId) return [];
       let q = supabase
         .schema('vc')
-        .from('notifications_with_actor_v2')
+        .from('notifications_with_actor')
         .select('*')
         .eq('user_id', userId)
         .filter('context->>vport_id', 'is', null) // exclude VPort inbox
@@ -125,32 +125,68 @@ export default function NotificationsScreen() {
       if (before) q = q.lt('created_at', before);
 
       const { data, error } = await q;
-      if (error) throw error;
+
+      // 🔎 DEBUG: show a sample raw row from the view to verify emitted columns
+      if (!before && process.env.NODE_ENV !== 'production') {
+        console.debug('[notifs] view sample row', (data && data[0]) || null);
+      }
+
+      if (error) {
+        console.error('[notifs] fetch error', error);
+        throw error;
+      }
 
       const page = (data ?? []).map((n) => {
-  const context = ensureContext(n.context);
+        const context = ensureContext(n.context);
 
-  let sender = null;
-  if (n.actor_kind === 'vport' && n.actor_vport_id) {
-    sender = {
-      id: n.actor_vport_id,
-      display_name: n.actor_vport_name || 'VPORT',
-      username: n.actor_vport_slug || undefined,
-      photo_url: n.actor_vport_avatar_url || undefined,
-      type: 'vport',
-    };
-  } else if (n.actor_profile_id) {
-    sender = {
-      id: n.actor_profile_id,
-      display_name: n.actor_display_name,
-      username: n.actor_username,
-      photo_url: n.actor_photo_url,
-      type: 'user',
-    };
-  }
+        let sender = null;
 
-  return { ...n, sender, context };
-});
+        // ✅ Prefer vport purely by presence of actor_vport_id
+        if (n.actor_vport_id) {
+          sender = {
+            type: 'vport',
+            id: n.actor_vport_id,
+            display_name: n.actor_vport_name || 'VPORT',
+            slug: n.actor_vport_slug || undefined,
+            avatar_url: n.actor_vport_avatar_url || undefined,
+            photo_url: n.actor_vport_avatar_url || undefined,
+          };
+          // 🧪 DEBUG: log the mapping decision
+          if (process.env.NODE_ENV !== 'production') {
+            console.debug('[notifs] map sender=vport', {
+              id: n.id,
+              actor_vport_id: n.actor_vport_id,
+              name: sender.display_name,
+              slug: sender.slug,
+            });
+          }
+        } else if (n.actor_profile_id) {
+          sender = {
+            type: 'user',
+            id: n.actor_profile_id,
+            display_name: n.actor_display_name,
+            username: n.actor_username || undefined,
+            avatar_url: n.actor_photo_url || undefined,
+            photo_url: n.actor_photo_url || undefined,
+          };
+          // 🧪 DEBUG: log the mapping decision
+          if (process.env.NODE_ENV !== 'production') {
+            console.debug('[notifs] map sender=user', {
+              id: n.id,
+              actor_profile_id: n.actor_profile_id,
+              name: sender.display_name,
+              username: sender.username,
+            });
+          }
+        } else {
+          // 🧪 DEBUG: no actor attached (system/broadcast)
+          if (process.env.NODE_ENV !== 'production') {
+            console.debug('[notifs] map sender=none', { id: n.id, kind: n.kind });
+          }
+        }
+
+        return { ...n, sender, context };
+      });
 
       return filterByBlocks(page);
     },
@@ -171,6 +207,12 @@ export default function NotificationsScreen() {
         setRows(trimmed);
         setHasMore(page.length > PAGE_SIZE);
         setCursor(trimmed[trimmed.length - 1]?.created_at || null);
+
+        // 🧪 DEBUG
+        if (process.env.NODE_ENV !== 'production') {
+          console.debug('[notifs] loaded page size', page.length, 'trimmed', trimmed.length);
+        }
+
         window.dispatchEvent(new Event('noti:refresh'));
       } catch (e) {
         if (!cancel) setErr(e?.message || 'Failed to load notifications.');
@@ -204,9 +246,13 @@ export default function NotificationsScreen() {
       setRows((prev) =>
         prev.map((n) => (n.id === id ? { ...n, is_read: true, is_seen: true } : n))
       );
+      // 🧪 DEBUG
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('[notifs] markAsRead', id);
+      }
       window.dispatchEvent(new Event('noti:refresh'));
-    } catch {
-      // ignore
+    } catch (e) {
+      console.error('[notifs] markAsRead error', e);
     }
   }, []);
 
@@ -215,7 +261,8 @@ export default function NotificationsScreen() {
     try {
       const { error } = await supabase.schema('vc').rpc('noti_mark_all_seen');
       if (error) throw error;
-    } catch {
+    } catch (e) {
+      console.warn('[notifs] rpc(noti_mark_all_seen) fallback', e?.message || e);
       if (!userId) return;
       await supabase
         .schema('vc')
@@ -232,6 +279,11 @@ export default function NotificationsScreen() {
       setRows(trimmed);
       setHasMore(page.length > PAGE_SIZE);
       setCursor(trimmed[trimmed.length - 1]?.created_at || null);
+
+      // 🧪 DEBUG
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('[notifs] markAllSeen -> reload size', page.length);
+      }
     } catch {
       setRows((prev) => prev.map((n) => ({ ...n, is_seen: true })));
     }
@@ -249,6 +301,11 @@ export default function NotificationsScreen() {
       setRows((prev) => [...prev, ...trimmed]);
       setHasMore(page.length > PAGE_SIZE);
       setCursor(trimmed[trimmed.length - 1]?.created_at || null);
+
+      // 🧪 DEBUG
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('[notifs] loadMore page size', page.length, 'next cursor', cursor);
+      }
     } catch (e) {
       setErr(e?.message || 'Failed to load more.');
     } finally {
@@ -339,6 +396,12 @@ export default function NotificationsScreen() {
           (notif?.object_type === 'post' ? notif?.object_id : null);
         if (pid) path = `/noti/post/${encodeURIComponent(pid)}`;
       }
+
+      // 🧪 DEBUG
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('[notifs] open -> path', path);
+      }
+
       navigate(path || '/notifications');
     },
     [markAsRead, derivePath, navigate]

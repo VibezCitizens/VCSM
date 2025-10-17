@@ -7,14 +7,27 @@ import UserLink from '@/components/UserLink';
 import { db } from '@/data/data';
 import { supabase } from '@/lib/supabaseClient';
 
+// USER comment-like APIs
 import {
-  toggleCommentLike,
-  isCommentLikedByMe,
-  getCommentLikeCounts,
-} from '../lib/commentReactions';
+  isCommentLiked as isCommentLikedUser,
+  likeComment as likeCommentUser,
+  unlikeComment as unlikeCommentUser,
+} from '@/data/user/post/commentLikes';
+
+// VPORT comment-like APIs
+import {
+  isCommentLiked as isCommentLikedVport,
+  likeComment as likeCommentVport,
+  unlikeComment as unlikeCommentVport,
+} from '@/data/vport/vpost/commentLikes';
+
+// Aggregate count helper (unchanged, still single source of truth)
+import { getCommentLikeCounts } from '../lib/commentReactions';
 
 const DEV = import.meta?.env?.DEV;
-const logDebug = (...a) => { if (DEV) console.log('%c[CommentCard Debug]', 'color:#f97316', ...a); };
+const logDebug = (...a) => {
+  if (DEV) console.log('%c[CommentCard Debug]', 'color:#f97316', ...a);
+};
 
 export default function CommentCard({
   comment,
@@ -42,7 +55,7 @@ export default function CommentCard({
     return result;
   }, [comment?.as_vport, comment?.vport, comment?.actor_vport_id]);
 
-  // Viewer identity (user vs vport) — informative only; RPC resolves actor internally
+  // Viewer identity (user vs vport) — we’ll use it to pick which like/unlike path to call
   const viewerIsVport = useMemo(
     () => identity?.type === 'vport' && !!identity?.vportId,
     [identity?.type, identity?.vportId]
@@ -58,6 +71,7 @@ export default function CommentCard({
         name: v?.name || 'VPORT',
         avatar_url: v?.avatar_url || '/avatar.jpg',
         type: 'vport',
+        slug: v?.slug || undefined,
       };
       logDebug('Author Resolved as VPORT:', author.name, '(ID:', author.id, ')');
       return author;
@@ -102,32 +116,44 @@ export default function CommentCard({
     setEditText(comment?.content || '');
   }, [comment?.content]);
 
-  // Load replies and likes
+  // Load likes (count + whether the current identity liked it)
   const loadLikes = useCallback(async () => {
     let cancelled = false;
     try {
-      // Count (single source of truth)
+      // Count
       const counts = await getCommentLikeCounts([comment.id]).catch(() => new Map());
       const total = counts.get(comment.id) || 0;
 
       // Did current actor like it?
       let viewerLiked = false;
       if (currentUser?.id) {
-        viewerLiked = await isCommentLikedByMe(comment.id);
+        if (viewerIsVport) {
+          // viewer is a VPORT — check actor-aware liked
+          viewerLiked = await isCommentLikedVport({
+            commentId: comment.id,
+            vportId: identity?.vportId,
+          });
+          logDebug('isCommentLiked (VPORT)', { commentId: comment.id, vportId: identity?.vportId, viewerLiked });
+        } else {
+          // viewer is a normal user
+          viewerLiked = await isCommentLikedUser({ commentId: comment.id });
+          logDebug('isCommentLiked (USER)', { commentId: comment.id, viewerLiked });
+        }
       }
 
       if (!cancelled) {
         setLikeCount(total);
         setLiked(!!viewerLiked);
       }
-    } catch {
+    } catch (e) {
+      logDebug('loadLikes error:', e?.message || e);
       if (!cancelled) {
         setLikeCount(0);
         setLiked(false);
       }
     }
     return () => { cancelled = true; };
-  }, [comment.id, currentUser?.id]);
+  }, [comment.id, currentUser?.id, viewerIsVport, identity?.vportId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -136,8 +162,8 @@ export default function CommentCard({
       try {
         const data = await db.comments.listReplies(comment.id, currentUser?.id);
         if (!cancelled) setReplies(data || []);
-      } catch {
-        /* ignore */
+      } catch (e) {
+        logDebug('loadReplies error:', e?.message || e);
       }
     };
 
@@ -204,20 +230,32 @@ export default function CommentCard({
     }
   };
 
-  // Like toggle (single source of truth via RPC; no double-count)
+  // Like toggle using the correct path (user vs vport)
   const handleLike = async () => {
     if (!currentUser || likeBusy) return;
     setLikeBusy(true);
     try {
-      const res = await toggleCommentLike(comment.id);
-      logDebug('Like action complete. Result:', res);
-      if (!res?.found) {
-        alert('Comment not visible or no longer exists.');
-        return;
+      if (viewerIsVport) {
+        if (!identity?.vportId) throw new Error('Missing active vportId');
+        if (liked) {
+          await unlikeCommentVport({ commentId: comment.id, vportId: identity.vportId });
+          logDebug('UNLIKE (VPORT)', { commentId: comment.id, vportId: identity.vportId });
+        } else {
+          await likeCommentVport({ commentId: comment.id, vportId: identity.vportId });
+          logDebug('LIKE (VPORT)', { commentId: comment.id, vportId: identity.vportId });
+        }
+      } else {
+        if (liked) {
+          await unlikeCommentUser({ commentId: comment.id });
+          logDebug('UNLIKE (USER)', { commentId: comment.id });
+        } else {
+          await likeCommentUser({ commentId: comment.id });
+          logDebug('LIKE (USER)', { commentId: comment.id });
+        }
       }
-      // Trust RPC truth
-      setLiked(!!res.liked);
-      setLikeCount(Number(res.likeCount || 0));
+
+      // Re-fetch truth after action
+      await loadLikes();
     } catch (e) {
       alert(e?.message || 'Failed to like comment.');
     } finally {

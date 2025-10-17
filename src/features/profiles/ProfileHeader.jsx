@@ -14,6 +14,12 @@ import VisibleQRCode from '@/features/profiles/components/VisibleQRCode';
 import SocialActions from '@/features/profiles/components/SocialActions';
 import ProfileDots from '@/features/profiles/components/ProfileDots';
 import { useBlockStatus } from '@/features/profiles/hooks/useBlockStatus';
+import { useIdentity } from '@/state/identityContext';
+import { openChatWithUser, startVportConversation } from '@/features/chat/api/chatActions';
+
+// ===== DEBUG SWITCH ==========================================================
+const __DBG = true; // set to false to silence debug logs
+// ============================================================================
 
 export default function ProfileHeader({
   profile,
@@ -27,6 +33,7 @@ export default function ProfileHeader({
   const fileRef = useRef(null);
   const bannerRef = useRef(null);
   const { user } = useAuth();
+  const { identity } = useIdentity();
 
   const {
     id: profileId,
@@ -61,9 +68,9 @@ export default function ProfileHeader({
   const [initialSubscribed, setInitialSubscribed] = useState(undefined);
 
   // 🔎 DEV DEBUG: trace what we received
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV || __DBG) {
     // eslint-disable-next-line no-console
-    console.log('[Header] profile debug', {
+    console.debug('[ProfileHeader] profile debug', {
       profileId,
       username: profileUsername,
       kind: profileKind,
@@ -72,7 +79,6 @@ export default function ProfileHeader({
       initialSubCount,
       isOwnProfile,
     });
-    // expose a tiny handle for quick manual checks in console
     // eslint-disable-next-line no-underscore-dangle
     window.__dbgProfileHeader = { profile, profileId, isPrivate };
   }
@@ -222,10 +228,73 @@ export default function ProfileHeader({
       : `${base}/u/${profileUsername || profileId}`;
   }, [isVport, profileId, profileUsername]);
 
+  // Open chat handler (auto-selects VPORT or USER path) + DEBUG
+  const handleMessage = useCallback(async () => {
+    if (!profileId) return;
+
+    if (__DBG) {
+      // eslint-disable-next-line no-console
+      console.debug('[ProfileHeader] Message click', {
+        identityType: identity?.type,
+        vportId: identity?.vportId,
+        targetUserId: profileId,
+      });
+    }
+
+    let convId = await openChatWithUser({ identity, targetUserId: profileId });
+
+    if (!convId) {
+      toast.error('Could not open chat.');
+      if (__DBG) console.debug('[ProfileHeader] openChatWithUser returned null/undefined');
+      return;
+    }
+
+    if (__DBG) {
+      // eslint-disable-next-line no-console
+      console.debug('[ProfileHeader] openChatWithUser resolved', { convId });
+    }
+
+    // ✅ Ensure VPORT convo when identity is VPORT (self-heal)
+    if (identity?.type === 'vport' && identity?.vportId) {
+      try {
+        const { data } = await supabase
+          .schema('vc')
+          .from('conversations')
+          .select('id, pair_key')
+          .eq('id', convId)
+          .maybeSingle();
+
+        const isVportConv = !!data?.pair_key && String(data.pair_key).startsWith('vpc:');
+        if (__DBG) {
+          // eslint-disable-next-line no-console
+          console.debug('[ProfileHeader] pair_key check', {
+            convId,
+            pair_key: data?.pair_key,
+            isVportConv,
+          });
+        }
+
+        if (!isVportConv) {
+          // Wrong convo shape for VPORT — get/create proper VPORT→user conversation id.
+          const vConvId = await startVportConversation(identity.vportId, profileId);
+          if (vConvId) {
+            if (__DBG) console.debug('[ProfileHeader] corrected to VPORT convo', { vConvId });
+            convId = vConvId;
+          }
+        }
+      } catch (e) {
+        if (__DBG) console.debug('[ProfileHeader] pair_key lookup/correction failed', e);
+      }
+    }
+
+    // ✅ Navigate after possible correction
+    navigate(identity?.type === 'vport' ? `/vport/chat/${convId}` : `/chat/${convId}`);
+  }, [identity, profileId, navigate]);
+
   // DEV DEBUG: what are we sending down to SocialActions?
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV || __DBG) {
     // eslint-disable-next-line no-console
-    console.log('[Header -> SocialActions props]', {
+    console.debug('[Header -> SocialActions props]', {
       profileId,
       isOwnProfile,
       initialSubscribed,
@@ -357,7 +426,7 @@ export default function ProfileHeader({
 
               {/* Bottom-right social buttons */}
               {!isOwnProfile && !isVport && (
-                <div className="absolute bottom-4 right-4 md:bottom-5 md:right-5 z-20">
+                <div className="absolute bottom-4 right-4 md:bottom-5 md:right-5 z-20 flex items-center gap-2">
                   <SocialActions
                     profileId={profileId}
                     isOwnProfile={isOwnProfile}
@@ -368,7 +437,10 @@ export default function ProfileHeader({
                     profileIsPrivate={isPrivate}
                     /* If you had an acceptance callback, you could refresh counts here */
                     // onFollowRequestAccepted={() => fetchSubscriberCount()}
+                     onMessage={handleMessage}
                   />
+                  {/* NOTE: We removed the extra inline Message button to avoid duplicates.
+                      If you ever need a custom Message button here, add it back and call handleMessage. */}
                 </div>
               )}
             </div>

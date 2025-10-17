@@ -1,3 +1,4 @@
+// src/features/chat/ChatHeader.jsx
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, MoreHorizontal } from 'lucide-react';
@@ -17,7 +18,7 @@ export default function ChatHeader({
 
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
-  // { muted, archived_at, cleared_before, partner_user_id, partner }
+  // data = { muted, archived_at, cleared_before, partner_user_id, partner, partner_kind }
   const [data, setData] = React.useState(null);
   const [meId, setMeId] = React.useState(null);
 
@@ -42,7 +43,6 @@ export default function ChatHeader({
     return parts.length >= 2 ? [parts[0], parts[1]] : [null, null];
   };
 
-  // Existing: create my membership if missing and set partner_user_id
   const tryRepairMembership = React.useCallback(
     async (me) => {
       const convRes = await supabase
@@ -74,7 +74,6 @@ export default function ChatHeader({
     [conversationId]
   );
 
-  // NEW: if my membership exists but partner_user_id is null, fill it from pair_key
   const fillPartnerIfMissing = React.useCallback(
     async (me) => {
       const convRes = await supabase
@@ -105,6 +104,86 @@ export default function ChatHeader({
     [conversationId]
   );
 
+  // ---- NEW: resolve header partner prioritizing latest VPORT actor ----
+  async function resolveHeaderPartner(me, partnerUserId) {
+    // Prefer fast path via vc.inbox_entries.last_message_id
+    let lastMessageId = null;
+    const snap = await supabase
+      .schema('vc')
+      .from('inbox_entries')
+      .select('last_message_id')
+      .eq('conversation_id', conversationId)
+      .eq('user_id', me)
+      .maybeSingle();
+
+    if (!snap.error) lastMessageId = snap.data?.last_message_id ?? null;
+
+    // Fallback: directly get latest message if snapshot missing
+    if (!lastMessageId) {
+      const lastMsg = await supabase
+        .schema('vc')
+        .from('messages')
+        .select('id')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!lastMsg.error) lastMessageId = lastMsg.data?.id ?? null;
+    }
+
+    if (lastMessageId) {
+      // -> actor_id
+      const msg = await supabase
+        .schema('vc')
+        .from('messages')
+        .select('actor_id')
+        .eq('id', lastMessageId)
+        .maybeSingle();
+      if (!msg.error && msg.data?.actor_id) {
+        const act = await supabase
+          .schema('vc')
+          .from('actors')
+          .select('id, kind, vport_id')
+          .eq('id', msg.data.actor_id)
+          .maybeSingle();
+        if (!act.error && act.data?.kind === 'vport' && act.data?.vport_id) {
+          const v = await supabase
+            .schema('vc')
+            .from('vports')
+            .select('id, name, avatar_url')
+            .eq('id', act.data.vport_id)
+            .maybeSingle();
+          if (!v.error && v.data?.id) {
+            return {
+              partner: {
+                id: v.data.id,
+                display_name: (v.data.name || 'VPORT').trim(),
+                username: null,
+                email: null,
+                photo_url: v.data.avatar_url || '/img/avatar-fallback.png',
+              },
+              partner_kind: 'vport',
+            };
+          }
+        }
+      }
+    }
+
+    // USER fallback (what you had before)
+    if (partnerUserId) {
+      const pRes = await supabase
+        .from('profiles')
+        .select('id, display_name, username, email, photo_url')
+        .eq('id', partnerUserId)
+        .maybeSingle();
+      if (!pRes.error && pRes.data) {
+        return { partner: pRes.data, partner_kind: 'user' };
+      }
+    }
+
+    return { partner: null, partner_kind: null };
+  }
+
   const load = React.useCallback(async () => {
     if (!conversationId) return;
     setLoading(true);
@@ -126,7 +205,7 @@ export default function ChatHeader({
         .maybeSingle();
       if (memRes.error) throw memRes.error;
 
-      // 2) if no row, repair (create my membership + partner id)
+      // 2) repair if needed
       if (!memRes.data) {
         const repaired = await tryRepairMembership(me);
         if (repaired) {
@@ -141,7 +220,7 @@ export default function ChatHeader({
         }
       }
 
-      // 3) if row exists but partner_user_id is null, fill it now
+      // 3) fill partner_user_id from pair_key if null
       if (memRes.data && !memRes.data.partner_user_id) {
         const filled = await fillPartnerIfMissing(me);
         if (filled) memRes = { data: filled, error: null };
@@ -149,19 +228,14 @@ export default function ChatHeader({
 
       if (!memRes.data) throw new Error('Conversation not found or no access');
 
-      // 4) fetch partner profile
-      let partner = null;
-      if (memRes.data.partner_user_id) {
-        const pRes = await supabase
-          .from('profiles')
-          .select('id, display_name, username, email, photo_url')
-          .eq('id', memRes.data.partner_user_id)
-          .maybeSingle();
-        if (pRes.error) throw pRes.error;
-        partner = pRes.data ?? null;
-      }
+      // 4) *** Resolve header partner, prioritizing VPORT based on latest actor ***
+      const resolved = await resolveHeaderPartner(me, memRes.data.partner_user_id);
 
-      setData({ ...memRes.data, partner });
+      setData({
+        ...memRes.data,
+        partner: resolved.partner,
+        partner_kind: resolved.partner_kind, // 'vport' | 'user' | null
+      });
     } catch (e) {
       setErr(e);
       setData(null);
@@ -233,7 +307,6 @@ export default function ChatHeader({
     }
   };
 
-  // ---- UI bits ----
   React.useEffect(() => {
     if (!reportOpen) return;
     const prev = document.body.style.overflow;
@@ -242,18 +315,27 @@ export default function ChatHeader({
   }, [reportOpen]);
 
   const p = data?.partner;
+  const partnerKind = data?.partner_kind; // 'vport' | 'user' | null
   const avatarSrc = p?.photo_url || '/img/avatar-fallback.png';
 
-  // Trim display_name (e.g., "Karlota ")
+  // Prefer title prop; else vport/user name
   const primaryDisplayName = p?.display_name ? p.display_name.trim() : null;
-
-  // Never show “Loading…”. Use 'Chat' until partner arrives.
-  const primary = title ?? primaryDisplayName ?? p?.username ?? p?.email ?? 'Chat';
+  const primary =
+    title ??
+    primaryDisplayName ??
+    p?.username ??
+    p?.email ??
+    'Chat';
 
   let secondary = '';
   if (!subtitle && p) {
-    const handle = p.username ? `@${p.username}` : (p.email || '');
-    if (handle && handle !== primary) secondary = handle;
+    if (partnerKind === 'vport') {
+      // Keep subtitle empty or a tag for VPORT
+      secondary = 'VPORT';
+    } else {
+      const handle = p.username ? `@${p.username}` : (p.email || '');
+      if (handle && handle !== primary) secondary = handle;
+    }
   } else if (subtitle) {
     secondary = subtitle;
   }
@@ -261,9 +343,7 @@ export default function ChatHeader({
   return (
     <>
       <div className={['sticky top-0 z-10 bg-black/80 backdrop-blur border-b border-neutral-800', className].join(' ')}>
-        {/* row: left content (back+avatar+title) | right menu */}
         <div className="w-full h-12 flex items-center justify-between px-3 gap-3">
-          {/* LEFT: back + avatar + titles */}
           <div className="flex items-center gap-3 min-w-0">
             {showBack && (
               <button
@@ -282,17 +362,18 @@ export default function ChatHeader({
               draggable={false}
             />
 
-            {/* Title column */}
             <div className="min-w-0">
-              {/* Name (left) + dots/badges (right) */}
               <div className="flex items-center">
                 <span className="truncate font-semibold text-white flex-1">
                   {primary}
                 </span>
-
-                {/* right-side dots + badges */}
                 <div className="ml-2 flex items-center gap-1 shrink-0">
                   {loading && !p && <span className="text-[11px] text-white/60">• • •</span>}
+                  {partnerKind === 'vport' && (
+                    <span className="text-[10px] px-1 py-0.5 rounded bg-purple-600/20 text-purple-200 border border-purple-700/40">
+                      VPORT
+                    </span>
+                  )}
                   {data?.muted && (
                     <span className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-800 text-white/70">
                       Muted
@@ -318,7 +399,6 @@ export default function ChatHeader({
             </div>
           </div>
 
-          {/* RIGHT: menu pinned to the far right */}
           <HeaderMenu
             partner={p}
             muted={!!data?.muted}

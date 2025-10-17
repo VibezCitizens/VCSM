@@ -8,12 +8,12 @@ import { Link } from 'react-router-dom';
  *
  * Props:
  * - user: record from profiles or vports caches
- * - authorType?: 'user' | 'vport'   // OPTIONAL; inferred if omitted
+ * - authorType?: 'user' | 'vport'   // OPTIONAL; if provided, we treat it as authoritative
  * - avatarSize, avatarShape, textSize, showUsername, showTimestamp, timestamp, className, toOverride
  */
 export default function UserLink({
   user,
-  authorType,               // optional; we will infer if not provided
+  authorType,               // optional; if provided, overrides inference
   avatarSize = 'w-8 h-8',
   avatarShape = 'rounded-none',
   textSize = 'text-sm',
@@ -40,17 +40,17 @@ export default function UserLink({
   }
 
   // ---------- infer or trust authorType ----------
-  const inferredIsVport =
-    authorType === 'vport' ||
-    (!authorType &&
-      (
-        has(user, 'name') ||                                    // vport has name
-        (has(user, 'avatar_url') && !has(user, 'photo_url')) || // vport avatar key
-        (typeof user?.type === 'string' && user.type.toLowerCase().includes('vport'))
-      )
-    );
-
-  const isVport = !!inferredIsVport;
+  // If caller passes authorType, treat as authoritative to avoid misclassification.
+  const isVport =
+    authorType === 'vport'
+      ? true
+      : authorType === 'user'
+      ? false
+      : (
+          has(user, 'name') ||                                 // typical vport shape
+          has(user, 'slug') || has(user, 'vport_slug') ||      // vport has slug
+          (typeof user?.type === 'string' && user.type.toLowerCase().includes('vport'))
+        );
 
   // ---------- normalize shape ----------
   const norm = isVport
@@ -59,7 +59,7 @@ export default function UserLink({
         displayName: firstNonEmpty([user?.name, user?.display_name, 'VPORT']),
         username: null,
         avatarUrl: firstNonEmpty([user?.avatar_url, user?.photo_url, '/avatar.jpg']),
-        slug: user?.slug,
+        slug: firstNonEmpty([user?.slug, user?.vport_slug]),
       }
     : {
         id: firstNonEmpty([user?.id, user?.user_id]),
@@ -74,6 +74,7 @@ export default function UserLink({
   if (toOverride) {
     to = toOverride;
   } else if (isVport) {
+    // If your app prefers /v/:slug, change the first branch below to `/v/${safe(norm.slug)}`
     to = norm?.slug
       ? `/vport/slug/${safe(norm.slug)}`
       : (norm.id ? `/vport/${safe(norm.id)}` : '/vports');

@@ -26,6 +26,7 @@ async function getMeId() {
 
 /**
  * Ensure there is a vc.actors row for this user (kind='user') and return its id.
+ * Assumes vc.actors(profile_id, kind) with kind in ('user','vport').
  */
 async function ensureUserActorId(userId) {
   // Try existing
@@ -51,6 +52,37 @@ async function ensureUserActorId(userId) {
     .single();
 
   if (insErr) throw new Error(`ensureUserActorId failed: ${insErr.message}`);
+  return inserted.id;
+}
+
+/**
+ * Ensure there is a vc.actors row for this VPORT (kind='vport') and return its id.
+ * We store vportId in actors.profile_id with kind='vport'.
+ */
+async function ensureVportActorId(vportId) {
+  if (!vportId) throw new Error("ensureVportActorId: missing vportId");
+
+  const { data: existing, error: selErr } = await supabase
+    .schema("vc")
+    .from("actors")
+    .select("id")
+    .eq("profile_id", vportId)
+    .eq("kind", "vport")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (selErr) throw selErr;
+  if (existing?.id) return existing.id;
+
+  const { data: inserted, error: insErr } = await supabase
+    .schema("vc")
+    .from("actors")
+    .insert([{ profile_id: vportId, kind: "vport" }])
+    .select("id")
+    .single();
+
+  if (insErr) throw new Error(`ensureVportActorId failed: ${insErr.message}`);
   return inserted.id;
 }
 
@@ -179,6 +211,10 @@ export async function addMembers(conversationId, userIds = []) {
   return assertOk({ data, error, hint: "addMembers failed" });
 }
 
+/**
+ * USER-actor message (current behavior).
+ * Keeps sender_user_id populated with the authed user and actor_id -> user actor.
+ */
 export async function addMessage(
   conversationId,
   senderId,
@@ -208,6 +244,43 @@ export async function addMessage(
     .single();
 
   return assertOk({ data: message, error, hint: "addMessage failed" });
+}
+
+/**
+ * VPORT-actor message (NEW).
+ * - actor_id points to the vport actor (kind='vport', profile_id=vportId)
+ * - sender_user_id remains the authed user for audit (can be null if your schema allows)
+ */
+export async function addVportMessage(
+  conversationId,
+  vportId,
+  { content, media_url = null, media_type = "text", media_mime = null }
+) {
+  if (!vportId) throw new Error("addVportMessage: missing vportId");
+  const meId = await getMeId();
+  const vportActorId = await ensureVportActorId(vportId);
+
+  const { data: message, error } = await supabase
+    .schema("vc")
+    .from("messages")
+    .insert([
+      {
+        conversation_id: conversationId,
+        sender_id: meId,            // keep audit user if your schema requires non-null
+        sender_user_id: meId,       // set to null if allowed and you prefer pure-actor records
+        actor_id: vportActorId,     // <-- drives rendering as VPORT
+        content,
+        media_url,
+        media_type,
+        media_mime,
+      },
+    ])
+    .select(
+      "id, conversation_id, sender_id, sender_user_id, actor_id, content, media_url, media_type, created_at"
+    )
+    .single();
+
+  return assertOk({ data: message, error, hint: "addVportMessage failed" });
 }
 
 export async function markConversationRead(conversationId) {
@@ -277,6 +350,14 @@ export async function sendMessage(conversationId, payload) {
   return addMessage(conversationId, meId, payload);
 }
 
+/**
+ * NEW: send a message AS a VPORT actor.
+ * Call this from your /vport/chat/:id composer.
+ */
+export async function sendVportMessage(conversationId, vportId, payload) {
+  return addVportMessage(conversationId, vportId, payload);
+}
+
 export async function getOrCreateDirectVisible(
   otherUserId,
   { restoreHistory = false } = {}
@@ -335,6 +416,7 @@ const chat = {
   addMyMembership,            // client-safe helper
   addMembers,                 // kept for server-side/backwards compat
   addMessage,
+  addVportMessage,            // <-- NEW
   markConversationRead,
   getOrCreatePrivateConversation,
   sendPrivateMessage: async (userIdA, userIdB, authorId, payload) => {
@@ -343,6 +425,7 @@ const chat = {
     return { conversation: conv, message: msg };
   },
   sendMessage,
+  sendVportMessage,           // <-- NEW
   getOrCreateDirectVisible,
   startVportConversation,
 };

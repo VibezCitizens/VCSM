@@ -46,7 +46,19 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
   const [seenLocal, setSeenLocal] = useState(false);
 
   // Prefer the hydrated sender from the VIEW (can be user OR vport)
-  const preloadedSender = notif?.sender || null; // { type: 'user'|'vport', ... }
+  let preloadedSender = notif?.sender || null; // { type: 'user'|'vport', ... }
+
+  // 🔧 Defensive: if sender is missing type but notif has actor_vport_id, treat as vport
+  if (!preloadedSender && notif?.actor_vport_id) {
+    preloadedSender = {
+      type: 'vport',
+      id: notif.actor_vport_id,
+      display_name: notif.actor_vport_name || 'VPORT',
+      slug: notif.actor_vport_slug || null,
+      avatar_url: notif.actor_vport_avatar_url || '/avatar.jpg',
+      photo_url: notif.actor_vport_avatar_url || '/avatar.jpg',
+    };
+  }
 
   // If we didn't get a sender (older rows / fallback), try to resolve a user profile
   // only in the user case. Vports don't use this hook.
@@ -66,23 +78,16 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
     if (preloadedSender?.type === 'vport') {
       return {
         id: preloadedSender.id,
-        display_name:
-          preloadedSender.display_name ||
-          preloadedSender.name ||
-          'VPORT',
-        username: preloadedSender.slug || null, // lets UserLink build /v/:slug
-        slug: preloadedSender.slug || null,
-        avatar_url:
-          preloadedSender.avatar_url ||
-          preloadedSender.photo_url ||
-          '/avatar.jpg',
-        photo_url:
-          preloadedSender.photo_url ||
-          preloadedSender.avatar_url ||
-          '/avatar.jpg',
+        display_name: preloadedSender.display_name || preloadedSender.name || 'VPORT',
+        // Keep both slug + username fields for compatibility; UserLink prefers slug for vports.
+        slug: preloadedSender.slug || preloadedSender.vport_slug || null,
+        username: null,
+        avatar_url: preloadedSender.avatar_url || preloadedSender.photo_url || '/avatar.jpg',
+        photo_url: preloadedSender.photo_url || preloadedSender.avatar_url || '/avatar.jpg',
         type: 'vport',
       };
     }
+
     if (preloadedSender?.type === 'user') {
       return {
         id: preloadedSender.id,
@@ -93,6 +98,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         type: 'user',
       };
     }
+
     // Fallback from fetched user profile
     if (fetchedSender) {
       return {
@@ -206,7 +212,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
 
     const goToRequesterProfile = () => {
       if (sender?.type === 'vport') {
-        if (sender?.slug) navigate(`/v/${sender.slug}`);
+        if (sender?.slug) navigate(`/vport/slug/${sender.slug}`);
         else navigate(`/vport/${sender.id}`);
       } else if (sender?.username) {
         navigate(`/u/${sender.username}`);
@@ -318,7 +324,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
     const goToProfile = async () => {
       await markRead();
       if (sender?.type === 'vport') {
-        if (sender?.slug) navigate(`/v/${sender.slug}`);
+        if (sender?.slug) navigate(`/vport/slug/${sender.slug}`);
         else navigate(`/vport/${sender.id}`);
       } else if (sender?.username) {
         navigate(`/u/${sender.username}`);

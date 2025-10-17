@@ -1,45 +1,65 @@
 // src/utils/conversations.js
-import { supabase } from '@/lib/supabaseClient';
+// DEPRECATED: this file used to create conversations directly in public.conversations.
+// Now it delegates to the centralized chat DAL to ensure correct behavior for
+// both USER and VPORT modes, without changing existing call sites.
+//
+// Usage (legacy, unchanged):
+//   const id = await getOrCreatePrivateConversation(currentUserId, targetUserId);
+//
+// Optional VPORT support (new, backward-compatible):
+//   const id = await getOrCreatePrivateConversation(currentUserId, targetUserId, { vportId });
+//
+// You can also pass { restoreHistory: true } to un-clear local history on open.
+
+import chat from "@/data/user/chat/chat.js";
 
 /**
- * Get or create a private conversation between two users.
- * Returns conversation id.
+ * Get or create a private conversation.
+ * - If options.vportId is provided -> ensures a VPORT-to-user conversation and returns its id.
+ * - Otherwise -> ensures a user-to-user conversation is visible to the authed user and returns its id.
+ *
+ * @param {string} userId          // kept for backward compat (not required by DAL)
+ * @param {string} targetUserId
+ * @param {{ vportId?: string, restoreHistory?: boolean }} [options]
+ * @returns {Promise<string|null>}
  */
-export async function getOrCreatePrivateConversation(userId, targetUserId) {
-  if (!userId || !targetUserId) return null;
+export async function getOrCreatePrivateConversation(userId, targetUserId, options = {}) {
+  const { vportId = null, restoreHistory = false } = options || {};
+  try {
+    if (!targetUserId) return null;
 
-  // Check if conversation exists
-  const { data: existing, error: fetchError } = await supabase
-    .from('conversations')
-    .select('id')
-    .eq('is_group', false)
-    .contains('member_ids', [userId, targetUserId])
-    .maybeSingle();
+    // VPORT mode: start/ensure vport conversation path (pairs with /vport/chat/:id screens)
+    if (vportId) {
+      const convId = await chat.startVportConversation(vportId, targetUserId);
+      return convId || null;
+    }
 
-  if (fetchError) {
-    console.error('Error fetching conversation:', fetchError);
+    // USER mode: make the DM visible and stamp partner_user_id
+    const conv = await chat.getOrCreateDirectVisible(targetUserId, { restoreHistory });
+    return conv?.id || null;
+  } catch (err) {
+    console.error("[utils/conversations] getOrCreatePrivateConversation failed:", err);
     return null;
   }
+}
 
-  if (existing) return existing.id;
-
-  // Create new conversation
-  const { data: inserted, error: insertError } = await supabase
-    .from('conversations')
-    .insert([
-      {
-        is_group: false,
-        member_ids: [userId, targetUserId],
-        created_at: new Date().toISOString(),
-      },
-    ])
-    .select('id')
-    .single();
-
-  if (insertError) {
-    console.error('Error creating conversation:', insertError);
+/* Optional convenience exports if you want explicit calls elsewhere */
+export async function openUserDm(targetUserId, { restoreHistory = false } = {}) {
+  try {
+    const conv = await chat.getOrCreateDirectVisible(targetUserId, { restoreHistory });
+    return conv?.id || null;
+  } catch (err) {
+    console.error("[utils/conversations] openUserDm failed:", err);
     return null;
   }
+}
 
-  return inserted.id;
+export async function openVportDm(vportId, targetUserId) {
+  try {
+    if (!vportId) throw new Error("openVportDm: missing vportId");
+    return await chat.startVportConversation(vportId, targetUserId);
+  } catch (err) {
+    console.error("[utils/conversations] openVportDm failed:", err);
+    return null;
+  }
 }

@@ -12,6 +12,7 @@ export default function SocialActions({
   onSubscribeToggle,
   onFollowToggle,
   profileIsPrivate = false,
+  onMessage, // ✅ NEW (optional) VPORT-aware opener from parent
 }) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -26,7 +27,14 @@ export default function SocialActions({
     setBusy(true);
     const dismiss = toast.loading('Opening chat…');
     try {
-      // Lazy import keeps profile bundle small
+      // ✅ If parent provided a custom message handler, use it.
+      if (typeof onMessage === 'function') {
+        await onMessage();
+        toast.dismiss(dismiss);
+        return;
+      }
+
+      // Fallback: existing user→user DM flow
       const { getOrCreateDirectVisible } = await import('@/data/user/chat/chat');
 
       // Ensures convo exists, unarchives my row, sets partner_user_id
@@ -43,7 +51,7 @@ export default function SocialActions({
     } finally {
       setBusy(false);
     }
-  }, [profileId, navigate, busy]);
+  }, [profileId, navigate, busy, onMessage]); // ✅ include onMessage
 
   const handleToggle = useCallback(
     (now) => {

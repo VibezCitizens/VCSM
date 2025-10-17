@@ -30,59 +30,124 @@ export default function NotiViewPostScreen() {
     (async () => {
       setLoading(true);
 
-      // vc.posts only
-      const p = await supabase
+      // 1) Load the post (include actor_id so we can resolve vport vs user)
+      const { data: postRow, error: postErr } = await supabase
         .schema('vc')
         .from('posts')
-        .select('id, created_at, user_id, media_type, title, text, media_url')
+        .select('id, created_at, user_id, actor_id, media_type, title, text, media_url')
         .eq('id', postId)
         .maybeSingle();
 
-      let normalized = null;
-
-      if (p.data && !p.error) {
-        const row = p.data;
-
-        const rawTitle = (row.title || '').trim();
-        const rawBody  = (row.text  || '').trim();
-
-        const title = rawTitle || null;
-        // show body only if it's non-empty AND not identical to title
-        const body  = rawBody && rawBody !== rawTitle ? rawBody : null;
-
-        normalized = {
-          id: row.id,
-          created_at: row.created_at,
-          type: 'user',
-          authorId: row.user_id,
-          media_type: row.media_type || null,
-          title,
-          text: body,
-          media_url: row.media_url || null,
-          source: 'vc.posts',
-          raw: row,
-        };
-      }
-
-      if (!normalized) {
+      if (postErr || !postRow) {
         if (!cancelled) setLoading(false);
         return;
       }
 
-      // author
-      const { data: authorData } = await supabase
-        .from('profiles')
-        .select('id, username, display_name, photo_url, private')
-        .eq('id', normalized.authorId)
-        .maybeSingle();
+      // Normalize title/body exactly like before
+      const rawTitle = (postRow.title || '').trim();
+      const rawBody  = (postRow.text  || '').trim();
+      const title    = rawTitle || null;
+      const body     = rawBody && rawBody !== rawTitle ? rawBody : null;
+
+      // 2) Resolve actor (vport or user)
+      let authorType = 'user';
+      let authorObj  = null;
+
+      if (postRow.actor_id) {
+        const { data: actor, error: actorErr } = await supabase
+          .schema('vc')
+          .from('actors')
+          .select('id, profile_id, vport_id')
+          .eq('id', postRow.actor_id)
+          .maybeSingle();
+
+        if (!actorErr && actor) {
+          if (actor.vport_id) {
+            // vport author
+            const { data: vport } = await supabase
+              .schema('vc')
+              .from('vports')
+              .select('id, name, slug, avatar_url, is_active')
+              .eq('id', actor.vport_id)
+              .maybeSingle();
+
+            authorType = 'vport';
+            authorObj = vport
+              ? {
+                  id: vport.id,
+                  name: vport.name || 'VPORT',
+                  display_name: vport.name || 'VPORT',
+                  slug: vport.slug || null,
+                  avatar_url: vport.avatar_url || '/avatar.jpg',
+                  type: 'vport',
+                }
+              : {
+                  id: actor.vport_id,
+                  name: 'VPORT',
+                  display_name: 'VPORT',
+                  slug: null,
+                  avatar_url: '/avatar.jpg',
+                  type: 'vport',
+                };
+          } else {
+            // user author (fallback to profiles by user_id; same as before)
+            const userId = postRow.user_id || actor.profile_id || null;
+            if (userId) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('id, username, display_name, photo_url, private')
+                .eq('id', userId)
+                .maybeSingle();
+
+              if (profile) {
+                authorObj = profile;
+                authorType = 'user';
+              }
+            }
+          }
+        }
+      }
+
+      // Fallback: if actor lookup failed for any reason, keep the old user path
+      if (!authorObj && postRow.user_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, photo_url, private')
+          .eq('id', postRow.user_id)
+          .maybeSingle();
+
+        if (profile) {
+          authorObj = profile;
+          authorType = 'user';
+        }
+      }
+
+      // 3) Build the same post shape you already use, but with vport-aware authorType/authorId
+      const normalized = {
+        id: postRow.id,
+        created_at: postRow.created_at,
+        type: authorType,                                        // 'user' or 'vport'
+        authorId:
+          authorType === 'vport'
+            ? (authorObj?.id || null)
+            : postRow.user_id,                                   // keep the same field you relied on
+        media_type: postRow.media_type || null,
+        title,
+        text: body,
+        media_url: postRow.media_url || null,
+        source: 'vc.posts',
+        raw: postRow,
+      };
 
       if (cancelled) return;
       setPost(normalized);
-      setAuthor(authorData ?? null);
+      setAuthor(authorObj ?? null);
       setLoading(false);
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [postId, navigate]);
 
   if (loading) {
@@ -107,8 +172,8 @@ export default function NotiViewPostScreen() {
 
       <PostCard
         post={post}
-        user={author}
-        authorType={post.type}
+        user={author}               // user profile OR vport record (UserLink handles both)
+        authorType={post.type}      // 'user' | 'vport'
         showComments
         commentHighlightId={commentId}
       />

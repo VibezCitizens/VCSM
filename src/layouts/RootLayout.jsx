@@ -6,13 +6,19 @@ import PageContainer from '@/ui/components/PageContainer'
 
 export default function RootLayout() {
   const { pathname } = useLocation()
-  const isChat = pathname.startsWith('/chat/')
+
+  // Hide chrome only on ChatScreen (thread), not on conversation list
+  // Matches /chat/:id or /vport/chat/:id
+  const isChatScreen = /^\/(vport\/)?chat\/[^/]+$/.test(pathname)
+
   const hideChrome =
-    isChat ||
+    isChatScreen ||
     ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
 
   // shell does NOT scroll; child screens handle their own scrolling
-  const mainClass = hideChrome ? 'flex-1 overflow-hidden' : 'flex-1 pt-12 pb-[64px] overflow-hidden'
+  const mainClass = hideChrome 
+    ? 'flex-1 overflow-hidden' 
+    : 'flex-1 pt-12 pb-[64px] overflow-hidden'
 
   return (
     <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">

@@ -11,6 +11,30 @@ function LoginScreen() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // --- NEW: one-time discoverable flip after successful login
+  const markDiscoverableIfNeeded = async (authUserId) => {
+    if (!authUserId) return;
+
+    // 1) Quick read to avoid unnecessary updates
+    const { data: profile, error: readErr } = await supabase
+      .from('profiles')
+      .select('id, discoverable')
+      .eq('id', authUserId)
+      .single();
+
+    if (readErr || !profile) return; // silently skip on read issues
+
+    if (profile.discoverable === false) {
+      // 2) One-time update guarded by WHERE discoverable=false
+      await supabase
+        .from('profiles')
+        .update({ discoverable: true, updated_at: new Date().toISOString() })
+        .eq('id', authUserId)
+        .eq('discoverable', false);
+    }
+  };
+  // --- END NEW
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -26,8 +50,11 @@ function LoginScreen() {
       });
 
       console.log('[Login] result', data, error);
-
       if (error) throw error;
+
+      // NEW: flip discoverable only if currently false (one-time)
+      const authUserId = data?.user?.id;
+      await markDiscoverableIfNeeded(authUserId);
 
       const from = location.state?.from?.pathname;
       const dest =
@@ -102,4 +129,3 @@ function LoginScreen() {
 }
 
 export default LoginScreen;
-

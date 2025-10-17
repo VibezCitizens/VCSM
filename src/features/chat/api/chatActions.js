@@ -1,7 +1,7 @@
-// Thin wrappers around the centralized DAL (src/data/user/chat/chat.js).
-// ❌ No direct Supabase calls here.
-
+// src/features/chat/api/chatActions.js
 import chat from "@/data/user/chat/chat.js";
+
+const __DBG = true;
 
 /** Finds (or creates) a private 1:1 conversation and returns its id. */
 export async function getOrCreatePrivateConversation(userIdA, userIdB) {
@@ -18,6 +18,7 @@ export async function getOrCreatePrivateConversation(userIdA, userIdB) {
 export async function startVportConversation(vportId, receiverUserId) {
   try {
     const convId = await chat.startVportConversation(vportId, receiverUserId);
+    if (__DBG) console.debug("[chatActions.startVportConversation] →", { vportId, receiverUserId, convId });
     return convId || null;
   } catch (err) {
     console.error("startVportConversation failed:", err);
@@ -25,23 +26,18 @@ export async function startVportConversation(vportId, receiverUserId) {
   }
 }
 
-/**
- * Make a DM visible to the authed user, stamping partner_user_id.
- * NOTE: This returns the DAL's full object (e.g., { id, members }).
- * Some callers expect just the id; use getOrCreateConversationId() below for that.
- */
+/** Returns DAL object (use the Id variant for buttons). */
 export async function getOrCreateConversation(otherUserId, { restoreHistory = false } = {}) {
   return chat.getOrCreateDirectVisible(otherUserId, { restoreHistory });
 }
 
-/**
- * Convenience: same as getOrCreateConversation but normalized to return only the id (or null).
- * Safe for button handlers that only need to navigate.
- */
+/** Always returns just the conversation id (or null). */
 export async function getOrCreateConversationId(otherUserId, { restoreHistory = false } = {}) {
   try {
     const conv = await chat.getOrCreateDirectVisible(otherUserId, { restoreHistory });
-    return conv?.id || null;
+    const id = conv?.id || null;
+    if (__DBG) console.debug("[chatActions.getOrCreateConversationId] →", { otherUserId, id });
+    return id;
   } catch (err) {
     console.error("getOrCreateConversationId failed:", err);
     return null;
@@ -49,20 +45,25 @@ export async function getOrCreateConversationId(otherUserId, { restoreHistory = 
 }
 
 /**
- * Single entrypoint for "Message" buttons. Picks the right path based on identity.
- * - If identity.type === 'vport' → ensures a VPORT→user conversation and returns its id
- * - Else → ensures a user↔user conversation is visible and returns its id
+ * Single entrypoint for “Message” buttons.
+ * Uses identity to decide VPORT vs USER.
  */
 export async function openChatWithUser({ identity, targetUserId, restoreHistory = false }) {
+  if (__DBG) console.debug("[chatActions.openChatWithUser] input", { identity, targetUserId, restoreHistory });
+
   if (!targetUserId) return null;
 
-  // VPORT mode
+  // VPORT path
   if (identity?.type === "vport" && identity?.vportId) {
-    return startVportConversation(identity.vportId, targetUserId);
+    const id = await startVportConversation(identity.vportId, targetUserId);
+    if (__DBG) console.debug("[chatActions.openChatWithUser] VPORT conv id", id);
+    return id;
   }
 
-  // USER mode
-  return getOrCreateConversationId(targetUserId, { restoreHistory });
+  // USER path
+  const id = await getOrCreateConversationId(targetUserId, { restoreHistory });
+  if (__DBG) console.debug("[chatActions.openChatWithUser] USER conv id", id);
+  return id;
 }
 
 export default {

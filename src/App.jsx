@@ -14,8 +14,8 @@ const OnboardingScreen    = lazy(() => import('@/features/auth/screens/Onboardin
 const CentralFeed         = lazy(() => import('@/features/feed/screens/CentralFeed.jsx'));
 
 const ExploreScreen       = lazy(() => import('@/features/explore/ExploreScreen'));
-const ConversationList    = lazy(() => import('@/features/chat/ConversationList')); // user inbox
-const ChatScreen          = lazy(() => import('@/features/chat/ChatScreen'));       // user convo
+const ConversationList    = lazy(() => import('@/features/chat/ConversationList')); // user inbox (full page)
+const ChatScreen          = lazy(() => import('@/features/chat/ChatScreen'));       // user convo (full page)
 const NotificationsScreen = lazy(() => import('@/features/notifications/NotificationsScreen'));
 const UploadScreen        = lazy(() => import('@/features/post/UploadScreen'));
 const MeScreen            = lazy(() => import('@/features/profiles/screens/MeScreen'));
@@ -37,7 +37,7 @@ const VportNotificationsScreen = lazy(() =>
   import('@/features/notifications/vnotificationcenter/VportNotificationsScreen')
 );
 
-/* 💬 VPORT chat (ADD THESE) */
+/* 💬 VPORT chat (full page list + full page thread) */
 const VConversationList   = lazy(() => import('@/features/chat/vchat/VConversationList'));
 const VChatScreen         = lazy(() => import('@/features/chat/vchat/VChatScreen'));
 
@@ -57,11 +57,11 @@ export default function App() {
             <Route path="/feed" element={<CentralFeed />} />
             <Route path="/explore" element={<ExploreScreen />} />
 
-            {/* 💬 User chat */}
+            {/* 💬 User chat (full pages) */}
             <Route path="/chat" element={<ConversationList />} />
             <Route path="/chat/:id" element={<ChatScreen />} />
 
-            {/* 💬 VPORT chat (ADD) */}
+            {/* 💬 VPORT chat (full pages, no split) */}
             <Route path="/vport/chat" element={<VConversationList />} />
             <Route path="/vport/chat/:id" element={<VChatScreen />} />
 
