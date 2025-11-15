@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useIdentity } from "@/state/identityContext";
-import UserLink from "@/components/userlink";
-import BackButton from "@/ui/components/Backbutton";
+import UserLink from "@/components/UserLink";
+import BackButton from "@/ui/components/Backbutton"; 
 
 export default function Fans() {
   const { identity } = useIdentity();
