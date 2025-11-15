@@ -5,7 +5,18 @@ import { supabase } from '@/lib/supabaseClient';
 
 const PAGE_SIZE = 20;
 
-export default function PostList({ user }) {
+/**
+ * Usage:
+ *   <PostList user={profileObj} />                    // fetch by profile (public.profiles.id)
+ *   <PostList vportId="c441b8c7-b6fe-4e9f-bc40-..." /> // fetch by vport (vc.vports.id)
+ *   <PostList actorId="a8906d01-66e4-4ae0-912c-ad26f4b13009" /> // direct actor override
+ *
+ * Schema facts:
+ * - vc.posts: id, actor_id, user_id, text, title, media_url, media_type, post_type, tags, created_at
+ * - vc.actors: id, profile_id, vport_id
+ * - No vport_id column on vc.posts → must resolve actor_id first.
+ */
+export default function PostList({ user, vportId = null, actorId: actorIdProp = null }) {
   const [posts, setPosts] = useState([]);
   const [profiles, setProfiles] = useState({});
   const [loading, setLoading] = useState(true);
@@ -13,20 +24,67 @@ export default function PostList({ user }) {
   const [hasMore, setHasMore] = useState(true);
   const pageRef = useRef(0);
 
-  const userId = user?.id;
+  const profileId = user?.id ?? null;
+
+  // resolved actor
+  const [actorId, setActorId] = useState(actorIdProp || null);
+
+  // --- resolve actor_id from either explicit prop, vportId, or profileId
+  useEffect(() => {
+    let cancelled = false;
+
+    // if caller provided actorId, just use it
+    if (actorIdProp) {
+      setActorId(actorIdProp);
+      return;
+    }
+
+    (async () => {
+      setError('');
+      setActorId(null);
+
+      try {
+        const match =
+          vportId ? { vport_id: vportId } :
+          profileId ? { profile_id: profileId } :
+          null;
+
+        if (!match) return;
+
+        const { data, error } = await supabase
+          .schema('vc')
+          .from('actors')
+          .select('id')
+          .match(match)
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!cancelled) setActorId(data?.id ?? null);
+      } catch (e) {
+        if (!cancelled) {
+          setActorId(null);
+          setError(e?.message || 'Failed to resolve actor.');
+        }
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [actorIdProp, profileId, vportId]);
 
   const fetchPage = useCallback(
     async (page = 0) => {
-      if (!userId) return { rows: [], done: true };
+      if (!actorId) return { rows: [], done: true };
 
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data, error } = await supabase
+      // Text-only posts per your rule (media_type='text'); tolerate '' or NULL for media_url.
+      // NOTE: PostgREST treats empty-string eq as `.eq.` (no quotes). Using .or with that form.
+      const query = supabase
         .schema('vc')
         .from('posts')
-        .select(
-          `
+        .select(`
           id,
           user_id,
           text,
@@ -34,15 +92,16 @@ export default function PostList({ user }) {
           media_url,
           media_type,
           post_type,
+          tags,
           created_at
-        `
-        )
-        .eq('user_id', userId)
+        `)
+        .eq('actor_id', actorId)
         .eq('media_type', 'text')
-        .or('media_url.is.null,media_url.eq.""')
+        .or('media_url.is.null,media_url.eq.')
         .order('created_at', { ascending: false })
         .range(from, to);
 
+      const { data, error } = await query;
       if (error) throw error;
 
       return {
@@ -50,73 +109,85 @@ export default function PostList({ user }) {
         done: !data || data.length < PAGE_SIZE,
       };
     },
-    [userId]
+    [actorId]
   );
 
-  const fetchProfiles = useCallback(async userIds => {
+  const fetchProfiles = useCallback(async (userIds) => {
     if (!userIds.length) return {};
-
     const { data, error } = await supabase
-      .from('profiles')
+      .from('profiles') // public.profiles
       .select('id, username, display_name, photo_url, is_adult')
       .in('id', userIds);
 
     if (error) throw error;
 
     const map = {};
-    for (const p of data) {
-      map[p.id] = p;
-    }
+    for (const p of data) map[p.id] = p;
     return map;
   }, []);
 
   const loadInitial = useCallback(async () => {
+    if (!actorId) return; // wait for actor resolution
     setLoading(true);
     setError('');
     try {
       pageRef.current = 0;
       const { rows, done } = await fetchPage(0);
 
-      // fetch related profiles
-      const userIds = [...new Set(rows.map(r => r.user_id))];
+      const userIds = [...new Set(rows.map((r) => r.user_id).filter(Boolean))];
       const profileMap = await fetchProfiles(userIds);
 
       setPosts(rows);
       setProfiles(profileMap);
       setHasMore(!done);
     } catch (e) {
-      setError(e.message || 'Failed to load posts.');
+      setError(e?.message || 'Failed to load posts.');
+      setPosts([]);
+      setProfiles({});
+      setHasMore(true);
     } finally {
       setLoading(false);
     }
-  }, [fetchPage, fetchProfiles]);
+  }, [actorId, fetchPage, fetchProfiles]);
 
   const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore || !actorId) return;
     try {
       setLoading(true);
       const nextPage = pageRef.current + 1;
       const { rows, done } = await fetchPage(nextPage);
 
-      const userIds = [...new Set(rows.map(r => r.user_id))];
+      const userIds = [...new Set(rows.map((r) => r.user_id).filter(Boolean))];
       const profileMap = await fetchProfiles(userIds);
 
       pageRef.current = nextPage;
-      setPosts(prev => [...prev, ...rows]);
-      setProfiles(prev => ({ ...prev, ...profileMap }));
+      setPosts((prev) => [...prev, ...rows]);
+      setProfiles((prev) => ({ ...prev, ...profileMap }));
       setHasMore(!done);
     } catch (e) {
-      setError(e.message || 'Failed to load more.');
+      setError(e?.message || 'Failed to load more.');
     } finally {
       setLoading(false);
     }
-  }, [fetchPage, fetchProfiles, hasMore, loading]);
+  }, [actorId, fetchPage, fetchProfiles, hasMore, loading]);
 
+  // reload when actor changes
   useEffect(() => {
     loadInitial();
   }, [loadInitial]);
 
-  if (error) {
+  // ---- UI states
+  if ((loading && posts.length === 0) || (!actorId && (profileId || vportId || actorIdProp))) {
+    return (
+      <div className="space-y-3">
+        <div className="h-6 w-40 animate-pulse rounded bg-neutral-800" />
+        <div className="h-24 animate-pulse rounded bg-neutral-800" />
+        <div className="h-24 animate-pulse rounded bg-neutral-800" />
+      </div>
+    );
+  }
+
+  if (error && posts.length === 0) {
     return (
       <div className="text-center text-red-400">
         {error}{' '}
@@ -126,16 +197,6 @@ export default function PostList({ user }) {
         >
           Retry
         </button>
-      </div>
-    );
-  }
-
-  if (loading && posts.length === 0) {
-    return (
-      <div className="space-y-3">
-        <div className="h-6 w-40 animate-pulse rounded bg-neutral-800" />
-        <div className="h-24 animate-pulse rounded bg-neutral-800" />
-        <div className="h-24 animate-pulse rounded bg-neutral-800" />
       </div>
     );
   }
@@ -156,12 +217,8 @@ export default function PostList({ user }) {
 
   return (
     <div className="space-y-4">
-      {posts.map(post => (
-        <PostCard
-          key={post.id}
-          post={post}
-          user={profiles[post.user_id] || {}}
-        />
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} user={profiles[post.user_id] || {}} />
       ))}
 
       {hasMore ? (

@@ -59,8 +59,19 @@ select {
 button { cursor: pointer; }
 
 /* Optional utility: hide scrollbars for any specific container that still needs scrolling */
-.hide-scrollbars { scrollbar-width: none; -ms-overflow-style: none; }
-.hide-scrollbars::-webkit-scrollbar { width: 0; height: 0; }
+/* =========================
+   Universal scrollbar hide
+   ========================= */
+* {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
 
 /* Small animation (unchanged) */
 @keyframes slideUp {
@@ -73,4 +84,15 @@ button { cursor: pointer; }
 @supports (-webkit-touch-callout: none) {
   input, textarea, select { font-size: 14px; }   /* your normal size */
   input:focus, textarea:focus, select:focus { font-size: 18px; } /* typing size */
+}
+
+/* Keep close/X below notches & status bars */
+.safe-top {
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Allow vertical panning for swipe (prevents browser from hijacking) */
+.touch-pan-y {
+  touch-action: pan-y;
 }

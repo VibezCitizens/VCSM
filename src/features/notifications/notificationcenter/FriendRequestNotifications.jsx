@@ -6,8 +6,11 @@ import {
   listMyFriendRequests,
   respondFriendRequest, // 'accept' | 'decline'
   cancelFriendRequest,  // cancel a pending request I sent
-} from '@/utils/social';
+} from '@/utils/socialfriends/social';
 import { supabase } from '@/lib/supabaseClient';
+
+const DEBUG = true;
+const dlog = (...a) => DEBUG && console.debug('[FriendRequestNotifications]', ...a);
 
 export default function FriendRequestNotifications({ onCountChange }) {
   const [items, setItems] = useState([]);
@@ -19,19 +22,23 @@ export default function FriendRequestNotifications({ onCountChange }) {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getUser();
-      setMe(data?.user?.id || null);
+      const uid = data?.user?.id || null;
+      setMe(uid);
+      dlog('whoami', uid);
     })();
   }, []);
 
   const load = useCallback(async () => {
     try {
       setLoading(true);
+      dlog('load:start');
 
       const raw = await listMyFriendRequests();
+      dlog('load:raw', raw);
 
       // fetch display for both sides
       const userIds = Array.from(
-        new Set(raw.flatMap(r => [r.requester_id, r.addressee_id]).filter(Boolean))
+        new Set(raw.flatMap((r) => [r.requester_id, r.addressee_id]).filter(Boolean))
       );
 
       let profilesById = {};
@@ -50,19 +57,26 @@ export default function FriendRequestNotifications({ onCountChange }) {
       }
 
       // decorate for UI
-      const data = raw.map(r => {
+      const data = raw.map((r) => {
         const requester = profilesById[r.requester_id] || null;
         const addressee = profilesById[r.addressee_id] || null;
         const incoming = me && r.addressee_id === me; // someone sent to me
         const outgoing = me && r.requester_id === me; // I sent to someone
-        return { ...r, _requester: requester, _addressee: addressee, _incoming: !!incoming, _outgoing: !!outgoing };
+        return {
+          ...r,
+          _requester: requester,
+          _addressee: addressee,
+          _incoming: !!incoming,
+          _outgoing: !!outgoing,
+        };
       });
 
       setItems(data);
 
       // update badge count
-      const pendingCount = data.filter(d => d.status === 'pending').length;
+      const pendingCount = data.filter((d) => d.status === 'pending' && d._incoming).length;
       onCountChange?.(pendingCount);
+      dlog('load:done', { pendingCount, total: data.length });
     } catch (err) {
       console.error(err);
       toast.error(err?.message || 'Failed to load friend requests');
@@ -75,11 +89,31 @@ export default function FriendRequestNotifications({ onCountChange }) {
     if (me !== null) load();
   }, [me, load]);
 
+  // 🔄 refresh on focus / visibility / cross-component hints (no realtime)
+  useEffect(() => {
+    const onFocus = () => load();
+    const onVis = () => {
+      if (!document.hidden) load();
+    };
+    const onChanged = () => load();
+
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('friendreq:changed', onChanged);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('friendreq:changed', onChanged);
+    };
+  }, [load]);
+
   async function handleAccept(req) {
     setBusyId(req.id);
     try {
       await respondFriendRequest(req.id, 'accept');
       toast.success('Friend request accepted');
+      window.dispatchEvent?.(new Event('friendreq:changed'));
       await load();
     } catch (err) {
       console.error(err);
@@ -94,6 +128,7 @@ export default function FriendRequestNotifications({ onCountChange }) {
     try {
       await respondFriendRequest(req.id, 'decline');
       toast('Declined', { icon: '🫥' });
+      window.dispatchEvent?.(new Event('friendreq:changed'));
       await load();
     } catch (err) {
       console.error(err);
@@ -108,6 +143,7 @@ export default function FriendRequestNotifications({ onCountChange }) {
     try {
       await cancelFriendRequest(req.addressee_id);
       toast('Canceled', { icon: '🗑️' });
+      window.dispatchEvent?.(new Event('friendreq:changed'));
       await load();
     } catch (err) {
       console.error(err);
@@ -122,11 +158,7 @@ export default function FriendRequestNotifications({ onCountChange }) {
   }
 
   if (!items.length) {
-    return (
-      <div className="text-neutral-500 text-xs">
-        No friend requests.
-      </div>
-    );
+    return <div className="text-neutral-500 text-xs">No friend requests.</div>;
   }
 
   return (
@@ -138,15 +170,20 @@ export default function FriendRequestNotifications({ onCountChange }) {
         // choose who to show on the left
         const actor = r._incoming ? r._requester : r._addressee;
         const actorName =
-          actor?.display_name || actor?.username || (r._incoming ? r.requester_id : r.addressee_id);
-        const actorHref = actor?.username ? `/u/${actor.username}` : (actor?.id ? `/profile/${actor.id}` : '#');
+          actor?.display_name ||
+          actor?.username ||
+          (r._incoming ? r.requester_id : r.addressee_id);
+        const actorHref = actor?.username
+          ? `/u/${actor.username}`
+          : actor?.id
+            ? `/profile/${actor.id}`
+            : '#';
 
-        const line =
-          r._incoming
-            ? 'sent you a friend request'
-            : r._outgoing
-              ? 'you sent a friend request'
-              : 'friend request';
+        const line = r._incoming
+          ? 'sent you a friend request'
+          : r._outgoing
+            ? 'you sent a friend request'
+            : 'friend request';
 
         return (
           <li key={r.id} className="rounded-xl bg-neutral-800 px-3 py-2">
@@ -166,7 +203,7 @@ export default function FriendRequestNotifications({ onCountChange }) {
                 </Link>
 
                 <div className="text-xs">
-                  <div className="text-white"> {/* ← always white */}
+                  <div className="text-white">
                     <Link
                       to={actorHref}
                       className="hover:underline text-white"
@@ -191,8 +228,8 @@ export default function FriendRequestNotifications({ onCountChange }) {
 
               {/* Right: actions */}
               <div className="flex items-center gap-1 shrink-0">
-                {isPending && (
-                  r._incoming ? (
+                {isPending &&
+                  (r._incoming ? (
                     <>
                       <button
                         disabled={isBusy}
@@ -209,17 +246,18 @@ export default function FriendRequestNotifications({ onCountChange }) {
                         Decline
                       </button>
                     </>
-                  ) : r._outgoing && (
-                    <button
-                      disabled={isBusy}
-                      onClick={() => handleCancel(r)}
-                      className={`px-2 py-0.5 rounded text-xs bg-neutral-700 text-white hover:bg-neutral-600 ${isBusy ? 'opacity-60 cursor-not-allowed' : ''}`}
-                      title="Cancel request I sent"
-                    >
-                      Cancel
-                    </button>
-                  )
-                )}
+                  ) : (
+                    r._outgoing && (
+                      <button
+                        disabled={isBusy}
+                        onClick={() => handleCancel(r)}
+                        className={`px-2 py-0.5 rounded text-xs bg-neutral-700 text-white hover:bg-neutral-600 ${isBusy ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        title="Cancel request I sent"
+                      >
+                        Cancel
+                      </button>
+                    )
+                  ))}
               </div>
             </div>
           </li>

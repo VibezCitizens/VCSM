@@ -10,6 +10,7 @@ import VideoFeed from '@/features/profiles/tabs/VideoFeed';
 import PostList from '@/features/profiles/tabs/PostList';
 import FriendsList from '@/features/profiles/tabs/FriendsList';
 import FriendsListEditor from '@/features/profiles/tabs/FriendsListEditor';
+import RankedFriendsPublic from '@/features/profiles/tabs/RankedFriendsPublic'; // ⬅️ show only ranked top-10 to others
 
 import PrivateProfileGate from '@/features/profiles/components/private/PrivateProfileGate';
 import { isFollowing as fetchIsFollowing } from '@/data/user/profiles/profiles';
@@ -48,6 +49,10 @@ export default function MeScreen() {
   // follow state
   const [isFollowing, setIsFollowing] = useState(false);
 
+  // ✅ NEW: actor id for the viewed profile (needed for vc.posts.actor_id)
+  const [targetActorId, setTargetActorId] = useState(null);
+  const [resolvingActor, setResolvingActor] = useState(false);
+
   const TABS = isOwnProfile ? TABS_OWN : TABS_OTHER;
 
   // Load target profile (me or by params)
@@ -55,6 +60,9 @@ export default function MeScreen() {
     let cancelled = false;
 
     async function loadProfile() {
+      // Reset actor when profile target changes
+      setTargetActorId(null);
+
       // If route has a username or id, fetch that profile
       if (routeUsername || routeId) {
         setLoadingProfile(true);
@@ -105,6 +113,31 @@ export default function MeScreen() {
     return () => { cancelled = true; };
   }, [routeUsername, routeId, user?.id]);
 
+  // ✅ Resolve vc.actors.id for the viewed profile (needed for vc.posts.actor_id)
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (!profile?.id) { if (alive) setTargetActorId(null); return; }
+      setResolvingActor(true);
+      try {
+        const { data, error } = await supabase
+          .schema('vc')
+          .from('actors')
+          .select('id')
+          .eq('profile_id', profile.id)
+          .maybeSingle();
+        if (!alive) return;
+        if (error && error.code !== 'PGRST116') throw error;
+        setTargetActorId(data?.id ?? null);
+      } catch {
+        if (alive) setTargetActorId(null);
+      } finally {
+        if (alive) setResolvingActor(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [profile?.id]);
+
   // ✅ load follow relationship (viewer → profile)
   useEffect(() => {
     let alive = true;
@@ -137,9 +170,9 @@ export default function MeScreen() {
   }, [profile, isOwnProfile, isFollowing, anyBlock]);
 
   // Load posts for the currently viewed profile (only when allowed and blocks resolved)
-  const loadPosts = async (ownerId) => {
+  const loadPosts = async (actorId) => {
     // 🔒 NEVER fetch if blocks not resolved or viewer is blocked (unless own profile)
-    if (!ownerId || !blocksReady || (!isOwnProfile && anyBlock)) {
+    if (!actorId || !blocksReady || (!isOwnProfile && anyBlock)) {
       setPosts([]);
       setLoadingPosts(false);
       return;
@@ -151,8 +184,8 @@ export default function MeScreen() {
       const { data, error } = await supabase
         .schema('vc')
         .from('posts')
-        .select('id, text, media_url, media_type, post_type, user_id, created_at, title')
-        .eq('user_id', ownerId)
+        .select('id, text, media_url, media_type, post_type, user_id, created_at, title, actor_id')
+        .eq('actor_id', actorId)
         .order('created_at', { ascending: false });
 
       if (!error) setPosts(data || []);
@@ -162,14 +195,17 @@ export default function MeScreen() {
     }
   };
 
+  // Kick off posts load whenever the actor id / visibility gate changes
   useEffect(() => {
-    if (profile?.id) {
-      loadPosts(profile.id);
+    if (targetActorId) {
+      loadPosts(targetActorId);
     } else {
+      // If we’re still resolving or have no actor, clear the list but keep spinner logic correct
       setPosts([]);
+      if (!resolvingActor) setLoadingPosts(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.id, canViewContent, blocksReady]);
+  }, [targetActorId, canViewContent, blocksReady]);
 
   // 🔒 hard gate: never render anything until profile + blocks are resolved
   if (loadingProfile || !blocksReady) {
@@ -272,20 +308,23 @@ export default function MeScreen() {
 
               {tab === 'friends' && (
                 isOwnProfile ? (
+                  // Owner view: full breakdown + editor
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-xl border border-white/5 bg-neutral-900/70 p-3">
-                      <div className="text-sm font-semibold mb-2">Reorder mutual friends</div>
+                      <div className="text-sm font-semibold mb-2"> 
+                        “Top 10 Friends”</div>
                       <FriendsListEditor userId={profile.id} />
                     </div>
                     <div className="rounded-xl border border-white/5 bg-neutral-900/70 p-3">
-                      <div className="text-sm font-semibold mb-2">Friends</div>
+                      <div className="text-sm font-semibold mb-2">Circle</div>
                       <FriendsList userId={profile.id} isPrivate={false} />
                     </div>
                   </div>
                 ) : (
+                  // Public view: only ranked top-10 friends
                   <div className="rounded-xl border border-white/5 bg-neutral-900/70 p-3">
                     <div className="text-sm font-semibold mb-2">Friends</div>
-                    <FriendsList userId={profile.id} isPrivate={false} />
+                    <RankedFriendsPublic userId={profile.id} />
                   </div>
                 )
               )}
@@ -294,9 +333,9 @@ export default function MeScreen() {
 
           <div className="flex justify-end mt-3">
             <button
-              onClick={() => loadPosts(profile.id)}
+              onClick={() => loadPosts(targetActorId)}
               className="px-3 py-1.5 rounded-lg text-sm bg-neutral-800 hover:bg-neutral-700"
-              disabled={!canViewContent}
+              disabled={!canViewContent || !targetActorId}
             >
               Refresh
             </button>

@@ -1,85 +1,128 @@
-// src/features/profiles/components/SocialActions.jsx
-import { useCallback, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import SubscribeButton from '@/features/profiles/components/subscriber/SubscribeButton';
+import { useCallback, useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import { useAuth } from "@/hooks/useAuth";
+import { useIdentity } from "@/state/identityContext";
+import SubscribeButton from "@/features/profiles/components/subscriber/SubscribeButton";
+import vc from "@/lib/vcClient"; // supabase client scoped to 'vc'
+
+// ===== DEBUG =================================================================
+const DEBUG = true;
+const dlog = (...a) => DEBUG && console.debug("[SocialActions]", ...a);
+// ============================================================================
 
 export default function SocialActions({
   profileId,
+  targetActorId,
   isOwnProfile,
   initialSubscribed,
   onSubscribeToggle,
   onFollowToggle,
   profileIsPrivate = false,
-  onMessage, // ✅ NEW (optional) VPORT-aware opener from parent
+  onMessage, // kept for external MessageButton in ProfileHeader
 }) {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const me = user?.id || null;
+  const { user } = useAuth();
+  const { identity } = useIdentity();
   const [busy, setBusy] = useState(false);
 
-  // hide for self/unauth
-  if (!profileId || !me || isOwnProfile || me === profileId) return null;
+  const myActorId = useMemo(() => identity?.actorId ?? null, [identity]);
+  const isVportPersona = identity?.type === "vport";
 
-  const handleMessage = useCallback(async () => {
-    if (busy) return;
-    setBusy(true);
-    const dismiss = toast.loading('Opening chat…');
-    try {
-      // ✅ If parent provided a custom message handler, use it.
-      if (typeof onMessage === 'function') {
-        await onMessage();
-        toast.dismiss(dismiss);
-        return;
-      }
+  // skip rendering for self-profile
+  if (!profileId || !user?.id || isOwnProfile || user.id === profileId) return null;
 
-      // Fallback: existing user→user DM flow
-      const { getOrCreateDirectVisible } = await import('@/data/user/chat/chat');
-
-      // Ensures convo exists, unarchives my row, sets partner_user_id
-      const conv = await getOrCreateDirectVisible(profileId);
-      if (conv?.id) {
-        toast.dismiss(dismiss);
-        navigate(`/chat/${conv.id}`);
-      } else {
-        throw new Error('No conversation id returned');
-      }
-    } catch (e) {
-      toast.dismiss(dismiss);
-      toast.error(e?.message || 'Failed to start chat.');
-    } finally {
-      setBusy(false);
+  // Wait for actor hydration
+  useEffect(() => {
+    if (!myActorId && identity?.actorId) {
+      dlog("Actor became ready:", identity.actorId);
     }
-  }, [profileId, navigate, busy, onMessage]); // ✅ include onMessage
+  }, [myActorId, identity]);
 
+  // Resolve target actor (for profile we're viewing)
+  const resolveTargetActorId = useCallback(
+    async (targetProfileId) => {
+      if (targetActorId) return targetActorId;
+      const { data, error } = await vc
+        .from("actors")
+        .select("id")
+        .eq("profile_id", targetProfileId)
+        .maybeSingle();
+      if (error) {
+        dlog("resolveTargetActorId error:", error.message);
+        return null;
+      }
+      return data?.id ?? null;
+    },
+    [targetActorId]
+  );
+
+  // Unified follow/subscribe toggle
   const handleToggle = useCallback(
     (now) => {
-      if (typeof onSubscribeToggle === 'function') return onSubscribeToggle(now);
-      if (typeof onFollowToggle === 'function') return onFollowToggle(now);
+      if (typeof onSubscribeToggle === "function") onSubscribeToggle(now);
+      else if (typeof onFollowToggle === "function") onFollowToggle(now);
     },
     [onSubscribeToggle, onFollowToggle]
   );
 
+  // Open or create direct chat
+  const openDirectChat = useCallback(
+    async ({ meActorId, otherActorId }) => {
+      const { data: convId, error } = await vc.rpc("vc_get_or_create_one_to_one", {
+        a1: meActorId,
+        a2: otherActorId,
+      });
+      if (error || !convId) throw new Error(error?.message || "Failed to open chat");
+      // Delay ensures React Router navigation doesn’t freeze while state updates
+      setTimeout(() => {
+        navigate(`${isVportPersona ? "/vport/chat" : "/chat"}/${convId}`);
+      }, 150);
+    },
+    [navigate, isVportPersona]
+  );
+
+  // Message handler (safe, debounced, actor-ready)
+  const handleMessage = useCallback(async () => {
+    if (busy) return; // prevent spam
+    if (!myActorId) {
+      toast.error("Loading your identity. Please wait...");
+      return;
+    }
+
+    setBusy(true);
+    const dismiss = toast.loading("Opening chat…");
+
+    try {
+      if (typeof onMessage === "function") {
+        await onMessage();
+      } else {
+        const otherActorId = await resolveTargetActorId(profileId);
+        if (!otherActorId) throw new Error("Could not resolve recipient");
+        await openDirectChat({ meActorId: myActorId, otherActorId });
+      }
+    } catch (e) {
+      toast.error(e?.message || "Failed to start chat.");
+    } finally {
+      toast.dismiss(dismiss);
+      setBusy(false);
+    }
+  }, [busy, myActorId, onMessage, profileId, resolveTargetActorId, openDirectChat]);
+
+  // --- Render (Subscribe only; Message handled externally) ---
   return (
-    <div className="flex flex-col gap-2 w-[116px]">
+    <div className="flex flex-col gap-2 items-end">
       <SubscribeButton
         targetId={profileId}
+        targetActorId={targetActorId || undefined}
         initialSubscribed={initialSubscribed}
         size="sm"
         className="w-full"
         onToggle={handleToggle}
         profileIsPrivate={Boolean(profileIsPrivate)}
       />
-
-      <button
-        onClick={handleMessage}
-        disabled={busy}
-        className="w-full px-3 py-1.5 rounded-lg bg-white text-black text-sm hover:opacity-90 disabled:opacity-60"
-        title="Send a private message"
-      >
-        {busy ? 'Opening…' : 'Message'}
-      </button>
+      {/* Message button intentionally removed — handled in ProfileHeader */}
     </div>
   );
 }

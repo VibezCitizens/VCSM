@@ -31,18 +31,88 @@ function ensureContext(ctx) {
   if (!ctx) return {};
   if (typeof ctx === 'object') return ctx;
   if (typeof ctx === 'string') {
-    try {
-      return JSON.parse(ctx);
-    } catch {
-      return {};
-    }
+    try { return JSON.parse(ctx); } catch { return {}; }
   }
   return {};
 }
 
-/** Composite cursor for stable keyset pagination */
-function makeCursor(row) {
-  return row ? { created_at: row.created_at, id: row.id } : null;
+/** Look up the actor.id for a given vport_id (needed for recipient_actor_id RLS) */
+async function getVportActorId(vportId) {
+  if (!vportId) return null;
+  const { data, error } = await supabase
+    .schema('vc')
+    .from('actors')
+    .select('id')
+    .eq('vport_id', vportId)
+    .limit(1)
+    .single();
+  if (error) throw error;
+  return data?.id ?? null;
+}
+
+/** Resolve senders for a list of actor_ids → { [actor_id]: senderObj } */
+async function resolveSenders(actorIds) {
+  const unique = Array.from(new Set((actorIds || []).filter(Boolean)));
+  if (unique.length === 0) return {};
+
+  const { data: actors, error: e1 } = await supabase
+    .schema('vc')
+    .from('actors')
+    .select('id, profile_id, vport_id')
+    .in('id', unique);
+
+  if (e1) throw e1;
+
+  const profileIds = Array.from(new Set(actors.map(a => a.profile_id).filter(Boolean)));
+  const vportIds   = Array.from(new Set(actors.map(a => a.vport_id).filter(Boolean)));
+
+  const [profilesRes, vportsRes] = await Promise.all([
+    profileIds.length
+      ? supabase.from('profiles').select('id, display_name, username, photo_url').in('id', profileIds)
+      : Promise.resolve({ data: [], error: null }),
+    vportIds.length
+      ? supabase.schema('vc').from('vports').select('id, name, slug, avatar_url').in('id', vportIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (profilesRes.error) throw profilesRes.error;
+  if (vportsRes.error) throw vportsRes.error;
+
+  const profMap = new Map((profilesRes.data ?? []).map(p => [p.id, p]));
+  const vportMap = new Map((vportsRes.data ?? []).map(v => [v.id, v]));
+
+  const out = {};
+  for (const a of actors) {
+    const prof = a.profile_id ? profMap.get(a.profile_id) : null;
+    const vp   = a.vport_id ? vportMap.get(a.vport_id) : null;
+
+    if (vp) {
+      out[a.id] = {
+        type: 'vport',
+        id: vp.id,
+        display_name: vp.name || 'VPORT',
+        slug: vp.slug || null,
+        avatar_url: vp.avatar_url || '/avatar.jpg',
+        photo_url: vp.avatar_url || '/avatar.jpg',
+      };
+    } else if (prof) {
+      out[a.id] = {
+        type: 'user',
+        id: prof.id,
+        display_name: prof.display_name,
+        username: prof.username || null,
+        avatar_url: prof.photo_url || undefined,
+        photo_url: prof.photo_url || undefined,
+      };
+    } else {
+      out[a.id] = {
+        type: 'actor',
+        id: a.id,
+        display_name: 'Someone',
+      };
+    }
+  }
+  return out;
 }
 
 export default function VportNotificationsScreen() {
@@ -51,63 +121,71 @@ export default function VportNotificationsScreen() {
 
   // Require active VPORT
   const vportId = identity?.type === 'vport' ? String(identity?.vportId || '') : null;
-  const userId = identity?.userId || identity?.id || null; // who owns the vport
 
+  const [vportActorId, setVportActorId] = useState(null); // <-- used for recipient_actor_id
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [cursor, setCursor] = useState(null); // { created_at, id }
+  const [cursor, setCursor] = useState(null); // Date cursor (created_at)
   const [hasMore, setHasMore] = useState(true);
   const [paging, setPaging] = useState(false);
   const [err, setErr] = useState('');
 
-  // fetch a page (VPORT inbox only) — stable keyset on (created_at DESC, id DESC)
+  // Resolve VPORT actor id once identity is present
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (!vportId) { setVportActorId(null); return; }
+      try {
+        const aid = await getVportActorId(vportId);
+        if (!alive) return;
+        setVportActorId(aid);
+      } catch (e) {
+        if (alive) {
+          console.error('[VportNotifs] resolve vport actor error:', e);
+          setVportActorId(null);
+        }
+      }
+    })();
+    return () => { alive = false; };
+  }, [vportId]);
+
+  // fetch a page (VPORT inbox) — keyset on created_at DESC
   const fetchPage = useCallback(
     async ({ before } = {}) => {
-      if (!userId || !vportId) return [];
+      if (!vportId || !vportActorId) return [];
 
       let q = supabase
         .schema('vc')
-        .from('notifications_with_actor')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('context->>vport_id', vportId) // ensure string compare
+        .from('notifications')
+        .select('id, recipient_actor_id, actor_id, kind, object_type, object_id, link_path, context, is_read, is_seen, created_at')
+        .eq('recipient_actor_id', vportActorId)
         .order('created_at', { ascending: false })
-        .order('id', { ascending: false })
-        .limit(PAGE_SIZE);
+        .limit(PAGE_SIZE + (before ? 1 : 0));
 
-      if (before?.created_at && before?.id) {
-        const createdAt = encodeURIComponent(before.created_at);
-        const id = encodeURIComponent(String(before.id));
-        q = q.or(
-          `and(created_at.lt.${createdAt}),and(created_at.eq.${createdAt},id.lt.${id})`
-        );
-      }
+      if (before) q = q.lt('created_at', before);
 
       const { data, error } = await q;
       if (error) throw error;
 
-      const page = (data ?? []).map((n) => {
-        const sender = n.actor_profile_id
-          ? {
-              id: n.actor_profile_id,
-              display_name: n.actor_display_name,
-              username: n.actor_username,
-              photo_url: n.actor_photo_url,
-            }
-          : null;
-        const context = ensureContext(n.context);
-        return { ...n, sender, context };
-      });
+      const base = data ?? [];
+
+      // enrich with sender
+      const senderMap = await resolveSenders(base.map(n => n.actor_id));
+      const page = base.map(n => ({
+        ...n,
+        context: ensureContext(n.context),
+        sender: n.actor_id ? senderMap[n.actor_id] || null : null,
+      }));
 
       return page;
     },
-    [userId, vportId]
+    [vportId, vportActorId]
   );
 
   // initial load
   useEffect(() => {
-    if (!userId || !vportId) return;
+    if (!vportId || !vportActorId) return;
     let cancel = false;
     (async () => {
       setLoading(true);
@@ -115,9 +193,10 @@ export default function VportNotificationsScreen() {
       try {
         const page = await fetchPage();
         if (cancel) return;
-        setRows(page);
-        setHasMore(page.length === PAGE_SIZE);
-        setCursor(makeCursor(page[page.length - 1]));
+        const trimmed = page.slice(0, PAGE_SIZE);
+        setRows(trimmed);
+        setHasMore(page.length > PAGE_SIZE);
+        setCursor(trimmed[trimmed.length - 1]?.created_at || null);
         window.dispatchEvent(new Event('noti:refresh'));
       } catch (e) {
         if (!cancel) setErr(e?.message || 'Failed to load notifications.');
@@ -125,29 +204,26 @@ export default function VportNotificationsScreen() {
         if (!cancel) setLoading(false);
       }
     })();
-    return () => {
-      cancel = true;
-    };
-  }, [userId, vportId, fetchPage]);
+    return () => { cancel = true; };
+  }, [vportId, vportActorId, fetchPage]);
 
   // section split
   const { todayRows, earlierRows } = useMemo(() => {
-    const t = [];
-    const e = [];
-    for (const n of rows) {
-      (isTodayLocal(n.created_at) ? t : e).push(n);
-    }
+    const t = [], e = [];
+    for (const n of rows) (isTodayLocal(n.created_at) ? t : e).push(n);
     return { todayRows: t, earlierRows: e };
   }, [rows]);
 
   // mark single (owner can update their own rows under RLS)
   const markAsRead = useCallback(async (id) => {
+    if (!id || !vportActorId) return;
     try {
       await supabase
         .schema('vc')
         .from('notifications')
         .update({ is_read: true, is_seen: true })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('recipient_actor_id', vportActorId); // <-- align with RLS
       setRows((prev) =>
         prev.map((n) => (n.id === id ? { ...n, is_read: true, is_seen: true } : n))
       );
@@ -155,50 +231,51 @@ export default function VportNotificationsScreen() {
     } catch {
       // ignore
     }
-  }, []);
+  }, [vportActorId]);
 
-  // mark all seen (VPORT inbox only)
+  // mark all seen (VPORT inbox via recipient_actor_id)
   const markAllSeen = useCallback(async () => {
-    if (!userId || !vportId) return;
+    if (!vportActorId) return;
     try {
       await supabase
         .schema('vc')
         .from('notifications')
         .update({ is_seen: true })
-        .eq('user_id', userId)
-        .eq('is_seen', false)
-        .eq('context->>vport_id', vportId);
+        .eq('recipient_actor_id', vportActorId)
+        .eq('is_seen', false);
     } catch {
       // best-effort; ignore
     }
 
     try {
       const page = await fetchPage();
-      setRows(page);
-      setHasMore(page.length === PAGE_SIZE);
-      setCursor(makeCursor(page[page.length - 1]));
+      const trimmed = page.slice(0, PAGE_SIZE);
+      setRows(trimmed);
+      setHasMore(page.length > PAGE_SIZE);
+      setCursor(trimmed[trimmed.length - 1]?.created_at || null);
     } catch {
       setRows((prev) => prev.map((n) => ({ ...n, is_seen: true })));
     }
     window.dispatchEvent(new Event('noti:refresh'));
-  }, [fetchPage, userId, vportId]);
+  }, [fetchPage, vportActorId]);
 
-  // pagination
+  // pagination (created_at keyset)
   const loadMore = useCallback(async () => {
-    if (!userId || !vportId || !hasMore || paging || !cursor) return;
+    if (!vportId || !vportActorId || !hasMore || paging || !cursor) return;
     setPaging(true);
     setErr('');
     try {
       const page = await fetchPage({ before: cursor });
-      setRows((prev) => [...prev, ...(page ?? [])]);
-      setHasMore((page?.length || 0) === PAGE_SIZE);
-      setCursor(makeCursor(page?.[page.length - 1]));
+      const trimmed = page.slice(0, PAGE_SIZE);
+      setRows((prev) => [...prev, ...trimmed]);
+      setHasMore(page.length > PAGE_SIZE);
+      setCursor(trimmed[trimmed.length - 1]?.created_at || null);
     } catch (e) {
       setErr(e?.message || 'Failed to load more.');
     } finally {
       setPaging(false);
     }
-  }, [userId, vportId, hasMore, paging, cursor, fetchPage]);
+  }, [vportId, vportActorId, hasMore, paging, cursor, fetchPage]);
 
   // resolve post id for deep-linking (same logic)
   const resolvePostId = useCallback(async (n) => {
@@ -221,12 +298,11 @@ export default function VportNotificationsScreen() {
     return null;
   }, []);
 
-  // derive link path (now tags vport actor so the viewer enforces VPORT mode)
+  // derive link path (tag vport mode)
   const derivePath = useCallback(
     async (n) => {
       if (!n) return null;
       if (typeof n.link_path === 'string' && n.link_path.startsWith('/noti/post/')) {
-        // Ensure we carry vport context even if link_path exists
         return `${n.link_path}${n.link_path.includes('?') ? '&' : '?'}as=vport&v=${encodeURIComponent(vportId)}`;
       }
 
@@ -248,28 +324,17 @@ export default function VportNotificationsScreen() {
         }
       }
 
-      if (
-        kind.includes('like') ||
-        kind.includes('dislike') ||
-        kind.includes('rose') ||
-        kind === 'post_reaction'
-      ) {
+      if (kind.includes('like') || kind.includes('dislike') || kind.includes('rose') || kind === 'post_reaction') {
         const postId =
-          ctx.post_id ||
-          (objType === 'post' ? n.object_id : null) ||
-          (await resolvePostId(n));
+          ctx.post_id || (objType === 'post' ? n.object_id : null) || (await resolvePostId(n));
         if (postId) {
           const tab = normTab(kind, ctx);
-          return `/noti/post/${encodeURIComponent(postId)}?tab=${encodeURIComponent(
-            tab
-          )}&as=vport&v=${encodeURIComponent(vportId)}`;
+          return `/noti/post/${encodeURIComponent(postId)}?tab=${encodeURIComponent(tab)}&as=vport&v=${encodeURIComponent(vportId)}`;
         }
       }
 
       const postId =
-        ctx.post_id ||
-        (objType === 'post' ? n.object_id : null) ||
-        (await resolvePostId(n));
+        ctx.post_id || (objType === 'post' ? n.object_id : null) || (await resolvePostId(n));
       if (postId) {
         return `/noti/post/${encodeURIComponent(postId)}?as=vport&v=${encodeURIComponent(vportId)}`;
       }
@@ -279,7 +344,7 @@ export default function VportNotificationsScreen() {
     [resolvePostId, vportId]
   );
 
-  const handleOpen = useCallback(
+  const markAsReadAndOpen = useCallback(
     async (notif) => {
       await markAsRead(notif.id);
       let path = await derivePath(notif);
@@ -334,11 +399,8 @@ export default function VportNotificationsScreen() {
       ) : (
         <>
           {(() => {
-            const t = [];
-            const e = [];
-            for (const n of rows) {
-              (isTodayLocal(n.created_at) ? t : e).push(n);
-            }
+            const t = [], e = [];
+            for (const n of rows) (isTodayLocal(n.created_at) ? t : e).push(n);
             return (
               <>
                 {t.length > 0 && (
@@ -349,7 +411,7 @@ export default function VportNotificationsScreen() {
                         <VportNotificationItem
                           key={n.id}
                           notif={n}
-                          onClick={() => handleOpen(n)}
+                          onClick={() => markAsReadAndOpen(n)}
                           onResolved={handleResolved}
                         />
                       ))}
@@ -366,7 +428,7 @@ export default function VportNotificationsScreen() {
                         <VportNotificationItem
                           key={n.id}
                           notif={n}
-                          onClick={() => handleOpen(n)}
+                          onClick={() => markAsReadAndOpen(n)}
                           onResolved={handleResolved}
                         />
                       ))}

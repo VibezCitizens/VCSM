@@ -1,21 +1,11 @@
 // src/components/UserLink.jsx
 import { Link } from 'react-router-dom';
 
-/**
- * UserLink
- * - Public profile link
- * - Works with both "user" (profiles) and "vport" shapes
- *
- * Props:
- * - user: record from profiles or vports caches
- * - authorType?: 'user' | 'vport'   // OPTIONAL; if provided, we treat it as authoritative
- * - avatarSize, avatarShape, textSize, showUsername, showTimestamp, timestamp, className, toOverride
- */
 export default function UserLink({
   user,
-  authorType,               // optional; if provided, overrides inference
-  avatarSize = 'w-8 h-8',
-  avatarShape = 'rounded-none',
+  authorType,
+  avatarSize = 'w-10 h-10',          // 🔹 bigger square (was w-8 h-8)
+  avatarShape = 'rounded-none',       // 🔹 square shape (no rounding)
   textSize = 'text-sm',
   showUsername = false,
   showTimestamp = false,
@@ -25,7 +15,6 @@ export default function UserLink({
 }) {
   if (!user) return null;
 
-  // ---------- helpers ----------
   const safe = (s) => encodeURIComponent(String(s));
   function firstNonEmpty(arr) {
     for (const v of arr) {
@@ -39,51 +28,45 @@ export default function UserLink({
     return obj && Object.prototype.hasOwnProperty.call(obj, key);
   }
 
-  // ---------- infer or trust authorType ----------
-  // If caller passes authorType, treat as authoritative to avoid misclassification.
   const isVport =
     authorType === 'vport'
       ? true
       : authorType === 'user'
       ? false
       : (
-          has(user, 'name') ||                                 // typical vport shape
-          has(user, 'slug') || has(user, 'vport_slug') ||      // vport has slug
+          (typeof user?.kind === 'string' && user.kind.toLowerCase() === 'vport') ||
+          (typeof user?.actor_kind === 'string' && user.actor_kind.toLowerCase() === 'vport') ||
+          has(user, 'slug') || has(user, 'vport_slug') || has(user, 'name') ||
           (typeof user?.type === 'string' && user.type.toLowerCase().includes('vport'))
         );
 
-  // ---------- normalize shape ----------
   const norm = isVport
     ? {
         id: firstNonEmpty([user?.id]),
-        displayName: firstNonEmpty([user?.name, user?.display_name, 'VPORT']),
-        username: null,
-        avatarUrl: firstNonEmpty([user?.avatar_url, user?.photo_url, '/avatar.jpg']),
+        displayName: firstNonEmpty([user?.display_name, user?.name, 'VPORT']),
+        username: firstNonEmpty([user?.username, user?.slug, user?.vport_slug]),
+        avatarUrl: firstNonEmpty([user?.photo_url, user?.avatar_url, '/avatar.jpg']),
         slug: firstNonEmpty([user?.slug, user?.vport_slug]),
       }
     : {
         id: firstNonEmpty([user?.id, user?.user_id]),
-        displayName: firstNonEmpty([user?.display_name, user?.full_name, user?.username, 'User']),
+        displayName: firstNonEmpty([user?.display_name, user?.username, 'User']),
         username: firstNonEmpty([user?.username]),
         avatarUrl: firstNonEmpty([user?.photo_url, user?.avatar_url, '/avatar.jpg']),
       };
 
-  // ---------- destination (public routes only) ----------
   let to = '/me';
-
   if (toOverride) {
     to = toOverride;
   } else if (isVport) {
-    // If your app prefers /v/:slug, change the first branch below to `/v/${safe(norm.slug)}`
     to = norm?.slug
-      ? `/vport/slug/${safe(norm.slug)}`
-      : (norm.id ? `/vport/${safe(norm.id)}` : '/vports');
+      ? `/vport/${safe(norm.slug)}`
+      : (norm.id ? `/vport/id/${safe(norm.id)}` : '/vports');
   } else {
     if (norm.username)      to = `/u/${safe(norm.username)}`;
     else if (norm.id)       to = `/profile/${safe(norm.id)}`;
   }
 
-  // ---------- render ----------
   return (
     <Link
       to={to}

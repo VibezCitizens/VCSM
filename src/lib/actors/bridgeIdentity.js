@@ -5,18 +5,20 @@
 const STORAGE_KEY = 'vibez.activeActor.v1';
 const K_KIND = 'actor_kind';
 const K_VPORT_ID = 'actor_vport_id';
+const K_ACTOR_ID = 'actor_id'; // NEW: carried for consumers that care (Identity listens via onActorChange)
 
 function readActorKeys() {
   try {
     const kind = localStorage.getItem(K_KIND);
     const vid = localStorage.getItem(K_VPORT_ID);
-    return { kind, vid };
+    const aid = localStorage.getItem(K_ACTOR_ID); // may be null
+    return { kind, vid, aid };
   } catch {
-    return { kind: null, vid: null };
+    return { kind: null, vid: null, aid: null };
   }
 }
 
-function writeStorageKeyFromActor({ kind, vid }) {
+function writeStorageKeyFromActor({ kind, vid /*, aid*/ }) {
   try {
     if (kind === 'vport' && vid) {
       localStorage.setItem(STORAGE_KEY, `vport:${vid}`);
@@ -41,9 +43,11 @@ function writeStorageKeyFromActor({ kind, vid }) {
   if (typeof window === 'undefined') return;
   window.addEventListener('storage', (e) => {
     if (!e?.key) return;
-    if (e.key === K_KIND || e.key === K_VPORT_ID) {
+    if (e.key === K_KIND || e.key === K_VPORT_ID || e.key === K_ACTOR_ID) {
       const { kind, vid } = readActorKeys();
       writeStorageKeyFromActor({ kind, vid });
     }
   });
 })();
+
+export const __actorKeys__ = { STORAGE_KEY, K_KIND, K_VPORT_ID, K_ACTOR_ID };

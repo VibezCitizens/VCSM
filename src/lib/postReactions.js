@@ -1,5 +1,3 @@
-// src/lib/postReactions.js
-
 // src/features/post/usePostReactions.js
 import { useCallback, useEffect, useState } from 'react';
 
@@ -14,15 +12,13 @@ const LD = ['like', 'dislike'];
 /**
  * usePostReactions(postId, opts?)
  * opts: { actingAsVport?: boolean, vportId?: string }
- * - counts: { like, dislike, rose }
+ * - counts: { like, dislike, rose }               // rose kept for compatibility; can be 0 here
  * - userReaction: 'like' | 'dislike' | 'rose' | null
  * - toggle(type): toggles current identity's reaction (like/dislike)
  * - reload(): refetch from DB
  *
- * Notes:
- * - Operates on ACTOR identity: (post_id, actor_id, type).
- * - Avoids ON CONFLICT mismatch by doing SELECT → UPDATE/INSERT for like/dislike.
- * - Roses use an upsert with onConflict = 'post_id,actor_id,type'.
+ * Schema note:
+ * - One row per (post_id, actor_id). Column 'reaction' stores the value.
  */
 export function usePostReactions(postId, opts = {}) {
   const { actingAsVport = false, vportId = null } = opts;
@@ -51,11 +47,10 @@ export function usePostReactions(postId, opts = {}) {
     try {
       const aId = actorId ?? (await resolveActor());
 
-      // fetch all reactions for this post (actor-based)
       const { data, error } = await supabase
         .schema('vc')
         .from('post_reactions')
-        .select('type,actor_id,qty')
+        .select('reaction, actor_id')
         .eq('post_id', postId);
 
       if (error) throw error;
@@ -64,12 +59,12 @@ export function usePostReactions(postId, opts = {}) {
       let mine = null;
 
       for (const r of data || []) {
-        if (agg[r.type] !== undefined) {
-          const inc = typeof r.qty === 'number' ? r.qty : 1;
-          agg[r.type] += inc;
-        }
-        if (aId && r.actor_id === aId && LD.includes(r.type)) {
-          mine = r.type;
+        if (r.reaction === 'like') agg.like += 1;
+        else if (r.reaction === 'dislike') agg.dislike += 1;
+        else if (r.reaction === 'rose') agg.rose += 1; // optional; roses often handled elsewhere
+
+        if (aId && r.actor_id === aId && LD.includes(r.reaction)) {
+          mine = r.reaction;
         }
       }
 
@@ -88,15 +83,24 @@ export function usePostReactions(postId, opts = {}) {
       const aId = actorId ?? (await resolveActor());
       if (!aId) return;
 
-      // If same selected reaction → remove it
-      if (userReaction === type) {
+      // Current row (if any) for this actor/post
+      const { data: existing, error: selErr } = await supabase
+        .schema('vc')
+        .from('post_reactions')
+        .select('reaction')
+        .eq('post_id', postId)
+        .eq('actor_id', aId)
+        .maybeSingle();
+      if (selErr && selErr.code !== 'PGRST116') throw selErr;
+
+      // If same selected reaction → remove it (delete row)
+      if (existing?.reaction === type) {
         const { error: delErr } = await supabase
           .schema('vc')
           .from('post_reactions')
           .delete()
           .eq('post_id', postId)
-          .eq('actor_id', aId)
-          .eq('type', type);
+          .eq('actor_id', aId);
         if (delErr) throw delErr;
 
         setUserReaction(null);
@@ -104,42 +108,33 @@ export function usePostReactions(postId, opts = {}) {
         return;
       }
 
-      // Else, set/flip reaction using SELECT → UPDATE/INSERT (no upsert conflict)
-      const { data: existing, error: selErr } = await supabase
-        .schema('vc')
-        .from('post_reactions')
-        .select('id, type')
-        .eq('post_id', postId)
-        .eq('actor_id', aId)
-        .in('type', LD)
-        .maybeSingle();
-      if (selErr && selErr.code !== 'PGRST116') throw selErr;
+      // Else, set/flip reaction (update if exists, else insert)
+      if (existing) {
+        const { error: upErr } = await supabase
+          .schema('vc')
+          .from('post_reactions')
+          .update({ reaction: type, updated_at: new Date().toISOString() })
+          .eq('post_id', postId)
+          .eq('actor_id', aId);
+        if (upErr) throw upErr;
 
-      if (existing?.id) {
-        if (existing.type !== type) {
-          const { error: upErr } = await supabase
-            .schema('vc')
-            .from('post_reactions')
-            .update({ type })
-            .eq('id', existing.id);
-          if (upErr) throw upErr;
-
+        // adjust counts
+        if (LD.includes(existing.reaction)) {
           setCounts((c) => ({
             ...c,
-            [existing.type]: Math.max(0, c[existing.type] - 1),
+            [existing.reaction]: Math.max(0, c[existing.reaction] - 1),
             [type]: c[type] + 1,
           }));
+        } else {
+          setCounts((c) => ({ ...c, [type]: c[type] + 1 }));
         }
       } else {
         const { error: insErr } = await supabase
           .schema('vc')
           .from('post_reactions')
-          .insert({ post_id: postId, actor_id: aId, type, qty: 1 });
+          .insert({ post_id: postId, actor_id: aId, reaction: type, updated_at: new Date().toISOString() });
         if (insErr) throw insErr;
 
-        if (userReaction) {
-          setCounts((c) => ({ ...c, [userReaction]: Math.max(0, c[userReaction] - 1) }));
-        }
         setCounts((c) => ({ ...c, [type]: c[type] + 1 }));
       }
 
@@ -161,7 +156,6 @@ export function usePostReactions(postId, opts = {}) {
 
 /**
  * Non-hook utilities
- * These resolve the current ACTOR internally via supabase.auth.getUser() + getCurrentActorId()
  */
 
 /** Toggle a reaction (like/dislike) for the current identity on a post */
@@ -180,43 +174,39 @@ export async function toggleReaction(postId, type, opts = {}) {
   const actorId = await getCurrentActorId({ userId: me, activeVportId: actingAsVport ? vportId : null });
   if (!actorId) throw new Error('toggleReaction: no actor for current identity');
 
-  // current reaction?
-  const { data: mine, error: mineErr } = await supabase
+  const { data: existing, error: selErr } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .select('id, type')
+    .select('reaction')
     .eq('post_id', postId)
     .eq('actor_id', actorId)
-    .in('type', LD)
     .maybeSingle();
-  if (mineErr && mineErr.code !== 'PGRST116') throw mineErr;
+  if (selErr && selErr.code !== 'PGRST116') throw selErr;
 
-  // same type => remove it
-  if (mine?.type === type) {
+  if (existing?.reaction === type) {
     const { error: delErr } = await supabase
       .schema('vc')
       .from('post_reactions')
       .delete()
       .eq('post_id', postId)
-      .eq('actor_id', actorId)
-      .eq('type', type);
+      .eq('actor_id', actorId);
     if (delErr) throw delErr;
     return { changed: true, removed: true, type };
   }
 
-  // else set/flip (no upsert; select → update/insert)
-  if (mine?.id) {
+  if (existing) {
     const { error: upErr } = await supabase
       .schema('vc')
       .from('post_reactions')
-      .update({ type })
-      .eq('id', mine.id);
+      .update({ reaction: type, updated_at: new Date().toISOString() })
+      .eq('post_id', postId)
+      .eq('actor_id', actorId);
     if (upErr) throw upErr;
   } else {
     const { error: insErr } = await supabase
       .schema('vc')
       .from('post_reactions')
-      .insert({ post_id: postId, actor_id: actorId, type, qty: 1 });
+      .insert({ post_id: postId, actor_id: actorId, reaction: type, updated_at: new Date().toISOString() });
     if (insErr) throw insErr;
   }
   return { changed: true, removed: false, type };
@@ -224,8 +214,8 @@ export async function toggleReaction(postId, type, opts = {}) {
 
 /**
  * Send (add) a 'rose' for the current identity on a post.
- * This uses an upsert on (post_id, actor_id, type). If you want to increment
- * the qty on repeated sends, switch to DO UPDATE qty = qty + EXCLUDED.qty.
+ * With single-row model, a second 'rose' would overwrite the reaction.
+ * Since you handle roses elsewhere in `roses.js`, this stays lightweight.
  */
 export async function sendRose(postId, opts = {}) {
   if (!postId) throw new Error('sendRose requires postId');
@@ -241,11 +231,14 @@ export async function sendRose(postId, opts = {}) {
   const actorId = await getCurrentActorId({ userId: me, activeVportId: actingAsVport ? vportId : null });
   if (!actorId) throw new Error('sendRose: no actor for current identity');
 
+  // Optional: enforce user→user only outside of this DAL.
+
+  // If you truly want roses to be separate from like/dislike, consider a dedicated table.
   const { error } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .insert({ post_id: postId, actor_id: actorId, type: 'rose', qty: 1 });
+    .insert({ post_id: postId, actor_id: actorId, reaction: 'rose', updated_at: new Date().toISOString() });
 
   if (error) throw error;
-  return { ok: true, type: 'rose' };
+  return { ok: true, reaction: 'rose' };
 }

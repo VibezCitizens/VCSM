@@ -45,6 +45,30 @@ const mapVportProfile = (row) => {
   };
 };
 
+/* ---------------- helper: resolve actor ids ---------------- */
+
+async function getActorIdForUser(userProfileId) {
+  if (!userProfileId) return null;
+  const { data } = await supabase
+    .schema('vc')
+    .from('actors')
+    .select('id')
+    .eq('profile_id', userProfileId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
+async function getActorIdForVport(vportId) {
+  if (!vportId) return null;
+  const { data } = await supabase
+    .schema('vc')
+    .from('actors')
+    .select('id')
+    .eq('vport_id', vportId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 /* ---------------- hook ---------------- */
 
 export function useProfileData({
@@ -57,6 +81,8 @@ export function useProfileData({
   const { identity } = useIdentity();
 
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [currentUserActorId, setCurrentUserActorId] = useState(null);
+
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
 
@@ -73,6 +99,15 @@ export function useProfileData({
     const { data, error: authErr } = await supabase.auth.getUser();
     if (authErr) { setCurrentUser(null); return; }
     setCurrentUser(data?.user ?? null);
+
+    // derive current user's actor_id via vc.actors
+    const uid = data?.user?.id || null;
+    if (uid) {
+      const actorId = await getActorIdForUser(uid);
+      setCurrentUserActorId(actorId);
+    } else {
+      setCurrentUserActorId(null);
+    }
   }, []);
 
   const ensureProfileRow = useCallback(async (userId) => {
@@ -100,7 +135,7 @@ export function useProfileData({
     if (insErr) throw insErr;
   }, []);
 
-  /* -------- minimal private-profile fallback via RPC -------- */
+  /* -------- minimal private-profile fallback via RPC (unchanged) -------- */
 
   async function fetchMinimalUser({ username, userId }) {
     if (userId) {
@@ -116,7 +151,7 @@ export function useProfileData({
     return null;
   }
 
-  /* ---------------- fetchers ---------------- */
+  /* ---------------- fetchers: USER ---------------- */
 
   const fetchUserBundle = useCallback(
     async ({ username, userId }) => {
@@ -132,7 +167,7 @@ export function useProfileData({
         };
       }
 
-      // 1) profile
+      // 1) profile (public.profiles)
       let userRow = null;
       {
         let q = supabase
@@ -147,7 +182,7 @@ export function useProfileData({
         userRow = data ?? null;
       }
 
-      // 2) build mapped from select or fallback RPC
+      // 2) map or fallback
       let mapped = userRow ? mapUserProfile(userRow) : null;
       if (!mapped) {
         mapped = await fetchMinimalUser({ username, userId: userId ?? null });
@@ -160,41 +195,46 @@ export function useProfileData({
 
       const mine = !!(currentUser?.id && currentUser.id === mapped.id);
 
-      // 3) am I following them?
+      // resolve ACTORs
+      const targetActorId = await getActorIdForUser(mapped.id);
+      const viewerActorId = currentUserActorId;
+
+      // 3) am I following them? (vc.actor_follows)
       let amSubscribed = false;
-      if (currentUser?.id && !mine) {
+      if (viewerActorId && targetActorId && !mine) {
         const { data: subData } = await supabase
-          .from('followers')
-          .select('follower_id')
-          .eq('follower_id', currentUser.id)
-          .eq('followed_id', mapped.id)
-          .eq('is_active', true)
+          .schema('vc')
+          .from('actor_follows')
+          .select('follower_actor_id')
+          .eq('follower_actor_id', viewerActorId)
+          .eq('followed_actor_id', targetActorId)
           .maybeSingle();
         amSubscribed = !!subData;
       }
 
-      // 4) posts — MUST use vc.posts
+      // 4) posts (vc.posts by user_id)
       let postRows = [];
       if (!mapped.private || mine || amSubscribed) {
         const { data, error } = await supabase
           .schema('vc')
           .from('posts')
-          .select('id,text,title,media_type,media_url,post_type,tags,created_at,user_id,vport_id')
+          .select('id,text,title,media_type,media_url,post_type,tags,created_at,user_id,actor_id,vport_id')
           .eq('user_id', mapped.id)
           .order('created_at', { ascending: false });
         if (!error) postRows = data ?? [];
       }
 
-      // 5) follower count
+      // 5) follower count (vc.actor_follows where followed_actor_id = targetActorId)
       let followerCount = 0;
-      try {
+      if (targetActorId) {
         const { count } = await supabase
-          .from('followers')
-          .select('followed_id', { count: 'exact', head: true })
-          .eq('followed_id', mapped.id)
+          .schema('vc')
+          .from('actor_follows')
+          .select('followed_actor_id', { count: 'exact', head: true })
+          .eq('followed_actor_id', targetActorId)
           .eq('is_active', true);
         if (typeof count === 'number') followerCount = count;
-      } catch {}
+      }
 
       return {
         profile: mapped,
@@ -204,18 +244,30 @@ export function useProfileData({
         isOwnProfile: mine,
       };
     },
-    [currentUser?.id, identity?.userId, ensureProfileRow]
+    [currentUser?.id, identity?.userId, ensureProfileRow, currentUserActorId]
   );
+
+  /* ---------------- fetchers: VPORT ---------------- */
 
   const fetchVportBundle = useCallback(
     async ({ slug, id }) => {
       let vportRow = null;
       if (id) {
-        const { data, error } = await supabase.from('vports').select('*').eq('id', id).maybeSingle();
+        const { data, error } = await supabase
+          .schema('vc')
+          .from('vports')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
         if (error && error.code !== 'PGRST116') throw error;
         vportRow = data ?? null;
       } else if (slug) {
-        const { data, error } = await supabase.from('vports').select('*').eq('slug', slug).maybeSingle();
+        const { data, error } = await supabase
+          .schema('vc')
+          .from('vports')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle();
         if (error && error.code !== 'PGRST116') throw error;
         vportRow = data ?? null;
       } else {
@@ -230,33 +282,46 @@ export function useProfileData({
 
       const mapped = mapVportProfile(vportRow);
 
+      // resolve actor ids
+      const targetActorId = await getActorIdForVport(mapped.id);
+      const viewerActorId = currentUserActorId;
+
+      // posts (vc.posts by vport_id)
       let postRows = [];
-      try {
+      {
         const { data, error } = await supabase
-          .from('vport_posts')
-          .select('*')
-          .eq('vport_id', mapped.id)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        postRows = data ?? [];
-      } catch {
-        const { data } = await supabase
           .schema('vc')
           .from('posts')
-          .select('id,text,title,media_type,media_url,post_type,tags,created_at,user_id,vport_id')
+          .select('id,text,title,media_type,media_url,post_type,tags,created_at,user_id,actor_id,vport_id')
           .eq('vport_id', mapped.id)
           .order('created_at', { ascending: false });
-        postRows = data ?? [];
+        if (!error) postRows = data ?? [];
       }
 
-      let vportSubs = 0;
-      try {
+      // follower count for VPORT actor
+      let followerCount = 0;
+      if (targetActorId) {
         const { count } = await supabase
-          .from('vport_subscribers')
-          .select('*', { count: 'exact', head: true })
-          .eq('vport_id', mapped.id);
-        if (typeof count === 'number') vportSubs = count;
-      } catch {}
+          .schema('vc')
+          .from('actor_follows')
+          .select('followed_actor_id', { count: 'exact', head: true })
+          .eq('followed_actor_id', targetActorId)
+          .eq('is_active', true);
+        if (typeof count === 'number') followerCount = count;
+      }
+
+      // isSubscribed (viewer follows vport actor)
+      let amSubscribed = false;
+      if (viewerActorId && targetActorId) {
+        const { data: subData } = await supabase
+          .schema('vc')
+          .from('actor_follows')
+          .select('follower_actor_id')
+          .eq('follower_actor_id', viewerActorId)
+          .eq('followed_actor_id', targetActorId)
+          .maybeSingle();
+        amSubscribed = !!subData;
+      }
 
       const mine =
         identity?.type === 'vport' &&
@@ -267,12 +332,12 @@ export function useProfileData({
       return {
         profile: mapped,
         posts: postRows,
-        subscriberCount: vportSubs,
-        isSubscribed: false,
+        subscriberCount: followerCount,
+        isSubscribed: amSubscribed,
         isOwnProfile: !!mine,
       };
     },
-    [identity?.type, identity?.vportId]
+    [identity?.type, identity?.vportId, currentUserActorId]
   );
 
   /* ---------------- orchestrator ---------------- */
@@ -311,7 +376,10 @@ export function useProfileData({
     } finally {
       setLoading(false);
     }
-  }, [currentUser, fetchAuth, fetchUserBundle, fetchVportBundle, mode, urlUsername, urlUserId, vportSlug, vportId]);
+  }, [
+    currentUser, fetchAuth, fetchUserBundle, fetchVportBundle,
+    mode, urlUsername, urlUserId, vportSlug, vportId
+  ]);
 
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [
     mode, urlUsername, urlUserId, vportSlug, vportId, currentUser?.id, identity?.userId,

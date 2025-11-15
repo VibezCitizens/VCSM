@@ -1,46 +1,140 @@
 // src/features/notifications/notificationcenter/friendrequest/NotiFollowRequestItem.jsx
-import { useState, useCallback } from 'react';
+// (instrumented for debugging only — no behavior changes)
+
+import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { useIdentity } from '@/state/identityContext';
+import vc from '@/lib/vcClient';
 import {
   acceptFollowRequest,
   declineFollowRequest,
 } from '@/features/profiles/lib/friendrequest/followRequests';
 
-export default function NotiFollowRequestItem({ notification, onResolved /* keep prop but don't use */ }) {
+const DBG = true;
+const dlog = (...a) => DBG && console.debug('[NotiFollowRequestItem]', ...a);
+
+// Resolve a user’s “user-actor” (vc.actors.profile_id = userId)
+async function resolveActorIdForUser(userId) {
+  if (!userId) return null;
+  try {
+    const { data, error } = await vc
+      .from('actors')
+      .select('id')
+      .eq('profile_id', userId)
+      .limit(1);
+    if (error) {
+      dlog('resolveActorIdForUser error', error);
+      return null;
+    }
+    const out = Array.isArray(data) && data[0]?.id ? data[0].id : null;
+    dlog('resolveActorIdForUser →', { userId, actorId: out });
+    return out;
+  } catch (e) {
+    dlog('resolveActorIdForUser exception', e);
+    return null;
+  }
+}
+
+export default function NotiFollowRequestItem({ notification, onResolved /* unused but kept */ }) {
   const n = notification || {};
   const { id, created_at, context } = n;
 
-  const requesterProfile = context?.requester || null;         // profiles domain
-  // If your app uses the same UUID for profiles & auth, this fallback helps
+  const requesterProfile = context?.requester || null; // profiles domain
   const requesterAuthId = context?.requester_auth_id || requesterProfile?.id || null;
+
+  // Prefer actor id if your notification payload carries it
+  const requesterActorIdFromContext = context?.requester_actor_id || null;
+
+  const { identity } = useIdentity();
+  const targetActorId = identity?.actorId || null; // approver (me) actor id
 
   const [busy, setBusy] = useState(false);
   const [decision, setDecision] = useState(null); // 'accepted' | 'declined' | null
+  const [requesterActorId, setRequesterActorId] = useState(
+    requesterActorIdFromContext || null
+  );
+
+  // log mount state
+  useEffect(() => {
+    dlog('mount', {
+      notificationId: id,
+      created_at,
+      requesterAuthId,
+      requesterActorIdFromContext,
+      targetActorId,
+      context,
+    });
+  }, []); // eslint-disable-line
+
+  // Resolve requester actor id if not provided in the context
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      dlog('resolve-actor effect', { requesterAuthId, requesterActorIdFromContext, targetActorId });
+      if (requesterActorIdFromContext) {
+        if (alive) setRequesterActorId(requesterActorIdFromContext);
+        return;
+      }
+      if (!requesterActorId && requesterAuthId) {
+        const aId = await resolveActorIdForUser(requesterAuthId);
+        if (alive) setRequesterActorId(aId);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requesterActorIdFromContext, requesterAuthId]);
 
   const markSeen = useCallback(async () => {
     try {
-      await supabase
+      dlog('markSeen → notifications.update', { id });
+      const { data, error } = await supabase
         .schema('vc')
         .from('notifications')
         .update({ is_read: true, is_seen: true })
-        .eq('id', id);
+        .eq('id', id)
+        .select('id,is_read,is_seen,recipient_actor_id');
+      dlog('markSeen: result', { data, error });
       window.dispatchEvent?.(new Event('noti:refresh'));
-    } catch {/* non-blocking */}
+    } catch (e) {
+      dlog('markSeen error (non-blocking)', e);
+    }
   }, [id]);
+
+  const refreshCountersSoon = () => {
+    dlog('dispatch refresh events');
+    window.dispatchEvent?.(new Event('friendreq:changed'));
+    window.dispatchEvent?.(new Event('follow:changed'));
+    window.dispatchEvent?.(new Event('noti:refresh'));
+  };
 
   const handleAccept = async () => {
     if (busy) return;
     if (!requesterAuthId) return toast.error('Missing requester id.');
+    if (!targetActorId) return toast.error('Your actor isn’t ready yet.');
+    if (!requesterActorId) return toast.error('Requester actor not resolved yet.');
+
     try {
       setBusy(true);
-      await acceptFollowRequest({ requesterId: requesterAuthId });
-      setDecision('accepted');              // optimistic UI
+      dlog('ACCEPT click', { requesterAuthId, requesterActorId, targetActorId, notificationId: id });
+
+      await acceptFollowRequest({
+        requesterActorId,
+        requesterId: requesterAuthId, // ignored by helper; here for traceability
+        targetActorId,
+      });
+
+      setDecision('accepted'); // optimistic UI
       toast.success('Request accepted');
+
       await markSeen();
-      // Keep card visible
+      refreshCountersSoon();
+      dlog('ACCEPT done');
     } catch (e) {
       console.error(e);
+      dlog('ACCEPT error', e);
       toast.error(e?.message || 'Failed to accept.');
       setDecision(null);
     } finally {
@@ -51,15 +145,27 @@ export default function NotiFollowRequestItem({ notification, onResolved /* keep
   const handleDecline = async () => {
     if (busy) return;
     if (!requesterAuthId) return toast.error('Missing requester id.');
+    if (!targetActorId) return toast.error('Your actor isn’t ready yet.');
+    if (!requesterActorId) return toast.error('Requester actor not resolved yet.');
+
     try {
       setBusy(true);
-      await declineFollowRequest({ requesterId: requesterAuthId });
-      setDecision('declined');              // optimistic UI
+      dlog('DECLINE click', { requesterAuthId, requesterActorId, targetActorId, notificationId: id });
+
+      await declineFollowRequest({
+        requesterActorId,
+        requesterId: requesterAuthId, // ignored by helper; here for traceability
+        targetActorId,
+      });
+
+      setDecision('declined'); // optimistic UI
       toast('Request declined');
       await markSeen();
-      // Keep card visible
+      refreshCountersSoon();
+      dlog('DECLINE done');
     } catch (e) {
       console.error(e);
+      dlog('DECLINE error', e);
       toast.error(e?.message || 'Failed to decline.');
       setDecision(null);
     } finally {
@@ -118,7 +224,7 @@ export default function NotiFollowRequestItem({ notification, onResolved /* keep
 
       <div className="flex items-center gap-2 shrink-0">
         <button
-          disabled={busy}
+          disabled={busy || !requesterActorId}
           onClick={handleAccept}
           className="px-3 py-1.5 rounded-lg bg-white text-black text-sm hover:opacity-90 disabled:opacity-60"
           title="Accept follow request"
@@ -126,7 +232,7 @@ export default function NotiFollowRequestItem({ notification, onResolved /* keep
           Accept
         </button>
         <button
-          disabled={busy}
+          disabled={busy || !requesterActorId}
           onClick={handleDecline}
           className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400/60 disabled:opacity-60"
           title="Decline follow request"

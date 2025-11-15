@@ -1,148 +1,125 @@
-// C:\Users\vibez\OneDrive\Desktop\no src\src\features\vport\vprofile\tabs\VportPhotoGrid.jsx
+// src/features/vport/vprofile/tabs/VportPhotoGrid.jsx
+import { useEffect, useState } from "react";
+import supabase from "@/lib/supabaseClient";
 
-import { useMemo, useState, useCallback, useEffect } from 'react';
+export default function VportPhotoGrid({ vport }) {
+  const [photos, setPhotos] = useState([]);
+  const [actorId, setActorId] = useState(null);
+  const [loadingActor, setLoadingActor] = useState(true);
+  const [loadingPhotos, setLoadingPhotos] = useState(true);
 
-/**
- * Basic, self-contained photo grid for VPORT profiles.
- * - No external deps (no Supabase calls, no reaction/comment modals).
- * - Filters incoming `posts` for images and shows a 3-column grid.
- * - Lightweight built-in fullscreen viewer with Prev/Next + keyboard support.
- *
- * Props:
- *   - posts: Array of post objects that include { id, media_type, media_url, text, title }
- *   - className: optional container className override
- */
-export default function VportPhotoGrid({ posts = [], className = '' }) {
-  const [viewerOpen, setViewerOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  // Only keep posts that are valid images
-  const imagePosts = useMemo(() => {
-    return (posts || []).filter(
-      (p) => p && p.media_type === 'image' && typeof p.media_url === 'string' && p.media_url.trim() !== ''
-    );
-  }, [posts]);
-
-  const openViewer = useCallback((index) => {
-    setActiveIndex(index);
-    setViewerOpen(true);
-  }, []);
-
-  const closeViewer = useCallback(() => {
-    setViewerOpen(false);
-    setActiveIndex(null);
-  }, []);
-
-  const goPrev = useCallback(() => {
-    if (!imagePosts.length) return;
-    setActiveIndex((prev) => (prev === 0 ? imagePosts.length - 1 : prev - 1));
-  }, [imagePosts.length]);
-
-  const goNext = useCallback(() => {
-    if (!imagePosts.length) return;
-    setActiveIndex((prev) => (prev === imagePosts.length - 1 ? 0 : prev + 1));
-  }, [imagePosts.length]);
-
-  // Keyboard navigation when viewer is open
+  // 1) Resolve actorId for this vport (vc.actors.vport_id is UNIQUE)
   useEffect(() => {
-    if (!viewerOpen) return;
-    const onKey = (e) => {
-      if (e.key === 'Escape') closeViewer();
-      else if (e.key === 'ArrowLeft') goPrev();
-      else if (e.key === 'ArrowRight') goNext();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [viewerOpen, closeViewer, goPrev, goNext]);
+    let cancelled = false;
 
-  if (!imagePosts.length) {
-    return <div className="text-center text-neutral-400 py-10">No images yet.</div>;
+    (async () => {
+      if (!vport?.id) {
+        console.warn("[VportPhotoGrid] Missing vport.id → cannot resolve actor");
+        if (!cancelled) {
+          setActorId(null);
+          setLoadingActor(false);
+        }
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .schema("vc")
+          .from("actors")
+          .select("id")
+          .eq("vport_id", vport.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("[VportPhotoGrid] error resolving actorId:", error);
+          if (!cancelled) setActorId(null);
+        } else if (!cancelled) {
+          setActorId(data?.id ?? null);
+        }
+      } catch (err) {
+        console.error("[VportPhotoGrid] exception resolving actorId:", err);
+        if (!cancelled) setActorId(null);
+      } finally {
+        if (!cancelled) setLoadingActor(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [vport?.id]);
+
+  // 2) Load ONLY photo posts for this actor
+  useEffect(() => {
+    if (loadingActor) return;
+
+    if (!actorId) {
+      console.warn("[VportPhotoGrid] Missing actorId → cannot load photos");
+      setPhotos([]);
+      setLoadingPhotos(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      setLoadingPhotos(true);
+
+      const { data, error } = await supabase
+        .schema("vc")
+        .from("posts")
+        .select("id, media_url, media_type")
+        .eq("actor_id", actorId)
+        .eq("media_type", "image") // only images based on type
+        .order("created_at", { ascending: false });
+
+      if (!cancelled) {
+        if (error) {
+          console.error("[VportPhotoGrid] Supabase error:", error);
+          setPhotos([]);
+        } else {
+          // extra guard: only URLs that look like image files
+          const filtered = (data || []).filter((p) =>
+            /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(p.media_url || "")
+          );
+          setPhotos(filtered);
+        }
+        setLoadingPhotos(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [actorId, loadingActor]);
+
+  if (loadingActor || loadingPhotos) {
+    return (
+      <p className="text-center text-neutral-500 py-10">
+        Loading photos…
+      </p>
+    );
+  }
+
+  if (!actorId || !photos.length) {
+    return (
+      <p className="text-center text-neutral-500 py-10">
+        No photos yet.
+      </p>
+    );
   }
 
   return (
-    <>
-      <div className={`grid grid-cols-3 gap-1 p-2 ${className}`}>
-        {imagePosts.map((post, idx) => (
-          <button
-            key={post.id ?? idx}
-            type="button"
-            className="w-full aspect-square overflow-hidden"
-            onClick={() => openViewer(idx)}
-            aria-label={`Open image ${idx + 1}`}
-          >
-            <img
-              src={post.media_url}
-              alt={post.title || post.text || 'Image'}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          </button>
-        ))}
-      </div>
-
-      {viewerOpen && activeIndex !== null && imagePosts[activeIndex] && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-          onClick={closeViewer}
-        >
-          {/* Stop propagation so clicks on content don't close viewer */}
-          <div className="relative max-w-5xl w-[92vw] h-[92vh]" onClick={(e) => e.stopPropagation()}>
-            {/* Image */}
-            <img
-              src={imagePosts[activeIndex].media_url}
-              alt={imagePosts[activeIndex].title || imagePosts[activeIndex].text || 'Image'}
-              className="w-full h-full object-contain"
-              draggable="false"
-            />
-
-            {/* Caption (optional) */}
-            {(imagePosts[activeIndex].title || imagePosts[activeIndex].text) && (
-              <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/60 text-white text-sm">
-                {imagePosts[activeIndex].title || imagePosts[activeIndex].text}
-              </div>
-            )}
-
-            {/* Controls */}
-            <button
-              type="button"
-              onClick={closeViewer}
-              className="absolute top-3 right-3 rounded-full bg-white/10 hover:bg-white/20 text-white px-3 py-1"
-              aria-label="Close"
-              title="Close (Esc)"
-            >
-              ✕
-            </button>
-
-            <button
-              type="button"
-              onClick={goPrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 rounded bg-white/10 hover:bg-white/20 text-white px-3 py-2"
-              aria-label="Previous image"
-              title="Previous (←)"
-            >
-              ‹
-            </button>
-
-            <button
-              type="button"
-              onClick={goNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-white/10 hover:bg-white/20 text-white px-3 py-2"
-              aria-label="Next image"
-              title="Next (→)"
-            >
-              ›
-            </button>
-
-            {/* Counter */}
-            <div className="absolute top-3 left-3 text-white/80 text-xs">
-              {activeIndex + 1} / {imagePosts.length}
-            </div>
-          </div>
+    <div className="grid grid-cols-3 gap-1 px-1">
+      {photos.map((p) => (
+        <div key={p.id} className="w-full aspect-square">
+          <img
+            src={p.media_url}
+            className="w-full h-full object-cover rounded-sm"
+            alt=""
+          />
         </div>
-      )}
-    </>
+      ))}
+    </div>
   );
 }

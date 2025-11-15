@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // Lazy-load the tabs (optional but nice for perf)
 const PrivacyTab = lazy(() => import('./tabs/PrivacyTab'));
-const ProfileTab = lazy(() => import('./tabs/ProfileTab'));
+const ProfileTab = lazy(() => import('./tabs/ProfileTab.jsx'));
 const AccountTab = lazy(() => import('./tabs/AccountTab'));
 const VportsTab  = lazy(() => import('./tabs/VportsTab'));
 

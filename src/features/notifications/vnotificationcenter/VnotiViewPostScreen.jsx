@@ -64,7 +64,7 @@ export default function NotiViewPostScreen() {
   const [author, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // fetch post + author (doesn’t depend on actor)
+  // fetch post + author (actor-aware)
   useEffect(() => {
     let cancelled = false;
     if (!postId) return;
@@ -72,51 +72,110 @@ export default function NotiViewPostScreen() {
     (async () => {
       setLoading(true);
 
-      const p = await supabase
+      // ⬇️ pull actor_id as well
+      const { data: row, error: postErr } = await supabase
         .schema('vc')
         .from('posts')
-        .select('id, created_at, user_id, media_type, title, text, media_url')
+        .select('id, created_at, user_id, actor_id, media_type, title, text, media_url')
         .eq('id', postId)
         .maybeSingle();
 
-      let normalized = null;
-
-      if (p.data && !p.error) {
-        const row = p.data;
-        const rawTitle = (row.title || '').trim();
-        const rawBody  = (row.text  || '').trim();
-
-        const title = rawTitle || null;
-        const body  = rawBody && rawBody !== rawTitle ? rawBody : null;
-
-        normalized = {
-          id: row.id,
-          created_at: row.created_at,
-          type: 'user',          // authorType for PostCard
-          authorId: row.user_id,
-          media_type: row.media_type || null,
-          title,
-          text: body,
-          media_url: row.media_url || null,
-          source: 'vc.posts',
-          raw: row,
-        };
-      }
-
-      if (!normalized) {
+      if (postErr || !row) {
         if (!cancelled) setLoading(false);
         return;
       }
 
-      const { data: authorData } = await supabase
-        .from('profiles')
-        .select('id, username, display_name, photo_url, private')
-        .eq('id', normalized.authorId)
-        .maybeSingle();
+      // Normalize title/body exactly like before
+      const rawTitle = (row.title || '').trim();
+      const rawBody  = (row.text  || '').trim();
+      const title    = rawTitle || null;
+      const body     = rawBody && rawBody !== rawTitle ? rawBody : null;
+
+      // Resolve actor → vport or user
+      let authorType = 'user';
+      let authorObj  = null;
+
+      if (row.actor_id) {
+        const { data: actor } = await supabase
+          .schema('vc')
+          .from('actors')
+          .select('id, profile_id, vport_id')
+          .eq('id', row.actor_id)
+          .maybeSingle();
+
+        if (actor?.vport_id) {
+          // vport author
+          const { data: vport } = await supabase
+            .schema('vc')
+            .from('vports')
+            .select('id, name, slug, avatar_url, is_active')
+            .eq('id', actor.vport_id)
+            .maybeSingle();
+
+          authorType = 'vport';
+          authorObj = vport
+            ? {
+                id: vport.id,
+                name: vport.name || 'VPORT',
+                display_name: vport.name || 'VPORT',
+                slug: vport.slug || null,
+                avatar_url: vport.avatar_url || '/avatar.jpg',
+                type: 'vport',
+              }
+            : {
+                id: actor.vport_id,
+                name: 'VPORT',
+                display_name: 'VPORT',
+                slug: null,
+                avatar_url: '/avatar.jpg',
+                type: 'vport',
+              };
+        } else {
+          // user author by profile_id (fallback also to posts.user_id)
+          const userId = row.user_id || actor?.profile_id || null;
+          if (userId) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id, username, display_name, photo_url, private')
+              .eq('id', userId)
+              .maybeSingle();
+            if (profile) {
+              authorObj = profile;
+              authorType = 'user';
+            }
+          }
+        }
+      }
+
+      // Final fallbacks for old rows
+      if (!authorObj && row.user_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, photo_url, private')
+          .eq('id', row.user_id)
+          .maybeSingle();
+        if (profile) {
+          authorObj = profile;
+          authorType = 'user';
+        }
+      }
+
+      const normalized = {
+        id: row.id,
+        created_at: row.created_at,
+        type: authorType,                              // 'user' | 'vport'
+        authorId: authorType === 'vport' ? (authorObj?.id || null) : row.user_id,
+        media_type: row.media_type || null,
+        title,
+        text: body,
+        media_url: row.media_url || null,
+        source: 'vc.posts',
+        raw: row,
+      };
 
       if (cancelled) return;
       setPost(normalized);
-      setAuthor(authorData ?? null);
+      setAuthor(authorObj ?? null);
       setLoading(false);
     })();
 
@@ -157,8 +216,8 @@ export default function NotiViewPostScreen() {
 
       <PostCard
         post={post}
-        user={author}
-        authorType={post.type}
+        user={author}               // profile OR vport object; your UserLink should handle both
+        authorType={post.type}      // 'user' | 'vport'
         showComments
         commentHighlightId={commentId}
       />

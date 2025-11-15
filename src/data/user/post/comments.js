@@ -46,8 +46,8 @@ async function getBlockSets(meId) {
   try {
     const [myBlocks, blockedBy] = await withRetry(async () => {
       const [{ data: d1, error: e1 }, { data: d2, error: e2 }] = await Promise.all([
-        supabase.schema('vc').from('user_blocks').select('blocked_id').eq('blocker_id', meId),
-        supabase.schema('vc').from('user_blocks').select('blocker_id').eq('blocked_id', meId),
+        supabase.schema('vc').from('user_blocks').select('blocked_id').eq('blocker_actor_id', meId),
+        supabase.schema('vc').from('user_blocks').select('blocker_id').eq('blocked_actor_id', meId),
       ]);
       if (e1) throw e1;
       if (e2) throw e2;

@@ -9,19 +9,35 @@ import {
   sendRose as sendRoseAPI,
 } from '@/lib/postReactions';
 
+// --- helper: resolve the current user's actor_id once ---
+async function getActorIdForUser(userId) {
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .schema('vc')
+    .from('actor_owners')
+    .select('actor_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error('[PhotoGrid] failed to resolve actor_id', error);
+    return null;
+  }
+  return data?.actor_id ?? null;
+}
 
 // Helper: Enrich posts with reaction + comment counts (vc schema)
-async function enrichImagePosts(posts, userId) {
+async function enrichImagePosts(posts, actorId) {
   const postIds = posts.map((p) => p.id);
   if (postIds.length === 0) return [];
 
+  // NOTE: correct columns -> post_id, actor_id, reaction
   const { data: reactions, error: reactionErr } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .select('post_id, user_id, type')
+    .select('post_id, actor_id, reaction')
     .in('post_id', postIds);
 
-  // If comments live in vc; adjust if your comments are elsewhere
   const { data: comments, error: commentErr } = await supabase
     .schema('vc')
     .from('post_comments')
@@ -39,44 +55,60 @@ async function enrichImagePosts(posts, userId) {
   });
 
   return posts.map((post) => {
-    const reactionsForPost = (reactions || []).filter((r) => r.post_id === post.id);
-    const userReaction = reactionsForPost.find((r) => r.user_id === userId);
+    const rForPost = (reactions || []).filter((r) => r.post_id === post.id);
+    const userReaction = actorId ? rForPost.find((r) => r.actor_id === actorId) : null;
+
     return {
       ...post,
-      likeCount: reactionsForPost.filter((r) => r.type === 'like').length,
-      dislikeCount: reactionsForPost.filter((r) => r.type === 'dislike').length,
-      roseCount: reactionsForPost.filter((r) => r.type === 'rose').length,
+      likeCount:    rForPost.filter((r) => r.reaction === 'like').length,
+      dislikeCount: rForPost.filter((r) => r.reaction === 'dislike').length,
+      roseCount:    rForPost.filter((r) => r.reaction === 'rose').length,
       commentCount: commentMap[post.id] || 0,
-      userHasReacted: userReaction?.type || null,
+      userHasReacted: userReaction?.reaction || null,
     };
   });
 }
 
 export default function PhotoGrid({ posts = [], handleShare }) {
   const { user } = useAuth();
+  const [actorId, setActorId] = useState(null);
   const [enrichedPosts, setEnrichedPosts] = useState([]);
   const [showViewer, setShowViewer] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
   const [showComments, setShowComments] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
 
-  // 🔧 Memoize to avoid new array identity each render
+  // Memoize to avoid new array identity each render
   const imagePosts = useMemo(
     () => posts.filter((p) => p.media_type === 'image' && p.media_url),
     [posts]
   );
 
+  // resolve actor once per user
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!user?.id) {
+        setActorId(null);
+        return;
+      }
+      const id = await getActorIdForUser(user.id);
+      if (!cancelled) setActorId(id);
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
   useEffect(() => {
     const loadEnriched = async () => {
-      const enriched = await enrichImagePosts(imagePosts, user?.id);
+      const enriched = await enrichImagePosts(imagePosts, actorId);
       setEnrichedPosts(enriched);
     };
-    if (user?.id && imagePosts.length > 0) {
+    if (actorId && imagePosts.length > 0) {
       loadEnriched();
     } else {
       setEnrichedPosts([]);
     }
-  }, [imagePosts, user?.id]);
+  }, [imagePosts, actorId]);
 
   useEffect(() => {
     if (activeIndex !== null && activeIndex >= enrichedPosts.length) {
@@ -85,18 +117,17 @@ export default function PhotoGrid({ posts = [], handleShare }) {
   }, [enrichedPosts.length, activeIndex]);
 
   const toggleReaction = async (postId, type) => {
-    if (!user?.id) return;
-    // API resolves the current user internally
+    if (!actorId) return;
+    // API resolves current actor internally
     await toggleReactionAPI(postId, type);
-    const updated = await enrichImagePosts(imagePosts, user.id);
+    const updated = await enrichImagePosts(imagePosts, actorId);
     setEnrichedPosts(updated);
   };
 
   const sendRose = async (postId) => {
-    if (!user?.id) return;
-    // API resolves the current user internally
+    if (!actorId) return;
     await sendRoseAPI(postId);
-    const updated = await enrichImagePosts(imagePosts, user.id);
+    const updated = await enrichImagePosts(imagePosts, actorId);
     setEnrichedPosts(updated);
   };
 

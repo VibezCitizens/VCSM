@@ -49,8 +49,8 @@ export default function PostReactionsPanel({ postId, initialKind = 'rose' }) {
       if (!me) { if (active) setBlocksReady(true); return; }
 
       const [{ data: myBlocks, error: e1 }, { data: blockedBy, error: e2 }] = await Promise.all([
-        supabase.schema('vc').from('user_blocks').select('blocked_id').eq('blocker_id', me),
-        supabase.schema('vc').from('user_blocks').select('blocker_id').eq('blocked_id', me),
+        supabase.schema('vc').from('user_blocks').select('blocked_id').eq('blocker_actor_id', me),
+        supabase.schema('vc').from('user_blocks').select('blocker_id').eq('blocked_actor_id', me),
       ]);
       if (!active) return;
 

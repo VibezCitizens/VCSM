@@ -6,15 +6,117 @@ import { createVport } from '@/data/vport/vprofile/vport'; // <-- use RPC wrappe
 
 const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
-const TYPE_OPTIONS = [
-  'creator',
-  'artist',
-  'public figure',
-  'athlete',
-  'business',
-  'organization',
-  'other',
-];
+
+// Grouped and alphabetized type taxonomy (UI only)
+const TYPE_GROUPS = {
+  'Arts, Media & Entertainment': [
+    'artist',
+    'creator',
+    'dj',
+    'event planner',
+    'musician',
+    'photographer',
+    'public figure',
+    'videographer',
+  ],
+
+  'Beauty & Wellness': [
+    'barber',
+    'esthetician',
+    'fitness instructor',
+    'hairstylist',
+    'makeup artist',
+    'massage therapist',
+    'nail technician',
+    'yoga instructor',
+  ],
+
+  'Education & Care': [
+    'babysitter',
+    'caregiver',
+    'counselor',
+    'elder care',
+    'nanny',
+    'teacher',
+    'therapist',
+    'tutor',
+  ],
+
+  'Food, Hospitality & Events': [
+    'baker',
+    'bartender',
+    'caterer',
+    'chef',
+    'cook',
+    'restaurant',
+    'server',
+  ],
+
+  'Health & Medical': [
+    'chiropractor',
+    'dentist',
+    'doctor',
+    'nurse',
+    'nutritionist',
+  ],
+
+  'Home, Maintenance & Trades': [
+    'carpenter',
+    'cleaning service',
+    'contractor',
+    'electrician',
+    'gardener',
+    'handyman',
+    'landscaper',
+    'mechanic',
+    'painter',
+    'plumber',
+  ],
+
+  'Professional & Business Services': [
+    'accountant',
+    'bookkeeper',
+    'business',
+    'consultant',
+    'designer',
+    'developer',
+    'engineer',
+    'lawyer',
+    'marketer',
+    'notary',
+    'organization',
+    'real estate',
+  ],
+
+  'Retail, Sales & Commerce': [
+    'nonprofit',
+    'shop',
+    'vendor',
+  ],
+
+  'Sports & Fitness': [
+    'athlete',
+    'coach',
+    'trainer',
+  ],
+
+  'Transport & Logistics': [
+    'courier',
+    'delivery',
+    'driver',
+    'mover',
+    'rideshare',
+    'towing',
+    'truck driver',
+  ],
+
+  'Animal Care': [
+    'dog walker',
+    'pet sitter',
+  ],
+
+  Other: ['other'],
+};
 
 function cx(...xs) { return xs.filter(Boolean).join(' '); }
 
@@ -75,37 +177,32 @@ export default function CreateVportForm({ onCreated }) {
     setError('');
 
     try {
-      // 1) upload avatar if needed
       let finalAvatarUrl = avatarUrl;
       if (!finalAvatarUrl && avatarFile) {
         finalAvatarUrl = await uploadAvatar();
         setAvatarUrl(finalAvatarUrl);
       }
 
-      // 2) validate and normalize type (kept for UX; not persisted in current vc.vports schema)
       const normalizedType = String(type).toLowerCase();
-      if (!TYPE_OPTIONS.includes(normalizedType)) {
+      const allTypes = Object.values(TYPE_GROUPS).flat();
+      if (!allTypes.includes(normalizedType)) {
         throw new Error('Invalid Vport type.');
       }
 
-      // 3) create via RPC (vc.create_vport). Description -> bio
       const res = await createVport({
         name: name.trim(),
-        slug: nullIfEmpty(slugifyMaybe(name)), // change to your own slug input if you add one
+        slug: nullIfEmpty(slugifyMaybe(name)),
         avatarUrl: finalAvatarUrl || null,
         bio: (description || '').trim() || null,
+        ownerUserId: user?.id ?? null,
       });
-      // res: { vport_id, actor_id }
 
-      // 4) notify caller or navigate
       if (onCreated) {
         onCreated(res);
       } else {
-        // if you later collect an explicit slug, prefer /vport/slug/:slug
         navigate(`/vport/${res.vport_id}`);
       }
 
-      // 5) reset minimal local state
       setName('');
       setType('business');
       setAvatarFile(null);
@@ -134,7 +231,7 @@ export default function CreateVportForm({ onCreated }) {
         />
       </div>
 
-      {/* Type (kept for UI; not persisted unless you add a column) */}
+      {/* Type */}
       <div>
         <label className="block text-sm text-zinc-300 mb-1.5">Type</label>
         <select
@@ -143,8 +240,14 @@ export default function CreateVportForm({ onCreated }) {
           className="w-full rounded-xl bg-white border border-zinc-300 text-black px-3 py-2 outline-none focus:ring-2 focus:ring-violet-600"
           required
         >
-          {TYPE_OPTIONS.map((t) => (
-            <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>
+          {Object.entries(TYPE_GROUPS).map(([groupName, types]) => (
+            <optgroup key={groupName} label={groupName}>
+              {types.map((t) => (
+                <option key={t} value={t}>
+                  {t[0].toUpperCase() + t.slice(1)}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>
@@ -198,7 +301,7 @@ export default function CreateVportForm({ onCreated }) {
         </div>
       </div>
 
-      {/* Description -> bio */}
+      {/* Description */}
       <div>
         <label className="block text-sm text-zinc-300 mb-1.5">
           Description (optional)
@@ -226,7 +329,9 @@ export default function CreateVportForm({ onCreated }) {
           disabled={!canSubmit || submitting}
           className={cx(
             'rounded-xl px-5 py-2.5 font-semibold transition-colors',
-            canSubmit && !submitting ? 'bg-violet-600 hover:bg-violet-700' : 'bg-zinc-800 text-zinc-400 cursor-not-allowed'
+            canSubmit && !submitting
+              ? 'bg-violet-600 hover:bg-violet-700'
+              : 'bg-zinc-800 text-zinc-400 cursor-not-allowed'
           )}
         >
           {submitting ? 'Creating…' : 'Create Vport'}
@@ -236,10 +341,9 @@ export default function CreateVportForm({ onCreated }) {
   );
 }
 
-/* -------------------- local helpers (slug if needed) -------------------- */
+/* -------------------- local helpers -------------------- */
 function nullIfEmpty(s) { return s && s.trim() ? s.trim() : null; }
 function slugifyMaybe(name) {
-  // if you later add an explicit slug input, replace this with that value
   return name
     ?.toLowerCase()
     .replace(/[^a-z0-9\s-]+/g, '')

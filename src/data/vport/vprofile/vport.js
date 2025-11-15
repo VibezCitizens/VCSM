@@ -1,7 +1,6 @@
-// src/data/vport/vprofile/vport.js
 // Minimal data-layer for VPORTs under schema `vc`.
 
-import supabase from '@/lib/supabaseClient';  // ✅ default export
+import supabase from '@/lib/supabaseClient';  // default export
 import vc from '@/lib/vcClient';              // supabase.schema('vc') wrapper
 
 /* ------------------------------ utils ------------------------------ */
@@ -36,7 +35,7 @@ function raise(message, meta) {
 
 /* ------------------------------ create ----------------------------- */
 
-export async function createVport({ name, slug, avatarUrl, bio }) {
+export async function createVport({ name, slug, avatarUrl, bio, bannerUrl }) {
   await requireUser();
 
   const cleanName = ensureString(name).trim();
@@ -49,6 +48,7 @@ export async function createVport({ name, slug, avatarUrl, bio }) {
     p_slug: cleanSlug,                  // may be null
     p_avatar_url: avatarUrl ?? null,
     p_bio: bio ?? null,
+    p_banner_url: bannerUrl ?? null,    // optional in RPC
   });
 
   if (error) {
@@ -73,7 +73,7 @@ export async function listMyVports() {
   const user = await requireUser();
   const { data, error } = await vc
     .from('vports')
-    .select('id, name, slug, avatar_url, bio, is_active, created_at')
+    .select('id, name, slug, avatar_url, banner_url, bio, is_active, created_at')
     .eq('owner_user_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -84,9 +84,9 @@ export async function listMyVports() {
 export async function getVportById(vportId) {
   const { data, error } = await vc
     .from('vports')
-    .select('id, owner_user_id, name, slug, avatar_url, bio, is_active, created_at, updated_at')
+    .select('id, owner_user_id, name, slug, avatar_url, banner_url, bio, is_active, created_at, updated_at')
     .eq('id', vportId)
-    .maybeSingle();
+    .single(); // fail if not found/RLS
 
   if (error) raise('Failed to load Vport', { error });
   return data || null;
@@ -98,7 +98,7 @@ export async function getVportBySlug(slug) {
 
   const { data, error } = await vc
     .from('vports')
-    .select('id, owner_user_id, name, slug, avatar_url, bio, is_active, created_at, updated_at')
+    .select('id, owner_user_id, name, slug, avatar_url, banner_url, bio, is_active, created_at, updated_at')
     .eq('slug', clean)
     .maybeSingle();
 
@@ -112,7 +112,7 @@ export async function getVportsByIds(ids = []) {
   if (!uniq.length) return [];
   const { data, error } = await vc
     .from('vports')
-    .select('id, name, avatar_url, slug, is_active')
+    .select('id, name, slug, avatar_url, banner_url, is_active')
     .in('id', uniq);
   if (error) raise('Failed to load Vports', { error });
   return data || [];
@@ -120,14 +120,33 @@ export async function getVportsByIds(ids = []) {
 
 /* ------------------------------ updates ------------------------------ */
 
-export async function updateVport(vportId, { name, slug, avatarUrl, bio, is_active } = {}) {
+export async function updateVport(
+  vportId,
+  {
+    name,
+    slug,
+    avatarUrl,   // camelCase accepted
+    avatar_url,  // snake_case also accepted
+    bannerUrl,   // camelCase
+    banner_url,  // snake_case
+    bio,
+    is_active,
+  } = {}
+) {
   await requireUser();
+
   const patch = {};
-  if (name !== undefined) patch.name = ensureString(name).trim();
-  if (slug !== undefined) patch.slug = normalizeSlug(slug);
-  if (avatarUrl !== undefined) patch.avatar_url = avatarUrl ?? null;
-  if (bio !== undefined) patch.bio = bio ?? null;
-  if (is_active !== undefined) patch.is_active = !!is_active;
+  if (name !== undefined)        patch.name = ensureString(name).trim();
+  if (slug !== undefined)        patch.slug = normalizeSlug(slug);
+
+  if (avatarUrl !== undefined)   patch.avatar_url = avatarUrl ?? null;
+  if (avatar_url !== undefined)  patch.avatar_url = avatar_url ?? patch.avatar_url ?? null;
+
+  if (bannerUrl !== undefined)   patch.banner_url = bannerUrl ?? null;
+  if (banner_url !== undefined)  patch.banner_url = banner_url ?? patch.banner_url ?? null;
+
+  if (bio !== undefined)         patch.bio = bio ?? null;
+  if (is_active !== undefined)   patch.is_active = !!is_active;
 
   if (Object.keys(patch).length === 0) return await getVportById(vportId);
 
@@ -135,8 +154,8 @@ export async function updateVport(vportId, { name, slug, avatarUrl, bio, is_acti
     .from('vports')
     .update(patch)
     .eq('id', vportId)
-    .select('id, name, slug, avatar_url, bio, is_active, created_at, updated_at')
-    .maybeSingle();
+    .select('id, name, slug, avatar_url, banner_url, bio, is_active, created_at, updated_at')
+    .single(); // error if 0 rows (RLS or wrong id)
 
   if (error) raise('Failed to update Vport', { error });
   return data;

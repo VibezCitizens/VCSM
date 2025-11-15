@@ -1,6 +1,6 @@
 // src/ui/components/BottomNavBar.jsx
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide-react';
 
 import useNotiCount from '@/features/notifications/notificationcenter/hooks/useNotiCount';
@@ -8,21 +8,67 @@ import useUnreadBadge from '@/features/chat/hooks/useUnreadBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { useIdentity } from '@/state/identityContext';
 
+const DEBUG = true;
+
 export default function BottomNavBar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { identity } = useIdentity();
 
-  // unseen notifications (user hook — you can swap to a VPORT hook later if you want separate counts)
-  const notiCount = useNotiCount();
-
-  // total unread DMs (live) — still counting user inbox; you can add a VPORT version later
-  const chatUnread = useUnreadBadge(user?.id);
-
-  // when acting as VPORT, route bell and chat to VPORT screens
+  // persona choice (you already set this elsewhere)
   const isVport = identity?.type === 'vport' && !!identity?.vportId;
+
+  // ✅ The ONLY id you should pass to actor-scoped counters is vc.actors.id:
+  const personaActorId = useMemo(() => {
+    return identity?.actorId ?? null; // works for both user and vport personas in your context
+    // Only depend on the scalar used. Avoid re-computes from identity object identity changes.
+  }, [identity?.actorId]);
+
+  // 🔇 Log only when personaActorId actually changes
+  const lastActorRef = useRef();
+  useEffect(() => {
+    if (!DEBUG) return;
+    if (lastActorRef.current !== personaActorId) {
+      console.log('[BottomNavBar] personaActorId=', personaActorId, {
+        identity,
+        userId_was_profiles_id: user?.id ?? null,
+      });
+      lastActorRef.current = personaActorId;
+    }
+  }, [personaActorId, identity, user?.id]);
+
+  // Notifications — force counting on recipient_actor_id
+  const notiCount = useNotiCount({
+    actorId: personaActorId, // <-- vc.actors.id
+    scope: isVport ? 'vport' : 'user',         // <-- tells the hook to use recipient_actor_id
+    debug: DEBUG,
+    pollMs: 60_000,
+  });
+
+  // Chat unread — pass the same actor if your chat is actor-scoped
+  const { count: chatUnread } = useUnreadBadge({
+    actorId: personaActorId,            // <-- vc.actors.id
+    vportId: identity?.vportId || null, // keep if your chat also needs it
+    scope: isVport ? 'vport' : 'user',
+    refreshMs: 20_000,
+  });
+
+  // persona-aware routes
   const notificationsPath = isVport ? '/vport/notifications' : '/notifications';
   const chatPath = isVport ? '/vport/chat' : '/chat';
+
+  // persona-aware profile path
+  const profilePath = isVport
+    ? (identity?.vportSlug ? `/vport/${identity.vportSlug}` : `/vport/id/${identity?.vportId}`)
+    : '/me';
+
+  // keep badge fresh as you navigate, but only when actor is known
+  useEffect(() => {
+    if (!personaActorId) return;
+    if (DEBUG) console.log('[BottomNavBar] route change → noti:refresh', location.pathname);
+    window.dispatchEvent(new Event('noti:refresh'));
+  }, [location.pathname, personaActorId]);
 
   return (
     <nav
@@ -31,13 +77,9 @@ export default function BottomNavBar() {
       aria-label="Primary"
     >
       <div className="max-w-[600px] mx-auto h-16 flex items-center justify-between px-6 text-white">
-        {/* Home -> central feed */}
         <Tab to="/feed" label="Home" icon={<Home size={22} />} end />
-
-        {/* Explore */}
         <Tab to="/explore" label="Explore" icon={<Compass size={22} />} />
 
-        {/* Chat (routes to user or VPORT inbox) */}
         <Tab
           to={chatPath}
           label={chatUnread > 0 ? `Chat (${chatUnread})` : 'Chat'}
@@ -45,7 +87,6 @@ export default function BottomNavBar() {
           badgeCount={chatUnread}
         />
 
-        {/* Upload (center action button) */}
         <button
           aria-label="New Upload"
           onClick={() => navigate('/upload')}
@@ -54,7 +95,6 @@ export default function BottomNavBar() {
           <Plus size={24} />
         </button>
 
-        {/* Notifications (route depends on identity) */}
         <Tab
           to={notificationsPath}
           label={notiCount > 0 ? `Notifications (${notiCount})` : 'Notifications'}
@@ -62,10 +102,7 @@ export default function BottomNavBar() {
           badgeCount={notiCount}
         />
 
-        {/* Profile */}
-        <Tab to="/me" label="Profile" icon={<User size={22} />} />
-
-        {/* Settings */}
+        <Tab to={profilePath} label="Profile" icon={<User size={22} />} />
         <Tab to="/settings" label="Settings" icon={<Settings size={22} />} />
       </div>
     </nav>
@@ -74,7 +111,7 @@ export default function BottomNavBar() {
 
 const Tab = React.memo(function Tab({ to, icon, label, end = false, badgeCount = 0, badgeMax = 99 }) {
   const showBadge = Number(badgeCount) > 0;
-  const badgeText = badgeCount > badgeMax ? `${badgeMax}+` : String(badgeCount);
+  const badgeText = Number(badgeCount) > badgeMax ? `${badgeMax}+` : String(badgeCount);
 
   return (
     <NavLink
@@ -88,12 +125,11 @@ const Tab = React.memo(function Tab({ to, icon, label, end = false, badgeCount =
       }
     >
       <span className="inline-flex items-center justify-center">{icon}</span>
-
       {showBadge && (
         <span
-          className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1.5 rounded-full
-                     bg-red-500 text-white text-[10px] leading-[18px] text-center font-medium
-                     shadow"
+          className="pointer-events-none absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
+                     min-w-[18px] h-[18px] px-1.5 rounded-full bg-red-500 text-white
+                     text-[10px] leading-[18px] text-center font-medium shadow"
           aria-hidden="true"
         >
           {badgeText}

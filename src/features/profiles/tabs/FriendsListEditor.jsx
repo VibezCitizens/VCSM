@@ -1,59 +1,97 @@
-// src/features/profile/FriendsListEditor.jsx
+// src/features/profiles/tabs/FriendsListEditor.jsx
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
-import SortableFriend from "@/features/profiles/tabs/components/SortableFriend";
-
-
+import SortableFriend from '@/features/profiles/tabs/components/SortableFriend';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 
 const isUndefinedTable = (err) =>
-  String(err?.code) === '42P01' ||
-  /does not exist/i.test(String(err?.message || ''));
+  String(err?.code) === '42P01' || /does not exist/i.test(String(err?.message || ''));
+
+// resolve actor_id for a given user_id (public.profiles.id)
+async function getActorIdForUser(userId) {
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .schema('vc')
+    .from('actor_owners')
+    .select('actor_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error('[FriendsListEditor] failed to resolve actor_id', error);
+    return null;
+  }
+  return data?.actor_id ?? null;
+}
 
 /**
  * Editor that shows mutual friends (mutual follows) and lets you reorder.
- * If the optional table `public.friend_ranks` is not present, we still render,
+ * If the optional table `friend_ranks` is not present, we still render,
  * but we won’t persist drag order.
+ *
+ * NOTE: input prop remains userId (profile/user id). Internally we map to actor_id.
  */
 export default function FriendsListEditor({ userId }) {
-  const [items, setItems] = useState([]);       // [{id, username, display_name, photo_url, _rank?}]
+  const [items, setItems] = useState([]);       // [{id, username, display_name, photo_url, _rank?, _actor_id}]
   const [loading, setLoading] = useState(true);
   const [ranksAvailable, setRanksAvailable] = useState(true);
+  const [ownerActorId, setOwnerActorId] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const aId = await getActorIdForUser(userId);
+      if (!cancelled) setOwnerActorId(aId);
+    })();
+    return () => { cancelled = true; };
+  }, [userId]);
 
   const load = useCallback(async () => {
-    if (!userId) return;
+    if (!ownerActorId) return;
     setLoading(true);
     try {
-      // get following (active only)
+      // get following/followers (active only) from vc.actor_follows (actor-based)
       const [following, followers] = await Promise.all([
-        supabase.from('followers').select('followed_id').eq('follower_id', userId).eq('is_active', true),
-        supabase.from('followers').select('follower_id').eq('followed_id', userId).eq('is_active', true),
+        supabase
+          .schema('vc')
+          .from('actor_follows')
+          .select('followed_actor_id')
+          .eq('follower_actor_id', ownerActorId)
+          .eq('is_active', true),
+
+        supabase
+          .schema('vc')
+          .from('actor_follows')
+          .select('follower_actor_id')
+          .eq('followed_actor_id', ownerActorId)
+          .eq('is_active', true),
       ]);
       if (following.error) throw following.error;
       if (followers.error) throw followers.error;
 
-      const followingIds = (following.data || []).map((r) => r.followed_id);
-      const followerIds  = (followers.data  || []).map((r) => r.follower_id);
-      const setFollowers = new Set(followerIds);
-      const mutualIds = Array.from(new Set(followingIds.filter((id) => setFollowers.has(id))));
+      const followingIds = (following.data || []).map(r => r.followed_actor_id);
+      const followerIds  = (followers.data  || []).map(r => r.follower_actor_id);
+      const followerSet  = new Set(followerIds);
+      const mutualActorIds = Array.from(new Set(followingIds.filter(id => followerSet.has(id))));
 
-      if (mutualIds.length === 0) {
+      if (mutualActorIds.length === 0) {
         setItems([]);
         return;
       }
 
-      // try to fetch ranks (optional table)
+      // optional friend_ranks (actor-based)
       let rankMap = {};
       try {
         const { data: ranks, error: rankErr } = await supabase
-          .from('friend_ranks')
-          .select('friend_id, rank')
-          .eq('owner_id', userId)
-          .in('friend_id', mutualIds);
+          .schema('vc')
+          .from('friend_ranks') // optional
+          .select('friend_actor_id, rank')
+          .eq('owner_actor_id', ownerActorId)
+          .in('friend_actor_id', mutualActorIds);
         if (rankErr) throw rankErr;
-        (ranks || []).forEach((r) => { rankMap[r.friend_id] = r.rank; });
+        (ranks || []).forEach(r => { rankMap[r.friend_actor_id] = r.rank; });
         setRanksAvailable(true);
       } catch (e) {
         if (isUndefinedTable(e)) {
@@ -64,17 +102,33 @@ export default function FriendsListEditor({ userId }) {
         }
       }
 
-      // fetch profiles for mutuals
+      // map actor -> profile
+      const { data: actorRows, error: aErr } = await supabase
+        .schema('vc')
+        .from('actors')
+        .select('id, profile_id')
+        .in('id', mutualActorIds);
+      if (aErr) throw aErr;
+
+      const profileIds = (actorRows || []).map(r => r.profile_id).filter(Boolean);
+      const actorByProfile = {};
+      (actorRows || []).forEach(r => { if (r.profile_id) actorByProfile[r.profile_id] = r.id; });
+
+      // fetch public profiles
       const { data: profiles, error: pErr } = await supabase
-        .from('profiles')
+        .from('profiles') // public.profiles
         .select('id, username, display_name, photo_url')
-        .in('id', mutualIds);
+        .in('id', profileIds);
       if (pErr) throw pErr;
 
-      const decorated = (profiles || []).map((p) => ({
-        ...p,
-        _rank: Number.isFinite(rankMap[p.id]) ? rankMap[p.id] : null,
-      }));
+      const decorated = (profiles || []).map(p => {
+        const friendActorId = actorByProfile[p.id];
+        return {
+          ...p,
+          _actor_id: friendActorId,
+          _rank: Number.isFinite(rankMap[friendActorId]) ? rankMap[friendActorId] : null,
+        };
+      });
 
       // sort: ranked first (asc), then alphabetical
       decorated.sort((a, b) => {
@@ -91,12 +145,11 @@ export default function FriendsListEditor({ userId }) {
     } catch (err) {
       console.error('Failed to load friends', err);
       setItems([]);
-      // keep the UI usable even if ranking table is missing
       if (isUndefinedTable(err)) setRanksAvailable(false);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [ownerActorId]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -104,22 +157,27 @@ export default function FriendsListEditor({ userId }) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = items.findIndex((i) => i.id === active.id);
-    const newIndex = items.findIndex((i) => i.id === over.id);
+    const oldIndex = items.findIndex(i => i.id === active.id);
+    const newIndex = items.findIndex(i => i.id === over.id);
     const newOrder = arrayMove(items, oldIndex, newIndex);
     setItems(newOrder);
 
-    // persist ranks only if table exists
-    if (!ranksAvailable) return;
+    if (!ranksAvailable || !ownerActorId) return;
+
     try {
-      const upserts = newOrder.map((f, i) => ({
-        owner_id: userId,
-        friend_id: f.id,
-        rank: i,
+      // ✅ keep only top 10 and make rank 1–10 (matches CHECK constraint)
+      const limited = newOrder.slice(0, 10);
+      const upserts = limited.map((f, i) => ({
+        owner_actor_id: ownerActorId,
+        friend_actor_id: f._actor_id,
+        rank: i + 1, // <-- 1-based rank
       }));
+
       const { error } = await supabase
+        .schema('vc')
         .from('friend_ranks')
-        .upsert(upserts, { onConflict: ['owner_id', 'friend_id'] });
+        .upsert(upserts, { onConflict: ['owner_actor_id', 'friend_actor_id'] });
+
       if (error) {
         if (isUndefinedTable(error)) {
           setRanksAvailable(false);
@@ -144,9 +202,9 @@ export default function FriendsListEditor({ userId }) {
         </p>
       )}
       <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-        <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
-            {items.map((f) => <SortableFriend key={f.id} friend={f} />)}
+            {items.map(f => <SortableFriend key={f.id} friend={f} />)}
           </div>
         </SortableContext>
       </DndContext>

@@ -312,12 +312,15 @@ export default function CommentCard({
       <div className="bg-neutral-700 p-3 rounded-xl text-white text-sm">
         <div className="flex items-center justify-between">
           <UserLink
-            user={authorForLink}
-            authorType={authorTypeForLink}
-            textSize="text-sm"
-            avatarSize="w-6 h-6"
-            avatarShape="rounded-md"
-          />
+  user={authorForLink}
+  authorType={authorTypeForLink}
+  className="min-w-0 flex-1"
+  avatarSize="w-10 h-10"
+avatarShape="rounded-md"
+  textSize="text-base"
+  withUsername
+/>
+
         </div>
 
         {!isEditing ? (

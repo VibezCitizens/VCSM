@@ -8,7 +8,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useIdentity } from '@/state/identityContext';
 import { db } from '@/data/data';
-import { getOrCreateConversation } from '@/features/chat/utils/conversations';
+// import useOpenChat from '@/features/chat/hooks/useOpenChat'; // (unused here)
+import { openChatAsVport } from '@/features/chat/vchats/openChatAsVport';
+import { openChatWithUser } from '@/features/chat/helpers/chatHelpers';
+// import { getOrCreateConversation } from '@/features/chat/utils/conversations'; // replaced
+
 import UserLink from '@/components/UserLink';
 import CommentCard from './CommentCard';
 import { isFollowing, followUser, unfollowUser } from '@/utils/socialfriends/social';
@@ -49,6 +53,15 @@ const vibrate = (ms = 25) => navigator.vibrate?.(ms);
 const DEV = import.meta.env?.DEV;
 const logErr = (...a) => { if (DEV) console.error('%c[PostCard]', 'color:#ef4444', ...a); };
 const logDebug = (...a) => { if (DEV) console.log('%c[PostCard Debug]', 'color:#22c55e', ...a); };
+
+/** Treat duplicate-notification unique violations as success (idempotent path). */
+const isDuplicateNotiError = (e) => {
+  if (!e) return false;
+  if (e.code === '23505') return true;
+  const msg = String(e.message || '');
+  return msg.includes('duplicate key value')
+    || msg.includes('uniq_noti_per_post_reaction_user');
+};
 
 /* ------------------------------- component ------------------------------- */
 export default function PostCard({
@@ -276,38 +289,69 @@ export default function PostCard({
           activeVportId: willActAsVport ? vportId : null,
         });
         if (!actorId) throw new Error('No actor_id found for current user');
-        await db.roses.give({
-          postId: post.id,
-          qty: 1,
-          profileId: uid,
-          actingAsVport: willActAsVport,
-          vportId,
-          actorId,
-        });
+
+        try {
+          await db.roses.give({
+            postId: post.id,
+            qty: 1,
+            profileId: uid,
+            actingAsVport: willActAsVport,
+            vportId,
+            actorId,
+          });
+        } catch (e) {
+          // Treat duplicate notification inserts as success (idempotent)
+          if (isDuplicateNotiError(e)) {
+            console.warn('[PostCard] rose duplicate-notification ignored', e);
+          } else {
+            throw e;
+          }
+        }
+
         await fetchReactions();
         return;
       }
 
+      // like / dislike toggle
       if (userReaction === kind) {
-        await rApi.clearForPost({
-          postId: post.id,
-          userId: uid,
-          vportId: willActAsVport ? vportId : undefined,
-          kind,
-        });
+        try {
+          await rApi.clearForPost({
+            postId: post.id,
+            userId: uid,
+            vportId: willActAsVport ? vportId : undefined,
+            kind,
+          });
+        } catch (e) {
+          if (isDuplicateNotiError(e)) {
+            console.warn('[PostCard] clearForPost duplicate-notification ignored', e);
+          } else {
+            throw e;
+          }
+        }
       } else {
-        await rApi.setForPost({
-          postId: post.id,
-          kind,
-          userId: uid,
-          vportId: willActAsVport ? vportId : undefined,
-        });
+        try {
+          await rApi.setForPost({
+            postId: post.id,
+            kind,
+            userId: uid,
+            vportId: willActAsVport ? vportId : undefined,
+          });
+        } catch (e) {
+          if (isDuplicateNotiError(e)) {
+            console.warn('[PostCard] setForPost duplicate-notification ignored', e);
+          } else {
+            throw e;
+          }
+        }
       }
 
       await fetchReactions();
     } catch (e) {
       logErr('handleReact error', e);
-      alert(`Failed to react: ${e?.message || e}`);
+      // Only surface real errors; duplicate-notification is harmless/idempotent
+      if (!isDuplicateNotiError(e)) {
+        alert(`Failed to react: ${e?.message || e}`);
+      }
     } finally {
       setReactionBusy(false);
     }
@@ -350,13 +394,23 @@ export default function PostCard({
     }
   };
 
+  // ⬇️ Replaced to mirror ProfileHeader behavior; resolves actors internally
   const handleMessage = async () => {
     try {
       if (authorType !== 'user') return;
       const uid = currentUser?.id;
       if (!uid || !authorId || uid === authorId) return;
-      const convo = await getOrCreateConversation(authorId);
-      if (convo?.id) navigate(`/chat/${convo.id}`);
+
+      if (willActAsVport && vportId) {
+        await openChatAsVport({
+          vportId,
+          targetUserId: authorId,
+          navigate: (path) => navigate(path),
+        });
+      } else {
+        const convId = await openChatWithUser(authorId);
+        if (convId) navigate(`/chat/${convId}`);
+      }
     } catch (e) {
       logErr('handleMessage error', e);
     }

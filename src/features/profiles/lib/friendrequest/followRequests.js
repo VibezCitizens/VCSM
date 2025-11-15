@@ -1,276 +1,297 @@
-// /src/features/profiles/lib/friendrequest/followRequests.js
+// src/features/profiles/lib/friendrequest/followRequests.js
+// (instrumented for debugging only — no behavior changes)
+
 import { supabase } from '@/lib/supabaseClient';
 
-/* ──────────────────────────────────────────────────────────────────────────
- * Helpers: auth.user.id → profiles.id → actors.id
- *────────────────────────────────────────────────────────────────────────── */
+const DBG = true;
+const dlog = (...a) => DBG && console.debug('[followRequests]', ...a);
 
-async function getMyAuthUser() {
+/* ------------------------------------------------------------------ *
+ * helpers
+ * ------------------------------------------------------------------ */
+
+async function requireAuthUser() {
   const { data, error } = await supabase.auth.getUser();
   if (error) throw error;
-  const user = data?.user || null;
+  const user = data?.user;
   if (!user?.id) throw new Error('Not authenticated');
+  dlog('requireAuthUser →', user.id);
   return user;
 }
 
-/** Returns public.profiles.id for a given auth.users.id (often the same id in many apps). */
-async function getProfileIdForAuthUser(authUserId) {
-  // If your profiles.id == auth.users.id, you can return authUserId directly.
-  // We resolve via DB in case they ever diverge.
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('id', authUserId) // adjust if you store the mapping differently
-    .maybeSingle();
-  if (error) throw error;
-  if (!data?.id) throw new Error('Profile not found for user');
-  return data.id;
-}
-
-/** Returns vc.actors.id for a given profile_id (for kind='user' actor). */
-async function getActorIdForProfile(profileId) {
+/** The “user-actor” for a given auth user (actors.profile_id = auth user id) */
+async function getUserActorIdForUser(userId) {
+  if (!userId) return null;
   const { data, error } = await supabase
     .schema('vc')
     .from('actors')
     .select('id')
-    .eq('profile_id', profileId)
-    .eq('kind', 'user') // adjust if you want vport/org, etc.
-    .maybeSingle();
+    .eq('profile_id', userId)
+    .limit(1);
   if (error) throw error;
-  if (!data?.id) throw new Error('Actor not found for profile');
-  return data.id;
+  const out = Array.isArray(data) && data[0]?.id ? data[0].id : null;
+  dlog('getUserActorIdForUser →', { userId, actorId: out });
+  return out;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
- * Requester-side: status / create / cancel
- *────────────────────────────────────────────────────────────────────────── */
-
-export async function getFollowRequestStatus({ requesterId, targetId }) {
-  // requesterId & targetId here are auth.users.id
+/** Any owner of an actor (covers user actors and vports) */
+async function getOwnerUserIdForActor(actorId) {
+  if (!actorId) return null;
   const { data, error } = await supabase
     .schema('vc')
-    .from('follow_requests')
-    .select('status')
-    .eq('requester_id', requesterId)
-    .eq('target_id', targetId)
-    .maybeSingle();
-
-  if (error && error.code !== 'PGRST116') throw error;
-  return data?.status || null; // null = no request yet
+    .from('actor_owners')
+    .select('user_id')
+    .eq('actor_id', actorId)
+    .limit(1);
+  if (error) throw error;
+  const out = Array.isArray(data) && data[0]?.user_id ? data[0].user_id : null;
+  dlog('getOwnerUserIdForActor →', { actorId, ownerUserId: out });
+  return out;
 }
 
-export async function createFollowRequest({ targetId }) {
-  // targetId is expected to be auth.users.id (owner’s auth id)
-  const meAuth = await getMyAuthUser(); // requester auth
-  const myProfileId = await getProfileIdForAuthUser(meAuth.id);  // for notifications actor lookup + other tables
-  const myActorId = await getActorIdForProfile(myProfileId);
+/* ------------------------------------------------------------------ *
+ * queries
+ * ------------------------------------------------------------------ */
 
-  // 1) insert follow_requests (auth-domain IDs)
-  const { error } = await supabase
+/** Read current follow-request status (by actor pair), or null if none */
+export async function getFollowRequestStatus({ requesterActorId, targetActorId }) {
+  if (!requesterActorId || !targetActorId) return null;
+
+  dlog('getFollowRequestStatus: query', { requesterActorId, targetActorId });
+  const { data, error } = await supabase
     .schema('vc')
-    .from('follow_requests')
-    .insert({
-      requester_id: meAuth.id,
-      target_id: targetId,
-      status: 'pending',
-    });
+    .from('social_follow_requests')
+    .select('status')
+    .eq('requester_actor_id', requesterActorId)
+    .eq('target_actor_id', targetActorId)
+    .limit(1);
 
   if (error) throw error;
+  const out = Array.isArray(data) && data[0]?.status ? data[0].status : null;
+  dlog('getFollowRequestStatus: result', out);
+  return out;
+}
 
-  // 2) emit notification to target’s notifications inbox
-  //    vc.notifications requires: user_id (recipient profile id), actor_id (vc.actors.id), kind, context
-  try {
-    const targetProfileId = await getProfileIdForAuthUser(targetId);
+/**
+ * Create (or revive) a follow request to 'pending'.
+ * Inputs are ACTOR IDs. We also populate user FKs for your existing PK (requester_id,target_id).
+ */
+export async function createFollowRequest({ requesterActorId, targetActorId }) {
+  if (!requesterActorId || !targetActorId) throw new Error('Missing actor ids');
 
-    // tiny requester card for UI
-    const { data: meProf } = await supabase
-      .from('profiles')
-      .select('id, username, display_name, photo_url')
-      .eq('id', myProfileId)
-      .maybeSingle();
+  dlog('createFollowRequest: begin', { requesterActorId, targetActorId });
 
-    await supabase
-      .schema('vc')
-      .from('notifications')
-      .insert({
-        user_id: targetProfileId,        // recipient (profile id)
-        actor_id: myActorId,             // requester actor id
-        kind: 'follow_request',
-        object_type: 'follow_request',
-        object_id: null,
-        link_path: null,                 // e.g., `/u/<username>` if you want a deep link
-        context: {
-          requester: meProf || { id: myProfileId },
-          requester_auth_id: meAuth.id,
-        },
-        is_seen: false,
-        is_read: false,
-      });
-  } catch (e) {
-    // don't block request creation on notification failure
-    console.warn('[followRequests] notification insert failed', e?.message || e);
+  // Resolve user owners for both actors (kept to satisfy your current PK/joins)
+  const [requesterUserId, targetUserId] = await Promise.all([
+    getOwnerUserIdForActor(requesterActorId),
+    getOwnerUserIdForActor(targetActorId),
+  ]);
+
+  if (!requesterUserId || !targetUserId) {
+    throw new Error('Could not resolve requester/target user owners for the given actors.');
   }
 
-  return true;
+  const payload = {
+    requester_id: requesterUserId,
+    target_id:    targetUserId,
+    requester_actor_id: requesterActorId,
+    target_actor_id:    targetActorId,
+    status: 'pending',
+    updated_at: new Date().toISOString(),
+  };
+  dlog('createFollowRequest: upsert payload', payload);
+
+  const { data, error: upErr } = await supabase
+    .schema('vc')
+    .from('social_follow_requests')
+    .upsert(payload, { onConflict: 'requester_id,target_id' })
+    .select('requester_id,target_id,requester_actor_id,target_actor_id,status,created_at,updated_at');
+
+  dlog('createFollowRequest: upsert result', { data, upErr });
+  if (upErr) throw upErr;
+
+  // Return current status by actor pair
+  const status = await getFollowRequestStatus({ requesterActorId, targetActorId });
+  dlog('createFollowRequest: final status', status ?? 'pending');
+  return status ?? 'pending';
 }
 
-export async function cancelFollowRequest({ targetId }) {
-  const meAuth = await getMyAuthUser();
+/** Cancel my pending request (by actor pair) */
+export async function cancelFollowRequest({ requesterActorId, targetActorId }) {
+  if (!requesterActorId || !targetActorId) return true;
 
-  const { error } = await supabase
+  dlog('cancelFollowRequest: begin', { requesterActorId, targetActorId });
+
+  const { data, error } = await supabase
     .schema('vc')
-    .from('follow_requests')
-    .update({ status: 'cancelled' })
-    .eq('requester_id', meAuth.id)
-    .eq('target_id', targetId)
-    .eq('status', 'pending');
+    .from('social_follow_requests')
+    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+    .match({
+      requester_actor_id: requesterActorId,
+      target_actor_id: targetActorId,
+      status: 'pending',
+    })
+    .select('requester_actor_id,target_actor_id,status');
 
+  dlog('cancelFollowRequest: update result', { data, error });
   if (error) throw error;
   return true;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
- * Target-side: list pending / accept / decline
- * IMPORTANT: followers table wants profiles.id (NOT auth.users.id)
- *────────────────────────────────────────────────────────────────────────── */
-
-// REPLACE ONLY this function in /src/features/profiles/lib/friendrequest/followRequests.js
-
+/**
+ * List incoming pending requests for the CURRENT AUTH USER across:
+ *  - rows where target_actor_id == my user-actor
+ *  - rows where target_id == my auth user id (legacy support)
+ */
 export async function listIncomingFollowRequests() {
-  const { data: authRes, error: uerr } = await supabase.auth.getUser();
-  if (uerr) throw uerr;
-  const meAuthId = authRes?.user?.id;
-  if (!meAuthId) throw new Error('Not authenticated');
+  const me = await requireAuthUser();
+  const myUserActorId = await getUserActorIdForUser(me.id);
 
-  // 1) Raw pending requests (AUTH-domain ids)
+  dlog('listIncomingFollowRequests: begin', { me: me.id, myUserActorId });
+
+  // Pull both kinds (actor-targeted and user-targeted)
+  const orExpr = [
+    myUserActorId ? `and(target_actor_id.eq.${myUserActorId},status.eq.pending)` : null,
+    `and(target_id.eq.${me.id},status.eq.pending)`,
+  ]
+    .filter(Boolean)
+    .join(',');
+
+  dlog('listIncomingFollowRequests: or()', orExpr);
+
   const { data: reqs, error } = await supabase
     .schema('vc')
-    .from('follow_requests')
-    .select('requester_id, target_id, status, created_at')
-    .eq('target_id', meAuthId)
-    .eq('status', 'pending')
+    .from('social_follow_requests')
+    .select('requester_id, requester_actor_id, target_id, target_actor_id, status, created_at')
+    .or(orExpr)
     .order('created_at', { ascending: false });
+
+  dlog('listIncomingFollowRequests: rows', reqs);
   if (error) throw error;
+  if (!Array.isArray(reqs) || reqs.length === 0) return [];
 
-  if (!reqs?.length) return [];
+  // Enrich with requester profile rows (by requester_id = auth/profiles id)
+  const requesterUserIds = [...new Set(reqs.map(r => r.requester_id).filter(Boolean))];
+  let profilesById = new Map();
+  if (requesterUserIds.length) {
+    const { data: profiles, error: pErr } = await supabase
+      .from('profiles')
+      .select('id, username, display_name, photo_url')
+      .in('id', requesterUserIds);
+    if (pErr) throw pErr;
+    profilesById = new Map((profiles || []).map(p => [p.id, p]));
+  }
 
-  // 2) Fetch requester profiles in one round-trip (PROFILE-domain ids == auth ids in your app)
-  const ids = [...new Set(reqs.map(r => r.requester_id))];
-  const { data: profiles, error: pErr } = await supabase
-    .from('profiles')
-    .select('id, username, display_name, photo_url')
-    .in('id', ids);
-  if (pErr) throw pErr;
-
-  const byId = new Map((profiles || []).map(p => [p.id, p]));
-
-  // 3) Merge into the shape your UI expects
-  return reqs.map(r => ({
-    requesterAuthId: r.requester_id,                 // AUTH id (also your profiles.id)
-    targetAuthId: r.target_id,                       // AUTH id
+  const out = reqs.map(r => ({
+    requesterActorId: r.requester_actor_id ?? null,
+    targetActorId: r.target_actor_id ?? null,
     status: r.status,
     createdAt: r.created_at,
-    requesterProfile: byId.get(r.requester_id) || null, // PROFILE row for tile UI
+    requesterProfile: r.requester_id ? profilesById.get(r.requester_id) || null : null,
   }));
+
+  dlog('listIncomingFollowRequests: out →', out);
+  return out;
 }
 
-
 /**
- * Accept a request:
- *  1) upsert follower (requesterProfileId → myProfileId) in vc.followers
- *  2) mark follow_requests row as accepted (auth domain)
- *  3) (optional) notify requester that it was accepted
+ * Accept a pending request (by requesterActorId → my user-actor):
+ *  - Upsert actor_follows edge: requesterActorId (follower) → myUserActorId (followed)
+ *  - Mark request as 'accepted'
  */
-export async function acceptFollowRequest({ requesterId }) {
-  // requesterId is AUTH user id of the requester
-  const meAuth = await getMyAuthUser();
-  const myProfileId = await getProfileIdForAuthUser(meAuth.id);
-  const requesterProfileId = await getProfileIdForAuthUser(requesterId); // convert AUTH → PROFILE for followers table
+export async function acceptFollowRequest({ requesterActorId }) {
+  if (!requesterActorId) throw new Error('Missing requesterActorId');
 
-  // 1) Upsert followers with PROFILE ids
-  const { error: fErr } = await supabase
+  const me = await requireAuthUser();
+  const myUserActorId = await getUserActorIdForUser(me.id);
+  if (!myUserActorId) throw new Error('Your user actor could not be resolved');
+
+  dlog('ACCEPT begin', { me: me.id, requesterActorId, myUserActorId });
+
+  // Sanity: what pending row *should* match? (no 'id' column here)
+  {
+    const { data: pre, error: preErr } = await supabase
+      .schema('vc')
+      .from('social_follow_requests')
+      .select('requester_id,target_id,requester_actor_id,target_actor_id,status,created_at,updated_at')
+      .eq('requester_actor_id', requesterActorId)
+      .eq('target_actor_id', myUserActorId)
+      .eq('status', 'pending')
+      .limit(5);
+    dlog('ACCEPT pre-check (expected pending rows):', { rows: pre, error: preErr });
+  }
+
+  // 1) Create/activate follow edge in vc.actor_follows
+  const followPayload = {
+    follower_actor_id: requesterActorId,
+    followed_actor_id: myUserActorId,
+    is_active: true,
+  };
+  const { data: fData, error: fErr } = await supabase
     .schema('vc')
-    .from('followers')
-    .upsert(
-      { follower_id: requesterProfileId, followed_id: myProfileId, is_active: true },
-      { onConflict: 'followed_id,follower_id' }
-    );
+    .from('actor_follows')
+    .upsert(followPayload, { onConflict: 'follower_actor_id,followed_actor_id' })
+    .select('follower_actor_id,followed_actor_id,is_active');
+
+  dlog('ACCEPT actor_follows upsert →', { followPayload, fData, fErr });
   if (fErr) throw fErr;
 
-  // 2) Mark request accepted (AUTH ids)
-  const { error: rErr } = await supabase
+  // 2) Update the request to accepted (no 'id' column in select)
+  const { data: updated, error: rErr } = await supabase
     .schema('vc')
-    .from('follow_requests')
-    .update({ status: 'accepted' })
-    .match({ requester_id: requesterId, target_id: meAuth.id, status: 'pending' });
+    .from('social_follow_requests')
+    .update({ status: 'accepted', updated_at: new Date().toISOString() })
+    .match({
+      requester_actor_id: requesterActorId,
+      target_actor_id: myUserActorId,
+      status: 'pending',
+    })
+    .select('requester_actor_id,target_actor_id,status,updated_at');
+
+  dlog('ACCEPT update →', { updated, rErr });
   if (rErr) throw rErr;
-
-  // 3) Optional: send a notification to the requester that it was accepted
-  try {
-    const myActorId = await getActorIdForProfile(myProfileId);
-    await supabase
-      .schema('vc')
-      .from('notifications')
-      .insert({
-        user_id: requesterProfileId,   // recipient is requester (profile id)
-        actor_id: myActorId,           // actor is me (target who accepted)
-        kind: 'follow_request_accepted',
-        object_type: 'follow',
-        object_id: null,
-        link_path: null,
-        context: { target_profile_id: myProfileId, target_auth_id: meAuth.id },
-        is_seen: false,
-        is_read: false,
-      });
-  } catch (e) {
-    console.warn('[followRequests] accept notify failed', e?.message || e);
+  if (!Array.isArray(updated) || updated.length === 0) {
+    throw new Error('No pending request matched this actor pair for the current target.');
   }
 
+  dlog('ACCEPT done ✅');
   return true;
 }
 
-/**
- * Decline a request (target side)
- */
-export async function declineFollowRequest({ requesterId }) {
-  const meAuth = await getMyAuthUser();
+/** Decline a pending request (by actor pair) */
+export async function declineFollowRequest({ requesterActorId }) {
+  if (!requesterActorId) throw new Error('Missing requesterActorId');
 
-  const { error } = await supabase
+  const me = await requireAuthUser();
+  const myUserActorId = await getUserActorIdForUser(me.id);
+  if (!myUserActorId) throw new Error('Your user actor could not be resolved');
+
+  dlog('DECLINE begin', { me: me.id, requesterActorId, myUserActorId });
+
+  const { data: updated, error } = await supabase
     .schema('vc')
-    .from('follow_requests')
-    .update({ status: 'declined' })
-    .match({ requester_id: requesterId, target_id: meAuth.id, status: 'pending' });
+    .from('social_follow_requests')
+    .update({ status: 'declined', updated_at: new Date().toISOString() })
+    .match({
+      requester_actor_id: requesterActorId,
+      target_actor_id: myUserActorId,
+      status: 'pending',
+    })
+    .select('requester_actor_id,target_actor_id,status,updated_at');
 
+  dlog('DECLINE update →', { updated, error });
   if (error) throw error;
-
-  // Optional: notify requester of the decline (comment out if not desired)
-  try {
-    const myProfileId = await getProfileIdForAuthUser(meAuth.id);
-    const myActorId = await getActorIdForProfile(myProfileId);
-    const requesterProfileId = await getProfileIdForAuthUser(requesterId);
-    await supabase
-      .schema('vc')
-      .from('notifications')
-      .insert({
-        user_id: requesterProfileId,
-        actor_id: myActorId,
-        kind: 'follow_request_declined',
-        object_type: 'follow',
-        object_id: null,
-        link_path: null,
-        context: { target_profile_id: myProfileId, target_auth_id: meAuth.id },
-        is_seen: false,
-        is_read: false,
-      });
-  } catch (e) {
-    console.warn('[followRequests] decline notify failed', e?.message || e);
+  if (!Array.isArray(updated) || updated.length === 0) {
+    throw new Error('No pending request matched this actor pair for the current target.');
   }
-
+  dlog('DECLINE done ✅');
   return true;
 }
 
-/* Convenience wrapper */
-export async function respondToFollowRequest({ requesterId, accept }) {
-  if (accept) return acceptFollowRequest({ requesterId });
-  return declineFollowRequest({ requesterId });
+/** Helper: unified accept/decline (actor-based) */
+export async function respondToFollowRequest({ requesterActorId, accept }) {
+  dlog('respondToFollowRequest', { requesterActorId, accept });
+  return accept
+    ? acceptFollowRequest({ requesterActorId })
+    : declineFollowRequest({ requesterActorId });
 }

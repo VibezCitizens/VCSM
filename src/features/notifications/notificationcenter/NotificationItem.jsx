@@ -1,10 +1,14 @@
 // src/features/notifications/notificationcenter/NotificationItem.jsx
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserLink from '@/components/UserLink';
 import { supabase } from '@/lib/supabaseClient';
 import toast from 'react-hot-toast';
 import useProfile from '@/features/notifications/notificationcenter/hooks/useProfile';
+import {
+  acceptFollowRequest,
+  declineFollowRequest,
+} from '@/features/profiles/lib/friendrequest/followRequests';
 
 const DEBUG = true;
 
@@ -36,19 +40,60 @@ function ensureObj(v) {
   }
 }
 
+/** Normalize DB kinds (dot.case, generic) to UI snake_case names your switch expects */
+function normalizeKind(raw) {
+  const k = String(raw || '').toLowerCase();
+  if (!k) return '';
+
+  // convert dot.case -> snake_case
+  const snake = k.replaceAll('.', '_');
+
+  // map generic names coming from triggers/inserts
+  if (snake === 'reaction') return 'post_reaction';
+  if (k === 'follow.request' || snake === 'follow_request') return 'follow_request';
+  if (k === 'follow.accepted' || snake === 'follow_accepted' || snake === 'follow_accept') {
+    return 'follow_request_accepted';
+  }
+
+  // otherwise keep as-is
+  return snake;
+}
+
+// Resolve a user’s “user-actor” (vc.actors.profile_id = userId)
+async function resolveActorIdForUser(userId) {
+  if (!userId) return null;
+  try {
+    const { data, error } = await supabase
+      .schema('vc')
+      .from('actors')
+      .select('id')
+      .eq('profile_id', userId)
+      .limit(1);
+
+    if (error) {
+      if (DEBUG) console.debug('[NotificationItem] resolveActorIdForUser error', error);
+      return null;
+    }
+    return Array.isArray(data) && data[0]?.id ? data[0].id : null;
+  } catch (e) {
+    if (DEBUG) console.debug('[NotificationItem] resolveActorIdForUser exception', e);
+    return null;
+  }
+}
+
 export default function NotificationItem({ notif, onClick, onResolved }) {
   const navigate = useNavigate();
 
-  const kind = (notif?.kind || notif?.type || '').toLowerCase();
+  const kind = normalizeKind(notif?.kind || notif?.type);
   const objectType = (notif?.object_type || '').toLowerCase();
 
   const [busy, setBusy] = useState(false);
   const [seenLocal, setSeenLocal] = useState(false);
 
-  // Prefer the hydrated sender from the VIEW (can be user OR vport)
+  // Prefer the hydrated sender injected upstream (can be user OR vport)
   let preloadedSender = notif?.sender || null; // { type: 'user'|'vport', ... }
 
-  // 🔧 Defensive: if sender is missing type but notif has actor_vport_id, treat as vport
+  // Defensive: if sender missing but notif hints it's a vport actor
   if (!preloadedSender && notif?.actor_vport_id) {
     preloadedSender = {
       type: 'vport',
@@ -60,8 +105,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
     };
   }
 
-  // If we didn't get a sender (older rows / fallback), try to resolve a user profile
-  // only in the user case. Vports don't use this hook.
+  // If still no sender, try fetching a user profile (vports don't use this hook)
   const actorProfileId =
     notif?.actor_profile_id ||
     notif?.context?.actor_user_id ||
@@ -74,12 +118,11 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
 
   // Final sender object normalized for <UserLink/>
   const sender = useMemo(() => {
-    // --- VPORT normalization: expose display_name/photo_url so <UserLink/> renders name + avatar
+    // vport
     if (preloadedSender?.type === 'vport') {
       return {
         id: preloadedSender.id,
         display_name: preloadedSender.display_name || preloadedSender.name || 'VPORT',
-        // Keep both slug + username fields for compatibility; UserLink prefers slug for vports.
         slug: preloadedSender.slug || preloadedSender.vport_slug || null,
         username: null,
         avatar_url: preloadedSender.avatar_url || preloadedSender.photo_url || '/avatar.jpg',
@@ -87,7 +130,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         type: 'vport',
       };
     }
-
+    // user (preloaded)
     if (preloadedSender?.type === 'user') {
       return {
         id: preloadedSender.id,
@@ -98,8 +141,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         type: 'user',
       };
     }
-
-    // Fallback from fetched user profile
+    // fetched user profile fallback
     if (fetchedSender) {
       return {
         id: fetchedSender.id,
@@ -131,13 +173,19 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
       );
     }
     if (!sender) return <span className="text-neutral-400 italic">Someone</span>;
+
+    const authorType = sender.type === 'vport' ? 'vport' : 'user';
+
     return (
       <span className="[&_*]:pointer-events-none">
         <UserLink
           user={sender}
-          authorType={sender.type === 'vport' ? 'vport' : 'user'}
-          avatarSize="w-5 h-5"
-          textSize="text-sm"
+          authorType={authorType}
+          className="min-w-0 flex-1"
+          avatarSize="w-10 h-10"
+          avatarShape="rounded-md"
+          textSize="text-base"
+          withUsername
         />
       </span>
     );
@@ -151,17 +199,27 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
     kind === 'like_comment' ||
     (objectType === 'post_comment' &&
       (kind === 'like' ||
-        kind === 'post_like' ||
-        ctx.action === 'like' ||
-        ctx.event === 'like'));
+       kind === 'post_like' ||
+       kind === 'post_reaction' || // if reactions used for comment likes
+       ctx.action === 'like' ||
+       ctx.event === 'like' ||
+       ctx.reaction_type === 'like' ||
+       ctx.reaction === 'like'));
 
   const markRead = useCallback(async () => {
     try {
-      const { error } = await supabase
+      let q = supabase
         .schema('vc')
         .from('notifications')
         .update({ is_read: true, is_seen: true })
         .eq('id', notif.id);
+
+      // if we have the recipient, include it for RLS-friendly update
+      if (notif?.recipient_actor_id) {
+        q = q.eq('recipient_actor_id', notif.recipient_actor_id);
+      }
+
+      const { error } = await q;
 
       if (DEBUG) {
         if (error) console.error('[noti][markRead] error', error);
@@ -171,7 +229,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
       if (DEBUG) console.error('[noti][markRead] threw', e);
     }
     setSeenLocal(true);
-  }, [notif?.id]);
+  }, [notif?.id, notif?.recipient_actor_id]);
 
   const showNew = !(notif?.is_seen ?? false) && !seenLocal;
 
@@ -183,7 +241,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
       if (DEBUG)
         console.log('[noti][persistResolution] writing', { id: notif.id, newCtx });
 
-      const { data: updData, error: upErr } = await supabase
+      let q = supabase
         .schema('vc')
         .from('notifications')
         .update({
@@ -195,20 +253,45 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         .select('id, is_read, is_seen, context')
         .maybeSingle();
 
+      if (notif?.recipient_actor_id) {
+        q = q.eq('recipient_actor_id', notif.recipient_actor_id);
+      }
+
+      const { error: upErr } = await q;
+
       if (upErr) {
         if (DEBUG) console.error('[noti][persistResolution] update error', upErr);
         throw upErr;
       }
-      if (DEBUG) console.log('[noti][persistResolution] table updated row', updData);
 
-      return updData;
+      return true;
     },
-    [ctx, notif?.id]
+    [ctx, notif?.id, notif?.recipient_actor_id]
   );
 
   // ───────────── FOLLOW REQUEST
   if (kind === 'follow_request') {
+    const createdAt = notif?.created_at || null;
+
+    // Prefer actor id from context; else resolve from requester auth id
     const requesterAuthId = ctx?.requester_auth_id || sender?.id || null;
+    const requesterActorIdFromCtx = ctx?.requester_actor_id || null;
+
+    const [requesterActorId, setRequesterActorId] = useState(requesterActorIdFromCtx || null);
+
+    useEffect(() => {
+      let alive = true;
+      (async () => {
+        if (!requesterActorIdFromCtx && requesterAuthId && !requesterActorId) {
+          const aId = await resolveActorIdForUser(requesterAuthId);
+          if (alive) setRequesterActorId(aId);
+        }
+      })();
+      return () => {
+        alive = false;
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [requesterActorIdFromCtx, requesterAuthId]);
 
     const goToRequesterProfile = () => {
       if (sender?.type === 'vport') {
@@ -223,15 +306,27 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
 
     const handleAccept = async (e) => {
       e?.stopPropagation?.();
-      if (!requesterAuthId) return toast.error('Missing requester id.');
-      setLocalDecision('accepted');
-      setBusy(true);
-      await markRead();
+      if (busy) return;
+      if (!requesterActorId) return toast.error('Requester actor not resolved yet.');
+
       try {
-        // your existing accept flow (left as-is)
-        // await acceptFollowRequest({ requesterId: requesterAuthId });
+        setBusy(true);
+        setLocalDecision('accepted');
+
+        // UX first
+        await markRead();
+
+        // DB: accept (writes vc.actor_follows + updates vc.social_follow_requests via RLS)
+        await acceptFollowRequest({ requesterActorId });
+
+        // Optional: persist resolution to notification context
         await persistResolution('accepted');
+
         toast.success('Request accepted');
+        onResolved?.('accepted');
+        window.dispatchEvent?.(new Event('friendreq:changed'));
+        window.dispatchEvent?.(new Event('follow:changed'));
+        window.dispatchEvent?.(new Event('noti:refresh'));
       } catch (err) {
         setLocalDecision(null);
         toast.error(err?.message || 'Failed to accept.');
@@ -243,14 +338,21 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
 
     const handleDecline = async (e) => {
       e?.stopPropagation?.();
-      if (!requesterAuthId) return toast.error('Missing requester id.');
-      setLocalDecision('declined');
-      setBusy(true);
-      await markRead();
+      if (busy) return;
+      if (!requesterActorId) return toast.error('Requester actor not resolved yet.');
+
       try {
-        // await declineFollowRequest({ requesterId: requesterAuthId });
+        setBusy(true);
+        setLocalDecision('declined');
+        await markRead();
+
+        await declineFollowRequest({ requesterActorId });
         await persistResolution('declined');
+
         toast('Declined');
+        onResolved?.('declined');
+        window.dispatchEvent?.(new Event('friendreq:changed'));
+        window.dispatchEvent?.(new Event('noti:refresh'));
       } catch (err) {
         setLocalDecision(null);
         toast.error(err?.message || 'Failed to decline.');
@@ -267,11 +369,12 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
             ✅ You’re connected! Now’s a great time to start making memories together.
           </div>
           <div className="text-xs text-neutral-400">
-            {notif?.created_at ? new Date(notif.created_at).toLocaleString() : ''}
+            {createdAt ? new Date(createdAt).toLocaleString() : ''}
           </div>
         </li>
       );
     }
+
     if (decision === 'declined') {
       return (
         <li className="bg-neutral-800 p-3 rounded-lg shadow">
@@ -279,7 +382,7 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
             🚫 Friendship declined. You can always create new memories with new friends.
           </div>
           <div className="text-xs text-neutral-400">
-            {notif?.created_at ? new Date(notif.created_at).toLocaleString() : ''}
+            {createdAt ? new Date(createdAt).toLocaleString() : ''}
           </div>
         </li>
       );
@@ -290,24 +393,24 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         className="bg-neutral-800 p-3 rounded-lg shadow flex justify-between items-center"
         aria-label="Follow request"
       >
-        <div>
+        <div onClick={goToRequesterProfile} className="min-w-0">
           <div className="text-sm">
             👥 <ActorInline /> requested to follow you
           </div>
           <div className="text-xs text-neutral-400">
-            {notif?.created_at ? new Date(notif.created_at).toLocaleString() : ''}
+            {createdAt ? new Date(createdAt).toLocaleString() : ''}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
-            disabled={busy}
+            disabled={busy || !requesterActorId}
             onClick={handleAccept}
             className="px-3 py-1.5 rounded-lg bg-white text-black text-sm hover:opacity-90 disabled:opacity-60"
           >
             Accept
           </button>
           <button
-            disabled={busy}
+            disabled={busy || !requesterActorId}
             onClick={handleDecline}
             className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400/60 disabled:opacity-60"
           >
@@ -404,21 +507,56 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         break;
       }
       case 'post_reaction': {
-        const ico = emojiMap[ctx?.reaction_type] || fallbackIcon;
-        message = (
-          <>
-            {ico} <ActorInline /> reacted to your post
-          </>
-        );
+        // Handle both reaction_type and reaction fields
+        const reactionType =
+          (ctx?.reaction_type ?? ctx?.reaction ?? ctx?.type ?? ctx?.name ?? '').toLowerCase();
+
+        if (reactionType === 'like') {
+          message = (
+            <>
+              {emojiMap.like} <ActorInline /> liked your post
+            </>
+          );
+        } else if (reactionType === 'dislike') {
+          message = (
+            <>
+              {emojiMap.dislike} <ActorInline /> disliked your post
+            </>
+          );
+        } else {
+          const ico = emojiMap[reactionType] || fallbackIcon;
+          message = (
+            <>
+              {ico} <ActorInline /> reacted to your post
+            </>
+          );
+        }
         break;
       }
       case 'story_reaction': {
-        const ico = emojiMap[ctx?.reaction_type] || fallbackIcon;
-        message = (
-          <>
-            {ico} <ActorInline /> reacted to your story
-          </>
-        );
+        const reactionType =
+          (ctx?.reaction_type ?? ctx?.reaction ?? ctx?.type ?? ctx?.name ?? '').toLowerCase();
+
+        if (reactionType === 'like') {
+          message = (
+            <>
+              {emojiMap.like} <ActorInline /> liked your story
+            </>
+          );
+        } else if (reactionType === 'dislike') {
+          message = (
+            <>
+              {emojiMap.dislike} <ActorInline /> disliked your story
+            </>
+          );
+        } else {
+          const ico = emojiMap[reactionType] || fallbackIcon;
+          message = (
+            <>
+              {ico} <ActorInline /> reacted to your story
+            </>
+          );
+        }
         break;
       }
       case 'follow':
@@ -487,7 +625,11 @@ export default function NotificationItem({ notif, onClick, onResolved }) {
         break;
       }
       default:
-        message = <>{fallbackIcon} You have a new notification</>;
+        message = (
+          <>
+            {fallbackIcon} <ActorInline /> sent a notification
+          </>
+        );
     }
   }
 

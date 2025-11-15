@@ -1,23 +1,115 @@
 // src/features/settings/tabs/ProfileTab.jsx
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useIdentity } from '@/state/identityContext';
 import { db } from '@/data/data';
 import Card from '../components/Card';
 import { uploadProfilePicture } from '@/features/chat/hooks/useProfileUploader';
 import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+const UUID_RX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export default function ProfileTab() {
+export default function ProfileTab(props) {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const params = useParams();
   const { user } = useAuth();
+  const { identity } = useIdentity(); // { type: 'vport'|'user', vportId?, userId? }
+
+  const inferModeFromPath = () => {
+    const segs = location.pathname.split('/').filter(Boolean);
+    return segs.includes('vport') ? 'vport' : 'user';
+  };
+
+  const rawMode =
+    props.mode ??
+    ((identity?.type === 'vport') ? 'vport' : null) ??
+    searchParams.get('mode') ??
+    inferModeFromPath() ??
+    'user';
+
+  const mode = String(rawMode).toLowerCase() === 'vport' ? 'vport' : 'user';
+
+  // Only pick vportId from params for vport mode; do NOT mix in actorId here.
+  const pathVportId = params.vportId || null;
+  const qpActorId = searchParams.get('actorId');
+
+  // VPORT MODE precedence = route :vportId → identity.vportId → null (NEVER actorId)
+  // USER MODE precedence = props.actorId → qpActorId → user.id
+  const resolvedActorId =
+    (mode === 'vport')
+      ? (
+          props.actorId ?? // if you explicitly pass a vport id via props, allow it
+          pathVportId ??
+          identity?.vportId ??
+          null
+        )
+      : (
+          props.actorId ??
+          qpActorId ??
+          (user?.id || null)
+        );
+
+  // --- DB adapter (db.vport is singular) ------------------------------------
+  const vportApi = db?.vport || {};
+
+  const vportGet =
+    vportApi.getVport ||
+    vportApi.get ||
+    vportApi.fetch ||
+    vportApi.getById ||
+    vportApi.getVportById;
+
+  const vportUpdate =
+    vportApi.updateVport ||
+    vportApi.update ||
+    vportApi.patch;
+
+  const getProfileBySubject = async (subjectId, subjectMode) => {
+    if (subjectMode === 'vport') {
+      if (!vportGet) throw new Error('vport.get function not found in db.vport');
+
+      // Guard: ensure we are hitting by vc.vports.id UUID (not actor_id)
+      if (!UUID_RX.test(subjectId)) {
+        throw new Error('Invalid VPort id. Expected a vc.vports.id UUID.');
+      }
+
+      const row = await vportGet(subjectId);
+      if (!row) throw new Error('VPort not found');
+      return row; // { id, name, slug, avatar_url, banner_url, bio, ... }
+    }
+    return db.profiles.users.get(subjectId);
+  };
+
+  const updateProfileBySubject = async (subjectId, subjectMode, data) => {
+    if (subjectMode === 'vport') {
+      if (!vportUpdate) throw new Error('vport.update function not found in db.vport');
+
+      // same guard here too
+      if (!UUID_RX.test(subjectId)) {
+        throw new Error('Invalid VPort id. Expected a vc.vports.id UUID.');
+      }
+
+      const payload = {
+        ...(data.display_name ? { name: data.display_name } : {}),
+        ...(data.bio !== undefined ? { bio: data.bio } : {}),
+        ...(data.photo_url !== undefined ? { avatar_url: data.photo_url } : {}),
+        ...(data.banner_url !== undefined ? { banner_url: data.banner_url } : {}),
+      };
+      return vportUpdate(subjectId, payload);
+    }
+    return db.profiles.users.update(subjectId, data);
+  };
+  // --------------------------------------------------------------------------
 
   const [loading, setLoading]   = useState(true);
   const [saving, setSaving]     = useState(false);
   const [err, setErr]           = useState('');
 
   // fields
-  const [username, setUsername]       = useState(''); // read-only
+  const [username, setUsername]       = useState(''); // @username or @slug
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail]             = useState('');
   const [bio, setBio]                 = useState('');
@@ -34,31 +126,54 @@ export default function ProfileTab() {
   const [bannerPreview, setBannerPreview] = useState('');
   const bannerInputRef = useRef(null);
 
-  // load profile
+  // quick visibility
+  console.log('[ProfileTab] mode=', mode, 'resolvedActorId=', resolvedActorId, 'identity=', identity);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!user?.id) { setLoading(false); return; }
+      if (!resolvedActorId) {
+        console.log('[ProfileTab] resolvedActorId is null; skip fetch');
+        setLoading(false);
+        return;
+      }
       try {
-       const p = await db.profiles.users.get(user.id);
-
+        console.log('[ProfileTab] fetching profile', { id: resolvedActorId, mode });
+        const p = await getProfileBySubject(resolvedActorId, mode);
+        console.log('[ProfileTab] fetched profile:', p);
         if (cancelled) return;
-        setUsername(p?.username || '');
-        setDisplayName(p?.display_name || '');
-        setEmail(p?.email || user.email || '');
-        setBio(p?.bio || '');
-        setPhotoUrl(p?.photo_url || '');
-        setBannerUrl(p?.banner_url || '/default-banner.jpg'); // fallback if null
+
+        if (mode === 'vport') {
+          setUsername(p?.slug || '');
+          setDisplayName(p?.name || '');
+          setEmail(user?.email || ''); // vports don’t have email
+          setBio(p?.bio || '');
+          setPhotoUrl(p?.avatar_url || '');
+          setBannerUrl(p?.banner_url || '/default-banner.jpg');
+        } else {
+          setUsername(p?.username || '');
+          setDisplayName(p?.display_name || '');
+          setEmail(p?.email || user?.email || '');
+          setBio(p?.bio || '');
+          setPhotoUrl(p?.photo_url || '');
+          setBannerUrl(p?.banner_url || '/default-banner.jpg');
+        }
       } catch (e) {
+        console.error('[ProfileTab] load error:', e);
         if (!cancelled) setErr(e?.message || 'Failed to load profile.');
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [
+    resolvedActorId,
+    mode,
+    user?.email,
+    identity?.type,
+    identity?.vportId,
+  ]);
 
-  // avatar preview lifecycle
   useEffect(() => {
     if (!file) { setPreview(''); return; }
     const url = URL.createObjectURL(file);
@@ -66,7 +181,6 @@ export default function ProfileTab() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  // banner preview lifecycle
   useEffect(() => {
     if (!bannerFile) { setBannerPreview(''); return; }
     const url = URL.createObjectURL(bannerFile);
@@ -116,77 +230,132 @@ export default function ProfileTab() {
     setBannerUrl('/default-banner.jpg');
   };
 
-  // uploads bannerFile to Cloudflare and returns URL
+  const uploadVportAvatar = async (blob) => {
+    if (!resolvedActorId) throw new Error('Not authenticated');
+    const key = `vports/${resolvedActorId}/avatar.jpg`;
+    const { url, error } = await uploadToCloudflare(blob, key);
+    if (error || !url) throw new Error('Avatar upload failed.');
+    return url;
+  };
+
   const uploadProfileBanner = async (blob) => {
-    if (!user?.id) throw new Error('Not authenticated');
-    const key = `profile-banners/${user.id}.jpg`;
+    if (!resolvedActorId) throw new Error('Not authenticated');
+    const key =
+      mode === 'vport'
+        ? `vports/${resolvedActorId}/banner.jpg`
+        : `profile-banners/${resolvedActorId}.jpg`;
     const { url, error } = await uploadToCloudflare(blob, key);
     if (error || !url) throw new Error('Banner upload failed.');
     return url;
   };
 
   const onSave = async () => {
-    if (!user?.id) return;
+    if (!resolvedActorId) return;
     setSaving(true);
     setErr('');
+
     try {
-      // 1) upload new avatar if selected
-      let finalAvatarUrl = photoUrl;
-      if (file) {
-        finalAvatarUrl = await uploadProfilePicture(file);
+      // preflight for vport mode (explicit visibility only)
+      if (mode === 'vport') {
+        console.log('[VPORT save] resolvedActorId=', resolvedActorId);
+
+        // guard again
+        if (!UUID_RX.test(resolvedActorId)) {
+          setErr('Invalid VPort id. Expected a vc.vports.id UUID.');
+          setSaving(false);
+          return;
+        }
+
+        try {
+          const row = await db.vport.getVportById(resolvedActorId);
+          console.log('[VPORT save] loaded row:', row);
+          if (!row?.id) {
+            setErr('VPort not found. Make sure this id is vc.vports.id (not actor_id).');
+            setSaving(false);
+            return;
+          }
+          if (row.owner_user_id !== user?.id) {
+            setErr('You do not own this VPort. Update blocked by RLS.');
+            setSaving(false);
+            return;
+          }
+        } catch (preErr) {
+          console.error('[VPORT save] preflight error:', preErr);
+          setErr(preErr?.message || 'Could not load VPort (RLS or wrong id).');
+          setSaving(false);
+          return;
+        }
       }
 
-      // 2) upload new banner if selected
+      // avatar
+      let finalAvatarUrl = photoUrl;
+      if (file) {
+        finalAvatarUrl =
+          mode === 'vport'
+            ? await uploadVportAvatar(file)
+            : await uploadProfilePicture(file);
+      }
+
+      // banner
       let finalBannerUrl = bannerUrl || null;
       if (bannerFile) {
         finalBannerUrl = await uploadProfileBanner(bannerFile);
       }
 
-      // 3) update profile (do NOT include username/email here)
-      await db.profiles.users.update(user.id, {
-        display_name: (displayName || '').trim(),
+      const payload = {
+        display_name: (displayName || '').trim(), // maps to name for vport
         bio: (bio || '').trim(),
         photo_url: finalAvatarUrl || null,
         banner_url: finalBannerUrl || null,
-      });
+      };
 
-      // 4) reset local states to the new URLs
+      console.log('[SAVE] mode', mode, 'payload', payload);
+
+      const updated = await updateProfileBySubject(resolvedActorId, mode, payload);
+      console.log('[SAVE] updated row', updated);
+
+      // reset local state
       setPhotoUrl(finalAvatarUrl || '');
       setFile(null);
       setPreview('');
-
       setBannerUrl(finalBannerUrl || '/default-banner.jpg');
       setBannerFile(null);
       setBannerPreview('');
     } catch (e) {
+      console.error('[SAVE] error', e);
       setErr(e?.message || 'Could not save changes.');
     } finally {
       setSaving(false);
     }
   };
 
-  // ✅ Always go to your own profile
-  const profilePath = user ? '/me' : '#';
+  const profilePath =
+    mode === 'vport'
+      ? (resolvedActorId ? `/vport/${resolvedActorId}` : '#')
+      : (user ? '/me' : '#');
 
   return (
     <div className="space-y-4">
       <Card>
-        {/* Top bar: title + View profile (white text, no underline, no icon) */}
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-semibold">Profile</div>
+          <div className="text-sm font-semibold">
+            {mode === 'vport' ? 'VPort Profile' : 'Profile'}
+          </div>
           <Link
             to={profilePath}
             className="text-white no-underline hover:no-underline focus:no-underline active:no-underline visited:text-white hover:text-white active:text-white focus:text-white outline-none"
-            aria-label="View my profile"
-            title="View my profile"
+            aria-label="View profile"
+            title="View profile"
           >
-            View my profile
+            View {mode === 'vport' ? 'VPort' : 'my'} profile
           </Link>
         </div>
 
-        {/* Banner row */}
+        {/* Banner */}
         <div className="space-y-1">
-          <label className="text-xs text-zinc-300">Profile banner</label>
+          <label className="text-xs text-zinc-300">
+            {mode === 'vport' ? 'VPort banner' : 'Profile banner'}
+          </label>
           <div className="rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
             <div className="relative w-full h-32 sm:h-40 md:h-48">
               <img
@@ -219,7 +388,7 @@ export default function ProfileTab() {
                 className="rounded-xl bg-zinc-900 px-3 py-1.5 text-sm hover:bg-zinc-800"
                 disabled={saving}
               >
-              Remove
+                Remove
               </button>
             )}
             <span className="text-[11px] text-zinc-500">
@@ -228,9 +397,11 @@ export default function ProfileTab() {
           </div>
         </div>
 
-        {/* Avatar row */}
+        {/* Avatar */}
         <div className="mt-4 space-y-1">
-          <label className="text-xs text-zinc-300">Profile picture</label>
+          <label className="text-xs text-zinc-300">
+            {mode === 'vport' ? 'VPort picture' : 'Profile picture'}
+          </label>
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
               {(preview || photoUrl) ? (
@@ -303,14 +474,14 @@ export default function ProfileTab() {
           </p>
         </div>
 
-        {/* Display name (editable) */}
+        {/* Display name */}
         <div className="mt-3 space-y-1">
           <label className="text-xs text-zinc-300">Display name</label>
           <input
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             className="w-full rounded-xl bg-zinc-950 border border-zinc-800 text-white px-3 py-2"
-            placeholder="Your name shown on your profile"
+            placeholder={mode === 'vport' ? 'VPort name' : 'Your name shown on your profile'}
             disabled={saving}
           />
         </div>
@@ -326,15 +497,15 @@ export default function ProfileTab() {
           />
         </div>
 
-        {/* Bio (editable) */}
+        {/* Bio/About */}
         <div className="mt-3 space-y-1">
-          <label className="text-xs text-zinc-300">Bio</label>
+          <label className="text-xs text-zinc-300">{mode === 'vport' ? 'About' : 'Bio'}</label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={4}
             className="w-full rounded-xl bg-zinc-950 border border-zinc-800 text-white px-3 py-2 resize-y"
-            placeholder="Tell people a bit about you…"
+            placeholder={mode === 'vport' ? 'Tell people about this VPort…' : 'Tell people a bit about you…'}
             disabled={saving}
           />
         </div>

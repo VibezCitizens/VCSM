@@ -14,13 +14,13 @@ import * as commentLikes from './user/post/commentLikes';
 
 import search from './user/search/search';
 
-// VPORT-scoped post modules
-import vpostReactions from './vport/vpost/reactions';   // default export
-import vpostComments  from './vport/vpost/comments';    // default export
-import vpostRoses     from './vport/vpost/roses';       // default export
+// VPORT-scoped post modules (default exports)
+import vpostReactions from './vport/vpost/reactions';
+import vpostComments  from './vport/vpost/comments';
+import vpostRoses     from './vport/vpost/roses';
 
-// ✅ NEW: vport-scoped comment-like API (❤️ on comments acting as vport)
-import vpostCommentLikes from './vport/vpost/commentLikes'; // default export
+// ✅ NEW: vport-scoped comment-like API (❤️ on comments acting as vport) — default export
+import vpostCommentLikes from './vport/vpost/commentLikes';
 
 function freezeDeep(obj) {
   Object.freeze(obj);
@@ -33,14 +33,14 @@ function freezeDeep(obj) {
 export const db = freezeDeep({
   auth: { ...auth },
   profiles: { ...profiles },
-  blocks,                 // adapter object with list/block APIs
+  blocks, // adapter object with list/block APIs
   vport: {
-    ...vport,             // vport profile CRUD (create/list/get/update)
+    ...vport, // vport profile CRUD (create/list/get/update)
     post: {
       reactions: vpostReactions,     // db.vport.post.reactions.setForPost/clearForPost/...
       comments : vpostComments,      // db.vport.post.comments.create/listTopLevel/...
       roses    : vpostRoses,         // db.vport.post.roses.give/count
-      // ✅ NEW: like/unlike a COMMENT while acting as a VPORT
+      // ✅ like/unlike a COMMENT while acting as a VPORT
       commentLikes: vpostCommentLikes // { likeComment({commentId,vportId}), unlikeComment({commentId,vportId}), isCommentLiked({commentId}) }
     },
   },
@@ -51,10 +51,13 @@ export const db = freezeDeep({
   reactions    : { ...reactions },
   roses        : { ...roses },
 
-  // ✅ NEW: like/unlike a COMMENT while acting as USER
+  // ✅ like/unlike a COMMENT while acting as USER
   commentLikes : { ...commentLikes }, // { likeComment({commentId}), unlikeComment({commentId}), isCommentLiked({commentId}) }
 
   search,
 });
 
-export default db;
+// Provide BOTH a named and default export so callers can do either:
+//   import { db } from '@/data/data.js'
+//   import db from '@/data/data.js'
+export { db as default };

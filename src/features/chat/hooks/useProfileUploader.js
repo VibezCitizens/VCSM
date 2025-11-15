@@ -42,4 +42,4 @@ export async function uploadProfilePicture(file) {
   if (upErr) throw upErr;
 
   return url; // string
-}
+} 

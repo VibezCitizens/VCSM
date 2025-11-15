@@ -1,96 +1,124 @@
 // src/data/user/search/search.js
-import { supabase } from '@/lib/supabaseClient';     // ensure this matches your actual export
-import { vc } from '@/lib/vcClient';
+import { supabase } from '@/lib/supabaseClient'; // main client (rpc lives here)
+import { vc } from '@/lib/vcClient';            // schema-scoped client for tables
 
 export const search = {
-  /** USERS — unchanged from yours */
+  /**
+   * USERS — now backed by vc.search_directory RPC
+   * Rules enforced server-side:
+   * - Always return self.
+   * - Public & discoverable users are searchable by substring.
+   * - Private users only when:
+   *   - exact @username match, or
+   *   - viewer already follows them (friend discovery).
+   * Returns: id (user_id), actor_id, username, display_name, photo_url, is_private
+   */
   async users(rawQuery, opts = {}) {
-    const { minLength = 1, limit = 25 } = opts;
+    const { minLength = 1, limit = 25, offset = 0 } = opts;
     let { currentUserId } = opts;
 
     const q = (rawQuery || '').trim();
     if (q.length < minLength) return [];
 
+    // Ensure we know viewer id (for client-side block filter fallback)
     if (!currentUserId) {
       try {
         const { data } = await supabase.auth.getUser();
         currentUserId = data?.user?.id || null;
-      } catch { currentUserId = null; }
+      } catch {
+        currentUserId = null;
+      }
     }
 
-    const byId = q.startsWith('#');
     const byHandle = q.startsWith('@');
-    const needle = byId || byHandle ? q.slice(1) : q;
+    const byId     = q.startsWith('#');
+    const needle   = (byHandle || byId) ? q.slice(1) : q;
 
-    let query = supabase
-      .from('profiles')
-      .select('id, display_name, username, photo_url, private, discoverable')
-      .limit(limit);
+    // Call RPC (lives in vc schema, but supabase.rpc handles it globally)
+    // _q is the raw query string the function expects (case-insensitive inside)
+    let rows = [];
+    try {
+      const { data, error } = await supabase.rpc('search_directory', {
+        _q: needle,
+        _limit: limit,
+        _offset: offset,
+      });
+      if (error) throw error;
+      rows = Array.isArray(data) ? data : [];
+    } catch (e) {
+      // Optional fallback if RPC is missing — keep behavior identical to old code
+      // (Public & discoverable only; won’t return private exact-match or follow-visibility)
+      let fb = supabase
+        .from('profiles')
+        .select('id, display_name, username, photo_url, private, discoverable')
+        .limit(limit);
 
-    if (currentUserId) query = query.or(`discoverable.eq.true,id.eq.${currentUserId}`);
-    else query = query.eq('discoverable', true);
+      // Only discoverable, plus self if logged in
+      if (currentUserId) fb = fb.or(`discoverable.eq.true,id.eq.${currentUserId}`);
+      else fb = fb.eq('discoverable', true);
 
-    if (byId && needle)       query = query.ilike('id', `${needle}%`);
-    else if (byHandle && needle) query = query.ilike('username', `${needle}%`);
-    else {
-      const like = `%${needle}%`;
-      query = query.or(`username.ilike.${like},display_name.ilike.${like}`);
-    }
+      if (byId && needle)       fb = fb.ilike('id', `${needle}%`);
+      else if (byHandle && needle) fb = fb.ilike('username', `${needle}%`);
+      else {
+        const like = `%${needle}%`;
+        fb = fb.or(`username.ilike.${like},display_name.ilike.${like}`);
+      }
 
-    const { data, error } = await query;
-    if (error) throw error;
+      const { data: fallbackData, error: fallbackErr } = await fb;
+      if (fallbackErr) throw fallbackErr;
 
-    if (!currentUserId) {
-      return (data || []).map(u => ({
-        result_type: 'user',
+      rows = (fallbackData || []).map(u => ({
         id: u.id,
+        actor_id: null, // not available from fallback
+        username: u.username || '',
         display_name: u.display_name || '',
         photo_url: u.photo_url || '/avatar.jpg',
-        username: u.username || '',
-        private: !!u.private,
-        discoverable: !!u.discoverable,
+        is_private: !!u.private,
       }));
     }
 
-    // two-way block filter
-    const candidates = Array.isArray(data) ? data : [];
-    const candidateIds = candidates.map(u => u.id).filter(Boolean);
-
-    let iBlockedSet = new Set();
-    try {
-      const { data: myBlocks } = await vc
-        .from('user_blocks')
-        .select('blocked_id')
-        .eq('blocker_id', currentUserId);
-      iBlockedSet = new Set((myBlocks || []).map(r => r.blocked_id));
-    } catch {}
-
-    let blockedMeSet = new Set();
-    try {
-      if (candidateIds.length) {
-        const { data: bbRows } = await vc
+    // Client-side 2-way block safety net (server may already enforce this elsewhere)
+    if (currentUserId && rows.length) {
+      // who I blocked
+      let iBlockedSet = new Set();
+      try {
+        const { data: myBlocks } = await vc
           .from('user_blocks')
-          .select('blocker_id')
-          .in('blocker_id', candidateIds)
-          .eq('blocked_id', currentUserId);
-        blockedMeSet = new Set((bbRows || []).map(r => r.blocker_id));
-      }
-    } catch {}
+          .select('blocked_id')
+          .eq('blocker_id', currentUserId);
+        iBlockedSet = new Set((myBlocks || []).map(r => r.blocked_id));
+      } catch {}
 
-    const filtered = candidates.filter(u => !iBlockedSet.has(u.id) && !blockedMeSet.has(u.id));
+      // who blocked me
+      let blockedMeSet = new Set();
+      try {
+        const candidateIds = rows.map(r => r.id).filter(Boolean);
+        if (candidateIds.length) {
+          const { data: bbRows } = await vc
+            .from('user_blocks')
+            .select('blocker_id')
+            .in('blocker_id', candidateIds)
+            .eq('blocked_id', currentUserId);
+          blockedMeSet = new Set((bbRows || []).map(r => r.blocker_id));
+        }
+      } catch {}
 
-    return filtered.map(u => ({
+      rows = rows.filter(r => !iBlockedSet.has(r.id) && !blockedMeSet.has(r.id));
+    }
+
+    return rows.map(r => ({
       result_type: 'user',
-      id: u.id,
-      display_name: u.display_name || '',
-      photo_url: u.photo_url || '/avatar.jpg',
-      username: u.username || '',
-      private: !!u.private,
-      discoverable: !!u.discoverable,
+      id: r.id,
+      display_name: r.display_name || '',
+      photo_url: r.photo_url || '/avatar.jpg',
+      username: r.username || '',
+      // keep these fields around if you want to show badges or navigate by actor
+      actor_id: r.actor_id ?? null,
+      private: !!r.is_private,
     }));
   },
 
-  /** VPORTS — NEW */
+  /** VPORTS — unchanged from prior message (active, or mine) */
   async vports(rawQuery, opts = {}) {
     const { minLength = 1, limit = 25 } = opts;
     let { currentUserId } = opts;
@@ -107,10 +135,9 @@ export const search = {
 
     const byId = q.startsWith('#');     // #<uuid-prefix>
     const bySlug = q.startsWith('@');   // @<slug-prefix>
-    const needle = byId || bySlug ? q.slice(1) : q;
+    const needle = (byId || bySlug) ? q.slice(1) : q;
     const like = `%${needle}%`;
 
-    // Base: show active vports to everyone; always include my own even if inactive
     let query = vc
       .from('vports')
       .select('id, name, slug, avatar_url, bio, is_active, owner_user_id')
@@ -121,13 +148,9 @@ export const search = {
     } else if (bySlug && needle) {
       query = query.ilike('slug', `${needle}%`);
     } else {
-      // name/slug/bio match
-      // (Supabase's .or() expects comma-separated clauses)
       query = query.or(`name.ilike.${like},slug.ilike.${like},bio.ilike.${like}`);
     }
 
-    // Fetch first, then filter client-side for visibility rule:
-    // visible if is_active OR owner_user_id == viewer
     const { data, error } = await query;
     if (error) throw error;
 

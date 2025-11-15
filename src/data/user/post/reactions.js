@@ -1,8 +1,7 @@
 // src/data/user/post/reactions.js
 // Actor-based reactions DAL (👍 / 👎).
-// - Uses vc.post_reactions with (post_id, actor_id, type, qty)
-// - Toggle semantics via unique index on (post_id, actor_id, type) for like|dislike
-// - Roses are handled in roses.js (unlimited), not here.
+// Schema: vc.post_reactions(post_id, actor_id, reaction, created_at, updated_at)
+// Single row per (post_id, actor_id). 'reaction' holds 'like' | 'dislike' | 'rose' | emoji.
 
 import supabase from '@/lib/supabaseClient';
 import { getCurrentActorId } from '@/lib/actors/actors';
@@ -15,25 +14,23 @@ export async function listForPost({ postId }) {
   const { data, error } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .select('id, post_id, actor_id, user_id, type, qty, created_at')
+    .select('post_id, actor_id, reaction, created_at')
     .eq('post_id', postId);
 
   if (error) throw error;
 
+  // Shape compatible with existing UI (it reads `.reaction`):
   return (data || []).map((r) => ({
-    id: r.id,
     post_id: r.post_id,
-    actor_id: r.actor_id || null, // actor-based path (new)
-    user_id: r.user_id || null,   // legacy fallback (old rows)
-    reaction: r.type,             // 'like' | 'dislike' | 'rose'
-    qty: r.qty ?? 1,
+    actor_id: r.actor_id,
+    reaction: r.reaction, // 'like' | 'dislike' | 'rose' | '🔥'...
     created_at: r.created_at,
   }));
 }
 
 /**
  * Set (toggle) a reaction for the current identity to 'like' or 'dislike'.
- * No UPSERT (avoids partial-index conflict mismatch).
+ * No UPSERT needed: SELECT → UPDATE/INSERT to avoid conflict surprises.
  */
 export async function setForPost({
   postId,
@@ -51,49 +48,48 @@ export async function setForPost({
   });
   if (!actorId) throw new Error('setForPost: no actor for current identity');
 
-  // 1) Do we already have a like/dislike row for this actor on this post?
+  // Is there already a reaction row for this actor/post?
   const { data: existing, error: selErr } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .select('id, type')
+    .select('reaction')
     .eq('post_id', postId)
     .eq('actor_id', actorId)
-    .in('type', LD)
     .maybeSingle();
   if (selErr && selErr.code !== 'PGRST116') throw selErr;
 
-  if (existing?.id) {
-    // 2a) Row exists: switch type if different
-    if (existing.type !== kind) {
+  if (existing) {
+    // Switch reaction if different
+    if (existing.reaction !== kind) {
       const { error: upErr } = await supabase
         .schema('vc')
         .from('post_reactions')
-        .update({ type: kind })
-        .eq('id', existing.id);
+        .update({ reaction: kind, updated_at: new Date().toISOString() })
+        .eq('post_id', postId)
+        .eq('actor_id', actorId);
       if (upErr) throw upErr;
     }
-    return { id: existing.id, type: kind };
+    return { reaction: kind };
   }
 
-  // 2b) No row: insert new
-  const { data: row, error: insErr } = await supabase
+  // No row: insert new
+  const { error: insErr } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .insert({ post_id: postId, actor_id: actorId, type: kind, qty: 1 })
-    .select('id, type')
-    .maybeSingle();
+    .insert({ post_id: postId, actor_id: actorId, reaction: kind, updated_at: new Date().toISOString() });
   if (insErr) throw insErr;
-  return row || null;
+  return { reaction: kind };
 }
 
 /**
  * Clear the current identity’s like/dislike for a post.
- * If `kind` is provided, clears just that; otherwise clears both.
+ * With new schema there is at most ONE row → delete it.
+ * If `kind` is provided, we still delete the row (it’s the same row).
  */
 export async function clearForPost({
   postId,
   userId,
-  kind,                 // optional: 'like' | 'dislike' | 'rose'
+  kind,                 // optional: 'like' | 'dislike' | 'rose' (ignored in filter)
   actingAsVport = false,
   vportId = null,
 }) {
@@ -105,21 +101,17 @@ export async function clearForPost({
   });
   if (!actorId) return;
 
-  let q = supabase
+  const { error } = await supabase
     .schema('vc')
     .from('post_reactions')
     .delete()
     .eq('post_id', postId)
     .eq('actor_id', actorId);
 
-  if (kind) q = q.eq('type', kind);
-  else q = q.in('type', LD);
-
-  const { error } = await q;
   if (error) throw error;
 }
 
-/** Optional helper: returns 'like' | 'dislike' | null for current identity. */
+/** Returns 'like' | 'dislike' | 'rose' | null for current identity. */
 export async function getMyReactionForPost({
   postId,
   userId,
@@ -137,14 +129,13 @@ export async function getMyReactionForPost({
   const { data, error } = await supabase
     .schema('vc')
     .from('post_reactions')
-    .select('type')
+    .select('reaction')
     .eq('post_id', postId)
     .eq('actor_id', actorId)
-    .in('type', LD)
     .maybeSingle();
 
   if (error && error.code !== 'PGRST116') throw error;
-  return data?.type ?? null;
+  return data?.reaction ?? null;
 }
 
 const reactionsApi = {

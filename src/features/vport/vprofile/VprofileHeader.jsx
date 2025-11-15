@@ -1,132 +1,103 @@
-// C:\Users\vibez\OneDrive\Desktop\no src\src\features\vport\vprofile\VprofileHeader.jsx
-// Lightweight VPORT header mirroring ProfileHeader API, but tailored for VPORTs.
-// - Keeps upload (photo/banner), QR, and block menu.
-// - Hides SocialActions (subscribe/follow) by default for VPORTs.
-// - Accepts same props shape so you can swap it in without touching callers.
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import toast from 'react-hot-toast';
-import imageCompression from 'browser-image-compression';
-import { supabase } from '@/lib/supabaseClient';
-import { uploadToCloudflare } from '@/lib/uploadToCloudflare';
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate, useLocation } from 'react-router-dom';
-import VisibleQRCode from '@/features/profiles/components/VisibleQRCode';
-import ProfileDots from '@/features/profiles/components/ProfileDots';
-import { useBlockStatus } from '@/features/profiles/hooks/useBlockStatus';
+import VisibleQRCode from "@/features/profiles/components/VisibleQRCode";
+import ProfileDots from "@/features/profiles/components/ProfileDots";
+import { useBlockStatus } from "@/features/profiles/hooks/useBlockStatus";
+import VportSocialActions from "./VportSocialActions.jsx";
+import supabase from "@/lib/supabaseClient";
 
+const DEFAULT_AVATAR = "/avatar.jpg";
+const DEFAULT_BANNER = "/default-banner.jpg";
+
+/**
+ * VprofileHeader
+ * - Visual + behavior parallel to ProfileHeader (user)
+ * - No upload controls here (display-only for vports)
+ *
+ * Expected vport fields:
+ *   id, name, slug, bio, avatar_url, banner_url, owner_user_id
+ */
 export default function VprofileHeader({
   profile,
   isOwnProfile = false,
-  onPhotoChange,
-  allowBannerUpload = true,
-  // Optional: if you do want to display a count (e.g., subscribers/customers) for VPORT
-  // pass it in; otherwise it remains hidden.
-  metricLabel = 'Subscribers',
+  metricLabel = "Subscribers",
   metricCount,
+  initialSubscribed = false,
+  onSubscribeToggle, // (next:boolean) => void
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const fileRef = useRef(null);
-  const bannerRef = useRef(null);
-  const { user } = useAuth();
 
-  const {
-    id: profileId,
-    display_name: profileDisplayName,
-    bio: profileBio,
-    photo_url: profilePhotoUrl,
-    banner_url: profileBannerUrl,
-    username: profileUsername,
-    kind: profileKind,
-    private: profileIsPrivateFlag,
-  } = profile || {};
+  // accept both shapes safely
+  const p = profile || {};
+  const profileId = p.id ?? null; // vc.vports.id
+  const ownerProfileId = p.owner_user_id ?? null; // public.profiles.id (auth user id)
+  const profileUsername = p.slug ?? p.username ?? null;
 
-  const isVport = profileKind === 'vport' || true; // this header is VPORT-specific
-  const isProfileIdValid = !!profileId && /^[0-9a-fA-F-]{36}$/.test(profileId);
+  const profileDisplayName = p.name ?? p.display_name ?? "VPORT";
+  const profileBio = p.bio ?? p.description ?? "";
+  const profilePhotoUrl =
+    p.avatar_url ?? p.photo_url ?? p.avatarUrl ?? DEFAULT_AVATAR;
+  const profileBannerUrl =
+    p.banner_url ?? p.cover_url ?? p.bannerUrl ?? DEFAULT_BANNER;
 
-  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
-  const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
-
-  // Prevent any brief flash of this header after we block & navigate
-  const [forcedBlocked, setForcedBlocked] = useState(false);
-
-  // DEV TRACE
-  if (import.meta.env.DEV) {
-    // eslint-disable-next-line no-console
-    console.log('[VprofileHeader] profile debug', {
-      profileId,
-      username: profileUsername,
-      kind: profileKind,
-      isVport,
-      metricCount,
-      isOwnProfile,
-    });
-  }
+  // resolve actor for this VPORT (schema: vc.actors.vport_id is UNIQUE)
+  const [actorId, setActorId] = useState(null); // vc.actors.id for this vport
 
   useEffect(() => {
-    setQrCodeModalOpen(false);
+    let cancelled = false;
+    (async () => {
+      if (!profileId) {
+        setActorId(null);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .schema("vc")
+          .from("actors")
+          .select("id")
+          .eq("vport_id", profileId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!cancelled) setActorId(data?.id ?? null);
+      } catch {
+        if (!cancelled) setActorId(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [profileId]);
 
-  useEffect(() => {
-    // Any route change closes the QR modal
-    setQrCodeModalOpen(false);
-  }, [location.pathname]);
+  const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
+  const [forcedBlocked, setForcedBlocked] = useState(false);
 
-  const handlePhotoUpload = useCallback(
-    async (e, type = 'photo') => {
-      const file = e.target.files?.[0];
-      e.target.value = '';
-      if (!file) return;
-      if (!isProfileIdValid) return toast.error('Profile ID invalid.');
+  useEffect(() => setQrCodeModalOpen(false), [profileId]);
+  useEffect(() => setQrCodeModalOpen(false), [location.pathname]);
 
-      const setter = type === 'photo' ? setIsUploadingPhoto : setIsUploadingBanner;
-      setter(true);
-      try {
-        const compressed = await imageCompression(file, {
-          maxSizeMB: 0.7,
-          maxWidthOrHeight: type === 'photo' ? 600 : 1600,
-          useWebWorker: true,
-        });
+  // IMPORTANT: use owner profile id for block status, not vport id / actor id.
+  const targetProfileIdForBlock = ownerProfileId || profileId;
 
-        const key =
-          type === 'photo'
-            ? `profile-pictures/${profileId}.jpg`
-            : `profile-banners/${profileId}.jpg`;
-
-        const { url, error: uploadError } = await uploadToCloudflare(compressed, key);
-        if (uploadError || !url) throw new Error('Upload failed.');
-
-        const updateField = type === 'photo' ? { photo_url: url } : { banner_url: url };
-
-        const { error: supabaseError } = await supabase
-          .from('profiles')
-          .update(updateField)
-          .eq('id', profileId);
-
-        if (supabaseError) throw new Error(supabaseError.message);
-        toast.success(`${type === 'photo' ? 'Profile' : 'Banner'} updated!`);
-        onPhotoChange?.();
-      } catch (err) {
-        console.error(err);
-        toast.error(err?.message || 'Upload failed.');
-      } finally {
-        setter(false);
-      }
-    },
-    [isProfileIdValid, onPhotoChange, profileId]
-  );
-
-  // Read block status (for initial state of dots menu)
-  const { isBlocking /* isBlockedBy, anyBlock, loading */ } = useBlockStatus(profileId);
+  const { isBlocking } = useBlockStatus(targetProfileIdForBlock);
 
   const qrCodeValue = useMemo(() => {
-    if (!profileId) return '';
+    if (!profileId) return "";
     const base = window.location.origin;
-    // VPORT deep link
     return `${base}/vport/${profileUsername || profileId}`;
   }, [profileId, profileUsername]);
+
+  if (!profileId) {
+    return (
+      <div className="w-full text-white">
+        <div className="rounded-xl border border-red-900 bg-red-950/40 p-3 text-sm text-red-200">
+          VPort not found. Ensure you’re passing a VPort row (vc.vports) with an{" "}
+          <code>id</code>.
+        </div>
+      </div>
+    );
+  }
 
   if (forcedBlocked && !isOwnProfile) return null;
 
@@ -135,31 +106,14 @@ export default function VprofileHeader({
       {/* Banner */}
       <div className="relative w-full h-44 md:h-60">
         <img
-          src={profileBannerUrl || '/default-banner.jpg'}
+          src={profileBannerUrl || DEFAULT_BANNER}
           alt="VPORT banner"
           className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.src = DEFAULT_BANNER;
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/70" />
-
-        {isOwnProfile && allowBannerUpload && (
-          <>
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              ref={bannerRef}
-              onChange={(e) => handlePhotoUpload(e, 'banner')}
-              disabled={isUploadingBanner}
-            />
-            <button
-              type="button"
-              onClick={() => !isUploadingBanner && bannerRef.current?.click()}
-              className="absolute top-3 right-3 rounded-xl px-3 py-1 text-xs bg-black/40 hover:bg-black/60 backdrop-blur-sm"
-            >
-              {isUploadingBanner ? 'Uploading…' : 'Change Banner'}
-            </button>
-          </>
-        )}
       </div>
 
       {/* Header card */}
@@ -171,51 +125,35 @@ export default function VprofileHeader({
                 {/* Avatar */}
                 <div className="relative w-24 h-24 md:w-28 md:h-28 shrink-0">
                   <img
-                    src={profilePhotoUrl || '/avatar.jpg'}
+                    src={profilePhotoUrl || DEFAULT_AVATAR}
                     alt="avatar"
                     className="w-full h-full object-cover rounded-2xl border border-neutral-700 shadow"
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_AVATAR;
+                    }}
                   />
-                  {isOwnProfile && (
-                    <>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        ref={fileRef}
-                        onChange={(e) => handlePhotoUpload(e, 'photo')}
-                        disabled={isUploadingPhoto}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => !isUploadingPhoto && fileRef.current?.click()}
-                        className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 text-xs opacity-0 hover:opacity-100 transition-opacity"
-                      >
-                        {isUploadingPhoto ? 'Uploading…' : 'Change'}
-                      </button>
-                    </>
-                  )}
                 </div>
 
-                {/* Info */}
+                {/* Info + actions */}
                 <div className="flex-1 min-w-0">
+                  {/* Top row: name/bio + QR (owner) */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h1 className="text-xl md:text-2xl font-semibold truncate">
-                        {profileDisplayName || 'VPORT'}
+                        {profileDisplayName || "VPORT"}
                       </h1>
                       <p className="mt-1 text-sm text-neutral-300 line-clamp-3">
-                        {profileBio || 'No description yet.'}
+                        {profileBio || "No description yet."}
                       </p>
 
-                      {/* Optional metric (hidden unless provided) */}
-                      {typeof metricCount === 'number' && (
+                      {typeof metricCount === "number" && (
                         <div className="mt-2 text-sm text-purple-400">
                           {metricCount} {metricLabel}
                         </div>
                       )}
                     </div>
 
-                    {/* Owner-only action: Show QR */}
+                    {/* Owner-only: QR */}
                     {isOwnProfile && (
                       <div className="flex flex-col items-end gap-2 shrink-0">
                         <button
@@ -227,20 +165,37 @@ export default function VprofileHeader({
                       </div>
                     )}
                   </div>
+
+                  {/* Actions – Message + Subscribe */}
+                  {!isOwnProfile && (
+                    <div className="mt-2 flex justify-end">
+                      <VportSocialActions
+                        vportId={profileId}
+                        initialSubscribed={initialSubscribed}
+                        onSubscribeToggle={onSubscribeToggle}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Three-dots menu (top-right) for visitors */}
+              {/* Three-dots menu */}
               {!isOwnProfile && (
                 <div className="absolute top-4 right-4 z-50">
                   <ProfileDots
-                    targetId={profileId}
+                    // Block by OWNER profile id so rows use public.profiles.id
+                    targetId={targetProfileIdForBlock}
+                    targetActorId={actorId || null}
                     initialBlocked={isBlocking}
                     onBlock={(nowBlocked) => {
-                      toast.success(nowBlocked ? 'Profile blocked' : 'Profile unblocked');
                       if (nowBlocked) {
-                        setForcedBlocked(true); // hide header instantly
-                        navigate('/', { replace: true, state: { justBlocked: profileId } });
+                        setForcedBlocked(true);
+                        navigate("/", {
+                          replace: true,
+                          state: { justBlocked: profileId },
+                        });
+                      } else {
+                        toast.success("Profile unblocked");
                       }
                     }}
                   />
@@ -253,7 +208,7 @@ export default function VprofileHeader({
         </div>
       </div>
 
-      {/* QR Code Modal */}
+      {/* QR Modal */}
       {qrCodeModalOpen && (
         <div
           className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"

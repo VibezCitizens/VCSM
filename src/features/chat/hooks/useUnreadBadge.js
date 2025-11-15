@@ -1,57 +1,92 @@
- import { useEffect, useRef, useState } from 'react';
- import { getUnreadTotal } from '@/data/user/chat/inbox';
- import { onUnreadDelta } from '@/features/chat/events/badge';
+// VERSION: 2025-11-10 (actor-scoped; vc schema; filtered; realtime; safe polling)
 
- const POLL_MS = 60000; // 60s
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
- export default function useUnreadBadge() {
-   const [count, setCount] = useState(0);
-   const timerRef = useRef(null);
-   const mountedRef = useRef(false);
+function isUUID(x) {
+  return typeof x === 'string' && x.length >= 32;
+}
 
-   const fetchCount = async () => {
-     try {
-       const n = await getUnreadTotal();              // -> rpc('unread_total')
-       if (mountedRef.current) setCount(Number(n || 0));
-     } catch {
-       // ignore; retry later
-     }
-   };
+/**
+ * useUnreadBadge({ actorId, refreshMs=20000, debug=false })
+ * Sums vc.inbox_entries.unread_count for one actor (vc.actors.id).
+ */
+export default function useUnreadBadge(opts = {}) {
+  const actorId = opts.actorId ?? null;
+  const refreshMs = Number(opts.refreshMs ?? 20000);
+  const debug = !!opts.debug;
 
-   useEffect(() => {
-     mountedRef.current = true;
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const aliveRef = useRef(true);
+  const timerRef = useRef(null);
 
-     // initial load
-     fetchCount();
+  const canQuery = useMemo(() => isUUID(actorId), [actorId]);
 
-    // instant local updates when other parts of the app change unread
-    const off = onUnreadDelta((delta) => {
-      if (!mountedRef.current) return;
-      if (typeof delta === 'number' && !Number.isNaN(delta)) {
-        setCount((c) => Math.max(0, c + delta));
+  async function load() {
+    if (!canQuery) {
+      if (aliveRef.current) {
+        setCount(0);
+        setLoading(false);
       }
-    });
+      if (debug) console.log('[useUnreadBadge] skip: no actorId', { actorId });
+      return;
+    }
 
-     // focus/visibility refresh (no realtime dependency)
-     const onFocus = () => fetchCount();
-     const onVis = () => { if (!document.hidden) fetchCount(); };
-     window.addEventListener('focus', onFocus);
-     document.addEventListener('visibilitychange', onVis);
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .schema('vc')
+        .from('inbox_entries')
+        .select('unread_count')
+        .eq('actor_id', actorId);
 
-     // polling when visible
-     timerRef.current = setInterval(() => {
-       if (!document.hidden) fetchCount();
-     }, POLL_MS);
+      if (error) throw error;
 
-     return () => {
-       mountedRef.current = false;
-       window.removeEventListener('focus', onFocus);
-       document.removeEventListener('visibilitychange', onVis);
-       if (timerRef.current) clearInterval(timerRef.current);
-       timerRef.current = null;
-      off?.();
-     };
-   }, []);
+      const total = (data || []).reduce((sum, r) => sum + (r?.unread_count || 0), 0);
+      if (aliveRef.current) setCount(total);
+      if (debug) console.log('[useUnreadBadge] fetch ->', total, { rows: data?.length ?? 0 });
+    } catch (e) {
+      if (aliveRef.current) setCount(0);
+      if (debug) console.warn('[useUnreadBadge] error', e);
+    } finally {
+      if (aliveRef.current) setLoading(false);
+    }
+  }
 
-   return count;
- }
+  useEffect(() => {
+    aliveRef.current = true;
+    load();
+
+    // Realtime scoped to this actor’s inbox rows
+    let ch = null;
+    if (canQuery) {
+      ch = supabase
+        .channel(`vc-inbox-badge-${actorId}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'vc', table: 'inbox_entries', filter: `actor_id=eq.${actorId}` },
+          () => load()
+        )
+        .subscribe();
+    }
+
+    // Optional polling
+    if (refreshMs > 0) {
+      timerRef.current = setInterval(load, refreshMs);
+    }
+
+    // Manual refresh (you can dispatch window event 'chat:refresh')
+    const onRefresh = () => load();
+    window.addEventListener('chat:refresh', onRefresh);
+
+    return () => {
+      aliveRef.current = false;
+      if (timerRef.current) clearInterval(timerRef.current);
+      try { if (ch) supabase.removeChannel(ch); } catch {}
+      window.removeEventListener('chat:refresh', onRefresh);
+    };
+  }, [actorId, canQuery, refreshMs]);
+
+  return { count, loading };
+}

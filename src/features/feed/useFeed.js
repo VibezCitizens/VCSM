@@ -71,12 +71,11 @@ export function useFeed(userId) {
         actorMap = (actors || []).reduce((acc, a) => { acc[a.id] = a; return acc; }, {});
       }
 
-      // ---- 2) Profiles for user-authored posts ----
-      // Use a safer predicate: an actor is "user-authored" iff it has no vport_id.
+      // ---- 2) Profiles for user-authored posts (actor without vport_id) ----
       const userIds = [
         ...new Set(
           pageItemsRaw
-            .filter(r => !actorMap[r.actor_id]?.vport_id) // ✅ vport_id is the source of truth
+            .filter(r => !actorMap[r.actor_id]?.vport_id)
             .map(r => r.user_id)
             .filter(Boolean)
         ),
@@ -105,7 +104,7 @@ export function useFeed(userId) {
       const vportIds = [
         ...new Set(
           pageItemsRaw
-            .map(r => actorMap[r.actor_id]?.vport_id || null) // ✅ take the id directly
+            .map(r => actorMap[r.actor_id]?.vport_id || null)
             .filter(Boolean)
         ),
       ];
@@ -137,17 +136,57 @@ export function useFeed(userId) {
           blockedIdsByViewer = new Set((rows || []).map(r => r.blocked_id).filter(Boolean));
         } catch {}
       }
+
+      // NOTE: user_blocks likely stores actor IDs for the blocked target.
+      // We'll compute my actor ids (4a) and then check if *any* of my actors are blocked by authors.
+      // ---- 4a) My actor ids ----
+      let myActorIds = new Set();
+      if (userId) {
+        try {
+          const { data: mine } = await supabase
+            .schema('vc')
+            .from('actor_owners')
+            .select('actor_id')
+            .eq('user_id', userId);
+          myActorIds = new Set((mine || []).map(r => r.actor_id));
+        } catch {}
+      }
+
+      // ---- 4b) Which authors block any of my actors? ----
       let blockedByAuthors = new Set();
-      if (userId && userIds.length) {
+      if (myActorIds.size && userIds.length) {
         try {
           const { data: bbRows } = await supabase
             .schema('vc')
             .from('user_blocks')
-            .select('blocker_id')
-            .in('blocker_id', userIds)
-            .eq('blocked_id', userId);
+            .select('blocker_id, blocked_actor_id')
+            .in('blocker_id', userIds) // author (user) who is the blocker
+            .in('blocked_actor_id', Array.from(myActorIds)); // any of my actors
           blockedByAuthors = new Set((bbRows || []).map(r => r.blocker_id));
         } catch {}
+      }
+
+      // ---- 4c) Follows: allow private authors I follow (mirror DebugPrivacyPanel) ----
+      let followerEdges = new Set();
+      if (myActorIds.size && actorIds.length) {
+        try {
+          const { data: follows } = await supabase
+            .schema('vc')
+            .from('actor_follows')
+            .select('follower_actor_id, followed_actor_id, is_active')
+            .in('follower_actor_id', Array.from(myActorIds))
+            .in('followed_actor_id', actorIds);
+          (follows || []).forEach(f => {
+            if (f.is_active) followerEdges.add(`${f.follower_actor_id}->${f.followed_actor_id}`);
+          });
+        } catch {}
+      }
+
+      function viewerFollowsAuthor(authorActorId) {
+        for (const my of myActorIds) {
+          if (followerEdges.has(`${my}->${authorActorId}`)) return true;
+        }
+        return false;
       }
 
       // ---- 5) Filter (privacy/blocks) and normalize ----
@@ -157,12 +196,22 @@ export function useFeed(userId) {
 
       const pageItems = pageItemsRaw.filter(r => {
         const actor = actorMap[r.actor_id];
-        if (!actor) return false;
+        if (!actor) return false; // hidden by RLS ⇒ drop
 
-        const isVport = !!actor.vport_id; // ✅ single source of truth
+        const isVport = !!actor.vport_id;
+
         if (!isVport) {
           const authorId = r.user_id;
-          if (!allowedUserIds.has(authorId)) return false;
+          const authorActorId = actor.id;
+
+          const isAuthorPublic = allowedUserIds.has(authorId);
+          const isMe = authorId === userId;
+          const IFollowAuthor = viewerFollowsAuthor(authorActorId);
+
+          // allow if public, me, or I follow the private author
+          if (!(isAuthorPublic || isMe || IFollowAuthor)) return false;
+
+          // block checks (user ↔ user)
           if (blockedIdsByViewer.has(authorId)) return false;
           if (blockedByAuthors.has(authorId)) return false;
         } else {
@@ -175,13 +224,13 @@ export function useFeed(userId) {
 
       const norm = pageItems.map(r => {
         const actor = actorMap[r.actor_id];
-        const isVport = !!actor?.vport_id; // ✅ use vport_id presence
+        const isVport = !!actor?.vport_id;
 
         if (isVport) {
           const vpId = actor.vport_id;
           return {
             id: r.id,
-            authorId: vpId,                 // used by CentralFeed/PostCard for vports
+            authorId: vpId,
             type: 'vport',
             text: r.text || '',
             title: r.title || '',
@@ -189,7 +238,7 @@ export function useFeed(userId) {
             media_type: r.media_type || inferMediaType(r.media_url),
             created_at: r.created_at,
             post_type: r.post_type || 'post',
-            vport: vportMap[vpId] || null,  // may be null if RLS hides it
+            vport: vportMap[vpId] || null,
           };
         }
 

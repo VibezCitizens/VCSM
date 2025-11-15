@@ -1,67 +1,73 @@
 // src/hooks/useAuth.jsx
-import { useEffect, useState, useContext, createContext } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { usePresence } from '@/features/chat/hooks/usePresence';
+import { useEffect, useState, useContext, createContext } from 'react'
+import { supabase } from '@/lib/supabaseClient'
 
-const AuthContext = createContext({ user: null, session: null, loading: true, logout: () => {} });
+const AuthContext = createContext({
+  user: null,
+  session: null,
+  loading: true, // stays true until initial hydration completes
+  logout: async () => {},
+})
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true); // stays true until initial hydration completes
+  const [user, setUser] = useState(null)
+  const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true) // initial hydration gate
 
   useEffect(() => {
-    let cancelled = false;
-    let unsubscribe = () => {};
+    let cancelled = false
+    let unsubscribe = () => {}
 
-    (async () => {
+    ;(async () => {
       try {
-        // 1) Hydrate from localStorage (if persisted)
-        const { data } = await supabase.auth.getSession();
+        // 1) Initial hydration from persisted session (can be null for a moment)
+        const { data, error } = await supabase.auth.getSession()
+        if (error) console.warn('[Auth] getSession error:', error)
         if (!cancelled) {
-          setSession(data.session ?? null);
-          setUser(data.session?.user ?? null);
-          setLoading(false);
+          const nextSession = data?.session ?? null
+          setSession(nextSession)
+          setUser(nextSession?.user ?? null)
+          setLoading(false) // we have an answer: session or no session
         }
 
-        // 2) Listen for future auth changes (login/logout/refresh)
+        // 2) Listen for future auth changes (login/logout/token refresh)
         const { data: listener } = supabase.auth.onAuthStateChange((_evt, nextSession) => {
-          if (!cancelled) {
-            setSession(nextSession ?? null);
-            setUser(nextSession?.user ?? null);
-            setLoading(false);
-          }
-        });
+          if (cancelled) return
+          setSession(nextSession ?? null)
+          setUser(nextSession?.user ?? null)
+          setLoading(false)
+        })
 
-        unsubscribe = () => listener?.subscription?.unsubscribe?.();
+        unsubscribe = () => listener?.subscription?.unsubscribe?.()
       } catch (e) {
-        console.error('[Auth] init error:', e);
-        if (!cancelled) setLoading(false);
+        console.error('[Auth] init error:', e)
+        if (!cancelled) setLoading(false)
       }
-    })();
+    })()
 
     return () => {
-      cancelled = true;
-      unsubscribe();
-    };
-  }, []);
-
-  // Optional presence heartbeat
-  usePresence(user);
+      cancelled = true
+      unsubscribe()
+    }
+  }, [])
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    // keep it simple for now
-    window.location.href = '/login';
-  };
+    try {
+      await supabase.auth.signOut()
+    } catch (e) {
+      console.error('[Auth] signOut error:', e)
+    } finally {
+      window.location.href = '/login'
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ user, session, loading, logout }}>
       {children}
     </AuthContext.Provider>
-  );
+  )
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  return useContext(AuthContext)
 }

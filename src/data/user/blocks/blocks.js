@@ -1,84 +1,107 @@
 // src/data/user/blocks/blocks.js
-// Adapter that maps UI-facing helpers to your existing DAL in src/data/user/blocks.js
+// Adapter that maps UI-facing helpers to the core in src/data/user/blocks.js
 
 import { supabase } from '@/lib/supabaseClient';
 import { vc } from '@/lib/vcClient';
-import coreDefault from '@/data/user/blocks'; // your file exporting { blocks: { ... } } or default blocks
+import coreDefault from '@/data/user/blocks'; // <- core DAL
 
-// Normalize the core export
-const core = coreDefault?.block ? coreDefault
-           : coreDefault?.blocks ? coreDefault.blocks
-           : coreDefault;
+// Normalize the core export into an object with {block,unblock,isBlocked,listMyBlocks}
+const core =
+  coreDefault?.block ? coreDefault :
+  coreDefault?.blocks ? coreDefault.blocks :
+  coreDefault;
 
-/** Block a user by profile id (delegates to core.block) */
+async function getSessionUserId() {
+  const { data } = await supabase.auth.getUser();
+  return data?.user?.id ?? null;
+}
+
+/** Block a user by profile id */
 export async function blockUser(blockedId, { reason = null } = {}) {
-  if (!core?.block) throw new Error('blocksCore.block not found');
-  return core.block(blockedId, reason);
+  try {
+    if (!core?.block) throw new Error('blocksCore.block not found');
+    return await core.block(blockedId, reason);
+  } catch (e) {
+    console.error('[blocks.adapter] blockUser failed:', e);
+    throw e;
+  }
 }
 
-/** Unblock a user by profile id (delegates to core.unblock) */
+/** Unblock a user by profile id */
 export async function unblockUser(blockedId) {
-  if (!core?.unblock) throw new Error('blocksCore.unblock not found');
-  return core.unblock(blockedId);
+  try {
+    if (!core?.unblock) throw new Error('blocksCore.unblock not found');
+    return await core.unblock(blockedId);
+  } catch (e) {
+    console.error('[blocks.adapter] unblockUser failed:', e);
+    throw e;
+  }
 }
 
-/** Is viewer blocking profile? (delegates to core.isBlocked) */
+/** Is viewer blocking profile? (session viewer only) */
 export async function isBlocking(viewerId, profileId) {
   if (!profileId || !viewerId) return false;
-  const { data } = await supabase.auth.getUser();
-  const uid = data?.user?.id;
+  const uid = await getSessionUserId();
   if (!uid || uid !== viewerId) return false; // no peeking for others
   if (!core?.isBlocked) throw new Error('blocksCore.isBlocked not found');
   return core.isBlocked(profileId);
 }
 
-/** Is viewer blocked by profile? (direct table check) */
+/** Is viewer blocked by profile? (direct check via legacy columns for convenience) */
 export async function isBlockedBy(viewerId, profileId) {
   if (!profileId || !viewerId) return false;
-  const { data } = await supabase.auth.getUser();
-  const uid = data?.user?.id;
+  const uid = await getSessionUserId();
   if (!uid || uid !== viewerId) return false;
 
-  const { data: rows, error } = await vc
+  const { data, error } = await vc
     .from('user_blocks')
-    .select('id')
+    .select('blocker_id')
     .eq('blocker_id', profileId)
     .eq('blocked_id', viewerId)
-    .limit(1);
+    .limit(1); // array read (avoid maybeSingle)
 
   if (error) return false;
-  return (rows?.length ?? 0) > 0;
+  return Array.isArray(data) && data.length > 0;
 }
 
-/** Any block either direction between aId and bId? */
+/** Any block either direction between two profile IDs */
 export async function hasBlockEitherDirection(aId, bId) {
   if (!aId || !bId) return false;
-  const { data } = await supabase.auth.getUser();
-  const uid = data?.user?.id;
+  const uid = await getSessionUserId();
   if (!uid || uid !== aId) return false;
 
-  const { data: rows, error } = await vc
+  const { data, error } = await vc
     .from('user_blocks')
     .select('blocker_id, blocked_id')
-    .or(`and(blocker_id.eq.${aId},blocked_id.eq.${bId}),and(blocker_id.eq.${bId},blocked_id.eq.${aId})`);
+    .or(
+      `and(blocker_id.eq.${aId},blocked_id.eq.${bId}),and(blocker_id.eq.${bId},blocked_id.eq.${aId})`
+    );
+
   if (error) return false;
-  return (rows?.length ?? 0) > 0;
+  return (data?.length ?? 0) > 0;
+}
+
+/** NEW: Any block either direction between two ACTOR IDs */
+export async function hasActorBlockEitherDirection(aActorId, bActorId) {
+  if (!aActorId || !bActorId) return false;
+  if (!core?.hasBlockEitherDirectionActors) {
+    throw new Error('blocksCore.hasBlockEitherDirectionActors not found');
+  }
+  return core.hasBlockEitherDirectionActors(aActorId, bActorId);
 }
 
 /* --------------------- UI compatibility wrappers --------------------- */
 
-/** UI expects: db.blocks.list({ userId }) -> array of profile rows for users I blocked */
+/** db.blocks.list({ userId }) -> array of profile rows for users I blocked */
 export async function list({ userId, limit = 100 } = {}) {
-  // your core returns blocked_id list for the current session user
   const rows = await (core?.listMyBlocks
     ? core.listMyBlocks({ limit })
     : (async () => {
-        const { data: auth } = await supabase.auth.getUser();
-        const blockerId = auth?.user?.id;
+        const blockerId = await getSessionUserId();
         if (!blockerId) return [];
         const { data, error } = await vc
           .from('user_blocks')
-          .select('blocked_id')
+          .select('blocked_id, created_at')
           .eq('blocker_id', blockerId)
           .order('created_at', { ascending: false })
           .limit(limit);
@@ -89,7 +112,6 @@ export async function list({ userId, limit = 100 } = {}) {
   const ids = Array.from(new Set((rows ?? []).map(r => r.blocked_id))).filter(Boolean);
   if (ids.length === 0) return [];
 
-  // enrich with profiles for display
   const { data: profs, error } = await supabase
     .from('profiles')
     .select('id, username, display_name, photo_url')
@@ -101,31 +123,31 @@ export async function list({ userId, limit = 100 } = {}) {
   );
 }
 
-/** UI expects: db.blocks.blockByUsername({ blockerId, username }) -> boolean created? */
+/** db.blocks.blockByUsername({ blockerId, username }) -> boolean created? */
 export async function blockByUsername({ blockerId, username, reason = null }) {
   const raw = (username || '').trim().replace(/^@/, '');
   if (!raw) return false;
 
-  // Resolve username (case-insensitive)
-  const { data: target, error: eFind } = await supabase
+  // Avoid maybeSingle: limit(1) array read
+  const { data: targets, error: eFind } = await supabase
     .from('profiles')
     .select('id')
     .ilike('username', raw)
-    .maybeSingle();
+    .limit(1);
   if (eFind) throw eFind;
+
+  const target = Array.isArray(targets) ? targets[0] : null;
   if (!target?.id || target.id === blockerId) return false;
 
-  // already blocked?
   const { data: existing, error: eExists } = await vc
     .from('user_blocks')
-    .select('id')
+    .select('blocker_id')
     .eq('blocker_id', blockerId)
     .eq('blocked_id', target.id)
-    .maybeSingle();
-  if (eExists && eExists.code !== 'PGRST116') throw eExists;
-  if (existing) return false;
+    .limit(1);
+  if (eExists) throw eExists;
+  if (Array.isArray(existing) && existing.length > 0) return false;
 
-  // delegate to core.block (uses session auth)
   if (!core?.block) throw new Error('blocksCore.block not found');
   await core.block(target.id, reason);
   return true;
@@ -137,7 +159,7 @@ const blocks = {
   isBlocking,
   isBlockedBy,
   hasBlockEitherDirection,
-  // UI compat:
+  hasActorBlockEitherDirection,
   list,
   blockByUsername,
 };

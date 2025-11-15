@@ -1,45 +1,58 @@
-﻿// src/App.jsx
+﻿﻿// src/App.jsx
 import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import RootLayout from '@/layouts/RootLayout';
 import ProtectedRoute from '@/app/ProtectedRoute';
 
+// Small helper to log exactly which lazy import failed (no new files)
+function lazyWithLog(label, importer) {
+  return lazy(() =>
+    importer().catch((e) => {
+      console.error(`[lazy import] ${label} failed`, e);
+      throw e;
+    })
+  );
+}
+
 /* Auth */
-const LoginScreen         = lazy(() => import('@/features/auth/screens/LoginScreen'));
-const RegisterScreen      = lazy(() => import('@/features/auth/screens/RegisterScreen'));
-const ResetPasswordScreen = lazy(() => import('@/features/auth/screens/ResetPasswordScreen'));
-const OnboardingScreen    = lazy(() => import('@/features/auth/screens/Onboarding'));
+const LoginScreen         = lazyWithLog('LoginScreen',         () => import('@/features/auth/screens/LoginScreen'));
+const RegisterScreen      = lazyWithLog('RegisterScreen',      () => import('@/features/auth/screens/RegisterScreen'));
+const ResetPasswordScreen = lazyWithLog('ResetPasswordScreen', () => import('@/features/auth/screens/ResetPasswordScreen'));
+const OnboardingScreen    = lazyWithLog('Onboarding',          () => import('@/features/auth/screens/Onboarding'));
 
 /* App screens */
 const CentralFeed         = lazy(() => import('@/features/feed/screens/CentralFeed.jsx'));
+const ExploreScreen       = lazyWithLog('ExploreScreen',       () => import('@/features/explore/ExploreScreen'));
+const NotificationsScreen = lazyWithLog('NotificationsScreen', () => import('@/features/notifications/NotificationsScreen'));
+const UploadScreen        = lazyWithLog('UploadScreen',        () => import('@/features/post/UploadScreen'));
+const MeScreen            = lazyWithLog('MeScreen',            () => import('@/features/profiles/screens/MeScreen.jsx'));
+const SettingsScreen      = lazyWithLog('SettingsScreen',      () => import('@/features/settings/SettingsScreen'));
+const VoidScreen          = lazyWithLog('VoidScreen',          () => import('@/features/void/VoidScreen'));
 
-const ExploreScreen       = lazy(() => import('@/features/explore/ExploreScreen'));
-const ConversationList    = lazy(() => import('@/features/chat/ConversationList')); // user inbox (full page)
-const ChatScreen          = lazy(() => import('@/features/chat/ChatScreen'));       // user convo (full page)
-const NotificationsScreen = lazy(() => import('@/features/notifications/NotificationsScreen'));
-const UploadScreen        = lazy(() => import('@/features/post/UploadScreen'));
-const MeScreen            = lazy(() => import('@/features/profiles/screens/MeScreen'));
-const SettingsScreen      = lazy(() => import('@/features/settings/SettingsScreen'));
-const VoidScreen          = lazy(() => import('@/features/void/VoidScreen'));
+/* Chat screens (USER) */
+const ChatInboxScreen     = lazyWithLog('ChatInbox',           () => import('@/features/chat/pages/Inbox.jsx'));
+const ChatThreadScreen    = lazyWithLog('ChatThread',          () => import('@/features/chat/pages/ConversationView.jsx'));
 
-/* Notifications deep-link */
-const NotiViewPostScreen  = lazy(() =>
-  import('@/features/notifications/notificationcenter/NotiViewPostScreen')
-);
+/* Chat screens (VPORT) */
+const VInboxScreen        = lazyWithLog('VInbox',              () => import('@/features/chat/pages/VInbox.jsx'));
+const VChatThreadScreen   = lazyWithLog('VConversationView',   () => import('@/features/chat/pages/VConversationView.jsx'));
 
 /* VPORT profile screen */
-const VportProfileScreen  = lazy(() =>
-  import('@/features/vport/vprofile/VportProfileScreen')
-);
+const VportProfileScreen  = lazyWithLog('VportProfileScreen',  () => import('@/features/vport/vprofile/VportProfileScreen.jsx'));
+
+/* Notifications deep-link */
+const NotiViewPostScreen  = lazyWithLog('NotiViewPostScreen',  () => import('@/features/notifications/notificationcenter/NotiViewPostScreen'));
 
 /* VPORT notifications */
-const VportNotificationsScreen = lazy(() =>
-  import('@/features/notifications/vnotificationcenter/VportNotificationsScreen')
+const VportNotificationsScreen = lazyWithLog(
+  'VportNotificationsScreen',
+  () => import('@/features/notifications/vnotificationcenter/VportNotificationsScreen')
 );
 
-/* 💬 VPORT chat (full page list + full page thread) */
-const VConversationList   = lazy(() => import('@/features/chat/vchat/VConversationList'));
-const VChatScreen         = lazy(() => import('@/features/chat/vchat/VChatScreen'));
+/* 👥 Circle list screens */
+const FansScreen          = lazyWithLog('FansScreen',          () => import('@/features/profiles/tabs/components/Fans.jsx'));
+const ImaFanScreen        = lazyWithLog('ImaFanScreen',        () => import('@/features/profiles/tabs/components/ImaFan.jsx'));
+const MutualFriendsScreen = lazyWithLog('MutualFriendsScreen', () => import('@/features/profiles/tabs/components/MutualFriends.jsx'));
 
 export default function App() {
   return (
@@ -57,13 +70,13 @@ export default function App() {
             <Route path="/feed" element={<CentralFeed />} />
             <Route path="/explore" element={<ExploreScreen />} />
 
-            {/* 💬 User chat (full pages) */}
-            <Route path="/chat" element={<ConversationList />} />
-            <Route path="/chat/:id" element={<ChatScreen />} />
+            {/* 💬 Chat (USER) */}
+            <Route path="/chat" element={<ChatInboxScreen />} />
+            <Route path="/chat/:id" element={<ChatThreadScreen />} />
 
-            {/* 💬 VPORT chat (full pages, no split) */}
-            <Route path="/vport/chat" element={<VConversationList />} />
-            <Route path="/vport/chat/:id" element={<VChatScreen />} />
+            {/* 💬 Chat (VPORT) */}
+            <Route path="/vport/chat" element={<VInboxScreen />} />
+            <Route path="/vport/chat/:id" element={<VChatThreadScreen />} />
 
             {/* 🔔 User notifications */}
             <Route path="/notifications" element={<NotificationsScreen />} />
@@ -72,16 +85,31 @@ export default function App() {
 
             <Route path="/upload" element={<UploadScreen />} />
             <Route path="/me" element={<MeScreen />} />
+
+            {/* 🔽 full circle lists for *current* user */}
+            <Route path="/me/fans" element={<FansScreen />} />
+            <Route path="/me/imafan" element={<ImaFanScreen />} />
+            <Route path="/me/mutual-friends" element={<MutualFriendsScreen />} />
+
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/void" element={<VoidScreen />} />
 
-            {/* Other users → MeScreen */}
+            {/* 👤 User profiles */}
             <Route path="/u/:username" element={<MeScreen />} />
-            <Route path="/profile/:id" element={<MeScreen />} />
+            {/* full circle lists when viewing a profile by username */}
+            <Route path="/u/:username/fans" element={<FansScreen />} />
+            <Route path="/u/:username/imafan" element={<ImaFanScreen />} />
+            <Route path="/u/:username/mutual-friends" element={<MutualFriendsScreen />} />
 
-            {/* VPORT profiles */}
-            <Route path="/vport/:id" element={<VportProfileScreen />} />
-            <Route path="/vport/slug/:slug" element={<VportProfileScreen />} />
+            <Route path="/profile/:id" element={<MeScreen />} />
+            {/* full circle lists when viewing by profile id */}
+            <Route path="/profile/:id/fans" element={<FansScreen />} />
+            <Route path="/profile/:id/imafan" element={<ImaFanScreen />} />
+            <Route path="/profile/:id/mutual-friends" element={<MutualFriendsScreen />} />
+
+            {/* 🏢 VPORT profiles (slug first, then id route) */}
+            <Route path="/vport/id/:id" element={<VportProfileScreen />} />
+            <Route path="/vport/:slug" element={<VportProfileScreen />} />
 
             {/* Notifications deep-link to post */}
             <Route path="/noti/post/:postId" element={<NotiViewPostScreen />} />
