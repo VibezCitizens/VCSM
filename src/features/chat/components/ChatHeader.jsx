@@ -1,7 +1,7 @@
 // src/features/chat/components/ChatHeader.jsx
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { ChevronLeft, MoreVertical } from 'lucide-react';
-import UserLink from '@/components/userlink';
+import UserLink from '@/components/UserLink';
 import { supabase } from '@/lib/supabaseClient';
 
 /** partner is usable if it has any visible identity */
