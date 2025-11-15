@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useIdentity } from "@/state/identityContext";
-import UserLink from "@/components/UserLinkerlink";
+import UserLink from "@/components/Userlink";
 import BackButton from "@/ui/components/Backbutton";
 
 export default function ImaFan() {
