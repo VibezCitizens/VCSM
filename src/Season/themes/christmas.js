@@ -2,7 +2,7 @@
 export const ChristmasTheme = {
   name: "christmas",
   start: { month: 11, day: 1 },
-  end: { month: 1, day: 7 },
+  end: { month: 11, day: 7 },
 
   apply(position = "topRight") {
     return {
