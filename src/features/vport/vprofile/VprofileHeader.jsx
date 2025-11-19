@@ -1,3 +1,4 @@
+// src/features/vport/vprofile/VprofileHeader.jsx
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -6,34 +7,24 @@ import VisibleQRCode from "@/features/profiles/components/VisibleQRCode";
 import ProfileDots from "@/features/profiles/components/ProfileDots";
 import { useBlockStatus } from "@/features/profiles/hooks/useBlockStatus";
 import VportSocialActions from "./VportSocialActions.jsx";
-import supabase from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient"; // ✅ named import
 
 const DEFAULT_AVATAR = "/avatar.jpg";
 const DEFAULT_BANNER = "/default-banner.jpg";
 
-/**
- * VprofileHeader
- * - Visual + behavior parallel to ProfileHeader (user)
- * - No upload controls here (display-only for vports)
- *
- * Expected vport fields:
- *   id, name, slug, bio, avatar_url, banner_url, owner_user_id
- */
 export default function VprofileHeader({
   profile,
   isOwnProfile = false,
   metricLabel = "Subscribers",
   metricCount,
   initialSubscribed = false,
-  onSubscribeToggle, // (next:boolean) => void
+  onSubscribeToggle,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // accept both shapes safely
   const p = profile || {};
   const profileId = p.id ?? null; // vc.vports.id
-  const ownerProfileId = p.owner_user_id ?? null; // public.profiles.id (auth user id)
   const profileUsername = p.slug ?? p.username ?? null;
 
   const profileDisplayName = p.name ?? p.display_name ?? "VPORT";
@@ -43,8 +34,8 @@ export default function VprofileHeader({
   const profileBannerUrl =
     p.banner_url ?? p.cover_url ?? p.bannerUrl ?? DEFAULT_BANNER;
 
-  // resolve actor for this VPORT (schema: vc.actors.vport_id is UNIQUE)
-  const [actorId, setActorId] = useState(null); // vc.actors.id for this vport
+  // resolve actorId of this VPORT
+  const [actorId, setActorId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,8 +68,8 @@ export default function VprofileHeader({
   useEffect(() => setQrCodeModalOpen(false), [profileId]);
   useEffect(() => setQrCodeModalOpen(false), [location.pathname]);
 
-  // IMPORTANT: use owner profile id for block status, not vport id / actor id.
-  const targetProfileIdForBlock = ownerProfileId || profileId;
+  // Always check block state using THIS VPORT’S profile id (actor based).
+  const targetProfileIdForBlock = profileId;
 
   const { isBlocking } = useBlockStatus(targetProfileIdForBlock);
 
@@ -136,7 +127,6 @@ export default function VprofileHeader({
 
                 {/* Info + actions */}
                 <div className="flex-1 min-w-0">
-                  {/* Top row: name/bio + QR (owner) */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h1 className="text-xl md:text-2xl font-semibold truncate">
@@ -153,7 +143,6 @@ export default function VprofileHeader({
                       )}
                     </div>
 
-                    {/* Owner-only: QR */}
                     {isOwnProfile && (
                       <div className="flex flex-col items-end gap-2 shrink-0">
                         <button
@@ -166,7 +155,6 @@ export default function VprofileHeader({
                     )}
                   </div>
 
-                  {/* Actions – Message + Subscribe */}
                   {!isOwnProfile && (
                     <div className="mt-2 flex justify-end">
                       <VportSocialActions
@@ -179,11 +167,9 @@ export default function VprofileHeader({
                 </div>
               </div>
 
-              {/* Three-dots menu */}
               {!isOwnProfile && (
                 <div className="absolute top-4 right-4 z-50">
                   <ProfileDots
-                    // Block by OWNER profile id so rows use public.profiles.id
                     targetId={targetProfileIdForBlock}
                     targetActorId={actorId || null}
                     initialBlocked={isBlocking}
@@ -208,7 +194,6 @@ export default function VprofileHeader({
         </div>
       </div>
 
-      {/* QR Modal */}
       {qrCodeModalOpen && (
         <div
           className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"

@@ -295,50 +295,64 @@ function ProviderImpl({ children }) {
   }, []);
 
   // ---- FAST HYDRATE (StrictMode de-duped: once per authUserId) ----
-  const lastRanForAuthRef = useRef(null);
-  useEffect(() => {
-    // Only run when we have an auth user and haven't run for this userId in this mount cycle.
-    if (!authUserId || lastRanForAuthRef.current === authUserId) return;
-    lastRanForAuthRef.current = authUserId;
+ // ---- FAST HYDRATE (StrictMode de-duped: once per authUserId) ----
+const lastRanForAuthRef = useRef(null);
+useEffect(() => {
+  if (!authUserId || lastRanForAuthRef.current === authUserId) return;
+  lastRanForAuthRef.current = authUserId;
 
-    let alive = true;
-    (async () => {
-      if (userActorId) return;
-      try {
-        DBG("fast-hydrate: resolving user actor via vc.actor_owners JOIN vc.actors", {
-          authUserId,
-        });
-        const { data, error } = await vc
-          .from("actor_owners")
-          .select("actor_id, actors:actor_id(kind)")
-          .eq("user_id", authUserId)
-          .limit(50);
+  let alive = true;
+  (async () => {
+    if (userActorId) return;
+    try {
+      DBG("fast-hydrate: resolving user actor via vc.actor_owners JOIN vc.actors", {
+        authUserId,
+      });
+      const { data, error } = await vc
+        .schema("vc")
+        .from("actor_owners")
+        .select(`
+          actor_id,
+          actors (
+            id,
+            kind,
+            profile_id,
+            vport_id
+          )
+        `)
+        .eq("user_id", authUserId)
+        .limit(50);
 
-        if (!alive) return;
+      if (!alive) return;
 
-        if (!error && Array.isArray(data)) {
-          const userActor = data.find((r) => r?.actors?.kind === "user");
-          if (userActor?.actor_id) {
-            setUserActorId(userActor.actor_id);
-            DBG("fast-hydrate: actorId set =", userActor.actor_id);
-          }
+      if (!error && Array.isArray(data)) {
+        const userActor = data.find((r) => r?.actors?.kind === "user");
+        if (userActor?.actor_id) {
+          setUserActorId(userActor.actor_id);
+          DBG("fast-hydrate: actorId set =", userActor.actor_id);
         }
-
-        if (!activeAccountId) {
-          const cid = `citizen:${authUserId}`;
-          setActiveAccountId(cid);
-          localStorage.setItem(STORAGE_KEY, cid);
-          DBG("fast-hydrate: primed activeAccountId =", cid);
-        }
-      } catch (e) {
-        DBG("fast-hydrate error (non-fatal)", e);
       }
-    })();
 
-    return () => {
-      alive = false;
-    };
-  }, [authUserId, userActorId, activeAccountId]);
+      // ❌ OLD BUG:
+      // if (!activeAccountId) force citizen
+
+      // ✅ FIX: NEVER override activeAccountId if we are already acting as a vport
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!activeAccountId && !stored) {
+        const cid = `citizen:${authUserId}`;
+        setActiveAccountId(cid);
+        localStorage.setItem(STORAGE_KEY, cid);
+        DBG("fast-hydrate: primed activeAccountId =", cid);
+      }
+    } catch (e) {
+      DBG("fast-hydrate error (non-fatal)", e);
+    }
+  })();
+
+  return () => {
+    alive = false;
+  };
+}, [authUserId, userActorId, activeAccountId]);
 
   // ---- Initial hydrate ----
   useEffect(() => {
@@ -688,13 +702,14 @@ function ProviderImpl({ children }) {
 
   // ---- Stable identity: hold last non-null while loading to remove transient null gap ----
   const [identity, setIdentity] = useState(nextIdentity);
-  useEffect(() => {
-    setIdentity((prev) => {
-      // If we’re loading and nextIdentity is null, keep the last non-null value (smoothing)
-      if (loading && nextIdentity == null) return prev ?? null;
-      return nextIdentity;
-    });
-  }, [nextIdentity, loading]);
+useEffect(() => {
+  setIdentity((prev) => {
+    // NEVER drop identity back to null once it exists
+    if (nextIdentity == null) return prev ?? null;
+    return nextIdentity;
+  });
+}, [nextIdentity]);
+
 
   const isUser = identity?.type === "user";
   const isVport = identity?.type === "vport";

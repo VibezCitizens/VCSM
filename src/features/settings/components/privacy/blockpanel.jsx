@@ -1,7 +1,7 @@
 // src/features/settings/components/privacy/PrivacyTab.jsx
-import Card from '../components/Card';
-import Row from '../components/Row';
-import ProfilePrivacyToggle from '../../profiles/components/private/ProfilePrivacyToggle';
+import Card from '@/features/settings/components/Card';
+import Row from '@/features/settings/components/Row';
+import ProfilePrivacyToggle from '@/features/settings/components/ProfilePrivacyToggle';
 import BlockedUsersPanel from '@/features/settings/components/privacy/blockpanel';
 
 export default function PrivacyTab() {

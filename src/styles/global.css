@@ -96,3 +96,25 @@ button { cursor: pointer; }
 .touch-pan-y {
   touch-action: pan-y;
 }
+h1, h2, h3, .title {
+  font-family: 'GFS Didot', serif !important;
+}
+@keyframes fogSlow {
+  0% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(-50px, 30px, 0); }
+  100% { transform: translate3d(0,0,0); }
+}
+
+@keyframes fogFast {
+  0% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(60px, -40px, 0); }
+  100% { transform: translate3d(0,0,0); }
+}
+
+.animate-fogSlow {
+  animation: fogSlow 18s ease-in-out infinite;
+}
+
+.animate-fogFast {
+  animation: fogFast 12s ease-in-out infinite;
+}

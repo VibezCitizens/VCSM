@@ -1,75 +1,80 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { db } from '@/data/data';
+// src/features/profiles/components/private/ProfilePrivacyToggle.jsx
+import { useEffect, useMemo, useState } from 'react';
+import supabase from '@/lib/supabaseClient';
+import { vc } from '@/lib/vcClient';
+import { useIdentity } from '@/state/identityContext';
 
-export default function ProfilePrivacyToggle() {
-  const { user } = useAuth();
-  const [checked, setChecked] = useState(false); // false=public, true=private
-  const [busy, setBusy] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+export default function ProfilePrivacyToggle({ scope: propScope, userId: propUserId, vportId: propVportId }) {
+  const { identity } = useIdentity();
 
+  // Resolve scope + ids
+  const scope = useMemo(() => propScope || (identity?.type === 'vport' ? 'vport' : 'user'), [propScope, identity?.type]);
+  const userId  = useMemo(() => propUserId  || identity?.userId  || identity?.profileId || null, [propUserId, identity]);
+  const vportId = useMemo(() => propVportId || identity?.vportId || null, [propVportId, identity]);
+
+  const [value, setValue] = useState(null); // null = loading
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
+
+  // Load current flag (READ ONLY — no writes on mount)
   useEffect(() => {
-    let cancelled = false;
+    let alive = true;
     (async () => {
-      if (!user?.id) { setLoaded(true); return; }
+      setErr('');
+      setValue(null);
       try {
-        const me = await db.profiles.users.getById(user.id);
-        if (!cancelled) {
-          setChecked(Boolean(me?.private));
-          setLoaded(true);
+        if (scope === 'vport') {
+          if (!vportId) { if (alive) setValue(false); return; }
+          const { data, error } = await vc.from('vports').select('id, is_private').eq('id', vportId).maybeSingle();
+          if (error) throw error;
+          if (alive) setValue(!!data?.is_private);
+        } else {
+          if (!userId) { if (alive) setValue(false); return; }
+          const { data, error } = await supabase.from('profiles').select('id, private').eq('id', userId).maybeSingle();
+          if (error) throw error;
+          if (alive) setValue(!!data?.private);
         }
-      } catch {
-        setLoaded(true);
+      } catch (e) {
+        if (alive) { setErr(e.message || 'Failed to load privacy'); setValue(false); }
       }
     })();
-    return () => { cancelled = true; };
-  }, [user?.id]);
+    return () => { alive = false; };
+  }, [scope, userId, vportId]);
 
-  const save = async (next) => {
-    if (!user?.id) return;
-    setBusy(true);
+  async function onToggle() {
+    if (value == null) return;
+    setSaving(true);
+    setErr('');
     try {
-      if (typeof db.profiles.setPrivacy === 'function') {
-        await db.profiles.setPrivacy({ userId: user.id, isPrivate: next });
+      const next = !value;
+      if (scope === 'vport') {
+        const { error } = await vc.from('vports').update({ is_private: next }).eq('id', vportId);
+        if (error) throw error;
       } else {
-        // fallback: update directly via users.update
-        await db.profiles.users.update(user.id, { private: next });
+        const { error } = await supabase.from('profiles').update({ private: next }).eq('id', userId);
+        if (error) throw error;
       }
+      setValue(next);
     } catch (e) {
-      // revert on error
-      setChecked((v) => !v);
-      alert(e?.message || 'Failed to update privacy.');
+      setErr(e.message || 'Failed to update');
     } finally {
-      setBusy(false);
+      setSaving(false);
     }
-  };
+  }
 
-  const onChange = () => {
-    const next = !checked;
-    setChecked(next);
-    save(next);
-  };
+  const label = value == null ? 'Loading…' : value ? 'Private' : 'Public';
 
   return (
-    <label className="inline-flex items-center gap-2 select-none">
-      <span className="text-sm text-zinc-300">{checked ? 'Private' : 'Public'}</span>
+    <div className="flex items-center gap-2">
       <button
-        type="button"
-        onClick={onChange}
-        disabled={!loaded || busy}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-          checked ? 'bg-violet-600' : 'bg-zinc-700'
-        } ${(!loaded || busy) ? 'opacity-60' : ''}`}
-        aria-pressed={checked}
-        aria-label="Toggle profile privacy"
-        title={checked ? 'Private' : 'Public'}
+        onClick={onToggle}
+        disabled={value == null || saving}
+        className="px-3 py-2 rounded-lg bg-zinc-800 text-white disabled:opacity-50 text-sm"
       >
-        <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${
-            checked ? 'translate-x-5' : 'translate-x-1'
-          }`}
-        />
+        {saving ? 'Saving…' : `Make ${value ? 'Public' : 'Private'}`}
       </button>
-    </label>
+      <span className="text-xs text-zinc-400">{label}</span>
+      {err && <span className="text-xs text-amber-300">{err}</span>}
+    </div>
   );
 }

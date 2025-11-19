@@ -1,143 +1,194 @@
-// src/features/settings/components/privacy/useMyBlocks.js
+// src/features/settings/components/privacy/useMyBlocks.jsx
 import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+  createContext, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { vc } from '@/lib/vcClient';
 
 const Ctx = createContext(null);
 
-export function MyBlocksProvider({ children }) {
-  const [uid, setUid] = useState(null);
-  const [blocks, setBlocks] = useState([]); // array of profile rows
+export function MyBlocksProvider({ actorId, userId, vportId, children }) {
+  const [blocks, setBlocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
 
-  // load session user
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!alive) return;
-      setUid(data?.user?.id || null);
-    })();
-    return () => { alive = false; };
-  }, []);
-
   const load = useCallback(async () => {
-    if (!uid) { setBlocks([]); setLoading(false); return; }
+    if (!actorId) {
+      setBlocks([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setErr('');
+
     try {
-      // who I blocked
       const { data: rows, error: bErr } = await vc
         .from('user_blocks')
-        .select('blocked_id, created_at')
-        .eq('blocker_id', uid)
+        .select('blocked_actor_id, created_at, reason')
+        .eq('blocker_actor_id', actorId)
         .order('created_at', { ascending: false });
+
       if (bErr) throw bErr;
 
-      const ids = [...new Set((rows || []).map(r => r.blocked_id))];
-      if (ids.length === 0) {
+      const actorIds = [...new Set((rows || []).map(r => r.blocked_actor_id))];
+      if (actorIds.length === 0) {
         setBlocks([]);
         return;
       }
 
-      // fetch their profiles
-      const { data: profs, error: pErr } = await supabase
-        .from('profiles')
-        .select('id, display_name, username, photo_url')
-        .in('id', ids);
-      if (pErr) throw pErr;
+      const { data: actors, error: aErr } = await vc
+        .from('actors')
+        .select('id, kind, profile_id, vport_id')
+        .in('id', actorIds);
 
-      // keep order by created_at (most recent first)
-      const index = new Map(ids.map((id, i) => [id, i]));
-      const ordered = (profs || []).slice().sort((a, b) => {
-        return (index.get(a.id) ?? 0) - (index.get(b.id) ?? 0);
-      });
+      if (aErr) throw aErr;
+
+      const profileIds = actors.filter(a => a.profile_id).map(a => a.profile_id);
+      const vportIds   = actors.filter(a => a.vport_id).map(a => a.vport_id);
+
+      const [profilesResp, vportsResp] = await Promise.all([
+        profileIds.length
+          ? supabase.from('profiles').select('id, display_name, username, photo_url')
+                    .in('id', profileIds)
+          : { data: [], error: null },
+        vportIds.length
+          ? vc.from('vports').select('id, name, slug, avatar_url')
+               .in('id', vportIds)
+          : { data: [], error: null },
+      ]);
+
+      if (profilesResp.error) throw profilesResp.error;
+      if (vportsResp.error) throw vportsResp.error;
+
+      const profMap  = new Map(profilesResp.data.map(p => [p.id, p]));
+      const vportMap = new Map(vportsResp.data.map(v => [v.id, v]));
+
+      const cardByActor = new Map();
+
+      for (const a of actors) {
+        if (a.profile_id && profMap.has(a.profile_id)) {
+          const p = profMap.get(a.profile_id);
+          cardByActor.set(a.id, {
+            actorId: a.id,
+            kind: 'user',
+            profileId: p.id,
+            vportId: null,
+            title: p.display_name || p.username || 'Unknown',
+            subtitle: p.username ? `@${p.username}` : '',
+            avatarUrl: p.photo_url || '/avatar.jpg',
+          });
+        } else if (a.vport_id && vportMap.has(a.vport_id)) {
+          const v = vportMap.get(a.vport_id);
+          cardByActor.set(a.id, {
+            actorId: a.id,
+            kind: 'vport',
+            profileId: null,
+            vportId: v.id,
+            title: v.name || 'Untitled VPORT',
+            subtitle: v.slug ? `/${v.slug}` : '',
+            avatarUrl: v.avatar_url || '/avatar.jpg',
+          });
+        }
+      }
+
+      const index = new Map(rows.map((r, i) => [r.blocked_actor_id, i]));
+      const ordered = actorIds
+        .map(id => cardByActor.get(id))
+        .filter(Boolean)
+        .sort((a, b) => index.get(a.actorId) - index.get(b.actorId));
 
       setBlocks(ordered);
     } catch (e) {
-      setErr(e?.message || 'Failed to load blocked users.');
+      setErr(e.message);
       setBlocks([]);
     } finally {
       setLoading(false);
     }
-  }, [uid]);
+  }, [actorId]);
 
   useEffect(() => { load(); }, [load]);
 
-  const isBlocked = useCallback((profileId) => {
-    if (!profileId) return false;
-    return blocks.some(p => p.id === profileId);
-  }, [blocks]);
+  const isBlockedByActor = useCallback(
+    (actorId) => blocks.some(b => b.actorId === actorId),
+    [blocks]
+  );
 
-  const block = useCallback(async (profileId) => {
-    if (!uid || !profileId) return false;
-    try {
-      // server first (avoid RLS races)
+  // ---- RESOLVE PROFILE OR VPORT TO ACTOR ----
+  async function resolveActorId(id, type) {
+    if (type === 'profile') {
+      const { data, error } = await vc
+        .from('actors')
+        .select('id')
+        .eq('profile_id', id)
+        .maybeSingle();
+      if (error || !data) throw new Error('Profile actor not found.');
+      return data.id;
+    }
+
+    if (type === 'vport') {
+      const { data, error } = await vc
+        .from('actors')
+        .select('id')
+        .eq('vport_id', id)
+        .maybeSingle();
+      if (error || !data) throw new Error('VPORT actor not found.');
+      return data.id;
+    }
+
+    throw new Error('Invalid type for resolveActorId');
+  }
+
+  const blockByActor = useCallback(
+    async (blockedActorId) => {
       const { error } = await vc
         .from('user_blocks')
-        .insert([{ blocker_id: uid, blocked_id: profileId, reason: null }]);
+        .insert([{ blocker_actor_id: actorId, blocked_actor_id: blockedActorId }]);
       if (error) throw error;
-
-      // optimistic enrich (only if not already present)
-      if (!isBlocked(profileId)) {
-        const { data: prof, error: pErr } = await supabase
-          .from('profiles')
-          .select('id, display_name, username, photo_url')
-          .eq('id', profileId)
-          .maybeSingle();
-        if (pErr) throw pErr;
-        if (prof) setBlocks(prev => [prof, ...prev]);
-      }
+      await load();
       return true;
-    } catch (e) {
-      setErr(e?.message || 'Block failed.');
-      return false;
-    }
-  }, [uid, isBlocked]);
+    },
+    [actorId, load]
+  );
 
-  const unblock = useCallback(async (profileId) => {
-    if (!uid || !profileId) return false;
-    try {
+  const unblockByActor = useCallback(
+    async (blockedActorId) => {
       const { error } = await vc
         .from('user_blocks')
         .delete()
-        .match({ blocker_id: uid, blocked_id: profileId });
-      if (error) throw error;
+        .match({ blocker_actor_id: actorId, blocked_actor_id: blockedActorId });
 
-      // optimistic remove
-      setBlocks(prev => prev.filter(p => p.id !== profileId));
+      if (error) throw error;
+      setBlocks(prev => prev.filter(b => b.actorId !== blockedActorId));
       return true;
-    } catch (e) {
-      setErr(e?.message || 'Unblock failed.');
-      return false;
-    }
-  }, [uid]);
+    },
+    [actorId]
+  );
 
   const value = useMemo(() => ({
-    uid,
+    actorId,
+    uid: userId || null,
+    vportId: vportId || null,
+
     blocks,
     loading,
     error: err,
     refresh: load,
-    isBlocked,
-    block,
-    unblock,
-  }), [uid, blocks, loading, err, load, isBlocked, block, unblock]);
 
-  // No JSX to keep .js extension safe:
-  return React.createElement(Ctx.Provider, { value }, children);
+    isBlockedByActor,
+    resolveActorId,
+    blockByActor,
+    unblockByActor,
+  }), [
+    actorId, userId, vportId, blocks, loading, err,
+    load, isBlockedByActor, resolveActorId, blockByActor, unblockByActor,
+  ]);
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useMyBlocks() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useMyBlocks must be used inside <MyBlocksProvider>');
+  if (!ctx) throw new Error('useMyBlocks must be inside provider');
   return ctx;
 }

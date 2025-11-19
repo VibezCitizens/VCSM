@@ -3,6 +3,7 @@ import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import RootLayout from '@/layouts/RootLayout';
 import ProtectedRoute from '@/app/ProtectedRoute';
+import BlockGate from '@/features/profiles/components/BlockGate'; // 🔒 import
 
 // Small helper to log lazy load failures
 function lazyWithLog(label, importer) {
@@ -103,22 +104,92 @@ export default function AppRoutes() {
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/void" element={<VoidScreen />} />
 
-            {/* USER Profile routes */}
-            <Route path="/u/:username" element={<MeScreen />} />
+            {/* USER Profile routes protected by BlockGate */}
+            <Route
+              path="/u/:username"
+              element={
+                <BlockGate>
+                  <MeScreen />
+                </BlockGate>
+              }
+            />
             {/* circle lists when viewing by username */}
-            <Route path="/u/:username/fans" element={<FansScreen />} />
-            <Route path="/u/:username/imafan" element={<ImaFanScreen />} />
-            <Route path="/u/:username/mutual-friends" element={<MutualFriendsScreen />} />
+            <Route
+              path="/u/:username/fans"
+              element={
+                <BlockGate>
+                  <FansScreen />
+                </BlockGate>
+              }
+            />
+            <Route
+              path="/u/:username/imafan"
+              element={
+                <BlockGate>
+                  <ImaFanScreen />
+                </BlockGate>
+              }
+            />
+            <Route
+              path="/u/:username/mutual-friends"
+              element={
+                <BlockGate>
+                  <MutualFriendsScreen />
+                </BlockGate>
+              }
+            />
 
-            <Route path="/profile/:id" element={<MeScreen />} />
+            <Route
+              path="/profile/:id"
+              element={
+                <BlockGate>
+                  <MeScreen />
+                </BlockGate>
+              }
+            />
             {/* circle lists when viewing by profile id */}
-            <Route path="/profile/:id/fans" element={<FansScreen />} />
-            <Route path="/profile/:id/imafan" element={<ImaFanScreen />} />
-            <Route path="/profile/:id/mutual-friends" element={<MutualFriendsScreen />} />
+            <Route
+              path="/profile/:id/fans"
+              element={
+                <BlockGate>
+                  <FansScreen />
+                </BlockGate>
+              }
+            />
+            <Route
+              path="/profile/:id/imafan"
+              element={
+                <BlockGate>
+                  <ImaFanScreen />
+                </BlockGate>
+              }
+            />
+            <Route
+              path="/profile/:id/mutual-friends"
+              element={
+                <BlockGate>
+                  <MutualFriendsScreen />
+                </BlockGate>
+              }
+            />
 
-            {/* ✅ VPORT Profile routes (slug + id) */}
-            <Route path="/vport/id/:id" element={<VportProfileScreen />} />
-            <Route path="/vport/:slug" element={<VportProfileScreen />} />
+            {/* ✅ VPORT Profile routes (slug + id) PROTECTED */}
+            <Route
+              path="/vport/id/:id"
+              element={
+                <BlockGate>
+                  <VportProfileScreen />
+                </BlockGate>
+              }
+            />
+            <Route
+              path="/vport/:slug"
+              element={
+                <BlockGate>
+                  <VportProfileScreen />
+                </BlockGate>
+              }
+            />
 
             {/* Notifications deep-link */}
             <Route path="/noti/post/:postId" element={<NotiViewPostScreen />} />

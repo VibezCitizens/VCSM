@@ -95,9 +95,12 @@ export default function ProfileHeader({
     setQrCodeModalOpen(false);
   }, [profileId]);
 
-  useEffect(() => {
-    setShowSubscriberModal(false);
-  }, [location.pathname]);
+ useEffect(() => {
+  if (targetActorId) {
+    fetchSubscriberCount();
+  }
+}, [targetActorId, identity?.actorId]);
+
 
   // --- resolve targetActorId from profileId ---------------------------------
   useEffect(() => {
@@ -154,24 +157,45 @@ export default function ProfileHeader({
   }, [identity?.actorId, targetActorId]);
   // ---------------------------------------------------------------------------
 
-  const fetchSubscriberCount = useCallback(async () => {
-    if (!targetActorId) return;
-    try {
-      const { count } = await supabase
-        .schema('vc')
-        .from('actor_follows')
-        .select('followed_actor_id', { count: 'exact', head: true })
-        .eq('followed_actor_id', targetActorId)
-        .eq('is_active', true);
-      if (typeof count === 'number') setDisplayedSubCount(count);
-    } catch {
-      // ignore
-    }
-  }, [targetActorId]);
+const fetchSubscriberCount = useCallback(async () => {
+  if (!targetActorId) return;
 
-  useEffect(() => {
-    fetchSubscriberCount();
-  }, [profileId, targetActorId, fetchSubscriberCount]);
+  try {
+    // 1. Load all relevant block relations
+ const { data: blocks } = await supabase
+  .schema('vc')
+  .from('user_blocks') // ← FIXED HERE
+  .select('blocker_actor_id, blocked_actor_id')
+  .or(`blocker_actor_id.eq.${targetActorId},blocked_actor_id.eq.${targetActorId}`);
+
+
+
+    // Build a set of all actors who are blocked or blocking target
+    const blockedSet = new Set();
+    for (const b of blocks || []) {
+      blockedSet.add(b.blocker_actor_id);
+      blockedSet.add(b.blocked_actor_id);
+    }
+    blockedSet.delete(targetActorId); // remove self
+
+    // 2. Load subscribers (active follows)
+    const { data: rows } = await supabase
+      .schema('vc')
+      .from('actor_follows')
+      .select('follower_actor_id')
+      .eq('followed_actor_id', targetActorId)
+      .eq('is_active', true);
+
+    // 3. Apply Option A filtering
+    const filtered = (rows || []).filter(
+      (r) => !blockedSet.has(r.follower_actor_id)
+    );
+
+    setDisplayedSubCount(filtered.length);
+  } catch (e) {
+    console.error('[fetchSubscriberCount]', e);
+  }
+}, [targetActorId]);
 
   const handlePhotoUpload = useCallback(
     async (e, type = 'photo') => {
@@ -461,24 +485,21 @@ export default function ProfileHeader({
                 </div>
               </div>
 
-              {/* Three-dots menu */}
-              {!isOwnProfile && (
-                <div className="absolute top-4 right-4 z-50">
-                  <ProfileDots
-                    targetId={profileId}
-                    initialBlocked={isBlocking}
-                    onBlock={(nowBlocked) => {
-                      toast.success(
-                        nowBlocked ? 'User blocked' : 'User unblocked'
-                      );
-                      if (nowBlocked) {
-                        setForcedBlocked(true);
-                        navigate('/', { replace: true });
-                      }
-                    }}
-                  />
-                </div>
-              )}
+              {/* Three-dots menu (moved OUTSIDE stacking context) */}
+{!isOwnProfile && (
+  <div className="fixed top-4 right-4 z-[99999] pointer-events-auto">
+    <ProfileDots
+    targetActorId={targetActorId}
+
+      initialBlocked={isBlocking}
+      onBlock={(nowBlocked) => {
+        toast.success(nowBlocked ? 'User blocked' : 'User unblocked');
+        if (nowBlocked) navigate('/', { replace: true });
+      }}
+    />
+  </div>
+)}
+
             </div>
           </div>
         </div>

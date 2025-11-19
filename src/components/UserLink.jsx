@@ -1,11 +1,10 @@
-// src/components/UserLink.jsx
 import { Link } from 'react-router-dom';
 
 export default function UserLink({
   user,
   authorType,
-  avatarSize = 'w-10 h-10',          // 🔹 bigger square (was w-8 h-8)
-  avatarShape = 'rounded-none',       // 🔹 square shape (no rounding)
+  avatarSize = 'w-11 h-11',          // smoother, premium size
+  avatarShape = 'rounded-xl',        // 🔥 soft rounded corners
   textSize = 'text-sm',
   showUsername = false,
   showTimestamp = false,
@@ -83,6 +82,7 @@ export default function UserLink({
         }}
         className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
       />
+
       <div className="flex flex-col leading-tight">
         <span className={`${textSize} text-white font-medium`}>
           {norm.displayName}

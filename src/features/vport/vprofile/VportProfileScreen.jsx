@@ -78,19 +78,26 @@ export default function VportProfileScreen() {
 
   const [currentUserId, setCurrentUserId] = useState(null);
   const [currentUserActorId, setCurrentUserActorId] = useState(null);
+  const [myActorIds, setMyActorIds] = useState([]); // all viewer actors (user + vports)
+
   const [isOwner, setIsOwner] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   // subscriber count state
   const [subscriberCount, setSubscriberCount] = useState(0);
 
-  // AUTH + ACTOR
+  // 🔒 gate state
+  const [blockChecked, setBlockChecked] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  // AUTH + ACTOR (viewer)
   useEffect(() => {
     (async () => {
       try {
         const { data } = await supabase.auth.getSession();
         const uid = data?.session?.user?.id ?? null;
         setCurrentUserId(uid);
+
         if (uid) {
           if (identity?.actorId) {
             setCurrentUserActorId(identity.actorId);
@@ -98,9 +105,20 @@ export default function VportProfileScreen() {
             const resolved = await getActorIdForUser(uid);
             setCurrentUserActorId(resolved || null);
           }
+
+          // collect ALL viewer actors
+          const { data: owned, error: aoErr } = await supabase
+            .schema("vc")
+            .from("actor_owners")
+            .select("actor_id")
+            .eq("user_id", uid);
+          if (!aoErr) setMyActorIds((owned || []).map((r) => r.actor_id));
+        } else {
+          setMyActorIds([]);
         }
       } catch (e) {
         DBGE("auth/actor resolve error:", e);
+        setMyActorIds([]);
       }
     })();
   }, [identity?.actorId]);
@@ -127,7 +145,11 @@ export default function VportProfileScreen() {
 
   // LOAD ACTOR for this vport
   useEffect(() => {
-    if (!vport?.id) return;
+    if (!vport?.id) {
+      setActorId(null);
+      setLoadingActor(false);
+      return;
+    }
     (async () => {
       const { data, error } = await supabase
         .schema("vc")
@@ -155,6 +177,68 @@ export default function VportProfileScreen() {
     })();
   }, [actorId, currentUserId]);
 
+  // 🔒 BLOCK CHECK (either direction): viewer’s ANY actor vs vport actor
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      setBlockChecked(false);
+      setIsBlocked(false);
+
+      // if anonymous viewer → no block gate (let route-level BlockGate decide if you later want public gating)
+      if (!currentUserId) {
+        if (alive) {
+          setBlockChecked(true);
+          setIsBlocked(false);
+        }
+        return;
+      }
+
+      if (!actorId || myActorIds.length === 0) {
+        if (alive) {
+          setBlockChecked(true);
+          setIsBlocked(false);
+        }
+        return;
+      }
+
+      try {
+        const idsCSV = myActorIds.join(",");
+        const { data: rows, error } = await supabase
+          .schema("vc")
+          .from("user_blocks")
+          .select("blocker_actor_id,blocked_actor_id")
+          .or(
+            `and(blocker_actor_id.in.(${idsCSV}),blocked_actor_id.eq.${actorId}),` +
+              `and(blocker_actor_id.eq.${actorId},blocked_actor_id.in.(${idsCSV}))`
+          );
+
+        if (error) {
+          DBGE("block check error:", error);
+          if (alive) {
+            setBlockChecked(true);
+            setIsBlocked(false);
+          }
+          return;
+        }
+
+        const any = (rows?.length ?? 0) > 0;
+        if (alive) {
+          setIsBlocked(any);
+          setBlockChecked(true);
+        }
+      } catch (e) {
+        DBGE("block check catch:", e);
+        if (alive) {
+          setBlockChecked(true);
+          setIsBlocked(false);
+        }
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [currentUserId, myActorIds, actorId]);
+
   // FOLLOW STATE (am I subscribed?)
   useEffect(() => {
     if (!actorId || !currentUserActorId) return;
@@ -171,15 +255,15 @@ export default function VportProfileScreen() {
     })();
   }, [actorId, currentUserActorId]);
 
-  // LOAD SUBSCRIBER COUNT (active followers only)
+  // LOAD SUBSCRIBER COUNT (active followers only) — skip if blocked and not owner
   useEffect(() => {
     if (!actorId) return;
+    if (!isOwner && isBlocked) return; // 🔒 gate
     (async () => {
       try {
         const { count, error } = await supabase
           .schema("vc")
           .from("actor_follows")
-          // IMPORTANT: actor_follows has NO `id` column, so select "*"
           .select("*", { count: "exact" })
           .eq("followed_actor_id", actorId)
           .eq("is_active", true);
@@ -188,19 +272,17 @@ export default function VportProfileScreen() {
           DBGE("load subscriber count error:", error);
           return;
         }
-
         setSubscriberCount(typeof count === "number" ? count : 0);
       } catch (err) {
         DBGE("load subscriber count error (catch):", err);
       }
     })();
-  }, [actorId]);
+  }, [actorId, isOwner, isBlocked]);
 
-  // handleSubscribeToggle only updates local state (optimistic).
-  // DB writes are handled in VportSocialActions and it calls this with `next`.
+  // posts/tabs don’t load here; VportTabs handles its own data by vport
+
   const handleSubscribeToggle = useCallback((nextIsSubscribed) => {
     setIsSubscribed(!!nextIsSubscribed);
-
     setSubscriberCount((prev) => {
       if (typeof prev !== "number") return prev;
       const delta = nextIsSubscribed ? 1 : -1;
@@ -214,12 +296,29 @@ export default function VportProfileScreen() {
       { title: "vport", body: JSON.stringify(vport, null, 2) },
       { title: "actorId", body: String(actorId) },
       { title: "identity", body: JSON.stringify(identity, null, 2) },
+      { title: "myActorIds", body: JSON.stringify(myActorIds) },
       { title: "subscriberCount", body: String(subscriberCount) },
       { title: "isSubscribed", body: String(isSubscribed) },
+      { title: "isOwner", body: String(isOwner) },
+      { title: "blockChecked", body: String(blockChecked) },
+      { title: "isBlocked", body: String(isBlocked) },
     ];
-  }, [vport, actorId, identity, subscriberCount, isSubscribed]);
+  }, [
+    vport,
+    actorId,
+    identity,
+    myActorIds,
+    subscriberCount,
+    isSubscribed,
+    isOwner,
+    blockChecked,
+    isBlocked,
+  ]);
 
-  if (loadingVport || loadingActor) {
+  // ---------------------------------------
+  // RENDER GATES
+  // ---------------------------------------
+  if (loadingVport || loadingActor || !blockChecked) {
     return (
       <div className="flex items-center justify-center min-h-[60dvh] text-white">
         Loading…
@@ -233,6 +332,11 @@ export default function VportProfileScreen() {
         VPort not found
       </div>
     );
+  }
+
+  // If blocked (and not owner), render nothing (or a minimal blocked notice if you prefer)
+  if (!isOwner && isBlocked) {
+    return null;
   }
 
   return (

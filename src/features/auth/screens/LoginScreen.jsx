@@ -1,7 +1,8 @@
-﻿// src/features/auth/screens/LoginScreen.jsx
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
+
+import { getActiveSeasonTheme } from '@/Season';
 
 function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -11,29 +12,27 @@ function LoginScreen() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // --- NEW: one-time discoverable flip after successful login
+  // Load season (with hat position + hatClassMap from theme)
+  const season = getActiveSeasonTheme("topRight");
+
   const markDiscoverableIfNeeded = async (authUserId) => {
     if (!authUserId) return;
 
-    // 1) Quick read to avoid unnecessary updates
     const { data: profile, error: readErr } = await supabase
       .from('profiles')
       .select('id, discoverable')
       .eq('id', authUserId)
       .single();
 
-    if (readErr || !profile) return; // silently skip on read issues
+    if (readErr || !profile) return;
 
-    if (profile.discoverable === false) {
-      // 2) One-time update guarded by WHERE discoverable=false
+    if (!profile.discoverable) {
       await supabase
         .from('profiles')
         .update({ discoverable: true, updated_at: new Date().toISOString() })
-        .eq('id', authUserId)
-        .eq('discoverable', false);
+        .eq('id', authUserId);
     }
   };
-  // --- END NEW
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,12 +48,9 @@ function LoginScreen() {
         password: pwd,
       });
 
-      console.log('[Login] result', data, error);
       if (error) throw error;
 
-      // NEW: flip discoverable only if currently false (one-time)
-      const authUserId = data?.user?.id;
-      await markDiscoverableIfNeeded(authUserId);
+      await markDiscoverableIfNeeded(data?.user?.id);
 
       const from = location.state?.from?.pathname;
       const dest =
@@ -73,57 +69,91 @@ function LoginScreen() {
   const canSubmit = !loading && email.trim() && password.trim();
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-md space-y-5 bg-neutral-900 p-6 sm:p-8 rounded-2xl shadow-2xl"
-      >
-        <h1 className="text-3xl font-bold text-center">Vibez Citizens</h1>
+    <div className={season.wrapper}>
+      
+      {season.fog1 && <div className={season.fog1} />}
+      {season.fog2 && <div className={season.fog2} />}
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          inputMode="email"
-          className="w-full px-4 py-2 bg-neutral-800 text-white placeholder:text-neutral-400 border border-neutral-700 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
-        />
+      <div className="w-full max-w-md mx-auto">
+        <div className="relative">
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-          className="w-full px-4 py-2 bg-neutral-800 text-white placeholder:text-neutral-400 border border-neutral-700 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
-        />
+          {/* 🎅 Santa Hat */}
+          {season.hatPosition && season.hatClassMap && (
+            <img
+              src="/season/xmas/XmasHat.png"
+              alt="Xmas Hat"
+              className={`w-72 pointer-events-none z-50 ${season.hatClassMap[season.hatPosition]}`}
+            />
+          )}
 
-        {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          <form
+            onSubmit={handleLogin}
+            className="
+              relative
+              w-full space-y-5 
+              bg-white/5 backdrop-blur-xl
+              border border-white/10
+              p-6 sm:p-8 rounded-2xl 
+              shadow-[0_8px_32px_rgba(0,0,0,0.6)]
+            "
+          >
+            <h1 className="text-5xl font-['GFS Didot'] text-center tracking-[0.5px] leading-tight">
+              Vibez Citizens
+            </h1>
 
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="w-full py-2 bg-purple-600 rounded-lg hover:bg-purple-500 transition-all duration-150 disabled:opacity-50"
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              inputMode="email"
+              className="w-full px-4 py-2 bg-black/30 text-white placeholder:text-neutral-300 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
+            />
 
-        <p className="mt-2 text-center text-sm text-neutral-400">
-          <Link to="/forgot-password" className="text-purple-400 hover:underline">
-            Forgot password?
-          </Link>
-        </p>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              className="w-full px-4 py-2 bg-black/30 text-white placeholder:text-neutral-300 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
+            />
 
-        <p className="text-sm text-center text-neutral-400">
-          Don’t have an account?{' '}
-          <Link to="/register" className="text-purple-400 hover:underline">
-            Register here
-          </Link>
-        </p>
-      </form>
+            {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="
+                w-full py-2 
+                bg-purple-600/80 hover:bg-purple-600
+                rounded-lg 
+                transition-all duration-150 
+                disabled:opacity-50
+              "
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+
+            <p className="text-center text-sm text-neutral-300">
+              <Link to="/forgot-password" className="text-purple-400 hover:underline">
+                Forgot password?
+              </Link>
+            </p>
+
+            <p className="text-sm text-center text-neutral-300">
+              Don’t have an account?{' '}
+              <Link to="/register" className="text-purple-400 hover:underline">
+                Register here
+              </Link>
+            </p>
+
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

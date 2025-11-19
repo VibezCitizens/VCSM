@@ -1,20 +1,22 @@
-// src/features/profiles/tabs/components/Fans.jsx
+// src/features/profiles/tabs/components/ImaFan.jsx
+// People who follows me BUT i don’t follow back
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useIdentity } from "@/state/identityContext";
 import UserLink from "@/components/UserLink";
-import BackButton from "@/ui/components/Backbutton"; 
+import BackButton from "@/ui/components/Backbutton";
 
-export default function Fans() {
+export default function ImaFan() {
   const { identity } = useIdentity();
   const actorId = identity?.actorId;
 
-  const [fans, setFans] = useState([]);
+  const [targets, setTargets] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!actorId) return;
-    loadFans();
+    loadTargets();
   }, [actorId]);
 
   async function hydrateActors(actorIds) {
@@ -116,28 +118,49 @@ export default function Fans() {
     return sortEntriesByName(entries);
   }
 
-  async function loadFans() {
+  async function loadTargets() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase
+      // 1. Who I follow
+      const { data: iFollow, error: followErr } = await supabase
+        .schema("vc")
+        .from("actor_follows")
+        .select("followed_actor_id")
+        .eq("follower_actor_id", actorId)
+        .eq("is_active", true);
+
+      if (followErr) throw followErr;
+
+      const iFollowIds = new Set(
+        (iFollow || []).map((r) => r.followed_actor_id)
+      );
+
+      // 2. Who follows me back
+      const { data: followsMe, error: meErr } = await supabase
         .schema("vc")
         .from("actor_follows")
         .select("follower_actor_id")
         .eq("followed_actor_id", actorId)
         .eq("is_active", true);
 
-      if (error) throw error;
+      if (meErr) throw meErr;
 
-      const ids = Array.from(
-        new Set((data || []).map((row) => row.follower_actor_id))
+      const followsMeIds = new Set(
+        (followsMe || []).map((r) => r.follower_actor_id)
       );
 
-      const entries = await hydrateActors(ids);
-      setFans(entries);
+      // 3. Remove mutual follows → keep only:
+      //    I follow them AND they do NOT follow me back
+      const filtered = [...iFollowIds].filter(
+        (id) => !followsMeIds.has(id)
+      );
+
+      const entries = await hydrateActors(filtered);
+      setTargets(entries);
     } catch (err) {
-      console.error("Fans load error:", err);
-      setFans([]);
+      console.error("ImaFan load error:", err);
+      setTargets([]);
     } finally {
       setLoading(false);
     }
@@ -175,14 +198,14 @@ export default function Fans() {
   return (
     <div className="p-4 space-y-4">
       <BackButton />
-      <h1 className="text-xl font-bold">Fans</h1>
+      <h1 className="text-xl font-bold">I'm a Fan Of</h1>
 
       {loading && <p>Loading…</p>}
-      {!loading && fans.length === 0 && <p>No fans yet.</p>}
+      {!loading && targets.length === 0 && <p>None.</p>}
 
-      {!loading && fans.length > 0 && (
+      {!loading && targets.length > 0 && (
         <div className="space-y-3">
-          {fans.map((entry) => renderEntry(entry))}
+          {targets.map((entry) => renderEntry(entry))}
         </div>
       )}
     </div>

@@ -1,13 +1,12 @@
 // src/features/profiles/hooks/useBlockStatus.js
 import { useEffect, useState } from 'react';
-import { isBlocking, isBlockedBy } from '@/data/user/blocks/blocks';
+import { isBlocking, isBlockedBy, getSessionActorId, getActorIdByAnyId } from '@/data/user/blocks/blocks';
 
-import { useAuth } from '@/hooks/useAuth';
-
+/**
+ * Hook to check whether the viewer and target profile are blocked
+ * in either direction (actor-aware, supports users and vports).
+ */
 export function useBlockStatus(targetProfileId) {
-  const { user } = useAuth();
-  const viewerId = user?.id || null;
-
   const [state, setState] = useState({
     loading: !!targetProfileId,
     isBlocking: false,
@@ -17,23 +16,70 @@ export function useBlockStatus(targetProfileId) {
 
   useEffect(() => {
     let alive = true;
+
     (async () => {
-      if (!targetProfileId || !viewerId || targetProfileId === viewerId) {
-        if (alive) setState({ loading: false, isBlocking: false, isBlockedBy: false, anyBlock: false });
+      if (!targetProfileId) {
+        if (alive) {
+          setState({
+            loading: false,
+            isBlocking: false,
+            isBlockedBy: false,
+            anyBlock: false,
+          });
+        }
         return;
       }
+
       try {
-        const [a, b] = await Promise.all([
-          isBlocking(viewerId, targetProfileId),
-          isBlockedBy(viewerId, targetProfileId),
+        // Resolve actor IDs for both viewer and target
+        const [viewerActorId, targetActorId] = await Promise.all([
+          getSessionActorId(),
+          getActorIdByAnyId(targetProfileId),
         ]);
-        if (alive) setState({ loading: false, isBlocking: a, isBlockedBy: b, anyBlock: a || b });
-      } catch {
-        if (alive) setState({ loading: false, isBlocking: false, isBlockedBy: false, anyBlock: false });
+
+        if (!viewerActorId || !targetActorId || viewerActorId === targetActorId) {
+          if (alive) {
+            setState({
+              loading: false,
+              isBlocking: false,
+              isBlockedBy: false,
+              anyBlock: false,
+            });
+          }
+          return;
+        }
+
+        // Check both directions
+        const [blocking, blockedBy] = await Promise.all([
+          isBlocking(viewerActorId, targetActorId), // you → them
+          isBlockedBy(viewerActorId, targetActorId), // them → you
+        ]);
+
+        if (alive) {
+          setState({
+            loading: false,
+            isBlocking: blocking,
+            isBlockedBy: blockedBy,
+            anyBlock: blocking || blockedBy,
+          });
+        }
+      } catch (err) {
+        console.error('[useBlockStatus] failed:', err);
+        if (alive) {
+          setState({
+            loading: false,
+            isBlocking: false,
+            isBlockedBy: false,
+            anyBlock: false,
+          });
+        }
       }
     })();
-    return () => { alive = false; };
-  }, [viewerId, targetProfileId]);
+
+    return () => {
+      alive = false;
+    };
+  }, [targetProfileId]);
 
   return state;
 }

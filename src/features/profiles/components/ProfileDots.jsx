@@ -2,17 +2,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { blockUser, unblockUser } from '@/data/user/blocks/blocks';
-import { useAuth } from '@/hooks/useAuth';
+import { useIdentity } from '@/state/identityContext';
 import toast from 'react-hot-toast';
 
 export default function ProfileDots({
-  targetId,
+  targetActorId,
   initialBlocked = false,
-  onBlock,                 // (nowBlocked: boolean) => void
-  redirectOnBlock = true,  // redirect after blocking (default true)
-  extraMenu = null,        // NEW: optional ReactNode to inject custom menu items
+  onBlock,
+  redirectOnBlock = true,
+  extraMenu = null,
 }) {
-  const { user } = useAuth();
+  const { identity } = useIdentity();
   const nav = useNavigate();
   const location = useLocation();
 
@@ -23,14 +23,15 @@ export default function ProfileDots({
   const btnRef = useRef(null);
   const menuRef = useRef(null);
 
-  // keep in sync if parent changes
   useEffect(() => setIsBlocked(!!initialBlocked), [initialBlocked]);
 
-  // close on outside click
   useEffect(() => {
     if (!open) return;
     const onClick = (e) => {
-      if (!btnRef.current?.contains(e.target) && !menuRef.current?.contains(e.target)) {
+      if (
+        !btnRef.current?.contains(e.target) &&
+        !menuRef.current?.contains(e.target)
+      ) {
         setOpen(false);
       }
     };
@@ -38,7 +39,6 @@ export default function ProfileDots({
     return () => document.removeEventListener('mousedown', onClick);
   }, [open]);
 
-  // close on escape
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
@@ -46,28 +46,36 @@ export default function ProfileDots({
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  // NEW: close menu on route change
   useEffect(() => {
     if (open) setOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  const canAct = user?.id && targetId && user.id !== targetId;
+  const myActorId = identity?.actorId;
+  const canAct = myActorId && targetActorId && myActorId !== targetActorId;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                    FIX                                     */
+  /* -------------------------------------------------------------------------- */
 
   const doBlock = async () => {
     if (!canAct || busy) return;
     setBusy(true);
     try {
-      await blockUser(targetId);
+      await blockUser({
+        blockerActorId: myActorId,
+        blockedActorId: targetActorId,
+      });
+
       setIsBlocked(true);
       onBlock?.(true);
       toast.success('User blocked');
 
       if (redirectOnBlock) {
-        nav('/', { replace: true, state: { justBlocked: targetId } });
+        nav('/', { replace: true, state: { justBlocked: targetActorId } });
       }
     } catch (e) {
       toast.error(e?.message || 'Failed to block');
+      console.error('[ProfileDots] block error:', e);
     } finally {
       setBusy(false);
       setOpen(false);
@@ -77,13 +85,19 @@ export default function ProfileDots({
   const doUnblock = async () => {
     if (!canAct || busy) return;
     setBusy(true);
+
     try {
-      await unblockUser(targetId);
+      await unblockUser({
+        blockerActorId: myActorId,
+        blockedActorId: targetActorId,
+      });
+
       setIsBlocked(false);
       onBlock?.(false);
       toast.success('User unblocked');
     } catch (e) {
       toast.error(e?.message || 'Failed to unblock');
+      console.error('[ProfileDots] unblock error:', e);
     } finally {
       setBusy(false);
       setOpen(false);
@@ -91,17 +105,22 @@ export default function ProfileDots({
   };
 
   return (
-    <div className="relative z-50">
+    <div
+      className="relative z-50"
+      onClick={(e) => e.stopPropagation()}
+    >
       <button
         ref={btnRef}
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="More options"
-        onClick={() => setOpen(v => !v)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
         className="w-9 h-9 inline-flex items-center justify-center rounded-full hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
       >
-        {/* vertical ellipsis */}
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
           fill="currentColor" className="w-5 h-5 text-white">
           <path d="M10 3.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
@@ -112,12 +131,10 @@ export default function ProfileDots({
         <div
           ref={menuRef}
           role="menu"
+          onClick={(e) => e.stopPropagation()}
           className="absolute right-0 mt-2 w-44 rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-lg p-1 z-50"
         >
-          {/* NEW: custom items slot (e.g., "Request Follow") */}
           {extraMenu}
-
-          {/* If you want a subtle divider when extraMenu exists */}
           {extraMenu && <div className="my-1 h-px bg-white/10" />}
 
           {isBlocked ? (

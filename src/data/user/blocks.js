@@ -1,207 +1,169 @@
 // src/data/user/blocks.js
-// Core DAL for vc.user_blocks using actor-based PK (blocker_actor_id, blocked_actor_id).
-// Accepts profile IDs (public.profiles.id) as inputs.
+// Core actor-based block module (final correct version)
 
-import { supabase } from '@/lib/supabaseClient';
 import { vc } from '@/lib/vcClient';
+import { supabase } from '@/lib/supabaseClient';
 
-async function getAuthUserId() {
+/* -------------------------------------------------------------------------- */
+/*                     SESSION + ACTOR RESOLUTION HELPERS                     */
+/* -------------------------------------------------------------------------- */
+
+export async function getSessionActorId() {
   const { data: auth } = await supabase.auth.getUser();
-  return auth?.user?.id ?? null;
-}
-
-async function getMyActorId(userId) {
+  const userId = auth?.user?.id;
   if (!userId) return null;
-  const { data, error } = await vc
+
+  const { data } = await vc
     .from('actor_owners')
     .select('actor_id')
     .eq('user_id', userId)
-    .limit(1);
+    .maybeSingle();
 
-  if (error) throw error;
-  const row = Array.isArray(data) ? data[0] : null;
-  return row?.actor_id ?? null;
+  return data?.actor_id ?? null;
 }
 
-async function getActorIdByProfileId(profileId) {
-  if (!profileId) return null;
-  const { data, error } = await vc
+/** Convert profile_id or vport_id → actor_id (optional helper) */
+export async function getActorIdByAnyId(id) {
+  if (!id) return null;
+
+  const { data } = await vc
     .from('actors')
     .select('id')
-    .eq('profile_id', profileId)
-    .limit(1);
+    .or(`profile_id.eq.${id},vport_id.eq.${id}`)
+    .maybeSingle();
 
-  if (error) throw error;
-  const row = Array.isArray(data) ? data[0] : null;
-  return row?.id ?? null;
+  return data?.id ?? null;
 }
 
-const core = {
-  /**
-   * Block a profile (blockedId is public.profiles.id).
-   * Returns: { blocker_actor_id, blocked_actor_id, blocker_id, blocked_id, created_at }
-   */
-  async block(blockedId, _reason = null) {
-    if (!blockedId) throw new Error('blocks.block: blockedId required');
+/* -------------------------------------------------------------------------- */
+/*                             BLOCK (ACTOR → ACTOR)                          */
+/* -------------------------------------------------------------------------- */
 
-    const userId = await getAuthUserId();
-    if (!userId) throw new Error('blocks.block: auth required');
+export async function block({ blockerActorId, blockedActorId, reason = null }) {
+  if (!blockerActorId) throw new Error('Missing blockerActorId');
+  if (!blockedActorId) throw new Error('Missing blockedActorId');
+  if (blockerActorId === blockedActorId) throw new Error('Cannot block self');
 
-    const [blockerActorId, blockedActorId] = await Promise.all([
-      getMyActorId(userId),
-      getActorIdByProfileId(blockedId),
-    ]);
-    if (!blockerActorId) throw new Error('blocks.block: no actor for current user');
-    if (!blockedActorId) throw new Error('blocks.block: target profile has no actor');
+  const { error } = await vc.from('user_blocks').insert({
+    blocker_actor_id: blockerActorId,
+    blocked_actor_id: blockedActorId,
+    reason,
+  });
 
-    const payload = {
+  if (error && !error.message?.includes('duplicate key')) {
+    console.error('[block] error:', error);
+    throw new Error('Failed to block user');
+  }
+
+  return true;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           UNBLOCK (ACTOR → ACTOR)                          */
+/* -------------------------------------------------------------------------- */
+
+export async function unblock({ blockerActorId, blockedActorId }) {
+  if (!blockerActorId || !blockedActorId)
+    throw new Error('Missing actor IDs for unblock');
+
+  const { error } = await vc
+    .from('user_blocks')
+    .delete()
+    .match({
       blocker_actor_id: blockerActorId,
       blocked_actor_id: blockedActorId,
-      // legacy back-fill (nullable in schema; helpful for old UI/reporting)
-      blocker_id: userId,
-      blocked_id: blockedId,
-    };
+    });
 
-    // Upsert WITHOUT inline .select() to avoid PGRST116 if legacy dupes exist.
-    const { error: upsertErr } = await vc
-      .from('user_blocks')
-      .upsert([payload], {
-        onConflict: 'blocker_actor_id,blocked_actor_id',
-        ignoreDuplicates: true,
-      });
-    if (upsertErr) throw upsertErr;
+  if (error) {
+    console.error('[unblock] error:', error);
+    throw new Error('Failed to unblock user');
+  }
 
-    // Deterministic read: fetch exactly one row even if legacy dupes exist.
-    const { data, error } = await vc
-      .from('user_blocks')
-      .select('blocker_actor_id, blocked_actor_id, blocker_id, blocked_id, created_at')
-      .eq('blocker_actor_id', blockerActorId)
-      .eq('blocked_actor_id', blockedActorId)
-      .order('created_at', { ascending: false })
-      .limit(1);
+  return true;
+}
 
-    if (error) throw error;
-    const row = Array.isArray(data) ? data[0] : null;
+/* -------------------------------------------------------------------------- */
+/*                          CHECKS (ACTOR → ACTOR)                            */
+/* -------------------------------------------------------------------------- */
 
-    return (
-      row ?? {
-        blocker_actor_id: blockerActorId,
-        blocked_actor_id: blockedActorId,
-        blocker_id: userId,
-        blocked_id: blockedId,
-        created_at: new Date().toISOString(),
-      }
+export async function isBlocked(blockerActorId, blockedActorId) {
+  if (!blockerActorId || !blockedActorId) return false;
+
+  const { data } = await vc
+    .from('user_blocks')
+    .select('id')
+    .eq('blocker_actor_id', blockerActorId)
+    .eq('blocked_actor_id', blockedActorId)
+    .limit(1);
+
+  return data?.length > 0;
+}
+
+export async function isBlockedBy(blockedActorId, blockerActorId) {
+  if (!blockerActorId || !blockedActorId) return false;
+
+  const { data } = await vc
+    .from('user_blocks')
+    .select('id')
+    .eq('blocker_actor_id', blockerActorId)
+    .eq('blocked_actor_id', blockedActorId)
+    .limit(1);
+
+  return data?.length > 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                      BIDIRECTIONAL CHECK (CHAT SAFE)                       */
+/* -------------------------------------------------------------------------- */
+
+export async function hasBlockEitherDirectionActors(aActorId, bActorId) {
+  if (!aActorId || !bActorId) return false;
+
+  const { data } = await vc
+    .from('user_blocks')
+    .select('blocker_actor_id, blocked_actor_id')
+    .or(
+      `and(blocker_actor_id.eq.${aActorId},blocked_actor_id.eq.${bActorId}),
+       and(blocker_actor_id.eq.${bActorId},blocked_actor_id.eq.${aActorId})`
     );
-  },
 
-  /** Unblock a profile (idempotent) */
-  async unblock(blockedId) {
-    if (!blockedId) throw new Error('blocks.unblock: blockedId required');
+  return (data?.length ?? 0) > 0;
+}
 
-    const userId = await getAuthUserId();
-    if (!userId) throw new Error('blocks.unblock: auth required');
+/* -------------------------------------------------------------------------- */
+/*                       LIST MY BLOCKS (ACTOR → ACTOR)                       */
+/* -------------------------------------------------------------------------- */
 
-    const [blockerActorId, blockedActorId] = await Promise.all([
-      getMyActorId(userId),
-      getActorIdByProfileId(blockedId),
-    ]);
-    if (!blockerActorId || !blockedActorId) return true;
+export async function listMyBlocks({ limit = 100 } = {}) {
+  const actorId = await getSessionActorId();
+  if (!actorId) return [];
 
-    const { error } = await vc
-      .from('user_blocks')
-      .delete()
-      .match({ blocker_actor_id: blockerActorId, blocked_actor_id: blockedActorId });
+  const { data, error } = await vc
+    .from('user_blocks')
+    .select('blocked_actor_id, created_at, reason')
+    .eq('blocker_actor_id', actorId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
 
-    if (error) throw error;
-    return true;
-  },
+  if (error) throw error;
+  return data ?? [];
+}
 
-  /** Is current user blocking this profile? (one-way) */
-  async isBlocked(blockedId) {
-    if (!blockedId) return false;
+/* -------------------------------------------------------------------------- */
+/*                                 EXPORT                                      */
+/* -------------------------------------------------------------------------- */
 
-    const userId = await getAuthUserId();
-    if (!userId) return false;
+const blocksCore = {
+  getSessionActorId,
+  getActorIdByAnyId,
 
-    const [blockerActorId, blockedActorId] = await Promise.all([
-      getMyActorId(userId),
-      getActorIdByProfileId(blockedId),
-    ]);
-    if (!blockerActorId || !blockedActorId) return false;
+  block,
+  unblock,
 
-    const { data, error } = await vc
-      .from('user_blocks')
-      .select('blocker_actor_id')
-      .match({ blocker_actor_id: blockerActorId, blocked_actor_id: blockedActorId })
-      .order('created_at', { ascending: false })
-      .limit(1); // array read
-
-    if (error) throw error;
-    return Array.isArray(data) && data.length > 0;
-  },
-
-  /**
-   * List my blocks (profile IDs).
-   * Returns [{ blocked_id }] or with created_at if you want to show timestamps.
-   */
-  async listMyBlocks({ limit = 100, withReasons = false } = {}) {
-    const userId = await getAuthUserId();
-    if (!userId) return [];
-
-    const blockerActorId = await getMyActorId(userId);
-    if (!blockerActorId) return [];
-
-    const { data, error } = await vc
-      .from('user_blocks')
-      .select('blocked_id, created_at, blocked_actor_id')
-      .eq('blocker_actor_id', blockerActorId)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-
-    // Back-fill blocked_id from actors if null
-    const missingActorIds = (data ?? [])
-      .filter(r => !r.blocked_id && r.blocked_actor_id)
-      .map(r => r.blocked_actor_id);
-
-    let actorToProfile = {};
-    if (missingActorIds.length) {
-      const { data: actors, error: aerr } = await vc
-        .from('actors')
-        .select('id, profile_id')
-        .in('id', missingActorIds);
-      if (aerr) throw aerr;
-      actorToProfile = Object.fromEntries((actors ?? []).map(a => [a.id, a.profile_id]));
-    }
-
-    return (data ?? []).map(r => ({
-      blocked_id: r.blocked_id ?? actorToProfile[r.blocked_actor_id] ?? null,
-      ...(withReasons ? { created_at: r.created_at } : {}),
-    }));
-  },
-
-  /**
-   * NEW: Actor-level block check in either direction.
-   * aActorId = viewer actor
-   * bActorId = target actor
-   */
-  async hasBlockEitherDirectionActors(aActorId, bActorId) {
-    if (!aActorId || !bActorId) return false;
-
-    const { data, error } = await vc
-      .from('user_blocks')
-      .select('blocker_actor_id, blocked_actor_id')
-      .or(
-        `and(blocker_actor_id.eq.${aActorId},blocked_actor_id.eq.${bActorId}),` +
-          `and(blocker_actor_id.eq.${bActorId},blocked_actor_id.eq.${aActorId})`
-      )
-      .limit(1);
-
-    if (error) throw error;
-    return Array.isArray(data) && data.length > 0;
-  },
+  isBlocked,
+  isBlockedBy,
+  hasBlockEitherDirectionActors,
+  listMyBlocks,
 };
 
-export default core;
-export { core as blocks };
+export default blocksCore;
