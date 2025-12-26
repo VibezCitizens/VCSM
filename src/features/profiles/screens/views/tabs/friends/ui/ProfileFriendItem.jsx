@@ -1,0 +1,34 @@
+// ============================================================
+//  PROFILE — FRIEND ITEM (ACTOR-BASED)
+// ------------------------------------------------------------
+//  @System: FriendsModule
+//  @RefactorBatch: 2025-12
+//  @Status: FINAL
+//  @Scope: Single friend row (actor SSOT)
+// ------------------------------------------------------------
+//  RULES:
+//   • Receives ONLY actorId
+//   • Resolves presentation via actor store
+//   • Never touches profile / vport directly
+//   • Safe hook usage (no conditional hooks)
+// ============================================================
+
+import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import ActorLink from "@/shared/components/ActorLink";
+
+export default function ProfileFriendItem({ actorId }) {
+  // 🔒 Actor presentation is resolved here
+  const actor = useActorPresentation(actorId);
+
+  if (!actor) return null;
+
+  return (
+    <ActorLink
+      actor={actor}
+      avatarSize="w-10 h-10"
+      avatarShape="rounded-md"
+      showUsername
+      className="min-w-0"
+    />
+  );
+}

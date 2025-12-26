@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import supabase from "@/lib/supabaseClient";
-import { useIdentity } from "@/state/identityContext";
-import { getActorIdForUser } from "@/lib/actors/actors";
+import supabase from '@/services/supabase/supabaseClient'; //transfer;
+import { useIdentity } from '@/state/identity/identityContext'; //transfer
+import { getActorIdForUser } from '@/services/actors/dl/actors';
+;
 import VprofileHeader from "@/features/vport/vprofile/VprofileHeader.jsx";
 import VportTabs from "./tabs/VportTabs";
 

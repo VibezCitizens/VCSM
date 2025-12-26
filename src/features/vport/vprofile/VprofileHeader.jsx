@@ -3,11 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import VisibleQRCode from "@/features/profiles/components/VisibleQRCode";
-import ProfileDots from "@/features/profiles/components/ProfileDots";
+import VisibleQRCode from "@/features/profiles/components/qRCode/VisibleQRCode";
+import ProfileDots from "@/features/profiles/components/private/ProfileDots";
 import { useBlockStatus } from "@/features/profiles/hooks/useBlockStatus";
 import VportSocialActions from "./VportSocialActions.jsx";
-import { supabase } from "@/lib/supabaseClient"; // ✅ named import
+import { supabase } from '@/services/supabase/supabaseClient'; //transfer; // ✅ named import
 
 const DEFAULT_AVATAR = "/avatar.jpg";
 const DEFAULT_BANNER = "/default-banner.jpg";

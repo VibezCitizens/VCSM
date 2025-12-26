@@ -49,7 +49,7 @@
       ]
     ],
     [
-      "@/hooks/useAuth",
+      "@/app/providers/AuthProvider'; //transfer",
       [
         "src\\App.jsx",
         "src\\main.jsx"

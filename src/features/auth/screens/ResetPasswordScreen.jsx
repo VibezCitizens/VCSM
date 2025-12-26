@@ -1,5 +1,11 @@
+// @RefactorBatch: 2025-11
+// @Touched: 2025-11-21
+// @Status: FULLY MIGRATED
+// @Scope: Architecture rewrite
+// @Note: Do NOT remove, rename, or modify this block.
+
 import { useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/services/supabase/supabaseClient'; //transfer
 import { Link } from 'react-router-dom';
 
 export default function ResetPasswordScreen() {

@@ -1,0 +1,64 @@
+// src/shared/components/ActorLink.jsx
+
+import { Link } from 'react-router-dom';
+
+/*
+  actor (presentation-safe) = {
+    id,
+    kind,
+    displayName,
+    username,
+    avatar,
+    route
+  }
+*/
+
+export default function ActorLink({
+  actor,
+  avatarSize = 'w-11 h-11',
+  avatarShape = 'rounded-xl',
+  textSize = 'text-sm',
+  showUsername = false,
+  showTimestamp = false,
+  timestamp = '',
+  className = '',
+}) {
+  if (!actor) return null;
+
+  return (
+    <Link
+      to={actor.route}
+      className={`flex items-center gap-2 no-underline hover:no-underline ${className}`}
+      aria-label={`${actor.displayName} profile`}
+    >
+      <img
+        src={actor.avatar}
+        alt={actor.displayName}
+        loading="lazy"
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = '/avatar.jpg';
+        }}
+        className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
+      />
+
+      <div className="flex flex-col leading-tight">
+        <span className={`${textSize} text-white font-medium`}>
+          {actor.displayName}
+        </span>
+
+        {showUsername && actor.username && (
+          <span className="text-xs text-gray-400">
+            @{actor.username}
+          </span>
+        )}
+
+        {showTimestamp && timestamp && (
+          <span className="text-[11px] text-neutral-400">
+            {timestamp}
+          </span>
+        )}
+      </div>
+    </Link>
+  );
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import supabase from "@/lib/supabaseClient";
+import supabase from '@/services/supabase/supabaseClient'; //transfer;
 import PostCard from "@/features/post/components/PostCard";
 
 export default function VportPostList({ vport }) {

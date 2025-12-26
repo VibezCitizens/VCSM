@@ -1,5 +1,5 @@
 // src/data/vport/vprofile/vport.js
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/services/supabase/supabaseClient'; //transfer
 
 /**
  * Create a Vport. Preferred path: owner-aware RPC.

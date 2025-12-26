@@ -1,83 +1,36 @@
-﻿﻿import { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { supabase } from '@/lib/supabaseClient';
+// @RefactorBatch: 2025-11
+// @Touched: 2025-11-21
+// @Scope: Global migration pass
+// @Note: Do NOT remove, rename, or modify this block.
 
-import { getActiveSeasonTheme } from '@/Season';
+import { useNavigate, Link, useLocation } from 'react-router-dom'
+import { getActiveSeasonTheme } from '@/Season'
+import { useLogin } from '@/features/auth/hooks/useLogin'
 
 function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
+  const season = getActiveSeasonTheme('topRight')
 
-  // Load season (with hat position + hatClassMap from theme)
-  const season = getActiveSeasonTheme("topRight");
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    error,
+    handleLogin,
+  } = useLogin(navigate, location)
 
-  const markDiscoverableIfNeeded = async (authUserId) => {
-    if (!authUserId) return;
-
-    const { data: profile, error: readErr } = await supabase
-      .from('profiles')
-      .select('id, discoverable')
-      .eq('id', authUserId)
-      .single();
-
-    if (readErr || !profile) return;
-
-    if (!profile.discoverable) {
-      await supabase
-        .from('profiles')
-        .update({ discoverable: true, updated_at: new Date().toISOString() })
-        .eq('id', authUserId);
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const normalizedEmail = email.trim().toLowerCase();
-      const pwd = password.trim();
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: normalizedEmail,
-        password: pwd,
-      });
-
-      if (error) throw error;
-
-      await markDiscoverableIfNeeded(data?.user?.id);
-
-      const from = location.state?.from?.pathname;
-      const dest =
-        from && !['/login', '/register', '/reset', '/forgot-password'].includes(from)
-          ? from
-          : '/feed';
-
-      navigate(dest, { replace: true });
-    } catch (err) {
-      setError(err?.message || 'Failed to sign in.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const canSubmit = !loading && email.trim() && password.trim();
+  const canSubmit = !loading && email.trim() && password.trim()
 
   return (
-    <div className={season.wrapper}>
-      
+    <div className={`${season.wrapper} min-h-screen flex items-center justify-center`}>
       {season.fog1 && <div className={season.fog1} />}
       {season.fog2 && <div className={season.fog2} />}
 
       <div className="w-full max-w-md mx-auto">
         <div className="relative">
-
-          {/* 🎅 Santa Hat */}
           {season.hatPosition && season.hatClassMap && (
             <img
               src="/season/xmas/XmasHat.png"
@@ -88,16 +41,9 @@ function LoginScreen() {
 
           <form
             onSubmit={handleLogin}
-            className="
-              relative
-              w-full space-y-5 
-              bg-white/5 backdrop-blur-xl
-              border border-white/10
-              p-6 sm:p-8 rounded-2xl 
-              shadow-[0_8px_32px_rgba(0,0,0,0.6)]
-            "
+            className="relative w-full space-y-5 bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-2xl"
           >
-            <h1 className="text-5xl font-['GFS Didot'] text-center tracking-[0.5px] leading-tight">
+            <h1 className="text-5xl font-['GFS Didot'] text-center">
               Vibez Citizens
             </h1>
 
@@ -108,8 +54,7 @@ function LoginScreen() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              inputMode="email"
-              className="w-full px-4 py-2 bg-black/30 text-white placeholder:text-neutral-300 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
+              className="w-full px-4 py-2 bg-black/30 text-white rounded-lg"
             />
 
             <input
@@ -119,43 +64,33 @@ function LoginScreen() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full px-4 py-2 bg-black/30 text-white placeholder:text-neutral-300 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-all duration-150 text-[18px]"
+              className="w-full px-4 py-2 bg-black/30 text-white rounded-lg"
             />
 
-            {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+            {error && (
+              <p className="text-red-400 text-sm text-center">{error}</p>
+            )}
 
             <button
               type="submit"
               disabled={!canSubmit}
-              className="
-                w-full py-2 
-                bg-purple-600/80 hover:bg-purple-600
-                rounded-lg 
-                transition-all duration-150 
-                disabled:opacity-50
-              "
+              className="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white"
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
 
-            <p className="text-center text-sm text-neutral-300">
-              <Link to="/forgot-password" className="text-purple-400 hover:underline">
-                Forgot password?
-              </Link>
+            <p className="text-center text-sm">
+              <Link to="/forgot-password">Forgot password?</Link>
             </p>
 
-            <p className="text-sm text-center text-neutral-300">
-              Don’t have an account?{' '}
-              <Link to="/register" className="text-purple-400 hover:underline">
-                Register here
-              </Link>
+            <p className="text-sm text-center">
+              Don’t have an account? <Link to="/register">Register</Link>
             </p>
-
           </form>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default LoginScreen;
+export default LoginScreen

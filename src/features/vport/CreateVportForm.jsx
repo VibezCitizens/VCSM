@@ -1,8 +1,8 @@
 // src/features/vport/CreateVportForm.jsx
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { createVport } from '@/data/vport/vprofile/vport'; // <-- use RPC wrapper
+import { useAuth } from '@/app/providers/AuthProvider'; //transfer';
+import { createVport } from '@/features/vport/model/vport.model'; // <-- use RPC wrapper
 
 const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB

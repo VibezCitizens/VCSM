@@ -1,28 +1,25 @@
-﻿// src/main.jsx
-import '@/lib/actors/bridgeIdentity'; // keep IdentityContext's STORAGE_KEY in sync with actor store
+﻿import React from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import 'uno.css'
+import '@/styles/global.css'
 
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import 'uno.css';
-import '@/styles/global.css';
+import App from './App'
+import { AuthProvider } from '@/app/providers/AuthProvider'
+import { IdentityProvider } from '@/state/identity/identityContext'
 
-import App from './App';
-import { AuthProvider } from '@/hooks/useAuth';
-import IdentityMount from '@/state/IdentityMount';
-import { registerSW } from 'virtual:pwa-register';
+import { registerSW } from 'virtual:pwa-register'
 
-// Only register in production. In dev, also unregister any workers.
+// Only register in production. In dev, also unregister workers.
 if (import.meta.env.PROD) {
-  registerSW();
+  registerSW()
 } else if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) =>
     regs.forEach((r) => r.unregister())
-  );
+  )
 
-  // Extra: also clear PWA caches in dev to avoid corrupted content
   if ('caches' in window) {
-    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)))
   }
 }
 
@@ -30,11 +27,10 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        {/* MUST wrap routes/nav so everything sees the current VPORT identity */}
-        <IdentityMount>
+        <IdentityProvider>
           <App />
-        </IdentityMount>
+        </IdentityProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
-);
+)

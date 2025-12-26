@@ -1,3 +1,9 @@
+// @RefactorBatch: 2025-11
+// @Touched: 2025-11-21
+// @Status: FULLY MIGRATED
+// @Scope: Architecture rewrite
+// @Note: Do NOT remove, rename, or modify this block.
+
 // src/Season/themes/default.js
 
 export const DefaultTheme = {

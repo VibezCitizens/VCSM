@@ -1,6 +1,6 @@
 // src/features/vport/vprofile/tabs/VportPhotoGrid.jsx
 import { useEffect, useState } from "react";
-import supabase from "@/lib/supabaseClient";
+import supabase from '@/services/supabase/supabaseClient'; //transfer;
 
 export default function VportPhotoGrid({ vport }) {
   const [photos, setPhotos] = useState([]);

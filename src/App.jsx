@@ -1,6 +1,5 @@
-﻿﻿// src/App.jsx
-import AppRoutes from '@/app/AppRoutes';
+﻿﻿import AppRoutes from '@/app/routes'
 
 export default function App() {
-  return <AppRoutes />;
+  return <AppRoutes />
 }
