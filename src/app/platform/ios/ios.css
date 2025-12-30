@@ -85,3 +85,17 @@ textarea {
 * {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ============================================================
+   iOS PWA OVERRIDES
+   ============================================================ */
+
+html.ios-pwa .chat-footer {
+  /* ❌ do not move footer in PWA */
+  transform: none;
+}
+
+html.ios-pwa .chat-messages {
+  /* messages already account for footer */
+  bottom: calc(88px + env(safe-area-inset-bottom));
+}
