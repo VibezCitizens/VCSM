@@ -164,7 +164,3 @@ h3,
 .animate-fade-in {
   animation: fade-in 0.2s ease-out forwards;
 }
-.app-root {
-  transform: translateY(var(--vv-offset, 0px));
-  will-change: transform;
-}

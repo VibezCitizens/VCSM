@@ -13,6 +13,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { useIdentity } from '@/state/identity/identityContext'
 
+// ✅ iOS platform (chat-only)
+import { ios } from '@/app/platform'
+
 // hooks
 import useConversation from '../hooks/conversation/useConversation'
 import useConversationMembers from '../hooks/conversation/useConversationMembers'
@@ -30,11 +33,21 @@ import MessageActionsMenu from '../components/MessageActionsMenu'
 import resolvePartnerActor from '../lib/resolvePartnerActor'
 import canReadConversation from '../permissions/canReadConversation'
 import canSendMessage from '../permissions/canSendMessage'
-
+import ChatScreenLayout from '../layout/ChatScreenLayout'
 export default function ConversationView({ conversationId }) {
   const navigate = useNavigate()
   const { identity } = useIdentity()
   const actorId = identity?.actorId ?? null
+
+
+
+
+  /* ============================================================
+     iOS PLATFORM (CHAT ONLY)
+     ============================================================ */
+
+  ios.useIOSPlatform({ enableKeyboard: true })
+  ios.useIOSKeyboard(true)
 
   /* ============================================================
      Core hooks (ALL hooks must run unconditionally)
@@ -101,108 +114,85 @@ export default function ConversationView({ conversationId }) {
   const closeMenu = useCallback(() => {
     setMenu(null)
   }, [])
-/* ============================================================
-   Edit state (ConversationView owns edit session)
-   ============================================================ */
 
-const [editing, setEditing] = useState(null)
-// shape:
-// { messageId: string, initialBody: string } | null
+  /* ============================================================
+     Edit state
+     ============================================================ */
 
- /* ============================================================
-   Message action handlers
-   ============================================================ */
-/* =======================
-   Edit
-   ======================= */
+  const [editing, setEditing] = useState(null)
+  // { messageId, initialBody } | null
 
-const handleEdit = useCallback(() => {
-  if (!menu?.messageId) return
+  const handleEdit = useCallback(() => {
+    if (!menu?.messageId) return
 
-  const msg = messages.find(m => m.id === menu.messageId)
-  if (!msg) return
+    const msg = messages.find(m => m.id === menu.messageId)
+    if (!msg || msg.isDeleted || msg.deletedAt) return
 
-  // do not allow editing deleted / system messages (safety)
-  if (msg.isDeleted || msg.deletedAt) return
-
-  setEditing({
-    messageId: msg.id,
-    initialBody: msg.body ?? '',
-  })
-
-  closeMenu()
-}, [menu, messages, closeMenu])
-
-/* =======================
-   Save edit
-   ======================= */
-const handleSaveEdit = useCallback(
-  (newBody) => {
-    if (!editing) return
-
-    const trimmed = newBody.trim()
-
-    // ⛔ block empty edits
-    if (!trimmed) return
-
-    // ⛔ block no-op edits
-    if (trimmed === editing.initialBody) {
-      setEditing(null)
-      return
-    }
-
-    onEditMessage({
-      messageId: editing.messageId,
-      body: trimmed,
+    setEditing({
+      messageId: msg.id,
+      initialBody: msg.body ?? '',
     })
 
+    closeMenu()
+  }, [menu, messages, closeMenu])
+
+  const handleSaveEdit = useCallback(
+    (newBody) => {
+      if (!editing) return
+
+      const trimmed = newBody.trim()
+      if (!trimmed) return
+
+      if (trimmed === editing.initialBody) {
+        setEditing(null)
+        return
+      }
+
+      onEditMessage({
+        messageId: editing.messageId,
+        body: trimmed,
+      })
+
+      setEditing(null)
+    },
+    [editing, onEditMessage]
+  )
+
+  const handleCancelEdit = useCallback(() => {
     setEditing(null)
-  },
-  [editing, onEditMessage]
-)
+  }, [])
 
-/* =======================
-   Cancel edit
-   ======================= */
-const handleCancelEdit = useCallback(() => {
-  setEditing(null)
-}, [])
-
-  // ============================================================ */
-  /* =======================
-   Delete (me)
-   ======================= */
+  /* ============================================================
+     Delete handlers
+     ============================================================ */
 
   const handleDeleteForMe = useCallback(() => {
     if (!menu?.messageId) return
+
     onDeleteMessage({
       messageId: menu.messageId,
       scope: 'me',
     })
+
     closeMenu()
   }, [menu, onDeleteMessage, closeMenu])
 
-
-    // ============================================================ */
-/* =======================
-   Unsend (all)
-   ======================= */
-
   const handleUnsend = useCallback(() => {
     if (!menu?.messageId) return
+
     onDeleteMessage({
       messageId: menu.messageId,
       scope: 'all',
     })
+
     closeMenu()
   }, [menu, onDeleteMessage, closeMenu])
 
-    // ============================================================ */
-/* =======================
-   Send
-   ======================= */
-  
-   const handleSend = useCallback(
+  /* ============================================================
+     Send
+     ============================================================ */
+
+  const handleSend = useCallback(
     (text) => {
       onSendMessage({ body: text, type: 'text' })
     },
@@ -210,22 +200,16 @@ const handleCancelEdit = useCallback(() => {
   )
 
   /* ============================================================
-     Guards (AFTER all hooks — SAFE)
+     Guards
      ============================================================ */
 
   if (error) {
     return <div className="p-4 text-red-400">Failed to load</div>
   }
 
-  if (loading || !conversation) {
+  if (loading || !conversation || !members?.length) {
     return <div className="p-4">Loading…</div>
   }
-
-  if (!Array.isArray(members) || members.length === 0) {
-    return <div className="p-4">Loading…</div>
-  }
-
- 
 
   if (!canReadConversation({ actorId, members })) {
     return <div className="p-4 text-neutral-400">Access denied</div>
@@ -237,42 +221,25 @@ const handleCancelEdit = useCallback(() => {
   /* ============================================================
      Render
      ============================================================ */
-
-  return (
-    <div
-      className="flex flex-col bg-black text-white"
-      style={{ height: '100dvh' }}
-    >
-
-     
-
-      {/* HEADER */}
+return (
+  <ChatScreenLayout
+    header={
       <ChatHeader
         conversation={conversation}
         partnerActor={partnerActorUi}
         onBack={() => navigate(-1)}
       />
-
-
-      {/* MESSAGE LIST */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        <MessageList
-          messages={messages}
-          currentActorId={actorId}
-          isGroupChat={conversation.isGroup}
-          onOpenActions={openMenu}
-        />
-      </div>
-
-      {/* FOOTER */}
-      <div
-        className="
-          flex-shrink-0
-          border-t border-white/10
-          bg-black
-        "
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
+    }
+    messages={
+      <MessageList
+        messages={messages}
+        currentActorId={actorId}
+        isGroupChat={conversation.isGroup}
+        onOpenActions={openMenu}
+      />
+    }
+    footer={
+      <>
         {typingActors.length > 0 && (
           <div className="px-3 py-1">
             <TypingIndicator actors={typingActors} />
@@ -283,24 +250,15 @@ const handleCancelEdit = useCallback(() => {
           disabled={!allowSend}
           onSend={handleSend}
           onTyping={notifyTyping}
-      /* 🧠 EDIT MODE WIRING */
-  editing={!!editing}
-  initialValue={editing?.initialBody ?? ''}
-  onSaveEdit={handleSaveEdit}
-  onCancelEdit={handleCancelEdit}
-/>
-      </div>
+          editing={!!editing}
+          initialValue={editing?.initialBody ?? ''}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
+        />
+      </>
+    }
+  />
+)
 
-      {/* MESSAGE ACTIONS MENU */}
-      <MessageActionsMenu
-        open={!!menu}
-        anchorRect={menu?.anchorRect}
-        isOwn={menu?.isOwn}
-        onClose={closeMenu}
-        onEdit={handleEdit}
-        onDeleteForMe={handleDeleteForMe}
-        onUnsend={handleUnsend}
-      />
-    </div>
-  )
+
 }

@@ -1,0 +1,87 @@
+/* ============================================================
+   iOS PLATFORM BASE
+   ============================================================ */
+
+/* Lock document height on iOS */
+html.ios-keyboard {
+  height: 100%;
+}
+
+html.ios-keyboard body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* ============================================================
+   CANONICAL CHAT SCREEN LAYOUT
+   ============================================================ */
+
+/* ============================================================
+   CHAT SCREEN — FINAL, CANONICAL
+   ============================================================ */
+
+.chat-screen {
+  position: fixed;
+  inset: 0;
+  background: black;
+}
+
+/* HEADER */
+.chat-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 10;
+}
+
+/* FOOTER (INPUT HOLDER) */
+.chat-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  min-height: 88px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: black;
+  z-index: 10;
+
+  /* 👇 THIS MAKES INPUT MOVE WITH KEYBOARD */
+  transform: translateY(var(--ios-kb-offset, 0px));
+  will-change: transform;
+}
+
+
+/* MESSAGE LIST */
+.chat-messages {
+  position: absolute;
+  top: 64px;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+
+  overflow-y: auto;
+
+  /* 🚫 DO NOT MOVE MESSAGES */
+  will-change: contents;
+}
+
+
+
+/* ============================================================
+   SAFETY / QUALITY OF LIFE
+   ============================================================ */
+
+/* Prevent text-size auto zoom on focus (iOS Safari) */
+input,
+textarea {
+  font-size: 16px;
+}
+
+/* Prevent tap highlight artifacts */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
