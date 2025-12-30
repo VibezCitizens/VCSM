@@ -1,7 +1,7 @@
 // src/features/profiles/ui/PrivateProfileGate.jsx
 
 import ActorLink from "@/shared/components/ActorLink";
-import MessageButton from "@/features/profiles/ui/header/MessageButton";
+import MessageButton from "@/features/profiles/ui/header/Messagebutton";
 
 /**
  * ============================================================
