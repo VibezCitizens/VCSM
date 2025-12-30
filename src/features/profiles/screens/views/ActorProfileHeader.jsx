@@ -4,8 +4,8 @@ import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import ProfileHeaderQRCodeModal from '@/features/profiles/screens/views/profileheader/ProfileHeaderQRCodeModal'
-import MessageButton from '@/features/profiles/ui/header/MessageButton'
-import SubscribeButton from '@/features/profiles/ui/header/SubscribeButton'
+import MessageButton from '@/features/profiles/ui/header/Messagebutton'
+import SubscribeButton from '@/features/profiles/ui/header/Subscribebutton'
 import { useProfileHeaderMessaging } from '@/features/profiles/hooks/header/useProfileHeaderMessaging'
 import ActorActionsMenu from '@/shared/components/components/ActorActionsMenu'
 
