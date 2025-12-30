@@ -7,41 +7,45 @@
   box-sizing: border-box;
 }
 
+/* ============================================================
+   ROOT / BODY — LOCK PAGE SCROLL (CRITICAL FOR iOS CHAT)
+   ============================================================ */
 html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* Let the page grow; do NOT fix the height */
-  min-height: 100dvh;
+  height: 100%;                  /* 🔒 single height owner */
   font-family: 'Inter', sans-serif;
   background-color: #000;
   color: #e5e7eb;
+
+  /* ❌ DO NOT ALLOW BODY SCROLL (prevents iOS auto-pan) */
+  overflow: hidden;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* Scrolling */
-  overflow-x: hidden;
-  overflow-y: auto;                 /* allow scroll */
-  overscroll-behavior-y: none;      /* prevent rubber-band bounce on mobile */
-  -webkit-overflow-scrolling: touch;/* momentum scrolling on iOS */
-
-  /* Prevent iOS Safari auto-zoom on small text fields */
   -webkit-text-size-adjust: 100%;
 }
 
-/* Hide scrollbars ONLY on the main page scroll (still scrolls) */
+/* Hide scrollbars ONLY visually (still scrolls where allowed) */
 body::-webkit-scrollbar { width: 0; height: 0; }
 body { scrollbar-width: none; -ms-overflow-style: none; }
 
+/* ============================================================
+   APP ROOT
+   ============================================================ */
 #root {
   width: 100%;
-  min-height: 100dvh; /* allow app to be at least full viewport */
+  height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;                 /* 🔑 allow children to shrink */
 }
 
-/* Inputs/buttons reset */
+/* ============================================================
+   Inputs / buttons reset
+   ============================================================ */
 input,
 button,
 textarea,
@@ -58,13 +62,12 @@ select {
 
 button { cursor: pointer; }
 
-/* Optional utility: hide scrollbars for any specific container that still needs scrolling */
-/* =========================
-   Universal scrollbar hide
-   ========================= */
+/* ============================================================
+   Scrollbar hide utilities (safe)
+   ============================================================ */
 * {
-  -ms-overflow-style: none;  /* IE/Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 *::-webkit-scrollbar {
@@ -72,42 +75,71 @@ button { cursor: pointer; }
   height: 0px;
 }
 
-
-/* Small animation (unchanged) */
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0%);   opacity: 1; }
+/* ============================================================
+   iOS-specific keyboard stability
+   ============================================================ */
+textarea {
+  overscroll-behavior: contain;   /* prevent iOS focus pan */
 }
-.animate-slideUp { animation: slideUp 0.3s ease-out forwards; }
 
-/* iOS only */
+/* Prevent iOS Safari auto-zoom on small inputs */
 @supports (-webkit-touch-callout: none) {
-  input, textarea, select { font-size: 14px; }   /* your normal size */
-  input:focus, textarea:focus, select:focus { font-size: 18px; } /* typing size */
+  input,
+  textarea,
+  select {
+    font-size: 14px;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    font-size: 18px;
+  }
 }
 
-/* Keep close/X below notches & status bars */
+/* ============================================================
+   Safe area helpers
+   ============================================================ */
 .safe-top {
   padding-top: constant(safe-area-inset-top);
   padding-top: env(safe-area-inset-top);
 }
 
-/* Allow vertical panning for swipe (prevents browser from hijacking) */
+/* Allow controlled vertical gestures */
 .touch-pan-y {
   touch-action: pan-y;
 }
-h1, h2, h3, .title {
+
+/* ============================================================
+   Typography
+   ============================================================ */
+h1,
+h2,
+h3,
+.title {
   font-family: 'GFS Didot', serif !important;
 }
+
+/* ============================================================
+   Animations (unchanged)
+   ============================================================ */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0%);   opacity: 1; }
+}
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
 @keyframes fogSlow {
-  0% { transform: translate3d(0,0,0); }
-  50% { transform: translate3d(-50px, 30px, 0); }
+  0%   { transform: translate3d(0,0,0); }
+  50%  { transform: translate3d(-50px, 30px, 0); }
   100% { transform: translate3d(0,0,0); }
 }
 
 @keyframes fogFast {
-  0% { transform: translate3d(0,0,0); }
-  50% { transform: translate3d(60px, -40px, 0); }
+  0%   { transform: translate3d(0,0,0); }
+  50%  { transform: translate3d(60px, -40px, 0); }
   100% { transform: translate3d(0,0,0); }
 }
 
@@ -118,25 +150,15 @@ h1, h2, h3, .title {
 .animate-fogFast {
   animation: fogFast 12s ease-in-out infinite;
 }
+
 @keyframes menu-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
 }
+
 @keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 10px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
 .animate-fade-in {
