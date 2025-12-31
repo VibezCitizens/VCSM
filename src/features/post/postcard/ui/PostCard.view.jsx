@@ -20,13 +20,7 @@ export default function PostCardView({
   /* ============================================================
      ACTOR PRESENTATION (ACTOR ID ONLY — CORRECT)
      ============================================================ */
-     console.log('[PostCardView]', {
-  postActor: post.actor,
-  postActorId: post.actorId,
-});
-
-const actorUI = useActorPresentation(post.actorId);
-
+  const actorUI = useActorPresentation(post.actorId);
   if (!actorUI) return null;
 
   // ✅ INDEPENDENT COMMENT COUNT (NOT FROM FEED)
@@ -41,8 +35,10 @@ const actorUI = useActorPresentation(post.actorId);
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18 }}
       className="
-        w-full bg-neutral-900 border border-neutral-800
-        rounded-2xl overflow-hidden shadow-sm
+        w-full
+        bg-neutral-900 border border-neutral-800
+        rounded-2xl shadow-sm
+        overflow-hidden
       "
     >
       {/* ======================================================

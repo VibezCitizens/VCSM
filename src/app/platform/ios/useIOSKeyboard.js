@@ -9,6 +9,10 @@ import { isIOS, isIOSPWA } from './ios.env'
  * IMPORTANT:
  * - Safari: keyboard changes visualViewport → move footer
  * - PWA: Apple freezes viewport → DO NOT move UI
+ *
+ * RULE:
+ * - NEVER globally block touch scrolling
+ * - ONLY prevent Safari auto-scroll on window
  */
 export default function useIOSKeyboard(enabled) {
   useEffect(() => {
@@ -30,7 +34,7 @@ export default function useIOSKeyboard(enabled) {
         return
       }
 
-      // ✅ Safari: calculate keyboard height
+      // ✅ iOS Safari: calculate keyboard height
       const keyboardHeight =
         window.innerHeight - (vv.height ?? window.innerHeight)
 
@@ -41,16 +45,12 @@ export default function useIOSKeyboard(enabled) {
     }
 
     /* ============================================================
-       PREVENT SAFARI AUTO SCROLL
+       PREVENT SAFARI AUTO SCROLL (WINDOW ONLY)
        ============================================================ */
-    const lockScroll = () => {
+    const lockWindowScroll = () => {
       if (window.scrollY !== 0) {
         window.scrollTo(0, 0)
       }
-    }
-
-    const preventTouchMove = (e) => {
-      e.preventDefault()
     }
 
     /* ============================================================
@@ -61,8 +61,8 @@ export default function useIOSKeyboard(enabled) {
     vv.addEventListener('resize', update)
     vv.addEventListener('scroll', update)
 
-    window.addEventListener('scroll', lockScroll, { passive: false })
-    document.addEventListener('touchmove', preventTouchMove, {
+    // ⚠️ ONLY lock window scroll, NOT touchmove
+    window.addEventListener('scroll', lockWindowScroll, {
       passive: false,
     })
 
@@ -73,8 +73,7 @@ export default function useIOSKeyboard(enabled) {
       vv.removeEventListener('resize', update)
       vv.removeEventListener('scroll', update)
 
-      window.removeEventListener('scroll', lockScroll)
-      document.removeEventListener('touchmove', preventTouchMove)
+      window.removeEventListener('scroll', lockWindowScroll)
 
       document.documentElement.style.removeProperty('--ios-kb-offset')
     }

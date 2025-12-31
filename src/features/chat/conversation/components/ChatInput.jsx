@@ -31,11 +31,6 @@ export default function ChatInput({
   const inEdit = !!editing
 
   /* ============================================================
-     DEBUG STATE (forces HUD refresh)
-     ============================================================ */
-  const [, forceRender] = useState(0)
-
-  /* ============================================================
      EDIT MODE SYNC
      ============================================================ */
   const prevInEditRef = useRef(inEdit)
@@ -59,37 +54,6 @@ export default function ChatInput({
       })
     }
   }, [inEdit, initialValue])
-
-  /* ============================================================
-     iOS DEBUG LISTENERS (TEMP)
-     ============================================================ */
-  useEffect(() => {
-    if (!isIOS) return
-
-    const vv = window.visualViewport
-
-    const log = () => {
-      console.log('[iOS DEBUG]', {
-        scrollY: window.scrollY,
-        innerHeight: window.innerHeight,
-        vvTop: vv?.offsetTop,
-        vvHeight: vv?.height,
-      })
-      forceRender(x => x + 1)
-    }
-
-    window.addEventListener('scroll', log)
-    vv?.addEventListener('resize', log)
-    vv?.addEventListener('scroll', log)
-
-    log()
-
-    return () => {
-      window.removeEventListener('scroll', log)
-      vv?.removeEventListener('resize', log)
-      vv?.removeEventListener('scroll', log)
-    }
-  }, [])
 
   /* ============================================================
      INPUT LOGIC
@@ -203,122 +167,95 @@ export default function ChatInput({
      RENDER
      ============================================================ */
   return (
-    <>
-      {/* ===============================
-          iOS DEBUG HUD (TEMP)
-          =============================== */}
-      {isIOS && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 4,
-            right: 4,
-            zIndex: 99999,
-            background: '#000',
-            color: '#0f0',
-            fontSize: 10,
-            padding: 6,
-            fontFamily: 'monospace',
-            lineHeight: 1.4,
-          }}
-        >
-          <div>scrollY: {window.scrollY}</div>
-          <div>vh: {window.innerHeight}</div>
-          <div>vv.top: {window.visualViewport?.offsetTop}</div>
-          <div>vv.h: {window.visualViewport?.height}</div>
-        </div>
-      )}
-
-      <div
-        className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
-        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
-        aria-live="polite"
-      >
-        <div className="px-3">
-          {inEdit && (
-            <div className="flex items-center justify-between text-xs text-white/70 mb-2 px-1">
-              <span>Editing</span>
-              <button
-                type="button"
-                onClick={onCancelEdit}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-white"
-              >
-                <X size={14} /> Cancel
-              </button>
-            </div>
-          )}
-
-          <div className="flex items-end gap-2">
+    <div
+      className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
+      style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      aria-live="polite"
+    >
+      <div className="px-3">
+        {inEdit && (
+          <div className="flex items-center justify-between text-xs text-white/70 mb-2 px-1">
+            <span>Editing</span>
             <button
               type="button"
-              onClick={() => onAttach?.()}
-              className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white"
-              disabled={actuallyDisabled}
+              onClick={onCancelEdit}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-white"
             >
-              <Paperclip size={18} />
-            </button>
-
-            <div className="flex-1">
-              <div className="rounded-2xl bg-white/10 px-4 py-3">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={value}
-                  onCompositionStart={() => { composingRef.current = true }}
-                  onCompositionEnd={() => { composingRef.current = false }}
-                  onBeforeInput={handleBeforeInput}
-                  onChange={handleChange}
-                  onPaste={handlePaste}
-                  onKeyDown={handleKeyDown}
-
-                  /* 🔒 iOS SAFARI FOCUS SCROLL FIX */
-                  onMouseDown={(e) => {
-                    if (!isIOS) return
-                    e.preventDefault()
-                    inputRef.current?.focus()
-                  }}
-                  onFocus={(e) => {
-                    if (!isIOS) return
-                    requestAnimationFrame(() => {
-                      e.target.scrollIntoView({
-                        block: 'nearest',
-                        inline: 'nearest',
-                      })
-                    })
-                  }}
-
-                  placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
-                  className="w-full bg-transparent outline-none text-white placeholder-white/50"
-                  disabled={actuallyDisabled}
-                  inputMode="text"
-                  autoComplete="off"
-                  autoCorrect="on"
-                  spellCheck
-                  enterKeyHint={inEdit ? 'done' : 'send'}
-                />
-              </div>
-
-              <div className="text-[11px] text-white/50 mt-1 pl-1">
-                {remaining} characters left
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={doPrimary}
-              disabled={actuallyDisabled || !value.trim()}
-              className={[
-                'px-4 py-3 rounded-2xl font-medium',
-                value.trim() && !actuallyDisabled
-                  ? 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white'
-                  : 'bg-white/10 text-white/40 cursor-not-allowed',
-              ].join(' ')}
-            >
-              {inEdit ? 'Save' : 'Send'}
+              <X size={14} /> Cancel
             </button>
           </div>
+        )}
+
+        <div className="flex items-end gap-2">
+          <button
+            type="button"
+            onClick={() => onAttach?.()}
+            className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white"
+            disabled={actuallyDisabled}
+          >
+            <Paperclip size={18} />
+          </button>
+
+          <div className="flex-1">
+            <div className="rounded-2xl bg-white/10 px-4 py-3">
+              <input
+                ref={inputRef}
+                type="text"
+                value={value}
+                onCompositionStart={() => { composingRef.current = true }}
+                onCompositionEnd={() => { composingRef.current = false }}
+                onBeforeInput={handleBeforeInput}
+                onChange={handleChange}
+                onPaste={handlePaste}
+                onKeyDown={handleKeyDown}
+
+                /* 🔒 iOS SAFARI FOCUS SCROLL FIX */
+                onMouseDown={(e) => {
+                  if (!isIOS) return
+                  e.preventDefault()
+                  inputRef.current?.focus()
+                }}
+                onFocus={(e) => {
+                  if (!isIOS) return
+                  requestAnimationFrame(() => {
+                    e.target.scrollIntoView({
+                      block: 'nearest',
+                      inline: 'nearest',
+                    })
+                  })
+                }}
+
+                placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
+                className="w-full bg-transparent outline-none text-white placeholder-white/50"
+                disabled={actuallyDisabled}
+                inputMode="text"
+                autoComplete="off"
+                autoCorrect="on"
+                spellCheck
+                enterKeyHint={inEdit ? 'done' : 'send'}
+              />
+            </div>
+
+            <div className="text-[11px] text-white/50 mt-1 pl-1">
+              {remaining} characters left
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={doPrimary}
+            disabled={actuallyDisabled || !value.trim()}
+            className={[
+              'px-4 py-3 rounded-2xl font-medium',
+              value.trim() && !actuallyDisabled
+                ? 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white'
+                : 'bg-white/10 text-white/40 cursor-not-allowed',
+            ].join(' ')}
+          >
+            {inEdit ? 'Save' : 'Send'}
+          </button>
         </div>
       </div>
-    </>
+    </div>
   )
 }

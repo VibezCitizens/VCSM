@@ -222,43 +222,54 @@ export default function ConversationView({ conversationId }) {
      Render
      ============================================================ */
 return (
-  <ChatScreenLayout
-    header={
-      <ChatHeader
-        conversation={conversation}
-        partnerActor={partnerActorUi}
-        onBack={() => navigate(-1)}
-      />
-    }
-    messages={
-      <MessageList
-        messages={messages}
-        currentActorId={actorId}
-        isGroupChat={conversation.isGroup}
-        onOpenActions={openMenu}
-      />
-    }
-    footer={
-      <>
-        {typingActors.length > 0 && (
-          <div className="px-3 py-1">
-            <TypingIndicator actors={typingActors} />
-          </div>
-        )}
-
-        <ChatInput
-          disabled={!allowSend}
-          onSend={handleSend}
-          onTyping={notifyTyping}
-          editing={!!editing}
-          initialValue={editing?.initialBody ?? ''}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
+  <>
+    <ChatScreenLayout
+      header={
+        <ChatHeader
+          conversation={conversation}
+          partnerActor={partnerActorUi}
+          onBack={() => navigate(-1)}
         />
-      </>
-    }
-  />
+      }
+      messages={
+        <MessageList
+          messages={messages}
+          currentActorId={actorId}
+          isGroupChat={conversation.isGroup}
+          onOpenActions={openMenu}
+        />
+      }
+      footer={
+        <>
+          {typingActors.length > 0 && (
+            <div className="px-3 py-1">
+              <TypingIndicator actors={typingActors} />
+            </div>
+          )}
+
+          <ChatInput
+            disabled={!allowSend}
+            onSend={handleSend}
+            onTyping={notifyTyping}
+            editing={!!editing}
+            initialValue={editing?.initialBody ?? ''}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+          />
+        </>
+      }
+    />
+
+    {/* ✅ MESSAGE ACTIONS MENU (FIX) */}
+    <MessageActionsMenu
+      open={!!menu}
+      anchorRect={menu?.anchorRect}
+      isOwn={menu?.isOwn}
+      onClose={closeMenu}
+      onEdit={handleEdit}
+      onDeleteForMe={handleDeleteForMe}
+      onUnsend={handleUnsend}
+    />
+  </>
 )
-
-
 }

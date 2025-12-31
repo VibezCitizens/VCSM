@@ -23,7 +23,15 @@ export default function SearchScreen() {
   ]
 
   return (
-    <div className="w-full px-4">
+    <div
+  className="
+    w-full
+    px-4
+
+    pt-[calc(env(safe-area-inset-top)+12px)]
+  "
+>
+
       {/* ================= SEARCH INPUT ================= */}
       <div className="mb-6 relative">
         <input

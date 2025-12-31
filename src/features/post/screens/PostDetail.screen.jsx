@@ -1,8 +1,5 @@
 // ============================================================
 // PostDetail Screen
-// - Full post view
-// - Actor-based (actorId only)
-// - Uses READ-MODEL comment count (aligned with Feed)
 // ============================================================
 
 import { useParams } from "react-router-dom";
@@ -23,9 +20,8 @@ import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCo
 import CommentList from "@/features/post/commentcard/components/CommentList";
 import CommentInputView from "@/features/post/commentcard/ui/CommentInput.view";
 
-// Data (ACTOR-BASED READ MODEL)
+// Data
 import { getPostById } from "@/features/post/postcard/controller/getPostById.controller";
-
 
 export default function PostDetailScreen() {
   const { postId } = useParams();
@@ -34,14 +30,11 @@ export default function PostDetailScreen() {
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
 
-  // 🔥 READ MODEL (authoritative comment count)
   const commentCount = usePostCommentCount(postId);
-
-  // THREAD = sparks (detail only)
   const thread = useCommentThread(postId);
 
   /* ============================================================
-     LOAD POST (READ MODEL — ACTOR ID ONLY)
+     LOAD POST
      ============================================================ */
   useEffect(() => {
     let cancelled = false;
@@ -65,21 +58,6 @@ export default function PostDetailScreen() {
       cancelled = true;
     };
   }, [postId]);
-/* ============================================================
-   DEBUG — POST HEADER INPUT
-   ============================================================ */
-useEffect(() => {
-  if (!post) return;
-
-  console.group("[PostDetail → PostHeader DEBUG]");
-  console.log("post.id:", post.id);
-  console.log("post.actor:", post.actor);
-  console.log("post.actor?.actorId:", post.actor?.actorId);
-  console.log("post.created_at:", post.created_at);
-  console.log("typeof post.actor:", typeof post.actor);
-  console.log("post.media:", post.media);
-  console.groupEnd();
-}, [post]);
 
   /* ============================================================
      STATES
@@ -101,74 +79,82 @@ useEffect(() => {
   }
 
   /* ============================================================
-     RENDER
+     RENDER (IMPORTANT PART)
      ============================================================ */
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18 }}
-      className="w-full max-w-2xl mx-auto pb-20"
+    /* 🔑 THIS IS THE SCROLL OWNER */
+    <div
+      className="
+        h-full
+        w-full
+        overflow-y-auto
+        touch-pan-y
+      "
     >
-      {/* ================= POST ================= */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden mb-4">
-        {/* 🔒 actor === actorId (uuid) */}
-        <PostHeader
-          actor={post.actor.actorId}
-          createdAt={post.created_at}
-        />
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.18 }}
+        className="w-full max-w-2xl mx-auto pb-24"
+      >
+        {/* ================= POST ================= */}
+        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden mb-4">
+          <PostHeader
+            actor={post.actor.actorId}
+            createdAt={post.created_at}
+          />
 
-        <div className="px-4 pb-3">
-          <PostBody text={post.text} />
-        </div>
-
-        {post.media?.length > 0 && (
-          <div className="px-0 pb-3">
-            <MediaCarousel media={post.media} />
+          <div className="px-4 pb-3">
+            <PostBody text={post.text} />
           </div>
-        )}
 
-        {/* ✅ SAME COUNT AS FEED */}
-        <div className="px-4 pb-3">
-          <ReactionBar
-            postId={post.id}
-            commentCount={commentCount}
-          />
-        </div>
-      </div>
-
-      {/* ================= SPARKS (COMMENTS THREAD) ================= */}
-      <div className="bg-black/40 rounded-2xl border border-neutral-900">
-        <div className="px-4 py-3 border-b border-neutral-800 text-sm text-neutral-400">
-          Sparks
-        </div>
-
-        <div className="px-2">
-          {thread.loading && (
-            <div className="py-6 text-center text-neutral-500 text-sm">
-              Loading sparks…
+          {post.media?.length > 0 && (
+            <div className="px-0 pb-3">
+              <MediaCarousel media={post.media} />
             </div>
           )}
 
-          {!thread.loading && thread.comments.length === 0 && (
-            <div className="py-6 text-center text-neutral-500 text-sm">
-              No sparks yet. Be the first.
-            </div>
-          )}
-
-          <CommentList comments={thread.comments} />
+          <div className="px-4 pb-3">
+            <ReactionBar
+              postId={post.id}
+              commentCount={commentCount}
+            />
+          </div>
         </div>
 
-        {thread.actorId && identity && (
-          <CommentInputView
-            key={thread.actorId}
-            actorId={thread.actorId}
-            identity={identity}
-            onSubmit={thread.addComment}
-            disabled={thread.posting}
-          />
-        )}
-      </div>
-    </motion.div>
+        {/* ================= COMMENTS ================= */}
+        <div className="bg-black/40 rounded-2xl border border-neutral-900">
+          <div className="px-4 py-3 border-b border-neutral-800 text-sm text-neutral-400">
+            Sparks
+          </div>
+
+          <div className="px-2">
+            {thread.loading && (
+              <div className="py-6 text-center text-neutral-500 text-sm">
+                Loading sparks…
+              </div>
+            )}
+
+            {!thread.loading && thread.comments.length === 0 && (
+              <div className="py-6 text-center text-neutral-500 text-sm">
+                No sparks yet. Be the first.
+              </div>
+            )}
+
+            <CommentList comments={thread.comments} />
+          </div>
+
+          {thread.actorId && identity && (
+            <CommentInputView
+              key={thread.actorId}
+              actorId={thread.actorId}
+              identity={identity}
+              onSubmit={thread.addComment}
+              disabled={thread.posting}
+            />
+          )}
+        </div>
+      </motion.div>
+    </div>
   );
 }

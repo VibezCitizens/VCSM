@@ -1,8 +1,11 @@
 /* ============================================================
    iOS PLATFORM BASE
-   ============================================================ */
+   ============================================================
+   Purpose:
+   - Lock viewport height on iOS Safari
+   - Prevent Safari from scrolling the document
+*/
 
-/* Lock document height on iOS */
 html.ios-keyboard {
   height: 100%;
 }
@@ -13,13 +16,14 @@ html.ios-keyboard body {
   overscroll-behavior: none;
 }
 
-/* ============================================================
-   CANONICAL CHAT SCREEN LAYOUT
-   ============================================================ */
 
 /* ============================================================
-   CHAT SCREEN — FINAL, CANONICAL
-   ============================================================ */
+   CHAT SCREEN ROOT
+   ============================================================
+   Purpose:
+   - Fixed full-screen container
+   - Prevents layout shifts
+*/
 
 .chat-screen {
   position: fixed;
@@ -27,7 +31,15 @@ html.ios-keyboard body {
   background: black;
 }
 
-/* HEADER */
+
+/* ============================================================
+   HEADER
+   ============================================================
+   Purpose:
+   - Fixed chat header
+   - Does NOT move with keyboard
+*/
+
 .chat-header {
   position: absolute;
   top: 0;
@@ -37,7 +49,16 @@ html.ios-keyboard body {
   z-index: 10;
 }
 
-/* FOOTER (INPUT HOLDER) */
+
+/* ============================================================
+   FOOTER (INPUT HOLDER)
+   ============================================================
+   Purpose:
+   - Holds ChatInput
+   - Moves UP when iOS keyboard opens (Safari only)
+   - Does NOT affect message list directly
+*/
+
 .chat-footer {
   position: absolute;
   left: 0;
@@ -46,56 +67,117 @@ html.ios-keyboard body {
 
   min-height: 88px;
   padding-bottom: env(safe-area-inset-bottom);
+
   background: black;
   z-index: 10;
 
-  /* 👇 THIS MAKES INPUT MOVE WITH KEYBOARD */
+  /*
+    Safari keyboard handling:
+    --ios-kb-offset is NEGATIVE when keyboard opens
+    This transform visually moves the footer upward
+  */
   transform: translateY(var(--ios-kb-offset, 0px));
   will-change: transform;
-}
 
-
-/* MESSAGE LIST */
-.chat-messages {
-  position: absolute;
-  top: 64px;
-  bottom: calc(88px + env(safe-area-inset-bottom));
-  left: 0;
-  right: 0;
-
-  overflow-y: auto;
-
-  /* 🚫 DO NOT MOVE MESSAGES */
-  will-change: contents;
+  /*
+    UX polish:
+    - Does NOT make it faster
+    - Smooths the return when keyboard closes
+    - Matches native iOS easing
+  */
+  transition: transform 120ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 
 
 /* ============================================================
-   SAFETY / QUALITY OF LIFE
-   ============================================================ */
+   MESSAGE LIST (SCROLLABLE AREA)
+   ============================================================
+   Purpose:
+   - Scrollable message viewport
+   - Bottom boundary dynamically follows footer movement
+   - Guarantees last message is NEVER hidden
+*/
 
-/* Prevent text-size auto zoom on focus (iOS Safari) */
+.chat-messages {
+  position: absolute;
+  top: 64px; /* below header */
+
+  /*
+    🔑 CRITICAL LOGIC:
+
+    - Footer moves UP by -var(--ios-kb-offset)
+    - Message list bottom MUST shrink by same amount
+    - Convert negative offset into positive keyboard height
+
+    Result:
+    Messages remain visible above input + keyboard
+  */
+  bottom: calc(
+    88px +
+    env(safe-area-inset-bottom) +
+    max(0px, calc(-1 * var(--ios-kb-offset, 0px)))
+  );
+
+  left: 0;
+  right: 0;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /*
+    Scroll anchoring safety:
+    - Ensures scrollIntoView respects input height
+    - Prevents last message from hiding behind footer
+  */
+  padding-bottom: calc(1px + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(1px + env(safe-area-inset-bottom));
+
+  will-change: contents;
+}
+
+
+/* ============================================================
+   SAFETY / QUALITY OF LIFE
+   ============================================================
+*/
+
+/* Prevent Safari zoom on input focus */
 input,
 textarea {
   font-size: 16px;
 }
 
-/* Prevent tap highlight artifacts */
+/* Remove tap highlight artifacts */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
+
 /* ============================================================
    iOS PWA OVERRIDES
-   ============================================================ */
+   ============================================================
+   Context:
+   - In iOS PWA mode, Apple freezes visualViewport
+   - Keyboard overlays screen instead of resizing it
+   - Footer MUST be fixed
+   - No transform math allowed
+*/
 
+/* Footer stays fixed in PWA */
 html.ios-pwa .chat-footer {
-  /* ❌ do not move footer in PWA */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom);
+
+  z-index: 20;
+
+  /* ❌ Disable Safari keyboard transform logic */
   transform: none;
 }
 
+/* Message list only accounts for footer height */
 html.ios-pwa .chat-messages {
-  /* messages already account for footer */
   bottom: calc(88px + env(safe-area-inset-bottom));
 }

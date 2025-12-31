@@ -3,6 +3,7 @@
 // MessageActionsMenu (Bubble-anchored, WhatsApp-style)
 // ------------------------------------------------------------
 // - Uses anchorRect ONLY
+// - Auto-flips up when near bottom
 // - No flex spacing bugs
 // - Inline emoji text
 // - Color-safe (explicit per action)
@@ -49,12 +50,21 @@ export default function MessageActionsMenu({
   if (!open || !anchorRect) return null
 
   /* ============================================================
-     Positioning
+     Positioning (AUTO FLIP)
      ============================================================ */
   const GAP = 6
   const MENU_WIDTH = 160
+  const MENU_HEIGHT = isOwn ? 120 : 80
 
-  const top = anchorRect.bottom + GAP
+  const viewportHeight = window.innerHeight
+  const spaceBelow = viewportHeight - anchorRect.bottom
+
+  const openUpward = spaceBelow < MENU_HEIGHT + GAP
+
+  const top = openUpward
+    ? Math.max(8, anchorRect.top - MENU_HEIGHT - GAP)
+    : anchorRect.bottom + GAP
+
   const left = isOwn
     ? Math.max(8, anchorRect.right - MENU_WIDTH)
     : Math.max(8, anchorRect.left)
@@ -73,9 +83,12 @@ export default function MessageActionsMenu({
           border border-white/10
           overflow-hidden
         "
-        style={{ top, left }}
+        style={{
+          top,
+          left,
+          transformOrigin: openUpward ? 'bottom' : 'top',
+        }}
       >
-        {/* IMPORTANT: kill browser list padding */}
         <ul className="m-0 list-none py-1 pl-0 pr-0">
           {isOwn && (
             <li>

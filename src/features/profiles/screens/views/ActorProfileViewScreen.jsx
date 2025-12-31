@@ -13,7 +13,6 @@ import ActorProfileFriendsView from './ActorProfileFriendsView'
 import ActorProfilePhotosView from './ActorProfilePhotosView'
 
 import PrivateProfileNotice from '@/features/social/components/PrivateProfileNotice'
-
 export default function ActorProfileViewScreen({
   viewerActorId,
   profileActorId,
@@ -21,10 +20,6 @@ export default function ActorProfileViewScreen({
   const [tab, setTab] = useState('posts')
   const [gateVersion, setGateVersion] = useState(0)
   const navigate = useNavigate()
-
-  // ============================================================
-  // PRIVACY GATE
-  // ============================================================
 
   const gate = useProfileGate({
     viewerActorId,
@@ -34,10 +29,6 @@ export default function ActorProfileViewScreen({
 
   const canViewContent =
     gate.loading ? undefined : gate.canView
-
-  // ============================================================
-  // PROFILE DATA
-  // ============================================================
 
   const {
     loading,
@@ -51,10 +42,6 @@ export default function ActorProfileViewScreen({
     canViewContent,
   })
 
-  // ============================================================
-  // BLOCK GATE
-  // ============================================================
-
   const {
     loading: blockLoading,
     canViewProfile,
@@ -65,10 +52,6 @@ export default function ActorProfileViewScreen({
       navigate('/feed', { replace: true })
     }
   }, [blockLoading, canViewProfile, navigate])
-
-  // ============================================================
-  // STATES
-  // ============================================================
 
   if (loading || blockLoading || gate.loading) {
     return (
@@ -86,12 +69,18 @@ export default function ActorProfileViewScreen({
     )
   }
 
-  // ============================================================
-  // RENDER
-  // ============================================================
-
   return (
-    <div className="min-h-screen bg-black text-white">
+    /* 🔑 SCROLL OWNER */
+    <div
+      className="
+        h-full
+        w-full
+        overflow-y-auto
+        touch-pan-y
+        bg-black
+        text-white
+      "
+    >
       <ActorProfileHeader
         profile={profile}
         viewerActorId={viewerActorId}
@@ -101,13 +90,11 @@ export default function ActorProfileViewScreen({
         }
       />
 
-      {/* ================= TABS ================= */}
       <ActorProfileTabs
         tab={tab}
         setTab={setTab}
       />
 
-      {/* ================= PRIVATE NOTICE ================= */}
       {!gate.canView && (
         <PrivateProfileNotice
           actor={profile.actor}
@@ -116,10 +103,8 @@ export default function ActorProfileViewScreen({
         />
       )}
 
-      {/* ================= TAB CONTENT ================= */}
       {gate.canView && (
         <div className="px-4 pb-24 max-w-3xl mx-auto">
-
           {tab === 'posts' && (
             <ActorProfilePostsView
               profileActorId={profile.actorId}
@@ -147,7 +132,6 @@ export default function ActorProfileViewScreen({
               canViewContent={gate.canView}
             />
           )}
-
         </div>
       )}
     </div>
