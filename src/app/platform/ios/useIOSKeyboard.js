@@ -1,19 +1,7 @@
+// src/app/platform/ios/useIOSKeyboard.js
 import { useEffect } from 'react'
-import { isIOS, isIOSPWA } from './ios.env'
+import { isIOS } from './ios.env'
 
-/**
- * useIOSKeyboard
- * ------------------------------------------------------------
- * Handles iOS keyboard behavior safely.
- *
- * IMPORTANT:
- * - Safari: keyboard changes visualViewport → move footer
- * - PWA: Apple freezes viewport → DO NOT move UI
- *
- * RULE:
- * - NEVER globally block touch scrolling
- * - ONLY prevent Safari auto-scroll on window
- */
 export default function useIOSKeyboard(enabled) {
   useEffect(() => {
     if (!isIOS() || !enabled) return
@@ -21,61 +9,66 @@ export default function useIOSKeyboard(enabled) {
     const vv = window.visualViewport
     if (!vv) return
 
-    /* ============================================================
-       UPDATE KEYBOARD OFFSET
-       ============================================================ */
-    const update = () => {
-      // 🚫 iOS PWA: keyboard does NOT affect viewport
-      if (isIOSPWA()) {
-        document.documentElement.style.setProperty(
-          '--ios-kb-offset',
-          '0px'
-        )
-        return
-      }
+    let raf = 0
 
-      // ✅ iOS Safari: calculate keyboard height
-      const keyboardHeight =
-        window.innerHeight - (vv.height ?? window.innerHeight)
+    const apply = () => {
+      raf = 0
 
+      const ih = window.innerHeight
+
+      const rawH = vv.height ?? ih
+      const rawTop = vv.offsetTop ?? 0
+
+      // clamp to prevent transient spikes
+      const vvHeight = Math.max(0, Math.min(rawH, ih))
+      const vvTop = Math.max(0, rawTop)
+
+      // keyboard overlap (bottom covered)
+      let overlap = ih - (vvHeight + vvTop)
+      overlap = Math.max(0, Math.min(overlap, ih))
+
+      document.documentElement.style.setProperty('--vv-height', `${vvHeight}px`)
+      document.documentElement.style.setProperty('--vv-top', `${vvTop}px`)
       document.documentElement.style.setProperty(
         '--ios-kb-offset',
-        keyboardHeight > 0 ? `-${keyboardHeight}px` : '0px'
+        overlap > 0 ? `-${overlap}px` : '0px'
       )
     }
 
-    /* ============================================================
-       PREVENT SAFARI AUTO SCROLL (WINDOW ONLY)
-       ============================================================ */
-    const lockWindowScroll = () => {
-      if (window.scrollY !== 0) {
-        window.scrollTo(0, 0)
-      }
+    const schedule = () => {
+      if (raf) return
+      raf = requestAnimationFrame(apply)
     }
 
-    /* ============================================================
-       ATTACH LISTENERS
-       ============================================================ */
-    update()
+    apply()
 
-    vv.addEventListener('resize', update)
-    vv.addEventListener('scroll', update)
+    vv.addEventListener('resize', schedule)
+    vv.addEventListener('scroll', schedule)
 
-    // ⚠️ ONLY lock window scroll, NOT touchmove
-    window.addEventListener('scroll', lockWindowScroll, {
-      passive: false,
-    })
+    // PWA often needs focus signals
+    const onFocusIn = () => {
+      setTimeout(schedule, 50)
+      setTimeout(schedule, 250)
+    }
+    const onFocusOut = () => {
+      setTimeout(schedule, 50)
+      setTimeout(schedule, 250)
+    }
 
-    /* ============================================================
-       CLEANUP
-       ============================================================ */
+    window.addEventListener('focusin', onFocusIn)
+    window.addEventListener('focusout', onFocusOut)
+
     return () => {
-      vv.removeEventListener('resize', update)
-      vv.removeEventListener('scroll', update)
+      vv.removeEventListener('resize', schedule)
+      vv.removeEventListener('scroll', schedule)
+      window.removeEventListener('focusin', onFocusIn)
+      window.removeEventListener('focusout', onFocusOut)
 
-      window.removeEventListener('scroll', lockWindowScroll)
+      if (raf) cancelAnimationFrame(raf)
 
       document.documentElement.style.removeProperty('--ios-kb-offset')
+      document.documentElement.style.removeProperty('--vv-height')
+      document.documentElement.style.removeProperty('--vv-top')
     }
   }, [enabled])
 }

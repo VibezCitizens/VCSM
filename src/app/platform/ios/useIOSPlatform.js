@@ -1,3 +1,4 @@
+// src/app/platform/ios/useIOSPlatform.js
 import { useEffect } from 'react'
 import { isIOS, isIOSPWA } from './ios.env'
 
@@ -16,9 +17,7 @@ import { isIOS, isIOSPWA } from './ios.env'
  * - Handle keyboard math
  * - Handle scrolling
  */
-export default function useIOSPlatform({
-  enableKeyboard = false,
-} = {}) {
+export default function useIOSPlatform({ enableKeyboard = false } = {}) {
   useEffect(() => {
     if (!isIOS()) return
 

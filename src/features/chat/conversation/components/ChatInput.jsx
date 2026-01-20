@@ -11,6 +11,11 @@ const isIOS =
   typeof navigator !== 'undefined' &&
   /iPad|iPhone|iPod/.test(navigator.userAgent)
 
+const isIOSPWA =
+  typeof window !== 'undefined' &&
+  window.navigator &&
+  window.navigator.standalone === true
+
 export default function ChatInput({
   onSend,
   disabled,
@@ -18,7 +23,6 @@ export default function ChatInput({
   maxLength = DEFAULT_MAX,
   isSending = false,
 
-  // edit-in-input props (match ConversationView)
   editing = false,
   initialValue = '',
   onSaveEdit,
@@ -29,6 +33,7 @@ export default function ChatInput({
   const inputRef = useRef(null)
 
   const inEdit = !!editing
+  const isIOSSafari = isIOS && !isIOSPWA
 
   /* ============================================================
      EDIT MODE SYNC
@@ -163,9 +168,6 @@ export default function ChatInput({
     }
   }, [doPrimary, inEdit, onCancelEdit])
 
-  /* ============================================================
-     RENDER
-     ============================================================ */
   return (
     <div
       className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
@@ -209,14 +211,9 @@ export default function ChatInput({
                 onPaste={handlePaste}
                 onKeyDown={handleKeyDown}
 
-                /* 🔒 iOS SAFARI FOCUS SCROLL FIX */
-                onMouseDown={(e) => {
-                  if (!isIOS) return
-                  e.preventDefault()
-                  inputRef.current?.focus()
-                }}
+                /* ✅ Safari only. In iOS PWA this causes the jump. */
                 onFocus={(e) => {
-                  if (!isIOS) return
+                  if (!isIOSSafari) return
                   requestAnimationFrame(() => {
                     e.target.scrollIntoView({
                       block: 'nearest',

@@ -1,3 +1,4 @@
+// src/app/platform/ios/IOSDebugHUD.jsx
 import { useState } from 'react'
 import { isIOS } from './ios.env'
 
@@ -41,6 +42,8 @@ export default function IOSDebugHUD() {
           vv.offsetTop: {window.visualViewport?.offsetTop}
           <br />
           vv.height: {window.visualViewport?.height}
+          <br />
+          innerHeight: {window.innerHeight}
         </div>
       )}
     </>
