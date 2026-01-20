@@ -171,7 +171,7 @@ export default function ChatInput({
   return (
     <div
       className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
-      style={{ paddingBottom: 'calc(0.25rem + env(safe-area-inset-bottom))' }}
+      style={{ paddingBottom: 'calc(0.05rem + env(safe-area-inset-bottom))' }}
       aria-live="polite"
     >
       <div className="px-3">
