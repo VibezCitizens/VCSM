@@ -1,6 +1,6 @@
 // src/features/feed/screens/CentralFeed.jsx
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/state/identity/identityContext'
@@ -12,6 +12,17 @@ import PullToRefresh from '@/shared/components/PullToRefresh'
 import { useFeed } from '@/features/feed/hooks/useFeed'
 
 import DebugPrivacyPanel from './DebugPrivacyPanel'
+
+// ✅ report flow
+import useReportFlow from '@/features/moderation/hooks/useReportFlow'
+
+// ✅ report modal
+import ReportModal from '@/features/moderation/components/ReportModal'
+
+// ✅ post menu
+import PostActionsMenu from '@/features/post/postcard/components/PostActionsMenu'
+
+import { softDeletePostController } from '@/features/post/postcard/controller/deletePost.controller'
 
 export default function CentralFeed() {
   const navigate = useNavigate()
@@ -32,10 +43,10 @@ export default function CentralFeed() {
   const actorId = identity?.actorId ?? null
   const realmId = identity?.realmId ?? null
 
-  const [search] = useSearchParams()
-  const debugPrivacy =
-    (search.get('debug') || '').toLowerCase() === 'privacy'
+  // ✅ report flow (actor-based)
+  const reportFlow = useReportFlow({ reporterActorId: actorId })
 
+  // ✅ MOVE useFeed UP so fetchPosts/posts exist before callbacks use them
   const {
     posts,
     viewerIsAdult,
@@ -44,6 +55,102 @@ export default function CentralFeed() {
     fetchPosts,
     fetchViewer,
   } = useFeed(actorId, realmId)
+
+  /* ============================================================
+     DEBUG: remounts / auth flicker / report state
+     ============================================================ */
+  useEffect(() => {
+    console.log('[CentralFeed] MOUNT')
+    return () => console.log('[CentralFeed] UNMOUNT')
+  }, [])
+
+  useEffect(() => {
+    console.log('[CentralFeed] user changed', { hasUser: !!user })
+  }, [user])
+
+  useEffect(() => {
+    console.log('[CentralFeed] reportFlow.open changed', { open: reportFlow.open })
+  }, [reportFlow.open])
+
+  // ✅ POST ••• MENU STATE
+  const [postMenu, setPostMenu] = useState(null)
+  // postMenu = { postId, postActorId, isOwn, anchorRect } | null
+
+  const openPostMenu = useCallback(
+    ({ postId, postActorId, anchorRect }) => {
+      if (!postId || !anchorRect) return
+      setPostMenu({
+        postId,
+        postActorId: postActorId ?? null,
+        isOwn: (postActorId ?? null) === (actorId ?? null),
+        anchorRect,
+      })
+    },
+    [actorId]
+  )
+
+  const closePostMenu = useCallback(() => {
+    setPostMenu(null)
+  }, [])
+
+  // ✅ OWNER: EDIT
+  const handleEditPost = useCallback(() => {
+    if (!postMenu?.postId) return
+
+    // pass previous text if available (so edit screen shows it)
+    const post = posts.find((p) => p.id === postMenu.postId)
+    const initialText = post?.text ?? ''
+
+    closePostMenu()
+    navigate(`/post/${postMenu.postId}/edit`, { state: { initialText } })
+  }, [postMenu, posts, navigate, closePostMenu])
+
+  // ✅ OWNER: DELETE (SOFT DELETE)
+  const handleDeletePost = useCallback(async () => {
+    if (!actorId) return
+    if (!postMenu?.postId) return
+
+    const okConfirm = window.confirm('Delete this post?')
+    if (!okConfirm) return
+
+    const res = await softDeletePostController({
+      actorId,
+      postId: postMenu.postId,
+    })
+
+    if (!res.ok) {
+      window.alert(res.error?.message ?? 'Failed to delete post')
+      return
+    }
+
+    // refetch after delete
+    await fetchPosts(true)
+
+    closePostMenu()
+  }, [actorId, postMenu, fetchPosts, closePostMenu])
+
+  // ✅ NOT OWNER: REPORT
+  const handleReportPost = useCallback(() => {
+    if (!actorId) return
+    if (!postMenu?.postId) return
+
+    reportFlow.start({
+      objectType: 'post',
+      objectId: postMenu.postId,
+
+      postId: postMenu.postId,
+
+      dedupeKey: `report:post:${postMenu.postId}`,
+
+      title: 'Report post',
+      subtitle: 'Tell us what’s wrong with this post.',
+    })
+
+    closePostMenu()
+  }, [actorId, postMenu, reportFlow, closePostMenu])
+
+  const [search] = useSearchParams()
+  const debugPrivacy = (search.get('debug') || '').toLowerCase() === 'privacy'
 
   /* ============================================================
      🔎 FEED STATE DEBUG
@@ -113,36 +220,46 @@ export default function CentralFeed() {
       className="h-screen overflow-y-auto bg-black text-white px-0 py-2"
     >
       {viewerIsAdult === null && (
-        <p className="text-center text-gray-400 mt-6">
-          Loading your feed…
-        </p>
+        <p className="text-center text-gray-400 mt-6">Loading your feed…</p>
       )}
 
       {viewerIsAdult !== null && !loading && posts.length === 0 && (
-        <p className="text-center text-gray-400">
-          No posts found.
-        </p>
+        <p className="text-center text-gray-400">No posts found.</p>
       )}
 
-      {/* ======================================================
-         POSTS
-         ====================================================== */}
       {posts.map((post) => (
         <div key={`post:${post.id}`} className="mb-2 last:mb-0">
           <PostCard
             post={{
               ...post,
-              // 🔒 FEED → POSTCARD CONTRACT
               actorId: post.actor.id,
             }}
             onOpenPost={() => navigate(`/post/${post.id}`)}
+            onOpenMenu={openPostMenu}
           />
         </div>
       ))}
 
-      {debugPrivacy && (
-        <DebugPrivacyPanel userId={actorId} posts={posts} />
-      )}
+      <PostActionsMenu
+        open={!!postMenu}
+        anchorRect={postMenu?.anchorRect}
+        isOwn={!!postMenu?.isOwn}
+        onClose={closePostMenu}
+        onEdit={handleEditPost}
+        onDelete={handleDeletePost}
+        onReport={handleReportPost}
+      />
+
+      <ReportModal
+        open={reportFlow.open}
+        title={reportFlow.context?.title ?? 'Report'}
+        subtitle={reportFlow.context?.subtitle ?? null}
+        loading={reportFlow.loading}
+        onClose={reportFlow.close}
+        onSubmit={reportFlow.submit}
+      />
+
+      {debugPrivacy && <DebugPrivacyPanel userId={actorId} posts={posts} />}
 
       {loading && posts.length === 0 && (
         <div className="space-y-3 px-4">
@@ -156,15 +273,11 @@ export default function CentralFeed() {
       )}
 
       {loading && posts.length > 0 && (
-        <p className="text-center text-white">
-          Loading more…
-        </p>
+        <p className="text-center text-white">Loading more…</p>
       )}
 
       {!hasMore && !loading && posts.length > 0 && (
-        <p className="text-center text-gray-400">
-          End of feed
-        </p>
+        <p className="text-center text-gray-400">End of feed</p>
       )}
 
       <div ref={sentinelRef} className="h-1" />

@@ -1,33 +1,9 @@
-// ============================================================
-//  BLOCK SYSTEM — CONFIRM MODAL (ACTOR-BASED)
-// ------------------------------------------------------------
-//  @File: BlockConfirmModal.jsx
-//  @System: Blocking
-//  @RefactorBatch: 2025-12
-//  @Status: FINAL
-//  @Scope:
-//    • Confirm block / unblock intent
-//    • Actor-based only
-//    • UI-only (no DB calls)
-// ------------------------------------------------------------
-//  RULES:
-//   • actorId is the ONLY identity
-//   • No DAL usage
-//   • No side effects here
-// ============================================================
+// BlockConfirmModal.jsx
 
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useActorPresentation } from "@/state/actors/useActorPresentation";
 
-/**
- * PROPS
- * ------------------------------------------------------------
- * open            boolean
- * mode            "block" | "unblock"
- * targetActorId   uuid
- * loading         boolean
- * onConfirm       fn()
- * onCancel        fn()
- */
 export default function BlockConfirmModal({
   open,
   mode = "block",
@@ -38,17 +14,26 @@ export default function BlockConfirmModal({
 }) {
   const actor = useActorPresentation(targetActorId);
 
+  useEffect(() => {
+    if (!open) return;
+
+    // optional: lock background scroll while modal is open
+    const html = document.documentElement;
+    const prevOverflow = html.style.overflow;
+    html.style.overflow = "hidden";
+
+    return () => {
+      html.style.overflow = prevOverflow;
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const isBlock = mode === "block";
 
-  return (
+  return createPortal(
     <div
-      className="
-        fixed inset-0 z-50
-        flex items-center justify-center
-        bg-black/60 backdrop-blur-sm
-      "
+      className="fixed inset-0 z-[999999] flex items-center justify-center bg-black"
       onClick={onCancel}
     >
       <div
@@ -79,9 +64,7 @@ export default function BlockConfirmModal({
         {/* ================= BODY ================= */}
         {isBlock && (
           <div className="mt-4 text-sm text-neutral-400 space-y-2">
-            <p>
-              Blocking will:
-            </p>
+            <p>Blocking will:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Remove them from your followers and friends</li>
               <li>Prevent messages and interactions</li>
@@ -125,14 +108,11 @@ export default function BlockConfirmModal({
                 `
             }
           >
-            {loading
-              ? "Working…"
-              : isBlock
-              ? "Block"
-              : "Unblock"}
+            {loading ? "Working…" : isBlock ? "Block" : "Unblock"}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

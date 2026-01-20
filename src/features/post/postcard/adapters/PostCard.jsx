@@ -6,6 +6,7 @@ export default function PostCard({
   post,
   onOpenPost,
   onReact,
+  onOpenMenu, // ✅ pass-through
 }) {
   if (!post) return null;
 
@@ -27,6 +28,7 @@ export default function PostCard({
       post={normalizedPost}
       onOpenPost={onOpenPost}
       onReact={onReact}
+      onOpenMenu={onOpenMenu} // ✅ forward to view
     />
   );
 }

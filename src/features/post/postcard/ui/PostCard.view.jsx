@@ -10,12 +10,19 @@ import { useActorPresentation } from "@/state/actors/useActorPresentation";
 // ✅ COMMENT COUNT (INDEPENDENT DOMAIN)
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
 
+// ✅ add this
+import { useIdentity } from "@/state/identity/identityContext";
+
 export default function PostCardView({
   post,
   onReact,
   onOpenPost,
+  onOpenMenu, // ✅ NEW (for •••)
 }) {
   if (!post) return null;
+
+  const { identity } = useIdentity(); // ✅ add
+  const viewerActorId = identity?.actorId ?? null;
 
   /* ============================================================
      ACTOR PRESENTATION (ACTOR ID ONLY — CORRECT)
@@ -27,6 +34,9 @@ export default function PostCardView({
   const commentCount = usePostCommentCount(post.id);
 
   const isVport = actorUI.kind === "vport";
+
+  // ✅ add (owner check)
+  const isOwner = !!viewerActorId && post.actorId === viewerActorId;
 
   return (
     <motion.div
@@ -62,7 +72,22 @@ export default function PostCardView({
 
         <button
           className="text-neutral-400 hover:text-white text-xl px-2"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const rect = e.currentTarget.getBoundingClientRect();
+
+            onOpenMenu?.({
+              postId: post.id,
+              postActorId: post.actorId,
+              viewerActorId, // ✅ add
+              isOwner,       // ✅ add
+              anchorRect: rect,
+            });
+          }}
+          aria-label="Post options"
+          type="button"
         >
           •••
         </button>

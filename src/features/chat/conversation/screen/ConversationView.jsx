@@ -24,12 +24,21 @@ import useConversationMembers from '../hooks/conversation/useConversationMembers
 import useConversationMessages from '../hooks/conversation/useConversationMessages'
 import useTypingChannel from '../hooks/realtime/useTypingChannel'
 
+// ✅ report flow hook
+import useReportFlow from '@/features/moderation/hooks/useReportFlow'
+
 // ui
 import ChatHeader from '../components/ChatHeader'
 import MessageList from '../components/MessageList'
 import ChatInput from '../components/ChatInput'
 import TypingIndicator from '../components/TypingIndicator'
 import MessageActionsMenu from '../components/MessageActionsMenu'
+
+// ✅ 3-dot menu (new independent file)
+import ConversationActionsMenu from '../components/ConversationActionsMenu'
+
+// ✅ report modal
+import ReportModal from '@/features/moderation/components/ReportModal'
 
 // domain helpers
 import resolvePartnerActor from '../lib/resolvePartnerActor'
@@ -59,6 +68,9 @@ export default function ConversationView({ conversationId }) {
     useConversationMessages({ conversationId, actorId })
 
   const { typingActors, notifyTyping } = useTypingChannel({ conversationId, actorId })
+
+  // ✅ reporting flow (wired)
+  const reportFlow = useReportFlow({ reporterActorId: actorId })
 
   /* ============================================================
      Derived data
@@ -104,7 +116,7 @@ export default function ConversationView({ conversationId }) {
   }, [viewer])
 
   /* ============================================================
-     Message action menu state
+     Message action menu state (bubble menu)
      ============================================================ */
   const [menu, setMenu] = useState(null)
 
@@ -113,6 +125,7 @@ export default function ConversationView({ conversationId }) {
       setMenu({
         messageId,
         isOwn: senderActorId === actorId,
+        senderActorId,
         anchorRect,
       })
     },
@@ -122,6 +135,39 @@ export default function ConversationView({ conversationId }) {
   const closeMenu = useCallback(() => {
     setMenu(null)
   }, [])
+
+  /* ============================================================
+     ✅ Conversation 3-dot menu state (header menu)
+     ============================================================ */
+  const [convMenu, setConvMenu] = useState(null)
+  // convMenu = { anchorRect } | null
+
+  const openConvMenu = useCallback((anchorRect) => {
+    if (!anchorRect) return
+    setConvMenu({ anchorRect })
+  }, [])
+
+  const closeConvMenu = useCallback(() => {
+    setConvMenu(null)
+  }, [])
+
+  const handleReportConversation = useCallback(() => {
+    if (!actorId) return
+    if (!conversationId) return
+
+    reportFlow.start({
+      objectType: 'conversation',
+      objectId: conversationId,
+      conversationId,
+
+      dedupeKey: `report:conversation:${conversationId}`,
+
+      title: 'Report conversation',
+      subtitle: 'Tell us what’s wrong with this conversation.',
+    })
+
+    closeConvMenu()
+  }, [actorId, conversationId, reportFlow, closeConvMenu])
 
   /* ============================================================
      Edit state
@@ -195,6 +241,31 @@ export default function ConversationView({ conversationId }) {
   }, [menu, onDeleteMessage, closeMenu])
 
   /* ============================================================
+     ✅ Report handler (from message bubble menu)
+     ============================================================ */
+  const handleReportMessage = useCallback(() => {
+    if (!menu?.messageId) return
+    if (!menu?.senderActorId) return
+    if (!actorId) return
+
+    reportFlow.start({
+      objectType: 'message',
+      objectId: menu.messageId,
+
+      conversationId,
+      messageId: menu.messageId,
+
+      // optional: stable key so repeated taps don’t spam
+      dedupeKey: `report:message:${menu.messageId}`,
+
+      title: 'Report message',
+      subtitle: 'Tell us what’s wrong with this message.',
+    })
+
+    closeMenu()
+  }, [menu, actorId, conversationId, reportFlow, closeMenu])
+
+  /* ============================================================
      Send
      ============================================================ */
   const handleSend = useCallback(
@@ -259,6 +330,7 @@ export default function ConversationView({ conversationId }) {
             conversation={conversation}
             partnerActor={partnerActorUi}
             onBack={() => navigate(-1)}
+            onOpenMenu={openConvMenu}
           />
         }
         messages={
@@ -292,7 +364,15 @@ export default function ConversationView({ conversationId }) {
         }
       />
 
-      {/* ✅ MESSAGE ACTIONS MENU (FIX) */}
+      {/* ✅ 3-DOT HEADER MENU */}
+      <ConversationActionsMenu
+        open={!!convMenu}
+        anchorRect={convMenu?.anchorRect}
+        onClose={closeConvMenu}
+        onReportConversation={handleReportConversation}
+      />
+
+      {/* ✅ MESSAGE ACTIONS MENU (bubble) */}
       <MessageActionsMenu
         open={!!menu}
         anchorRect={menu?.anchorRect}
@@ -301,6 +381,17 @@ export default function ConversationView({ conversationId }) {
         onEdit={handleEdit}
         onDeleteForMe={handleDeleteForMe}
         onUnsend={handleUnsend}
+        onReport={handleReportMessage}
+      />
+
+      {/* ✅ REPORT MODAL (wired) */}
+      <ReportModal
+        open={reportFlow.open}
+        title={reportFlow.context?.title ?? 'Report'}
+        subtitle={reportFlow.context?.subtitle ?? null}
+        loading={reportFlow.loading}
+        onClose={reportFlow.close}
+        onSubmit={reportFlow.submit}
       />
 
       {/* ✅ FULLSCREEN MEDIA VIEWER */}

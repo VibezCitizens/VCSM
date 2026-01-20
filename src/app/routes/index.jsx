@@ -81,6 +81,13 @@ const PostDetailScreen = lazyWithLog(
   () => import('@/features/post/screens/PostDetail.screen')
 )
 
+
+const EditPostScreen = lazyWithLog(
+  'EditPostScreen',
+  () => import('@/features/post/postcard/ui/EditPost')
+)
+
+
 /* ================= CHAT ================= */
 const ChatInboxScreen = lazyWithLog(
   'ChatInbox',
@@ -135,6 +142,11 @@ export default function AppRoutes() {
             <Route path="/posts" element={<PostFeedScreen />} />
             <Route path="/posts/:postId" element={<PostDetailScreen />} />
             <Route path="/post/:postId" element={<PostDetailScreen />} />
+            <Route path="/posts/:postId/edit" element={<EditPostScreen />} />
+            <Route path="/post/:postId/edit" element={<EditPostScreen />} />
+
+
+
 
             {/* CHAT */}
             <Route path="/chat" element={<ChatInboxScreen />} />

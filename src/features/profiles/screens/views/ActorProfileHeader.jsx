@@ -15,7 +15,7 @@ import { useFollowerCount } from '@/features/social/friend/subscribe/hooks/useFo
 // ============================================================
 // ActorProfileHeader
 // ------------------------------------------------------------
-// Mobile-first profile header (PHASE 1)
+// Mobile-first profile header
 // ============================================================
 
 export default function ActorProfileHeader({
@@ -44,25 +44,22 @@ export default function ActorProfileHeader({
     refresh: refreshFollowerCount,
   } = useFollowerCount(profile.actorId)
 
-  // ✅ ONLY CHANGE IS HERE
   const {
-  label: subscribeLabel,
-  disabled: subscribeDisabled,
-  onClick: onSubscribe,
-  isSubscribed,
-} = useSubscribeAction({
-  viewerActorId,
-  targetActorId: profile.actorId,
-  profileIsPrivate,
-  onAfterChange: () => {
-    refreshFollowerCount()
-
-    if (isSubscribed) {
-      navigate('/feed', { replace: true })
-    }
-  },
-})
-
+    label: subscribeLabel,
+    disabled: subscribeDisabled,
+    onClick: onSubscribe,
+    isSubscribed,
+  } = useSubscribeAction({
+    viewerActorId,
+    targetActorId: profile.actorId,
+    profileIsPrivate,
+    onAfterChange: () => {
+      refreshFollowerCount()
+      if (isSubscribed) {
+        navigate('/feed', { replace: true })
+      }
+    },
+  })
 
   const qrValue = `${window.location.origin}/profile/${profile.actorId}`
 
@@ -89,6 +86,7 @@ export default function ActorProfileHeader({
 
   return (
     <div className="relative">
+      {/* ================= BANNER ================= */}
       <div
         className="h-48 w-full"
         style={{
@@ -103,6 +101,7 @@ export default function ActorProfileHeader({
       <div className="px-4">
         <div className="mx-auto w-full max-w-3xl">
           <div className="-mt-20 relative z-20 rounded-2xl bg-neutral-900/95 border border-neutral-800 shadow-2xl p-5">
+            {/* ================= HEADER CONTENT ================= */}
             <div className="flex items-start gap-4">
               <img
                 src={profile.avatarUrl || '/avatar.jpg'}
@@ -110,34 +109,15 @@ export default function ActorProfileHeader({
                 className="w-24 h-24 rounded-2xl object-cover"
               />
 
-              <div className="flex-1 min-w-0 pt-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-xl font-bold truncate text-white">
-                      {profile.displayName || 'Unnamed'}
-                    </h2>
-                    <div className="text-sm text-neutral-400 truncate">
-                      @{profile.username || 'username'}
-                    </div>
+              {/* reserve room for absolute buttons */}
+              <div className="flex-1 min-w-0 pt-1 pr-28">
+                <div className="min-w-0">
+                  <h2 className="text-xl font-bold truncate text-white">
+                    {profile.displayName || 'Unnamed'}
+                  </h2>
+                  <div className="text-sm text-neutral-400 truncate">
+                    @{profile.username || 'username'}
                   </div>
-
-                  {isSelf ? (
-                    <button
-                      onClick={safeShowQR}
-                      className="px-4 py-1.5 rounded-full text-xs font-medium bg-purple-600"
-                    >
-                      Show QR
-                    </button>
-                  ) : (
-                    <ActorActionsMenu
-                      viewerActorId={viewerActorId}
-                      targetActorId={profile.actorId}
-                      align="right"
-                      onBlocked={() =>
-                        navigate('/feed', { replace: true })
-                      }
-                    />
-                  )}
                 </div>
 
                 <div className="mt-3 text-sm text-neutral-300">
@@ -150,6 +130,28 @@ export default function ActorProfileHeader({
               </div>
             </div>
 
+            {/* ================= TOP RIGHT CONTROL ================= */}
+            {isSelf ? (
+              <div className="absolute top-4 right-4">
+                <button
+                  onClick={safeShowQR}
+                  className="px-4 py-1.5 rounded-full text-xs font-medium bg-purple-600 text-white hover:bg-purple-500"
+                >
+                  Show QR
+                </button>
+              </div>
+            ) : (
+              <div className="absolute top-4 right-4">
+                <ActorActionsMenu
+                  viewerActorId={viewerActorId}
+                  targetActorId={profile.actorId}
+                  align="right"
+                  onBlocked={() => navigate('/feed', { replace: true })}
+                />
+              </div>
+            )}
+
+            {/* ================= BOTTOM RIGHT ACTIONS ================= */}
             {!isSelf && (
               <div className="absolute bottom-4 right-4 flex flex-col gap-2">
                 <MessageButton onClick={safeHandleMessage} />
@@ -165,6 +167,7 @@ export default function ActorProfileHeader({
         </div>
       </div>
 
+      {/* ================= QR MODAL ================= */}
       <ProfileHeaderQRCodeModal
         open={showQR}
         onClose={() => setShowQR(false)}
@@ -173,4 +176,3 @@ export default function ActorProfileHeader({
     </div>
   )
 }
-

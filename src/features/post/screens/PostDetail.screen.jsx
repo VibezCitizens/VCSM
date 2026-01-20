@@ -4,9 +4,18 @@
 
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { useIdentity } from "@/state/identity/identityContext";
+
+// ✅ report flow
+import useReportFlow from "@/features/moderation/hooks/useReportFlow";
+
+// ✅ report modal
+import ReportModal from "@/features/moderation/components/ReportModal";
+
+// ✅ post actions menu
+import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
 
 // Post UI
 import PostHeader from "@/features/post/postcard/components/PostHeader";
@@ -27,11 +36,56 @@ export default function PostDetailScreen() {
   const { postId } = useParams();
   const { identity } = useIdentity();
 
+  const actorId = identity?.actorId ?? null;
+
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
 
   const commentCount = usePostCommentCount(postId);
   const thread = useCommentThread(postId);
+
+  // ✅ report flow
+  const reportFlow = useReportFlow({ reporterActorId: actorId });
+
+  // ✅ post ••• menu state
+  const [postMenu, setPostMenu] = useState(null);
+  // postMenu = { postId, postActorId, isOwn, anchorRect } | null
+
+  const openPostMenu = useCallback(
+    ({ postId: pid, postActorId, anchorRect }) => {
+      if (!pid || !anchorRect) return;
+      setPostMenu({
+        postId: pid,
+        postActorId: postActorId ?? null,
+        isOwn: (postActorId ?? null) === (actorId ?? null),
+        anchorRect,
+      });
+    },
+    [actorId]
+  );
+
+  const closePostMenu = useCallback(() => {
+    setPostMenu(null);
+  }, []);
+
+  const handleReportPost = useCallback(() => {
+    if (!actorId) return;
+    if (!postMenu?.postId) return;
+
+    reportFlow.start({
+      objectType: "post",
+      objectId: postMenu.postId,
+
+      postId: postMenu.postId,
+
+      dedupeKey: `report:post:${postMenu.postId}`,
+
+      title: "Report post",
+      subtitle: "Tell us what’s wrong with this post.",
+    });
+
+    closePostMenu();
+  }, [actorId, postMenu, reportFlow, closePostMenu]);
 
   /* ============================================================
      LOAD POST
@@ -102,6 +156,8 @@ export default function PostDetailScreen() {
           <PostHeader
             actor={post.actor.actorId}
             createdAt={post.created_at}
+            postId={post.id}
+            onOpenMenu={openPostMenu}
           />
 
           <div className="px-4 pb-3">
@@ -155,6 +211,25 @@ export default function PostDetailScreen() {
           )}
         </div>
       </motion.div>
+
+      {/* ✅ POST ••• MENU */}
+      <PostActionsMenu
+        open={!!postMenu}
+        anchorRect={postMenu?.anchorRect}
+        isOwn={!!postMenu?.isOwn}
+        onClose={closePostMenu}
+        onReport={handleReportPost}
+      />
+
+      {/* ✅ REPORT MODAL */}
+      <ReportModal
+        open={reportFlow.open}
+        title={reportFlow.context?.title ?? "Report"}
+        subtitle={reportFlow.context?.subtitle ?? null}
+        loading={reportFlow.loading}
+        onClose={reportFlow.close}
+        onSubmit={reportFlow.submit}
+      />
     </div>
   );
 }

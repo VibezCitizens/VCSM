@@ -17,7 +17,7 @@ export default function ChatHeader({
   conversation,
   partnerActor,
   onBack,
-  onOpenDetails,
+  onOpenMenu, // ✅ renamed (anchorRect menu)
 }) {
   if (!conversation) return null
 
@@ -27,24 +27,19 @@ export default function ChatHeader({
      Build ActorLink-compatible object
      ------------------------------------------------------------ */
   const actorLink =
-  !isGroup && partnerActor
-    ? {
-        id: partnerActor.actorId,
-        kind: partnerActor.kind,
-        displayName:
-          partnerActor.displayName ||
-          partnerActor.username ||
-          'User',
-        username: partnerActor.username,
-        avatar:
-          partnerActor.photoUrl || '/avatar.jpg',
-        route:
-          partnerActor.kind === 'vport'
-            ? `/vport/${partnerActor.username}`
-            : `/profile/${partnerActor.username}`,
-      }
-    : null
-
+    !isGroup && partnerActor
+      ? {
+          id: partnerActor.actorId,
+          kind: partnerActor.kind,
+          displayName: partnerActor.displayName || partnerActor.username || 'User',
+          username: partnerActor.username,
+          avatar: partnerActor.photoUrl || '/avatar.jpg',
+          route:
+            partnerActor.kind === 'vport'
+              ? `/vport/${partnerActor.username}`
+              : `/profile/${partnerActor.username}`,
+        }
+      : null
 
   const title = isGroup
     ? conversation.title || 'Group Chat'
@@ -113,7 +108,10 @@ export default function ChatHeader({
         {/* RIGHT */}
         <button
           type="button"
-          onClick={() => onOpenDetails?.()}
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect()
+            onOpenMenu?.(rect)
+          }}
           className="
             p-2 rounded-xl
             text-white/70
