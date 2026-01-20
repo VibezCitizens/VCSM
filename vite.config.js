@@ -40,8 +40,8 @@ export default defineConfig({
         globDirectory: 'dist',
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
 
-        // ✅ allow chunks up to 5 MB to be precached
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // ✅ allow chunks up to 10 MB to be precached
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
       devOptions: { enabled: false },
       includeAssets: ['favicon.svg', 'robots.txt'],
