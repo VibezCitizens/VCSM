@@ -103,6 +103,12 @@ const NotiViewPostScreen = lazyWithLog(
   () => import('@/features/notifications/screen/NotiViewPostScreen')
 )
 
+/* ================= DEV / PREVIEW ================= */
+const NurseHomeScreen = lazyWithLog(
+  'NurseHomeScreen',
+  () => import('@/features/professional/professional-nurse/screens/NurseHomeScreen')
+)
+
 // ============================================================================
 // ROUTES
 // ============================================================================
@@ -157,6 +163,9 @@ export default function AppRoutes() {
 
             {/* ================= VPORTS (ACTOR-BASED) ================= */}
             <Route path="/vport/:actorId" element={<VportScreen />} />
+
+            {/* ================= DEV PREVIEW ================= */}
+            <Route path="/_dev/nurse-home" element={<NurseHomeScreen />} />
 
             {/* DEFAULTS */}
             <Route path="/" element={<Navigate to="/feed" replace />} />

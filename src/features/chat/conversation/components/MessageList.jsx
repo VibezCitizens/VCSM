@@ -9,6 +9,7 @@ export default function MessageList({
   isGroupChat,
   statusForMessage,
   onOpenActions,
+  onOpenMedia,
 }) {
   const bottomRef = useRef(null)
   const lastCountRef = useRef(0)
@@ -90,6 +91,7 @@ export default function MessageList({
             isGroupChat={isGroupChat}
             statusForMessage={statusForMessage}
             onOpenActions={onOpenActions}
+            onOpenMedia={onOpenMedia}
           />
         )
       })}

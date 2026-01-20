@@ -1,12 +1,8 @@
-// src/features/chat/components/conversation/ChatInput.jsx
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Paperclip, X } from 'lucide-react'
 
 const DEFAULT_MAX = 4000
 
-/* ============================================================
-   iOS DETECTION (local, no deps)
-   ============================================================ */
 const isIOS =
   typeof navigator !== 'undefined' &&
   /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -31,13 +27,11 @@ export default function ChatInput({
   const [value, setValue] = useState('')
   const composingRef = useRef(false)
   const inputRef = useRef(null)
+  const fileRef = useRef(null)
 
   const inEdit = !!editing
   const isIOSSafari = isIOS && !isIOSPWA
 
-  /* ============================================================
-     EDIT MODE SYNC
-     ============================================================ */
   const prevInEditRef = useRef(inEdit)
   useEffect(() => {
     if (prevInEditRef.current && !inEdit) {
@@ -60,9 +54,6 @@ export default function ChatInput({
     }
   }, [inEdit, initialValue])
 
-  /* ============================================================
-     INPUT LOGIC
-     ============================================================ */
   const remaining = maxLength - value.length
   const actuallyDisabled = !!disabled || !!isSending
 
@@ -92,21 +83,14 @@ export default function ChatInput({
     const data = e.data ?? ''
     if (!data) return
 
-    const next =
-      value.slice(0, selectionStart) +
-      data +
-      value.slice(selectionEnd)
+    const next = value.slice(0, selectionStart) + data + value.slice(selectionEnd)
 
     if (next.length > maxLength) {
       e.preventDefault()
-      const allowed =
-        maxLength - (value.length - (selectionEnd - selectionStart))
+      const allowed = maxLength - (value.length - (selectionEnd - selectionStart))
       if (allowed > 0) {
         const partial = data.slice(0, allowed)
-        const patched =
-          value.slice(0, selectionStart) +
-          partial +
-          value.slice(selectionEnd)
+        const patched = value.slice(0, selectionStart) + partial + value.slice(selectionEnd)
         setValue(patched)
         requestAnimationFrame(() => {
           const pos = selectionStart + partial.length
@@ -116,10 +100,7 @@ export default function ChatInput({
     }
   }, [maxLength, value])
 
-  const handleChange = useCallback(
-    (e) => setValue(clamp(e.target.value)),
-    [clamp]
-  )
+  const handleChange = useCallback((e) => setValue(clamp(e.target.value)), [clamp])
 
   const handlePaste = useCallback((e) => {
     if (!inputRef.current) return
@@ -134,18 +115,14 @@ export default function ChatInput({
 
     const el = inputRef.current
     const { selectionStart, selectionEnd } = el
-    const available =
-      maxLength - (value.length - (selectionEnd - selectionStart))
+    const available = maxLength - (value.length - (selectionEnd - selectionStart))
     if (available <= 0) {
       e.preventDefault()
       return
     }
 
     const toInsert = text.slice(0, available)
-    const next =
-      value.slice(0, selectionStart) +
-      toInsert +
-      value.slice(selectionEnd)
+    const next = value.slice(0, selectionStart) + toInsert + value.slice(selectionEnd)
 
     if (toInsert.length !== text.length) {
       e.preventDefault()
@@ -168,12 +145,37 @@ export default function ChatInput({
     }
   }, [doPrimary, inEdit, onCancelEdit])
 
+  const openPicker = useCallback(() => {
+    if (actuallyDisabled) return
+    fileRef.current?.click()
+  }, [actuallyDisabled])
+
+  const onPickFiles = useCallback((e) => {
+    const list = e.target.files
+    if (!list || list.length === 0) return
+
+    onAttach?.(list)
+
+    // allow re-selecting the same file again
+    e.target.value = ''
+  }, [onAttach])
+
   return (
     <div
       className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
       style={{ paddingBottom: 'calc(0.05rem + env(safe-area-inset-bottom))' }}
       aria-live="polite"
     >
+      {/* hidden file picker (images only) */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        multiple={false}
+        onChange={onPickFiles}
+        style={{ display: 'none' }}
+      />
+
       <div className="px-3">
         {inEdit && (
           <div className="flex items-center justify-between text-xs text-white/70 mb-2 px-1">
@@ -191,7 +193,7 @@ export default function ChatInput({
         <div className="flex items-end gap-2">
           <button
             type="button"
-            onClick={() => onAttach?.()}
+            onClick={openPicker}
             className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white"
             disabled={actuallyDisabled}
           >
@@ -210,18 +212,12 @@ export default function ChatInput({
                 onChange={handleChange}
                 onPaste={handlePaste}
                 onKeyDown={handleKeyDown}
-
-                /* ✅ Safari only. In iOS PWA this causes the jump. */
                 onFocus={(e) => {
                   if (!isIOSSafari) return
                   requestAnimationFrame(() => {
-                    e.target.scrollIntoView({
-                      block: 'nearest',
-                      inline: 'nearest',
-                    })
+                    e.target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
                   })
                 }}
-
                 placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
                 className="w-full bg-transparent outline-none text-white placeholder-white/50"
                 disabled={actuallyDisabled}

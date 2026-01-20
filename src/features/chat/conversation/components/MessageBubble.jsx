@@ -15,6 +15,7 @@ export default function MessageBubble({
   showName = false,
   statusSlot = null,
   onOpenActions,
+  onOpenMedia,
 }) {
   if (!message) return null
 
@@ -60,6 +61,8 @@ export default function MessageBubble({
     })
   }
 
+  const isMediaOnly = !!message.mediaUrl && !message.body
+
   return (
     <div
       className={clsx(
@@ -96,11 +99,18 @@ export default function MessageBubble({
         {/* Bubble */}
         <div
           className={clsx(
-            'rounded-2xl px-3 py-2 text-sm break-words',
+            'text-sm break-words',
             !message.isDeleted && 'select-text',
-            isMine
-              ? 'bg-purple-600 text-white rounded-br-md'
-              : 'bg-purple-500 text-white rounded-bl-md'
+
+            // ✅ media-only messages should NOT render a purple bubble container
+            isMediaOnly
+              ? 'p-0 bg-transparent'
+              : [
+                  'rounded-2xl px-3 py-2',
+                  isMine
+                    ? 'bg-purple-600 text-white rounded-br-md'
+                    : 'bg-purple-500 text-white rounded-bl-md',
+                ]
           )}
           onContextMenu={(e) => {
             e.preventDefault()
@@ -130,11 +140,18 @@ export default function MessageBubble({
           {!message.isDeleted && (
             <>
               {message.mediaUrl && (
-                <MediaBlock
-                  type={message.type}
-                  url={message.mediaUrl}
-                />
-              )}
+  <MediaBlock
+    type={message.type}
+    url={message.mediaUrl}
+    onOpen={() =>
+      onOpenMedia?.({
+        url: message.mediaUrl,
+        type: message.type,
+      })
+    }
+  />
+)}
+
 
               {message.body && (
                 <span className="whitespace-pre-wrap">
@@ -166,23 +183,25 @@ export default function MessageBubble({
    Media renderer (UI only)
    ============================================================ */
 
-function MediaBlock({ type, url }) {
+function MediaBlock({ type, url, onOpen }) {
   switch (type) {
     case 'image':
       return (
         <img
           src={url}
           alt=""
-          className="mb-1 max-w-full rounded-lg"
+          onClick={onOpen}
+          className="mb-1 w-full max-w-full rounded-xl cursor-pointer active:opacity-90"
         />
       )
+
 
     case 'video':
       return (
         <video
           src={url}
           controls
-          className="mb-1 max-w-full rounded-lg"
+          className="mb-1 w-full max-w-full rounded-xl"
         />
       )
 

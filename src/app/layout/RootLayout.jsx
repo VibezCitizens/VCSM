@@ -16,17 +16,22 @@ export default function RootLayout() {
     isChatScreen ||
     ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
 
-  // ✅ ALLOW CHILD SCREENS TO SCROLL
+  /**
+   * ✅ SCROLL CONTRACT (LOCKED)
+   * - RootLayout owns viewport (overflow-hidden)
+   * - <main> is the ONE scroll container
+   * - Screens NEVER control scrolling
+   */
   const mainClass = hideChrome
-    ? 'flex-1 min-h-0'
-    : 'flex-1 min-h-0 pt-12 pb-[64px]'
+    ? 'flex-1 min-h-0 overflow-y-auto'
+    : 'flex-1 min-h-0 overflow-y-auto pt-12 pb-[64px]'
 
   return (
     <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
       {!hideChrome && <TopNav />}
 
+      {/* ✅ GLOBAL SCROLL CONTAINER */}
       <main className={mainClass}>
-        {/* ❌ noScroll REMOVED */}
         <PageContainer>
           <Outlet />
         </PageContainer>

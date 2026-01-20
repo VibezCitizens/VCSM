@@ -27,6 +27,7 @@
     "@tsparticles/react": "^3.0.0",
     "@unocss/preset-wind3": "^66.2.3",
     "browser-image-compression": "^2.0.2",
+    "country-state-city": "^3.2.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
@@ -57,6 +58,7 @@
     "react-window": "1.8.11",
     "swiper": "^11.2.10",
     "tsparticles": "^3.8.1",
+    "use-places-autocomplete": "^4.0.1",
     "workbox-window": "^7.3.0",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"

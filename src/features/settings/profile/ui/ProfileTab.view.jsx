@@ -9,6 +9,7 @@
 
 import { Link } from 'react-router-dom'
 import Card from '@/features/settings/ui/Card'
+import ProfessionalAccessButton from './ProfessionalAccessButton'
 
 export default function ProfileTabView({
   // identity
@@ -27,7 +28,7 @@ export default function ProfileTabView({
   // state
   saving,
   error,
-  saved, // ✅ NEW (pure UI flag)
+  saved,
 
   // refs
   avatarInputRef,
@@ -264,6 +265,9 @@ export default function ProfileTabView({
           </button>
         </div>
       </Card>
+
+      {/* ================= PROFESSIONAL ACCESS ================= */}
+      <ProfessionalAccessButton />
     </div>
   )
 }

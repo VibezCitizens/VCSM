@@ -1,6 +1,6 @@
 // src/app/routes/index.jsx
 // ============================================================================
-// APP ROUTES — ACTOR-BASED (UPDATED)
+// APP ROUTES — ACTOR-BASED (LOCKED, NO BLOCKGATE, NO MeScreen)
 // ============================================================================
 
 import { Suspense, lazy } from 'react'
@@ -8,7 +8,6 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 
 import ProtectedRoute from '@/app/guards/ProtectedRoute'
 import RootLayout from '@/app/layout/RootLayout'
-import BlockGate from '@/features/profiles/shared/components/private/BlockGate'
 
 // ----------------------------------------------------------------------------
 // Lazy helper with debugging
@@ -21,6 +20,11 @@ function lazyWithLog(label, importer) {
     })
   )
 }
+
+const UsernameProfileRedirect = lazyWithLog(
+  'UsernameProfileRedirect',
+  () => import('@/features/profiles/screens/UsernameProfileRedirect')
+)
 
 /* ================= AUTH ================= */
 const LoginScreen         = lazyWithLog('LoginScreen', () => import('@/features/auth/screens/LoginScreen'))
@@ -45,14 +49,15 @@ const UploadScreen = lazyWithLog(
 )
 
 /* ================= PROFILES ================= */
-const MeScreen = lazyWithLog(
-  'Me',
-  () => import('@/features/profiles/citizens/screens/MeScreen')
+const ActorProfileScreen = lazyWithLog(
+  'ActorProfileScreen',
+  () => import('@/features/profiles/screens/ActorProfileScreen')
 )
 
-const PublicUserProfileScreen = lazyWithLog(
-  'PublicUserProfileScreen',
-  () => import('@/features/profiles/citizens/screens/PublicUserProfileScreen')
+/* ================= VPORTS ================= */
+const VportScreen = lazyWithLog(
+  'VportScreen',
+  () => import('@/features/vport/screens/VportScreen')
 )
 
 const SettingsScreen = lazyWithLog(
@@ -63,28 +68,6 @@ const SettingsScreen = lazyWithLog(
 const VoidScreen = lazyWithLog(
   'VoidScreen',
   () => import('@/features/void/VoidScreen')
-)
-
-/* ================= FRIENDS ================= */
-const FriendsScreen = lazyWithLog(
-  'FriendsScreen',
-  () => import('@/features/profiles/shared/tabs/friends/screens/FriendsScreen.jsx')
-)
-
-const FriendsListEditor = lazyWithLog(
-  'FriendsListEditor',
-  () => import('@/features/profiles/shared/tabs/friends/components/TopFriendsRankEditor')
-)
-
-/* ================= VPORT PROFILES ================= */
-const VportMeProfileScreen = lazyWithLog(
-  'VportMeProfileScreen',
-  () => import('@/features/profiles/vport/screen/VportMeProfileScreen')
-)
-
-const VportPublicProfileScreen = lazyWithLog(
-  'VportPublicProfileScreen',
-  () => import('@/features/profiles/vport/screen/VportPublicProfileScreen')
 )
 
 /* ================= POSTS ================= */
@@ -98,7 +81,7 @@ const PostDetailScreen = lazyWithLog(
   () => import('@/features/post/screens/PostDetail.screen')
 )
 
-/* ================= CHAT (NEW ACTOR-BASED) ================= */
+/* ================= CHAT ================= */
 const ChatInboxScreen = lazyWithLog(
   'ChatInbox',
   () => import('@/features/chat').then(m => ({ default: m.InboxScreen }))
@@ -147,68 +130,33 @@ export default function AppRoutes() {
             <Route path="/posts/:postId" element={<PostDetailScreen />} />
             <Route path="/post/:postId" element={<PostDetailScreen />} />
 
-            {/* ================= CHAT ================= */}
+            {/* CHAT */}
             <Route path="/chat" element={<ChatInboxScreen />} />
             <Route path="/chat/new" element={<NewChatScreen />} />
             <Route path="/chat/:conversationId" element={<ChatConversationScreen />} />
 
-            {/* Legacy vport URLs → unified chat */}
+            {/* Legacy vport URLs */}
             <Route path="/vport/inbox" element={<Navigate to="/chat" replace />} />
             <Route path="/vport/chat/:conversationId" element={<ChatConversationScreen />} />
             <Route path="/vport/chat" element={<Navigate to="/chat" replace />} />
 
-            {/* ================= NOTIFICATIONS ================= */}
+            {/* NOTIFICATIONS */}
             <Route path="/notifications" element={<NotificationsScreen />} />
             <Route path="/vport/notifications" element={<Navigate to="/notifications" replace />} />
             <Route path="/noti/post/:postId" element={<NotiViewPostScreen />} />
 
             {/* ACCOUNT */}
             <Route path="/upload" element={<UploadScreen />} />
-            <Route path="/me" element={<MeScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/void" element={<VoidScreen />} />
 
-            {/* ================= PROFILES ================= */}
-            <Route
-              path="/u/:username"
-              element={<BlockGate><PublicUserProfileScreen /></BlockGate>}
-            />
-            <Route
-              path="/profile/:id"
-              element={<BlockGate><PublicUserProfileScreen /></BlockGate>}
-            />
+            {/* ================= PROFILES (SINGLE ENTRY POINT) ================= */}
+            <Route path="/me" element={<Navigate to="/profile/self" replace />} />
+            <Route path="/u/:username" element={<UsernameProfileRedirect />} />
+            <Route path="/profile/:actorId" element={<ActorProfileScreen />} />
 
-            {/* ================= FRIENDS ================= */}
-            <Route
-              path="/u/:username/friends"
-              element={<BlockGate><FriendsScreen /></BlockGate>}
-            />
-            <Route
-              path="/profile/:id/friends"
-              element={<BlockGate><FriendsScreen /></BlockGate>}
-            />
-            <Route
-              path="/u/:username/edit-friends"
-              element={<BlockGate><FriendsListEditor /></BlockGate>}
-            />
-            <Route
-              path="/profile/:id/edit-friends"
-              element={<BlockGate><FriendsListEditor /></BlockGate>}
-            />
-
-            {/* ================= VPORT ================= */}
-            <Route
-              path="/vport/me"
-              element={<BlockGate><VportMeProfileScreen /></BlockGate>}
-            />
-            <Route
-              path="/vport/:slug"
-              element={<BlockGate><VportPublicProfileScreen /></BlockGate>}
-            />
-            <Route
-              path="/vport/id/:id"
-              element={<BlockGate><VportPublicProfileScreen /></BlockGate>}
-            />
+            {/* ================= VPORTS (ACTOR-BASED) ================= */}
+            <Route path="/vport/:actorId" element={<VportScreen />} />
 
             {/* DEFAULTS */}
             <Route path="/" element={<Navigate to="/feed" replace />} />

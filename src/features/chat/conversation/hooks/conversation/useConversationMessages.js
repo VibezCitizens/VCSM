@@ -144,24 +144,26 @@ export default function useConversationMessages({
      Optimistic send lifecycle
      ============================================================ */
 
-  const addOptimistic = ({ body, type }) => {
-    const clientId = generateClientId()
+  const addOptimistic = ({ body, type, mediaUrl }) => {
+  const clientId = generateClientId()
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: clientId,          // local temp identity
-        clientId,              // stable client identity
-        body,
-        type,
-        senderActorId: actorId,
-        createdAt: new Date().toISOString(),
-        __optimistic: true,
-      },
-    ])
+  setMessages((prev) => [
+    ...prev,
+    {
+      id: clientId,
+      clientId,
+      body,
+      type,
+      mediaUrl, // ✅ add
+      senderActorId: actorId,
+      createdAt: new Date().toISOString(),
+      __optimistic: true,
+    },
+  ])
 
-    return clientId
-  }
+  return clientId
+}
+
 
   const replaceOptimistic = (clientId, message) => {
     const shouldDeleteForMe = pendingDeleteForMeRef.current.has(clientId)
@@ -213,26 +215,41 @@ export default function useConversationMessages({
      ============================================================ */
 
   const onSendMessage = useCallback(
-    async ({ body, type = 'text' }) => {
-      const clientId = addOptimistic({ body, type })
+  async ({ body = '', type = 'text', mediaUrl = null }) => {
+    const trimmed = String(body || '').trim()
 
-      try {
-        const { message } = await sendMessageController({
-          conversationId,
-          actorId,
-          body,
-          messageType: type,
-          clientId,
-        })
+    // ✅ allow media-only messages
+    const hasBody = trimmed.length > 0
+    const hasMedia = !!mediaUrl
 
-        replaceOptimistic(clientId, message)
-      } catch (err) {
-        console.error('[useConversationMessages] send failed', err)
-        removeOptimistic(clientId)
-      }
-    },
-    [conversationId, actorId]
-  )
+    if (!hasBody && !hasMedia) return
+
+    const clientId = addOptimistic({
+      body: hasBody ? trimmed : '',
+      type,
+      mediaUrl,
+    })
+
+    try {
+      const { message } = await sendMessageController({
+        conversationId,
+        actorId,
+        body: hasBody ? trimmed : '',
+        mediaUrl,          // ✅ pass through
+        messageType: type,
+        clientId,
+      })
+
+      replaceOptimistic(clientId, message)
+    } catch (err) {
+      console.error('[useConversationMessages] send failed', err)
+      removeOptimistic(clientId)
+    }
+  },
+  [conversationId, actorId]
+)
+
+
 
   const onEditMessage = useCallback(
     async ({ messageId, body }) => {
