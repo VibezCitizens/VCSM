@@ -29,6 +29,10 @@ import { softDeletePostController } from "@/features/post/postcard/controller/de
 // UI
 import PostCardView from "@/features/post/postcard/ui/PostCard.view";
 
+// ✅ SHARE (native + modal fallback)
+import { shareNative } from "@/shared/lib/shareNative";
+import ShareModal from "@/features/post/postcard/components/ShareModal";
+
 export default function PostFeedScreen() {
   const navigate = useNavigate();
   const { identity } = useIdentity();
@@ -129,6 +133,40 @@ export default function PostFeedScreen() {
   }, [actorId, postMenu, setPosts, closePostMenu]);
 
   // ------------------------------------------------------------
+  // ✅ SHARE STATE (modal fallback)
+  // ------------------------------------------------------------
+  const [shareState, setShareState] = useState({
+    open: false,
+    postId: null,
+    url: "",
+  });
+
+  const closeShare = useCallback(() => {
+    setShareState({ open: false, postId: null, url: "" });
+  }, []);
+
+  const handleShare = useCallback(
+    async (postId) => {
+      if (!postId) return;
+
+      // your feed navigates to `/post/${id}` so share that
+      const url = `${window.location.origin}/post/${postId}`;
+
+      const post = posts.find((p) => p.id === postId);
+      const text = post?.text ? post.text.slice(0, 140) : "";
+      const title = "Spread";
+
+      const res = await shareNative({ title, text, url });
+
+      // If native share isn't available (desktop/dev), open modal fallback
+      if (!res.ok) {
+        setShareState({ open: true, postId, url });
+      }
+    },
+    [posts]
+  );
+
+  // ------------------------------------------------------------
   // INITIAL LOAD / ACTOR SWITCH
   // ------------------------------------------------------------
   useEffect(() => {
@@ -188,6 +226,7 @@ export default function PostFeedScreen() {
             post={post}
             onOpenPost={() => navigate(`/post/${post.id}`)}
             onOpenMenu={openPostMenu}
+            onShare={handleShare} // ✅ WIRE SHARE DOWN
           />
         </div>
       ))}
@@ -211,6 +250,14 @@ export default function PostFeedScreen() {
         loading={reportFlow.loading}
         onClose={reportFlow.close}
         onSubmit={reportFlow.submit}
+      />
+
+      {/* ✅ SHARE MODAL (FALLBACK WHEN NO NATIVE SHARE) */}
+      <ShareModal
+        open={shareState.open}
+        title="Spread"
+        url={shareState.url}
+        onClose={closeShare}
       />
 
       {/* LOADING */}

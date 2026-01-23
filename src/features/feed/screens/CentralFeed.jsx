@@ -24,6 +24,10 @@ import PostActionsMenu from '@/features/post/postcard/components/PostActionsMenu
 
 import { softDeletePostController } from '@/features/post/postcard/controller/deletePost.controller'
 
+// ✅ SHARE (native + modal fallback)
+import { shareNative } from '@/shared/lib/shareNative'
+import ShareModal from '@/features/post/postcard/components/ShareModal'
+
 export default function CentralFeed() {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -55,6 +59,9 @@ export default function CentralFeed() {
     fetchPosts,
     fetchViewer,
   } = useFeed(actorId, realmId)
+
+  // ✅ HIDE REPORTED POSTS (client-side immediate UX)
+  const [hiddenPostIds, setHiddenPostIds] = useState(() => new Set())
 
   /* ============================================================
      DEBUG: remounts / auth flicker / report state
@@ -149,6 +156,40 @@ export default function CentralFeed() {
     closePostMenu()
   }, [actorId, postMenu, reportFlow, closePostMenu])
 
+  // ✅ WRAP REPORT SUBMIT: hide post from feed after success
+  const handleReportSubmit = useCallback(
+    async (payload) => {
+      const targetPostId =
+        reportFlow.context?.objectType === 'post'
+          ? (reportFlow.context?.objectId ?? null)
+          : null
+
+      try {
+        const res = await reportFlow.submit?.(payload)
+
+        // if hook returns { ok:false }, don't hide
+        if (res && res.ok === false) return
+
+        // ✅ immediately hide in feed
+        if (targetPostId) {
+          setHiddenPostIds((prev) => {
+            const next = new Set(prev)
+            next.add(targetPostId)
+            return next
+          })
+        }
+
+        reportFlow.close?.()
+
+        // optional: refresh feed if you want server consistency immediately
+        // await fetchPosts(true)
+      } catch (err) {
+        console.error('[CentralFeed] report submit failed:', err)
+      }
+    },
+    [reportFlow]
+  )
+
   const [search] = useSearchParams()
   const debugPrivacy = (search.get('debug') || '').toLowerCase() === 'privacy'
 
@@ -161,6 +202,40 @@ export default function CentralFeed() {
 
   const ptrRef = useRef(null)
   const sentinelRef = useRef(null)
+
+  /* ============================================================
+     ✅ SHARE STATE + HANDLER
+     ============================================================ */
+  const [shareState, setShareState] = useState({
+    open: false,
+    postId: null,
+    url: '',
+  })
+
+  const closeShare = useCallback(() => {
+    setShareState({ open: false, postId: null, url: '' })
+  }, [])
+
+  const handleShare = useCallback(
+    async (postId) => {
+      if (!postId) return
+
+      // you navigate to /post/:id in this screen
+      const url = `${window.location.origin}/post/${postId}`
+
+      const post = posts.find((p) => p.id === postId)
+      const text = post?.text ? String(post.text).slice(0, 140) : ''
+      const title = 'Spread'
+
+      const res = await shareNative({ title, text, url })
+
+      // fallback: open our modal on desktop/dev/unsupported
+      if (!res.ok) {
+        setShareState({ open: true, postId, url })
+      }
+    },
+    [posts]
+  )
 
   /* ============================================================
      VIEWER CONTEXT
@@ -208,6 +283,9 @@ export default function CentralFeed() {
     await fetchPosts(true)
   }, [fetchViewer, fetchPosts])
 
+  // ✅ filter out reported posts from UI
+  const visiblePosts = posts.filter((p) => !hiddenPostIds.has(p.id))
+
   /* ============================================================
      RENDER
      ============================================================ */
@@ -223,11 +301,11 @@ export default function CentralFeed() {
         <p className="text-center text-gray-400 mt-6">Loading your feed…</p>
       )}
 
-      {viewerIsAdult !== null && !loading && posts.length === 0 && (
+      {viewerIsAdult !== null && !loading && visiblePosts.length === 0 && (
         <p className="text-center text-gray-400">No posts found.</p>
       )}
 
-      {posts.map((post) => (
+      {visiblePosts.map((post) => (
         <div key={`post:${post.id}`} className="mb-2 last:mb-0">
           <PostCard
             post={{
@@ -236,6 +314,7 @@ export default function CentralFeed() {
             }}
             onOpenPost={() => navigate(`/post/${post.id}`)}
             onOpenMenu={openPostMenu}
+            onShare={handleShare} // ✅ WIRE SHARE DOWN
           />
         </div>
       ))}
@@ -256,12 +335,20 @@ export default function CentralFeed() {
         subtitle={reportFlow.context?.subtitle ?? null}
         loading={reportFlow.loading}
         onClose={reportFlow.close}
-        onSubmit={reportFlow.submit}
+        onSubmit={handleReportSubmit}
+      />
+
+      {/* ✅ SHARE MODAL (fallback when native share unsupported) */}
+      <ShareModal
+        open={shareState.open}
+        title="Spread"
+        url={shareState.url}
+        onClose={closeShare}
       />
 
       {debugPrivacy && <DebugPrivacyPanel userId={actorId} posts={posts} />}
 
-      {loading && posts.length === 0 && (
+      {loading && visiblePosts.length === 0 && (
         <div className="space-y-3 px-4">
           {[...Array(3)].map((_, i) => (
             <div
@@ -272,11 +359,11 @@ export default function CentralFeed() {
         </div>
       )}
 
-      {loading && posts.length > 0 && (
+      {loading && visiblePosts.length > 0 && (
         <p className="text-center text-white">Loading more…</p>
       )}
 
-      {!hasMore && !loading && posts.length > 0 && (
+      {!hasMore && !loading && visiblePosts.length > 0 && (
         <p className="text-center text-gray-400">End of feed</p>
       )}
 

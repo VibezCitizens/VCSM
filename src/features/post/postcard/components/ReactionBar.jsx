@@ -5,11 +5,13 @@ import { usePostReactions } from "../hooks/usePostReactions";
 import BinaryReactionButton from "./BinaryReactionButton";
 import RoseReactionButton from "./RoseReactionButton";
 import CommentButton from "./CommentButton";
+import ShareReactionButton from "./ShareReactionButton";
 
 export default function ReactionBar({
   postId,
   commentCount = 0,
   onOpenComments,
+  onShare, // 🔑 NEW (optional handler)
 }) {
   const {
     toggleReaction,
@@ -48,13 +50,22 @@ export default function ReactionBar({
         onSend={sendRose}
       />
 
-      {/* 💬 COMMENTS → navigation intent */}
+      {/* 💬 COMMENTS */}
       <CommentButton
         count={commentCount}
         onClick={(e) => {
           e?.stopPropagation?.();
           onOpenComments?.();
         }}
+      />
+
+      {/* 🌍 SPREAD / SHARE */}
+      <ShareReactionButton
+        onClick={(e) => {
+          e?.stopPropagation?.();
+          onShare?.(postId);
+        }}
+        disabled={loading}
       />
     </div>
   );

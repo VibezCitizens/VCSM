@@ -54,6 +54,12 @@ const ActorProfileScreen = lazyWithLog(
   () => import('@/features/profiles/screens/ActorProfileScreen')
 )
 
+/* ✅ TOP FRIENDS EDITOR (ADD THIS) */
+const TopFriendsRankEditor = lazyWithLog(
+  'TopFriendsRankEditor',
+  () => import('@/features/profiles/screens/views/tabs/friends/components/TopFriendsRankEditor')
+)
+
 /* ================= VPORTS ================= */
 const VportScreen = lazyWithLog(
   'VportScreen',
@@ -81,12 +87,10 @@ const PostDetailScreen = lazyWithLog(
   () => import('@/features/post/screens/PostDetail.screen')
 )
 
-
 const EditPostScreen = lazyWithLog(
   'EditPostScreen',
   () => import('@/features/post/postcard/ui/EditPost')
 )
-
 
 /* ================= CHAT ================= */
 const ChatInboxScreen = lazyWithLog(
@@ -145,9 +149,6 @@ export default function AppRoutes() {
             <Route path="/posts/:postId/edit" element={<EditPostScreen />} />
             <Route path="/post/:postId/edit" element={<EditPostScreen />} />
 
-
-
-
             {/* CHAT */}
             <Route path="/chat" element={<ChatInboxScreen />} />
             <Route path="/chat/new" element={<NewChatScreen />} />
@@ -172,6 +173,9 @@ export default function AppRoutes() {
             <Route path="/me" element={<Navigate to="/profile/self" replace />} />
             <Route path="/u/:username" element={<UsernameProfileRedirect />} />
             <Route path="/profile/:actorId" element={<ActorProfileScreen />} />
+
+            {/* ✅ TOP FRIENDS EDIT ROUTE (ADD THIS) */}
+            <Route path="/profile/:id/friends/top/edit" element={<TopFriendsRankEditor />} />
 
             {/* ================= VPORTS (ACTOR-BASED) ================= */}
             <Route path="/vport/:actorId" element={<VportScreen />} />

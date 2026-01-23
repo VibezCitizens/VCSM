@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useIdentity } from "@/state/identity/identityContext";
 
 import {
   enrichPhotoPostsController,
@@ -10,27 +11,21 @@ import {
  * ============================================================
  * Hook: usePhotoReactions
  * ------------------------------------------------------------
- * UI orchestration layer for photo reactions
- *
- * Answers ONE question:
- *   "When should photo reactions load and how should the UI respond?"
- *
- * 🚫 No Supabase
- * 🚫 No DAL
- * 🚫 No business meaning
+ * Viewer-actor SSOT:
+ * - Identity provides the reacting actorId
+ * - Profile actorId is NEVER used for mutations
  * ============================================================
  */
+export function usePhotoReactions(posts = []) {
+  const { identity, loading: identityLoading } = useIdentity();
+  const viewerActorId = identity?.actorId ?? null;
 
-export function usePhotoReactions(posts = [], actorId) {
   const [enriched, setEnriched] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  /* ---------------------------------------------------------
-     LOAD + ENRICH POSTS
-     --------------------------------------------------------- */
   const load = useCallback(async () => {
-    if (!actorId || posts.length === 0) {
+    if (!viewerActorId || identityLoading || posts.length === 0) {
       setEnriched([]);
       return;
     }
@@ -41,7 +36,7 @@ export function usePhotoReactions(posts = [], actorId) {
 
       const result = await enrichPhotoPostsController({
         posts,
-        actorId,
+        actorId: viewerActorId,
       });
 
       setEnriched(result);
@@ -52,7 +47,7 @@ export function usePhotoReactions(posts = [], actorId) {
     } finally {
       setLoading(false);
     }
-  }, [posts, actorId]);
+  }, [posts, viewerActorId, identityLoading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,62 +62,50 @@ export function usePhotoReactions(posts = [], actorId) {
     };
   }, [load]);
 
-  /* ---------------------------------------------------------
-     TOGGLE REACTION (LIKE / DISLIKE)
-     --------------------------------------------------------- */
   const toggleReaction = useCallback(
     async (postId, reaction) => {
-      if (!actorId || !postId) return;
+      if (!viewerActorId || identityLoading || !postId) return;
 
       try {
         await togglePhotoReactionController({
           postId,
-          actorId,
+          actorId: viewerActorId,
           reaction,
         });
 
-        // refresh after mutation
         await load();
       } catch (err) {
         console.error("[usePhotoReactions] toggleReaction failed", err);
         setError(err);
       }
     },
-    [actorId, load]
+    [viewerActorId, identityLoading, load]
   );
 
-  /* ---------------------------------------------------------
-     SEND ROSE
-     --------------------------------------------------------- */
   const sendRose = useCallback(
     async (postId) => {
-      if (!actorId || !postId) return;
+      if (!viewerActorId || identityLoading || !postId) return;
 
       try {
         await sendPhotoRoseController({
           postId,
-          actorId,
+          actorId: viewerActorId,
           qty: 1,
         });
 
-        // refresh after mutation
         await load();
       } catch (err) {
         console.error("[usePhotoReactions] sendRose failed", err);
         setError(err);
       }
     },
-    [actorId, load]
+    [viewerActorId, identityLoading, load]
   );
 
-  /* ---------------------------------------------------------
-     PUBLIC API
-     --------------------------------------------------------- */
   return {
     enriched,
-    loading,
+    loading: loading || identityLoading,
     error,
-
     toggleReaction,
     sendRose,
     reload: load,

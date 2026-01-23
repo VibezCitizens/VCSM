@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import PostCard from "@/features/post/postcard/adapters/PostCard";
 import { useActorPosts } from "@/features/profiles/screens/views/tabs/post/hooks/useActorPosts";
 
-export default function ActorProfilePostsView({ profileActorId }) {
+export default function ActorProfilePostsView({
+  profileActorId,
+  onShare,
+  onOpenMenu,
+  version = 0, // ✅ ADD
+}) {
   const navigate = useNavigate();
 
   const {
@@ -23,6 +28,9 @@ export default function ActorProfilePostsView({ profileActorId }) {
   console.log("posts.length:", posts.length);
   console.log("loading:", loading);
   console.log("hasMore:", hasMore);
+  console.log("onShare type:", typeof onShare);
+  console.log("onOpenMenu type:", typeof onOpenMenu);
+  console.log("version:", version); // ✅ ADD (keeps logs style)
   console.groupEnd();
 
   /* ============================================================
@@ -36,12 +44,13 @@ export default function ActorProfilePostsView({ profileActorId }) {
 
     console.group("[ActorProfilePostsView][EFFECT] reset + loadInitial");
     console.log("profileActorId:", profileActorId);
+    console.log("version:", version);
     console.groupEnd();
 
     reset(profileActorId);
     loadInitial();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileActorId]);
+  }, [profileActorId, version]); // ✅ IMPORTANT
 
   /* ============================================================
      DEBUG — AFTER DATA ARRIVAL
@@ -106,7 +115,9 @@ export default function ActorProfilePostsView({ profileActorId }) {
         <PostCard
           key={post.id}
           post={post}
-          onOpenPost={() => openPost(post.id)} // ✅ HERE
+          onOpenPost={() => openPost(post.id)}
+          onShare={onShare}
+          onOpenMenu={onOpenMenu}
         />
       ))}
 

@@ -15,9 +15,14 @@ export async function fetchPostsForActorDAL({
       title,
       media_url,
       media_type,
-      created_at
+      created_at,
+      edited_at,
+      deleted_at,
+      deleted_by_actor_id
     `)
     .eq("actor_id", actorId)
+    // ✅ exclude soft-deleted posts (same as CentralFeed)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 }

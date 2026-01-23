@@ -2,12 +2,12 @@ import { supabase } from "@/services/supabase/supabaseClient";
 
 /**
  * ============================================================
- * DAL: listPostCommentsCount
+ * DAL: listPostRoseCount
  * ------------------------------------------------------------
- * Returns raw comment counts per post_id
+ * Returns raw rose gift totals per post_id
  *
  * Question answered:
- *   "What does the database say about how many comments
+ *   "What does the database say about how many roses
  *    exist for each post?"
  *
  * 🚫 No business logic
@@ -20,17 +20,16 @@ import { supabase } from "@/services/supabase/supabaseClient";
  * @param {string[]} postIds
  * @returns {Promise<Record<string, number>>}
  */
-export async function listPostCommentsCount(postIds) {
+export async function listPostRoseCount(postIds) {
   if (!Array.isArray(postIds) || postIds.length === 0) {
     return {};
   }
 
   const { data, error } = await supabase
     .schema("vc")
-    .from("post_comments")
-    .select("post_id")
-    .in("post_id", postIds)
-    .is("deleted_at", null);
+    .from("post_rose_gifts")
+    .select("post_id, qty")
+    .in("post_id", postIds);
 
   if (error) {
     throw error;
@@ -38,7 +37,7 @@ export async function listPostCommentsCount(postIds) {
 
   const counts = {};
   for (const row of data ?? []) {
-    counts[row.post_id] = (counts[row.post_id] || 0) + 1;
+    counts[row.post_id] = (counts[row.post_id] || 0) + Number(row.qty || 0);
   }
 
   return counts;

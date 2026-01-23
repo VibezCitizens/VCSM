@@ -110,7 +110,11 @@ export default function ActorProfileHeader({
               />
 
               {/* reserve room for absolute buttons */}
-              <div className="flex-1 min-w-0 pt-1 pr-28">
+              <div
+                className={`flex-1 min-w-0 pt-1 ${
+                  isSelf ? '' : 'pr-32 pb-5'
+                }`}
+              >
                 <div className="min-w-0">
                   <h2 className="text-xl font-bold truncate text-white">
                     {profile.displayName || 'Unnamed'}

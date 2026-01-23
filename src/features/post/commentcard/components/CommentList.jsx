@@ -1,14 +1,15 @@
-// src/features/post/commentcard/components/CommentList.jsx
-// ============================================================
-// CommentList
-// - Pure list renderer
-// - No hooks per item
-// - Safe hook order
-// ============================================================
-
 import CommentCardContainer from "./CommentCard.container";
 
-export default function CommentList({ comments }) {
+export default function CommentList({
+  comments,
+  viewerActorId,
+  onOpenMenu,
+
+  editingCommentId,
+  editingInitialText,
+  onCancelInlineEdit,
+  onEditedSaved,
+}) {
   if (!Array.isArray(comments) || comments.length === 0) return null;
 
   return (
@@ -17,6 +18,13 @@ export default function CommentList({ comments }) {
         <CommentCardContainer
           key={rawComment.id}
           rawComment={rawComment}
+          viewerActorId={viewerActorId}
+          onOpenMenu={onOpenMenu}
+
+          editingCommentId={editingCommentId}
+          editingInitialText={editingInitialText}
+          onCancelInlineEdit={onCancelInlineEdit}
+          onEditedSaved={onEditedSaved}
         />
       ))}
     </div>

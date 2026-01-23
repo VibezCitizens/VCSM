@@ -1,44 +1,26 @@
-// src/features/profiles/dal/readActorPosts.dal.js
-// ============================================================
-// READ ACTOR POSTS (PROFILE CONTEXT)
-// ------------------------------------------------------------
-// - RAW POSTS ONLY (NO EMBEDS)
-// - Actor-based (actor_id only)
-// - Matches CentralFeed DAL behavior
-// - NEVER touches actor_presentation
-// - Safe: posts failure must NOT break profile
-// ============================================================
+import { supabase } from "@/services/supabase/supabaseClient";
 
-import { supabase } from '@/services/supabase/supabaseClient'
-
-/**
- * Returns RAW post rows for a single actor
- * Presentation is resolved later via hydrateActorsFromRows + useActorPresentation
- */
 export async function readActorPostsDAL(actorId) {
-  if (!actorId) return []
-
   const { data, error } = await supabase
-    .schema('vc')
-    .from('posts')
+    .schema("vc")
+    .from("posts")
     .select(`
       id,
       actor_id,
       text,
       title,
-      media_type,
       media_url,
-      post_type,
-      tags,
-      created_at
+      media_type,
+      created_at,
+      edited_at,
+      deleted_at,
+      deleted_by_actor_id
     `)
-    .eq('actor_id', actorId)
-    .order('created_at', { ascending: false })
+    .eq("actor_id", actorId)
+    // ✅ exclude soft-deleted posts (same as CentralFeed)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
 
-  if (error) {
-    console.warn('[readActorPostsDAL] failed (non-fatal)', error)
-    return [] // 🔒 CRITICAL: NEVER throw
-  }
-
-  return Array.isArray(data) ? data : []
+  if (error) throw error;
+  return Array.isArray(data) ? data : [];
 }

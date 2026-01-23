@@ -7,35 +7,27 @@ import ReactionBar from "../components/ReactionBar";
 import ActorLink from "@/shared/components/ActorLink";
 import { useActorPresentation } from "@/state/actors/useActorPresentation";
 
-// ✅ COMMENT COUNT (INDEPENDENT DOMAIN)
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
-
-// ✅ add this
 import { useIdentity } from "@/state/identity/identityContext";
 
 export default function PostCardView({
   post,
   onReact,
   onOpenPost,
-  onOpenMenu, // ✅ NEW (for •••)
+  onOpenMenu,
+  onShare, // ✅ ADD
 }) {
   if (!post) return null;
 
-  const { identity } = useIdentity(); // ✅ add
+  const { identity } = useIdentity();
   const viewerActorId = identity?.actorId ?? null;
 
-  /* ============================================================
-     ACTOR PRESENTATION (ACTOR ID ONLY — CORRECT)
-     ============================================================ */
   const actorUI = useActorPresentation(post.actorId);
   if (!actorUI) return null;
 
-  // ✅ INDEPENDENT COMMENT COUNT (NOT FROM FEED)
   const commentCount = usePostCommentCount(post.id);
 
   const isVport = actorUI.kind === "vport";
-
-  // ✅ add (owner check)
   const isOwner = !!viewerActorId && post.actorId === viewerActorId;
 
   return (
@@ -51,9 +43,6 @@ export default function PostCardView({
         overflow-hidden
       "
     >
-      {/* ======================================================
-         HEADER
-         ====================================================== */}
       <div
         onClick={onOpenPost}
         className="
@@ -81,8 +70,8 @@ export default function PostCardView({
             onOpenMenu?.({
               postId: post.id,
               postActorId: post.actorId,
-              viewerActorId, // ✅ add
-              isOwner,       // ✅ add
+              viewerActorId,
+              isOwner,
               anchorRect: rect,
             });
           }}
@@ -93,9 +82,6 @@ export default function PostCardView({
         </button>
       </div>
 
-      {/* ======================================================
-         TEXT
-         ====================================================== */}
       {post.text && (
         <div
           onClick={onOpenPost}
@@ -108,23 +94,18 @@ export default function PostCardView({
         </div>
       )}
 
-      {/* ======================================================
-         MEDIA
-         ====================================================== */}
       {post.media?.length > 0 && (
         <div onClick={onOpenPost} className="px-0 mb-2">
           <MediaCarousel media={post.media} />
         </div>
       )}
 
-      {/* ======================================================
-         REACTIONS
-         ====================================================== */}
       <div className="px-4 pb-3">
         <ReactionBar
           postId={post.id}
           commentCount={commentCount}
           onOpenComments={onOpenPost}
+          onShare={onShare} // ✅ ADD
         />
       </div>
     </motion.div>

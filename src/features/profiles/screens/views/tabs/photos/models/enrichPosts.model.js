@@ -3,30 +3,22 @@
  * Model: enrichPosts
  * ------------------------------------------------------------
  * Translates raw database state into domain-safe post objects
- *
- * Answers ONE question:
- *   "What does this post data mean to the application?"
- *
- * 🚫 No I/O
- * 🚫 No Supabase
- * 🚫 No controllers
- * 🚫 No hooks
  * ============================================================
  */
 
 /**
  * @param {Object} params
- * @param {Array}  params.posts        Raw post rows
- * @param {Array}  params.reactions    Raw reaction rows
- * @param {Object} params.commentCounts Map of post_id → count
+ * @param {Array}  params.posts
+ * @param {Array}  params.reactions
+ * @param {Object} params.commentCounts
+ * @param {Object} params.roseCounts
  * @param {string} params.viewerActorId
- *
- * @returns {Array}
  */
 export function enrichPostsModel({
   posts = [],
   reactions = [],
   commentCounts = {},
+  roseCounts = {},
   viewerActorId,
 }) {
   if (!Array.isArray(posts) || posts.length === 0) return [];
@@ -55,9 +47,8 @@ export function enrichPostsModel({
         (r) => r.reaction === "dislike"
       ).length,
 
-      roseCount: postReactions.filter(
-        (r) => r.reaction === "rose"
-      ).length,
+      // ✅ FIX: roses come from post_rose_gifts
+      roseCount: roseCounts[post.id] || 0,
 
       commentCount: commentCounts[post.id] || 0,
 

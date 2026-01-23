@@ -1,5 +1,9 @@
-import { X, Share2 } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import BinaryReactionButton from "@/features/post/postcard/components/BinaryReactionButton";
+import RoseReactionButton from "@/features/post/postcard/components/RoseReactionButton";
+import CommentButton from "@/features/post/postcard/components/CommentButton";
+import ShareReactionButton from "@/features/post/postcard/components/ShareReactionButton";
 
 /**
  * ImageViewerModal
@@ -49,10 +53,7 @@ export default function ImageViewerModal({
   // SCROLL TO ACTIVE IMAGE
   // ----------------------------------------------------------
   useEffect(() => {
-    if (
-      activeIndex != null &&
-      itemRefs.current[activeIndex]
-    ) {
+    if (activeIndex != null && itemRefs.current[activeIndex]) {
       itemRefs.current[activeIndex].scrollIntoView({
         behavior: "auto",
         block: "center",
@@ -72,15 +73,12 @@ export default function ImageViewerModal({
         );
       }
       if (e.key === "ArrowLeft") {
-        setActiveIndex?.((i) =>
-          Math.max((i ?? 0) - 1, 0)
-        );
+        setActiveIndex?.((i) => Math.max((i ?? 0) - 1, 0));
       }
     };
 
     window.addEventListener("keydown", onKey);
-    return () =>
-      window.removeEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [onClose, setActiveIndex, localPosts.length]);
 
   // ----------------------------------------------------------
@@ -100,10 +98,7 @@ export default function ImageViewerModal({
   return (
     <div className="fixed inset-0 z-50 bg-black">
       {/* BACKDROP */}
-      <div
-        className="absolute inset-0"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0" onClick={onClose} />
 
       {/* SCROLL CONTAINER */}
       <div
@@ -114,9 +109,7 @@ export default function ImageViewerModal({
         {localPosts.map((post, index) => (
           <div
             key={post.id}
-            ref={(el) =>
-              (itemRefs.current[index] = el)
-            }
+            ref={(el) => (itemRefs.current[index] = el)}
             className="snap-start h-full w-full flex items-center justify-center relative"
           >
             <img
@@ -127,77 +120,51 @@ export default function ImageViewerModal({
 
             {/* ACTION BAR */}
             <div className="absolute top-1/2 right-0 -translate-y-1/2 bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-5 border border-white/10 flex flex-col gap-4 text-white text-xl">
-              <button
-                onClick={() =>
-                  handleReaction(post.id, "like")
-                }
-                className="flex flex-col items-center gap-1"
-              >
-                <div
-                  className={`text-2xl ${
-                    post.userHasReacted === "like"
-                      ? "text-blue-400"
-                      : ""
-                  }`}
-                >
-                  👍
-                </div>
-                <span className="text-xs">
-                  {post.likeCount || 0}
-                </span>
-              </button>
+              {/* 👍 LIKE */}
+              <BinaryReactionButton
+                type="like"
+                emoji="👍"
+                active={post.userHasReacted === "like"}
+                count={post.likeCount || 0}
+                onClick={() => handleReaction(post.id, "like")}
+                disabled={false}
+              />
 
-              <button
-                onClick={() =>
-                  handleReaction(post.id, "dislike")
-                }
-                className="flex flex-col items-center gap-1"
-              >
-                <div
-                  className={`text-2xl ${
-                    post.userHasReacted === "dislike"
-                      ? "text-red-400"
-                      : ""
-                  }`}
-                >
-                  👎
-                </div>
-                <span className="text-xs">
-                  {post.dislikeCount || 0}
-                </span>
-              </button>
+              {/* 👎 DISLIKE */}
+              <BinaryReactionButton
+                type="dislike"
+                emoji="👎"
+                active={post.userHasReacted === "dislike"}
+                count={post.dislikeCount || 0}
+                onClick={() => handleReaction(post.id, "dislike")}
+                disabled={false}
+              />
 
-              <button
-                onClick={() => handleRose(post.id)}
-                className="flex flex-col items-center gap-1"
-              >
-                <div className="text-2xl">🌹</div>
-                <span className="text-xs">
-                  {post.roseCount || 0}
-                </span>
-              </button>
+              {/* 🌹 ROSE */}
+              <RoseReactionButton
+                count={post.roseCount || 0}
+                onSend={() => handleRose(post.id)}
+                disabled={false}
+              />
 
-              <button
-                onClick={() =>
-                  openComments?.(post.id)
-                }
-                className="flex flex-col items-center gap-1"
-              >
-                <div className="text-2xl">💬</div>
-                <span className="text-xs">
-                  {post.commentCount || 0}
-                </span>
-              </button>
+              {/* 💬 COMMENTS */}
+              <CommentButton
+                count={post.commentCount || 0}
+                onClick={(e) => {
+                  e?.stopPropagation?.();
+                  openComments?.(post.id);
+                }}
+              />
 
-              <button
-                onClick={() =>
-                  handleShare?.(post)
-                }
-                title="Share"
-                className="flex items-center justify-center"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
+              {/* 🌍 SPREAD */}
+<ShareReactionButton
+  onClick={(e) => {
+    e?.stopPropagation?.();
+    handleShare?.(post.id);
+  }}
+  disabled={false}
+/>
+
             </div>
           </div>
         ))}

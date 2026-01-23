@@ -80,7 +80,6 @@ export default function ActorProfileFriendsView({
 
   return (
     <div className="space-y-8">
-
       {/* ================= TOP FRIENDS ================= */}
       {!loadingTop && (
         <RankedFriendsPublic
@@ -91,7 +90,7 @@ export default function ActorProfileFriendsView({
             isOwnProfile
               ? () =>
                   navigate(
-                    `/profile/${profileActorId}/friends/edit`
+                    `/profile/${profileActorId}/friends/top/edit`
                   )
               : undefined
           }
@@ -104,7 +103,6 @@ export default function ActorProfileFriendsView({
         isPrivate={isPrivate}
         isOwnProfile={isOwnProfile}
       />
-
     </div>
   );
 }

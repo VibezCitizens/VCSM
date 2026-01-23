@@ -76,6 +76,11 @@ export default function TopFriendsRankEditor() {
     });
   }, []);
 
+  // ✅ REMOVE PERSON FROM LIST
+  const removeActor = useCallback((actorId) => {
+    setActorIds((prev) => prev.filter((id) => id !== actorId));
+  }, []);
+
   /* ============================================================
      SAVE RANKS
      ============================================================ */
@@ -138,6 +143,7 @@ export default function TopFriendsRankEditor() {
             total={actorIds.length}
             onMoveUp={moveUp}
             onMoveDown={moveDown}
+            onRemove={removeActor}
           />
         ))}
       </div>
@@ -192,7 +198,7 @@ export default function TopFriendsRankEditor() {
 /* ============================================================
    RANK ROW
    ============================================================ */
-function RankRow({ actorId, index, total, onMoveUp, onMoveDown }) {
+function RankRow({ actorId, index, total, onMoveUp, onMoveDown, onRemove }) {
   const actor = useActorPresentation(actorId);
   if (!actor) return null;
 
@@ -206,9 +212,32 @@ function RankRow({ actorId, index, total, onMoveUp, onMoveDown }) {
         showUsername
       />
 
-      <div className="flex items-center gap-1">
-        <button onClick={() => onMoveUp(index)} disabled={index === 0}>↑</button>
-        <button onClick={() => onMoveDown(index)} disabled={index === total - 1}>↓</button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onMoveUp(index)}
+          disabled={index === 0}
+          className="text-sm text-neutral-400 disabled:opacity-30"
+          title="Move up"
+        >
+          ↑
+        </button>
+
+        <button
+          onClick={() => onMoveDown(index)}
+          disabled={index === total - 1}
+          className="text-sm text-neutral-400 disabled:opacity-30"
+          title="Move down"
+        >
+          ↓
+        </button>
+
+        <button
+          onClick={() => onRemove(actorId)}
+          className="text-sm text-red-400 hover:text-red-300"
+          title="Remove from Top Friends"
+        >
+          ✕
+        </button>
       </div>
     </div>
   );
