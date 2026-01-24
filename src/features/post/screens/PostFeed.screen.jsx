@@ -1,60 +1,41 @@
 // src/features/post/screens/PostFeed.screen.jsx
-// ============================================================
-// PostFeed Screen
-// - Displays feed of posts
-// - Read-only preview cards
-// - Comments handled ONLY in PostDetail
-// ============================================================
 
 import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-
-// Feed hook (actor-based, READ MODEL)
 import { useFeed } from "@/features/feed/hooks/useFeed";
 
-// ✅ report flow
 import useReportFlow from "@/features/moderation/hooks/useReportFlow";
-
-// ✅ report modal
 import ReportModal from "@/features/moderation/components/ReportModal";
-
-// ✅ post menu
 import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
 
-// ✅ delete controller (you already have)
 import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
-
-// UI
 import PostCardView from "@/features/post/postcard/ui/PostCard.view";
 
-// ✅ SHARE (native + modal fallback)
 import { shareNative } from "@/shared/lib/shareNative";
 import ShareModal from "@/features/post/postcard/components/ShareModal";
+
+// ✅ NEW
+import usePostCovers from "@/features/post/postcard/hooks/usePostCovers";
+import ReportThanksOverlay from "@/features/moderation/components/ReportThanksOverlay";
 
 export default function PostFeedScreen() {
   const navigate = useNavigate();
   const { identity } = useIdentity();
-
   const actorId = identity?.actorId ?? null;
 
-  // ------------------------------------------------------------
-  // FEED (READ MODEL ONLY)
-  // ------------------------------------------------------------
-  const { posts, loading, hasMore, fetchPosts, setPosts, fetchViewer } =
-    useFeed(actorId);
+  const { posts, loading, hasMore, fetchPosts, setPosts, fetchViewer } = useFeed(actorId);
 
-  // ------------------------------------------------------------
-  // ✅ REPORT FLOW
-  // ------------------------------------------------------------
   const reportFlow = useReportFlow({ reporterActorId: actorId });
 
-  // ------------------------------------------------------------
-  // ✅ POST ••• MENU STATE
-  // ------------------------------------------------------------
+  // ✅ NEW: rehydrate covered posts for this actor
+  const postCovers = usePostCovers({
+    actorId,
+    postIds: posts.map((p) => p.id),
+  });
+
   const [postMenu, setPostMenu] = useState(null);
-  // postMenu = { postId, postActorId, isOwn, anchorRect } | null
 
   const openPostMenu = useCallback(
     ({ postId, postActorId, anchorRect }) => {
@@ -69,9 +50,7 @@ export default function PostFeedScreen() {
     [actorId]
   );
 
-  const closePostMenu = useCallback(() => {
-    setPostMenu(null);
-  }, []);
+  const closePostMenu = useCallback(() => setPostMenu(null), []);
 
   const handleReportPost = useCallback(() => {
     if (!actorId) return;
@@ -80,11 +59,8 @@ export default function PostFeedScreen() {
     reportFlow.start({
       objectType: "post",
       objectId: postMenu.postId,
-
       postId: postMenu.postId,
-
       dedupeKey: `report:post:${postMenu.postId}`,
-
       title: "Report post",
       subtitle: "Tell us what’s wrong with this post.",
     });
@@ -92,13 +68,9 @@ export default function PostFeedScreen() {
     closePostMenu();
   }, [actorId, postMenu, reportFlow, closePostMenu]);
 
-  // ------------------------------------------------------------
-  // ✅ EDIT
-  // ------------------------------------------------------------
   const handleEditPost = useCallback(() => {
     if (!postMenu?.postId) return;
 
-    // optional: pass initial text to edit screen
     const post = posts.find((p) => p.id === postMenu.postId);
     const initialText = post?.text ?? "";
 
@@ -106,9 +78,6 @@ export default function PostFeedScreen() {
     navigate(`/posts/${postMenu.postId}/edit`, { state: { initialText } });
   }, [postMenu, posts, navigate, closePostMenu]);
 
-  // ------------------------------------------------------------
-  // ✅ DELETE (SOFT DELETE)
-  // ------------------------------------------------------------
   const handleDeletePost = useCallback(async () => {
     if (!actorId) return;
     if (!postMenu?.postId) return;
@@ -126,20 +95,11 @@ export default function PostFeedScreen() {
       return;
     }
 
-    // remove from UI immediately
     setPosts((prev) => prev.filter((p) => p.id !== postMenu.postId));
-
     closePostMenu();
   }, [actorId, postMenu, setPosts, closePostMenu]);
 
-  // ------------------------------------------------------------
-  // ✅ SHARE STATE (modal fallback)
-  // ------------------------------------------------------------
-  const [shareState, setShareState] = useState({
-    open: false,
-    postId: null,
-    url: "",
-  });
+  const [shareState, setShareState] = useState({ open: false, postId: null, url: "" });
 
   const closeShare = useCallback(() => {
     setShareState({ open: false, postId: null, url: "" });
@@ -149,26 +109,17 @@ export default function PostFeedScreen() {
     async (postId) => {
       if (!postId) return;
 
-      // your feed navigates to `/post/${id}` so share that
       const url = `${window.location.origin}/post/${postId}`;
-
       const post = posts.find((p) => p.id === postId);
       const text = post?.text ? post.text.slice(0, 140) : "";
       const title = "Spread";
 
       const res = await shareNative({ title, text, url });
-
-      // If native share isn't available (desktop/dev), open modal fallback
-      if (!res.ok) {
-        setShareState({ open: true, postId, url });
-      }
+      if (!res.ok) setShareState({ open: true, postId, url });
     },
     [posts]
   );
 
-  // ------------------------------------------------------------
-  // INITIAL LOAD / ACTOR SWITCH
-  // ------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
 
@@ -186,16 +137,12 @@ export default function PostFeedScreen() {
     };
   }, [actorId, fetchViewer, fetchPosts, setPosts]);
 
-  // ------------------------------------------------------------
-  // INFINITE SCROLL
-  // ------------------------------------------------------------
   useEffect(() => {
     if (!hasMore || loading) return;
 
     function onScroll() {
       const nearBottom =
-        window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 600;
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 600;
 
       if (nearBottom && !loading && hasMore) {
         fetchPosts(false);
@@ -206,32 +153,37 @@ export default function PostFeedScreen() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [loading, hasMore, fetchPosts]);
 
-  // ------------------------------------------------------------
-  // UI
-  // ------------------------------------------------------------
   return (
     <div className="w-full max-w-2xl mx-auto pb-24">
-      {/* HEADER */}
       <div className="px-4 py-3 text-lg font-semibold">Feed</div>
 
-      {/* EMPTY */}
       {!loading && posts.length === 0 && (
         <div className="p-6 text-center text-neutral-500">No posts yet.</div>
       )}
 
-      {/* POSTS (READ-ONLY) */}
-      {posts.map((post) => (
-        <div key={`feed-post:${post.id}`} className="mb-3">
-          <PostCardView
-            post={post}
-            onOpenPost={() => navigate(`/post/${post.id}`)}
-            onOpenMenu={openPostMenu}
-            onShare={handleShare} // ✅ WIRE SHARE DOWN
-          />
-        </div>
-      ))}
+      {posts.map((post) => {
+        const covered = postCovers.coveredIds?.has?.(post.id);
 
-      {/* ✅ POST ••• MENU */}
+        return (
+          <div key={`feed-post:${post.id}`} className="mb-3">
+            <PostCardView
+              post={post}
+              onOpenPost={() => navigate(`/post/${post.id}`)}
+              onOpenMenu={openPostMenu}
+              onShare={handleShare}
+              covered={!!covered}
+              cover={
+                <ReportThanksOverlay
+                  variant="post"
+                  title="Reported"
+                  subtitle="Thanks — we’ll review it. This post is hidden for you."
+                />
+              }
+            />
+          </div>
+        );
+      })}
+
       <PostActionsMenu
         open={!!postMenu}
         anchorRect={postMenu?.anchorRect}
@@ -242,17 +194,19 @@ export default function PostFeedScreen() {
         onDelete={handleDeletePost}
       />
 
-      {/* ✅ REPORT MODAL */}
       <ReportModal
         open={reportFlow.open}
         title={reportFlow.context?.title ?? "Report"}
         subtitle={reportFlow.context?.subtitle ?? null}
         loading={reportFlow.loading}
         onClose={reportFlow.close}
-        onSubmit={reportFlow.submit}
+        onSubmit={async (payload) => {
+          await reportFlow.submit(payload);
+          // refresh covers after reporting so feed updates immediately
+          await postCovers.refresh?.();
+        }}
       />
 
-      {/* ✅ SHARE MODAL (FALLBACK WHEN NO NATIVE SHARE) */}
       <ShareModal
         open={shareState.open}
         title="Spread"
@@ -260,12 +214,8 @@ export default function PostFeedScreen() {
         onClose={closeShare}
       />
 
-      {/* LOADING */}
-      {loading && (
-        <div className="p-6 text-center text-neutral-500">Loading…</div>
-      )}
+      {loading && <div className="p-6 text-center text-neutral-500">Loading…</div>}
 
-      {/* END */}
       {!hasMore && posts.length > 0 && !loading && (
         <div className="p-6 text-center text-neutral-600 text-sm">
           You reached the end.

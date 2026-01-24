@@ -1,9 +1,9 @@
 // src/features/post/commentcard/controller/postComments.controller.js
 
-import {
-  listPostComments,
-  insertPostComment,
-} from "../dal/postComments.read.dal";
+import { listPostComments } from "../dal/postComments.read.dal";
+
+// ✅ use the real DAL writer that supports parentId
+import { createComment } from "../dal/comments.dal";
 
 /**
  * Build a nested comment tree from flat rows
@@ -47,15 +47,37 @@ export async function loadCommentThread(postId) {
  * Create a new root-level comment
  * - Returns raw comment row + replies placeholder
  */
-export async function createRootComment({
-  postId,
-  actorId,
-  content,
-}) {
-  const row = await insertPostComment({
+export async function createRootComment({ postId, actorId, content }) {
+  const row = await createComment({
     postId,
     actorId,
     content,
+    parentId: null,
+  });
+
+  return {
+    ...row,
+    replies: [],
+  };
+}
+
+/**
+ * ✅ Create a reply to an existing comment (top spark reply)
+ * - Returns raw reply row + replies placeholder
+ */
+export async function createReplyComment({
+  postId,
+  actorId,
+  parentCommentId,
+  content,
+}) {
+  if (!postId || !actorId || !parentCommentId) return null;
+
+  const row = await createComment({
+    postId,
+    actorId,
+    content,
+    parentId: parentCommentId, // ✅ THIS is the link
   });
 
   return {

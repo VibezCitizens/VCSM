@@ -1,3 +1,5 @@
+// src/features/post/commentcard/components/CommentCard.container.jsx
+
 import useCommentCard from "../hooks/useCommentCard";
 import CommentCardView from "../ui/CommentCard.view";
 
@@ -6,11 +8,15 @@ export default function CommentCardContainer({
   viewerActorId,
   onOpenMenu,
 
-  // ✅ inline edit control from PostDetail -> CommentList
   editingCommentId,
   editingInitialText,
   onCancelInlineEdit,
   onEditedSaved,
+
+  covered = false,
+  cover = null,
+
+  onReplyStart,
 }) {
   const controller = useCommentCard(rawComment);
   const { comment } = controller;
@@ -18,12 +24,12 @@ export default function CommentCardContainer({
   const commentActorId = comment.actorId ?? null;
   const isOwn = (commentActorId ?? null) === (viewerActorId ?? null);
 
-  // ✅ permissions
   const canReport = !!viewerActorId && !isOwn && typeof onOpenMenu === "function";
   const canDelete = !!viewerActorId && isOwn && typeof onOpenMenu === "function";
-
-  // show dots if either delete (own) OR report (not own)
   const showDots = canDelete || canReport;
+
+  // ✅ ROOT ONLY: hide Reply on reply-cards
+  const isRoot = !(comment.parent_id ?? rawComment?.parent_id ?? comment.parentId ?? rawComment?.parentId);
 
   return (
     <CommentCardView
@@ -35,26 +41,31 @@ export default function CommentCardContainer({
       likeCount={comment.likeCount}
 
       canLike={controller.canLike}
-      canReply={controller.canReply}
 
-      // ✅ now these mean real permissions (not "show dots")
+      // ✅ only top sparks can be replied to
+      canReply={isRoot && controller.canReply}
+
       canDelete={canDelete}
       canReport={canReport}
 
       onLike={controller.toggleLike}
-      onReply={() => {}}
+
+      // ✅ only attach handler when root
+      onReply={isRoot ? () => onReplyStart?.(comment.id) : undefined}
+
       onToggleReplies={controller.toggleExpanded}
 
-      // ✅ centralized menu opener (PostDetail)
       onOpenMenu={showDots ? onOpenMenu : undefined}
 
       showReplies={controller.expanded}
 
-      // ✅ inline edit props
       editingCommentId={editingCommentId}
       editingInitialText={editingInitialText}
       onCancelInlineEdit={onCancelInlineEdit}
       onEditedSaved={onEditedSaved}
+
+      covered={covered}
+      cover={cover}
     />
   );
 }

@@ -1,3 +1,5 @@
+// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\commentcard\ui\CommentCard.view.jsx
+
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -38,6 +40,10 @@ export default function CommentCardView({
   editingInitialText = "",
   onCancelInlineEdit,
   onEditedSaved,
+
+  // ✅ ADD: cover support
+  covered = false,
+  cover = null,
 }) {
   if (!comment) return null;
 
@@ -109,8 +115,22 @@ export default function CommentCardView({
         bg-neutral-900/35
         hover:bg-neutral-900/50
         transition
+        relative overflow-hidden
       "
     >
+      {/* ✅ COVER LAYER (anchors to this comment card now) */}
+      {covered ? (
+        <div
+          className="absolute inset-0 z-20"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          {cover}
+        </div>
+      ) : null}
+
       <div className="flex gap-3">
         <div className="flex-1 min-w-0">
           <CommentHeader
@@ -118,7 +138,7 @@ export default function CommentCardView({
             createdAt={comment.createdAt}
             canDelete={canDelete}
             canReport={canReport}
-            onOpenMenu={onOpenMenu}   // ✅ centralized menu opener
+            onOpenMenu={onOpenMenu} // ✅ centralized menu opener
             commentId={comment.id}
             commentActorId={comment.actorId}
           />

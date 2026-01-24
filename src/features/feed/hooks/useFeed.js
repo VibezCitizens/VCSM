@@ -19,20 +19,21 @@ export function useFeed(viewerActorId, realmId) {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  // ✅ server-driven hidden posts for this viewer (persisted)
+  const [hiddenPostIds, setHiddenPostIds] = useState(() => new Set());
+
   const cursorRef = useRef(null);
   const didInitialFetchRef = useRef(false);
   const loadingRef = useRef(false);
 
   const upsertActors = useActorStore((s) => s.upsertActors);
 
-  // ✅ Real lifecycle logs (optional)
   useEffect(() => {
     console.log("[useFeed] MOUNT", { viewerActorId, realmId });
     return () => console.log("[useFeed] UNMOUNT", { viewerActorId, realmId });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ Reset on identity inputs change
   useEffect(() => {
     didInitialFetchRef.current = false;
     cursorRef.current = null;
@@ -42,6 +43,8 @@ export function useFeed(viewerActorId, realmId) {
     setHasMore(true);
     setLoading(false);
     setViewerIsAdult(null);
+
+    setHiddenPostIds(new Set());
   }, [viewerActorId, realmId]);
 
   /* ============================================================
@@ -106,7 +109,6 @@ export function useFeed(viewerActorId, realmId) {
             "id, actor_id, text, title, media_url, post_type, created_at, realm_id, edited_at, deleted_at, deleted_by_actor_id"
           )
           .eq("realm_id", realmId)
-          // ✅ exclude soft-deleted posts
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .limit(PAGE + 1);
@@ -120,6 +122,46 @@ export function useFeed(viewerActorId, realmId) {
 
         const hasMoreNow = list.length > PAGE;
         const pageRows = hasMoreNow ? list.slice(0, PAGE) : list;
+
+        // ✅ SERVER-SIDE PERSISTENT HIDE (per viewer)
+        // We DO NOT remove posts; we return hiddenPostIds so UI can cover them.
+        const pagePostIds = pageRows.map((r) => r.id).filter(Boolean);
+
+        let hiddenByMeSet = new Set();
+        if (pagePostIds.length > 0) {
+          const { data: actions, error: actionsErr } = await supabase
+            .schema("vc")
+            .from("moderation_actions")
+            .select("object_id, action_type, created_at")
+            .eq("actor_id", viewerActorId)
+            .eq("object_type", "post")
+            .in("object_id", pagePostIds)
+            .in("action_type", ["hide", "unhide"])
+            .order("created_at", { ascending: false });
+
+          if (!actionsErr && Array.isArray(actions) && actions.length > 0) {
+            const latest = new Map(); // object_id -> action_type
+            for (const a of actions) {
+              const id = a?.object_id;
+              if (!id) continue;
+              if (latest.has(id)) continue; // already newest due to sort desc
+              latest.set(id, a.action_type);
+            }
+
+            hiddenByMeSet = new Set(
+              Array.from(latest.entries())
+                .filter(([, t]) => t === "hide")
+                .map(([id]) => id)
+            );
+          }
+        }
+
+        // ✅ accumulate hidden ids into hook state
+        setHiddenPostIds((prev) => {
+          const next = fresh ? new Set() : new Set(prev);
+          hiddenByMeSet.forEach((id) => next.add(id));
+          return next;
+        });
 
         // ACTORS
         const actorIds = [...new Set(pageRows.map((r) => r.actor_id).filter(Boolean))];
@@ -187,6 +229,8 @@ export function useFeed(viewerActorId, realmId) {
         // FILTER + NORMALIZE
         const normalized = pageRows
           .filter((r) => {
+            // ✅ DO NOT FILTER hiddenByMeSet here (we cover in UI)
+
             if (blockedActorSet.has(r.actor_id)) return false;
 
             const a = actorMap[r.actor_id];
@@ -215,6 +259,10 @@ export function useFeed(viewerActorId, realmId) {
               deleted_by_actor_id: r.deleted_by_actor_id ?? null,
               post_type: r.post_type || "post",
               actor_id: r.actor_id,
+
+              // ✅ add server flag so it survives refresh
+              is_hidden_for_viewer: hiddenByMeSet.has(r.id),
+
               actor: {
                 id: a.id,
                 kind: a.kind,
@@ -250,9 +298,6 @@ export function useFeed(viewerActorId, realmId) {
     [viewerActorId, realmId, upsertActors]
   );
 
-  /* ============================================================
-     INITIAL FETCH
-     ============================================================ */
   useEffect(() => {
     if (!viewerActorId || !realmId) return;
     if (didInitialFetchRef.current) return;
@@ -269,5 +314,6 @@ export function useFeed(viewerActorId, realmId) {
     fetchPosts,
     setPosts,
     fetchViewer,
+    hiddenPostIds, // (optional, you can use it too)
   };
 }

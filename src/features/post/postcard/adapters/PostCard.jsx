@@ -7,7 +7,11 @@ export default function PostCard({
   onOpenPost,
   onReact,
   onOpenMenu, // ✅ pass-through
-  onShare,    // ✅ ADD pass-through
+  onShare,    // ✅ pass-through
+
+  // ✅ ADD: cover support
+  covered = false,
+  cover = null,
 }) {
   if (!post) return null;
 
@@ -31,6 +35,10 @@ export default function PostCard({
       onReact={onReact}
       onOpenMenu={onOpenMenu} // ✅ forward to view
       onShare={onShare}       // ✅ forward to view
+
+      // ✅ forward cover props
+      covered={covered}
+      cover={cover}
     />
   );
 }

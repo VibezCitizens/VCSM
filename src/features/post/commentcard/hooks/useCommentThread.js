@@ -6,6 +6,7 @@ import { hydrateActorsFromRows } from "@/features/actors/controllers/hydrateActo
 import {
   loadCommentThread,
   createRootComment,
+  createReplyComment, // ✅ ADD
   buildTree, // ✅ REQUIRED — fixes “no default export” crash
 } from "@/features/post/commentcard/controller/postComments.controller";
 import { hydrateCommentReactions } from
@@ -105,6 +106,46 @@ export default function useCommentThread(postId) {
   };
 
   /* ------------------------------------------------------------
+     ADD REPLY (TOP SPARK REPLY)
+     ------------------------------------------------------------ */
+  const addReply = async (parentCommentId, content) => {
+    if (!actorId || !postId) return;
+    if (!parentCommentId || !content?.trim()) return;
+
+    setPosting(true);
+    try {
+      const reply = await createReplyComment({
+        postId,
+        actorId,
+        parentCommentId,
+        content: content.trim(),
+      });
+
+      if (!reply) return;
+
+      // hydrate actor for new reply
+      hydrateActorsFromRows([reply]);
+
+      // hydrate reactions (will be unliked / 0 count)
+      const reacted = await hydrateCommentReactions({
+        comments: [reply],
+        actorId,
+      });
+
+      // merge into existing tree deterministically
+      setComments((prevTree) => {
+        const prevFlat = flattenComments(prevTree);
+        const nextFlat = [...prevFlat, reacted[0]];
+        return buildTree(nextFlat);
+      });
+    } catch (err) {
+      console.error("[useCommentThread] addReply failed:", err);
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  /* ------------------------------------------------------------
      API
      ------------------------------------------------------------ */
   return {
@@ -114,5 +155,6 @@ export default function useCommentThread(postId) {
     posting,
     reload: load,
     addComment,
+    addReply, // ✅ ADD
   };
 }

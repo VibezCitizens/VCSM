@@ -16,6 +16,10 @@ export default function PostCardView({
   onOpenPost,
   onOpenMenu,
   onShare, // ✅ ADD
+
+  // ✅ ADD: post cover support
+  covered = false,
+  cover = null,
 }) {
   if (!post) return null;
 
@@ -41,10 +45,25 @@ export default function PostCardView({
         bg-neutral-900 border border-neutral-800
         rounded-2xl shadow-sm
         overflow-hidden
+        relative
       "
     >
+      {/* ✅ COVER LAYER (screen protector over the post) */}
+      {covered ? (
+        <div
+          className="absolute inset-0 z-20"
+          onClick={(e) => {
+            // prevent clicks from reaching post content
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          {cover}
+        </div>
+      ) : null}
+
       <div
-        onClick={onOpenPost}
+        onClick={covered ? undefined : onOpenPost}
         className="
           flex items-center justify-between
           px-4 py-3 cursor-pointer
@@ -65,6 +84,9 @@ export default function PostCardView({
             e.preventDefault();
             e.stopPropagation();
 
+            // ✅ block menu when post is covered
+            if (covered) return;
+
             const rect = e.currentTarget.getBoundingClientRect();
 
             onOpenMenu?.({
@@ -84,7 +106,7 @@ export default function PostCardView({
 
       {post.text && (
         <div
-          onClick={onOpenPost}
+          onClick={covered ? undefined : onOpenPost}
           className="
             px-4 pb-3 text-sm text-neutral-200
             whitespace-pre-line cursor-pointer
@@ -95,18 +117,37 @@ export default function PostCardView({
       )}
 
       {post.media?.length > 0 && (
-        <div onClick={onOpenPost} className="px-0 mb-2">
+        <div onClick={covered ? undefined : onOpenPost} className="px-0 mb-2">
           <MediaCarousel media={post.media} />
         </div>
       )}
 
       <div className="px-4 pb-3">
-        <ReactionBar
-          postId={post.id}
-          commentCount={commentCount}
-          onOpenComments={onOpenPost}
-          onShare={onShare} // ✅ ADD
-        />
+        {/* ✅ Block all interactions in ReactionBar when covered */}
+        <div
+          onClickCapture={(e) => {
+            if (!covered) return;
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onMouseDownCapture={(e) => {
+            if (!covered) return;
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onTouchStartCapture={(e) => {
+            if (!covered) return;
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <ReactionBar
+            postId={post.id}
+            commentCount={commentCount}
+            onOpenComments={covered ? undefined : onOpenPost}
+            onShare={covered ? undefined : onShare}
+          />
+        </div>
       </div>
     </motion.div>
   );
