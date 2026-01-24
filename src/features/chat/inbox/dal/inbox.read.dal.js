@@ -14,6 +14,7 @@ import { supabase } from '@/services/supabase/supabaseClient'
 export async function getInboxEntries({
   actorId,
   includeArchived = false,
+  folder = 'inbox', // ✅ NEW
 }) {
   if (!actorId) {
     throw new Error('[getInboxEntries] actorId required')
@@ -33,6 +34,7 @@ export async function getInboxEntries({
       muted,
       archived_until_new,
       history_cutoff_at,
+      folder,
 
       conversation:conversations (
         members:conversation_members (
@@ -53,6 +55,7 @@ export async function getInboxEntries({
       )
     `)
     .eq('actor_id', actorId)
+    .eq('folder', folder) // ✅ NEW
 
   // ------------------------------------------------------------
   // Visibility rules (semantic correctness)

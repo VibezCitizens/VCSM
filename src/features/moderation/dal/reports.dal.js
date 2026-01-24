@@ -24,6 +24,49 @@ const POST_HIDE_COLUMNS =
 const MESSAGE_HIDE_COLUMNS =
   'id,is_hidden,hidden_at,hidden_by_actor_id'
 
+const INBOX_ENTRY_FOLDER_COLUMNS =
+  'conversation_id,actor_id,folder,last_message_id,last_message_at,unread_count,pinned,archived,muted,history_cutoff_at,archived_until_new,partner_display_name,partner_username,partner_photo_url'
+
+/**
+ * upsertInboxEntryFolder (DAL)
+ * - creates/updates inbox entry folder for an actor + conversation
+ * - returns raw row
+ */
+export async function upsertInboxEntryFolder({
+  actorId,
+  conversationId,
+  folder,
+}) {
+  const insert = {
+    conversation_id: conversationId,
+    actor_id: actorId,
+    folder,
+  }
+
+  console.groupCollapsed('%c[DAL][inbox_entries.upsertFolder]', 'color:#22c55e;font-weight:bold')
+  console.log('payload:', insert)
+
+  const { data, error } = await supabase
+    .schema('vc')
+    .from('inbox_entries')
+    .upsert(insert, { onConflict: 'conversation_id,actor_id' })
+    .select(INBOX_ENTRY_FOLDER_COLUMNS)
+    .maybeSingle()
+
+  if (error) {
+    console.error('❌ supabase error:', error)
+  } else {
+    console.log('✅ upserted:', {
+      conversation_id: data?.conversation_id,
+      actor_id: data?.actor_id,
+      folder: data?.folder,
+    })
+  }
+  console.groupEnd()
+
+  return { row: data ?? null, error }
+}
+
 /**
  * insertReportRow (DAL)
  * - inserts report row and returns raw inserted row
@@ -73,12 +116,37 @@ export async function insertReportRow({
 
   if (error) {
     console.error('❌ supabase error:', error)
+    console.groupEnd()
+    return { row: null, error }
   } else {
     console.log('✅ inserted id:', data?.id)
   }
+
+  // ✅ BRIDGE: spam report on conversation → move to spam folder for reporter
+  if (reasonCode === 'spam' && objectType === 'conversation') {
+    const convoId = conversationId ?? data?.conversation_id ?? objectId
+
+    if (convoId) {
+      await upsertInboxEntryFolder({
+        actorId: reporterActorId,
+        conversationId: convoId,
+        folder: 'spam',
+      })
+    } else {
+      console.warn('[DAL][reports.insert] spam report missing conversation id', {
+        reporterActorId,
+        objectType,
+        objectId,
+        reasonCode,
+        conversationId,
+        dataConversationId: data?.conversation_id,
+      })
+    }
+  }
+
   console.groupEnd()
 
-  return { row: data ?? null, error }
+  return { row: data ?? null, error: null }
 }
 
 /**

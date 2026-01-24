@@ -10,11 +10,19 @@ import IdentityDebugger from '@/state/identity/IdentityDebugger'
 export default function RootLayout() {
   const { pathname } = useLocation()
 
-  const isChatScreen = /^\/(vport\/)?chat\/[^/]+$/.test(pathname)
+  // ✅ conversation screen only (/chat/:id and /vport/chat/:id)
+  const isConversationScreen = /^\/(vport\/)?chat\/[^/]+$/.test(pathname)
 
-  const hideChrome =
-    isChatScreen ||
-    ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
+  // ✅ any chat route (/chat, /chat/settings, /chat/spam, etc)
+  const isChatRoute = /^\/(vport\/)?chat(\/.*)?$/.test(pathname)
+
+  const isAuthRoute = ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
+
+  // ✅ show Vibez Citizens (TopNav) on inbox/settings, but hide on conversation
+  const hideTopNav = isConversationScreen || isAuthRoute
+
+  // ✅ keep bottom nav visible on inbox/settings, but hide on conversation + auth
+  const hideBottomNav = isConversationScreen || isAuthRoute
 
   /**
    * ✅ SCROLL CONTRACT (LOCKED)
@@ -22,13 +30,14 @@ export default function RootLayout() {
    * - <main> is the ONE scroll container
    * - Screens NEVER control scrolling
    */
-  const mainClass = hideChrome
-    ? 'flex-1 min-h-0 overflow-y-auto'
-    : 'flex-1 min-h-0 overflow-y-auto pt-12 pb-[64px]'
+  const mainClass =
+    hideTopNav || hideBottomNav
+      ? 'flex-1 min-h-0 overflow-y-auto'
+      : 'flex-1 min-h-0 overflow-y-auto pt-12 pb-[64px]'
 
   return (
     <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
-      {!hideChrome && <TopNav />}
+      {!hideTopNav && <TopNav />}
 
       {/* ✅ GLOBAL SCROLL CONTAINER */}
       <main className={mainClass}>
@@ -37,7 +46,7 @@ export default function RootLayout() {
         </PageContainer>
       </main>
 
-      {!hideChrome && <BottomNavBar />}
+      {!hideBottomNav && <BottomNavBar />}
 
       {import.meta.env.DEV && <IdentityDebugger />}
     </div>

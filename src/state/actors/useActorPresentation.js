@@ -53,15 +53,16 @@ export function useActorPresentation(actorId) {
       DEFAULT_BANNER;
 
     // ----------------------------------------------------------
-    // ROUTE (unchanged behavior)
+    // ROUTE
+    // - vports: go to ActorProfileScreen (/profile/:actorId)
+    // - users: keep /u/:username when available (UsernameProfileRedirect)
+    // - fallback: /profile/:actorId
     // ----------------------------------------------------------
     const route = isVport
-      ? username
-        ? `/v/${encodeURIComponent(username)}`
-        : `/v/id/${encodeURIComponent(actor.id)}`
+      ? `/profile/${encodeURIComponent(actor.id)}`
       : username
         ? `/u/${encodeURIComponent(username)}`
-        : `/u/id/${encodeURIComponent(actor.id)}`;
+        : `/profile/${encodeURIComponent(actor.id)}`;
 
     return {
       id: actor.id,

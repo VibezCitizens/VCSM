@@ -42,7 +42,11 @@ export default function InboxScreen() {
 
   const [startOpen, setStartOpen] = useState(false)
   console.log('startOpen state:', startOpen)
-const { start: startConversation } = useStartConversation()
+  const { start: startConversation } = useStartConversation()
+
+  // ✅ NEW: header action menu open/close
+  const [actionsOpen, setActionsOpen] = useState(false)
+
   // inbox data (✅ includes optimistic hide)
   const {
     entries = [],
@@ -76,11 +80,7 @@ const { start: startConversation } = useStartConversation()
   if (error) {
     console.error('[InboxScreen] inbox error', error)
     console.groupEnd()
-    return (
-      <div className="p-4 text-red-400">
-        Failed to load inbox
-      </div>
-    )
+    return <div className="p-4 text-red-400">Failed to load inbox</div>
   }
 
   const previews = entries
@@ -97,12 +97,9 @@ const { start: startConversation } = useStartConversation()
   console.log('final inbox previews:', previews)
 
   const handlePick = async (picked) => {
-  setStartOpen(false)
-  startConversation(picked)
-}
-
-
-
+    setStartOpen(false)
+    startConversation(picked)
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -116,22 +113,67 @@ const { start: startConversation } = useStartConversation()
               : 'Inbox'}
         </h1>
 
-        {/* 🔥 START CONVERSATION */}
-        <button
-          onClick={() => {
-            console.log('[InboxScreen] HEADER FIRE button CLICKED')
-            setStartOpen(true)
-          }}
-          className="
-            rounded-full p-2
-            border border-white
-            hover:bg-white/10
-            flex items-center justify-center
-          "
-          aria-label="Start conversation"
-        >
-          <ConversationSignalIcon size={20} className="text-white" />
-        </button>
+        {/* ✅ RIGHT ACTIONS: fire button triggers menu */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              console.log('[InboxScreen] HEADER FIRE button CLICKED (menu)')
+              setActionsOpen((v) => !v)
+            }}
+            className="
+              rounded-full p-2
+              border border-white
+              hover:bg-white/10
+              flex items-center justify-center
+            "
+            aria-label="Inbox actions"
+          >
+            <ConversationSignalIcon size={20} className="text-white" />
+          </button>
+
+          {/* ✅ MENU */}
+          {actionsOpen && (
+            <>
+              {/* backdrop click to close */}
+              <button
+                type="button"
+                aria-label="Close inbox actions"
+                onClick={() => setActionsOpen(false)}
+                className="fixed inset-0 z-40 cursor-default"
+              />
+
+              <div className="absolute right-0 mt-2 w-56 z-50 rounded-2xl border border-white/10 bg-black shadow-xl overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log('[InboxScreen] MENU: New conversation')
+                    setActionsOpen(false)
+                    setStartOpen(true)
+                  }}
+                  className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3"
+                >
+                  <span className="text-lg">➕</span>
+                  <span className="text-white">New conversation</span>
+                </button>
+
+                <div className="h-px bg-white/10" />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log('[InboxScreen] MENU: More actions')
+                    setActionsOpen(false)
+                    navigate('/chat/settings')
+                  }}
+                  className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3"
+                >
+                  <span className="text-lg">⚙️</span>
+                  <span className="text-white">More actions</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* CONTENT */}

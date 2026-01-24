@@ -161,94 +161,94 @@ export default function ChatInput({
   }, [onAttach])
 
   return (
-    <div
-      className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
-      style={{ paddingBottom: 'calc(0.05rem + env(safe-area-inset-bottom))' }}
-      aria-live="polite"
-    >
-      {/* hidden file picker (images only) */}
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        multiple={false}
-        onChange={onPickFiles}
-        style={{ display: 'none' }}
-      />
+  <div
+    className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
+    aria-live="polite"
+  >
+    {/* hidden file picker (images only) */}
+    <input
+      ref={fileRef}
+      type="file"
+      accept="image/*"
+      multiple={false}
+      onChange={onPickFiles}
+      style={{ display: 'none' }}
+    />
 
-      <div className="px-3">
-        {inEdit && (
-          <div className="flex items-center justify-between text-xs text-white/70 mb-2 px-1">
-            <span>Editing</span>
-            <button
-              type="button"
-              onClick={onCancelEdit}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-white"
-            >
-              <X size={14} /> Cancel
-            </button>
-          </div>
-        )}
-
-        <div className="flex items-end gap-2">
+    <div className="px-3">
+      {inEdit && (
+        <div className="flex items-center justify-between text-xs text-white/70 mb-2 px-1">
+          <span>Editing</span>
           <button
             type="button"
-            onClick={openPicker}
-            className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white"
-            disabled={actuallyDisabled}
+            onClick={onCancelEdit}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-white"
           >
-            <Paperclip size={18} />
-          </button>
-
-          <div className="flex-1">
-            <div className="rounded-2xl bg-white/10 px-4 py-3">
-              <input
-                ref={inputRef}
-                type="text"
-                value={value}
-                onCompositionStart={() => { composingRef.current = true }}
-                onCompositionEnd={() => { composingRef.current = false }}
-                onBeforeInput={handleBeforeInput}
-                onChange={handleChange}
-                onPaste={handlePaste}
-                onKeyDown={handleKeyDown}
-                onFocus={(e) => {
-                  if (!isIOSSafari) return
-                  requestAnimationFrame(() => {
-                    e.target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-                  })
-                }}
-                placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
-                className="w-full bg-transparent outline-none text-white placeholder-white/50"
-                disabled={actuallyDisabled}
-                inputMode="text"
-                autoComplete="off"
-                autoCorrect="on"
-                spellCheck
-                enterKeyHint={inEdit ? 'done' : 'send'}
-              />
-            </div>
-
-            <div className="text-[11px] text-white/50 mt-1 pl-1">
-              {remaining} characters left
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={doPrimary}
-            disabled={actuallyDisabled || !value.trim()}
-            className={[
-              'px-4 py-3 rounded-2xl font-medium',
-              value.trim() && !actuallyDisabled
-                ? 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white'
-                : 'bg-white/10 text-white/40 cursor-not-allowed',
-            ].join(' ')}
-          >
-            {inEdit ? 'Save' : 'Send'}
+            <X size={14} /> Cancel
           </button>
         </div>
+      )}
+
+      <div className="flex items-end gap-2">
+        <button
+          type="button"
+          onClick={openPicker}
+          className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white"
+          disabled={actuallyDisabled}
+        >
+          <Paperclip size={18} />
+        </button>
+
+        <div className="flex-1">
+          <div className="rounded-2xl bg-white/10 px-4 py-3">
+            <input
+              ref={inputRef}
+              type="text"
+              value={value}
+              onCompositionStart={() => { composingRef.current = true }}
+              onCompositionEnd={() => { composingRef.current = false }}
+              onBeforeInput={handleBeforeInput}
+              onChange={handleChange}
+              onPaste={handlePaste}
+              onKeyDown={handleKeyDown}
+              onFocus={(e) => {
+                if (!isIOSSafari) return
+                requestAnimationFrame(() => {
+                  e.target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+                })
+              }}
+              placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
+              className="w-full bg-transparent outline-none text-white placeholder-white/50"
+              disabled={actuallyDisabled}
+              inputMode="text"
+              autoComplete="off"
+              autoCorrect="on"
+              spellCheck
+              enterKeyHint={inEdit ? 'done' : 'send'}
+            />
+          </div>
+
+          <div className="text-[11px] text-white/50 mt-1 pl-1">
+            {remaining} characters left
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={doPrimary}
+          disabled={actuallyDisabled || !value.trim()}
+          className={[
+            'px-4 py-3 rounded-2xl font-medium',
+            value.trim() && !actuallyDisabled
+              ? 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white'
+              : 'bg-white/10 text-white/40 cursor-not-allowed',
+          ].join(' ')}
+        >
+          {inEdit ? 'Save' : 'Send'}
+        </button>
       </div>
     </div>
-  )
+  </div>
+)
+
 }

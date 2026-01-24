@@ -12,32 +12,21 @@ export function InboxEntryModel(raw, selfActorId) {
         return {
           actorId: m.actor_id,
           kind: a.kind ?? null,
-
-          displayName:
-            a.display_name ??
-            a.vport_name ??
-            null,
-
-          username:
-            a.username ??
-            a.vport_slug ??
-            null,
-
-          photoUrl:
-            a.photo_url ??
-            a.vport_avatar_url ??
-            '/avatar.jpg',
+          displayName: a.display_name ?? a.vport_name ?? null,
+          username: a.username ?? a.vport_slug ?? null,
+          photoUrl: a.photo_url ?? a.vport_avatar_url ?? '/avatar.jpg',
         }
       })
     : []
 
-  // ✅ CORRECT partner resolution
   const partner =
     members.find((m) => m.actorId !== selfActorId) || null
 
   return {
     conversationId: raw.conversation_id,
     actorId: raw.actor_id,
+
+    folder: raw.folder ?? 'inbox', // ✅ NEW (safe default)
 
     lastMessageId: raw.last_message_id ?? null,
     lastMessageAt: raw.last_message_at ?? null,

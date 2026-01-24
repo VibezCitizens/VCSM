@@ -34,10 +34,9 @@ export default function ChatHeader({
           displayName: partnerActor.displayName || partnerActor.username || 'User',
           username: partnerActor.username,
           avatar: partnerActor.photoUrl || '/avatar.jpg',
-          route:
-            partnerActor.kind === 'vport'
-              ? `/vport/${partnerActor.username}`
-              : `/profile/${partnerActor.username}`,
+
+          // ✅ FIX: profile routes expect actorId, not username
+          route: `/profile/${partnerActor.actorId}`,
         }
       : null
 

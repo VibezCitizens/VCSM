@@ -11,6 +11,7 @@
 import { useMemo, useCallback, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { supabase } from '@/services/supabase/supabaseClient'
 import { useIdentity } from '@/state/identity/identityContext'
 
 // ✅ iOS platform (chat-only)
@@ -26,6 +27,7 @@ import useTypingChannel from '../hooks/realtime/useTypingChannel'
 
 // ✅ report flow hook
 import useReportFlow from '@/features/moderation/hooks/useReportFlow'
+import ChatSpamCover from '@/features/moderation/components/ChatSpamCover'
 
 // ui
 import ChatHeader from '../components/ChatHeader'
@@ -34,7 +36,7 @@ import ChatInput from '../components/ChatInput'
 import TypingIndicator from '../components/TypingIndicator'
 import MessageActionsMenu from '../components/MessageActionsMenu'
 
-// ✅ 3-dot menu (new independent file)
+// ✅ 3-dot menu
 import ConversationActionsMenu from '../components/ConversationActionsMenu'
 
 // ✅ report modal
@@ -45,6 +47,9 @@ import resolvePartnerActor from '../lib/resolvePartnerActor'
 import canReadConversation from '../permissions/canReadConversation'
 import canSendMessage from '../permissions/canSendMessage'
 import ChatScreenLayout from '../layout/ChatScreenLayout'
+
+// spam controller
+import { markConversationSpam } from '../controllers/markConversationSpam.controller'
 
 export default function ConversationView({ conversationId }) {
   const navigate = useNavigate()
@@ -61,7 +66,6 @@ export default function ConversationView({ conversationId }) {
      Core hooks (ALL hooks must run unconditionally)
      ============================================================ */
   const { conversation, loading, error } = useConversation({ conversationId, actorId })
-
   const { members } = useConversationMembers({ conversationId, actorId })
 
   const { messages, onSendMessage, onEditMessage, onDeleteMessage } =
@@ -91,7 +95,6 @@ export default function ConversationView({ conversationId }) {
      Media viewer state (FULLSCREEN)
      ============================================================ */
   const [viewer, setViewer] = useState(null)
-  // viewer = { url, type } | null
 
   const openViewer = useCallback((media) => {
     if (!media?.url) return
@@ -102,7 +105,6 @@ export default function ConversationView({ conversationId }) {
     setViewer(null)
   }, [])
 
-  // lock background scroll while viewer is open (iOS friendly)
   useEffect(() => {
     if (!viewer) return
 
@@ -114,6 +116,44 @@ export default function ConversationView({ conversationId }) {
       html.style.overflow = prevOverflow
     }
   }, [viewer])
+
+  /* ============================================================
+     ✅ Persistent cover state (hydrated)
+     ============================================================ */
+  const [conversationCovered, setConversationCovered] = useState(false)
+
+  // ✅ HYDRATE: if user previously hid this conversation, show cover after refresh
+  useEffect(() => {
+    if (!actorId || !conversationId) return
+
+    let alive = true
+
+    supabase
+      .schema('vc')
+      .from('moderation_actions')
+      .select('id')
+      .eq('actor_id', actorId)
+      .eq('object_type', 'conversation')
+      .eq('object_id', conversationId)
+      .eq('action_type', 'hide')
+      .maybeSingle()
+      .then(({ data, error: qErr }) => {
+        if (!alive) return
+        if (qErr) {
+          console.warn('[ConversationView] hydrate moderation_actions failed:', qErr)
+          return
+        }
+        setConversationCovered(!!data)
+      })
+      .catch((e) => {
+        if (!alive) return
+        console.warn('[ConversationView] hydrate threw:', e)
+      })
+
+    return () => {
+      alive = false
+    }
+  }, [actorId, conversationId])
 
   /* ============================================================
      Message action menu state (bubble menu)
@@ -137,10 +177,9 @@ export default function ConversationView({ conversationId }) {
   }, [])
 
   /* ============================================================
-     ✅ Conversation 3-dot menu state (header menu)
+     Conversation 3-dot menu state (header menu)
      ============================================================ */
   const [convMenu, setConvMenu] = useState(null)
-  // convMenu = { anchorRect } | null
 
   const openConvMenu = useCallback((anchorRect) => {
     if (!anchorRect) return
@@ -159,9 +198,7 @@ export default function ConversationView({ conversationId }) {
       objectType: 'conversation',
       objectId: conversationId,
       conversationId,
-
       dedupeKey: `report:conversation:${conversationId}`,
-
       title: 'Report conversation',
       subtitle: 'Tell us what’s wrong with this conversation.',
     })
@@ -169,11 +206,50 @@ export default function ConversationView({ conversationId }) {
     closeConvMenu()
   }, [actorId, conversationId, reportFlow, closeConvMenu])
 
+  const handleMarkSpamConversation = useCallback(async () => {
+    if (!actorId) return
+    if (!conversationId) return
+
+    try {
+      await markConversationSpam({
+        reporterActorId: actorId,
+        conversationId,
+        reasonText: null,
+      })
+
+      setConversationCovered(true)
+      closeMenu()
+    } catch (e) {
+      console.error('[markConversationSpam] failed', e)
+    } finally {
+      closeConvMenu()
+    }
+  }, [actorId, conversationId, closeConvMenu, closeMenu])
+
+  const handleUndoSpam = useCallback(async () => {
+    if (!actorId || !conversationId) return
+
+    const { error: delErr } = await supabase
+      .schema('vc')
+      .from('moderation_actions')
+      .delete()
+      .eq('actor_id', actorId)
+      .eq('object_type', 'conversation')
+      .eq('object_id', conversationId)
+      .eq('action_type', 'hide')
+
+    if (delErr) {
+      console.warn('[ConversationView] undo spam delete failed:', delErr)
+      return
+    }
+
+    setConversationCovered(false)
+  }, [actorId, conversationId])
+
   /* ============================================================
      Edit state
      ============================================================ */
   const [editing, setEditing] = useState(null)
-  // { messageId, initialBody } | null
 
   const handleEdit = useCallback(() => {
     if (!menu?.messageId) return
@@ -241,7 +317,7 @@ export default function ConversationView({ conversationId }) {
   }, [menu, onDeleteMessage, closeMenu])
 
   /* ============================================================
-     ✅ Report handler (from message bubble menu)
+     Report handler (from message bubble menu)
      ============================================================ */
   const handleReportMessage = useCallback(() => {
     if (!menu?.messageId) return
@@ -251,13 +327,9 @@ export default function ConversationView({ conversationId }) {
     reportFlow.start({
       objectType: 'message',
       objectId: menu.messageId,
-
       conversationId,
       messageId: menu.messageId,
-
-      // optional: stable key so repeated taps don’t spam
       dedupeKey: `report:message:${menu.messageId}`,
-
       title: 'Report message',
       subtitle: 'Tell us what’s wrong with this message.',
     })
@@ -286,10 +358,10 @@ export default function ConversationView({ conversationId }) {
       const safeName = String(file.name || 'image').replace(/[^\w.\-]+/g, '_')
       const key = `chat/${conversationId}/${actorId}/${Date.now()}-${safeName}`
 
-      const { url, error } = await uploadToCloudflare(file, key)
+      const { url, error: upErr } = await uploadToCloudflare(file, key)
 
-      if (error || !url) {
-        console.error('upload failed:', error)
+      if (upErr || !url) {
+        console.error('upload failed:', upErr)
         return
       }
 
@@ -317,7 +389,8 @@ export default function ConversationView({ conversationId }) {
     return <div className="p-4 text-neutral-400">Access denied</div>
   }
 
-  const allowSend = canSendMessage({ actorId, conversation, members })
+  const allowSend =
+    canSendMessage({ actorId, conversation, members }) && !conversationCovered
 
   /* ============================================================
      Render
@@ -330,7 +403,7 @@ export default function ConversationView({ conversationId }) {
             conversation={conversation}
             partnerActor={partnerActorUi}
             onBack={() => navigate(-1)}
-            onOpenMenu={openConvMenu}
+            onOpenMenu={conversationCovered ? undefined : openConvMenu}
           />
         }
         messages={
@@ -338,8 +411,8 @@ export default function ConversationView({ conversationId }) {
             messages={messages}
             currentActorId={actorId}
             isGroupChat={conversation.isGroup}
-            onOpenActions={openMenu}
-            onOpenMedia={openViewer} // ✅ FULLSCREEN MEDIA
+            onOpenActions={conversationCovered ? undefined : openMenu}
+            onOpenMedia={conversationCovered ? undefined : openViewer}
           />
         }
         footer={
@@ -370,19 +443,22 @@ export default function ConversationView({ conversationId }) {
         anchorRect={convMenu?.anchorRect}
         onClose={closeConvMenu}
         onReportConversation={handleReportConversation}
+        onMarkSpam={handleMarkSpamConversation}
       />
 
       {/* ✅ MESSAGE ACTIONS MENU (bubble) */}
-      <MessageActionsMenu
-        open={!!menu}
-        anchorRect={menu?.anchorRect}
-        isOwn={menu?.isOwn}
-        onClose={closeMenu}
-        onEdit={handleEdit}
-        onDeleteForMe={handleDeleteForMe}
-        onUnsend={handleUnsend}
-        onReport={handleReportMessage}
-      />
+      {!conversationCovered && (
+        <MessageActionsMenu
+          open={!!menu}
+          anchorRect={menu?.anchorRect}
+          isOwn={menu?.isOwn}
+          onClose={closeMenu}
+          onEdit={handleEdit}
+          onDeleteForMe={handleDeleteForMe}
+          onUnsend={handleUnsend}
+          onReport={handleReportMessage}
+        />
+      )}
 
       {/* ✅ REPORT MODAL (wired) */}
       <ReportModal
@@ -393,6 +469,18 @@ export default function ConversationView({ conversationId }) {
         onClose={reportFlow.close}
         onSubmit={reportFlow.submit}
       />
+
+      {/* ✅ SPAM COVER (persistent) */}
+      {conversationCovered && (
+        <ChatSpamCover
+          title="Marked as spam"
+          subtitle="Thanks — we’ll review it. This conversation has been reported as spam."
+          primaryLabel="Back to inbox"
+          onPrimary={() => navigate('/chat')}
+          secondaryLabel="Undo"
+          onSecondary={handleUndoSpam}
+        />
+      )}
 
       {/* ✅ FULLSCREEN MEDIA VIEWER */}
       {viewer && (

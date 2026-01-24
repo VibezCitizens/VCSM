@@ -17,6 +17,7 @@ import { subscribeToInbox } from '@/features/chat/inbox/realtime/subscribeToInbo
 export default function useInbox({
   actorId,
   includeArchived = false,
+  folder = 'inbox', // ✅ NEW
 }) {
   const [entries, setEntries] = useState([])
   const [loading, setLoading] = useState(true)
@@ -42,23 +43,25 @@ export default function useInbox({
       const raw = await getInboxEntries({
         actorId,
         includeArchived,
+        folder, // ✅ NEW
       })
 
       // Flatten members BEFORE modeling
       const modeled = raw
         .map((row) =>
-          InboxEntryModel({
-            ...row,
-            members: row.conversation?.members ?? [],
-          })
+          InboxEntryModel(
+            {
+              ...row,
+              members: row.conversation?.members ?? [],
+            },
+            actorId // ✅ FIX: pass selfActorId
+          )
         )
         .filter(Boolean)
 
       // HARD FILTER — never resurrect hidden threads
       setEntries(
-        modeled.filter(
-          (e) => !hiddenRef.current.has(e.conversationId)
-        )
+        modeled.filter((e) => !hiddenRef.current.has(e.conversationId))
       )
     } catch (err) {
       console.error('[useInbox] load failed', err)
@@ -66,17 +69,17 @@ export default function useInbox({
     } finally {
       setLoading(false)
     }
-  }, [actorId, includeArchived])
+  }, [actorId, includeArchived, folder])
 
   /* ============================================================
-     RESET on actor switch (CRITICAL)
+     RESET on actor switch or folder change (CRITICAL)
      ============================================================ */
   useEffect(() => {
     hiddenRef.current.clear()
     setEntries([])
     setLoading(Boolean(actorId))
     setError(null)
-  }, [actorId])
+  }, [actorId, folder])
 
   /* ============================================================
      Realtime subscription (actor-scoped)

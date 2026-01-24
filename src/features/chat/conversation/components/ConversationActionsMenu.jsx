@@ -6,6 +6,7 @@ export default function ConversationActionsMenu({
   anchorRect = null,
   onClose,
   onReportConversation,
+  onMarkSpam,
   onBlockUser,
   onClearChat,
 }) {
@@ -40,11 +41,27 @@ export default function ConversationActionsMenu({
 
   const items = [
     typeof onReportConversation === 'function'
-      ? { key: 'report', label: '🚩 Report conversation', tone: 'text-red-400', fn: onReportConversation }
+      ? {
+          key: 'report',
+          label: '🚩 Report conversation',
+          tone: 'text-red-400',
+          fn: onReportConversation,
+        }
       : null,
+
+    typeof onMarkSpam === 'function'
+      ? {
+          key: 'spam',
+          label: '🚫 Mark as spam',
+          tone: 'text-red-400',
+          fn: onMarkSpam,
+        }
+      : null,
+
     typeof onBlockUser === 'function'
       ? { key: 'block', label: '⛔ Block user', tone: 'text-red-400', fn: onBlockUser }
       : null,
+
     typeof onClearChat === 'function'
       ? { key: 'clear', label: '🧹 Clear chat', tone: 'text-white', fn: onClearChat }
       : null,
@@ -63,7 +80,6 @@ export default function ConversationActionsMenu({
     ? Math.max(8, anchorRect.top - MENU_HEIGHT - GAP)
     : anchorRect.bottom + GAP
 
-  // ✅ clamp to viewport so it can't render off-screen
   const left = Math.min(
     Math.max(8, anchorRect.right - MENU_WIDTH),
     viewportWidth - MENU_WIDTH - 8

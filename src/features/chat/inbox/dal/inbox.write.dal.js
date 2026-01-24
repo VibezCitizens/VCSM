@@ -1,4 +1,4 @@
-// src/features/chat/dal/inbox.write.dal.js
+// src/features/chat/inbox/dal/inbox.write.dal.js
 // ============================================================
 // Inbox — WRITE DAL
 // ------------------------------------------------------------
@@ -71,14 +71,11 @@ export async function incrementUnread({
     throw new Error('[incrementUnread] missing params')
   }
 
-  const { error } = await supabase.rpc(
-    'increment_inbox_unread',
-    {
-      p_actor_id: actorId,
-      p_conversation_id: conversationId,
-      p_by: by,
-    }
-  )
+  const { error } = await supabase.rpc('increment_inbox_unread', {
+    p_actor_id: actorId,
+    p_conversation_id: conversationId,
+    p_by: by,
+  })
 
   if (error) {
     console.error(error)
@@ -140,13 +137,14 @@ export async function updateInboxLastMessage({
   createdAt,
 }) {
   if (!actorId || !conversationId || !messageId || !createdAt) {
-  console.warn(
-    '[updateInboxLastMessage] skipped — missing params',
-    { actorId, conversationId, messageId, createdAt }
-  )
-  return
-}
-
+    console.warn('[updateInboxLastMessage] skipped — missing params', {
+      actorId,
+      conversationId,
+      messageId,
+      createdAt,
+    })
+    return
+  }
 
   const { error } = await supabase
     .schema('vc')
@@ -241,5 +239,39 @@ export async function archiveConversationForActor({
   if (error) {
     console.error(error)
     throw new Error('[archiveConversationForActor] update failed')
+  }
+}
+
+/* ============================================================
+   Folder moves (spam / inbox / requests / archived)
+   ============================================================ */
+
+/**
+ * Move conversation to folder for actor.
+ *
+ * @param {Object} params
+ * @param {string} params.actorId
+ * @param {string} params.conversationId
+ * @param {'inbox'|'spam'|'requests'|'archived'} params.folder
+ */
+export async function moveConversationToFolder({
+  actorId,
+  conversationId,
+  folder,
+}) {
+  if (!actorId || !conversationId || !folder) {
+    throw new Error('[moveConversationToFolder] missing params')
+  }
+
+  const { error } = await supabase
+    .schema('vc')
+    .from('inbox_entries')
+    .update({ folder })
+    .eq('actor_id', actorId)
+    .eq('conversation_id', conversationId)
+
+  if (error) {
+    console.error(error)
+    throw new Error('[moveConversationToFolder] update failed')
   }
 }
