@@ -72,73 +72,81 @@ export default function ReportModal({
         e.preventDefault()
       }}
     >
-      <div
-        className="w-full max-w-sm rounded-xl bg-neutral-950 border border-neutral-800 p-5"
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <header className="space-y-1">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          {subtitle ? <p className="text-sm text-neutral-400">{subtitle}</p> : null}
-        </header>
+      {/* ✅ wrapper to apply OUTER purple glow like StartConversationModal */}
+      <div className="w-full max-w-sm px-4">
+        <div
+          className="
+            w-full rounded-xl
+            bg-neutral-950 border border-neutral-800
+            shadow-[0_0_40px_-16px_rgba(128,0,255,0.45)]
+            p-5
+          "
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <header className="space-y-1">
+            <h3 className="text-lg font-semibold text-white">{title}</h3>
+            {subtitle ? <p className="text-sm text-neutral-400">{subtitle}</p> : null}
+          </header>
 
-        <div className="mt-4">
-          <label className="text-xs text-neutral-400">Reason</label>
-          <select
-            className="mt-1 w-full rounded-lg bg-neutral-900 border border-neutral-800 p-2 text-sm text-white"
-            value={reasonCode}
-            onChange={(e) => setReasonCode(e.target.value)}
-            disabled={loading}
-            onMouseDown={(e) => {
-              // ✅ Stop propagation so no ancestor listeners treat it like an outside click
-              e.stopPropagation()
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {REASONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="mt-4">
+            <label className="text-xs text-neutral-400">Reason</label>
+            <select
+              className="mt-1 w-full rounded-lg bg-neutral-900 border border-neutral-800 p-2 text-sm text-white"
+              value={reasonCode}
+              onChange={(e) => setReasonCode(e.target.value)}
+              disabled={loading}
+              onMouseDown={(e) => {
+                // ✅ Stop propagation so no ancestor listeners treat it like an outside click
+                e.stopPropagation()
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {REASONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="mt-3">
-          <label className="text-xs text-neutral-400">Details (optional)</label>
-          <textarea
-            className="mt-1 w-full rounded-lg bg-neutral-900 border border-neutral-800 p-2 text-sm text-white"
-            rows={3}
-            value={reasonText}
-            onChange={(e) => setReasonText(e.target.value)}
-            placeholder="Add context for moderators…"
-            disabled={loading}
-          />
-        </div>
+          <div className="mt-3">
+            <label className="text-xs text-neutral-400">Details (optional)</label>
+            <textarea
+              className="mt-1 w-full rounded-lg bg-neutral-900 border border-neutral-800 p-2 text-sm text-white"
+              rows={3}
+              value={reasonText}
+              onChange={(e) => setReasonText(e.target.value)}
+              placeholder="Add context for moderators…"
+              disabled={loading}
+            />
+          </div>
 
-        <div className="mt-6 flex justify-end gap-2">
-          <button
-            type="button"
-            className="px-4 py-2 text-sm rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-            onClick={onClose}
-            disabled={loading}
-          >
-            Cancel
-          </button>
+          <div className="mt-6 flex justify-end gap-2">
+            <button
+              type="button"
+              className="px-4 py-2 text-sm rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+              onClick={onClose}
+              disabled={loading}
+            >
+              Cancel
+            </button>
 
-          <button
-            type="button"
-            className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-500 disabled:opacity-50"
-            disabled={!canSubmit}
-            onClick={() => {
-              const text = reasonText.trim()
-              onSubmit?.({
-                reasonCode,
-                reasonText: text ? text : null,
-              })
-            }}
-          >
-            {loading ? 'Sending…' : 'Submit'}
-          </button>
+            <button
+              type="button"
+              className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-500 disabled:opacity-50"
+              disabled={!canSubmit}
+              onClick={() => {
+                const text = reasonText.trim()
+                onSubmit?.({
+                  reasonCode,
+                  reasonText: text ? text : null,
+                })
+              }}
+            >
+              {loading ? 'Sending…' : 'Submit'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

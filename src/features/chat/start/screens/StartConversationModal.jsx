@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 /**
  * StartConversationModal
- * VISUAL UPDATE – TELEGRAM STYLE + PURPLE THEME
+ * VISUAL UPDATE –  + PURPLE THEME
  * NO LOGIC CHANGED
  */
 export default function StartConversationModal({ open, onClose, onPick, onSearch }) {
@@ -17,6 +17,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
   const [rows, setRows] = useState([])
 
   const query = useMemo(() => q.trim(), [q])
+  const canClear = !!query
 
   useEffect(() => {
     let cancelled = false
@@ -64,50 +65,66 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center 
-                    bg-black/70 backdrop-blur-md">
-      <div className="w-full sm:sm:max-w-lg rounded-3xl 
-                bg-[#181818] border border-purple-800/30 
-                shadow-[0_0_40px_-10px_rgba(128,0,255,0.6)] p-6">
-
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+      {/* ✅ make modal background closer to Explore (darker, less “grey card” effect) */}
+      <div
+        className="w-full sm:sm:max-w-lg rounded-3xl
+                   bg-black border border-white/10
+                   shadow-[0_0_40px_-16px_rgba(128,0,255,0.45)] p-6"
+      >
         {/* HEADER */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-white">New Conversation</h2>
 
           <button
             type="button"
-            className="rounded-lg px-3 py-1 text-sm text-purple-300 
-                       hover:bg-purple-900/40"
+            className="rounded-lg px-3 py-1 text-sm text-purple-300 hover:bg-purple-900/40"
             onClick={onClose}
           >
             Close
           </button>
         </div>
 
-        {/* INPUT + BUTTON */}
-        <div className="flex gap-2">
+        {/* ================= SEARCH INPUT (MATCH Explore SearchScreen) ================= */}
+        <div className="mb-6 relative">
           <input
             type="text"
+            placeholder="Search users, VPORTs, posts…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by name or @username"
-            className="mb-3 w-full rounded-xl border border-purple-700/40 
-                       bg-[#101010] px-3 py-2 text-white shadow-inner 
-                       placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
+            className="
+              w-full px-4 py-2 pr-10
+              rounded-2xl bg-neutral-900 text-white
+              border border-purple-700
+              focus:ring-2 focus:ring-purple-500
+            "
           />
 
-          <button
-            type="button"
-            disabled={!query}
-            onClick={pickDirect}
-            className="mb-3 shrink-0 rounded-xl bg-purple-600 
-                       px-4 py-2 text-white shadow-md 
-                       hover:bg-purple-700 disabled:bg-gray-700"
-          >
-            Start
-          </button>
+          {canClear && (
+            <button
+              type="button"
+              onClick={() => setQ('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              aria-label="Clear"
+            >
+              ×
+            </button>
+          )}
         </div>
+
+        {/* START BUTTON (kept logic, visual aligned a bit more) */}
+        <button
+          type="button"
+          disabled={!query}
+          onClick={pickDirect}
+          className="mb-3 w-full rounded-2xl
+                     bg-neutral-900 border border-purple-700
+                     px-4 py-2 text-white
+                     hover:bg-neutral-800/70
+                     disabled:opacity-50 disabled:hover:bg-neutral-900"
+        >
+          Start
+        </button>
 
         {loading && (
           <div className="py-2 text-sm text-gray-400">Searching…</div>
@@ -127,8 +144,8 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
             {rows.map((u) => (
               <li
                 key={u.id}
-                className="flex cursor-pointer items-center gap-3 
-                           rounded-2xl border border-purple-900/40 
+                className="flex cursor-pointer items-center gap-3
+                           rounded-2xl border border-purple-900/40
                            p-3 bg-[#1d1d1d] hover:bg-[#242424]
                            shadow-[0_0_12px_-4px_rgba(128,0,255,0.4)]"
                 onClick={() => handlePickRow(u)}
@@ -136,8 +153,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
                 <img
                   src={u.photo_url || '/avatar.jpg'}
                   alt=""
-                  className="h-12 w-12 rounded-xl object-cover 
-                             shadow-lg border border-purple-800/30"
+                  className="h-12 w-12 rounded-xl object-cover shadow-lg border border-purple-800/30"
                 />
 
                 <div className="min-w-0 text-white">
@@ -149,9 +165,11 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
                   )}
                 </div>
 
-                <span className="ml-auto rounded-full border border-purple-700/40 
-                                 px-2 py-1 text-xs text-purple-300 bg-purple-900/40 
-                                 capitalize">
+                <span
+                  className="ml-auto rounded-full border border-purple-700/40
+                             px-2 py-1 text-xs text-purple-300 bg-purple-900/40
+                             capitalize"
+                >
                   {u._kind}
                 </span>
               </li>
