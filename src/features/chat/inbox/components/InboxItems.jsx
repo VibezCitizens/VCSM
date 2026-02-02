@@ -3,7 +3,7 @@
 // ------------------------------------------------------------
 // - Pure UI component
 // - Actor-agnostic
-// - Renders a single conversation row
+// - Renders a single Vox row
 // - Consumes CAMELCASE inbox preview objects
 // ============================================================
 
@@ -63,7 +63,7 @@ export default function InboxItem({
 
   const title =
     partnerDisplayName ||
-    (partnerUsername ? `@${partnerUsername}` : 'Conversation')
+    (partnerUsername ? `@${partnerUsername}` : 'Vox')
 
   // Build presentation-safe actor for ActorLink
   const actor =
@@ -71,7 +71,7 @@ export default function InboxItem({
       ? {
           id: partnerActorId,
           kind: partnerKind,
-          displayName: partnerDisplayName || 'Conversation',
+          displayName: partnerDisplayName || 'Vox',
           username: partnerUsername,
           avatar: partnerPhotoUrl || '/avatar.jpg',
           route: partnerRoute || '#',
@@ -105,7 +105,7 @@ export default function InboxItem({
           />
         )}
 
-        {/* Conversation signal */}
+        {/* Vox signal */}
         {unreadCount > 0 && (
           <div className="absolute -bottom-1 -right-1">
             <ConversationSignalIcon

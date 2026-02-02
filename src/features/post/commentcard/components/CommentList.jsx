@@ -53,12 +53,10 @@ function CommentNode({
           viewerActorId={viewerActorId}
           onOpenMenu={onOpenMenu}
           onReplyStart={isRoot ? onReplyStart : undefined}
-
           editingCommentId={editingCommentId}
           editingInitialText={editingInitialText}
           onCancelInlineEdit={onCancelInlineEdit}
           onEditedSaved={onEditedSaved}
-
           // ✅ root cover is handled by group overlay below, not per-card
           covered={showCardCover}
           cover={
@@ -66,7 +64,7 @@ function CommentNode({
               <ReportedPostCover
                 variant="comment"
                 title="Reported"
-                subtitle="Thanks — we’ll review it. This comment is hidden for you."
+                subtitle="Thanks — we’ll review it. This Spark is hidden for you."
               />
             ) : null
           }
@@ -80,7 +78,7 @@ function CommentNode({
               onSubmit={onReplySubmit}
               disabled={!!postingReply}
               autoFocus
-              placeholder="Write a reply..."
+              placeholder="Write a Spark..."
             />
             <div className="px-3 pb-3 bg-black/40 flex justify-end">
               <button
@@ -89,7 +87,7 @@ function CommentNode({
                 className="text-xs text-neutral-400 hover:text-white transition"
                 disabled={!!postingReply}
               >
-                Cancel reply
+                Cancel Spark
               </button>
             </div>
           </div>
@@ -133,7 +131,7 @@ function CommentNode({
             <ReportedPostCover
               variant="comment"
               title="Reported"
-              subtitle="Thanks — we’ll review it. This comment is hidden for you."
+              subtitle="Thanks — we’ll review it. This Spark is hidden for you."
             />
           </div>
         ) : null}

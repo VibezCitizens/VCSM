@@ -53,7 +53,7 @@ export default function PrivateProfileGate({
         </p>
 
         <p className="text-xs text-neutral-500 mt-1">
-          Only approved followers can see posts, photos, and friends.
+          Only approved followers can see Vibes, photos, and friends.
         </p>
 
         {/* Primary CTA */}
@@ -70,7 +70,7 @@ export default function PrivateProfileGate({
         {canMessage && (
           <div className="mt-3">
             <MessageButton
-              label="Send Message"
+              label="Send Vox"
               onClick={() => {}}
             />
           </div>

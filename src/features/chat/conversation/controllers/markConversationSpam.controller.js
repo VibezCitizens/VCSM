@@ -2,6 +2,9 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createReportDAL } from '@/features/chat/conversation/dal/write/reports.write.dal'
 
+// ✅ NEW: move inbox entry into spam folder
+import { moveConversationToFolder } from '@/features/chat/inbox/dal/inbox.write.dal'
+
 export async function markConversationSpam({
   reporterActorId,
   conversationId,
@@ -33,6 +36,13 @@ export async function markConversationSpam({
     })
 
   if (error) throw error
+
+  // 3) ✅ NEW: move thread to Spam folder so SpamInboxScreen can read it
+  await moveConversationToFolder({
+    actorId: reporterActorId,
+    conversationId,
+    folder: 'spam',
+  })
 
   return reportId
 }

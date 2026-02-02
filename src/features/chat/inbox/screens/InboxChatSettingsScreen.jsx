@@ -3,12 +3,13 @@
 // InboxChatSettingsScreen (Full screen hub)
 // ------------------------------------------------------------
 // Sections:
-// - Inbox (filters / folders / spam behavior)
+// - Vox (filters / folders / spam behavior)
 // - Chat Settings (messaging behavior / safety)
 // ============================================================
 
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 
 export default function InboxChatSettingsScreen() {
   const navigate = useNavigate()
@@ -16,46 +17,46 @@ export default function InboxChatSettingsScreen() {
   const rows = useMemo(
     () => [
       {
-        section: 'Inbox',
+        section: 'Vox',
         items: [
           {
-            title: 'Inbox',
-            subtitle: 'View all conversations',
-            icon: '📥',
-            onClick: () => navigate('/chat'),
+            title: 'Vox',
+            subtitle: 'Vox preferences',
+            icon: '⚡',
+            onClick: () => navigate('/chat/settings/inbox'),
           },
           {
             title: 'Spam',
-            subtitle: 'View conversations marked as spam',
+            subtitle: 'Vox you marked as spam',
             icon: '🚫',
             onClick: () => navigate('/chat/spam'),
           },
           {
             title: 'Requests',
-            subtitle: 'People who messaged you first',
+            subtitle: 'Citizens who reached out first',
             icon: '🧾',
             onClick: () => navigate('/chat/requests'),
           },
           {
             title: 'Archived',
-            subtitle: 'Hidden from main inbox',
+            subtitle: 'Hidden from main Vox',
             icon: '🗃️',
             onClick: () => navigate('/chat/archived'),
           },
         ],
       },
       {
-        section: 'Chat settings',
+        section: 'Chat Settings',
         items: [
           {
-            title: 'Blocked users',
-            subtitle: 'Manage who cannot message you',
+            title: 'Blocked Citizens',
+            subtitle: 'Manage who cannot Vox you',
             icon: '⛔',
             onClick: () => navigate('/chat/settings/blocked'),
           },
           {
-            title: 'Message privacy',
-            subtitle: 'Who can message you',
+            title: 'Vox privacy',
+            subtitle: 'Who can Vox you',
             icon: '🔒',
             onClick: () => navigate('/chat/settings/privacy'),
           },
@@ -73,24 +74,48 @@ export default function InboxChatSettingsScreen() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* HEADER */}
-      <div className="px-4 py-3 border-b border-neutral-800 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="rounded-lg px-3 py-1 text-sm text-neutral-200 hover:bg-white/10"
-        >
-          Back
-        </button>
+      {/* HEADER (ChatHeader-style, centered title) */}
+      <header
+        className="
+          sticky top-0 z-20
+          bg-black/90 backdrop-blur
+          border-b border-white/10
+        "
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="relative h-14 px-3 flex items-center">
+          {/* LEFT: Back */}
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="
+              p-2 -ml-1 rounded-xl
+              text-violet-400
+              hover:bg-violet-500/15
+              active:bg-violet-500/25
+              transition
+            "
+            aria-label="Back"
+          >
+            <ChevronLeft size={22} />
+          </button>
 
-        <h1 className="text-lg font-semibold text-white">Inbox & Chat</h1>
-      </div>
+          {/* CENTER: Title */}
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
+            Vox & Chat
+          </h1>
+
+          {/* RIGHT: spacer */}
+          <div className="ml-auto w-10" />
+        </div>
+      </header>
 
       {/* CONTENT */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
         {rows.map((group) => (
           <div key={group.section} className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-neutral-400">
+            {/* ✅ align section label left with the card content */}
+            <div className="px-4 text-xs uppercase tracking-wider text-neutral-400">
               {group.section}
             </div>
 

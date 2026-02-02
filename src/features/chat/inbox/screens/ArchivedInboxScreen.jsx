@@ -1,10 +1,10 @@
 // src/features/chat/inbox/screens/ArchivedInboxScreen.jsx
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 
 import { useIdentity } from '@/state/identity/identityContext'
 
-import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useInboxFolder from '@/features/chat/inbox/hooks/useInboxFolder'
 
 import InboxList from '@/features/chat/inbox/components/InboxList'
@@ -18,53 +18,68 @@ export default function ArchivedInboxScreen() {
   const actorId = identity?.actorId ?? null
   const actorKind = identity?.kind ?? 'citizen'
 
-  /**
-   * NOTE:
-   * You do not yet have real "archived" logic.
-   * For now this behaves as a placeholder inbox that shows empty state.
-   * Later you can add `folder: 'archived'` support to useInboxFolder.
-   */
   const {
     entries = [],
     loading: inboxLoading,
     error,
-    hideConversation,
-  } = useInboxFolder({ actorId, folder: 'inbox' })
-
-  const inboxActions = useInboxActions({ actorId })
+  } = useInboxFolder({ actorId, folder: 'archived' })
 
   useEffect(() => {
     // optional debug
     // console.log('[ArchivedInboxScreen] entries:', entries)
   }, [entries])
 
+  const previews = useMemo(() => {
+    if (!entries?.length || !actorId) return []
+    return entries
+      .map((entry) => buildInboxPreview({ entry, currentActorId: actorId }))
+      .filter(Boolean)
+  }, [entries, actorId])
+
   if (identityLoading || !actorId) return null
 
   if (error) {
-    return <div className="p-4 text-red-400">Failed to load archived</div>
+    return <div className="p-4 text-red-400">Failed to load archived Vox</div>
   }
-
-  // Placeholder: no archived conversations yet
-  const previews = []
 
   return (
     <div className="flex flex-col min-h-0">
-      {/* HEADER */}
-      <div className="px-4 py-3 border-b border-neutral-800 flex items-center justify-between shrink-0">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="rounded-lg px-3 py-1 text-sm text-neutral-200 hover:bg-white/10"
-        >
-          Back
-        </button>
+      {/* HEADER (ChatHeader-style, centered title) */}
+      <header
+        className="
+          sticky top-0 z-20
+          bg-black/90 backdrop-blur
+          border-b border-white/10
+          shrink-0
+        "
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="relative h-14 px-3 flex items-center">
+          {/* LEFT: Back */}
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="
+              p-2 -ml-1 rounded-xl
+              text-violet-400
+              hover:bg-violet-500/15
+              active:bg-violet-500/25
+              transition
+            "
+            aria-label="Back"
+          >
+            <ChevronLeft size={22} />
+          </button>
 
-        <h1 className="text-lg font-semibold text-white">
-          {actorKind === 'vport' ? 'Archived (Vport)' : 'Archived'}
-        </h1>
+          {/* CENTER: Title */}
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
+            {actorKind === 'vport' ? 'Archived Vox (Vport)' : 'Archived Vox'}
+          </h1>
 
-        <div className="text-xs text-neutral-500" />
-      </div>
+          {/* RIGHT: spacer */}
+          <div className="ml-auto w-10" />
+        </div>
+      </header>
 
       {/* CONTENT */}
       <div className="flex-1 overflow-y-auto pb-24">
@@ -73,11 +88,8 @@ export default function ArchivedInboxScreen() {
         ) : (
           <InboxList
             entries={previews}
-            onSelect={(id) => navigate(`/chat/${id}`)}
-            onDelete={(conversationId) => {
-              hideConversation(conversationId)
-              inboxActions.deleteThreadForMe(conversationId)
-            }}
+            onSelect={(conversationId) => navigate(`/chat/${conversationId}`)}
+            // ✅ NO onDelete here -> no trash icon -> no delete-for-me possible
           />
         )}
       </div>

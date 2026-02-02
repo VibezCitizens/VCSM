@@ -1,11 +1,6 @@
 // src/features/chat/conversation/dal/read/messages.read.dal.js
 // ============================================================
 // Messages Read DAL (ACTOR-AGNOSTIC)
-// ------------------------------------------------------------
-// - RAW database reads only
-// - NO visibility logic
-// - NO message_receipts joins
-// - NO actor-based filtering
 // ============================================================
 
 import { supabase } from '@/services/supabase/supabaseClient'
@@ -30,19 +25,19 @@ export async function getMessagesForConversationForActor({
   before = null,
 }) {
   if (!conversationId) {
-    throw new Error(
-      '[getMessagesForConversationForActor] conversationId required'
-    )
+    throw new Error('[getMessagesForConversationForActor] conversationId required')
   }
 
+  // ✅ Fetch newest first, then reverse to chronological for UI
   let query = supabase
     .schema('vc')
     .from('messages')
     .select(MESSAGE_TIMELINE_COLUMNS)
     .eq('conversation_id', conversationId)
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false }) // ✅ NEWEST FIRST
     .limit(limit)
 
+  // ✅ Pagination: "before" means older than timestamp
   if (before) {
     query = query.lt('created_at', before)
   }
@@ -50,27 +45,21 @@ export async function getMessagesForConversationForActor({
   const { data, error } = await query
 
   if (error) {
-    console.error(
-      '[getMessagesForConversationForActor] query failed',
-      error
-    )
+    console.error('[getMessagesForConversationForActor] query failed', error)
     throw error
   }
 
-  return data ?? []
+  // UI wants oldest -> newest
+  return (data ?? []).reverse()
 }
 
 /* ============================================================
    Fetch minimal message fields for UNSEND
    ============================================================ */
 
-export async function fetchMessageForUnsendDAL({
-  messageId,
-}) {
+export async function fetchMessageForUnsendDAL({ messageId }) {
   if (!messageId) {
-    throw new Error(
-      '[fetchMessageForUnsendDAL] messageId required'
-    )
+    throw new Error('[fetchMessageForUnsendDAL] messageId required')
   }
 
   const { data, error } = await supabase
@@ -85,10 +74,38 @@ export async function fetchMessageForUnsendDAL({
     .maybeSingle()
 
   if (error) {
-    console.error(
-      '[fetchMessageForUnsendDAL] query failed',
-      error
-    )
+    console.error('[fetchMessageForUnsendDAL] query failed', error)
+    throw error
+  }
+
+  return data ?? null
+}
+
+/* ============================================================
+   Fetch latest message (for inbox preview hydration)
+   ============================================================ */
+
+export async function fetchLatestMessageForConversationDAL({ conversationId }) {
+  if (!conversationId) {
+    throw new Error('[fetchLatestMessageForConversationDAL] conversationId required')
+  }
+
+  const { data, error } = await supabase
+    .schema('vc')
+    .from('messages')
+    .select(`
+      id,
+      created_at,
+      deleted_at
+    `)
+    .eq('conversation_id', conversationId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[fetchLatestMessageForConversationDAL] query failed', error)
     throw error
   }
 

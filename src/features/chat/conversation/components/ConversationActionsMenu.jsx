@@ -5,6 +5,8 @@ export default function ConversationActionsMenu({
   open = false,
   anchorRect = null,
   onClose,
+  onArchiveConversation,
+  onUnarchiveConversation, // ✅ NEW
   onReportConversation,
   onMarkSpam,
   onBlockUser,
@@ -40,10 +42,29 @@ export default function ConversationActionsMenu({
   const MENU_WIDTH = 200
 
   const items = [
+    // ✅ NEW: Unarchive item
+    typeof onUnarchiveConversation === 'function'
+      ? {
+          key: 'unarchive',
+          label: '📤 Unarchive Vox',
+          tone: 'text-white',
+          fn: onUnarchiveConversation,
+        }
+      : null,
+
+    typeof onArchiveConversation === 'function'
+      ? {
+          key: 'archive',
+          label: '🗃️ Archive Vox',
+          tone: 'text-white',
+          fn: onArchiveConversation,
+        }
+      : null,
+
     typeof onReportConversation === 'function'
       ? {
           key: 'report',
-          label: '🚩 Report conversation',
+          label: '🚩 Report Vox',
           tone: 'text-red-400',
           fn: onReportConversation,
         }
@@ -52,18 +73,18 @@ export default function ConversationActionsMenu({
     typeof onMarkSpam === 'function'
       ? {
           key: 'spam',
-          label: '🚫 Mark as spam',
+          label: '🚫 Mark Vox as spam',
           tone: 'text-red-400',
           fn: onMarkSpam,
         }
       : null,
 
     typeof onBlockUser === 'function'
-      ? { key: 'block', label: '⛔ Block user', tone: 'text-red-400', fn: onBlockUser }
+      ? { key: 'block', label: '⛔ Block Citizen', tone: 'text-red-400', fn: onBlockUser }
       : null,
 
     typeof onClearChat === 'function'
-      ? { key: 'clear', label: '🧹 Clear chat', tone: 'text-white', fn: onClearChat }
+      ? { key: 'clear', label: '🧹 Clear Vox', tone: 'text-white', fn: onClearChat }
       : null,
   ].filter(Boolean)
 

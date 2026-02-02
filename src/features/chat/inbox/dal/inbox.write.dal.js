@@ -124,6 +124,10 @@ export async function resetUnread({
 /**
  * Update last message info for inbox entry.
  *
+ * NOTE:
+ * - Archived conversations STAY archived until the user unarchives.
+ * - So we ONLY update last_message_* fields here.
+ *
  * @param {Object} params
  * @param {string} params.actorId
  * @param {string} params.conversationId
@@ -152,8 +156,10 @@ export async function updateInboxLastMessage({
     .update({
       last_message_id: messageId,
       last_message_at: createdAt,
-      archived: false,
-      archived_until_new: false,
+      // IMPORTANT: do not auto-unarchive here
+      // archived: false,
+      // archived_until_new: false,
+      // folder: 'inbox',
     })
     .eq('actor_id', actorId)
     .eq('conversation_id', conversationId)
@@ -230,6 +236,7 @@ export async function archiveConversationForActor({
     .from('inbox_entries')
     .update({
       archived: true,
+      folder: 'archived',
       archived_until_new: untilNew,
       unread_count: 0,
     })
@@ -263,10 +270,24 @@ export async function moveConversationToFolder({
     throw new Error('[moveConversationToFolder] missing params')
   }
 
+  const patch = { folder }
+
+  // Keep flags consistent with folder semantics
+  if (folder === 'archived') {
+    patch.archived = true
+    // archived_until_new is your policy flag; default to false for "just store it there"
+    patch.archived_until_new = false
+    patch.unread_count = 0
+  } else {
+    // Leaving archived folder means it's not archived
+    patch.archived = false
+    patch.archived_until_new = false
+  }
+
   const { error } = await supabase
     .schema('vc')
     .from('inbox_entries')
-    .update({ folder })
+    .update(patch)
     .eq('actor_id', actorId)
     .eq('conversation_id', conversationId)
 

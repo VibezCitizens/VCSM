@@ -37,7 +37,7 @@ export default function BlockedUsersSimple() {
 
       {empty && (
         <div className="text-sm text-zinc-500 italic">
-          You haven’t blocked anyone.
+          You haven’t blocked any Citizens.
         </div>
       )}
 

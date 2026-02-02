@@ -46,23 +46,47 @@ export default function useInbox({
         folder, // ✅ NEW
       })
 
-      // Flatten members BEFORE modeling
+      // Flatten members + last message BEFORE modeling
       const modeled = raw
-        .map((row) =>
-          InboxEntryModel(
+        .map((row) => {
+          const lastMsg = row.last_message ?? row.lastMessage ?? null
+          const lastMsgBody =
+            typeof lastMsg?.body === 'string' ? lastMsg.body : null
+          const lastMsgType = lastMsg?.message_type ?? lastMsg?.messageType ?? null
+
+          const normalizedLastBody =
+            lastMsgBody && lastMsgBody.trim().length > 0
+              ? lastMsgBody
+              : lastMsgType === 'image'
+                ? '📷 Photo'
+                : lastMsgType === 'video'
+                  ? '🎥 Video'
+                  : null
+
+          return InboxEntryModel(
             {
               ...row,
               members: row.conversation?.members ?? [],
+
+              // ✅ IMPORTANT: InboxEntryModel was reading the wrong key before.
+              // We provide both snake_case and nested object so the model can pick it up.
+              last_message_body: normalizedLastBody,
+              last_message: lastMsg,
             },
             actorId // ✅ FIX: pass selfActorId
           )
-        )
+        })
         .filter(Boolean)
+        // ✅ ensure preview exists for CardInbox/buildInboxPreview even if body is null
+        .map((e) => {
+          const safePreview =
+            (e.lastMessageBody && String(e.lastMessageBody).trim()) ||
+            (e.unreadCount > 0 ? 'New message' : '')
+          return { ...e, preview: safePreview }
+        })
 
       // HARD FILTER — never resurrect hidden threads
-      setEntries(
-        modeled.filter((e) => !hiddenRef.current.has(e.conversationId))
-      )
+      setEntries(modeled.filter((e) => !hiddenRef.current.has(e.conversationId)))
     } catch (err) {
       console.error('[useInbox] load failed', err)
       setError(err)

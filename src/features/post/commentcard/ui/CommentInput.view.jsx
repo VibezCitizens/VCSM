@@ -14,7 +14,7 @@ import { useActorPresentation } from "@/state/actors/useActorPresentation";
 export default function CommentInputView({
   actorId,
   onSubmit,
-  placeholder = "Write a comment...",
+  placeholder = "Write a Spark...",
   autoFocus = false,
   disabled = false,
 }) {
@@ -70,7 +70,7 @@ export default function CommentInputView({
           disabled={disabled}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={disabled ? "Sign in to comment" : placeholder}
+          placeholder={disabled ? "Sign in to Spark" : placeholder}
           rows={1}
           className="
             w-full resize-none overflow-hidden
@@ -94,7 +94,7 @@ export default function CommentInputView({
                 : "bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-full text-sm"
             }
           >
-            Post
+            Vibe
           </button>
         </div>
       </div>

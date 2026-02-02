@@ -30,7 +30,7 @@ export default function ActorProfilePostsView({
   console.log("hasMore:", hasMore);
   console.log("onShare type:", typeof onShare);
   console.log("onOpenMenu type:", typeof onOpenMenu);
-  console.log("version:", version); // ✅ ADD (keeps logs style)
+  console.log("version:", version); // ✅ ADD
   console.groupEnd();
 
   /* ============================================================
@@ -50,7 +50,7 @@ export default function ActorProfilePostsView({
     reset(profileActorId);
     loadInitial();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileActorId, version]); // ✅ IMPORTANT
+  }, [profileActorId, version]);
 
   /* ============================================================
      DEBUG — AFTER DATA ARRIVAL
@@ -68,7 +68,7 @@ export default function ActorProfilePostsView({
   }, [posts]);
 
   /* ============================================================
-     NAVIGATION HANDLER (PROFILE → POST DETAIL)
+     NAVIGATION HANDLER (PROFILE → VIBE DETAIL)
      ============================================================ */
   const openPost = (postId) => {
     if (!postId) {
@@ -87,7 +87,7 @@ export default function ActorProfilePostsView({
     console.warn("[ActorProfilePostsView] UI → Loading state");
     return (
       <div className="flex items-center justify-center py-10 text-neutral-500">
-        Loading posts…
+        Loading Vibes…
       </div>
     );
   }
@@ -99,13 +99,13 @@ export default function ActorProfilePostsView({
     console.warn("[ActorProfilePostsView] UI → Empty state");
     return (
       <div className="flex items-center justify-center py-10 text-neutral-500">
-        No posts yet.
+        No Vibes yet.
       </div>
     );
   }
 
   /* ============================================================
-     RENDER POSTS
+     RENDER VIBES
      ============================================================ */
   console.log("[ActorProfilePostsView] UI → Rendering PostCards");
 

@@ -2,11 +2,11 @@
 
 import MessageRow from './MessageRow.adapter'
 
-import { editMessageController } 
+import { editMessageController }
   from '@/features/chat/conversation/controllers/editMessage.controller'
-import { unsendMessageController } 
+import { unsendMessageController }
   from '@/features/chat/conversation/controllers/unsendMessage.controller'
-import { deleteMessageForMeController } 
+import { deleteMessageForMeController }
   from '@/features/chat/conversation/controllers/deleteMessageForMe.controller'
 
 export default function MessageGroupAdapter({
@@ -16,13 +16,16 @@ export default function MessageGroupAdapter({
 
   // infrastructure
   actorId,
-  supabase,
+  supabase, // kept for compatibility even if controllers don't use it
 
   // lifecycle hooks
   onEdited,
   onDeleted,
 }) {
   if (!messages.length) return null
+
+  // derive conversationId from any message in this group (all are same conversation)
+  const conversationId = messages?.[0]?.conversationId ?? null
 
   return (
     <div className="flex flex-col gap-1 my-1">
@@ -39,17 +42,15 @@ export default function MessageGroupAdapter({
             /* intent wiring */
             onRequestEdit={async (msg) => {
               await editMessageController({
-                supabase,
                 actorId,
                 messageId: msg.id,
-                newBody: msg.__pendingEditBody, // or via UI flow
+                body: msg.__pendingEditBody ?? '',
               })
               onEdited?.()
             }}
 
             onRequestUnsend={async (msg) => {
               await unsendMessageController({
-                supabase,
                 actorId,
                 messageId: msg.id,
               })
@@ -57,11 +58,19 @@ export default function MessageGroupAdapter({
             }}
 
             onRequestDeleteForMe={async (msg) => {
+              if (!conversationId) {
+                throw new Error(
+                  '[MessageGroupAdapter] conversationId missing on message payload'
+                )
+              }
+
               await deleteMessageForMeController({
-                supabase,
                 actorId,
                 messageId: msg.id,
+                conversationId,
               })
+
+              onDeleted?.()
             }}
           />
         )

@@ -11,7 +11,7 @@ import { useState, useCallback } from "react";
 
 export default function CommentReplyInput({
   autoFocus = true,
-  placeholder = "Write a reply…",
+  placeholder = "Write a Spark…",
   submitting = false,
 
   onSubmit,

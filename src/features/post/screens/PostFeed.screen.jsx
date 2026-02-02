@@ -61,8 +61,8 @@ export default function PostFeedScreen() {
       objectId: postMenu.postId,
       postId: postMenu.postId,
       dedupeKey: `report:post:${postMenu.postId}`,
-      title: "Report post",
-      subtitle: "Tell us what’s wrong with this post.",
+      title: "Report Vibe",
+      subtitle: "Tell us what’s wrong with this Vibe.",
     });
 
     closePostMenu();
@@ -82,7 +82,7 @@ export default function PostFeedScreen() {
     if (!actorId) return;
     if (!postMenu?.postId) return;
 
-    const okConfirm = window.confirm("Delete this post?");
+    const okConfirm = window.confirm("Delete this Vibe?");
     if (!okConfirm) return;
 
     const res = await softDeletePostController({
@@ -91,7 +91,7 @@ export default function PostFeedScreen() {
     });
 
     if (!res.ok) {
-      window.alert(res.error?.message ?? "Failed to delete post");
+      window.alert(res.error?.message ?? "Failed to delete Vibe");
       return;
     }
 
@@ -158,7 +158,7 @@ export default function PostFeedScreen() {
       <div className="px-4 py-3 text-lg font-semibold">Feed</div>
 
       {!loading && posts.length === 0 && (
-        <div className="p-6 text-center text-neutral-500">No posts yet.</div>
+        <div className="p-6 text-center text-neutral-500">No Vibes yet.</div>
       )}
 
       {posts.map((post) => {
@@ -176,7 +176,7 @@ export default function PostFeedScreen() {
                 <ReportThanksOverlay
                   variant="post"
                   title="Reported"
-                  subtitle="Thanks — we’ll review it. This post is hidden for you."
+                  subtitle="Thanks — we’ll review it. This Vibe is hidden for you."
                 />
               }
             />

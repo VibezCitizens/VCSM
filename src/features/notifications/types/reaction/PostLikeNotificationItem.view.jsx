@@ -17,7 +17,7 @@ export default function PostLikeNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="liked your post"
+      message="liked your Vibe"
       timestamp={notification.createdAt}
       actionLabel={notification.linkPath ? 'View' : null}
       onAction={

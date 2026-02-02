@@ -112,6 +112,18 @@ const InboxChatSettingsScreen = lazyWithLog(
   () => import('@/features/chat/inbox/screens/InboxChatSettingsScreen')
 )
 
+// ✅ NEW: Inbox settings screen
+const InboxSettingsScreen = lazyWithLog(
+  'InboxSettingsScreen',
+  () => import('@/features/chat/inbox/screens/InboxSettingsScreen')
+)
+
+const MessagePrivacyScreen = lazyWithLog(
+  'MessagePrivacyScreen',
+  () => import('@/features/chat/inbox/screens/settings/MessagePrivacyScreen')
+)
+
+
 // ✅ NEW: folder screens
 const SpamInboxScreen = lazyWithLog(
   'SpamInboxScreen',
@@ -128,6 +140,10 @@ const ArchivedInboxScreen = lazyWithLog(
   'ArchivedInboxScreen',
   () => import('@/features/chat/inbox/screens/ArchivedInboxScreen')
 )
+const BlockedUsersScreen = lazyWithLog(
+  'BlockedUsersScreen',
+  () => import('@/features/chat/inbox/screens/settings/BlockedUsersScreen')
+)
 
 /* ================= NOTIFICATION DEEP LINKS ================= */
 const NotiViewPostScreen = lazyWithLog(
@@ -143,7 +159,8 @@ const NurseHomeScreen = lazyWithLog(
 
 // ============================================================================
 // ROUTES
-// ============================================================================
+// ============================================================================// ...imports above stay the same
+
 export default function AppRoutes() {
   return (
     <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
@@ -172,12 +189,17 @@ export default function AppRoutes() {
             <Route path="/chat" element={<ChatInboxScreen />} />
             <Route path="/chat/new" element={<NewChatScreen />} />
 
-            {/* ✅ NEW: folders */}
             <Route path="/chat/spam" element={<SpamInboxScreen />} />
             <Route path="/chat/requests" element={<RequestsInboxScreen />} />
             <Route path="/chat/archived" element={<ArchivedInboxScreen />} />
 
+            {/* ✅ SETTINGS ROUTES MUST COME BEFORE /chat/:conversationId */}
             <Route path="/chat/settings" element={<InboxChatSettingsScreen />} />
+            <Route path="/chat/settings/inbox" element={<InboxSettingsScreen />} />
+            <Route path="/chat/settings/privacy" element={<MessagePrivacyScreen />} />
+            <Route path="/chat/settings/blocked" element={<BlockedUsersScreen />} />
+
+            {/* Conversation route AFTER settings */}
             <Route path="/chat/:conversationId" element={<ChatConversationScreen />} />
 
             {/* Legacy vport URLs */}

@@ -43,7 +43,7 @@ export default function EditPostScreen() {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-lg font-semibold mb-3">Edit post</h1>
+      <h1 className="text-lg font-semibold mb-3">Edit Vibe</h1>
 
       <textarea
         value={text}

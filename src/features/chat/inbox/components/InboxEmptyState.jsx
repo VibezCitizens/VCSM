@@ -3,7 +3,7 @@
 // InboxEmptyState
 // ------------------------------------------------------------
 // - Pure UI component
-// - Shown when actor inbox has zero conversations
+// - Shown when actor inbox has zero Vox
 // - Actor-agnostic (no actorId / userId)
 // ============================================================
 
@@ -18,8 +18,8 @@ import { MessageCircle } from 'lucide-react'
  * action?: ReactNode
  */
 export default function InboxEmptyState({
-  title = 'No messages yet',
-  description = 'Start a conversation and your messages will appear here.',
+  title = 'No Vox yet',
+  description = 'Start a Vox and your Vox will appear here.',
   action = null,
 }) {
   return (

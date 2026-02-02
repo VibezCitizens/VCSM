@@ -6,13 +6,13 @@ import { resolveActorId } from  '@/services/actors/dl/actors';
 ;
 
 /**
- * Insert a comment as the current identity (user or vport).
- * @param {string} postId
+ * Insert a Spark as the current identity (Citizen or Vport).
+ * @param {string} vibeId
  * @param {string} content
  * @returns {Promise<object>} inserted row
  */
-export async function addComment(postId, content) {
-  if (!postId) throw new Error("addComment: postId required");
+export async function addComment(vibeId, content) {
+  if (!vibeId) throw new Error("addComment: vibeId required");
   const text = String(content ?? "").trim();
   if (!text) throw new Error("addComment: content required");
 
@@ -21,13 +21,13 @@ export async function addComment(postId, content) {
   const userId = u?.user?.id;
   if (!userId) throw new Error("Not authenticated");
 
-  const activeVportId = getActiveVportId(); // null => user mode
+  const activeVportId = getActiveVportId(); // null => Citizen mode
   const actorId = await resolveActorId({ userId, activeVportId });
 
   const payload = {
-    post_id: postId,
+    post_id: vibeId,
     content: text,
-    actor_id: actorId, // who is speaking (user or vport)
+    actor_id: actorId, // who is speaking (Citizen or Vport)
     user_id: userId,   // owner (profiles.id)
   };
 

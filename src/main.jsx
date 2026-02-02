@@ -8,9 +8,11 @@ import App from './App'
 import { AuthProvider } from '@/app/providers/AuthProvider'
 import { IdentityProvider } from '@/state/identity/identityContext'
 
+// ✅ IMPORT DEBUG HUD
+import IOSDebugHUD from '@/app/platform/ios/IOSDebugHUD'
+
 import { registerSW } from 'virtual:pwa-register'
 
-// Only register in production. In dev, also unregister workers.
 if (import.meta.env.PROD) {
   registerSW()
 } else if ('serviceWorker' in navigator) {
@@ -28,6 +30,9 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <IdentityProvider>
+          {/* ✅ ALWAYS MOUNTED */}
+          <IOSDebugHUD />
+
           <App />
         </IdentityProvider>
       </AuthProvider>

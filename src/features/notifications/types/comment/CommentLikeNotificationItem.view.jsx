@@ -31,7 +31,7 @@ export default function CommentLikeNotificationItem({ notification }) {
             size={14}
             className="text-pink-500 fill-pink-500"
           />
-          <span>liked your comment</span>
+          <span>liked your Spark</span>
         </span>
       }
     />

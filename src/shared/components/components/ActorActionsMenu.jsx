@@ -73,7 +73,7 @@ export default function ActorActionsMenu({
                 : 'text-red-400 hover:bg-neutral-800'}
             `}
           >
-            {isBlocked ? 'Unblock user' : 'Block user'}
+            {isBlocked ? 'Unblock Citizen' : 'Block Citizen'}
           </button>
         </div>
       )}

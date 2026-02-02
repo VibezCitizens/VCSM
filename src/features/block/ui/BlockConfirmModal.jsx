@@ -49,7 +49,7 @@ export default function BlockConfirmModal({
         {/* ================= HEADER ================= */}
         <header className="space-y-1">
           <h3 className="text-lg font-semibold text-white">
-            {isBlock ? "Block user" : "Unblock user"}
+            {isBlock ? "Block Citizen" : "Unblock Citizen"}
           </h3>
 
           {actor && (
@@ -67,7 +67,7 @@ export default function BlockConfirmModal({
             <p>Blocking will:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Remove them from your followers and friends</li>
-              <li>Prevent messages and interactions</li>
+              <li>Prevent Vox and interactions</li>
               <li>Hide their content from you</li>
             </ul>
           </div>

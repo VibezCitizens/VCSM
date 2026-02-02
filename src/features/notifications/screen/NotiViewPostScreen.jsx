@@ -181,7 +181,7 @@ export default function NotiViewPostScreen() {
   if (!post) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-black text-white">
-        Post not available (deleted or private).
+        Vibe not available (deleted or private).
       </div>
     )
   }

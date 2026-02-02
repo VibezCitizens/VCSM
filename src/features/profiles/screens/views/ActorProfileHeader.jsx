@@ -141,7 +141,7 @@ export default function ActorProfileHeader({
                   onClick={safeShowQR}
                   className="px-4 py-1.5 rounded-full text-xs font-medium bg-purple-600 text-white hover:bg-purple-500"
                 >
-                  Show QR
+                  QR
                 </button>
               </div>
             ) : (

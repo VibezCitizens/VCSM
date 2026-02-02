@@ -17,7 +17,7 @@ export default function PostRoseNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="sent you a 🌹 on your post"
+      message="sent you a 🌹 on your Vibe"
       timestamp={notification.createdAt}
       actionLabel={notification.linkPath ? 'View' : null}
       onAction={

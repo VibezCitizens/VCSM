@@ -97,7 +97,7 @@ export default function PostCardView({
               anchorRect: rect,
             });
           }}
-          aria-label="Post options"
+          aria-label="Vibe options"
           type="button"
         >
           •••

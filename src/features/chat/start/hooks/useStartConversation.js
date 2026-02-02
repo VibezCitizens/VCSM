@@ -21,7 +21,7 @@ export function useStartConversation() {
 
   const start = useCallback(async (picked) => {
     if (!identity?.actorId || !identity?.realmId) {
-      toast.error('Identity not ready')
+     toast.error('You can’t message this user')
       return
     }
 

@@ -1,4 +1,5 @@
 // src/features/chat/inbox/model/InboxEntry.model.js
+
 export function InboxEntryModel(raw, selfActorId) {
   if (!raw) {
     console.warn('[InboxEntryModel] raw is null')
@@ -8,7 +9,6 @@ export function InboxEntryModel(raw, selfActorId) {
   const members = Array.isArray(raw.members)
     ? raw.members.map((m) => {
         const a = m.actor || {}
-
         return {
           actorId: m.actor_id,
           kind: a.kind ?? null,
@@ -19,17 +19,36 @@ export function InboxEntryModel(raw, selfActorId) {
       })
     : []
 
-  const partner =
-    members.find((m) => m.actorId !== selfActorId) || null
+  const partner = members.find((m) => m.actorId !== selfActorId) || null
+
+  const msgBody =
+    raw.last_message_body ??
+    raw.lastMessageBody ??
+    raw.last_message?.body ??
+    raw.last_message?.text ??
+    null
+
+  const msgType = raw.last_message?.message_type ?? null
+
+  const normalizedBody =
+    typeof msgBody === 'string' && msgBody.trim().length > 0
+      ? msgBody
+      : msgType === 'image'
+        ? '📷 Photo'
+        : msgType === 'video'
+          ? '🎥 Video'
+          : null
 
   return {
     conversationId: raw.conversation_id,
     actorId: raw.actor_id,
 
-    folder: raw.folder ?? 'inbox', // ✅ NEW (safe default)
+    folder: raw.folder ?? 'inbox',
 
     lastMessageId: raw.last_message_id ?? null,
     lastMessageAt: raw.last_message_at ?? null,
+
+    lastMessageBody: normalizedBody,
 
     unreadCount: Number(raw.unread_count || 0),
     pinned: Boolean(raw.pinned),

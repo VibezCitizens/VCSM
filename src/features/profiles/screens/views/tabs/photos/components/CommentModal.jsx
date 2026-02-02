@@ -37,7 +37,7 @@ export default function CommentModal({ postId, onClose }) {
     <div className="fixed inset-0 z-50 flex flex-col bg-black/90">
       {/* HEADER */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-        <h2 className="text-lg font-semibold text-white">Comments</h2>
+        <h2 className="text-lg font-semibold text-white">Sparks</h2>
 
         <button
           onClick={onClose}
@@ -60,13 +60,13 @@ export default function CommentModal({ postId, onClose }) {
         >
           {loading && (
             <div className="text-center text-neutral-400 py-6">
-              Loading comments…
+              Loading sparks…
             </div>
           )}
 
           {!loading && (!comments || comments.length === 0) && (
             <div className="text-center text-neutral-500 py-6">
-              No comments yet.
+              No sparks yet.
             </div>
           )}
 
@@ -89,7 +89,7 @@ export default function CommentModal({ postId, onClose }) {
             <input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder="Write a comment…"
+              placeholder="Write a spark…"
               className="flex-1 rounded-md bg-neutral-800 text-white px-3 py-2 text-sm border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
             />
 
@@ -99,7 +99,7 @@ export default function CommentModal({ postId, onClose }) {
               className="px-4 py-2 rounded-md text-sm font-medium bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
               type="button"
             >
-              {posting ? "Posting…" : "Post"}
+              {posting ? "Sparking…" : "Spark"}
             </button>
           </div>
         )}

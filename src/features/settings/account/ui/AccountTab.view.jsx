@@ -16,8 +16,8 @@
 //   • Controller owns behavior
 // ============================================================
 
- import Card from '@/features/settings/ui/Card'
- import Row  from '@/features/settings/ui/Row'
+import Card from '@/features/settings/ui/Card'
+import Row  from '@/features/settings/ui/Row'
 
 import { useAccountController } from '../controller/Account.controller'
 
@@ -135,7 +135,7 @@ export default function AccountTabView() {
           onCancel={() => !busyAccount && setShowConfirmAccount(false)}
           onConfirm={deleteAccount}
         >
-          This removes your profile, posts, and messages permanently.
+          This removes your profile, Vibes, and Vox permanently.
         </ConfirmModal>
       )}
 

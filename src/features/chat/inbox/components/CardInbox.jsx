@@ -1,11 +1,4 @@
-// src/features/chat/components/inbox/CardInbox.jsx
-// ============================================================
-// CardInbox DELL
-// ------------------------------------------------------------
-// - Rounded card inbox row
-// - Calm, premium, mobile-first
-// ============================================================
-
+// src/features/chat/inbox/components/CardInbox.jsx
 import React from 'react'
 import { Trash2 } from 'lucide-react'
 
@@ -13,6 +6,7 @@ export default function CardInbox({
   entry,
   onClick,
   onDelete,
+  showThreadPreview = true,
 }) {
   if (!entry) return null
 
@@ -41,21 +35,13 @@ export default function CardInbox({
       "
     >
       <div className="flex items-center justify-between px-4 py-3">
-        {/* Left */}
         <div className="flex items-center gap-3 min-w-0">
-          {/* Avatar */}
           <img
             src={partnerPhotoUrl || '/avatar.jpg'}
             alt="profile"
-            className="
-              w-12 h-12
-              rounded-xl
-              object-cover
-              shrink-0
-            "
+            className="w-12 h-12 rounded-xl object-cover shrink-0"
           />
 
-          {/* Text */}
           <div className="flex flex-col min-w-0">
             <span
               className={`
@@ -63,22 +49,23 @@ export default function CardInbox({
                 ${hasUnread ? 'text-white font-semibold' : 'text-white'}
               `}
             >
-              {partnerDisplayName || partnerUsername || 'Conversation'}
+              {partnerDisplayName || partnerUsername || 'Vox'}
             </span>
 
-            <span
-              className={`
-                text-xs truncate mt-0.5
-                ${hasUnread ? 'text-white/80' : 'text-white/50'}
-              `}
-              title={preview || ''}
-            >
-              {preview || 'No messages yet'}
-            </span>
+            {showThreadPreview && (
+              <span
+                className={`
+                  text-xs truncate mt-0.5
+                  ${hasUnread ? 'text-white/80' : 'text-white/50'}
+                `}
+                title={preview || ''}
+              >
+                {preview || 'No Vox yet'}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Right */}
         <div className="flex items-center gap-3 shrink-0">
           {hasUnread && (
             <span
@@ -111,7 +98,7 @@ export default function CardInbox({
                 hover:bg-white/10
                 transition
               "
-              aria-label="Delete conversation"
+              aria-label="Delete Vox"
             >
               <Trash2 size={16} />
             </button>

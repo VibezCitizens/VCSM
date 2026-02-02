@@ -3,9 +3,10 @@
 // MessageBubble (PURE UI)
 // ============================================================
 
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import clsx from 'clsx'
 import ActorLink from '@/shared/components/ActorLink'
+import MessageMedia from '@/features/chat/conversation/components/MessageMedia'
 
 export default function MessageBubble({
   message,
@@ -51,9 +52,7 @@ export default function MessageBubble({
      ============================================================ */
   const openAtElement = (el) => {
     if (!el) return
-
     const rect = el.getBoundingClientRect()
-
     onOpenActions?.({
       messageId: message.id,
       senderActorId: message.senderActorId,
@@ -62,6 +61,21 @@ export default function MessageBubble({
   }
 
   const isMediaOnly = !!message.mediaUrl && !message.body
+
+  // ✅ timestamp text (for text bubbles too)
+  const timeText = useMemo(() => {
+    const createdAt = message?.createdAt
+    if (!createdAt) return ''
+    const d = createdAt instanceof Date ? createdAt : new Date(createdAt)
+    if (Number.isNaN(d.getTime())) return ''
+    try {
+      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    } catch {
+      return ''
+    }
+  }, [message?.createdAt])
+
+  const showTextTimestamp = !!timeText && !!message.body && !message.isDeleted
 
   return (
     <div
@@ -140,18 +154,19 @@ export default function MessageBubble({
           {!message.isDeleted && (
             <>
               {message.mediaUrl && (
-  <MediaBlock
-    type={message.type}
-    url={message.mediaUrl}
-    onOpen={() =>
-      onOpenMedia?.({
-        url: message.mediaUrl,
-        type: message.type,
-      })
-    }
-  />
-)}
-
+                <MessageMedia
+                  type={message.type}
+                  url={message.mediaUrl}
+                  isMine={isMine}
+                  createdAt={message.createdAt}
+                  onOpen={() =>
+                    onOpenMedia?.({
+                      url: message.mediaUrl,
+                      type: message.type,
+                    })
+                  }
+                />
+              )}
 
               {message.body && (
                 <span className="whitespace-pre-wrap">
@@ -163,6 +178,15 @@ export default function MessageBubble({
                 <span className="ml-2 text-[10px] opacity-70">
                   (edited)
                 </span>
+              )}
+
+              {/* ✅ timestamp for text messages (bottom-right inside bubble) */}
+              {showTextTimestamp && (
+                <div className="mt-1 flex justify-end">
+                  <span className="text-[10px] leading-none text-white/75">
+                    {timeText}
+                  </span>
+                </div>
               )}
             </>
           )}
@@ -177,47 +201,4 @@ export default function MessageBubble({
       </div>
     </div>
   )
-}
-
-/* ============================================================
-   Media renderer (UI only)
-   ============================================================ */
-
-function MediaBlock({ type, url, onOpen }) {
-  switch (type) {
-    case 'image':
-      return (
-        <img
-          src={url}
-          alt=""
-          onClick={onOpen}
-          className="mb-1 w-full max-w-full rounded-xl cursor-pointer active:opacity-90"
-        />
-      )
-
-
-    case 'video':
-      return (
-        <video
-          src={url}
-          controls
-          className="mb-1 w-full max-w-full rounded-xl"
-        />
-      )
-
-    case 'file':
-      return (
-        <a
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-          className="mb-1 block underline text-xs"
-        >
-          Download file
-        </a>
-      )
-
-    default:
-      return null
-  }
 }

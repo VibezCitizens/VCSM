@@ -83,7 +83,7 @@ export default function BottomNavBar() {
 
         <Tab
           to={chatPath}
-          label={chatUnread > 0 ? `Chat (${chatUnread})` : 'Chat'}
+          label={chatUnread > 0 ? `Vox (${chatUnread})` : 'Vox'}
           icon={<MessageCircle size={22} />}
           badgeCount={chatUnread}
         />
@@ -103,7 +103,7 @@ export default function BottomNavBar() {
           badgeCount={notiCount}
         />
 
-        <Tab to={profilePath} label="Profile" icon={<User size={22} />} />
+        <Tab to={profilePath} label="Citizen" icon={<User size={22} />} />
         <Tab to="/settings" label="Settings" icon={<Settings size={22} />} />
       </div>
     </nav>

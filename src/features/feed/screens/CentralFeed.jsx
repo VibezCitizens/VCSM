@@ -102,7 +102,7 @@ export default function CentralFeed() {
     if (!actorId) return
     if (!postMenu?.postId) return
 
-    const okConfirm = window.confirm('Delete this post?')
+    const okConfirm = window.confirm('Delete this Vibe?')
     if (!okConfirm) return
 
     const res = await softDeletePostController({
@@ -111,7 +111,7 @@ export default function CentralFeed() {
     })
 
     if (!res.ok) {
-      window.alert(res.error?.message ?? 'Failed to delete post')
+      window.alert(res.error?.message ?? 'Failed to delete Vibe')
       return
     }
 
@@ -128,8 +128,8 @@ export default function CentralFeed() {
       objectId: postMenu.postId,
       postId: postMenu.postId,
       dedupeKey: `report:post:${postMenu.postId}`,
-      title: 'Report post',
-      subtitle: 'Tell us what’s wrong with this post.',
+      title: 'Report Vibe',
+      subtitle: 'Tell us what’s wrong with this Vibe.',
     })
 
     closePostMenu()
@@ -277,7 +277,7 @@ export default function CentralFeed() {
       )}
 
       {viewerIsAdult !== null && !loading && posts.length === 0 && (
-        <p className="text-center text-gray-400">No posts found.</p>
+        <p className="text-center text-gray-400">No Vibes found.</p>
       )}
 
       {posts.map((post) => {

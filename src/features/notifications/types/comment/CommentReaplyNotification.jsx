@@ -17,7 +17,7 @@ export default function CommentReplyNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="replied to your comment"
+      message="replied to your Spark"
       timestamp={notification.createdAt}
       actionLabel={notification.linkPath ? 'View' : null}
       onAction={

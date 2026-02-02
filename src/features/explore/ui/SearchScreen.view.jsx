@@ -18,25 +18,23 @@ export default function SearchScreen() {
     { key: 'all', label: 'All' },
     { key: 'users', label: 'Citizens' },
     { key: 'vports', label: 'Vports' },
-    { key: 'posts', label: 'Posts' },
+    { key: 'posts', label: 'Vibes' },   // ✅ Posts → Vibes (UI label)
     { key: 'groups', label: 'Groups' },
   ]
 
   return (
     <div
-  className="
-    w-full
-    px-4
-
-    pt-[calc(env(safe-area-inset-top)+12px)]
-  "
->
-
+      className="
+        w-full
+        px-4
+        pt-[calc(env(safe-area-inset-top)+12px)]
+      "
+    >
       {/* ================= SEARCH INPUT ================= */}
       <div className="mb-6 relative">
         <input
           type="text"
-          placeholder="Search users, VPORTs, posts…"
+          placeholder="Search Citizens, Vports, Vibes…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="

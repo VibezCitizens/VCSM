@@ -3,7 +3,7 @@
 const DEFAULT_TABS = [
   { key: 'photos', label: 'Photos' },
   { key: 'videos', label: 'Videos' },
-  { key: 'posts', label: 'Posts' },
+  { key: 'posts', label: 'Vibes' },   // ✅ UI label updated
   { key: 'friends', label: 'Friends' },
 ]
 

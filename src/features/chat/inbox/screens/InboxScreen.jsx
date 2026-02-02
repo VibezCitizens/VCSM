@@ -1,6 +1,6 @@
 // src/features/chat/inbox/screens/InboxScreen.jsx
 // ============================================================
-// InboxScreen (DEBUG INSTRUMENTED — FINAL CLEAN UX)
+// VoxScreen (DEBUG INSTRUMENTED — FINAL CLEAN UX)
 // ============================================================
 
 import { useState, useEffect } from 'react'
@@ -11,6 +11,7 @@ import { useIdentity } from '@/state/identity/identityContext'
 // hooks
 import useInbox from '@/features/chat/inbox/hooks/useInbox'
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
+import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
 
 // ui
 import InboxList from '@/features/chat/inbox/components/InboxList'
@@ -23,6 +24,7 @@ import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 import StartConversationModal from '@/features/chat/start/screens/StartConversationModal'
 import { inboxOnSearch } from '@/features/chat/inbox/constants/inboxSearchAdapter'
 import { useStartConversation } from '@/features/chat/start/hooks/useStartConversation'
+
 // 🔥 fire icon (replaces Plus)
 import ConversationSignalIcon from '@/shared/components/ConversationSignalIcon'
 
@@ -47,6 +49,10 @@ export default function InboxScreen() {
   // ✅ NEW: header action menu open/close
   const [actionsOpen, setActionsOpen] = useState(false)
 
+  // ✅ settings (Option B: ONLY preview toggle)
+  const { settings } = useVexSettings()
+  const showThreadPreview = settings?.showThreadPreview ?? true
+
   // inbox data (✅ includes optimistic hide)
   const {
     entries = [],
@@ -56,7 +62,7 @@ export default function InboxScreen() {
   } = useInbox({ actorId })
 
   console.log('inboxLoading:', inboxLoading)
-  console.log('raw inbox entries:', entries)
+  console.log('raw Vox entries:', entries)
   console.log('inbox error:', error)
 
   // inbox actions
@@ -80,7 +86,7 @@ export default function InboxScreen() {
   if (error) {
     console.error('[InboxScreen] inbox error', error)
     console.groupEnd()
-    return <div className="p-4 text-red-400">Failed to load inbox</div>
+    return <div className="p-4 text-red-400">Failed to load Vox</div>
   }
 
   const previews = entries
@@ -94,7 +100,7 @@ export default function InboxScreen() {
     })
     .filter(Boolean)
 
-  console.log('final inbox previews:', previews)
+  console.log('final Vox previews:', previews)
 
   const handlePick = async (picked) => {
     setStartOpen(false)
@@ -107,10 +113,10 @@ export default function InboxScreen() {
       <div className="px-4 py-3 border-b border-neutral-800 flex items-center justify-between">
         <h1 className="text-lg font-semibold">
           {actorKind === 'vport'
-            ? `${identity?.displayName || 'Vport'} Inbox`
+            ? 'Vport Vox'
             : actorKind === 'void'
-              ? 'Void Inbox'
-              : 'Inbox'}
+              ? 'Void Vox'
+              : 'Vox'}
         </h1>
 
         {/* ✅ RIGHT ACTIONS: fire button triggers menu */}
@@ -126,7 +132,7 @@ export default function InboxScreen() {
               hover:bg-white/10
               flex items-center justify-center
             "
-            aria-label="Inbox actions"
+            aria-label="Vox actions"
           >
             <ConversationSignalIcon size={20} className="text-white" />
           </button>
@@ -137,7 +143,7 @@ export default function InboxScreen() {
               {/* backdrop click to close */}
               <button
                 type="button"
-                aria-label="Close inbox actions"
+                aria-label="Close Vox actions"
                 onClick={() => setActionsOpen(false)}
                 className="fixed inset-0 z-40 cursor-default"
               />
@@ -146,14 +152,14 @@ export default function InboxScreen() {
                 <button
                   type="button"
                   onClick={() => {
-                    console.log('[InboxScreen] MENU: New conversation')
+                    console.log('[InboxScreen] MENU: New Vox')
                     setActionsOpen(false)
                     setStartOpen(true)
                   }}
                   className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3"
                 >
                   <span className="text-lg">➕</span>
-                  <span className="text-white">New conversation</span>
+                  <span className="text-white">New Vox</span>
                 </button>
 
                 <div className="h-px bg-white/10" />
@@ -183,12 +189,13 @@ export default function InboxScreen() {
         ) : (
           <InboxList
             entries={previews}
+            showThreadPreview={showThreadPreview}
             onSelect={(id) => {
-              console.log('[InboxScreen] inbox item selected:', id)
+              console.log('[InboxScreen] Vox item selected:', id)
               navigate(`/chat/${id}`)
             }}
             onDelete={(conversationId) => {
-              console.log('[InboxScreen] delete thread:', conversationId)
+              console.log('[InboxScreen] delete Vox:', conversationId)
 
               // ✅ OPTIMISTIC — NO FLASH
               hideConversation(conversationId)
@@ -200,7 +207,7 @@ export default function InboxScreen() {
         )}
       </div>
 
-      {/* START CONVERSATION MODAL */}
+      {/* START VOX MODAL */}
       <StartConversationModal
         open={startOpen}
         onClose={() => {

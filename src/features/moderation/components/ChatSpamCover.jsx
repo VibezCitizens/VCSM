@@ -18,14 +18,14 @@ function CheckIcon({ className = "w-9 h-9" }) {
 /**
  * ChatSpamCover
  * - Fullscreen overlay for chat screens
- * - Use when a conversation is marked as spam
+ * - Use when a Vox is marked as spam
  */
 export default function ChatSpamCover({
   title = "Marked as spam",
-  subtitle = "Thanks — we’ll review it. This conversation has been reported as spam.",
+  subtitle = "Thanks — we’ll review it. This Vox has been reported as spam.",
   hint = "You can change this anytime in your safety settings.",
   onClose,
-  primaryLabel = "Back to inbox",
+  primaryLabel = "Back To Vox",
   onPrimary,
   secondaryLabel = "Not spam",
   onSecondary,

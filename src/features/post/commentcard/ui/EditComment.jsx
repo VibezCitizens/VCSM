@@ -40,7 +40,7 @@ export default function EditCommentScreen() {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-lg font-semibold mb-3">Edit comment</h1>
+      <h1 className="text-lg font-semibold mb-3">Edit Spark</h1>
 
       <textarea
         value={text}

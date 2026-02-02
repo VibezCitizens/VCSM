@@ -54,6 +54,11 @@ const ActorProfileScreen = lazyWithLog(
   () => import('@/features/profiles/screens/ActorProfileScreen')
 )
 
+const TopFriendsRankEditor = lazyWithLog(
+  'TopFriendsRankEditor',
+  () => import('@/features/profiles/screens/views/tabs/friends/components/TopFriendsRankEditor')
+)
+
 /* ================= VPORTS ================= */
 const VportScreen = lazyWithLog(
   'VportScreen',
@@ -81,6 +86,11 @@ const PostDetailScreen = lazyWithLog(
   () => import('@/features/post/screens/PostDetail.screen')
 )
 
+const EditPostScreen = lazyWithLog(
+  'EditPostScreen',
+  () => import('@/features/post/postcard/ui/EditPost')
+)
+
 /* ================= CHAT ================= */
 const ChatInboxScreen = lazyWithLog(
   'ChatInbox',
@@ -97,20 +107,64 @@ const NewChatScreen = lazyWithLog(
   () => import('@/features/chat').then(m => ({ default: m.NewConversationScreen }))
 )
 
+const InboxChatSettingsScreen = lazyWithLog(
+  'InboxChatSettingsScreen',
+  () => import('@/features/chat/inbox/screens/InboxChatSettingsScreen')
+)
+
+// ✅ NEW: Inbox settings screen
+const InboxSettingsScreen = lazyWithLog(
+  'InboxSettingsScreen',
+  () => import('@/features/chat/inbox/screens/InboxSettingsScreen')
+)
+
+const MessagePrivacyScreen = lazyWithLog(
+  'MessagePrivacyScreen',
+  () => import('@/features/chat/inbox/screens/settings/MessagePrivacyScreen')
+)
+
+
+// ✅ NEW: folder screens
+const SpamInboxScreen = lazyWithLog(
+  'SpamInboxScreen',
+  () => import('@/features/chat/inbox/screens/SpamInboxScreen')
+)
+
+// (create these later if you haven’t yet)
+const RequestsInboxScreen = lazyWithLog(
+  'RequestsInboxScreen',
+  () => import('@/features/chat/inbox/screens/RequestsInboxScreen')
+)
+
+const ArchivedInboxScreen = lazyWithLog(
+  'ArchivedInboxScreen',
+  () => import('@/features/chat/inbox/screens/ArchivedInboxScreen')
+)
+const BlockedUsersScreen = lazyWithLog(
+  'BlockedUsersScreen',
+  () => import('@/features/chat/inbox/screens/settings/BlockedUsersScreen')
+)
+
 /* ================= NOTIFICATION DEEP LINKS ================= */
 const NotiViewPostScreen = lazyWithLog(
   'NotiViewPost',
   () => import('@/features/notifications/screen/NotiViewPostScreen')
 )
 
+/* ================= DEV / PREVIEW ================= */
+const NurseHomeScreen = lazyWithLog(
+  'NurseHomeScreen',
+  () => import('@/features/professional/professional-nurse/screens/NurseHomeScreen')
+)
+
 // ============================================================================
 // ROUTES
-// ============================================================================
+// ============================================================================// ...imports above stay the same
+
 export default function AppRoutes() {
   return (
     <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
       <Routes>
-
         {/* ================= PUBLIC ================= */}
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
@@ -120,7 +174,6 @@ export default function AppRoutes() {
         {/* ================= PROTECTED ================= */}
         <Route element={<ProtectedRoute />}>
           <Route element={<RootLayout />}>
-
             {/* MAIN */}
             <Route path="/feed" element={<CentralFeed />} />
             <Route path="/explore" element={<ExploreScreen />} />
@@ -129,10 +182,24 @@ export default function AppRoutes() {
             <Route path="/posts" element={<PostFeedScreen />} />
             <Route path="/posts/:postId" element={<PostDetailScreen />} />
             <Route path="/post/:postId" element={<PostDetailScreen />} />
+            <Route path="/posts/:postId/edit" element={<EditPostScreen />} />
+            <Route path="/post/:postId/edit" element={<EditPostScreen />} />
 
             {/* CHAT */}
             <Route path="/chat" element={<ChatInboxScreen />} />
             <Route path="/chat/new" element={<NewChatScreen />} />
+
+            <Route path="/chat/spam" element={<SpamInboxScreen />} />
+            <Route path="/chat/requests" element={<RequestsInboxScreen />} />
+            <Route path="/chat/archived" element={<ArchivedInboxScreen />} />
+
+            {/* ✅ SETTINGS ROUTES MUST COME BEFORE /chat/:conversationId */}
+            <Route path="/chat/settings" element={<InboxChatSettingsScreen />} />
+            <Route path="/chat/settings/inbox" element={<InboxSettingsScreen />} />
+            <Route path="/chat/settings/privacy" element={<MessagePrivacyScreen />} />
+            <Route path="/chat/settings/blocked" element={<BlockedUsersScreen />} />
+
+            {/* Conversation route AFTER settings */}
             <Route path="/chat/:conversationId" element={<ChatConversationScreen />} />
 
             {/* Legacy vport URLs */}
@@ -150,24 +217,28 @@ export default function AppRoutes() {
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/void" element={<VoidScreen />} />
 
-            {/* ================= PROFILES (SINGLE ENTRY POINT) ================= */}
+            {/* PROFILES */}
             <Route path="/me" element={<Navigate to="/profile/self" replace />} />
             <Route path="/u/:username" element={<UsernameProfileRedirect />} />
             <Route path="/profile/:actorId" element={<ActorProfileScreen />} />
+            <Route path="/profile/:id/friends/top/edit" element={<TopFriendsRankEditor />} />
 
-            {/* ================= VPORTS (ACTOR-BASED) ================= */}
-            <Route path="/vport/:actorId" element={<VportScreen />} />
+            {/* VPORTS */}
+            <Route path="/vport/:vportId" element={<VportScreen />} />
+            <Route path="/v/id/:vportId" element={<VportScreen />} />
+            <Route path="/v/:vportId" element={<VportScreen />} />
+
+            {/* DEV PREVIEW */}
+            <Route path="/_dev/nurse-home" element={<NurseHomeScreen />} />
 
             {/* DEFAULTS */}
             <Route path="/" element={<Navigate to="/feed" replace />} />
             <Route path="*" element={<Navigate to="/feed" replace />} />
-
           </Route>
         </Route>
 
         {/* PUBLIC FALLBACK */}
         <Route path="*" element={<Navigate to="/login" replace />} />
-
       </Routes>
     </Suspense>
   )

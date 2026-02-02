@@ -1,20 +1,16 @@
-// ============================================================
-// InboxList DELL
-// ------------------------------------------------------------
-// - Pure list renderer
-// - Requires stable keys (conversationId)
-// - No actor logic
-// ============================================================
-
+// src/features/chat/inbox/components/InboxList.jsx
 import React from 'react'
-import CardInbox from './CardInbox' // ✅ USE NEW CARD
+import CardInbox from './CardInbox'
 
 export default function InboxList({
   entries = [],
-  activeConversationId = null, // (kept for future)
+  activeConversationId = null,
   onSelect,
   onContextMenu,
   onDelete,
+
+  // ✅ ONLY PREVIEW TOGGLE
+  showThreadPreview = true,
 }) {
   if (!Array.isArray(entries) || entries.length === 0) {
     return null
@@ -31,6 +27,7 @@ export default function InboxList({
             entry={entry}
             onClick={() => onSelect?.(entry.conversationId)}
             onDelete={onDelete}
+            showThreadPreview={showThreadPreview}
           />
         )
       })}

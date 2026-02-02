@@ -54,12 +54,12 @@ export default function PrivacyTabView() {
   }
 
   const lookupTitle = isVport
-    ? 'Find a user (VPORT scope)'
-    : 'Find a user'
+    ? 'Find a Citizen (VPORT scope)'
+    : 'Find a Citizen'
 
   const blockedTitle = isVport
-    ? 'Blocked users (VPORT scope)'
-    : 'Blocked users'
+    ? 'Blocked Citizens (VPORT scope)'
+    : 'Blocked Citizens'
 
   const visibilityTitle = isVport
     ? 'VPORT visibility'

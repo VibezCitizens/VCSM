@@ -1,13 +1,5 @@
 /* src/features/chat/conversation/screen/chat-screen.css */
 
-/* ============================================================
-   iOS PLATFORM BASE
-   ============================================================
-   Purpose:
-   - Lock viewport height on iOS Safari
-   - Prevent Safari from scrolling the document
-*/
-
 html.ios-keyboard {
   height: 100%;
 }
@@ -18,35 +10,17 @@ html.ios-keyboard body {
   overscroll-behavior: none;
 }
 
-/* ============================================================
-   CHAT SCREEN ROOT
-   ============================================================
-   Purpose:
-   - Fixed full-screen container
-   - Prevents layout shifts
-*/
-
 .chat-screen {
   position: fixed;
   left: 0;
   right: 0;
-  top: 0;
 
-  /* render only inside the visual viewport */
+  top: var(--vv-top, 0px);
   height: var(--vv-height, 100dvh);
-
-  /* follow iOS panning */
-  transform: translateY(var(--vv-top, 0px));
 
   background: black;
   overflow: hidden;
 }
-
-
-/* ============================================================
-   HEADER
-   ============================================================
-*/
 
 .chat-header {
   position: absolute;
@@ -57,43 +31,13 @@ html.ios-keyboard body {
   z-index: 10;
 }
 
-/* ============================================================
-   FOOTER (INPUT HOLDER)
-   ============================================================
-*/
-
-.chat-footer {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  min-height: 88px;
-  padding-bottom: env(safe-area-inset-bottom);
-
-  background: black;
-  z-index: 10;
-
-  transform: translateY(var(--ios-kb-offset, 0px));
-  will-change: transform;
-
-  transition: transform 120ms cubic-bezier(0.33, 1, 0.68, 1);
-}
-
-/* ============================================================
-   MESSAGE LIST (SCROLLABLE AREA)
-   ============================================================
-*/
+/* ✅ footer can stay defined, but it's not used now */
+/* .chat-footer { ... } */
 
 .chat-messages {
   position: absolute;
   top: 64px;
-
-  bottom: calc(
-    88px +
-    env(safe-area-inset-bottom) +
-    max(0px, calc(-1 * var(--ios-kb-offset, 0px)))
-  );
+  bottom: 0; /* ✅ fill to bottom now */
 
   left: 0;
   right: 0;
@@ -101,31 +45,94 @@ html.ios-keyboard body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
   padding-bottom: calc(1px + env(safe-area-inset-bottom));
   scroll-padding-bottom: calc(1px + env(safe-area-inset-bottom));
-
-  will-change: contents;
 }
 
-/* ============================================================
-   SAFETY / QUALITY OF LIFE
-   ============================================================
-*/
-
-/* Prevent Safari zoom on input focus */
 input,
 textarea {
   font-size: 16px;
 }
 
-/* Remove tap highlight artifacts */
 * {
   -webkit-tap-highlight-color: transparent;
 }
+/* Big bottom T button */
+.chat-bottom-t {
+  position: absolute;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 30;
 
-/* ============================================================
-   iOS PWA OVERRIDES
-   ============================================================
-   Intentionally EMPTY now.
-   We no longer disable footer transforms in PWA.
-*/
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Floating top bar under header */
+.chat-topbar {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 64px; /* directly below .chat-header height */
+  z-index: 25;
+
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  padding: 10px 10px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.chat-topbar-input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  outline: none;
+
+  font-size: 16px; /* iOS no-zoom */
+}
+
+.chat-topbar-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.10);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

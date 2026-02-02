@@ -17,7 +17,7 @@ export default function PostDislikeNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="disliked your post"
+      message="disliked your Vibe"
       timestamp={notification.createdAt}
       actionLabel={notification.linkPath ? 'View' : null}
       onAction={

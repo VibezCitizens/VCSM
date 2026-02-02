@@ -55,13 +55,12 @@ export default function UploadScreenModern({ onSubmit }) {
 
   return (
     <div className="min-h-screen px-4 py-6 max-w-xl mx-auto">
-
       <div className="flex flex-col items-center gap-3 mb-4">
         <ActorPill />
 
         <div className="flex gap-2">
           <SegmentedButton active={mode === "post"} onClick={() => setMode("post")}>
-            POST
+            VIBE
           </SegmentedButton>
           <SegmentedButton active={mode === "24drop"} onClick={() => setMode("24drop")}>
             24DROP

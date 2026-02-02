@@ -1,6 +1,7 @@
 // src/features/chat/inbox/screens/SpamInboxScreen.jsx
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 
 import { useIdentity } from '@/state/identity/identityContext'
 
@@ -36,7 +37,7 @@ export default function SpamInboxScreen() {
   if (identityLoading || !actorId) return null
 
   if (error) {
-    return <div className="p-4 text-red-400">Failed to load spam</div>
+    return <div className="p-4 text-red-400">Failed to load spam Vox</div>
   }
 
   const previews = entries
@@ -50,24 +51,44 @@ export default function SpamInboxScreen() {
 
   return (
     <div className="flex flex-col min-h-0">
-      {/* HEADER */}
-      <div className="px-4 py-3 border-b border-neutral-800 flex items-center justify-between shrink-0">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="rounded-lg px-3 py-1 text-sm text-neutral-200 hover:bg-white/10"
-        >
-          Back
-        </button>
+      {/* HEADER (ChatHeader-style, centered title) */}
+      <header
+        className="
+          sticky top-0 z-20
+          bg-black/90 backdrop-blur
+          border-b border-white/10
+          shrink-0
+        "
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <div className="relative h-14 px-3 flex items-center">
+          {/* LEFT: Back */}
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="
+              p-2 -ml-1 rounded-xl
+              text-violet-400
+              hover:bg-violet-500/15
+              active:bg-violet-500/25
+              transition
+            "
+            aria-label="Back"
+          >
+            <ChevronLeft size={22} />
+          </button>
 
-        <h1 className="text-lg font-semibold text-white">
-          {actorKind === 'vport' ? 'Spam (Vport)' : 'Spam'}
-        </h1>
+          {/* CENTER: Title */}
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
+            {actorKind === 'vport' ? 'Spam Vox (Vport)' : 'Spam Vox'}
+          </h1>
 
-        <div className="text-xs text-neutral-500">
-          {spamLoading ? 'Loading…' : ''}
+          {/* RIGHT: status */}
+          <div className="ml-auto w-10 text-right text-xs text-neutral-500">
+            {spamLoading ? 'Loading…' : ''}
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* CONTENT */}
       <div className="flex-1 overflow-y-auto pb-24">

@@ -1,16 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
-import { Paperclip, X } from 'lucide-react'
+import { Paperclip, X, Send } from 'lucide-react'
 
 const DEFAULT_MAX = 4000
-
-const isIOS =
-  typeof navigator !== 'undefined' &&
-  /iPad|iPhone|iPod/.test(navigator.userAgent)
-
-const isIOSPWA =
-  typeof window !== 'undefined' &&
-  window.navigator &&
-  window.navigator.standalone === true
 
 export default function ChatInput({
   onSend,
@@ -18,237 +9,267 @@ export default function ChatInput({
   onAttach,
   maxLength = DEFAULT_MAX,
   isSending = false,
-
   editing = false,
   initialValue = '',
   onSaveEdit,
   onCancelEdit,
+  onTyping,
 }) {
   const [value, setValue] = useState('')
+  const [topBarOpen, setTopBarOpen] = useState(false)
+
+  // ✅ media preview state
+  const [mediaPreview, setMediaPreview] = useState(null)
+  // { file, url, type }
+
   const composingRef = useRef(false)
-  const inputRef = useRef(null)
+  const topInputRef = useRef(null)
   const fileRef = useRef(null)
 
   const inEdit = !!editing
-  const isIOSSafari = isIOS && !isIOSPWA
+  const actuallyDisabled = !!disabled || !!isSending
 
-  const prevInEditRef = useRef(inEdit)
-  useEffect(() => {
-    if (prevInEditRef.current && !inEdit) {
-      setValue('')
-      requestAnimationFrame(() => inputRef.current?.focus())
+  const focusInput = useCallback(() => {
+    const el = topInputRef.current
+    if (!el) return
+
+    const trigger = () => {
+      el.focus()
+      const len = el.value?.length ?? 0
+      try {
+        el.setSelectionRange(len, len)
+      } catch {}
     }
-    prevInEditRef.current = inEdit
-  }, [inEdit])
+
+    trigger()
+    requestAnimationFrame(trigger)
+    setTimeout(trigger, 50)
+    setTimeout(trigger, 150)
+  }, [])
 
   useEffect(() => {
     if (inEdit) {
       setValue(initialValue || '')
-      requestAnimationFrame(() => {
-        if (inputRef.current) {
-          const len = (initialValue || '').length
-          inputRef.current.focus()
-          inputRef.current.setSelectionRange(len, len)
-        }
-      })
+      setTopBarOpen(true)
+      requestAnimationFrame(() => focusInput())
     }
-  }, [inEdit, initialValue])
-
-  const remaining = maxLength - value.length
-  const actuallyDisabled = !!disabled || !!isSending
+  }, [inEdit, initialValue, focusInput])
 
   const clamp = useCallback(
     (s) => (s.length > maxLength ? s.slice(0, maxLength) : s),
     [maxLength]
   )
 
-  const doPrimary = useCallback(() => {
+  const openKeyboard = useCallback(
+    (e) => {
+      if (e?.preventDefault) e.preventDefault()
+      if (actuallyDisabled) return
+      setTopBarOpen(true)
+      focusInput()
+      requestAnimationFrame(() => focusInput())
+    },
+    [actuallyDisabled, focusInput]
+  )
+
+  const doPrimary = useCallback(async () => {
     if (actuallyDisabled) return
     const text = value.trim()
-    if (!text) return
 
-    if (inEdit) {
-      onSaveEdit?.(text)
-      return
-    }
+    if (!text && !mediaPreview) return
 
-    onSend?.(text)
-    setValue('')
-  }, [actuallyDisabled, inEdit, onSaveEdit, onSend, value])
-
-  const handleBeforeInput = useCallback((e) => {
-    if (!inputRef.current) return
-    const el = inputRef.current
-    const { selectionStart, selectionEnd } = el
-    const data = e.data ?? ''
-    if (!data) return
-
-    const next = value.slice(0, selectionStart) + data + value.slice(selectionEnd)
-
-    if (next.length > maxLength) {
-      e.preventDefault()
-      const allowed = maxLength - (value.length - (selectionEnd - selectionStart))
-      if (allowed > 0) {
-        const partial = data.slice(0, allowed)
-        const patched = value.slice(0, selectionStart) + partial + value.slice(selectionEnd)
-        setValue(patched)
-        requestAnimationFrame(() => {
-          const pos = selectionStart + partial.length
-          el.setSelectionRange(pos, pos)
-        })
+    // ✅ send media first (await upload handler)
+    if (mediaPreview) {
+      try {
+        await onAttach?.([mediaPreview.file])
+      } finally {
+        if (mediaPreview?.url) URL.revokeObjectURL(mediaPreview.url)
+        setMediaPreview(null)
       }
     }
-  }, [maxLength, value])
 
-  const handleChange = useCallback((e) => setValue(clamp(e.target.value)), [clamp])
-
-  const handlePaste = useCallback((e) => {
-    if (!inputRef.current) return
-    const files = e.clipboardData?.files
-    const text = e.clipboardData?.getData('text') ?? ''
-
-    if (files && files.length > 0) {
-      e.preventDefault()
-      onAttach?.(files)
-      return
+    // ✅ then send text (or edit)
+    if (text) {
+      if (inEdit) onSaveEdit?.(text)
+      else onSend?.(text)
     }
 
-    const el = inputRef.current
-    const { selectionStart, selectionEnd } = el
-    const available = maxLength - (value.length - (selectionEnd - selectionStart))
-    if (available <= 0) {
-      e.preventDefault()
-      return
-    }
+    setValue('')
+  }, [actuallyDisabled, value, mediaPreview, onAttach, onSend, inEdit, onSaveEdit])
 
-    const toInsert = text.slice(0, available)
-    const next = value.slice(0, selectionStart) + toInsert + value.slice(selectionEnd)
+  const handleChange = (e) => {
+    setValue(clamp(e.target.value))
+    onTyping?.()
+  }
 
-    if (toInsert.length !== text.length) {
-      e.preventDefault()
-      setValue(next)
-      requestAnimationFrame(() => {
-        const pos = selectionStart + toInsert.length
-        el.setSelectionRange(pos, pos)
-      })
-    }
-  }, [maxLength, onAttach, value])
-
-  const handleKeyDown = useCallback((e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !composingRef.current) {
       e.preventDefault()
       doPrimary()
     }
     if (e.key === 'Escape' && !composingRef.current) {
       if (inEdit) onCancelEdit?.()
-      else setValue('')
+      else {
+        setValue('')
+        setTopBarOpen(false)
+      }
     }
-  }, [doPrimary, inEdit, onCancelEdit])
+  }
 
-  const openPicker = useCallback(() => {
-    if (actuallyDisabled) return
-    fileRef.current?.click()
-  }, [actuallyDisabled])
+  // ✅ Handle file pick + preview
+  const handleFilePick = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-  const onPickFiles = useCallback((e) => {
-    const list = e.target.files
-    if (!list || list.length === 0) return
+    // only allow images/videos
+    const t = String(file.type || '')
+    if (!t.startsWith('image/') && !t.startsWith('video/')) {
+      e.target.value = ''
+      return
+    }
 
-    onAttach?.(list)
+    // cleanup any previous preview url
+    if (mediaPreview?.url) {
+      URL.revokeObjectURL(mediaPreview.url)
+    }
 
-    // allow re-selecting the same file again
+    const url = URL.createObjectURL(file)
+
+    setMediaPreview({
+      file,
+      url,
+      type: file.type,
+    })
+
     e.target.value = ''
-  }, [onAttach])
+    requestAnimationFrame(() => focusInput())
+  }
+
+  const removeMedia = () => {
+    if (mediaPreview?.url) URL.revokeObjectURL(mediaPreview.url)
+    setMediaPreview(null)
+  }
+
+  // ✅ prevent leaking objectURLs on unmount
+  useEffect(() => {
+    return () => {
+      if (mediaPreview?.url) URL.revokeObjectURL(mediaPreview.url)
+    }
+  }, [mediaPreview])
 
   return (
-  <div
-    className="bg-black/90 backdrop-blur pt-2 pb-3 border-t border-white/10"
-    aria-live="polite"
-  >
-    {/* hidden file picker (images only) */}
-    <input
-      ref={fileRef}
-      type="file"
-      accept="image/*"
-      multiple={false}
-      onChange={onPickFiles}
-      style={{ display: 'none' }}
-    />
+    <>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*,video/*"
+        onChange={handleFilePick}
+        className="hidden"
+      />
 
-    <div className="px-3">
-      {inEdit && (
-        <div className="flex items-center justify-between text-xs text-white/70 mb-2 px-1">
-          <span>Editing</span>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          doPrimary()
+        }}
+        className={`chat-topbar transition-all duration-200 ${
+          topBarOpen
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 -translate-y-2 pointer-events-none'
+        }`}
+      >
+        <div className="flex items-center gap-2 px-3 py-2 w-full">
+          {/* Attach */}
           <button
             type="button"
-            onClick={onCancelEdit}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-white"
+            onClick={() => fileRef.current?.click()}
+            className="shrink-0 p-2 rounded-full text-purple-400 hover:text-purple-300 active:opacity-80"
+            disabled={actuallyDisabled}
+            aria-label="Attach"
           >
-            <X size={14} /> Cancel
+            <Paperclip size={22} />
+          </button>
+
+          {/* Media preview pill */}
+          {mediaPreview && (
+            <div className="relative shrink-0">
+              {String(mediaPreview.type || '').startsWith('video/') ? (
+                <video
+                  src={mediaPreview.url}
+                  className="w-12 h-12 rounded-xl object-cover border border-purple-700"
+                  muted
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={mediaPreview.url}
+                  alt=""
+                  className="w-12 h-12 rounded-xl object-cover border border-purple-700"
+                />
+              )}
+
+              <button
+                type="button"
+                onClick={removeMedia}
+                className="absolute -top-2 -right-2 bg-black text-white rounded-full p-1"
+                aria-label="Remove media"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          )}
+
+          {/* Text input */}
+          <input
+            ref={topInputRef}
+            type="text"
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={() => (composingRef.current = true)}
+            onCompositionEnd={() => (composingRef.current = false)}
+            placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
+            className="
+              flex-1
+              w-full px-4 py-3
+              rounded-2xl
+              bg-neutral-900 text-white
+              border border-purple-700
+              focus:ring-2 focus:ring-purple-500
+              outline-none
+              placeholder:text-neutral-400
+            "
+            disabled={actuallyDisabled}
+            autoComplete="off"
+            inputMode="text"
+            enterKeyHint={inEdit ? 'done' : 'send'}
+          />
+
+          {/* Send */}
+          <button
+            type="submit"
+            disabled={actuallyDisabled || (!value.trim() && !mediaPreview)}
+            className={
+              value.trim() || mediaPreview
+                ? 'shrink-0 w-11 h-11 rounded-full bg-purple-600 text-white flex items-center justify-center active:opacity-90'
+                : 'shrink-0 w-11 h-11 rounded-full bg-purple-900/40 text-purple-400 cursor-not-allowed flex items-center justify-center'
+            }
+            aria-label={inEdit ? 'Save' : 'Send'}
+          >
+            <Send size={18} />
           </button>
         </div>
-      )}
+      </form>
 
-      <div className="flex items-end gap-2">
-        <button
-          type="button"
-          onClick={openPicker}
-          className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white"
-          disabled={actuallyDisabled}
-        >
-          <Paperclip size={18} />
-        </button>
-
-        <div className="flex-1">
-          <div className="rounded-2xl bg-white/10 px-4 py-3">
-            <input
-              ref={inputRef}
-              type="text"
-              value={value}
-              onCompositionStart={() => { composingRef.current = true }}
-              onCompositionEnd={() => { composingRef.current = false }}
-              onBeforeInput={handleBeforeInput}
-              onChange={handleChange}
-              onPaste={handlePaste}
-              onKeyDown={handleKeyDown}
-              onFocus={(e) => {
-                if (!isIOSSafari) return
-                requestAnimationFrame(() => {
-                  e.target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-                })
-              }}
-              placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
-              className="w-full bg-transparent outline-none text-white placeholder-white/50"
-              disabled={actuallyDisabled}
-              inputMode="text"
-              autoComplete="off"
-              autoCorrect="on"
-              spellCheck
-              enterKeyHint={inEdit ? 'done' : 'send'}
-            />
-          </div>
-
-          <div className="text-[11px] text-white/50 mt-1 pl-1">
-            {remaining} characters left
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={doPrimary}
-          disabled={actuallyDisabled || !value.trim()}
-          className={[
-            'px-4 py-3 rounded-2xl font-medium',
-            value.trim() && !actuallyDisabled
-              ? 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white'
-              : 'bg-white/10 text-white/40 cursor-not-allowed',
-          ].join(' ')}
-        >
-          {inEdit ? 'Save' : 'Send'}
-        </button>
-      </div>
-    </div>
-  </div>
-)
-
+      {/* Floating T button unchanged */}
+      <button
+        type="button"
+        className="chat-bottom-t fixed bottom-6 right-6 w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center font-bold text-xl z-40 border"
+        onPointerDown={openKeyboard}
+        onClick={openKeyboard}
+        aria-label="Open keyboard"
+      >
+        T
+      </button>
+    </>
+  )
 }

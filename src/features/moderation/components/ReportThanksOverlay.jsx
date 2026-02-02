@@ -22,12 +22,12 @@ function CheckIcon({ className = "w-9 h-9" }) {
 
 /**
  * variant:
- * - "post": full overlay (default) for PostCard
- * - "comment": compact overlay sized for CommentCard height
+ * - "post": full overlay (default) for VibeCard
+ * - "comment": compact overlay sized for SparkCard height
  */
 export default function ReportedPostCover({
   title = "Reported",
-  subtitle = "Thanks — we’ll review it. This post is hidden for you.",
+  subtitle = "Thanks — we’ll review it. This Vibe is hidden for you.",
   onClose,
   variant = "post",
 }) {

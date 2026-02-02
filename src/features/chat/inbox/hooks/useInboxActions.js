@@ -11,16 +11,13 @@ import { useCallback } from 'react'
 import {
   updateInboxFlags,
   archiveConversationForActor,
+  moveConversationToFolder, // ✅ NEW
 } from '@/features/chat/inbox/dal/inbox.write.dal'
 
-import {
-  leaveConversation,
-} from '@/features/chat/conversation/controllers/leaveConversation.controller'
+import { leaveConversation } from '@/features/chat/conversation/controllers/leaveConversation.controller'
 
 // ✅ NEW: thread delete controller
-import {
-  deleteThreadForMeController,
-} from '@/features/chat/inbox/controllers/deleteThreadForMe.controller'
+import { deleteThreadForMeController } from '@/features/chat/inbox/controllers/deleteThreadForMe.controller'
 
 export default function useInboxActions({ actorId }) {
   const isReady = Boolean(actorId)
@@ -28,10 +25,14 @@ export default function useInboxActions({ actorId }) {
   /* ============================================================
      Safe no-op wrapper
      ============================================================ */
-  const guard = (fn) => async (...args) => {
-    if (!isReady) return
-    return fn(...args)
-  }
+  const guard = useCallback(
+    (fn) =>
+      async (...args) => {
+        if (!isReady) return
+        return fn(...args)
+      },
+    [isReady]
+  )
 
   const pin = useCallback(
     guard(async (conversationId) => {
@@ -41,7 +42,7 @@ export default function useInboxActions({ actorId }) {
         flags: { pinned: true },
       })
     }),
-    [actorId]
+    [actorId, guard]
   )
 
   const unpin = useCallback(
@@ -52,7 +53,7 @@ export default function useInboxActions({ actorId }) {
         flags: { pinned: false },
       })
     }),
-    [actorId]
+    [actorId, guard]
   )
 
   const mute = useCallback(
@@ -63,7 +64,7 @@ export default function useInboxActions({ actorId }) {
         flags: { muted: true },
       })
     }),
-    [actorId]
+    [actorId, guard]
   )
 
   const unmute = useCallback(
@@ -74,7 +75,7 @@ export default function useInboxActions({ actorId }) {
         flags: { muted: false },
       })
     }),
-    [actorId]
+    [actorId, guard]
   )
 
   const archive = useCallback(
@@ -84,7 +85,19 @@ export default function useInboxActions({ actorId }) {
         conversationId,
       })
     }),
-    [actorId]
+    [actorId, guard]
+  )
+
+  // ✅ Unarchive (move back to inbox folder)
+  const unarchive = useCallback(
+    guard(async (conversationId) => {
+      await moveConversationToFolder({
+        actorId,
+        conversationId,
+        folder: 'inbox',
+      })
+    }),
+    [actorId, guard]
   )
 
   const leave = useCallback(
@@ -94,7 +107,21 @@ export default function useInboxActions({ actorId }) {
         conversationId,
       })
     }),
-    [actorId]
+    [actorId, guard]
+  )
+
+  /* ============================================================
+     Requests: Ignore (NO deleting) -> move to spam
+     ============================================================ */
+  const ignoreRequest = useCallback(
+    guard(async (conversationId) => {
+      await moveConversationToFolder({
+        actorId,
+        conversationId,
+        folder: 'spam',
+      })
+    }),
+    [actorId, guard]
   )
 
   /* ============================================================
@@ -108,7 +135,7 @@ export default function useInboxActions({ actorId }) {
         archiveUntilNew: true,
       })
     }),
-    [actorId]
+    [actorId, guard]
   )
 
   return {
@@ -118,7 +145,13 @@ export default function useInboxActions({ actorId }) {
     mute,
     unmute,
     archive,
+    unarchive,
     leave,
-    deleteThreadForMe, // ✅ exposed
+
+    // ✅ Requests
+    ignoreRequest,
+
+    // existing
+    deleteThreadForMe,
   }
 }

@@ -83,11 +83,11 @@ export default function PostDetailView() {
   // STATES
   // ============================================================
   if (loadingPost) {
-    return <div className="p-6 text-center text-neutral-400">Loading post…</div>;
+    return <div className="p-6 text-center text-neutral-400">Loading Vibes…</div>;
   }
 
   if (!post) {
-    return <div className="p-6 text-center text-neutral-500">Post not found</div>;
+    return <div className="p-6 text-center text-neutral-500">Vibes not found</div>;
   }
 
   // normalize ids (router param is string)
@@ -230,7 +230,7 @@ export default function PostDetailView() {
       <ReportedObjectCover
         open={isCovered}
         title="Report sent"
-        subtitle="You reported this post. It’s now hidden for you while we review it."
+        subtitle="You reported this Vibe. It’s now hidden for you while we review it."
         primaryLabel="Back To Central Citizen"
         onPrimary={() => navigate(-1)}
         secondaryLabel="Close"

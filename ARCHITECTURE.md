@@ -298,3 +298,12 @@ Shape lives in Models.
 Timing lives in Hooks.
 Composition lives in Screens.
 Data access stays dumb, explicit, and boring.
+
+
+ALL INPUT BAR SETTING COLOR 
+className="
+  w-full px-4 py-2 pr-10
+  rounded-2xl bg-neutral-900 text-white
+  border border-purple-700
+  focus:ring-2 focus:ring-purple-500
+"

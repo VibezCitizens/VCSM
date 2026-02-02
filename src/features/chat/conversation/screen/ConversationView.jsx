@@ -1,521 +1,206 @@
-// src/features/chat/conversation/screen/ConversationView.jsx (R)
-// ============================================================
-// ConversationView
-// ------------------------------------------------------------
-// - Composition / orchestration layer
-// - Owns hooks, permissions, UI composition
-// - NO routing
-// - NO redirects
-// ============================================================
-
-import { useMemo, useCallback, useState, useEffect } from 'react'
+// src/features/chat/conversation/screen/ConversationView.jsx
+import { useMemo, useRef, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-import { supabase } from '@/services/supabase/supabaseClient'
 import { useIdentity } from '@/state/identity/identityContext'
-
-// ✅ iOS platform (chat-only)
 import { ios } from '@/app/platform'
 
-import { uploadToCloudflare } from '@/services/cloudflare/uploadToCloudflare'
-
-// hooks
 import useConversation from '../hooks/conversation/useConversation'
 import useConversationMembers from '../hooks/conversation/useConversationMembers'
 import useConversationMessages from '../hooks/conversation/useConversationMessages'
 import useTypingChannel from '../hooks/realtime/useTypingChannel'
-
-// ✅ report flow hook
 import useReportFlow from '@/features/moderation/hooks/useReportFlow'
-import ChatSpamCover from '@/features/moderation/components/ChatSpamCover'
+import useMediaViewer from '../hooks/conversation/useMediaViewer'
+import useMessageActionsMenu from '../hooks/conversation/useMessageActionsMenu'
+import useConversationActionsMenu from '../hooks/conversation/useConversationActionsMenu'
+import useConversationCover from '@/features/moderation/hooks/useConversationCover'
+import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
+import useInboxEntryForConversation from '@/features/chat/inbox/hooks/useInboxEntryForConversation'
 
-// ui
+// ✅ add this import
+import useSendMessageActions from '../hooks/conversation/useSendMessageActions'
+
 import ChatHeader from '../components/ChatHeader'
 import MessageList from '../components/MessageList'
-import ChatInput from '../components/ChatInput'
-import TypingIndicator from '../components/TypingIndicator'
 import MessageActionsMenu from '../components/MessageActionsMenu'
-
-// ✅ 3-dot menu
 import ConversationActionsMenu from '../components/ConversationActionsMenu'
-
-// ✅ report modal
 import ReportModal from '@/features/moderation/components/ReportModal'
+import ChatScreenLayout from '../layout/ChatScreenLayout'
+import ChatSpamCover from '@/features/moderation/components/ChatSpamCover'
+import ChatInput from '../components/ChatInput'
 
-// domain helpers
 import resolvePartnerActor from '../lib/resolvePartnerActor'
 import canReadConversation from '../permissions/canReadConversation'
-import canSendMessage from '../permissions/canSendMessage'
-import ChatScreenLayout from '../layout/ChatScreenLayout'
-
-// spam controller
-import { markConversationSpam } from '../controllers/markConversationSpam.controller'
 
 export default function ConversationView({ conversationId }) {
   const navigate = useNavigate()
   const { identity } = useIdentity()
   const actorId = identity?.actorId ?? null
+  const messagesRef = useRef(null)
 
-  /* ============================================================
-     iOS PLATFORM (CHAT ONLY)
-     ============================================================ */
   ios.useIOSPlatform({ enableKeyboard: true })
   ios.useIOSKeyboard(true)
 
-  /* ============================================================
-     Core hooks (ALL hooks must run unconditionally)
-     ============================================================ */
   const { conversation, loading, error } = useConversation({ conversationId, actorId })
   const { members } = useConversationMembers({ conversationId, actorId })
-
-  const { messages, onSendMessage, onEditMessage, onDeleteMessage } =
+  const { messages, onEditMessage, onDeleteMessage, onSendMessage } =
     useConversationMessages({ conversationId, actorId })
+  const { notifyTyping } = useTypingChannel({ conversationId, actorId })
 
-  const { typingActors, notifyTyping } = useTypingChannel({ conversationId, actorId })
-
-  // ✅ reporting flow (wired)
   const reportFlow = useReportFlow({ reporterActorId: actorId })
+  const inboxActions = useInboxActions({ actorId })
+  const { entry: inboxEntry } = useInboxEntryForConversation({ actorId, conversationId })
+  const isArchived = inboxEntry?.folder === 'archived' || inboxEntry?.archived === true
 
-  /* ============================================================
-     Derived data
-     ============================================================ */
   const partnerActor = useMemo(
-    () =>
-      resolvePartnerActor({
-        actorId,
-        conversation,
-        members,
-      }),
+    () => resolvePartnerActor({ actorId, conversation, members }),
     [actorId, conversation, members]
   )
 
-  const partnerActorUi = useMemo(() => partnerActor ?? null, [partnerActor])
+  const { viewer, openViewer, closeViewer } = useMediaViewer()
+  const { conversationCovered, setConversationCovered, undoConversationCover } =
+    useConversationCover({ actorId, conversationId })
 
-  /* ============================================================
-     Media viewer state (FULLSCREEN)
-     ============================================================ */
-  const [viewer, setViewer] = useState(null)
+  const { menu, openMenu, closeMenu, handleEdit, handleDeleteForMe, handleUnsend, handleReportMessage } =
+    useMessageActionsMenu({
+      actorId,
+      conversationId,
+      messages,
+      onEditMessage,
+      onDeleteMessage,
+      reportFlow,
+    })
 
-  const openViewer = useCallback((media) => {
-    if (!media?.url) return
-    setViewer(media)
-  }, [])
+  const {
+    convMenu,
+    openConvMenu,
+    closeConvMenu,
+    handleArchiveConversation,
+    handleUnarchiveConversation,
+    handleReportConversation,
+    handleMarkSpamConversation,
+    handleUndoSpam,
+  } = useConversationActionsMenu({
+    actorId,
+    conversationId,
+    inboxActions,
+    navigate,
+    reportFlow,
+    setConversationCovered,
+    undoConversationCover,
+    closeMessageMenu: closeMenu,
+  })
 
-  const closeViewer = useCallback(() => {
-    setViewer(null)
+  const scrollToBottom = useCallback((behavior = 'auto') => {
+    messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight, behavior })
   }, [])
 
   useEffect(() => {
-    if (!viewer) return
+    requestAnimationFrame(() => scrollToBottom('auto'))
+  }, [messages?.length, scrollToBottom])
 
-    const html = document.documentElement
-    const prevOverflow = html.style.overflow
-    html.style.overflow = 'hidden'
+  // ✅ IMPORTANT: declare adapters/hooks BEFORE early returns (hook order rule)
 
-    return () => {
-      html.style.overflow = prevOverflow
-    }
-  }, [viewer])
+  // ✅ This is your real send+attach pipeline (uploads media -> sends message)
+  const { handleSend, handleAttach } = useSendMessageActions({
+    conversationId,
+    actorId,
+    onSendMessage,
+  })
 
-  /* ============================================================
-     ✅ Persistent cover state (hydrated)
-     ============================================================ */
-  const [conversationCovered, setConversationCovered] = useState(false)
+  // ✅ Now it’s safe to early-return
+  if (error) return <div className="p-4 text-red-400">Failed to load</div>
+  if (loading || !conversation || !members?.length) return <div className="p-4">Loading…</div>
+  if (!canReadConversation({ actorId, members })) return <div className="p-4 text-neutral-400">Access denied</div>
 
-  // ✅ HYDRATE: if user previously hid this conversation, show cover after refresh
-  useEffect(() => {
-    if (!actorId || !conversationId) return
+  const isEditing = menu?.type === 'edit'
+  const editingMessage = isEditing ? menu.message : null
 
-    let alive = true
-
-    supabase
-      .schema('vc')
-      .from('moderation_actions')
-      .select('id')
-      .eq('actor_id', actorId)
-      .eq('object_type', 'conversation')
-      .eq('object_id', conversationId)
-      .eq('action_type', 'hide')
-      .maybeSingle()
-      .then(({ data, error: qErr }) => {
-        if (!alive) return
-        if (qErr) {
-          console.warn('[ConversationView] hydrate moderation_actions failed:', qErr)
-          return
-        }
-        setConversationCovered(!!data)
-      })
-      .catch((e) => {
-        if (!alive) return
-        console.warn('[ConversationView] hydrate threw:', e)
-      })
-
-    return () => {
-      alive = false
-    }
-  }, [actorId, conversationId])
-
-  /* ============================================================
-     Message action menu state (bubble menu)
-     ============================================================ */
-  const [menu, setMenu] = useState(null)
-
-  const openMenu = useCallback(
-    ({ messageId, senderActorId, anchorRect }) => {
-      setMenu({
-        messageId,
-        isOwn: senderActorId === actorId,
-        senderActorId,
-        anchorRect,
-      })
-    },
-    [actorId]
-  )
-
-  const closeMenu = useCallback(() => {
-    setMenu(null)
-  }, [])
-
-  /* ============================================================
-     Conversation 3-dot menu state (header menu)
-     ============================================================ */
-  const [convMenu, setConvMenu] = useState(null)
-
-  const openConvMenu = useCallback((anchorRect) => {
-    if (!anchorRect) return
-    setConvMenu({ anchorRect })
-  }, [])
-
-  const closeConvMenu = useCallback(() => {
-    setConvMenu(null)
-  }, [])
-
-  const handleReportConversation = useCallback(() => {
-    if (!actorId) return
-    if (!conversationId) return
-
-    reportFlow.start({
-      objectType: 'conversation',
-      objectId: conversationId,
-      conversationId,
-      dedupeKey: `report:conversation:${conversationId}`,
-      title: 'Report conversation',
-      subtitle: 'Tell us what’s wrong with this conversation.',
-    })
-
-    closeConvMenu()
-  }, [actorId, conversationId, reportFlow, closeConvMenu])
-
-  const handleMarkSpamConversation = useCallback(async () => {
-    if (!actorId) return
-    if (!conversationId) return
-
-    try {
-      await markConversationSpam({
-        reporterActorId: actorId,
-        conversationId,
-        reasonText: null,
-      })
-
-      setConversationCovered(true)
-      closeMenu()
-    } catch (e) {
-      console.error('[markConversationSpam] failed', e)
-    } finally {
-      closeConvMenu()
-    }
-  }, [actorId, conversationId, closeConvMenu, closeMenu])
-
-  const handleUndoSpam = useCallback(async () => {
-    if (!actorId || !conversationId) return
-
-    const { error: delErr } = await supabase
-      .schema('vc')
-      .from('moderation_actions')
-      .delete()
-      .eq('actor_id', actorId)
-      .eq('object_type', 'conversation')
-      .eq('object_id', conversationId)
-      .eq('action_type', 'hide')
-
-    if (delErr) {
-      console.warn('[ConversationView] undo spam delete failed:', delErr)
-      return
-    }
-
-    setConversationCovered(false)
-  }, [actorId, conversationId])
-
-  /* ============================================================
-     Edit state
-     ============================================================ */
-  const [editing, setEditing] = useState(null)
-
-  const handleEdit = useCallback(() => {
-    if (!menu?.messageId) return
-
-    const msg = messages.find((m) => m.id === menu.messageId)
-    if (!msg || msg.isDeleted || msg.deletedAt) return
-
-    setEditing({
-      messageId: msg.id,
-      initialBody: msg.body ?? '',
-    })
-
-    closeMenu()
-  }, [menu, messages, closeMenu])
-
-  const handleSaveEdit = useCallback(
-    (newBody) => {
-      if (!editing) return
-
-      const trimmed = newBody.trim()
-      if (!trimmed) return
-
-      if (trimmed === editing.initialBody) {
-        setEditing(null)
-        return
-      }
-
-      onEditMessage({
-        messageId: editing.messageId,
-        body: trimmed,
-      })
-
-      setEditing(null)
-    },
-    [editing, onEditMessage]
-  )
-
-  const handleCancelEdit = useCallback(() => {
-    setEditing(null)
-  }, [])
-
-  /* ============================================================
-     Delete handlers
-     ============================================================ */
-  const handleDeleteForMe = useCallback(() => {
-    if (!menu?.messageId) return
-
-    onDeleteMessage({
-      messageId: menu.messageId,
-      scope: 'me',
-    })
-
-    closeMenu()
-  }, [menu, onDeleteMessage, closeMenu])
-
-  const handleUnsend = useCallback(() => {
-    if (!menu?.messageId) return
-
-    onDeleteMessage({
-      messageId: menu.messageId,
-      scope: 'all',
-    })
-
-    closeMenu()
-  }, [menu, onDeleteMessage, closeMenu])
-
-  /* ============================================================
-     Report handler (from message bubble menu)
-     ============================================================ */
-  const handleReportMessage = useCallback(() => {
-    if (!menu?.messageId) return
-    if (!menu?.senderActorId) return
-    if (!actorId) return
-
-    reportFlow.start({
-      objectType: 'message',
-      objectId: menu.messageId,
-      conversationId,
-      messageId: menu.messageId,
-      dedupeKey: `report:message:${menu.messageId}`,
-      title: 'Report message',
-      subtitle: 'Tell us what’s wrong with this message.',
-    })
-
-    closeMenu()
-  }, [menu, actorId, conversationId, reportFlow, closeMenu])
-
-  /* ============================================================
-     Send
-     ============================================================ */
-  const handleSend = useCallback(
-    (text) => {
-      onSendMessage({ body: text, type: 'text' })
-    },
-    [onSendMessage]
-  )
-
-  const handleAttach = useCallback(
-    async (files) => {
-      if (!files || files.length === 0) return
-      const file = files[0]
-      if (!file) return
-
-      if (!String(file.type || '').startsWith('image/')) return
-
-      const safeName = String(file.name || 'image').replace(/[^\w.\-]+/g, '_')
-      const key = `chat/${conversationId}/${actorId}/${Date.now()}-${safeName}`
-
-      const { url, error: upErr } = await uploadToCloudflare(file, key)
-
-      if (upErr || !url) {
-        console.error('upload failed:', upErr)
-        return
-      }
-
-      onSendMessage({
-        type: 'image',
-        body: '',
-        mediaUrl: url,
-      })
-    },
-    [conversationId, actorId, onSendMessage]
-  )
-
-  /* ============================================================
-     Guards
-     ============================================================ */
-  if (error) {
-    return <div className="p-4 text-red-400">Failed to load</div>
-  }
-
-  if (loading || !conversation || !members?.length) {
-    return <div className="p-4">Loading…</div>
-  }
-
-  if (!canReadConversation({ actorId, members })) {
-    return <div className="p-4 text-neutral-400">Access denied</div>
-  }
-
-  const allowSend =
-    canSendMessage({ actorId, conversation, members }) && !conversationCovered
-
-  /* ============================================================
-     Render
-     ============================================================ */
   return (
-    <>
+    <div className="chat-screen">
       <ChatScreenLayout
         header={
           <ChatHeader
             conversation={conversation}
-            partnerActor={partnerActorUi}
+            partnerActor={partnerActor}
             onBack={() => navigate(-1)}
             onOpenMenu={conversationCovered ? undefined : openConvMenu}
           />
         }
         messages={
-          <MessageList
-            messages={messages}
-            currentActorId={actorId}
-            isGroupChat={conversation.isGroup}
-            onOpenActions={conversationCovered ? undefined : openMenu}
-            onOpenMedia={conversationCovered ? undefined : openViewer}
-          />
-        }
-        footer={
-          <>
-            {typingActors.length > 0 && (
-              <div className="px-3 py-1">
-                <TypingIndicator actors={typingActors} />
-              </div>
-            )}
-
-            <ChatInput
-              disabled={!allowSend}
-              onSend={handleSend}
-              onAttach={handleAttach}
-              onTyping={notifyTyping}
-              editing={!!editing}
-              initialValue={editing?.initialBody ?? ''}
-              onSaveEdit={handleSaveEdit}
-              onCancelEdit={handleCancelEdit}
+          <div ref={messagesRef} className="chat-messages">
+            <MessageList
+              messages={messages}
+              currentActorId={actorId}
+              isGroupChat={conversation.isGroup}
+              onOpenActions={conversationCovered ? undefined : openMenu}
+              onOpenMedia={conversationCovered ? undefined : openViewer}
             />
-          </>
+          </div>
         }
+        footer={null}
       />
 
-      {/* ✅ 3-DOT HEADER MENU */}
+      {!conversationCovered && (
+        <ChatInput
+          onSend={handleSend}          // ✅ text works
+          onAttach={handleAttach}      // ✅ photos now upload + send
+          onTyping={notifyTyping}
+          editing={isEditing}
+          initialValue={editingMessage?.body ?? ''}
+          onSaveEdit={(text) => {
+            handleEdit(editingMessage, text)
+            closeMenu()
+          }}
+          onCancelEdit={closeMenu}
+        />
+      )}
+
       <ConversationActionsMenu
         open={!!convMenu}
         anchorRect={convMenu?.anchorRect}
         onClose={closeConvMenu}
+        onArchiveConversation={isArchived ? undefined : handleArchiveConversation}
+        onUnarchiveConversation={isArchived ? handleUnarchiveConversation : undefined}
         onReportConversation={handleReportConversation}
         onMarkSpam={handleMarkSpamConversation}
       />
 
-      {/* ✅ MESSAGE ACTIONS MENU (bubble) */}
-      {!conversationCovered && (
-        <MessageActionsMenu
-          open={!!menu}
-          anchorRect={menu?.anchorRect}
-          isOwn={menu?.isOwn}
-          onClose={closeMenu}
-          onEdit={handleEdit}
-          onDeleteForMe={handleDeleteForMe}
-          onUnsend={handleUnsend}
-          onReport={handleReportMessage}
-        />
-      )}
+      <MessageActionsMenu
+        open={!!menu}
+        anchorRect={menu?.anchorRect}
+        isOwn={menu?.isOwn}
+        onClose={closeMenu}
+        onEdit={handleEdit}
+        onDeleteForMe={handleDeleteForMe}
+        onUnsend={handleUnsend}
+        onReport={handleReportMessage}
+      />
 
-      {/* ✅ REPORT MODAL (wired) */}
       <ReportModal
         open={reportFlow.open}
         title={reportFlow.context?.title ?? 'Report'}
-        subtitle={reportFlow.context?.subtitle ?? null}
         loading={reportFlow.loading}
         onClose={reportFlow.close}
         onSubmit={reportFlow.submit}
       />
 
-      {/* ✅ SPAM COVER (persistent) */}
       {conversationCovered && (
-        <ChatSpamCover
-          title="Marked as spam"
-          subtitle="Thanks — we’ll review it. This conversation has been reported as spam."
-          primaryLabel="Back to inbox"
-          onPrimary={() => navigate('/chat')}
-          secondaryLabel="Undo"
-          onSecondary={handleUndoSpam}
-        />
+        <ChatSpamCover onPrimary={() => navigate('/chat')} onSecondary={handleUndoSpam} />
       )}
 
-      {/* ✅ FULLSCREEN MEDIA VIEWER */}
       {viewer && (
         <div
           className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center"
           onClick={closeViewer}
         >
-          <button
-            type="button"
-            onClick={closeViewer}
-            className="absolute top-4 right-4 text-white text-2xl"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-
-          {viewer.type === 'image' && (
-            <img
-              src={viewer.url}
-              alt=""
-              className="max-w-[100vw] max-h-[100vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-          )}
-
-          {viewer.type === 'video' && (
-            <video
-              src={viewer.url}
-              controls
-              className="max-w-[100vw] max-h-[100vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
+          <button className="absolute top-4 right-4 text-white text-2xl">✕</button>
+          {viewer.type === 'image' ? (
+            <img src={viewer.url} className="max-w-full max-h-full object-contain" />
+          ) : (
+            <video src={viewer.url} controls className="max-w-full max-h-full object-contain" />
           )}
         </div>
       )}
-    </>
+    </div>
   )
 }

@@ -84,21 +84,27 @@
  * WITHOUT touching UI or chat runtime code.
  *
  *
- * RETURN CONTRACT
- * ------------------------------------------------------------
- * @returns {Promise<{ conversationId: string }>}
- *
- * The returned conversationId is safe to route to:
- *   /chat/:conversationId
- *
+/**
+ * startDirectConversation
+ * ============================================================
+ * CHAT START → DIRECT CONVERSATION BRIDGE
+ * Location:
+ *   src/features/chat/start/controllers/startDirectConversation.controller.js
+ * ============================================================
+ * ... (your existing header unchanged)
  * ============================================================
  */// src/features/chat/controllers/startDirectConversation.controller.js
+
+// src/features/chat/start/controllers/startDirectConversation.controller.js
 
 import { resolvePickedActor } from
   '@/features/chat/start/controllers/resolvePickedToActorId.controller'
 
 import { getOrCreateDirectConversation } from '@/features/chat/start/controllers/getOrCreateDirectConversation.controller'
 import { openConversation } from '@/features/chat/start/dal/rpc/openConversation.rpc'
+
+// ✅ BLOCK CHECK (global)
+import { checkBlockStatus } from '@/features/block/dal/block.check.dal'
 
 export async function startDirectConversation({
   fromActorId,
@@ -120,6 +126,12 @@ export async function startDirectConversation({
   const toActorId = await resolvePickedActor(picked)
   if (!toActorId) throw new Error('Failed to resolve target actor')
 
+  // ✅ BLOCK ENFORCEMENT (GLOBAL)
+  const { isBlocked } = await checkBlockStatus(fromActorId, toActorId)
+  if (isBlocked) {
+    throw new Error('[chat/start] blocked relationship — cannot start conversation')
+  }
+
   // 2️⃣ Create or fetch conversation
   const { conversationId } = await getOrCreateDirectConversation({
     fromActorId,
@@ -135,4 +147,3 @@ export async function startDirectConversation({
 
   return { conversationId }
 }
-

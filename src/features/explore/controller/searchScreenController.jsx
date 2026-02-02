@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { searchDal } from '@/features/explore/dal/search.dal'
 
-const FILTERS = ['all', 'users', 'vports', 'posts', 'videos', 'groups']
+const FILTERS = ['all', 'users', 'vports', 'Voxs', 'videos', 'groups']
 const LS_KEY = 'search:lastFilter'
 
 // ============================================================

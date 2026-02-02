@@ -139,8 +139,8 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
       objectId: postMenu.postId,
       postId: postMenu.postId,
       dedupeKey: `report:post:${postMenu.postId}`,
-      title: "Report post",
-      subtitle: "Tell us what’s wrong with this post.",
+      title: "Report Vibe",
+      subtitle: "Tell us what’s wrong with this Vibe.",
     });
 
     closePostMenu();
@@ -157,7 +157,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     if (!viewerActorId) return;
     if (!postMenu?.postId) return;
 
-    const okConfirm = window.confirm("Delete this post?");
+    const okConfirm = window.confirm("Delete this Vibe?");
     if (!okConfirm) return;
 
     const res = await softDeletePostController({
@@ -166,7 +166,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     });
 
     if (!res.ok) {
-      window.alert(res.error?.message ?? "Failed to delete post");
+      window.alert(res.error?.message ?? "Failed to delete Vibe");
       return;
     }
 
@@ -239,7 +239,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
           {tab === "photos" && (
             <ActorProfilePhotosView
               actorId={profile.actorId}
-              posts={visibleProfilePosts} // ✅ IMPORTANT (fixes deleted showing)
+              posts={visibleProfilePosts}
               loadingPosts={loadingPosts}
               canViewContent={gate.canView}
               handleShare={handleShare}

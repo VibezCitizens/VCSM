@@ -18,7 +18,7 @@ export default function CommentNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="commented on your post"
+      message="sparked on your Vibe"
       timestamp={notification.createdAt}
       actionLabel={notification.linkPath ? 'View' : null}
       onAction={

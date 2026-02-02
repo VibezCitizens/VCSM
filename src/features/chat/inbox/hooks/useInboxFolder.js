@@ -8,5 +8,6 @@ import useInbox from '@/features/chat/inbox/hooks/useInbox'
  * Source of truth: vc.inbox_entries.folder
  */
 export default function useInboxFolder({ actorId, folder = 'inbox' }) {
-  return useInbox({ actorId, folder })
+  const includeArchived = folder === 'archived'
+  return useInbox({ actorId, folder, includeArchived })
 }

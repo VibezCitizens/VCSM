@@ -15,8 +15,8 @@ export default function InboxHeaderMenu() {
         hover:bg-white/10
         flex items-center justify-center
       "
-      aria-label="Inbox & chat settings"
-      title="Inbox & chat settings"
+      aria-label="Vox settings"
+      title="Vox settings"
     >
       <span className="text-white text-lg leading-none">⚙️</span>
     </button>

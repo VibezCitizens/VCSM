@@ -89,7 +89,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
         <div className="mb-6 relative">
           <input
             type="text"
-            placeholder="Search users, VPORTs, posts…"
+            placeholder="Search Citizens, Vports, Voxs…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="
