@@ -21,28 +21,25 @@ export default function ShareReactionButton({
     >
       {/* uniform icon box so it matches other buttons */}
       <span className="relative inline-flex items-center justify-center w-7 h-7 leading-none">
-        {/* globe sized to match others */}
+        {/* globe */}
         <span className="text-[22px]">🌍</span>
 
-        {/* arrows (WHITE) */}
-        <span className="absolute -top-1 -left-1 text-[10px] text-white">↖</span>
+        {/* N / S / E / W arrows (WHITE) */}
         <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] text-white">
           ↑
         </span>
-        <span className="absolute -top-1 -right-1 text-[10px] text-white">↗</span>
 
-        <span className="absolute top-1/2 -left-3 -translate-y-1/2 text-[10px] text-white">
-          ←
-        </span>
         <span className="absolute top-1/2 -right-3 -translate-y-1/2 text-[10px] text-white">
           →
         </span>
 
-        <span className="absolute -bottom-1 -left-1 text-[10px] text-white">↙</span>
         <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white">
           ↓
         </span>
-        <span className="absolute -bottom-1 -right-1 text-[10px] text-white">↘</span>
+
+        <span className="absolute top-1/2 -left-3 -translate-y-1/2 text-[10px] text-white">
+          ←
+        </span>
       </span>
 
       {count !== null && (
