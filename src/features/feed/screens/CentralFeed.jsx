@@ -288,20 +288,21 @@ export default function CentralFeed() {
 
         return (
           <div key={`post:${post.id}`} className="mb-2 last:mb-0">
-            <PostCard
-              post={{
-                ...post,
-                actorId: post.actor.id,
-              }}
-              onOpenPost={() => {
-                if (covered) return
-                navigate(`/post/${post.id}`)
-              }}
-              onOpenMenu={openPostMenu}
-              onShare={handleShare}
-              covered={covered}
-              cover={covered ? <ReportedPostCover /> : null}
-            />
+          <PostCard
+  post={{
+    ...post,
+    actorId: post.actor?.actor_id ?? post.actor?.actorId ?? post.actorId ?? post.actor_id ?? null,
+  }}
+  onOpenPost={() => {
+    if (covered) return
+    navigate(`/post/${post.id}`)
+  }}
+  onOpenMenu={openPostMenu}
+  onShare={handleShare}
+  covered={covered}
+  cover={covered ? <ReportedPostCover /> : null}
+/>
+
           </div>
         )
       })}

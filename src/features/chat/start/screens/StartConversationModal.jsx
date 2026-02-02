@@ -74,7 +74,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
       >
         {/* HEADER */}
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">New Conversation</h2>
+          <h2 className="text-lg font-semibold text-white">New Vox</h2>
 
           <button
             type="button"

@@ -23,6 +23,12 @@ export async function fetchPostByIdDAL(postId) {
       tags,
       created_at,
 
+      post_media (
+        url,
+        media_type,
+        sort_order
+      ),
+
       actor:actor_presentation!posts_actor_id_fkey (
         actor_id,
         kind,
@@ -36,5 +42,6 @@ export async function fetchPostByIdDAL(postId) {
       )
     `)
     .eq("id", postId)
+    .order("sort_order", { foreignTable: "post_media", ascending: true })
     .maybeSingle();
 }

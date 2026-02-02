@@ -236,15 +236,19 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
             />
           )}
 
-          {tab === "photos" && (
-            <ActorProfilePhotosView
-              actorId={profile.actorId}
-              posts={visibleProfilePosts}
-              loadingPosts={loadingPosts}
-              canViewContent={gate.canView}
-              handleShare={handleShare}
-            />
-          )}
+     
+  {tab === "photos" && (
+  <ActorProfilePhotosView
+    actorId={profile.actorId}
+    viewerActorId={viewerActorId}   // ✅ ADD THIS
+    posts={visibleProfilePosts}
+    loadingPosts={loadingPosts}
+    canViewContent={gate.canView}
+    handleShare={handleShare}
+  />
+)}
+
+
 
           {tab === "videos" && (
             <div className="flex items-center justify-center py-10 text-neutral-500">

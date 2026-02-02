@@ -116,11 +116,21 @@ export default function PostCardView({
         </div>
       )}
 
-      {post.media?.length > 0 && (
-        <div onClick={covered ? undefined : onOpenPost} className="px-0 mb-2">
-          <MediaCarousel media={post.media} />
-        </div>
-      )}
+     {post.media?.length > 0 && (
+  <div
+    className="px-0 mb-2"
+    onClick={(e) => {
+      // stop bubble so post card doesn't open
+      e.stopPropagation();
+    }}
+    onMouseDown={(e) => e.stopPropagation()}
+    onTouchStart={(e) => e.stopPropagation()}
+    onPointerDown={(e) => e.stopPropagation()}
+  >
+    <MediaCarousel media={post.media} />
+  </div>
+)}
+
 
       <div className="px-4 pb-3">
         {/* ✅ Block all interactions in ReactionBar when covered */}

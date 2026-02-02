@@ -19,6 +19,12 @@ export function createInitialPostPayload() {
     tags: [],
     visibility: Visibility.PUBLIC,
     mode: "post",      // post | 24drop | vdrop
+
+    // ✅ multi upload
+    files: [],         // File[]
+    mediaTypes: [],    // string[] parallel to files
+
+    // ✅ backward compatibility (optional)
     file: null,
     mediaType: MediaType.TEXT,
   };

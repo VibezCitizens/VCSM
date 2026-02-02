@@ -14,12 +14,23 @@ import { sendRoseController } from "@/features/post/postcard/controller/sendRose
 
 /**
  * Enrich image posts with reaction + comment metadata
+ *
+ * IMPORTANT:
+ * - viewerActorId = the logged-in viewer (who reacted)
+ * - post.actor_id = the owner of the post (different thing)
  */
-export async function enrichPhotoPostsController({ posts, actorId }) {
-  if (!actorId) throw new Error("Missing actorId");
-  if (!posts?.length) return [];
+export async function enrichPhotoPostsController({
+  posts,
+  viewerActorId,
+  actorId, // backward compat alias (older callers)
+}) {
+  const viewerId = viewerActorId ?? actorId;
 
-  const postIds = posts.map((p) => p.id);
+  if (!viewerId) throw new Error("Missing viewerActorId");
+  if (!Array.isArray(posts) || posts.length === 0) return [];
+
+  const postIds = posts.map((p) => p?.id).filter(Boolean);
+  if (!postIds.length) return [];
 
   const reactions = await listPostReactions(postIds);
   const commentCounts = await listPostCommentsCount(postIds);
@@ -30,7 +41,7 @@ export async function enrichPhotoPostsController({ posts, actorId }) {
     reactions,
     commentCounts,
     roseCounts,
-    viewerActorId: actorId,
+    viewerActorId: viewerId,
   });
 }
 
@@ -39,7 +50,7 @@ export async function enrichPhotoPostsController({ posts, actorId }) {
  */
 export async function togglePhotoReactionController({
   postId,
-  actorId,
+  actorId, // this one really IS the viewer actor id
   reaction,
 }) {
   if (!actorId) throw new Error("Missing actorId");
@@ -56,11 +67,10 @@ export async function togglePhotoReactionController({
  * Send rose (delegated to Post feature)
  *
  * ✅ IMPORTANT: export name MUST be sendPhotoRoseController
- * because your hook imports sendPhotoRoseController
  */
 export async function sendPhotoRoseController({
   postId,
-  actorId,
+  actorId, // viewer actor id
   qty = 1,
 }) {
   if (!actorId) throw new Error("Missing actorId");

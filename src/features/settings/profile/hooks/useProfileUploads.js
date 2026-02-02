@@ -10,6 +10,7 @@
 import imageCompression from 'browser-image-compression'
 import { uploadToCloudflare } from '@/services/cloudflare/uploadToCloudflare'
 import { supabase } from '@/services/supabase/supabaseClient'
+import { buildR2Key } from '@/services/cloudflare/buildR2Key'
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
@@ -37,7 +38,7 @@ export function useProfileUploads({ mode, subjectId }) {
     if (!f) return null
     if (!subjectId) throw new Error('uploadAvatar: subjectId missing')
 
-    // ---- USER AVATAR ----
+    // ---- USER AVATAR PHOTO (NEW) ----
     if (mode === 'user') {
       const { data } = await supabase.auth.getUser()
       const userId = data?.user?.id
@@ -49,15 +50,19 @@ export function useProfileUploads({ mode, subjectId }) {
         useWebWorker: true,
       })
 
-      const key = `profile-pictures/${userId}-${Date.now()}.jpg`
+      // avatar-photos/<userId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
+      const key = buildR2Key('avatar-photos', userId, compressed)
+
       const { url, error } = await uploadToCloudflare(compressed, key)
       if (error || !url) throw new Error(error || 'Avatar upload failed')
 
       return url
     }
 
-    // ---- VPORT AVATAR ----
-    const key = `vports/${subjectId}/avatar-${Date.now()}.jpg`
+    // ---- VPORT AVATAR PHOTO (NEW) ----
+    // vport-avatar-photos/<subjectId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
+    const key = buildR2Key('vport-avatar-photos', subjectId, f)
+
     const { url, error } = await uploadToCloudflare(f, key)
     if (error || !url) throw new Error(error || 'VPORT avatar upload failed')
 
@@ -69,10 +74,20 @@ export function useProfileUploads({ mode, subjectId }) {
     if (!f) return null
     if (!subjectId) throw new Error('uploadBanner: subjectId missing')
 
-    const key =
-      mode === 'vport'
-        ? `vports/${subjectId}/banner-${Date.now()}.jpg`
-        : `profile-banners/${subjectId}-${Date.now()}.jpg`
+    // ---- VPORT AVATAR BANNER (NEW) ----
+    if (mode === 'vport') {
+      // vport-avatar-banners/<subjectId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
+      const key = buildR2Key('vport-avatar-banners', subjectId, f)
+
+      const { url, error } = await uploadToCloudflare(f, key)
+      if (error || !url) throw new Error(error || 'Banner upload failed')
+
+      return url
+    }
+
+    // ---- USER AVATAR BANNER (NEW) ----
+    // avatar-banners/<userId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
+    const key = buildR2Key('avatar-banners', subjectId, f)
 
     const { url, error } = await uploadToCloudflare(f, key)
     if (error || !url) throw new Error(error || 'Banner upload failed')

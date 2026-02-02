@@ -1,6 +1,7 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 import { resolveRealm } from "../dal/resolveRealm";
 import { insertPost } from "../dal/insertPost";
+import { insertPostMedia } from "../dal/insertPostMedia";
 import { extractHashtags } from "../lib/extractHashtags";
 
 /**
@@ -19,29 +20,61 @@ export async function createPostController({ identity, input }) {
   }
 
   // 🧠 Domain meaning
-  const caption = input.caption.trim();
+  const caption = (input.caption || "").trim();
   const tags = extractHashtags(caption);
+
+  // ✅ Normalize media input (support old + new)
+  const mediaUrls = Array.isArray(input.mediaUrls) ? input.mediaUrls.filter(Boolean) : [];
+  const mediaTypes = Array.isArray(input.mediaTypes) ? input.mediaTypes.filter(Boolean) : [];
+
+  // Back-compat: if old single fields exist, use them
+  const legacyUrl = input.mediaUrl || "";
+  const legacyType = input.mediaType || "text";
+
+  const firstUrl = mediaUrls[0] || legacyUrl || "";
+  const firstType = mediaTypes[0] || (firstUrl ? legacyType : "text");
 
   // 🏗️ Authoritative DB row
   const row = {
-    user_id: auth.user.id,                 // auth / RLS anchor
-    actor_id: identity.actorId,            // author
+    user_id: auth.user.id,
+    actor_id: identity.actorId,
     realm_id: resolveRealm(identity.isVoid),
     text: caption,
     title: null,
-    media_url: input.mediaUrl || "",
-    media_type: input.mediaType || "text",
+
+    // ✅ keep first media item in posts table for backwards compatibility
+    media_url: firstUrl,
+    media_type: firstUrl ? (firstType || "image") : "text",
+
     post_type: input.mode,
-    tags,                                  // ✅ FIX: persist hashtags
+    tags,
     created_at: new Date().toISOString(),
   };
 
-  // 🧱 Persistence (DAL)
-  await insertPost(row);
+  // 🧱 Persistence (DAL) — must return inserted post id
+  const created = await insertPost(row);
+  const postId = created?.id;
+  if (!postId) throw new Error("insertPost did not return post id");
 
-  // Optional domain result
+  if (mediaUrls.length > 0) {
+    const items = mediaUrls.map((url, idx) => ({
+      url,
+      media_type: (mediaTypes[idx] || "image") === "video" ? "video" : "image",
+      sort_order: idx,
+    }));
+
+    try {
+      await insertPostMedia(postId, items);
+    } catch (e) {
+      // ✅ IMPORTANT: match schema for rollback
+      await supabase.schema("vc").from("posts").delete().eq("id", postId);
+      throw e;
+    }
+  }
+
   return {
     actorId: identity.actorId,
     tags,
+    postId,
   };
 }

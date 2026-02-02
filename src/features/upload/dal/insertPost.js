@@ -5,10 +5,13 @@ import { supabase } from "@/services/supabase/supabaseClient";
  * Returns raw DB result only
  */
 export async function insertPost(row) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .schema("vc")
     .from("posts")
-    .insert(row);
+    .insert(row)
+    .select("id")
+    .single();
 
   if (error) throw error;
+  return data; // { id }
 }

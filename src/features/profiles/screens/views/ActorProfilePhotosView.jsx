@@ -16,7 +16,8 @@ import PhotoGrid from "./tabs/photos/components/PhotoGrid";
 
 /**
  * @param {Object} props
- * @param {string}  props.actorId            Target profile actor
+ * @param {string}  props.actorId            Target profile actor (profile owner)
+ * @param {string}  props.viewerActorId      Viewer actor (me)
  * @param {Array}   props.posts              Aggregated post rows (raw)
  * @param {boolean} props.loadingPosts       Loading state from parent
  * @param {boolean} props.canViewContent     Privacy gate (resolved upstream)
@@ -24,6 +25,7 @@ import PhotoGrid from "./tabs/photos/components/PhotoGrid";
  */
 export default function ActorProfilePhotosView({
   actorId,
+  viewerActorId,
   posts = [],
   loadingPosts,
   canViewContent,
@@ -33,7 +35,8 @@ export default function ActorProfilePhotosView({
      DEBUG — ENTRY SNAPSHOT
      ========================================================== */
   console.group("[ActorProfilePhotosView]");
-  console.log("actorId:", actorId);
+  console.log("profile actorId (target):", actorId);
+  console.log("viewerActorId:", viewerActorId);
   console.log("loadingPosts:", loadingPosts);
   console.log("canViewContent:", canViewContent);
   console.log("posts.length:", posts?.length);
@@ -70,6 +73,15 @@ export default function ActorProfilePhotosView({
     );
   }
 
+  if (!viewerActorId) {
+    console.error("[ActorProfilePhotosView] blocked: missing viewerActorId");
+    return (
+      <div className="flex items-center justify-center py-10 text-neutral-500">
+        Viewer unavailable.
+      </div>
+    );
+  }
+
   // ----------------------------------------------------------
   // RENDER
   // ----------------------------------------------------------
@@ -78,7 +90,7 @@ export default function ActorProfilePhotosView({
   return (
     <PhotoGrid
       posts={posts}
-      actorId={actorId}
+      actorId={viewerActorId}       // ✅ IMPORTANT: reactions are for the VIEWER
       handleShare={handleShare}
     />
   );

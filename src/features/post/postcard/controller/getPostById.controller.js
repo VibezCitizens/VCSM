@@ -23,7 +23,7 @@ import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
  *     vportSlug?
  *   },
  *   text,
- *   media[],
+ *   media[],            // ✅ MULTI-MEDIA
  *   created_at
  * }
  */
@@ -31,7 +31,7 @@ export async function getPostById(postId) {
   if (!postId) throw new Error("getPostById: postId required");
 
   // ============================================================
-  // 1️⃣ FETCH RAW POST (WITH ACTOR PRESENTATION)
+  // 1️⃣ FETCH RAW POST (WITH ACTOR PRESENTATION + MEDIA)
   // ============================================================
   const { data: row, error } = await fetchPostByIdDAL(postId);
 
@@ -39,16 +39,29 @@ export async function getPostById(postId) {
   if (!row) return null;
 
   // ============================================================
-  // 2️⃣ NORMALIZE MEDIA
+  // 2️⃣ NORMALIZE MEDIA (NEW + BACK-COMPAT)
   // ============================================================
-  const media = row.media_url
-    ? [
-        {
-          type: row.media_type,
-          url: row.media_url,
-        },
-      ]
-    : [];
+  let media = [];
+
+  // ✅ Prefer vc.post_media (multi)
+  if (Array.isArray(row.post_media) && row.post_media.length > 0) {
+    media = row.post_media
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((m) => ({
+        type: m.media_type, // 'image' | 'video'
+        url: m.url,
+      }));
+  }
+  // 🧓 Backward compatibility (old single-media posts)
+  else if (row.media_url) {
+    media = [
+      {
+        type: row.media_type || "image",
+        url: row.media_url,
+      },
+    ];
+  }
 
   // ============================================================
   // 3️⃣ DOMAIN SHAPE (ACTOR PRESENTATION — REQUIRED)
@@ -69,7 +82,7 @@ export async function getPostById(postId) {
       : null,
 
     text: row.text,
-    media,
+    media,              // ✅ carousel-ready
     created_at: row.created_at,
   };
 }

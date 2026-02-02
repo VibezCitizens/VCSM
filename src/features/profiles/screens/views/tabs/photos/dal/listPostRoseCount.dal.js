@@ -5,18 +5,8 @@ import { supabase } from "@/services/supabase/supabaseClient";
  * DAL: listPostRoseCount
  * ------------------------------------------------------------
  * Returns raw rose gift totals per post_id
- *
- * Question answered:
- *   "What does the database say about how many roses
- *    exist for each post?"
- *
- * 🚫 No business logic
- * 🚫 No actor meaning
- * 🚫 No permissions
  * ============================================================
- */
-
-/**
+ *
  * @param {string[]} postIds
  * @returns {Promise<Record<string, number>>}
  */
@@ -31,9 +21,7 @@ export async function listPostRoseCount(postIds) {
     .select("post_id, qty")
     .in("post_id", postIds);
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   const counts = {};
   for (const row of data ?? []) {

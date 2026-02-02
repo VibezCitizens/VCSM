@@ -6,26 +6,34 @@ export default function PostCard({
   post,
   onOpenPost,
   onReact,
-  onOpenMenu, // ✅ pass-through
-  onShare,    // ✅ pass-through
+  onOpenMenu,
+  onShare,
 
-  // ✅ ADD: cover support
   covered = false,
   cover = null,
 }) {
   if (!post) return null;
 
-  /* ============================================================
-     🔒 DOMAIN IS ALREADY NORMALIZED
-     ============================================================ */
+  // ✅ support both shapes:
+  // - post.actorId (new)
+  // - post.actor.actorId (older domain result)
+  const actorId =
+    post.actorId ||
+    post.actor?.actorId ||
+    post.actor_id || // (if a raw row leaks in)
+    null;
+
   const normalizedPost = {
     ...post,
 
-    // ✅ actorId is the SSOT
-    actor: post.actorId,
+    // ✅ what the view actually uses
+    actorId,
 
-    // ✅ media already normalized upstream
-    media: post.media ?? [],
+    // ✅ keep these if other components still reference them
+    actor: post.actor ?? actorId,
+
+    // ✅ media normalized upstream
+    media: Array.isArray(post.media) ? post.media : [],
   };
 
   return (
@@ -33,10 +41,8 @@ export default function PostCard({
       post={normalizedPost}
       onOpenPost={onOpenPost}
       onReact={onReact}
-      onOpenMenu={onOpenMenu} // ✅ forward to view
-      onShare={onShare}       // ✅ forward to view
-
-      // ✅ forward cover props
+      onOpenMenu={onOpenMenu}
+      onShare={onShare}
       covered={covered}
       cover={cover}
     />

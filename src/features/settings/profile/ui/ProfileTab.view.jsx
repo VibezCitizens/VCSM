@@ -66,17 +66,17 @@ export default function ProfileTabView({
           </Link>
         </div>
 
-        {/* ================= BANNER ================= */}
+        {/* ================= AVATAR BANNER ================= */}
         <section className="space-y-1">
           <label className="text-xs text-zinc-300">
-            {isVport ? 'VPORT banner' : 'Profile banner'}
+            {isVport ? 'VPORT avatar banner' : 'Avatar banner'}
           </label>
 
           <div className="rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
             <div className="relative w-full h-32 sm:h-40 md:h-48">
               <img
                 src={previewBanner || bannerUrl || '/default-banner.jpg'}
-                alt="banner"
+                alt="avatar banner"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
@@ -117,10 +117,10 @@ export default function ProfileTabView({
           </div>
         </section>
 
-        {/* ================= AVATAR ================= */}
+        {/* ================= AVATAR PHOTO ================= */}
         <section className="mt-4 space-y-1">
           <label className="text-xs text-zinc-300">
-            {isVport ? 'VPORT picture' : 'Profile picture'}
+            {isVport ? 'VPORT avatar photo' : 'Avatar photo'}
           </label>
 
           <div className="flex items-center gap-3">

@@ -4,39 +4,111 @@ import SegmentedButton from "../ui/SegmentedButton";
 import ActorPill from "../ui/ActorPill";
 import { classifyFile } from "../lib/classifyFile";
 
+const MAX_VIBES_PHOTOS = 10;
+
 export default function UploadScreenModern({ onSubmit }) {
   const inputRef = useRef(null);
 
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("public");
-  const [mode, setMode] = useState("post");
+  const [mode, setMode] = useState("post"); // post=vibes
 
-  const [file, setFile] = useState(null);
-  const [mediaType, setMediaType] = useState(null);
-  const [fileUrl, setFileUrl] = useState("");
+  // ✅ multi
+  const [files, setFiles] = useState([]);         // File[]
+  const [mediaTypes, setMediaTypes] = useState([]); // string[]
+  const [fileUrls, setFileUrls] = useState([]);   // string[]
   const [error, setError] = useState("");
 
   function handlePick() {
     inputRef.current?.click();
   }
 
-  async function handleChosen(f) {
-    if (!f) return;
+  function clearSelection() {
+    // cleanup object urls
+    fileUrls.forEach((u) => {
+      try { URL.revokeObjectURL(u); } catch {}
+    });
+    setFiles([]);
+    setMediaTypes([]);
+    setFileUrls([]);
+  }
 
-    const check = classifyFile(f);
-    if (check.error) {
-      setError(check.error);
+  async function handleChosen(list) {
+    const picked = Array.from(list || []);
+    if (picked.length === 0) return;
+
+    // rules:
+    // - VIBES: up to 10 images
+    // - 24drop/vdrop: keep single file behavior (current)
+    const isVibes = mode === "post";
+
+    if (!isVibes) {
+      const f = picked[0];
+      if (!f) return;
+
+      const check = classifyFile(f);
+      if (check.error) {
+        setError(check.error);
+        return;
+      }
+
+      setError("");
+      clearSelection();
+      setFiles([f]);
+      setMediaTypes([check.type]);
+      setFileUrls([URL.createObjectURL(f)]);
       return;
     }
 
+    // VIBES: images only, up to 10
+    const images = picked.filter((f) => String(f?.type || "").startsWith("image/"));
+    if (images.length === 0) {
+      setError("VIBES: please select images only (up to 10).");
+      return;
+    }
+
+    if (images.length > MAX_VIBES_PHOTOS) {
+      setError(`You can upload up to ${MAX_VIBES_PHOTOS} photos at a time.`);
+      return;
+    }
+
+    // validate each with classifyFile
+    const nextFiles = [];
+    const nextTypes = [];
+    const nextUrls = [];
+
+    for (const f of images) {
+      const check = classifyFile(f);
+      if (check.error) {
+        setError(check.error);
+        // cleanup created URLs so far
+        nextUrls.forEach((u) => {
+          try { URL.revokeObjectURL(u); } catch {}
+        });
+        return;
+      }
+      if (check.type !== "image") {
+        setError("VIBES: only images are allowed for multi-upload.");
+        nextUrls.forEach((u) => {
+          try { URL.revokeObjectURL(u); } catch {}
+        });
+        return;
+      }
+
+      nextFiles.push(f);
+      nextTypes.push(check.type);
+      nextUrls.push(URL.createObjectURL(f));
+    }
+
     setError("");
-    setFile(f);
-    setMediaType(check.type);
-    setFileUrl(URL.createObjectURL(f));
+    clearSelection();
+    setFiles(nextFiles);
+    setMediaTypes(nextTypes);
+    setFileUrls(nextUrls);
   }
 
   function disabledReason() {
-    if (!caption.trim() && !file) return "Add text or media";
+    if (!caption.trim() && files.length === 0) return "Add text or media";
     return null;
   }
 
@@ -48,10 +120,12 @@ export default function UploadScreenModern({ onSubmit }) {
       caption,
       visibility,
       mode,
-      file,
-      mediaType,
+      files,       // ✅ now array
+      mediaTypes,  // ✅ now array
     });
   }
+
+  const isVibes = mode === "post";
 
   return (
     <div className="min-h-screen px-4 py-6 max-w-xl mx-auto">
@@ -59,13 +133,13 @@ export default function UploadScreenModern({ onSubmit }) {
         <ActorPill />
 
         <div className="flex gap-2">
-          <SegmentedButton active={mode === "post"} onClick={() => setMode("post")}>
+          <SegmentedButton active={mode === "post"} onClick={() => { setMode("post"); clearSelection(); }}>
             VIBE
           </SegmentedButton>
-          <SegmentedButton active={mode === "24drop"} onClick={() => setMode("24drop")}>
+          <SegmentedButton active={mode === "24drop"} onClick={() => { setMode("24drop"); clearSelection(); }}>
             24DROP
           </SegmentedButton>
-          <SegmentedButton active={mode === "vdrop"} onClick={() => setMode("vdrop")}>
+          <SegmentedButton active={mode === "vdrop"} onClick={() => { setMode("vdrop"); clearSelection(); }}>
             VDROP
           </SegmentedButton>
         </div>
@@ -80,13 +154,27 @@ export default function UploadScreenModern({ onSubmit }) {
           ref={inputRef}
           className="hidden"
           accept="image/*,video/*"
-          onChange={(e) => handleChosen(e.target.files?.[0])}
+          multiple={isVibes} // ✅ allow multi only for VIBES
+          onChange={(e) => handleChosen(e.target.files)}
         />
-        <div className="text-neutral-300">Click to upload or drag & drop</div>
+        <div className="text-neutral-300">
+          {isVibes ? "Click to upload (up to 10 photos) or drag & drop" : "Click to upload or drag & drop"}
+        </div>
       </div>
 
+      {/* ✅ Preview */}
       <div className="mt-4">
-        <MediaPreview url={fileUrl} type={mediaType} />
+        {fileUrls.length <= 1 ? (
+          <MediaPreview url={fileUrls[0] || ""} type={mediaTypes[0] || null} />
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            {fileUrls.map((u, idx) => (
+              <div key={u} className="rounded-xl overflow-hidden border border-neutral-800 bg-neutral-950">
+                <img src={u} alt={`preview-${idx}`} className="w-full h-28 object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <textarea

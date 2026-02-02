@@ -5,43 +5,26 @@ import RoseReactionButton from "@/features/post/postcard/components/RoseReaction
 import CommentButton from "@/features/post/postcard/components/CommentButton";
 import ShareReactionButton from "@/features/post/postcard/components/ShareReactionButton";
 
-/**
- * ImageViewerModal
- * ------------------------------------------------------------
- * UI-only fullscreen image viewer.
- *
- * RULES:
- * - Receives fully-enriched posts
- * - Never derives meaning
- * - Never touches DAL / Supabase
- * - Delegates all actions via props
- */
 export default function ImageViewerModal({
   imagePosts = [],
+  activePost = null,
+  activePostId,
   activeIndex,
   setActiveIndex,
   onClose,
-
-  // injected actions (domain-owned elsewhere)
   toggleReaction,
   sendRose,
   handleShare,
   openComments,
 }) {
-  const [localPosts, setLocalPosts] = useState(imagePosts);
+  const [localImages, setLocalImages] = useState(imagePosts);
   const containerRef = useRef(null);
   const itemRefs = useRef([]);
 
-  // ----------------------------------------------------------
-  // SYNC POSTS
-  // ----------------------------------------------------------
   useEffect(() => {
-    setLocalPosts(imagePosts);
+    setLocalImages(imagePosts);
   }, [imagePosts]);
 
-  // ----------------------------------------------------------
-  // LOCK BODY SCROLL
-  // ----------------------------------------------------------
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -49,9 +32,6 @@ export default function ImageViewerModal({
     };
   }, []);
 
-  // ----------------------------------------------------------
-  // SCROLL TO ACTIVE IMAGE
-  // ----------------------------------------------------------
   useEffect(() => {
     if (activeIndex != null && itemRefs.current[activeIndex]) {
       itemRefs.current[activeIndex].scrollIntoView({
@@ -61,16 +41,11 @@ export default function ImageViewerModal({
     }
   }, [activeIndex]);
 
-  // ----------------------------------------------------------
-  // KEYBOARD CONTROLS
-  // ----------------------------------------------------------
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose?.();
       if (e.key === "ArrowRight") {
-        setActiveIndex?.((i) =>
-          Math.min((i ?? 0) + 1, localPosts.length - 1)
-        );
+        setActiveIndex?.((i) => Math.min((i ?? 0) + 1, localImages.length - 1));
       }
       if (e.key === "ArrowLeft") {
         setActiveIndex?.((i) => Math.max((i ?? 0) - 1, 0));
@@ -79,22 +54,20 @@ export default function ImageViewerModal({
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, setActiveIndex, localPosts.length]);
+  }, [onClose, setActiveIndex, localImages.length]);
 
-  // ----------------------------------------------------------
-  // UI EVENT DELEGATES
-  // ----------------------------------------------------------
   const handleReaction = async (postId, type) => {
+    if (!postId) return;
     await toggleReaction?.(postId, type);
   };
 
   const handleRose = async (postId) => {
+    if (!postId) return;
     await sendRose?.(postId);
   };
 
-  // ----------------------------------------------------------
-  // RENDER
-  // ----------------------------------------------------------
+  const canAct = !!activePostId;
+
   return (
     <div className="fixed inset-0 z-50 bg-black">
       {/* BACKDROP */}
@@ -106,68 +79,74 @@ export default function ImageViewerModal({
         className="relative z-10 h-full w-full overflow-y-scroll snap-y snap-mandatory"
         onClick={(e) => e.stopPropagation()}
       >
-        {localPosts.map((post, index) => (
-          <div
-            key={post.id}
-            ref={(el) => (itemRefs.current[index] = el)}
-            className="snap-start h-full w-full flex items-center justify-center relative"
-          >
-            <img
-              src={post.media_url}
-              alt=""
-              className="max-h-full max-w-full object-contain"
-            />
+        {localImages.map((img, index) => {
+          const src =
+            img?.url || img?.media_url || img?.media?.url || img?.media?.media_url;
 
-            {/* ACTION BAR */}
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-5 border border-white/10 flex flex-col gap-4 text-white text-xl">
-              {/* 👍 LIKE */}
-              <BinaryReactionButton
-                type="like"
-                emoji="👍"
-                active={post.userHasReacted === "like"}
-                count={post.likeCount || 0}
-                onClick={() => handleReaction(post.id, "like")}
-                disabled={false}
-              />
-
-              {/* 👎 DISLIKE */}
-              <BinaryReactionButton
-                type="dislike"
-                emoji="👎"
-                active={post.userHasReacted === "dislike"}
-                count={post.dislikeCount || 0}
-                onClick={() => handleReaction(post.id, "dislike")}
-                disabled={false}
-              />
-
-              {/* 🌹 ROSE */}
-              <RoseReactionButton
-                count={post.roseCount || 0}
-                onSend={() => handleRose(post.id)}
-                disabled={false}
-              />
-
-              {/* 💬 COMMENTS */}
-              <CommentButton
-                count={post.commentCount || 0}
-                onClick={(e) => {
-                  e?.stopPropagation?.();
-                  openComments?.(post.id);
-                }}
-              />
-
-              {/* 🌍 SPREAD */}
-<ShareReactionButton
-  onClick={(e) => {
-    e?.stopPropagation?.();
-    handleShare?.(post.id);
-  }}
-  disabled={false}
-/>
-
+          return (
+            <div
+              key={img?.id ? `${img.id}-${index}` : `${src || "img"}-${index}`}
+              ref={(el) => (itemRefs.current[index] = el)}
+              className="snap-start h-full w-full flex items-center justify-center relative"
+            >
+              {src ? (
+                <img
+                  src={src}
+                  alt=""
+                  className="max-h-full max-w-full object-contain"
+                  draggable={false}
+                />
+              ) : (
+                <div className="text-white/70 text-sm">Image unavailable</div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      {/* ✅ SINGLE ACTION BAR (always reflects activePost) */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 z-20 bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-5 border border-white/10 flex flex-col gap-4 text-white text-xl">
+        <BinaryReactionButton
+          type="like"
+          emoji="👍"
+          active={activePost?.userHasReacted === "like"}
+          count={activePost?.likeCount || 0}
+          onClick={() => handleReaction(activePostId, "like")}
+          disabled={!canAct}
+        />
+
+        <BinaryReactionButton
+          type="dislike"
+          emoji="👎"
+          active={activePost?.userHasReacted === "dislike"}
+          count={activePost?.dislikeCount || 0}
+          onClick={() => handleReaction(activePostId, "dislike")}
+          disabled={!canAct}
+        />
+
+        <RoseReactionButton
+          count={activePost?.roseCount || 0}
+          onSend={() => handleRose(activePostId)}
+          disabled={!canAct}
+        />
+
+        <CommentButton
+          count={activePost?.commentCount || 0}
+          onClick={(e) => {
+            e?.stopPropagation?.();
+            if (!canAct) return;
+            openComments?.(activePostId);
+          }}
+        />
+
+        <ShareReactionButton
+          onClick={(e) => {
+            e?.stopPropagation?.();
+            if (!canAct) return;
+            handleShare?.(activePostId);
+          }}
+          disabled={!canAct}
+        />
       </div>
 
       {/* CLOSE */}

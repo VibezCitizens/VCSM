@@ -15,9 +15,14 @@ export default function UploadScreen() {
       throw new Error("Identity not ready");
     }
 
-    let mediaUrl = "";
-    if (form.file) {
-      mediaUrl = await uploadMedia(form.file, identity.actorId);
+    // ✅ now array
+    let mediaUrls = [];
+    let mediaTypes = [];
+
+    if (form.files && form.files.length) {
+      const res = await uploadMedia(form.files, identity.actorId, form.mode);
+      mediaUrls = res.mediaUrls;
+      mediaTypes = res.mediaTypes;
     }
 
     await createPostController({
@@ -26,12 +31,17 @@ export default function UploadScreen() {
         caption: form.caption,
         visibility: form.visibility,
         mode: form.mode,
-        mediaUrl,
-        mediaType: form.mediaType,
+
+        // ✅ new multi fields
+        mediaUrls,
+        mediaTypes,
+
+        // ✅ optional backward compat for old controller/screens:
+        mediaUrl: mediaUrls[0] || "",
+        mediaType: mediaTypes[0] || null,
       },
     });
 
-    // ✅ Navigate after successful controller execution
     navigate("/");
   }
 

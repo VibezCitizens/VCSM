@@ -1,3 +1,4 @@
+// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\feed\hooks\useFeed.js
 import { useCallback, useRef, useState, useEffect } from "react";
 import { supabase } from "@/services/supabase/supabaseClient";
 import { useActorStore } from "@/state/actors/actorStore";
@@ -106,7 +107,7 @@ export function useFeed(viewerActorId, realmId) {
           .schema("vc")
           .from("posts")
           .select(
-            "id, actor_id, text, title, media_url, post_type, created_at, realm_id, edited_at, deleted_at, deleted_by_actor_id"
+            "id, actor_id, text, title, media_url, media_type, post_type, created_at, realm_id, edited_at, deleted_at, deleted_by_actor_id"
           )
           .eq("realm_id", realmId)
           .is("deleted_at", null)
@@ -123,10 +124,35 @@ export function useFeed(viewerActorId, realmId) {
         const hasMoreNow = list.length > PAGE;
         const pageRows = hasMoreNow ? list.slice(0, PAGE) : list;
 
-        // ✅ SERVER-SIDE PERSISTENT HIDE (per viewer)
-        // We DO NOT remove posts; we return hiddenPostIds so UI can cover them.
         const pagePostIds = pageRows.map((r) => r.id).filter(Boolean);
 
+        // ============================================================
+        // ✅ MULTI MEDIA: fetch vc.post_media for these posts
+        // ============================================================
+        const mediaMap = new Map(); // post_id -> [{type,url}, ...]
+        if (pagePostIds.length > 0) {
+          const { data: pm, error: pmErr } = await supabase
+            .schema("vc")
+            .from("post_media")
+            .select("post_id, url, media_type, sort_order")
+            .in("post_id", pagePostIds)
+            .order("sort_order", { ascending: true });
+
+          if (!pmErr && Array.isArray(pm) && pm.length > 0) {
+            for (const it of pm) {
+              const pid = it?.post_id;
+              const url = it?.url;
+              if (!pid || !url) continue;
+
+              const type = (it.media_type || inferMediaType(url)) === "video" ? "video" : "image";
+              const arr = mediaMap.get(pid) || [];
+              arr.push({ type, url });
+              mediaMap.set(pid, arr);
+            }
+          }
+        }
+
+        // ✅ SERVER-SIDE PERSISTENT HIDE (per viewer)
         let hiddenByMeSet = new Set();
         if (pagePostIds.length > 0) {
           const { data: actions, error: actionsErr } = await supabase
@@ -144,7 +170,7 @@ export function useFeed(viewerActorId, realmId) {
             for (const a of actions) {
               const id = a?.object_id;
               if (!id) continue;
-              if (latest.has(id)) continue; // already newest due to sort desc
+              if (latest.has(id)) continue; // newest first due to desc
               latest.set(id, a.action_type);
             }
 
@@ -156,7 +182,6 @@ export function useFeed(viewerActorId, realmId) {
           }
         }
 
-        // ✅ accumulate hidden ids into hook state
         setHiddenPostIds((prev) => {
           const next = fresh ? new Set() : new Set(prev);
           hiddenByMeSet.forEach((id) => next.add(id));
@@ -229,8 +254,6 @@ export function useFeed(viewerActorId, realmId) {
         // FILTER + NORMALIZE
         const normalized = pageRows
           .filter((r) => {
-            // ✅ DO NOT FILTER hiddenByMeSet here (we cover in UI)
-
             if (blockedActorSet.has(r.actor_id)) return false;
 
             const a = actorMap[r.actor_id];
@@ -249,6 +272,13 @@ export function useFeed(viewerActorId, realmId) {
             const prof = a?.profile_id ? profileMap[a.profile_id] : null;
             const vp = a?.vport_id ? vportMap[a.vport_id] : null;
 
+            // ✅ prefer vc.post_media, fallback to posts.media_url
+            const multi = mediaMap.get(r.id) || [];
+            const legacy = r.media_url
+              ? [{ type: r.media_type || inferMediaType(r.media_url), url: r.media_url }]
+              : [];
+            const media = multi.length ? multi : legacy;
+
             return {
               id: r.id,
               text: r.text || "",
@@ -260,7 +290,6 @@ export function useFeed(viewerActorId, realmId) {
               post_type: r.post_type || "post",
               actor_id: r.actor_id,
 
-              // ✅ add server flag so it survives refresh
               is_hidden_for_viewer: hiddenByMeSet.has(r.id),
 
               actor: {
@@ -272,7 +301,8 @@ export function useFeed(viewerActorId, realmId) {
                 vport_name: vp?.name ?? null,
                 vport_slug: vp?.slug ?? null,
               },
-              media: r.media_url ? [{ type: inferMediaType(r.media_url), url: r.media_url }] : [],
+
+              media,
             };
           });
 
@@ -314,6 +344,6 @@ export function useFeed(viewerActorId, realmId) {
     fetchPosts,
     setPosts,
     fetchViewer,
-    hiddenPostIds, // (optional, you can use it too)
+    hiddenPostIds,
   };
 }
