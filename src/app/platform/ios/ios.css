@@ -136,3 +136,9 @@ textarea {
   align-items: center;
   justify-content: center;
 }
+/* Disable iOS native copy/lookup callout + selection on press */
+.no-ios-callout {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

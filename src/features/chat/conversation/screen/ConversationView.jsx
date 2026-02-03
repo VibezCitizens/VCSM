@@ -1,5 +1,5 @@
 // src/features/chat/conversation/screen/ConversationView.jsx
-import { useMemo, useRef, useCallback, useEffect } from 'react'
+import { useMemo, useRef, useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useIdentity } from '@/state/identity/identityContext'
 import { ios } from '@/app/platform'
@@ -31,11 +31,17 @@ import ChatInput from '../components/ChatInput'
 import resolvePartnerActor from '../lib/resolvePartnerActor'
 import canReadConversation from '../permissions/canReadConversation'
 
+// ✅ Toast
+import Toast from '@/shared/components/components/Toast'
+
 export default function ConversationView({ conversationId }) {
   const navigate = useNavigate()
   const { identity } = useIdentity()
   const actorId = identity?.actorId ?? null
   const messagesRef = useRef(null)
+
+  // ✅ toast state
+  const [toast, setToast] = useState('')
 
   ios.useIOSPlatform({ enableKeyboard: true })
   ios.useIOSKeyboard(true)
@@ -60,15 +66,33 @@ export default function ConversationView({ conversationId }) {
   const { conversationCovered, setConversationCovered, undoConversationCover } =
     useConversationCover({ actorId, conversationId })
 
-  const { menu, openMenu, closeMenu, handleEdit, handleDeleteForMe, handleUnsend, handleReportMessage } =
-    useMessageActionsMenu({
-      actorId,
-      conversationId,
-      messages,
-      onEditMessage,
-      onDeleteMessage,
-      reportFlow,
-    })
+  const {
+    menu,
+    openMenu,
+    closeMenu,
+
+    // ✅ copy
+    handleCopy,
+
+    // ✅ editing state + handlers
+    editing,
+    handleEdit,
+    handleSaveEdit,
+    handleCancelEdit,
+
+    // actions
+    handleDeleteForMe,
+    handleUnsend,
+    handleReportMessage,
+  } = useMessageActionsMenu({
+    actorId,
+    conversationId,
+    messages,
+    onEditMessage,
+    onDeleteMessage,
+    reportFlow,
+    onToast: (msg) => setToast(msg),
+  })
 
   const {
     convMenu,
@@ -98,8 +122,6 @@ export default function ConversationView({ conversationId }) {
     requestAnimationFrame(() => scrollToBottom('auto'))
   }, [messages?.length, scrollToBottom])
 
-  // ✅ IMPORTANT: declare adapters/hooks BEFORE early returns (hook order rule)
-
   // ✅ This is your real send+attach pipeline (uploads media -> sends message)
   const { handleSend, handleAttach } = useSendMessageActions({
     conversationId,
@@ -112,8 +134,9 @@ export default function ConversationView({ conversationId }) {
   if (loading || !conversation || !members?.length) return <div className="p-4">Loading…</div>
   if (!canReadConversation({ actorId, members })) return <div className="p-4 text-neutral-400">Access denied</div>
 
-  const isEditing = menu?.type === 'edit'
-  const editingMessage = isEditing ? menu.message : null
+  // ✅ EDITING IS DRIVEN BY `editing` (not `menu`)
+  const isEditing = !!editing
+  const editingInitialText = editing?.initialBody ?? ''
 
   return (
     <div className="chat-screen">
@@ -142,16 +165,19 @@ export default function ConversationView({ conversationId }) {
 
       {!conversationCovered && (
         <ChatInput
-          onSend={handleSend}          // ✅ text works
-          onAttach={handleAttach}      // ✅ photos now upload + send
+          onSend={handleSend}
+          onAttach={handleAttach}
           onTyping={notifyTyping}
+
+          // ✅ edit wiring
           editing={isEditing}
-          initialValue={editingMessage?.body ?? ''}
+          initialValue={editingInitialText}
           onSaveEdit={(text) => {
-            handleEdit(editingMessage, text)
-            closeMenu()
+            handleSaveEdit(text)
           }}
-          onCancelEdit={closeMenu}
+          onCancelEdit={() => {
+            handleCancelEdit()
+          }}
         />
       )}
 
@@ -170,7 +196,8 @@ export default function ConversationView({ conversationId }) {
         anchorRect={menu?.anchorRect}
         isOwn={menu?.isOwn}
         onClose={closeMenu}
-        onEdit={handleEdit}
+        onCopy={handleCopy}
+        onEdit={handleEdit} // ✅ starts edit (sets `editing`)
         onDeleteForMe={handleDeleteForMe}
         onUnsend={handleUnsend}
         onReport={handleReportMessage}
@@ -201,6 +228,8 @@ export default function ConversationView({ conversationId }) {
           )}
         </div>
       )}
+
+      <Toast open={!!toast} message={toast} onClose={() => setToast('')} />
     </div>
   )
 }

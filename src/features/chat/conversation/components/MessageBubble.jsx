@@ -77,6 +77,20 @@ export default function MessageBubble({
 
   const showTextTimestamp = !!timeText && !!message.body && !message.isDeleted
 
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }
+
+  const startLongPress = (targetEl) => {
+    clearLongPress()
+    longPressTimer.current = setTimeout(() => {
+      openAtElement(targetEl)
+    }, 500)
+  }
+
   return (
     <div
       className={clsx(
@@ -113,8 +127,9 @@ export default function MessageBubble({
         {/* Bubble */}
         <div
           className={clsx(
-            'text-sm break-words',
-            !message.isDeleted && 'select-text',
+            'text-sm break-words no-ios-callout', // ✅ stop iOS callout/selection
+            // ❌ removed select-text (this is what triggers iOS Copy/LookUp)
+            // !message.isDeleted && 'select-text',
 
             // ✅ media-only messages should NOT render a purple bubble container
             isMediaOnly
@@ -126,22 +141,29 @@ export default function MessageBubble({
                     : 'bg-purple-500 text-white rounded-bl-md',
                 ]
           )}
+          // ✅ never allow native context menu (desktop right-click + iOS long-press callout)
           onContextMenu={(e) => {
             e.preventDefault()
             openAtElement(e.currentTarget)
           }}
+          // ✅ mobile long press (iOS/Android)
           onTouchStart={(e) => {
             const target = e.currentTarget
-            longPressTimer.current = setTimeout(() => {
-              openAtElement(target)
-            }, 500)
+            startLongPress(target)
           }}
-          onTouchEnd={() => {
-            clearTimeout(longPressTimer.current)
+          onTouchEnd={clearLongPress}
+          onTouchMove={clearLongPress}
+          onTouchCancel={clearLongPress}
+          // ✅ pointer fallback (desktop / some mobile browsers)
+          onPointerDown={(e) => {
+            // only start long-press for touch/pen; mouse right click already handled by contextmenu
+            if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+              startLongPress(e.currentTarget)
+            }
           }}
-          onTouchMove={() => {
-            clearTimeout(longPressTimer.current)
-          }}
+          onPointerUp={clearLongPress}
+          onPointerCancel={clearLongPress}
+          onPointerMove={clearLongPress}
         >
           {/* 🔒 HARD VISUAL GUARD — deleted is terminal */}
           {message.isDeleted && (

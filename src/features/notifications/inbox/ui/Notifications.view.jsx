@@ -10,8 +10,8 @@ export default function NotificationsView({ rows, loading }) {
   }
 
   return (
-    <ul className="space-y-1">
-      {rows.map(n => (
+    <ul className="space-y-1 list-none p-0 m-0">
+      {rows.map((n) => (
         <NotificationItem key={n.id} notification={n} />
       ))}
     </ul>

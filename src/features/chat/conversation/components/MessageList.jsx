@@ -78,7 +78,10 @@ export default function MessageList({
   }, [])
 
   return (
-    <div className="px-3 py-2 space-y-1">
+    <div
+      className="px-3 py-2 space-y-1 no-ios-callout"
+      onContextMenu={(e) => e.preventDefault()} // ✅ blocks iOS/Safari callout menu
+    >
       {groups.map((group, index) => {
         const isMine = group.senderActorId === currentActorId
 

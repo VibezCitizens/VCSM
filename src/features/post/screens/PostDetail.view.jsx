@@ -2,6 +2,7 @@
 
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useMemo, useState, useCallback, useRef } from "react";
 
 import { useIdentity } from "@/state/identity/identityContext";
 
@@ -26,8 +27,24 @@ import usePostDetailEditing from "@/features/post/postcard/hooks/usePostDetailEd
 import usePostDetailReplying from "@/features/post/postcard/hooks/usePostDetailReplying";
 import usePostDetailReporting from "@/features/post/postcard/hooks/usePostDetailReporting";
 
-// ✅ Fullscreen thanks/cover UI
+import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
 import ReportedObjectCover from "@/features/moderation/components/ReportedObjectCover";
+
+import CommentReplyModal from "@/features/post/commentcard/components/CommentReplyModal";
+import CommentComposeModal from "@/features/post/commentcard/components/CommentComposeModal";
+
+function detectIOS() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isIPhoneIPadIPod = /iPad|iPhone|iPod/.test(ua);
+
+  const isIPadOS13Plus =
+    /Macintosh/.test(ua) &&
+    typeof document !== "undefined" &&
+    "ontouchend" in document;
+
+  return isIPhoneIPadIPod || isIPadOS13Plus;
+}
 
 export default function PostDetailView() {
   const { postId } = useParams();
@@ -39,46 +56,152 @@ export default function PostDetailView() {
   const commentCount = usePostCommentCount(postId);
   const thread = useCommentThread(postId);
 
-  // ✅ Post loading
   const { post, loadingPost } = usePostDetailPost(postId);
 
-  // ✅ comment covers (server + local)
   const commentCovers = useCommentCovers({
     actorId,
     commentTree: thread.comments || [],
     propagateRootToReplies: true,
   });
 
-  // ✅ editing orchestration
   const editing = usePostDetailEditing({
     threadComments: thread.comments,
     onReload: thread.reload,
   });
 
-  // ✅ replying orchestration
   const replying = usePostDetailReplying({
     addReply: thread.addReply,
     posting: thread.posting,
   });
 
-  // ✅ report orchestration (post cover + comment cover persistence)
   const reporting = usePostDetailReporting({
     actorId,
     postId,
     commentCovers,
   });
 
-  // ✅ menus orchestration
+  // ============================================================
+  // ✅ STABLE HANDLERS
+  // ============================================================
+  const handleEditPost = useCallback(
+    (payload) => {
+      const pid = payload?.postId ?? null;
+      if (!pid) return;
+
+      const initialText = post?.text ?? "";
+      navigate(`/posts/${pid}/edit`, { state: { initialText } });
+    },
+    [navigate, post?.text]
+  );
+
+  const handleDeletePost = useCallback(
+    async (payload) => {
+      const pid = payload?.postId ?? null;
+      if (!actorId) return;
+      if (!pid) return;
+
+      const okConfirm = window.confirm("Delete this Vibe?");
+      if (!okConfirm) return;
+
+      const res = await softDeletePostController({
+        actorId,
+        postId: pid,
+      });
+
+      if (!res.ok) {
+        window.alert(res.error?.message ?? "Failed to delete Vibe");
+        return;
+      }
+
+      navigate(-1);
+    },
+    [actorId, navigate]
+  );
+
   const menus = usePostDetailMenus({
     actorId,
     postId,
     thread,
     onReportPost: reporting.openReportPost,
+    onEditPost: handleEditPost,
+    onDeletePost: handleDeletePost,
     onReportComment: reporting.openReportComment,
     onEditComment: editing.startEditFromCommentId,
     onDeleteComment: editing.deleteCommentById,
   });
 
+  // ============================================================
+  // ✅ iOS detection + modal state (ABOVE early returns)
+  // ============================================================
+  const isIOS = useMemo(() => detectIOS(), []);
+  const [replyModalOpen, setReplyModalOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
+
+  // ✅ refs for focus DURING tap gesture
+  const replyRef = useRef(null);
+  const composeRef = useRef(null);
+
+  // ============================================================
+  // ✅ Reply modal (iOS: open + keyboard immediately)
+  // ============================================================
+  const openReply = useCallback(
+    (commentId) => {
+      replying.startReply(commentId);
+
+      if (!isIOS) return;
+
+      // open modal
+      setReplyModalOpen(true);
+
+      // focus during same gesture (best effort for iOS keyboard)
+      replyRef.current?.focus?.();
+      queueMicrotask(() => replyRef.current?.focus?.());
+      setTimeout(() => replyRef.current?.focus?.(), 0);
+    },
+    [replying, isIOS]
+  );
+
+  const closeReplyModal = useCallback(() => {
+    setReplyModalOpen(false);
+    replying.cancelReply();
+  }, [replying]);
+
+  const submitReplyFromModal = useCallback(
+    (text) => {
+      replying.submitReply(text);
+      setReplyModalOpen(false);
+    },
+    [replying]
+  );
+
+  // ============================================================
+  // ✅ Top-level compose modal (iOS: open + keyboard immediately)
+  // ============================================================
+  const openCompose = useCallback(() => {
+    if (!isIOS) return;
+
+    setComposeOpen(true);
+
+    composeRef.current?.focus?.();
+    queueMicrotask(() => composeRef.current?.focus?.());
+    setTimeout(() => composeRef.current?.focus?.(), 0);
+  }, [isIOS]);
+
+  const closeCompose = useCallback(() => {
+    setComposeOpen(false);
+  }, []);
+
+  const submitCompose = useCallback(
+    (text) => {
+      thread.addComment(text);
+      setComposeOpen(false);
+    },
+    [thread]
+  );
+
+  // ============================================================
+  // ✅ Early returns AFTER all hooks
+  // ============================================================
   if (loadingPost) {
     return <div className="p-6 text-center text-neutral-400">Loading Vibes…</div>;
   }
@@ -87,15 +210,14 @@ export default function PostDetailView() {
     return <div className="p-6 text-center text-neutral-500">Vibes not found</div>;
   }
 
-  const isCovered = String(reporting.reportedPostId ?? "") === String(postId ?? "");
+  const isCovered =
+    String(reporting.reportedPostId ?? "") === String(postId ?? "");
   const coveredCommentIds = commentCovers.coveredIds;
 
-  // ✅ LOCATION normalize for Header
   const locationText = String(post.location_text ?? post.locationText ?? "").trim();
 
-
-  // ✅ ACTOR normalize safely
-  const postActorId = post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
+  const postActorId =
+    post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
 
   return (
     <div className="h-full w-full overflow-y-auto touch-pan-y relative">
@@ -115,10 +237,7 @@ export default function PostDetailView() {
           />
 
           <div className="px-4 pb-3">
-            <PostBody
-              text={post.text}
-              mentionMap={post.mentionMap || {}}
-            />
+            <PostBody text={post.text} mentionMap={post.mentionMap || {}} />
           </div>
 
           {post.media?.length > 0 && (
@@ -159,25 +278,67 @@ export default function PostDetailView() {
               editingInitialText={editing.editingInitialText}
               onCancelInlineEdit={editing.cancelInlineEdit}
               onEditedSaved={editing.onEditedSaved}
-              replyingToCommentId={replying.replyingToCommentId}
-              onReplyStart={replying.startReply}
-              onReplyCancel={replying.cancelReply}
-              onReplySubmit={replying.submitReply}
+
+              // ✅ desktop keeps inline reply; iOS uses modal
+              replyingToCommentId={isIOS ? null : replying.replyingToCommentId}
+              onReplyStart={openReply}
+              onReplyCancel={isIOS ? undefined : replying.cancelReply}
+              onReplySubmit={isIOS ? undefined : replying.submitReply}
               postingReply={thread.posting}
             />
           </div>
 
+          {/* ✅ Bottom composer */}
           {thread.actorId && identity && (
-            <CommentInputView
-              key={thread.actorId}
-              actorId={thread.actorId}
-              identity={identity}
-              onSubmit={thread.addComment}
-              disabled={thread.posting}
-            />
+            <>
+              {!isIOS && (
+                <CommentInputView
+                  key={thread.actorId}
+                  actorId={thread.actorId}
+                  identity={identity}
+                  onSubmit={thread.addComment}
+                  disabled={thread.posting}
+                />
+              )}
+
+              {isIOS && (
+                <div className="px-3 py-3 border-t border-neutral-900 bg-black/40 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={openCompose}
+                    disabled={thread.posting}
+                    className={
+                      thread.posting
+                        ? "bg-neutral-800 text-neutral-500 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
+                        : "bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-full text-sm"
+                    }
+                  >
+                    Spark
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </motion.div>
+
+      {/* ✅ iOS reply modal (with ref for focus) */}
+      <CommentReplyModal
+        ref={replyRef}
+        open={replyModalOpen}
+        submitting={!!thread.posting}
+        onClose={closeReplyModal}
+        onSubmit={submitReplyFromModal}
+      />
+
+      {/* ✅ iOS top-level compose modal (with ref for focus) */}
+      <CommentComposeModal
+        ref={composeRef}
+        open={composeOpen}
+        submitting={!!thread.posting}
+        onClose={closeCompose}
+        onSubmit={submitCompose}
+      />
 
       <PostActionsMenu
         open={!!menus.postMenu}
@@ -185,6 +346,8 @@ export default function PostDetailView() {
         isOwn={!!menus.postMenu?.isOwn}
         onClose={menus.closePostMenu}
         onReport={menus.handleReportPostClick}
+        onEdit={menus.handleEditPostClick}
+        onDelete={menus.handleDeletePostClick}
       />
 
       <PostActionsMenu
@@ -198,27 +361,20 @@ export default function PostDetailView() {
       />
 
       <ReportModal
-        open={reporting.reportFlow.open}
-        title={reporting.reportFlow.context?.title ?? "Report"}
-        subtitle={reporting.reportFlow.context?.subtitle ?? null}
-        loading={reporting.reportFlow.loading}
-        onClose={reporting.reportFlow.close}
-        onSubmit={async (payload) => {
-          const ctx = reporting.reportFlow.context;
-          const objectType = ctx?.objectType ?? null;
-          const objectId = ctx?.objectId ?? null;
+  open={reporting.reportFlow.open}
+  title={reporting.reportFlow.context?.title ?? "Report"}
+  subtitle={reporting.reportFlow.context?.subtitle ?? null}
+  loading={reporting.reportFlow.loading}
+  onClose={reporting.reportFlow.close}
+  onSubmit={async (payload) => {
+    try {
+      await reporting.handleReportSubmit(payload);
+    } catch (e) {
+      reporting.clearReportedPost?.();
+    }
+  }}
+/>
 
-          if (objectType === "post" && objectId) {
-            // optimistic cover is handled in your reporting hook flow
-          }
-
-          try {
-            await reporting.handleReportSubmit(payload);
-          } catch (e) {
-            reporting.clearReportedPost?.();
-          }
-        }}
-      />
 
       <ReportedObjectCover
         open={isCovered}

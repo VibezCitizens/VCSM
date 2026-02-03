@@ -1,8 +1,11 @@
+// src/features/notifications/inbox/ui/NotificationItem.view.jsx
+
 import FollowRequestItem from '@/features/notifications/types/follow/FollowRequestItem.view'
 import AcceptFriendRequestItem from '@/features/notifications/types/follow/AcceptFriendRequestItem'
 
 import CommentNotificationItem from '@/features/notifications/types/comment/CommentNotificationItem.view'
 import CommentLikeNotificationItem from '@/features/notifications/types/comment/CommentLikeNotificationItem.view'
+import CommentReplyNotificationItem from '@/features/notifications/types/comment/CommentReplyNotificationItem.view'
 
 import PostLikeNotificationItem from '@/features/notifications/types/reaction/PostLikeNotificationItem.view'
 import PostDislikeNotificationItem from '@/features/notifications/types/reaction/PostDislikeNotificationItem.view'
@@ -29,6 +32,9 @@ export default function NotificationItem({ notification }) {
 
     case 'comment_like':
       return <CommentLikeNotificationItem notification={notification} />
+
+    case 'comment_reply':
+      return <CommentReplyNotificationItem notification={notification} />
 
     // 🔥 POST REACTIONS (SPLIT)
     case 'like':

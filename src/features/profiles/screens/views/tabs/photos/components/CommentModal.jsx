@@ -1,29 +1,71 @@
 // src/features/profiles/screens/views/tabs/photos/components/CommentModal.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import useCommentThread from "@/features/post/commentcard/hooks/useCommentThread";
 import CommentCard from "@/features/post/commentcard/components/CommentCard.container";
+import CommentComposeModal from "./CommentComposeModal";
+
+function detectIOS() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isIPhoneIPadIPod = /iPad|iPhone|iPod/.test(ua);
+
+  const isIPadOS13Plus =
+    /Macintosh/.test(ua) &&
+    typeof document !== "undefined" &&
+    "ontouchend" in document;
+
+  return isIPhoneIPadIPod || isIPadOS13Plus;
+}
 
 /**
  * CommentModal
  * ------------------------------------------------------------
  * UI-only modal for viewing & creating comments.
  *
- * Fixes:
- * - Input bar is sticky and padded to avoid bottom nav overlap
- * - Adds safe-area inset padding (iOS)
+ * ✅ Non-iOS: sticky input bar
+ * ✅ iOS: hide input bar, show Spark button -> opens compose modal w/ instant focus
+ * ✅ iOS-safe background scroll freeze (same approach as PostDetail modals)
  */
 export default function CommentModal({ postId, onClose }) {
   const thread = useCommentThread(postId);
-
   const { actorId, comments, loading, posting, reload, addComment } = thread;
 
   const [draft, setDraft] = useState("");
+
+  // ✅ iOS
+  const isIOS = useMemo(() => detectIOS(), []);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const composeRef = useRef(null);
 
   useEffect(() => {
     if (!postId) return;
     reload?.();
   }, [postId, reload]);
+
+  // ✅ Freeze background scroll while modal is mounted (iOS-safe)
+  useEffect(() => {
+    const scrollY = window.scrollY || 0;
+    const body = document.body;
+
+    const prevOverflow = body.style.overflow;
+    const prevPosition = body.style.position;
+    const prevTop = body.style.top;
+    const prevWidth = body.style.width;
+
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+
+    return () => {
+      body.style.overflow = prevOverflow;
+      body.style.position = prevPosition;
+      body.style.top = prevTop;
+      body.style.width = prevWidth;
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
 
   async function handleSubmit() {
     const content = draft.trim();
@@ -33,8 +75,37 @@ export default function CommentModal({ postId, onClose }) {
     setDraft("");
   }
 
+  // ✅ iOS open compose (focus during gesture)
+  const openCompose = useCallback(() => {
+    if (!isIOS) return;
+
+    setComposeOpen(true);
+
+    // focus attempt during same gesture
+    composeRef.current?.focus?.();
+
+    // fallback best effort
+    queueMicrotask(() => composeRef.current?.focus?.());
+    setTimeout(() => composeRef.current?.focus?.(), 0);
+  }, [isIOS]);
+
+  const closeCompose = useCallback(() => {
+    setComposeOpen(false);
+  }, []);
+
+  const submitCompose = useCallback(
+    async (text) => {
+      const trimmed = String(text ?? "").trim();
+      if (!trimmed || posting) return;
+
+      await addComment(trimmed);
+      setComposeOpen(false);
+    },
+    [addComment, posting]
+  );
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black/90">
+  <div className="fixed inset-0 z-[9999] flex flex-col bg-black/90">
       {/* HEADER */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <h2 className="text-lg font-semibold text-white">Sparks</h2>
@@ -75,35 +146,75 @@ export default function CommentModal({ postId, onClose }) {
           ))}
         </div>
 
-        {/* INPUT (sticky above bottom nav + safe area) */}
+        {/* INPUT AREA */}
         {actorId && (
-          <div
-            className="
-              sticky bottom-0 z-50
-              border-t border-white/10
-              bg-black/95 backdrop-blur
-              px-4 py-3 flex gap-2
-              pb-[calc(env(safe-area-inset-bottom)+16px)]
-            "
-          >
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              placeholder="Write a spark…"
-              className="flex-1 rounded-md bg-neutral-800 text-white px-3 py-2 text-sm border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
-            />
+          <>
+            {/* ✅ Non-iOS: sticky input bar */}
+            {!isIOS && (
+              <div
+                className="
+                  sticky bottom-0 z-50
+                  border-t border-white/10
+                  bg-black/95 backdrop-blur
+                  px-4 py-3 flex gap-2
+                  pb-[calc(env(safe-area-inset-bottom)+16px)]
+                "
+              >
+                <input
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Write a spark…"
+                  className="flex-1 rounded-md bg-neutral-800 text-white px-3 py-2 text-sm border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                />
 
-            <button
-              onClick={handleSubmit}
-              disabled={!draft.trim() || posting}
-              className="px-4 py-2 rounded-md text-sm font-medium bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              type="button"
-            >
-              {posting ? "Sparking…" : "Spark"}
-            </button>
-          </div>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!draft.trim() || posting}
+                  className="px-4 py-2 rounded-md text-sm font-medium bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                >
+                  {posting ? "Sparking…" : "Spark"}
+                </button>
+              </div>
+            )}
+
+            {/* ✅ iOS: no input bar — only Spark button */}
+            {isIOS && (
+              <div
+                className="
+                  sticky bottom-0 z-50
+                  border-t border-white/10
+                  bg-black/95 backdrop-blur
+                  px-4 py-3 flex justify-end
+                  pb-[calc(env(safe-area-inset-bottom)+16px)]
+                "
+              >
+                <button
+                  type="button"
+                  onClick={openCompose}
+                  disabled={posting}
+                  className={
+                    posting
+                      ? "bg-neutral-800 text-neutral-500 px-4 py-2 rounded-md text-sm cursor-not-allowed"
+                      : "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm"
+                  }
+                >
+                  Spark
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      {/* ✅ iOS compose modal */}
+      <CommentComposeModal
+        ref={composeRef}
+        open={composeOpen}
+        submitting={!!posting}
+        onClose={closeCompose}
+        onSubmit={submitCompose}
+      />
     </div>
   );
 }

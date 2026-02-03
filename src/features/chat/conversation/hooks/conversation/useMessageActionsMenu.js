@@ -9,6 +9,7 @@
 // ============================================================
 
 import { useCallback, useState } from 'react'
+import { copyToClipboard } from '@/shared/lib/clipboard'
 
 export default function useMessageActionsMenu({
   actorId,
@@ -17,6 +18,7 @@ export default function useMessageActionsMenu({
   onEditMessage,
   onDeleteMessage,
   reportFlow,
+  onToast, // ✅ add
 }) {
   /* ============================================================
      Message action menu state (bubble menu)
@@ -25,14 +27,18 @@ export default function useMessageActionsMenu({
 
   const openMenu = useCallback(
     ({ messageId, senderActorId, anchorRect }) => {
+      const msg = messages?.find?.((m) => m.id === messageId)
+      const body = msg?.body ?? ''
+
       setMenu({
         messageId,
         isOwn: senderActorId === actorId,
         senderActorId,
         anchorRect,
+        body, // ✅ store body so we can copy without hunting later
       })
     },
-    [actorId]
+    [actorId, messages]
   )
 
   const closeMenu = useCallback(() => {
@@ -83,6 +89,25 @@ export default function useMessageActionsMenu({
   const handleCancelEdit = useCallback(() => {
     setEditing(null)
   }, [])
+
+  /* ============================================================
+     Copy handler
+     ============================================================ */
+  const handleCopy = useCallback(async () => {
+    const text = menu?.body ?? ''
+    if (!text) {
+      closeMenu()
+      return
+    }
+
+    const res = await copyToClipboard(text)
+    if (res?.ok) {
+      onToast?.('Copied') // ✅ show toast
+      navigator.vibrate?.(15) // ✅ optional haptic (safe if unsupported)
+    }
+
+    closeMenu()
+  }, [menu, closeMenu, onToast])
 
   /* ============================================================
      Delete handlers
@@ -144,6 +169,7 @@ export default function useMessageActionsMenu({
     handleCancelEdit,
 
     // actions
+    handleCopy,
     handleDeleteForMe,
     handleUnsend,
     handleReportMessage,

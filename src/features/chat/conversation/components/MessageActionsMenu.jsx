@@ -16,9 +16,11 @@ export default function MessageActionsMenu({
   anchorRect = null,
   isOwn = false,
   onClose,
+  onCopy,          // ✅ add
   onEdit,
   onDeleteForMe,
   onUnsend,
+  onReport,        // (you already pass it from ConversationView)
 }) {
   const ref = useRef(null)
 
@@ -53,8 +55,8 @@ export default function MessageActionsMenu({
      Positioning (AUTO FLIP)
      ============================================================ */
   const GAP = 6
-  const MENU_WIDTH = 160
-  const MENU_HEIGHT = isOwn ? 120 : 80
+  const MENU_WIDTH = 180
+  const MENU_HEIGHT = isOwn ? 200 : 160
 
   const viewportHeight = window.innerHeight
   const spaceBelow = viewportHeight - anchorRect.bottom
@@ -75,7 +77,7 @@ export default function MessageActionsMenu({
         ref={ref}
         className="
           absolute
-          min-w-[160px]
+          min-w-[180px]
           rounded-xl
           bg-neutral-800/95
           text-white
@@ -90,6 +92,22 @@ export default function MessageActionsMenu({
         }}
       >
         <ul className="m-0 list-none py-1 pl-0 pr-0">
+          <li>
+            <button
+              className="
+                w-full text-left px-4 py-2
+                text-white
+                hover:bg-white/10
+              "
+              onClick={() => {
+                onCopy?.()
+                onClose?.()
+              }}
+            >
+              📋 Copy
+            </button>
+          </li>
+
           {isOwn && (
             <li>
               <button
@@ -141,6 +159,22 @@ export default function MessageActionsMenu({
               </button>
             </li>
           )}
+
+          <li>
+            <button
+              className="
+                w-full text-left px-4 py-2
+                text-white
+                hover:bg-white/10
+              "
+              onClick={() => {
+                onReport?.()
+                onClose?.()
+              }}
+            >
+              🚩 Report
+            </button>
+          </li>
         </ul>
       </div>
     </div>

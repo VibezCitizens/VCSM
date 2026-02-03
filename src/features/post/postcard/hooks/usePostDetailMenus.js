@@ -7,6 +7,8 @@ export default function usePostDetailMenus({
   postId,
   thread,
   onReportPost,
+  onEditPost,         // ✅ add
+  onDeletePost,       // ✅ add
   onReportComment,
   onEditComment,
   onDeleteComment,
@@ -40,6 +42,23 @@ export default function usePostDetailMenus({
     onReportPost?.({ postId: postMenu.postId });
     closePostMenu();
   }, [actorId, postMenu, onReportPost, closePostMenu]);
+
+  // ✅ MISSING: edit post
+  const handleEditPostClick = useCallback(() => {
+    if (!postMenu?.postId) return;
+
+    onEditPost?.({ postId: postMenu.postId });
+    closePostMenu();
+  }, [postMenu, onEditPost, closePostMenu]);
+
+  // ✅ MISSING: delete post
+  const handleDeletePostClick = useCallback(async () => {
+    if (!actorId) return;
+    if (!postMenu?.postId) return;
+
+    await onDeletePost?.({ postId: postMenu.postId });
+    closePostMenu();
+  }, [actorId, postMenu, onDeletePost, closePostMenu]);
 
   // ============================
   // COMMENT MENU
@@ -95,6 +114,8 @@ export default function usePostDetailMenus({
     openPostMenu,
     closePostMenu,
     handleReportPostClick,
+    handleEditPostClick,     // ✅ return
+    handleDeletePostClick,   // ✅ return
 
     openCommentMenu,
     closeCommentMenu,
