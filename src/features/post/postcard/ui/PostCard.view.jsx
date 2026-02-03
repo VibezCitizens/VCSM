@@ -1,23 +1,26 @@
+// src/features/post/postcard/ui/PostCard.view.jsx (or wherever PostCardView lives)
 import React from "react";
 import { motion } from "framer-motion";
 
 import MediaCarousel from "../components/MediaCarousel";
 import ReactionBar from "../components/ReactionBar";
 
-import ActorLink from "@/shared/components/ActorLink";
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
-
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
 import { useIdentity } from "@/state/identity/identityContext";
+
+// ✅ clickable mentions
+import LinkifiedMentions from "@/features/upload/ui/LinkifiedMentions";
+
+// ✅ NEW header
+import PostHeader from "../components/PostHeader";
 
 export default function PostCardView({
   post,
   onReact,
   onOpenPost,
   onOpenMenu,
-  onShare, // ✅ ADD
+  onShare,
 
-  // ✅ ADD: post cover support
   covered = false,
   cover = null,
 }) {
@@ -26,12 +29,13 @@ export default function PostCardView({
   const { identity } = useIdentity();
   const viewerActorId = identity?.actorId ?? null;
 
-  const actorUI = useActorPresentation(post.actorId);
-  if (!actorUI) return null;
-
   const commentCount = usePostCommentCount(post.id);
 
-  const isVport = actorUI.kind === "vport";
+  const locationText = String(post.location_text ?? post.locationText ?? "").trim();
+
+  const createdAt = post.created_at ?? post.createdAt ?? null;
+
+  // keep ownership logic as-is
   const isOwner = !!viewerActorId && post.actorId === viewerActorId;
 
   return (
@@ -48,12 +52,11 @@ export default function PostCardView({
         relative
       "
     >
-      {/* ✅ COVER LAYER (screen protector over the post) */}
+      {/* ✅ COVER LAYER */}
       {covered ? (
         <div
           className="absolute inset-0 z-20"
           onClick={(e) => {
-            // prevent clicks from reaching post content
             e.preventDefault();
             e.stopPropagation();
           }}
@@ -62,49 +65,28 @@ export default function PostCardView({
         </div>
       ) : null}
 
-      <div
-        onClick={covered ? undefined : onOpenPost}
-        className="
-          flex items-center justify-between
-          px-4 py-3 cursor-pointer
-          hover:bg-neutral-800/40
-        "
-      >
-        <ActorLink
-          actor={actorUI}
-          showUsername={!isVport}
-          showTimestamp={false}
-          avatarSize="w-11 h-11"
-          avatarShape="rounded-lg"
-        />
+      {/* ✅ HEADER (username + timestamp + location) */}
+      <PostHeader
+        actor={post.actorId}
+        createdAt={createdAt}
+        locationText={locationText}
+        postId={post.id}
+        onOpenPost={covered ? undefined : onOpenPost}
+        onOpenMenu={({ postId, postActorId, anchorRect }) => {
+          if (covered) return;
 
-        <button
-          className="text-neutral-400 hover:text-white text-xl px-2"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onOpenMenu?.({
+            postId,
+            postActorId,
+            viewerActorId,
+            isOwner,
+            anchorRect,
+          });
+        }}
+      />
 
-            // ✅ block menu when post is covered
-            if (covered) return;
-
-            const rect = e.currentTarget.getBoundingClientRect();
-
-            onOpenMenu?.({
-              postId: post.id,
-              postActorId: post.actorId,
-              viewerActorId,
-              isOwner,
-              anchorRect: rect,
-            });
-          }}
-          aria-label="Vibe options"
-          type="button"
-        >
-          •••
-        </button>
-      </div>
-
-      {post.text && (
+      {/* ✅ BODY TEXT */}
+      {post.text ? (
         <div
           onClick={covered ? undefined : onOpenPost}
           className="
@@ -112,28 +94,25 @@ export default function PostCardView({
             whitespace-pre-line cursor-pointer
           "
         >
-          {post.text}
+          <LinkifiedMentions text={post.text} mentionMap={post.mentionMap || {}} />
         </div>
-      )}
+      ) : null}
 
-     {post.media?.length > 0 && (
-  <div
-    className="px-0 mb-2"
-    onClick={(e) => {
-      // stop bubble so post card doesn't open
-      e.stopPropagation();
-    }}
-    onMouseDown={(e) => e.stopPropagation()}
-    onTouchStart={(e) => e.stopPropagation()}
-    onPointerDown={(e) => e.stopPropagation()}
-  >
-    <MediaCarousel media={post.media} />
-  </div>
-)}
+      {/* ✅ MEDIA */}
+      {post.media?.length > 0 ? (
+        <div
+          className="px-0 mb-2"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <MediaCarousel media={post.media} />
+        </div>
+      ) : null}
 
-
+      {/* ✅ REACTIONS */}
       <div className="px-4 pb-3">
-        {/* ✅ Block all interactions in ReactionBar when covered */}
         <div
           onClickCapture={(e) => {
             if (!covered) return;

@@ -10,8 +10,8 @@ export async function insertPost(row) {
     .from("posts")
     .insert(row)
     .select("id")
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
-  return data; // { id }
+  return data; // { id } | null
 }

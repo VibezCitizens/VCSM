@@ -23,13 +23,19 @@ import ReportThanksOverlay from "@/features/moderation/components/ReportThanksOv
 export default function PostFeedScreen() {
   const navigate = useNavigate();
   const { identity } = useIdentity();
-  const actorId = identity?.actorId ?? null;
 
-  const { posts, loading, hasMore, fetchPosts, setPosts, fetchViewer } = useFeed(actorId);
+  const actorId = identity?.actorId ?? null;
+  const realmId = identity?.realmId ?? null;
+
+  // ✅ FIX: useFeed requires (viewerActorId, realmId)
+  const { posts, loading, hasMore, fetchPosts, setPosts, fetchViewer } = useFeed(
+    actorId,
+    realmId
+  );
 
   const reportFlow = useReportFlow({ reporterActorId: actorId });
 
-  // ✅ NEW: rehydrate covered posts for this actor
+  // ✅ rehydrate covered posts for this actor
   const postCovers = usePostCovers({
     actorId,
     postIds: posts.map((p) => p.id),
@@ -99,7 +105,11 @@ export default function PostFeedScreen() {
     closePostMenu();
   }, [actorId, postMenu, setPosts, closePostMenu]);
 
-  const [shareState, setShareState] = useState({ open: false, postId: null, url: "" });
+  const [shareState, setShareState] = useState({
+    open: false,
+    postId: null,
+    url: "",
+  });
 
   const closeShare = useCallback(() => {
     setShareState({ open: false, postId: null, url: "" });
@@ -135,7 +145,7 @@ export default function PostFeedScreen() {
     return () => {
       cancelled = true;
     };
-  }, [actorId, fetchViewer, fetchPosts, setPosts]);
+  }, [actorId, realmId, fetchViewer, fetchPosts, setPosts]);
 
   useEffect(() => {
     if (!hasMore || loading) return;

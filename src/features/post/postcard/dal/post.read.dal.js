@@ -22,6 +22,7 @@ export async function fetchPostByIdDAL(postId) {
       post_type,
       tags,
       created_at,
+      location_text,
 
       post_media (
         url,

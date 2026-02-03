@@ -79,9 +79,6 @@ export default function PostDetailView() {
     onDeleteComment: editing.deleteCommentById,
   });
 
-  // ============================================================
-  // STATES
-  // ============================================================
   if (loadingPost) {
     return <div className="p-6 text-center text-neutral-400">Loading Vibes…</div>;
   }
@@ -90,13 +87,16 @@ export default function PostDetailView() {
     return <div className="p-6 text-center text-neutral-500">Vibes not found</div>;
   }
 
-  // normalize ids (router param is string)
   const isCovered = String(reporting.reportedPostId ?? "") === String(postId ?? "");
   const coveredCommentIds = commentCovers.coveredIds;
 
-  // ============================================================
-  // RENDER
-  // ============================================================
+  // ✅ LOCATION normalize for Header
+  const locationText = String(post.location_text ?? post.locationText ?? "").trim();
+
+
+  // ✅ ACTOR normalize safely
+  const postActorId = post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
+
   return (
     <div className="h-full w-full overflow-y-auto touch-pan-y relative">
       <motion.div
@@ -105,17 +105,20 @@ export default function PostDetailView() {
         transition={{ duration: 0.18 }}
         className="w-full max-w-2xl mx-auto pb-24"
       >
-        {/* ================= POST ================= */}
         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden mb-4">
           <PostHeader
-            actor={post.actor.actorId}
+            actor={postActorId}
             createdAt={post.created_at}
+            locationText={locationText}
             postId={post.id}
             onOpenMenu={menus.openPostMenu}
           />
 
           <div className="px-4 pb-3">
-            <PostBody text={post.text} />
+            <PostBody
+              text={post.text}
+              mentionMap={post.mentionMap || {}}
+            />
           </div>
 
           {post.media?.length > 0 && (
@@ -129,7 +132,6 @@ export default function PostDetailView() {
           </div>
         </div>
 
-        {/* ================= COMMENTS ================= */}
         <div className="bg-black/40 rounded-2xl border border-neutral-900">
           <div className="px-4 py-3 border-b border-neutral-800 text-sm text-neutral-400">
             Sparks
@@ -177,7 +179,6 @@ export default function PostDetailView() {
         </div>
       </motion.div>
 
-      {/* ✅ POST ••• MENU */}
       <PostActionsMenu
         open={!!menus.postMenu}
         anchorRect={menus.postMenu?.anchorRect}
@@ -186,7 +187,6 @@ export default function PostDetailView() {
         onReport={menus.handleReportPostClick}
       />
 
-      {/* ✅ COMMENT ••• MENU */}
       <PostActionsMenu
         open={!!menus.commentMenu}
         anchorRect={menus.commentMenu?.anchorRect}
@@ -197,7 +197,6 @@ export default function PostDetailView() {
         onReport={menus.handleReportCommentClick}
       />
 
-      {/* ✅ REPORT MODAL */}
       <ReportModal
         open={reporting.reportFlow.open}
         title={reporting.reportFlow.context?.title ?? "Report"}
@@ -205,28 +204,22 @@ export default function PostDetailView() {
         loading={reporting.reportFlow.loading}
         onClose={reporting.reportFlow.close}
         onSubmit={async (payload) => {
-          // ✅ IMPORTANT: optimistic cover for post BEFORE awaiting submit
           const ctx = reporting.reportFlow.context;
           const objectType = ctx?.objectType ?? null;
           const objectId = ctx?.objectId ?? null;
 
-          // show cover immediately (prevents “unmount before setState visible”)
           if (objectType === "post" && objectId) {
-            // if your hook exposes a setter, use it — otherwise we call existing handler
-            // which will set it after submit. We'll still do optimistic via clear+local:
-            // easiest: call handleReportSubmit which now persists and sets it.
+            // optimistic cover is handled in your reporting hook flow
           }
 
           try {
             await reporting.handleReportSubmit(payload);
           } catch (e) {
-            // if anything blows up, make sure cover is not stuck
             reporting.clearReportedPost?.();
           }
         }}
       />
 
-      {/* ✅ FULLSCREEN COVER AFTER REPORT (POST ONLY) */}
       <ReportedObjectCover
         open={isCovered}
         title="Report sent"

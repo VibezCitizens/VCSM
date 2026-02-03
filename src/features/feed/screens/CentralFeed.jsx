@@ -280,32 +280,44 @@ export default function CentralFeed() {
         <p className="text-center text-gray-400">No Vibes found.</p>
       )}
 
-      {posts.map((post) => {
-        const hiddenServer =
-          !!post.is_hidden_for_viewer || (serverHiddenPostIds?.has?.(post.id) ?? false)
+   {posts.map((post) => {
+  const hiddenServer =
+    !!post.is_hidden_for_viewer || (serverHiddenPostIds?.has?.(post.id) ?? false)
 
-        const covered = hiddenServer
+  const covered = hiddenServer
 
-        return (
-          <div key={`post:${post.id}`} className="mb-2 last:mb-0">
-          <PostCard
-  post={{
-    ...post,
-    actorId: post.actor?.actor_id ?? post.actor?.actorId ?? post.actorId ?? post.actor_id ?? null,
-  }}
-  onOpenPost={() => {
-    if (covered) return
-    navigate(`/post/${post.id}`)
-  }}
-  onOpenMenu={openPostMenu}
-  onShare={handleShare}
-  covered={covered}
-  cover={covered ? <ReportedPostCover /> : null}
-/>
+  // ✅ DEBUG: confirm mentionMap for each post
+  console.log("[CentralFeed][post mention debug]", {
+    postId: post.id,
+    text: post.text,
+    mentionMapKeys: Object.keys(post.mentionMap || {}),
+  })
 
-          </div>
-        )
-      })}
+  return (
+    <div key={`post:${post.id}`} className="mb-2 last:mb-0">
+      <PostCard
+        post={{
+          ...post,
+          actorId:
+            post.actor?.actor_id ??
+            post.actor?.actorId ??
+            post.actorId ??
+            post.actor_id ??
+            null,
+        }}
+        onOpenPost={() => {
+          if (covered) return
+          navigate(`/post/${post.id}`)
+        }}
+        onOpenMenu={openPostMenu}
+        onShare={handleShare}
+        covered={covered}
+        cover={covered ? <ReportedPostCover /> : null}
+      />
+    </div>
+  )
+})}
+
 
       <PostActionsMenu
         open={!!postMenu}

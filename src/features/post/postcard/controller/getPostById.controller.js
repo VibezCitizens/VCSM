@@ -24,7 +24,9 @@ import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
  *   },
  *   text,
  *   media[],            // ✅ MULTI-MEDIA
- *   created_at
+ *   created_at,
+ *   location_text?,     // ✅ add
+ *   locationText?       // ✅ add
  * }
  */
 export async function getPostById(postId) {
@@ -82,7 +84,11 @@ export async function getPostById(postId) {
       : null,
 
     text: row.text,
-    media,              // ✅ carousel-ready
+    media, // ✅ carousel-ready
     created_at: row.created_at,
+
+    // ✅ LOCATION (detail view needs this)
+    location_text: row.location_text ?? null,
+    locationText: row.location_text ?? null,
   };
 }

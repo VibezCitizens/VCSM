@@ -1,6 +1,6 @@
 // src/shared/components/ActorLink.jsx
 
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 /*
   actor (presentation-safe) = {
@@ -15,13 +15,16 @@ import { Link } from 'react-router-dom';
 
 export default function ActorLink({
   actor,
-  avatarSize = 'w-11 h-11',
-  avatarShape = 'rounded-xl',
-  textSize = 'text-sm',
+  avatarSize = "w-11 h-11",
+  avatarShape = "rounded-xl",
+  textSize = "text-sm",
   showUsername = false,
   showTimestamp = false,
-  timestamp = '',
-  className = '',
+  timestamp = "",
+  className = "",
+
+  // ✅ NEW: allow avatar-only rendering
+  showText = true,
 }) {
   if (!actor) return null;
 
@@ -37,28 +40,26 @@ export default function ActorLink({
         loading="lazy"
         onError={(e) => {
           e.currentTarget.onerror = null;
-          e.currentTarget.src = '/avatar.jpg';
+          e.currentTarget.src = "/avatar.jpg";
         }}
         className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
       />
 
-      <div className="flex flex-col leading-tight">
-        <span className={`${textSize} text-white font-medium`}>
-          {actor.displayName}
-        </span>
-
-        {showUsername && actor.username && (
-          <span className="text-xs text-gray-400">
-            @{actor.username}
+      {showText ? (
+        <div className="flex flex-col leading-tight">
+          <span className={`${textSize} text-white font-medium`}>
+            {actor.displayName}
           </span>
-        )}
 
-        {showTimestamp && timestamp && (
-          <span className="text-[11px] text-neutral-400">
-            {timestamp}
-          </span>
-        )}
-      </div>
+          {showUsername && actor.username && (
+            <span className="text-xs text-gray-400">@{actor.username}</span>
+          )}
+
+          {showTimestamp && timestamp && (
+            <span className="text-[11px] text-neutral-400">{timestamp}</span>
+          )}
+        </div>
+      ) : null}
     </Link>
   );
 }
