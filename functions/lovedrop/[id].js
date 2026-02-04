@@ -13,8 +13,13 @@ export async function onRequest(context) {
   const url = `${PUBLIC_ORIGIN}/lovedrop/${id}`;
   const image = "https://cdn.vibezcitizens.com/og/vibez-citizens-1200x630.png";
 
-  // Fetch the built index.html from Pages static assets
-  const indexRes = await env.ASSETS.fetch(new Request(new URL("/index.html", request.url), request));
+  // ✅ Fetch the built index.html from Pages static assets
+  const indexRes = await env.ASSETS.fetch("/index.html");
+
+  if (!indexRes || indexRes.status !== 200) {
+    return new Response("index.html not found", { status: 500 });
+  }
+
   let html = await indexRes.text();
 
   // Clean existing OG/Twitter (avoid duplicates)
@@ -47,7 +52,6 @@ export async function onRequest(context) {
   return new Response(html, {
     headers: {
       "content-type": "text/html; charset=utf-8",
-      // helps some scrapers re-check
       "cache-control": "no-store",
     },
   });
