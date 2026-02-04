@@ -8,6 +8,7 @@ import {
   createLovedropCard as createLovedropCardRow,
   getLovedropCardByPublicId,
 } from '@/season/lovedrop/dal/lovedropCards.dal'
+import { createLovedropOutboxItem } from '@/season/lovedrop/dal/lovedropOutbox.dal' // ✅ ADD
 import { lovedropCardFromRow } from '@/season/lovedrop/model/lovedropCard.model'
 import { ensureLovedropAnonIdentity } from '@/season/lovedrop/controllers/ensureLovedropAnon.controller'
 
@@ -34,26 +35,6 @@ function safeTrim(v) {
  * DB constraints to respect:
  * - realm_id NOT NULL
  * - template_key NOT NULL
- *
- * @param {{
- *  realmId: string,
- *  status?: 'draft'|'sent'|'revoked'|'expired',
- *  senderActorId?: string|null,
- *  senderAnonId?: string|null,
- *  clientKey?: string|null,
- *  recipientActorId?: string|null,
- *  recipientAnonId?: string|null,
- *  recipientEmail?: string|null,
- *  recipientPhone?: string|null,
- *  recipientChannel?: 'link'|'email'|'sms'|'copy'|string|null,
- *  isAnonymous?: boolean,
- *  messageText?: string|null,
- *  templateKey: string,
- *  customization?: object|null,
- *  expiresAt?: string|null, // ISO
- *  sentAt?: string|null, // ISO
- *  baseUrl?: string|null, // e.g. https://vibez.xxx
- * }} input
  */
 export async function createLovedropCard(input) {
   const realmId = input?.realmId ?? null
@@ -93,9 +74,7 @@ export async function createLovedropCard(input) {
 
   const nowIso = new Date().toISOString()
 
-  // ✅ RLS FIX:
-  // If creating as anon (no actor), we must ensure sender_anon_id is set,
-  // otherwise vc.lovedrop_cards_anon_insert will reject the row.
+  // ✅ RLS FIX: ensure sender_anon_id if no actor
   const senderActorId = input?.senderActorId ?? null
   let senderAnonId = input?.senderAnonId ?? null
 
@@ -106,10 +85,9 @@ export async function createLovedropCard(input) {
     senderAnonId = anon?.id ?? null
   }
 
-  // ✅ OPTION A: Create means shareable immediately => default status = 'sent'
+  // default status = 'sent'
   const status = input?.status ?? 'sent'
 
-  // If sent, ensure sent_at is set (required for analytics/ordering)
   const sentAt =
     status === 'sent' ? (input?.sentAt ?? nowIso) : (input?.sentAt ?? null)
 
@@ -135,7 +113,6 @@ export async function createLovedropCard(input) {
 
     is_anonymous: input?.isAnonymous !== undefined ? !!input.isAnonymous : true,
 
-    // plaintext optional; you already have cipher fields if you want later
     message_text: messageText || null,
 
     template_key: templateKey,
@@ -146,9 +123,21 @@ export async function createLovedropCard(input) {
 
   const createdRow = await createLovedropCardRow(row)
 
+  // ✅ ADD: write to sender outbox so you can list all cards later
+  // (if this fails, the card still exists, so don't break create UX)
+  try {
+    await createLovedropOutboxItem({
+      cardId: createdRow.id,
+      ownerActorId: senderActorId,
+      ownerAnonId: senderAnonId,
+    })
+  } catch (e) {
+    console.warn('[Lovedrop] failed to insert outbox item', e)
+  }
+
   const baseUrl = safeTrim(input?.baseUrl) || ''
 
-  // ✅ UPDATED: match routes: /lovedrop/v/:publicId
+  // ✅ URL for recipient view
   const url = baseUrl
     ? `${baseUrl.replace(/\/+$/, '')}/lovedrop/v/${publicId}`
     : `/lovedrop/v/${publicId}`

@@ -22,36 +22,26 @@ function getTemplateStyles(templateKey) {
         title: 'text-white',
         accent: 'text-gray-200',
       }
+    case 'elegant':
+      return {
+        wrapper: 'bg-indigo-50 border-indigo-200',
+        title: 'text-indigo-900',
+        accent: 'text-indigo-700',
+      }
     case 'classic':
     default:
       return {
-        wrapper: 'bg-white border-gray-200',
-        title: 'text-gray-900',
-        accent: 'text-gray-600',
+        wrapper: 'bg-rose-50 border-rose-200',
+        title: 'text-rose-900',
+        accent: 'text-rose-600',
       }
   }
 }
 
-/**
- * LovedropCardPreview
- * UI-only preview component for the create flow.
- *
- * Accepts either:
- * - a "draft payload" from LovedropCreateForm
- * OR
- * - a domain card shape from lovedropCardFromRow
- *
- * @param {{
- *   payload?: any,
- *   card?: any,
- *   className?: string
- * }} props
- */
 export function LovedropCardPreview({ payload, card, className = '' }) {
   const view = useMemo(() => {
-    // Prefer payload (create form) when available; fall back to card (domain model)
     const templateKey = payload?.templateKey ?? card?.templateKey ?? 'classic'
-    const isAnonymous = payload?.isAnonymous ?? card?.isAnonymous ?? true
+    const isAnonymous = payload?.isAnonymous ?? card?.isAnonymous ?? false
 
     const toName =
       payload?.toName ??
@@ -66,7 +56,6 @@ export function LovedropCardPreview({ payload, card, className = '' }) {
       null
 
     const messageText = payload?.messageText ?? card?.messageText ?? ''
-
     const customization = payload?.customization ?? card?.customization ?? {}
 
     return {
@@ -82,51 +71,79 @@ export function LovedropCardPreview({ payload, card, className = '' }) {
   const styles = getTemplateStyles(view.templateKey)
 
   const displayTo = (view.toName || '').trim()
-  const displayFrom = view.isAnonymous
-    ? 'Secret admirer 💌'
-    : ((view.fromName || '').trim() || 'Someone 💌')
+  const fromTrimmed = (view.fromName || '').trim()
+  const displayFrom = view.isAnonymous ? 'Secret admirer 💌' : (fromTrimmed || 'Someone 💌')
   const displayMsg = (view.messageText || '').trim()
+
+  const bgImage = view.customization?.imageDataUrl || null
+  const isMystery = view.templateKey === 'mystery'
+  const hasImage = !!bgImage
+
+  // ✅ PANEL: glass only if image exists
+  // ✅ mystery: always dark panel + light text
+  const panelClass = isMystery
+    ? [
+        'bg-black/55',
+        hasImage ? 'backdrop-blur-md' : '',
+        'border border-white/15',
+        'text-white',
+      ].join(' ')
+    : [
+        hasImage ? 'bg-white/70 backdrop-blur-md border border-white/40' : 'bg-white border border-black/5',
+        'text-black',
+      ].join(' ')
+
+  const headerTextClass = isMystery ? 'text-gray-200' : 'text-gray-700'
+  const messageTextClass = isMystery ? 'text-white' : 'text-gray-900'
 
   return (
     <div
       className={[
-        'rounded-xl border p-4 shadow-sm',
+        'relative overflow-hidden rounded-xl border shadow-sm',
         styles.wrapper,
         className,
       ].join(' ')}
     >
-      {/* HEADER ROW: To (left) + templateKey (right), baseline-aligned */}
-      <div className="flex items-baseline justify-between gap-3">
-        <div className={['text-sm', styles.accent].join(' ')}>
-          {displayTo ? `To: ${displayTo}` : 'To: (someone special)'}
-        </div>
-
-        <div className={['text-xs', styles.accent].join(' ')}>
-          {view.templateKey}
-        </div>
-      </div>
-
-      {/* TITLE */}
-      <div className={['mt-2 text-lg font-semibold leading-tight', styles.title].join(' ')}>
-        LoveDrop
-      </div>
-
-      {/* MESSAGE */}
-      <div className="mt-4 whitespace-pre-wrap text-base">
-        {displayMsg ? displayMsg : 'Write your message…'}
-      </div>
-
-      {/* FROM */}
-      <div className={['mt-4 text-sm', styles.accent].join(' ')}>
-        From: {displayFrom}
-      </div>
-
-      {/* Optional: show tiny customization debug safely (dev only) */}
-      {view.customization && Object.keys(view.customization).length > 0 ? (
-        <div className="mt-3 text-xs opacity-70">
-          {/* Keep it minimal; customization rendering later */}
-        </div>
+      {/* BACKGROUND IMAGE */}
+      {bgImage ? (
+        <img
+          src={bgImage}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       ) : null}
+
+      {/* TINT OVERLAY */}
+      {bgImage ? (
+        <div className={['absolute inset-0', isMystery ? 'bg-black/35' : 'bg-black/25'].join(' ')} />
+      ) : null}
+
+      {/* CONTENT PANEL */}
+      <div className={['relative z-10 m-3 rounded-xl p-4', panelClass].join(' ')}>
+        {/* HEADER */}
+        <div className="flex items-center justify-between gap-3">
+          <div className={['text-sm', headerTextClass].join(' ')}>
+            {displayTo ? `To: ${displayTo}` : 'To: (someone special)'}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className={['text-sm font-semibold opacity-80', styles.title].join(' ')}>
+              LoveDrop
+            </div>
+            {/* removed style label (view.templateKey) */}
+          </div>
+        </div>
+
+        {/* MESSAGE */}
+        <div className={['mt-4 whitespace-pre-wrap text-base leading-relaxed', messageTextClass].join(' ')}>
+          {displayMsg ? displayMsg : 'Write your message…'}
+        </div>
+
+        {/* FROM */}
+        <div className={['mt-4 text-sm', headerTextClass].join(' ')}>
+          From: {displayFrom}
+        </div>
+      </div>
     </div>
   )
 }

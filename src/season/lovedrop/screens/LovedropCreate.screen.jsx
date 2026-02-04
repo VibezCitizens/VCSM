@@ -1,6 +1,7 @@
 // src/season/lovedrop/screens/LovedropCreate.screen.jsx
 
 import React, { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import LovedropCreateForm from '@/season/lovedrop/components/LovedropCreateForm'
 import LovedropCardPreview from '@/season/lovedrop/components/LovedropCardPreview'
 import LovedropLoading from '@/season/lovedrop/components/LovedropLoading'
@@ -17,6 +18,8 @@ export function LovedropCreateScreen({
   baseUrl,
   onCreatedNavigate,
 }) {
+  const navigate = useNavigate()
+
   const [draft, setDraft] = useState({
     toName: null,
     fromName: null,
@@ -72,13 +75,14 @@ export function LovedropCreateScreen({
           return
         }
 
-       if (publicId) {
-  window.location.assign(`/lovedrop/v/${publicId}`)
-  return
-}
-
+        if (publicId) {
+          // ✅ SPA navigation (no reload)
+          navigate(`/lovedrop/created/${publicId}`)
+          return
+        }
 
         if (url) {
+          // If url is truly external, keep assign
           window.location.assign(url)
         }
       } catch (e) {
@@ -87,7 +91,7 @@ export function LovedropCreateScreen({
         setSubmitting(false)
       }
     },
-    [realmId, viewerActorId, viewerAnonId, baseUrl, onCreatedNavigate, handleDraft]
+    [realmId, viewerActorId, viewerAnonId, baseUrl, onCreatedNavigate, handleDraft, navigate]
   )
 
   return (
@@ -132,15 +136,34 @@ export function LovedropCreateScreen({
           </div>
         ) : null}
 
-        <div className="grid gap-6 md:grid-cols-2">
+        {/* ✅ MOBILE: Preview on top */}
+        <div className="grid gap-6 md:hidden">
+          <div className="rounded-xl border bg-white p-4 text-black">
+            <div className="mb-3 text-sm font-medium text-gray-700">
+              Preview
+            </div>
+            <LovedropCardPreview payload={draft} />
+          </div>
+
           <div className="rounded-xl border bg-white p-4 text-black">
             <LovedropCreateForm
-  loading={submitting}
-  disabled={!canSubmit || submitting}
-  onDraftChange={handleDraft}
-  onSubmit={handleSubmit}
-/>
+              loading={submitting}
+              disabled={!canSubmit || submitting}
+              onDraftChange={handleDraft}
+              onSubmit={handleSubmit}
+            />
+          </div>
+        </div>
 
+        {/* ✅ DESKTOP: Form left, Preview right */}
+        <div className="hidden md:grid md:grid-cols-2 md:gap-6">
+          <div className="rounded-xl border bg-white p-4 text-black">
+            <LovedropCreateForm
+              loading={submitting}
+              disabled={!canSubmit || submitting}
+              onDraftChange={handleDraft}
+              onSubmit={handleSubmit}
+            />
           </div>
 
           <div className="rounded-xl border bg-white p-4 text-black">

@@ -47,7 +47,13 @@ export async function openLovedropCard(input) {
     throw err
   }
 
-  const isCountable = cardRow.status !== 'revoked' && cardRow.status !== 'expired'
+  // ✅ Do not count opens from the sender themselves
+  const isSender =
+    (!!viewerActorId && !!cardRow.sender_actor_id && viewerActorId === cardRow.sender_actor_id) ||
+    (!!viewerAnonId && !!cardRow.sender_anon_id && viewerAnonId === cardRow.sender_anon_id)
+
+  const isCountable =
+    !isSender && cardRow.status !== 'revoked' && cardRow.status !== 'expired'
 
   if (isCountable) {
     // ✅ Atomic + concurrency-safe + event insert happens inside the RPC
@@ -79,3 +85,5 @@ export async function openLovedropCard(input) {
     didCountOpen: false,
   }
 }
+
+export default openLovedropCard

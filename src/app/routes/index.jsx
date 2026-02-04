@@ -168,9 +168,15 @@ const LovedropShareScreen = lazyWithLog(
   () => import('@/season/lovedrop/screens/LovedropShare.screen')
 )
 
-const LovedropViewScreen = lazyWithLog(
-  'LovedropViewScreen',
-  () => import('@/season/lovedrop/screens/LovedropView.screen')
+
+const LovedropRecipientScreen = lazyWithLog(
+  'LovedropRecipientScreen',
+  () => import('@/season/lovedrop/screens/LovedropRecipient.screen')
+)
+
+const LovedropOutboxScreen = lazyWithLog(
+  'LovedropOutboxScreen',
+  () => import('@/season/lovedrop/screens/LovedropOutbox.screen')
 )
 
 // ============================================================================
@@ -189,24 +195,32 @@ export default function AppRoutes() {
         <Route path="/reset" element={<ResetPasswordScreen />} />
         <Route path="/onboarding" element={<OnboardingScreen />} />
 
-        {/* ================= LOVEDROP (PUBLIC) ================= */}
-        <Route
-          path="/lovedrop"
-          element={
-            <LovedropCreateScreen
-              realmId={lovedropRealmId}
-              baseUrl={baseUrl}
-            />
-          }
-        />
-        <Route
-          path="/lovedrop/created/:publicId"
-          element={<LovedropShareScreen baseUrl={baseUrl} />}
-        />
-        <Route
-          path="/lovedrop/v/:publicId"
-          element={<LovedropViewScreen baseUrl={baseUrl} />}
-        />
+       {/* ================= LOVEDROP (PUBLIC) ================= */}
+<Route
+  path="/lovedrop"
+  element={
+    <LovedropCreateScreen
+      realmId={lovedropRealmId}
+      baseUrl={baseUrl}
+    />
+  }
+/>
+
+<Route
+  path="/lovedrop/outbox"
+  element={<LovedropOutboxScreen />}
+/>
+
+<Route
+  path="/lovedrop/created/:publicId"
+  element={<LovedropShareScreen baseUrl={baseUrl} redirectToView={false} />}
+/>
+
+<Route
+  path="/lovedrop/v/:publicId"
+  element={<LovedropRecipientScreen />}
+/>
+
 
         {/* ================= PROTECTED ================= */}
         <Route element={<ProtectedRoute />}>

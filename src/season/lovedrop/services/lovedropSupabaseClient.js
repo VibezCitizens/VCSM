@@ -12,10 +12,35 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   })
 }
 
+function mergeHeaders(input, initHeaders) {
+  // 1) Start with headers from Request (if input is Request)
+  const base =
+    typeof Request !== 'undefined' && input instanceof Request
+      ? new Headers(input.headers)
+      : new Headers()
+
+  // 2) Merge init.headers on top
+  if (initHeaders) {
+    const h = initHeaders instanceof Headers ? initHeaders : new Headers(initHeaders)
+    h.forEach((value, key) => base.set(key, value))
+  }
+
+  return base
+}
+
 function withClientKeyFetch(clientKey) {
   return async (input, init = {}) => {
-    const headers = new Headers(init.headers || {})
+    const headers = mergeHeaders(input, init.headers)
+
+    // ✅ Keep existing headers (incl Content-Profile / Accept-Profile), just add ours
     headers.set('x-client-key', clientKey)
+
+    // If input is a Request, clone it with merged headers so we don't lose anything
+    if (typeof Request !== 'undefined' && input instanceof Request) {
+      const req = new Request(input, { ...init, headers })
+      return fetch(req)
+    }
+
     return fetch(input, { ...init, headers })
   }
 }
@@ -26,15 +51,13 @@ export function getLovedropSupabase() {
   // HMR-safe singleton by key
   const g = globalThis
   const existing = g.__LOVEDROP_SB__
-
   if (existing && existing.__clientKey === clientKey) return existing
 
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
-      // ✅ This is the reliable way: force header on every request
       fetch: withClientKeyFetch(clientKey),
 
-      // (optional) doesn’t hurt; some internal calls may read this
+      // optional; fine to keep
       headers: {
         'x-client-key': clientKey,
       },
