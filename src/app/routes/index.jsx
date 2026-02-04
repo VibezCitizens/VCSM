@@ -8,6 +8,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 
 import ProtectedRoute from '@/app/guards/ProtectedRoute'
 import RootLayout from '@/app/layout/RootLayout'
+import { resolveRealm } from '@/features/upload/model/resolveRealm'
 
 // ----------------------------------------------------------------------------
 // Lazy helper with debugging
@@ -123,14 +124,12 @@ const MessagePrivacyScreen = lazyWithLog(
   () => import('@/features/chat/inbox/screens/settings/MessagePrivacyScreen')
 )
 
-
 // ✅ NEW: folder screens
 const SpamInboxScreen = lazyWithLog(
   'SpamInboxScreen',
   () => import('@/features/chat/inbox/screens/SpamInboxScreen')
 )
 
-// (create these later if you haven’t yet)
 const RequestsInboxScreen = lazyWithLog(
   'RequestsInboxScreen',
   () => import('@/features/chat/inbox/screens/RequestsInboxScreen')
@@ -140,6 +139,7 @@ const ArchivedInboxScreen = lazyWithLog(
   'ArchivedInboxScreen',
   () => import('@/features/chat/inbox/screens/ArchivedInboxScreen')
 )
+
 const BlockedUsersScreen = lazyWithLog(
   'BlockedUsersScreen',
   () => import('@/features/chat/inbox/screens/settings/BlockedUsersScreen')
@@ -157,11 +157,29 @@ const NurseHomeScreen = lazyWithLog(
   () => import('@/features/professional/professional-nurse/screens/NurseHomeScreen')
 )
 
+/* ================= LOVEDROP (PUBLIC) ================= */
+const LovedropCreateScreen = lazyWithLog(
+  'LovedropCreateScreen',
+  () => import('@/season/lovedrop/screens/LovedropCreate.screen')
+)
+
+const LovedropShareScreen = lazyWithLog(
+  'LovedropShareScreen',
+  () => import('@/season/lovedrop/screens/LovedropShare.screen')
+)
+
+const LovedropViewScreen = lazyWithLog(
+  'LovedropViewScreen',
+  () => import('@/season/lovedrop/screens/LovedropView.screen')
+)
+
 // ============================================================================
 // ROUTES
-// ============================================================================// ...imports above stay the same
-
+// ============================================================================
 export default function AppRoutes() {
+  const baseUrl = window.location.origin
+  const lovedropRealmId = resolveRealm(false) // false = PUBLIC realm, true = VOID realm
+
   return (
     <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
       <Routes>
@@ -170,6 +188,25 @@ export default function AppRoutes() {
         <Route path="/register" element={<RegisterScreen />} />
         <Route path="/reset" element={<ResetPasswordScreen />} />
         <Route path="/onboarding" element={<OnboardingScreen />} />
+
+        {/* ================= LOVEDROP (PUBLIC) ================= */}
+        <Route
+          path="/lovedrop"
+          element={
+            <LovedropCreateScreen
+              realmId={lovedropRealmId}
+              baseUrl={baseUrl}
+            />
+          }
+        />
+        <Route
+          path="/lovedrop/created/:publicId"
+          element={<LovedropShareScreen baseUrl={baseUrl} />}
+        />
+        <Route
+          path="/lovedrop/v/:publicId"
+          element={<LovedropViewScreen baseUrl={baseUrl} />}
+        />
 
         {/* ================= PROTECTED ================= */}
         <Route element={<ProtectedRoute />}>
