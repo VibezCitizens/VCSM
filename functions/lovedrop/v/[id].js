@@ -10,11 +10,13 @@ export async function onRequest(context) {
   const toName = "someone";
   const title = `💌 A LoveDrop for ${toName}`;
   const description = "Someone sent you something sweet. Tap to open.";
-  const url = `${PUBLIC_ORIGIN}/lovedrop/${id}`;
+  const url = `${PUBLIC_ORIGIN}/lovedrop/v/${id}`;
+
   const image = "https://cdn.vibezcitizens.com/og/vibez-citizens-1200x630.png";
 
   // ✅ Fetch the built index.html from Pages static assets
-  const indexRes = await env.ASSETS.fetch("/index.html");
+  const indexRes = await env.ASSETS.fetch(new Request("https://dummy/index.html"));
+
 
   if (!indexRes || indexRes.status !== 200) {
     return new Response("index.html not found", { status: 500 });
