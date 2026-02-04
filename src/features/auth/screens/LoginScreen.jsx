@@ -5,7 +5,7 @@
 
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { getActiveSeasonTheme } from '@/Season'
+import { getActiveSeasonTheme } from '@/season'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 
 // iOS install modal
