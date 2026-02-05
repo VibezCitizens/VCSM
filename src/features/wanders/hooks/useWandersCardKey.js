@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { readWandersCardKey, upsertWandersCardKey } from '@/features/wanders/controllers/wandersCardKeys.controller'
+import { readWandersCardKey, upsertWandersCardKey } from '@/features/wanders/controllers/wandersCardKeyscontroller'
 
 export function useWandersCardKey(input) {
   const { cardId, auto = false } = input || {}
