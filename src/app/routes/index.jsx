@@ -168,7 +168,6 @@ const LovedropShareScreen = lazyWithLog(
   () => import('@/season/lovedrop/screens/LovedropShare.screen')
 )
 
-
 const LovedropRecipientScreen = lazyWithLog(
   'LovedropRecipientScreen',
   () => import('@/season/lovedrop/screens/LovedropRecipient.screen')
@@ -179,13 +178,54 @@ const LovedropOutboxScreen = lazyWithLog(
   () => import('@/season/lovedrop/screens/LovedropOutbox.screen')
 )
 
+/* ================= WANDERS (PUBLIC + APP) ================= */
+const WandersHomeScreen = lazyWithLog(
+  'WandersHomeScreen',
+  () => import('@/features/wanders/screens/WandersHome.screen')
+)
+
+const WandersInboxPublicScreen = lazyWithLog(
+  'WandersInboxPublicScreen',
+  () => import('@/features/wanders/screens/WandersInboxPublic.screen')
+)
+
+const WandersCardPublicScreen = lazyWithLog(
+  'WandersCardPublicScreen',
+  () => import('@/features/wanders/screens/WandersCardPublic.screen')
+)
+
+const WandersSentScreen = lazyWithLog(
+  'WandersSentScreen',
+  () => import('@/features/wanders/screens/WandersSent.screen')
+)
+
+const WandersIntegrateActorScreen = lazyWithLog(
+  'WandersIntegrateActorScreen',
+  () => import('@/features/wanders/screens/WandersIntegrateActor.screen')
+)
+
+const WandersMailboxScreen = lazyWithLog(
+  'WandersMailboxScreen',
+  () => import('@/features/wanders/screens/WandersMailbox.screen')
+)
+
+const WandersOutboxScreen = lazyWithLog(
+  'WandersOutboxScreen',
+  () => import('@/features/wanders/screens/WandersOutbox.screen')
+)
+
+const WandersCreateScreen = lazyWithLog(
+  'WandersCreateScreen',
+  () => import('@/features/wanders/screens/WandersCreate.screen')
+)
+
 // ============================================================================
 // ROUTES
 // ============================================================================
 export default function AppRoutes() {
   const baseUrl = window.location.origin
   const lovedropRealmId = resolveRealm(false) // false = PUBLIC realm, true = VOID realm
-
+  const wandersRealmId = resolveRealm(false)
   return (
     <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
       <Routes>
@@ -195,31 +235,51 @@ export default function AppRoutes() {
         <Route path="/reset" element={<ResetPasswordScreen />} />
         <Route path="/onboarding" element={<OnboardingScreen />} />
 
-       {/* ================= LOVEDROP (PUBLIC) ================= */}
-<Route
-  path="/lovedrop"
-  element={
-    <LovedropCreateScreen
-      realmId={lovedropRealmId}
-      baseUrl={baseUrl}
-    />
-  }
-/>
+        {/* ================= LOVEDROP (PUBLIC) ================= */}
+        <Route
+          path="/lovedrop"
+          element={
+            <LovedropCreateScreen
+              realmId={lovedropRealmId}
+              baseUrl={baseUrl}
+            />
+          }
+        />
 
-<Route
-  path="/lovedrop/outbox"
-  element={<LovedropOutboxScreen />}
-/>
+        <Route
+          path="/lovedrop/outbox"
+          element={<LovedropOutboxScreen />}
+        />
 
-<Route
-  path="/lovedrop/created/:publicId"
-  element={<LovedropShareScreen baseUrl={baseUrl} redirectToView={false} />}
-/>
+        <Route
+          path="/lovedrop/created/:publicId"
+          element={<LovedropShareScreen baseUrl={baseUrl} redirectToView={false} />}
+        />
 
+        <Route
+          path="/lovedrop/v/:publicId"
+          element={<LovedropRecipientScreen />}
+        />
+
+       {/* ================= WANDERS (PUBLIC) ================= */}
+<Route path="/wanders" element={<WandersHomeScreen />} />
+<Route path="/wanders/i/:publicId" element={<WandersInboxPublicScreen />} />
+<Route path="/wanders/c/:publicId" element={<WandersCardPublicScreen />} />
+
+{/* ✅ MOVE THESE TO PUBLIC (anon-first flow) */}
 <Route
-  path="/lovedrop/v/:publicId"
-  element={<LovedropRecipientScreen />}
+  path="/wanders/create"
+  element={<WandersCreateScreen realmId={wandersRealmId} baseUrl={baseUrl} />}
 />
+<Route path="/wanders/mailbox" element={<WandersMailboxScreen />} />
+<Route path="/wanders/outbox" element={<WandersOutboxScreen />} />
+
+{/* sent confirmation supports both */}
+<Route path="/wanders/sent" element={<WandersSentScreen />} />
+<Route path="/wanders/sent/:cardPublicId" element={<WandersSentScreen />} />
+
+<Route path="/wanders/claim" element={<WandersIntegrateActorScreen />} />
+<Route path="/wanders/connect" element={<WandersIntegrateActorScreen />} />
 
 
         {/* ================= PROTECTED ================= */}
@@ -279,6 +339,8 @@ export default function AppRoutes() {
             <Route path="/v/id/:vportId" element={<VportScreen />} />
             <Route path="/v/:vportId" element={<VportScreen />} />
 
+            {/* ================= WANDERS (APP - PROTECTED) ================= */}
+           
             {/* DEV PREVIEW */}
             <Route path="/_dev/nurse-home" element={<NurseHomeScreen />} />
 

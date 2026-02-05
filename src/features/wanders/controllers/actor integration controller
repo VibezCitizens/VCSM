@@ -1,0 +1,353 @@
+Wanders Controllers — Contracts & Use-Cases (Anon-first)
+Goals
+
+Ship an anon-first share-link inbox + card system.
+
+Every controller:
+
+answers one complete use-case question (“Is this allowed? What is the domain result?”)
+
+never returns raw DB rows
+
+uses DAL for DB state, Models for shape, and trusts RLS for access control.
+
+Non-goals
+
+No UI lifecycle (hooks own that)
+
+No routing decisions (screens own that)
+
+No field mapping in controllers (models own that)
+
+No “select *” anywhere (DAL only, explicit selects)
+
+Identity primitives (controller assumptions)
+Anon Identity
+
+A stable clientKey exists client-side (wandersClientKey).
+
+Supabase requests include header x-client-key.
+
+RLS maps that header to a row in wanders.anon_identities.
+
+Controllers treat “current anon” as: the anon row returned by ensureWandersAnonIdentity.
+
+Actor Identity (later)
+
+Auth user maps to vc.actor_owners → vc.current_actor_id().
+
+Controllers may accept actorId explicitly for multi-actor ownership later, but anon-first uses null actor.
+
+Controller modules (what they do)
+documentation for actor integration controller
+Actor Integration Controller — Documentation (no code)
+
+File (suggested):
+C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\controllers\integrateWandersActor.controller.js
+
+This controller is the only owner of the “upgrade / adopt / merge” meaning between:
+
+Anon identity (device-based, x-client-key → wanders.anon_identities)
+
+Actor identity (auth-based, auth.uid() → vc.actor_owners → vc.actors)
+
+It does not change DAL rules. It orchestrates DAL + Models and relies on RLS for row-level enforcement.
+
+Purpose
+
+Answer one complete question:
+
+“Given an authenticated actor and the current anon identity, how do we attach ownership so this actor now controls the anon-created Wanders artifacts (inboxes, cards, mailbox items), and what is the domain result?”
+
+This turns “I used Wanders anonymously” into “this now belongs to my account/actor”.
+
+Inputs
+Required
+
+actorId: uuid
+The target actor to integrate into. (Usually the user’s current actor, but explicit keeps controllers deterministic.)
+
+Optional
+
+mode: 'adopt' | 'link' | 'merge'
+
+adopt: transfer ownership from anon → actor where appropriate
+
+link: keep anon ownership but record linkage (claims), actor can see/use via combined RLS
+
+merge: adopt + backfill/normalize mailbox/counters where needed (highest complexity)
+
+Optional toggles
+
+adoptInboxes?: boolean (default true)
+
+adoptMailbox?: boolean (default true)
+
+adoptCards?: boolean (default false initially; depends on your product semantics)
+
+createClaim?: boolean (default true)
+
+dryRun?: boolean (default false; returns a plan without mutations)
+
+Preconditions & Authority
+Preconditions (controller-enforced meaning)
+
+Actor must be authenticated.
+
+Actor must be a valid owner of actorId (ownership check).
+
+Anon identity must exist for the current device (ensureWandersAnonIdentity).
+
+Authority (RLS-enforced)
+
+The controller never assumes it can mutate rows; it attempts mutations and expects RLS to allow/deny.
+
+Actor ownership check should be backed by either:
+
+RLS allowing reading vc.actor_owners for self, or
+
+RPC / server side, depending on your setup.
+
+Outputs (Domain result)
+
+Return a domain object describing what happened, not raw DB:
+
+type IntegrateWandersActorResult = {
+  actorId: string
+  anonId: string
+
+  createdClaim: boolean
+  claimId?: string
+
+  adopted: {
+    inboxes: { attempted: number; updated: number; skipped: number }
+    mailboxItems: { attempted: number; updated: number; skipped: number }
+    cards: { attempted: number; updated: number; skipped: number }
+  }
+
+  conflicts: Array<{
+    type: 'inbox'|'mailbox'|'card'
+    id: string
+    reason: 'already_owned'|'rls_denied'|'ambiguous_owner'|'integrity'
+  }>
+
+  notes: string[]
+}
+
+High-level responsibilities
+
+This controller owns these meanings:
+
+Linking identities
+
+Record: “this actor is associated with this anon identity” (typically wanders.claims).
+
+That linkage is the durable record that enables upgrade flows.
+
+Ownership adoption
+
+Move “owner fields” from anon columns → actor columns:
+
+inbox: owner_anon_id → owner_actor_id
+
+mailbox_items: owner_anon_id → owner_actor_id
+
+optionally cards: sender_anon_id → sender_actor_id and/or recipient_anon_id → recipient_actor_id
+
+Idempotency
+
+The controller must be safe to run multiple times.
+
+If an item is already adopted, it should be skipped cleanly.
+
+Conflict resolution strategy
+
+If an entity already has an owner_actor_id and it’s not actorId, do not overwrite.
+
+If an entity is owned by a different anon (shouldn’t happen if based on current anon), skip.
+
+If both owner fields are set (actor + anon), you decide whether to normalize (merge mode).
+
+Data scope (what it touches)
+Tables involved
+
+wanders.anon_identities (read, touch)
+
+wanders.claims (insert/update)
+
+wanders.inboxes (read/list, update ownership)
+
+wanders.mailbox_items (read/list, update ownership)
+
+wanders.cards (optional read/list/update ownership)
+
+vc.actor_owners / vc.actors (validate actor ownership; depends on your client exposure rules)
+
+What it must never do
+
+Change presentation data (templates, messages) unless adoption rules require it
+
+Derive UI flags
+
+Return DB rows directly
+
+Step-by-step flow (recommended)
+Step 0 — Establish identities
+
+Ensure anon exists (ensureWandersAnonIdentity)
+
+Validate actor ownership:
+
+“actorId is owned by auth.uid()”
+
+If not, abort with NotAllowed
+
+Step 1 — Create or upsert claim linkage
+
+Insert into wanders.claims:
+
+anon_id = current anon
+
+actor_id = actorId
+
+flags: optionally mark claimed_sender/claimed_recipient depending on product meaning
+
+Idempotency:
+
+if claim already exists for (anon_id, actor_id), reuse it
+
+if multiple exist, pick the newest and optionally normalize later
+
+Step 2 — Adopt inboxes (anon-owned → actor-owned)
+
+List inboxes owned by anon:
+
+listWandersInboxesByOwnerAnonId(anonId)
+
+For each inbox:
+
+If owner_actor_id already set:
+
+if equals actorId → skip (already adopted)
+
+else → conflict (already owned)
+
+Else update:
+
+set owner_actor_id = actorId
+
+optionally clear owner_anon_id (depends on merge strategy)
+
+Record adopted counts
+
+Step 3 — Adopt mailbox_items
+
+List mailbox items owned by anon:
+
+listWandersMailboxItemsByOwnerAnonId(anonId)
+
+For each item:
+
+same ownership rule as inbox
+
+update owner_actor_id = actorId
+
+optionally clear owner_anon_id
+
+Step 4 — Optional: adopt cards
+
+This is the most sensitive piece because cards have two roles (sender/recipient) and may be part of public flows.
+
+Recommended approach:
+
+Start with NOT adopting cards in v1.
+
+Let combined RLS (participant access) allow actor to see and interact as long as claim exists.
+
+Adopt cards only when you’re ready to define:
+
+whether sender identity should change retroactively
+
+whether recipient identity should change
+
+how to handle “is_anonymous” semantics
+
+If/when enabled:
+
+For each card where sender_anon_id = anonId, set sender_actor_id = actorId (and possibly clear sender_anon_id)
+
+For each card where recipient_anon_id = anonId, set recipient_actor_id = actorId
+
+Be careful: a single card could match both (self-send testing) → handle deterministically.
+
+Step 5 — Return domain summary
+
+Provide counts + conflicts + claim info.
+
+Idempotency guarantees
+
+This controller should be safe under:
+
+repeated calls
+
+partial failure (e.g., some updates denied by RLS)
+
+Idempotency rules:
+
+Never overwrite non-null owner_actor_id unless it equals actorId.
+
+Never delete records (only update ownership columns).
+
+Always return structured “attempted/updated/skipped/conflicts”.
+
+Failure modes and expected errors
+
+No auth session → AuthRequired
+
+Actor not owned by user → NotAllowed
+
+Anon identity missing → AnonMissing (controller should attempt to create it first)
+
+RLS denies updates → treat as conflict item (rls_denied) and keep going unless strict mode
+
+FK constraint errors (rare) → classify as integrity
+
+RLS expectations for this controller to work
+
+To adopt ownership, RLS must allow:
+
+Actor owner to update rows currently owned by anon if the request also carries the same x-client-key
+
+OR allow via claim existence
+
+OR perform adoption via RPC using service role
+
+The cleanest pattern is:
+
+“If current anon controls row (owner_anon_id matches current anon), allow update to set owner_actor_id to current actor.”
+
+(That’s an RLS design choice—this controller assumes that’s true.)
+
+Recommended rollout strategy
+
+Anon-first shipping
+
+Create inboxes/cards/mailbox as anon
+
+Claims table exists but not critical
+
+Actor integration v1
+
+Create claim
+
+Adopt inboxes
+
+Adopt mailbox_items
+
+Do NOT adopt cards yet
+
+Actor integration v2
+
+Add “adopt cards sender side” only if product needs it
+
+Later add recipient side

@@ -42,7 +42,7 @@
     "lucide-react": "^0.522.0",
     "mime-types": "^3.0.1",
     "multer": "^2.0.2",
-    "nanoid": "^5.1.5",
+    "nanoid": "^5.1.6",
     "phosphor-react": "^1.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
