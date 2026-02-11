@@ -10,7 +10,8 @@ import {
   readWandersInboxById,
   readWandersInboxByPublicId,
   updateMyWandersInbox,
-} from '@/features/wanders/controllers/wandersInboxescontroller'
+} from "@/features/wanders/core/controllers/wandersInboxescontroller";
+
 
 export function useWandersInboxes(input = {}) {
   const { autoList = true, isActive = null, limit = 50 } = input

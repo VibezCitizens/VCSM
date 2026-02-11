@@ -1,10 +1,10 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\screens\WandersOutbox.screen.jsx
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 
-import { useWandersAnon } from "../hooks/useWandersAnon";
-import { useWandersMailbox } from "../hooks/useWandersMailbox";
-import { useWandersReplies } from "../hooks/useWandersReplies";
+import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
+import useWandersMailbox from "@/features/wanders/core/hooks/useWandersMailbox.hook";
+import { useWandersReplies } from "@/features/wanders/core/hooks/useWandersReplies"; // core "smart" hook w/ create/remove too
 
 import WandersMailboxToolbar from "../components/WandersMailboxToolbar";
 import WandersMailboxList from "../components/WandersMailboxList";
@@ -17,44 +17,41 @@ import WandersEmptyState from "../components/WandersEmptyState";
 import WandersLoading from "../components/WandersLoading";
 
 export default function WandersOutboxScreen() {
-  const { ensureAnon } = useWandersAnon();
-
-  const mailbox = useWandersMailbox();
-  const { list, items, loading, error, markRead } = mailbox || {};
+  // ✅ ensure auth user exists (guest user) so auth.uid() works in RLS
+  const { ensureUser } = useWandersGuest({ auto: true });
 
   // Fixed filter:
   const [folder] = useState("outbox");
-  const [role] = useState("sender");
+  const [ownerRole] = useState("sender");
 
   // Keep search + selection UX
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        await Promise.resolve(ensureAnon?.());
-      } catch {
-        // ignore
-      }
-    })();
-  }, [ensureAnon]);
+  // ✅ CORE mailbox
+  const mailbox = useWandersMailbox({ auto: false, folder, ownerRole, limit: 50 });
+  const { items, loading, error, refresh, markRead } = mailbox || {};
 
   useEffect(() => {
     (async () => {
       try {
-        await Promise.resolve(
-          list?.({
-            folder,
-            role,
-            search,
-          })
-        );
+        await Promise.resolve(ensureUser?.());
+      } catch {
+        // ignore
+      }
+    })();
+  }, [ensureUser]);
+
+  // ✅ fetch outbox when inputs change
+  useEffect(() => {
+    (async () => {
+      try {
+        await Promise.resolve(refresh?.({ folder, ownerRole }));
       } catch {
         // hook exposes error
       }
     })();
-  }, [folder, role, search, list]);
+  }, [folder, ownerRole, refresh]);
 
   const normalizedItems = useMemo(() => {
     if (Array.isArray(items)) return items;
@@ -63,76 +60,106 @@ export default function WandersOutboxScreen() {
     return [];
   }, [items]);
 
+  const filteredItems = useMemo(() => {
+    const q = (search || "").trim().toLowerCase();
+    if (!q) return normalizedItems;
+
+    return normalizedItems.filter((item) => {
+      const card = item?.card ?? {};
+      const msg = String(card?.messageText ?? card?.message_text ?? "").toLowerCase();
+      const customization = card?.customization ?? {};
+      const fromName = String(customization?.fromName ?? customization?.from_name ?? "").toLowerCase();
+      const toName = String(customization?.toName ?? customization?.to_name ?? "").toLowerCase();
+      const templateKey = String(card?.templateKey ?? card?.template_key ?? "").toLowerCase();
+
+      return msg.includes(q) || fromName.includes(q) || toName.includes(q) || templateKey.includes(q);
+    });
+  }, [normalizedItems, search]);
+
   const selectedItem = useMemo(() => {
     if (!selectedId) return null;
-    return normalizedItems.find((it) => String(it.id || it.item_id) === String(selectedId)) || null;
-  }, [normalizedItems, selectedId]);
+    return filteredItems.find((it) => String(it.id) === String(selectedId)) || null;
+  }, [filteredItems, selectedId]);
 
   const selectedCardId = useMemo(() => {
     if (!selectedItem) return null;
     return selectedItem.card_id || selectedItem.cardId || selectedItem.card?.id || null;
   }, [selectedItem]);
 
-  const replies = useWandersReplies(selectedCardId);
-  const { items: replyItems, loading: repliesLoading } = replies || {};
+  // ✅ CORE replies (smart hook)
+  const replies = useWandersReplies({ cardId: selectedCardId, auto: true, limit: 200 });
+  const replyItems = replies?.replies;
+  const repliesLoading = replies?.loading;
 
+  const normalizedReplyItems = useMemo(() => {
+    if (Array.isArray(replyItems)) return replyItems;
+    if (Array.isArray(replyItems?.items)) return replyItems.items;
+    if (Array.isArray(replyItems?.data)) return replyItems.data;
+    return [];
+  }, [replyItems]);
+
+  // auto-select first item
   useEffect(() => {
-    // auto-select first item
     if (selectedId) return;
-    if (!normalizedItems.length) return;
-    const first = normalizedItems[0];
-    setSelectedId(String(first.id || first.item_id));
-  }, [normalizedItems, selectedId]);
+    if (!filteredItems.length) return;
+    setSelectedId(String(filteredItems[0].id));
+  }, [filteredItems, selectedId]);
 
+  // keep selection valid when filtered list changes
+  useEffect(() => {
+    if (!selectedId) return;
+    const stillExists = filteredItems.some((it) => String(it.id) === String(selectedId));
+    if (stillExists) return;
+
+    if (!filteredItems.length) {
+      setSelectedId(null);
+      return;
+    }
+    setSelectedId(String(filteredItems[0].id));
+  }, [filteredItems, selectedId]);
+
+  // mark read (outbox usually already read, but safe)
   useEffect(() => {
     if (!selectedItem) return;
 
     const isUnread =
       typeof selectedItem.is_read === "boolean"
         ? !selectedItem.is_read
-        : typeof selectedItem.read === "boolean"
-        ? !selectedItem.read
-        : typeof selectedItem.read_at === "string"
-        ? false
+        : typeof selectedItem.isRead === "boolean"
+        ? !selectedItem.isRead
         : false;
 
     if (!isUnread) return;
 
     (async () => {
       try {
-        await Promise.resolve(markRead?.(selectedItem.id || selectedItem.item_id || selectedId));
+        await Promise.resolve(markRead?.(selectedItem.id, true));
       } catch {
         // ignore
       }
     })();
-  }, [selectedItem, selectedId, markRead]);
+  }, [selectedItem, markRead]);
 
-  const onSelectItem = (item) => setSelectedId(String(item?.id || item?.item_id));
+  const onSelectItem = useCallback((item) => {
+    setSelectedId(String(item?.id));
+  }, []);
 
   const toolbarModel = useMemo(
     () => ({
-      folder, // fixed
-      role, // fixed
-      search,
-      setFolder: undefined, // toolbar can optionally hide/disable
-      setRole: undefined,
-      setSearch,
-      // If your toolbar expects flags:
+      currentFolder: folder,
+      searchQuery: search,
+      onFolderChange: undefined, // locked
+      onSearchChange: setSearch,
+      disabled: !!loading,
       isFolderLocked: true,
-      isRoleLocked: true,
     }),
-    [folder, role, search]
+    [folder, search, loading]
   );
 
   if (loading) return <WandersLoading />;
 
   if (error) {
-    return (
-      <WandersEmptyState
-        title="Outbox unavailable"
-        subtitle={String(error?.message || error)}
-      />
-    );
+    return <WandersEmptyState title="Outbox unavailable" subtitle={String(error?.message || error)} />;
   }
 
   return (
@@ -143,19 +170,25 @@ export default function WandersOutboxScreen() {
 
       <div style={styles.split}>
         <div style={styles.left}>
-          {normalizedItems.length ? (
+          {filteredItems.length ? (
             <WandersMailboxList
-              items={normalizedItems}
-              selectedId={selectedId}
-              onSelect={onSelectItem}
+              items={filteredItems}
+              selectedItemId={selectedId}
+              onItemClick={onSelectItem}
               renderRow={(item) => (
                 <WandersMailboxItemRow
-                  key={String(item.id || item.item_id)}
+                  key={String(item.id)}
                   item={item}
-                  selected={String(item.id || item.item_id) === String(selectedId)}
+                  selected={String(item.id) === String(selectedId)}
                   onClick={() => onSelectItem(item)}
                 />
               )}
+              empty={
+                <WandersEmptyState
+                  title="No sent cards"
+                  subtitle={search ? "No items match your search." : "You haven’t sent anything yet."}
+                />
+              }
             />
           ) : (
             <WandersEmptyState
@@ -171,20 +204,23 @@ export default function WandersOutboxScreen() {
           ) : (
             <div style={styles.detailWrap}>
               <div style={styles.cardDetail}>
-                <WandersCardDetail item={selectedItem} cardId={selectedCardId} />
-              </div>
-
-              <div style={styles.replies}>
-                <div style={styles.sectionTitle}>Replies</div>
-                <WandersRepliesList
-                  loading={!!repliesLoading}
-                  items={Array.isArray(replyItems) ? replyItems : replyItems?.items || []}
-                  cardId={selectedCardId}
-                />
+                <WandersCardDetail card={selectedItem?.card ?? selectedItem} />
+                <div style={{ marginTop: 12 }}>
+                  <div style={styles.sectionTitle}>Replies</div>
+                  {repliesLoading ? (
+                    <div className="py-6 text-center text-sm text-gray-500">Loading replies…</div>
+                  ) : (
+                    <WandersRepliesList replies={normalizedReplyItems} />
+                  )}
+                </div>
               </div>
 
               <div style={styles.composer}>
-                <WandersReplyComposer cardId={selectedCardId} mailboxItem={selectedItem} />
+                <WandersReplyComposer
+                  disabled={!selectedCardId}
+                  cardId={selectedCardId}
+                  mailboxItem={selectedItem}
+                />
               </div>
             </div>
           )}
@@ -237,11 +273,6 @@ const styles = {
     border: "1px solid rgba(0,0,0,0.08)",
     padding: 10,
     background: "rgba(0,0,0,0.02)",
-  },
-  replies: {
-    borderRadius: 12,
-    border: "1px solid rgba(0,0,0,0.08)",
-    padding: 10,
   },
   sectionTitle: {
     fontSize: 13,
