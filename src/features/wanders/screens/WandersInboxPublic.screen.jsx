@@ -1,6 +1,6 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\screens\WandersInboxPublic.screen.jsx
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
@@ -16,7 +16,9 @@ export default function WandersInboxPublicScreen() {
   const navigate = useNavigate();
   const { publicId } = useParams();
 
-  const { ensureAnon } = useWandersAnon();
+  // ✅ Ensure auth user exists (anonymous sign-in) so RLS auth.uid() works
+  const { ensureUser } = useWandersGuest({ auto: true });
+
   const { readByPublicId } = useWandersInboxes();
   const { sendToInbox } = useWandersCards();
 
@@ -28,17 +30,28 @@ export default function WandersInboxPublicScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
+  const [isWide, setIsWide] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth >= 980;
+  });
+
   useEffect(() => {
-    // Ensure anonymous identity for sender (anon can send)
-    // If your hook returns a promise, we await it safely.
+    if (typeof window === "undefined") return;
+
+    const onResize = () => setIsWide(window.innerWidth >= 980);
+    onResize();
+
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
-        await Promise.resolve(ensureAnon?.());
+        await Promise.resolve(ensureUser?.());
       } catch (e) {
-        // If anon identity fails, we still attempt to render the page;
-        // sending may fail and show submitError.
         if (!cancelled) setInboxError(e);
       }
     })();
@@ -46,7 +59,13 @@ export default function WandersInboxPublicScreen() {
     return () => {
       cancelled = true;
     };
-  }, [ensureAnon]);
+  }, [ensureUser]);
+
+  // ✅ IMPORTANT: avoid depending on readByPublicId identity directly
+  const readByPublicIdStable = useCallback(
+    (id) => Promise.resolve(readByPublicId?.(id)),
+    [readByPublicId]
+  );
 
   useEffect(() => {
     if (!publicId) return;
@@ -58,7 +77,7 @@ export default function WandersInboxPublicScreen() {
       setInboxError(null);
 
       try {
-        const result = await Promise.resolve(readByPublicId?.(publicId));
+        const result = await readByPublicIdStable(publicId);
         if (cancelled) return;
         setInbox(result || null);
       } catch (e) {
@@ -73,11 +92,10 @@ export default function WandersInboxPublicScreen() {
     return () => {
       cancelled = true;
     };
-  }, [publicId, readByPublicId]);
+  }, [publicId, readByPublicIdStable]);
 
   const isInboxValid = useMemo(() => {
     if (!inbox) return false;
-    // Common patterns: inbox.active, inbox.isActive, inbox.status === 'active'
     if (typeof inbox.active === "boolean") return inbox.active;
     if (typeof inbox.isActive === "boolean") return inbox.isActive;
     if (typeof inbox.status === "string") return inbox.status.toLowerCase() === "active";
@@ -86,43 +104,57 @@ export default function WandersInboxPublicScreen() {
 
   const inboxIdentity = useMemo(() => {
     if (!inbox) return null;
-    // sendToInbox accepts inboxPublicId or inboxId; we provide both if present.
     return {
       inboxPublicId: publicId,
       inboxId: inbox.id || inbox.inboxId || inbox._id,
     };
   }, [inbox, publicId]);
 
-  const handleDraftChange = (nextDraft) => {
-    setDraftPayload(nextDraft || {});
-    if (submitError) setSubmitError(null);
-  };
+  const handleDraftChange = useCallback(
+    (nextDraft) => {
+      setDraftPayload(nextDraft || {});
+      if (submitError) setSubmitError(null);
+    },
+    [submitError]
+  );
 
-  const handleSubmit = async (payloadFromForm) => {
-    if (!inboxIdentity?.inboxPublicId && !inboxIdentity?.inboxId) return;
+  const handleSubmit = useCallback(
+    async (payloadFromForm) => {
+      if (!inboxIdentity?.inboxPublicId && !inboxIdentity?.inboxId) return;
 
-    setSubmitting(true);
-    setSubmitError(null);
+      setSubmitting(true);
+      setSubmitError(null);
 
-    try {
-      const finalPayload = payloadFromForm ?? draftPayload ?? {};
-      await Promise.resolve(
-        sendToInbox?.({
-          ...(inboxIdentity.inboxPublicId ? { inboxPublicId: inboxIdentity.inboxPublicId } : {}),
-          ...(inboxIdentity.inboxId ? { inboxId: inboxIdentity.inboxId } : {}),
-          ...finalPayload,
-        })
-      );
+      try {
+        // ensure user exists before sending
+        await Promise.resolve(ensureUser?.());
 
-      // Navigate to sent confirmation screen (preferred),
-      // but if your app doesn’t have it, you can replace with inline success UI.
-      navigate("sent", { replace: true });
-    } catch (e) {
-      setSubmitError(e);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+        const finalPayload = payloadFromForm ?? draftPayload ?? {};
+        await Promise.resolve(
+          sendToInbox?.({
+            ...(inboxIdentity.inboxPublicId ? { inboxPublicId: inboxIdentity.inboxPublicId } : {}),
+            ...(inboxIdentity.inboxId ? { inboxId: inboxIdentity.inboxId } : {}),
+            ...finalPayload,
+          })
+        );
+
+        navigate("sent", { replace: true });
+      } catch (e) {
+        setSubmitError(e);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [draftPayload, ensureUser, inboxIdentity, navigate, sendToInbox]
+  );
+
+  const gridStyle = useMemo(
+    () => ({
+      ...styles.grid,
+      gridTemplateColumns: isWide ? "1.05fr 0.95fr" : "1fr",
+    }),
+    [isWide]
+  );
 
   if (inboxLoading) return <WandersLoading />;
 
@@ -130,7 +162,11 @@ export default function WandersInboxPublicScreen() {
     return (
       <WandersEmptyState
         title="Inbox not found"
-        subtitle="This link is invalid or the inbox is inactive."
+        subtitle={
+          inboxError
+            ? String(inboxError?.message || inboxError)
+            : "This link is invalid or the inbox is inactive."
+        }
       />
     );
   }
@@ -153,7 +189,7 @@ export default function WandersInboxPublicScreen() {
       </div>
 
       <div style={styles.body}>
-        <div style={styles.grid}>
+        <div style={gridStyle}>
           <div style={styles.formPane}>
             <WandersSendCardForm
               inbox={inbox}
@@ -163,10 +199,9 @@ export default function WandersInboxPublicScreen() {
               submitting={submitting}
               error={submitError}
             />
+
             {!!inboxError && (
-              <div style={styles.notice}>
-                {String(inboxError?.message || inboxError)}
-              </div>
+              <div style={styles.notice}>{String(inboxError?.message || inboxError)}</div>
             )}
           </div>
 
@@ -233,16 +268,3 @@ const styles = {
     wordBreak: "break-word",
   },
 };
-
-// Simple responsive enhancement without depending on external CSS.
-// If your app already has a responsive system, you can remove this and rely on your CSS.
-if (typeof window !== "undefined") {
-  const applyResponsive = () => {
-    const isWide = window.innerWidth >= 980;
-    styles.grid.gridTemplateColumns = isWide ? "1.05fr 0.95fr" : "1fr";
-    styles.formPane.order = isWide ? 1 : 1; // left/top
-    styles.previewPane.order = isWide ? 2 : 2; // right/below
-  };
-  applyResponsive();
-  window.addEventListener("resize", applyResponsive);
-}
