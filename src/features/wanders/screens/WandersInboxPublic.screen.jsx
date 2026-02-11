@@ -3,9 +3,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useWandersAnon } from "../hooks/useWandersAnon";
-import { useWandersInboxes } from "../hooks/useWandersInboxes";
-import { useWandersCards } from "../hooks/useWandersCards";
+import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
+import { useWandersInboxes } from "@/features/wanders/core/hooks/useWandersInboxes.hook";
+import { useWandersCards } from "@/features/wanders/core/hooks/useWandersCards.hook";
 
 import WandersSendCardForm from "../components/WandersSendCardForm";
 import WandersCardPreview from "../components/WandersCardPreview";
