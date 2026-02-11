@@ -1,10 +1,10 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\screens\WandersCardPublic.screen.jsx
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { useWandersCards } from "../hooks/useWandersCards";
-import { useWandersReplies } from "../hooks/useWandersReplies";
+import { useWandersCards } from "@/features/wanders/core/hooks/useWandersCards.hook";
+import { useWandersReplies } from "@/features/wanders/core/hooks/useWandersReplies";
 
 import WandersCardPreview from "../components/WandersCardPreview";
 import WandersLoading from "../components/WandersLoading";
@@ -24,6 +24,13 @@ export default function WandersCardPublicScreen() {
   const [replying, setReplying] = useState(false);
   const [replyError, setReplyError] = useState(null);
 
+  // ✅ IMPORTANT: do not depend on `readByPublicId` identity (can change and cancel in-flight request).
+  // Keep the latest function in a ref-like memo (or just remove from deps).
+  const readByPublicIdStable = useCallback(
+    (id) => Promise.resolve(readByPublicId?.(id)),
+    [readByPublicId]
+  );
+
   useEffect(() => {
     console.log("[PublicCard] route publicId:", publicId);
 
@@ -41,7 +48,7 @@ export default function WandersCardPublicScreen() {
 
       try {
         console.log("[PublicCard] readByPublicId start:", publicId);
-        const result = await Promise.resolve(readByPublicId?.(publicId));
+        const result = await readByPublicIdStable(publicId);
         console.log("[PublicCard] readByPublicId result:", result);
 
         if (cancelled) return;
@@ -60,7 +67,7 @@ export default function WandersCardPublicScreen() {
     return () => {
       cancelled = true;
     };
-  }, [publicId, readByPublicId]);
+  }, [publicId, readByPublicIdStable]);
 
   const cardId = useMemo(() => card?.id || card?._id || card?.card_id || null, [card]);
 
@@ -207,12 +214,7 @@ export default function WandersCardPublicScreen() {
   if (loading) return <WandersLoading />;
 
   if (!publicId) {
-    return (
-      <WandersEmptyState
-        title="Missing card id"
-        subtitle="We couldn’t find a card public id in the URL."
-      />
-    );
+    return <WandersEmptyState title="Missing card id" subtitle="We couldn’t find a card public id in the URL." />;
   }
 
   if (!card) {
@@ -251,7 +253,7 @@ export default function WandersCardPublicScreen() {
           rows={4}
         />
 
-        {(replyError || repliesError) ? (
+        {replyError || repliesError ? (
           <div style={styles.error}>
             {String(
               replyError?.message ||
@@ -299,9 +301,7 @@ export default function WandersCardPublicScreen() {
             .map((r) => (
               <div key={r.id} style={styles.replyItem}>
                 <div style={styles.replyItemMeta}>
-                  <span style={styles.replyItemDate}>
-                    {r?.created_at ? new Date(r.created_at).toLocaleString() : ""}
-                  </span>
+                  <span style={styles.replyItemDate}>{r?.created_at ? new Date(r.created_at).toLocaleString() : ""}</span>
                 </div>
                 <div style={styles.replyItemBody}>{r?.body || ""}</div>
               </div>

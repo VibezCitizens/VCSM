@@ -2,6 +2,8 @@
 // ============================================================================
 // WANDERS DAL — CARDS
 // Contract: raw rows only, explicit selects, no derived meaning.
+
+// CAN BE DELETED LEGACY
 // ============================================================================
 
 import { getWandersSupabase } from '@/features/wanders/services/wandersSupabaseClient'

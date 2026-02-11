@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useWandersAnon from "../hooks/useWandersAnon";
+import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
 import { resolveRealm } from "@/features/upload/model/resolveRealm";
 
 import WandersLoading from "../components/WandersLoading";
@@ -11,7 +11,9 @@ import WandersEmptyState from "../components/WandersEmptyState";
 
 export default function WandersHomeScreen() {
   const navigate = useNavigate();
-  const { ensureAnon } = useWandersAnon();
+
+  // ✅ New architecture: guest auth identity (auth.users.id)
+  const { ensureUser } = useWandersGuest();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +35,7 @@ export default function WandersHomeScreen() {
       setLoading(true);
       setError(null);
       try {
-        await Promise.resolve(ensureAnon?.());
+        await Promise.resolve(ensureUser?.());
       } catch (e) {
         if (!cancelled) setError(e);
       } finally {
@@ -44,7 +46,7 @@ export default function WandersHomeScreen() {
     return () => {
       cancelled = true;
     };
-  }, [ensureAnon]);
+  }, [ensureUser]);
 
   const parsedPublicInboxId = useMemo(() => {
     const raw = (publicInboxIdOrUrl || "").trim();
@@ -96,9 +98,7 @@ export default function WandersHomeScreen() {
         <div className="mx-auto w-full max-w-4xl px-4">
           <div className="py-3">
             <h1 className="text-lg font-bold tracking-wide">Wanders</h1>
-            <p className="mt-1 text-sm text-zinc-300">
-              Create a card, or open an inbox link.
-            </p>
+            <p className="mt-1 text-sm text-zinc-300">Create a card, or open an inbox link.</p>
           </div>
         </div>
       </header>
@@ -108,9 +108,7 @@ export default function WandersHomeScreen() {
           {/* Primary actions */}
           <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
             <div className="text-sm font-semibold">Start</div>
-            <div className="mt-1 text-sm text-gray-700">
-              Create your first card or manage your mailbox.
-            </div>
+            <div className="mt-1 text-sm text-gray-700">Create your first card or manage your mailbox.</div>
 
             <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
               <button
@@ -134,9 +132,7 @@ export default function WandersHomeScreen() {
           {/* Open public inbox */}
           <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
             <div className="text-sm font-semibold">Open an inbox link</div>
-            <div className="mt-1 text-sm text-gray-700">
-              Paste a public inbox link or id.
-            </div>
+            <div className="mt-1 text-sm text-gray-700">Paste a public inbox link or id.</div>
 
             <div className="mt-4 grid gap-2 sm:flex sm:items-center">
               <input

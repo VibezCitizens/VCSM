@@ -3,9 +3,9 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useWandersAnon } from "../hooks/useWandersAnon";
-import { useWandersMailbox } from "../hooks/useWandersMailbox";
-import { useWandersReplies } from "../hooks/useWandersReplies";
+import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
+import useWandersMailbox from "@/features/wanders/core/hooks/useWandersMailbox.hook";
+import useWandersReplies from "@/features/wanders/core/hooks/useWandersReplies.hook";
 
 import WandersMailboxToolbar from "../components/WandersMailboxToolbar";
 import WandersMailboxList from "../components/WandersMailboxList";
@@ -16,8 +16,8 @@ import WandersReplyComposer from "../components/WandersReplyComposer";
 import WandersEmptyState from "../components/WandersEmptyState";
 import WandersLoading from "../components/WandersLoading";
 
-// ✅ ADD: controller used by screen (composer stays UI-only)
-import { createReplyAsAnon } from "@/features/wanders/controllers/wandersRepliescontroller";
+// ✅ CORE controller
+import { createReplyAsAnon } from "@/features/wanders/core/controllers/replies.controller";
 
 function useQuery() {
   const { search } = useLocation();
@@ -34,9 +34,10 @@ export default function WandersMailboxScreen() {
   const query = useQuery();
   const mode = query.get("mode");
 
-  const { ensureAnon } = useWandersAnon();
+  // ✅ Guest auth (auth.users.id)
+  const { ensureUser } = useWandersGuest({ auto: true });
 
-  const [folder, setFolder] = useState(() => resolveInitialFolder(mode)); // 'inbox' | 'outbox'
+  const [folder, setFolder] = useState(() => resolveInitialFolder(mode));
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
@@ -45,7 +46,6 @@ export default function WandersMailboxScreen() {
     return window.innerWidth >= 980;
   });
 
-  // ✅ ADD: reply submit UI state (prevents silent fails)
   const [replySending, setReplySending] = useState(false);
   const [replyError, setReplyError] = useState(null);
 
@@ -59,17 +59,17 @@ export default function WandersMailboxScreen() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // ✅ Ensure auth user exists (anonymous sign-in) so RLS auth.uid() works
   useEffect(() => {
     (async () => {
       try {
-        await Promise.resolve(ensureAnon?.());
+        await Promise.resolve(ensureUser?.());
       } catch {
         // ignore
       }
     })();
-  }, [ensureAnon]);
+  }, [ensureUser]);
 
-  // ✅ If URL mode changes while mounted, sync folder (navigation)
   useEffect(() => {
     const next = resolveInitialFolder(mode);
     setFolder(next);
@@ -77,10 +77,10 @@ export default function WandersMailboxScreen() {
     setReplyError(null);
   }, [mode]);
 
+  // ✅ CORE mailbox (user-based)
   const mailbox = useWandersMailbox({ auto: false, folder, ownerRole: null, limit: 50 });
   const { items, loading, error, refresh, markRead } = mailbox || {};
 
-  // ✅ Refresh ONLY when folder changes (navigation)
   useEffect(() => {
     (async () => {
       try {
@@ -124,9 +124,9 @@ export default function WandersMailboxScreen() {
     return selectedItem.card_id || selectedItem.cardId || selectedItem.card?.id || null;
   }, [selectedItem]);
 
-  // ✅ Replies: only load when selectedCardId changes.
+  // ✅ Replies (core user-based)
   const replies = useWandersReplies({ cardId: selectedCardId, auto: false, limit: 200 });
-  const replyItems = replies?.replies; // hook returns "replies"
+  const replyItems = replies?.replies;
   const repliesLoading = replies?.loading;
 
   const normalizedReplyItems = useMemo(() => {
@@ -136,7 +136,7 @@ export default function WandersMailboxScreen() {
     return [];
   }, [replyItems]);
 
-  // ✅ Refresh replies ONLY on navigation (selectedCardId change)
+  // ✅ IMPORTANT: avoid depending on the whole `replies` object (identity changes cause repeat refresh/flicker)
   useEffect(() => {
     if (!selectedCardId) return;
     (async () => {
@@ -146,7 +146,7 @@ export default function WandersMailboxScreen() {
         // ignore
       }
     })();
-  }, [selectedCardId, replies]);
+  }, [selectedCardId, replies?.refresh]);
 
   useEffect(() => {
     if (!selectedItem) return;
@@ -206,8 +206,8 @@ export default function WandersMailboxScreen() {
       currentFolder: folder,
       searchQuery: search,
       onFolderChange: (next) => {
-        setFolder(next);     // navigation triggers mailbox refresh
-        setSelectedId(null); // navigation reset
+        setFolder(next);
+        setSelectedId(null);
         setReplyError(null);
       },
       onSearchChange: (q) => setSearch(q),
@@ -216,16 +216,15 @@ export default function WandersMailboxScreen() {
     [folder, search, loading]
   );
 
-  // ✅ After sending a reply: refresh replies only (no mailbox spam)
+  // Keep this refresh helper stable by depending on refresh function only (not whole replies object)
   const handleReplySent = useCallback(async () => {
     try {
       await Promise.resolve(replies?.refresh?.());
     } catch {
       // ignore
     }
-  }, [replies]);
+  }, [replies?.refresh]);
 
-  // ✅ ADD: actual submit handler for UI-only composer
   const handleReplySubmit = useCallback(
     async ({ body }) => {
       if (!selectedCardId) return;
@@ -233,6 +232,9 @@ export default function WandersMailboxScreen() {
       setReplyError(null);
       setReplySending(true);
       try {
+        // ensure user exists before reply
+        await Promise.resolve(ensureUser?.());
+
         await Promise.resolve(
           createReplyAsAnon({
             cardId: selectedCardId,
@@ -240,17 +242,16 @@ export default function WandersMailboxScreen() {
           })
         );
 
-        // refresh replies after successful send
         await Promise.resolve(handleReplySent?.());
       } catch (e) {
         console.error("[Mailbox] reply submit failed", e);
         setReplyError(String(e?.message || e));
-        throw e; // lets composer catch if it wants
+        throw e;
       } finally {
         setReplySending(false);
       }
     },
-    [selectedCardId, handleReplySent]
+    [selectedCardId, handleReplySent, ensureUser]
   );
 
   if (loading) return <WandersLoading />;
@@ -301,9 +302,7 @@ export default function WandersMailboxScreen() {
                       <div style={styles.sectionTitle}>Replies</div>
 
                       {repliesLoading ? (
-                        <div className="py-6 text-center text-sm text-gray-500">
-                          Loading replies…
-                        </div>
+                        <div className="py-6 text-center text-sm text-gray-500">Loading replies…</div>
                       ) : (
                         <WandersRepliesList replies={normalizedReplyItems} />
                       )}
@@ -314,9 +313,7 @@ export default function WandersMailboxScreen() {
 
               <div style={styles.composer}>
                 {replyError ? (
-                  <div className="mb-2 text-sm font-semibold text-red-600">
-                    {replyError}
-                  </div>
+                  <div className="mb-2 text-sm font-semibold text-red-600">{replyError}</div>
                 ) : null}
 
                 <WandersReplyComposer

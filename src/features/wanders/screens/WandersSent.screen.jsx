@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { useWandersCards } from "../hooks/useWandersCards";
+import { useWandersCards } from "@/features/wanders/core/hooks/useWandersCards.hook";
 
 import WandersLoading from "../components/WandersLoading";
 import WandersEmptyState from "../components/WandersEmptyState";

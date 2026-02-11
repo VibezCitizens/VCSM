@@ -4,9 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import WandersLoading from "../components/WandersLoading";
 import WandersEmptyState from "../components/WandersEmptyState";
-import { useWandersAnon } from "../hooks/useWandersAnon";
+
+// ✅ NEW: guest auth hook (core)
+import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
+
 import CardBuilder from "@/features/wanders/components/cardstemplates/CardBuilder";
-import { publishWandersFromBuilder } from "../controllers/publishWandersFromBuilder.controller";
+
+// ✅ NEW: core controller (guest-auth)
+import { publishWandersFromBuilder } from "@/features/wanders/core/controllers/publishWandersFromBuilder.controller";
 
 export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: baseUrlProp }) {
   const navigate = useNavigate();
@@ -23,7 +28,8 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
     return "";
   }, [baseUrlProp, location?.state?.baseUrl]);
 
-  const { anonId, ensureAnon } = useWandersAnon({ auto: true, touch: true });
+  // ✅ guest user identity (auth.users.id)
+  const { ensureUser } = useWandersGuest({ auto: true });
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -36,11 +42,12 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
       setError(null);
 
       try {
-        await Promise.resolve(ensureAnon?.());
+        // ✅ ensure we have an auth user (anonymous sign-in)
+        await Promise.resolve(ensureUser?.());
 
+        // ✅ CORE publish (writes sender_user_id + seeds mailbox owner_user_id)
         const res = await publishWandersFromBuilder({
           realmId,
-          senderAnonId: anonId || null,
           baseUrl,
           payload,
         });
@@ -59,7 +66,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
         setSubmitting(false);
       }
     },
-    [realmId, ensureAnon, anonId, baseUrl, navigate]
+    [realmId, ensureUser, baseUrl, navigate]
   );
 
   if (!realmId) {
@@ -95,12 +102,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
       <main className="relative mx-auto w-full max-w-4xl px-4 pb-24 pt-6">
         {submitting ? <WandersLoading /> : null}
 
-        <CardBuilder
-          defaultCardType="generic"
-          loading={submitting}
-          error={error}
-          onSubmit={onSubmit}
-        >
+        <CardBuilder defaultCardType="generic" loading={submitting} error={error} onSubmit={onSubmit}>
           {({
             CARD_TYPES,
             cardType,
@@ -145,8 +147,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
                               active ? "opacity-100" : "",
                             ].join(" ")}
                             style={{
-                              background:
-                                "linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02))",
+                              background: "linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02))",
                             }}
                           />
 
@@ -154,18 +155,14 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
                             <div
                               className={[
                                 "flex h-10 w-10 items-center justify-center rounded-xl border text-lg",
-                                active
-                                  ? "border-black bg-black text-white"
-                                  : "border-gray-200 bg-white",
+                                active ? "border-black bg-black text-white" : "border-gray-200 bg-white",
                               ].join(" ")}
                             >
                               {t.icon}
                             </div>
 
                             <div className="min-w-0">
-                              <div className="truncate text-sm font-semibold text-gray-900">
-                                {t.label}
-                              </div>
+                              <div className="truncate text-sm font-semibold text-gray-900">{t.label}</div>
                               <div className="mt-1 truncate text-xs text-gray-600">{t.sub}</div>
                             </div>
                           </div>
@@ -174,9 +171,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
                     })}
                   </div>
 
-                  <div className="mt-2 text-xs text-gray-600">
-                    This controls templates + required fields.
-                  </div>
+                  <div className="mt-2 text-xs text-gray-600">This controls templates + required fields.</div>
                 </div>
 
                 {/* Template picker (only when needed) */}
@@ -200,15 +195,9 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
 
                 {/* Template Form */}
                 <form onSubmit={submit} className="mt-4">
-                  {FormUI ? (
-                    <FormUI data={formData} setData={setFormData} ui={ui} />
-                  ) : null}
+                  {FormUI ? <FormUI data={formData} setData={setFormData} ui={ui} /> : null}
 
-                  <button
-                    type="submit"
-                    className={`${ui.primaryBtn} mt-5`}
-                    disabled={submitting}
-                  >
+                  <button type="submit" className={`${ui.primaryBtn} mt-5`} disabled={submitting}>
                     {submitting ? "Creating…" : "Create card"}
                   </button>
                 </form>
@@ -217,9 +206,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
               {/* Square 2: LIVE PREVIEW */}
               <div className="rounded-2xl border border-white/10 bg-white p-4 text-black shadow-sm">
                 <div className="text-sm font-semibold text-gray-900">Preview</div>
-                <div className="mt-3">
-                  {PreviewUI ? <PreviewUI data={formData} /> : null}
-                </div>
+                <div className="mt-3">{PreviewUI ? <PreviewUI data={formData} /> : null}</div>
               </div>
             </div>
           )}
