@@ -6,6 +6,12 @@ function stripTrailingSlashes(url) {
   return String(url || "").replace(/\/+$/, "");
 }
 
+function safeTrim(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  return s ? s : null;
+}
+
 export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl, payload }) {
   if (!realmId) throw new Error("publishWandersFromBuilder requires realmId");
 
@@ -16,7 +22,15 @@ export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl
   // 2) payload.{toName, fromName, messageText}
   const toName = payload?.toName ?? payload?.message?.toName ?? null;
   const fromName = payload?.fromName ?? payload?.message?.fromName ?? null;
-  const messageText = payload?.messageText ?? payload?.message?.messageText ?? null;
+
+  // ✅ FIX: accept templates that use "message" (valentines-romantic uses data.message)
+  const messageText =
+    payload?.messageText ??
+    payload?.message_text ??
+    payload?.message?.messageText ??
+    payload?.message?.messageText ??
+    payload?.message ?? // ✅ <-- THIS is the important line
+    null;
 
   // ✅ Support multiple ways templates might provide template identity
   const templateKey =
@@ -36,7 +50,8 @@ export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl
     sender_anon_id: senderAnonId || null,
     is_anonymous: !!(payload?.is_anonymous ?? payload?.isAnonymous),
 
-    message_text: messageText,
+    // ✅ ensure we store trimmed text or null
+    message_text: safeTrim(messageText),
 
     // ✅ IMPORTANT: DB column is template_key (snake_case)
     template_key: String(templateKey),

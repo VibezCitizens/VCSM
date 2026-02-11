@@ -73,6 +73,7 @@ export default function WandersSentScreen() {
     };
   }, [cardPublicId, readByPublicId]);
 
+  // kept (harmless) in case you use it later; currently unused
   const inboxLink = useMemo(() => {
     const inboxPublicId =
       card?.inboxPublicId || card?.inbox?.publicId || card?.inboxPublic?.id || card?.inbox?.id;
@@ -82,19 +83,19 @@ export default function WandersSentScreen() {
     return `${window.location.origin}/wanders/i/${inboxPublicId}`;
   }, [card]);
 
+  // kept (harmless) in case you use it later; currently unused
   const handleCreateInbox = () => {
     navigate("/wanders/create", { state: { realmId, baseUrl } });
   };
 
+  // kept (harmless) in case you use it later; currently unused
   const handleViewOutbox = () => {
     navigate("/wanders/outbox");
   };
 
- const goMailbox = () => navigate("/wanders/mailbox?mode=sent");
-
+  const goMailbox = () => navigate("/wanders/mailbox?mode=sent");
   const goOutbox = () => navigate("/wanders/outbox");
   const goCreate = () => navigate("/wanders/create", { state: { realmId, baseUrl } });
-  const goClaim = () => navigate("/wanders/claim");
 
   if (loading) return <WandersLoading />;
 
@@ -135,62 +136,43 @@ export default function WandersSentScreen() {
 
       <main className="relative mx-auto w-full max-w-4xl px-4 pb-24 pt-5">
         {/* ✅ Preview + share panel moved to component */}
-        <WandersSharePreview
-          cardPublicId={cardPublicId}
-          card={card}
-          baseUrl={baseUrl}
-        />
+        <WandersSharePreview cardPublicId={cardPublicId} card={card} baseUrl={baseUrl} />
 
         {/* ✅ The dashboard you want AFTER creating a card */}
         <div className="mt-5 grid gap-3 md:gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
-            <div className="text-sm font-semibold">Your mailbox</div>
-            <div className="mt-1 text-sm text-gray-700">Read incoming cards, reply, and organize.</div>
-            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:gap-2">
+            <div className="text-sm font-semibold">Your WVOX</div>
+            <div className="mt-1 text-sm text-gray-700">View your incoming and sent cards.</div>
+
+            <div className="mt-4">
               <button
                 type="button"
                 onClick={goMailbox}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
+                className="w-full rounded-xl bg-black text-white px-4 py-3 text-sm font-semibold transition active:scale-[0.99] hover:bg-black/90"
               >
-                Open mailbox
-              </button>
-              <button
-                type="button"
-                onClick={goOutbox}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
-              >
-                View outbox
+                Your WVOX
               </button>
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
-            <div className="text-sm font-semibold">Create an inbox</div>
-            <div className="mt-1 text-sm text-gray-700">
-              Generate a shareable link so anyone can send you cards.
-            </div>
-            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:gap-2">
+            <div className="text-sm font-semibold">Send another</div>
+            <div className="mt-1 text-sm text-gray-700">Create a new Wander card and share it.</div>
+
+            <div className="mt-4">
               <button
                 type="button"
                 onClick={goCreate}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
+                className="w-full rounded-xl bg-black text-white px-4 py-3 text-sm font-semibold transition active:scale-[0.99] hover:bg-black/90"
               >
-                Create inbox
-              </button>
-              <button
-                type="button"
-                onClick={goClaim}
-                className="w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
-              >
-                Claim / connect account
+                Create a Wander Card
               </button>
             </div>
           </div>
 
           <div className="md:col-span-2">
             <div className="pt-1 text-xs text-zinc-400">
-              Tip: If you’re anon-only, you can still receive cards—connect later via{" "}
-              <span className="font-mono">/wanders/claim</span>.
+              Tip: Share your link — when they open it, the card will appear in your mailbox.
             </div>
           </div>
         </div>

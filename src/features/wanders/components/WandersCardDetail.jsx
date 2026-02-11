@@ -27,8 +27,21 @@ export function WandersCardDetail({
 
     const sentAt = card?.sentAt ?? card?.sent_at ?? null
     const createdAt = card?.createdAt ?? card?.created_at ?? null
-    const openedAt = card?.openedAt ?? card?.opened_at ?? null
-    const openCount = card?.openCount ?? card?.open_count ?? 0
+
+    // ✅ Prefer last_opened_at when present (your DB uses it)
+    const openedAt =
+      card?.lastOpenedAt ??
+      card?.last_opened_at ??
+      card?.openedAt ??
+      card?.opened_at ??
+      null
+
+    // ✅ open_count sometimes arrives as string from PostgREST — normalize
+    const rawOpenCount = card?.openCount ?? card?.open_count ?? 0
+    const openCount = Number.isFinite(Number(rawOpenCount))
+      ? Number(rawOpenCount)
+      : 0
+
     const status = card?.status ?? 'draft'
 
     const formatDate = (v) => {
@@ -46,6 +59,37 @@ export function WandersCardDetail({
       sentAtLabel: formatDate(sentAt),
       openedAtLabel: formatDate(openedAt),
       openCount,
+    }
+  }, [card])
+
+  const normalizedCard = useMemo(() => {
+    if (!card) return card
+
+    // Parse customization if it arrived as JSON string
+    let customization = card?.customization ?? null
+    if (typeof customization === 'string') {
+      try {
+        customization = JSON.parse(customization)
+      } catch {
+        customization = null
+      }
+    }
+
+    return {
+      ...card,
+
+      // Keep both shapes to make all components happy
+      templateKey: card?.templateKey ?? card?.template_key,
+      template_key: card?.template_key ?? card?.templateKey,
+
+      messageText: card?.messageText ?? card?.message_text,
+      message_text: card?.message_text ?? card?.messageText,
+
+      // If you ever store these later, keep both
+      toName: card?.toName ?? customization?.toName ?? customization?.to_name,
+      fromName: card?.fromName ?? customization?.fromName ?? customization?.from_name,
+
+      customization: customization ?? {},
     }
   }, [card])
 
@@ -70,7 +114,7 @@ export function WandersCardDetail({
       ].join(' ')}
     >
       {/* CARD PREVIEW */}
-      <WandersCardPreview card={card} />
+      <WandersCardPreview card={normalizedCard} />
 
       {/* META */}
       {meta && (
@@ -112,11 +156,7 @@ export function WandersCardDetail({
       {actions ? <div className="pt-2">{actions}</div> : null}
 
       {/* REPLIES SLOT */}
-      {replies ? (
-        <div className="pt-2 border-t border-gray-100">
-          {replies}
-        </div>
-      ) : null}
+      {replies ? <div className="pt-2 border-t border-gray-100">{replies}</div> : null}
     </div>
   )
 }

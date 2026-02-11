@@ -2,6 +2,7 @@
 // ============================================================================
 // WANDERS HOOK — REPLIES
 // Render-safe: does NOT throw when cardId is missing.
+// Smooth loading: does NOT flip loading=true if replies already exist.
 // ============================================================================
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -16,6 +17,10 @@ function safeTrim(v) {
   return String(v).trim();
 }
 
+function asArray(v) {
+  return Array.isArray(v) ? v : [];
+}
+
 export function useWandersReplies(input) {
   const cardId = safeTrim(input?.cardId);
   const auto = input?.auto ?? true;
@@ -26,6 +31,7 @@ export function useWandersReplies(input) {
   const [error, setError] = useState(null);
 
   const mountedRef = useRef(true);
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -34,7 +40,6 @@ export function useWandersReplies(input) {
   }, []);
 
   const refresh = useCallback(async () => {
-    // ✅ render-safe: no cardId => no-op
     if (!cardId) {
       if (mountedRef.current) {
         setReplies([]);
@@ -44,27 +49,36 @@ export function useWandersReplies(input) {
       return [];
     }
 
-    setLoading(true);
-    setError(null);
+    // ✅ Only show loading if we have NO replies yet
+    if (mountedRef.current) {
+      setLoading((prev) => {
+        if (replies.length > 0) return false; // keep visible
+        return true;
+      });
+      setError(null);
+    }
 
     try {
       const res = await listRepliesForCard({ cardId, limit });
       if (!mountedRef.current) return [];
-      setReplies(res || []);
-      return res || [];
+
+      const next = asArray(res);
+      setReplies(next);
+      return next;
     } catch (e) {
       if (!mountedRef.current) return [];
       setError(e);
       return [];
     } finally {
-      if (mountedRef.current) setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
-  }, [cardId, limit]);
+  }, [cardId, limit, replies.length]);
 
   useEffect(() => {
     if (!auto) return;
     if (!cardId) {
-      // If the selected card changes to "none", reset state cleanly
       setReplies([]);
       setLoading(false);
       setError(null);
@@ -82,21 +96,45 @@ export function useWandersReplies(input) {
       }
 
       setError(null);
+
       const created = await createReplyAsAnon({ cardId, ...(payload || {}) });
-      setReplies((prev) => [...(prev ?? []), created]);
+
+      if (mountedRef.current && created) {
+        setReplies((prev) => {
+          const arr = asArray(prev);
+          const exists = arr.some((r) => r?.id === created.id);
+          if (exists) return arr;
+          return [created, ...arr];
+        });
+      }
+
+      // silent background reconciliation
+      refresh();
+
       return created;
     },
-    [cardId]
+    [cardId, refresh]
   );
 
-  const remove = useCallback(async (replyId, isDeleted = true) => {
-    if (!replyId) return null;
+  const remove = useCallback(
+    async (replyId, isDeleted = true) => {
+      if (!replyId) return null;
 
-    setError(null);
-    const updated = await softDeleteReply({ replyId, isDeleted });
-    setReplies((prev) => (prev ?? []).map((r) => (r.id === updated.id ? updated : r)));
-    return updated;
-  }, []);
+      setError(null);
+      const updated = await softDeleteReply({ replyId, isDeleted });
+
+      if (mountedRef.current && updated?.id) {
+        setReplies((prev) =>
+          asArray(prev).map((r) => (r?.id === updated.id ? updated : r))
+        );
+      }
+
+      refresh();
+
+      return updated;
+    },
+    [refresh]
+  );
 
   return {
     cardId,

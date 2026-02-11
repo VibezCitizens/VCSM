@@ -9,7 +9,8 @@ import React, { useMemo, useState } from 'react'
 
 /**
  * @param {{
- *  onSubmit: (input: { body: string }) => void,
+ *  onSubmit: (input: { body: string }) => (void | Promise<void>),
+ *  onSent?: () => (void | Promise<void>),
  *  loading?: boolean,
  *  disabled?: boolean,
  *  placeholder?: string,
@@ -19,6 +20,7 @@ import React, { useMemo, useState } from 'react'
  */
 export function WandersReplyComposer({
   onSubmit,
+  onSent,
   loading = false,
   disabled = false,
   placeholder = 'Write a reply…',
@@ -31,14 +33,19 @@ export function WandersReplyComposer({
     return !!body.trim() && !loading && !disabled
   }, [body, loading, disabled])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const trimmed = body.trim()
     if (!trimmed) return
     if (typeof onSubmit !== 'function') return
 
-    onSubmit({ body: trimmed })
-    setBody('')
+    try {
+      await Promise.resolve(onSubmit({ body: trimmed }))
+      setBody('')
+      await Promise.resolve(onSent?.())
+    } catch {
+      // screen/controller should surface errors if desired
+    }
   }
 
   return (

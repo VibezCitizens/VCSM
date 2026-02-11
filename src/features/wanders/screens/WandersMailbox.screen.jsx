@@ -1,6 +1,7 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\screens\WandersMailbox.screen.jsx
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 
 import { useWandersAnon } from "../hooks/useWandersAnon";
 import { useWandersMailbox } from "../hooks/useWandersMailbox";
@@ -15,10 +16,24 @@ import WandersReplyComposer from "../components/WandersReplyComposer";
 import WandersEmptyState from "../components/WandersEmptyState";
 import WandersLoading from "../components/WandersLoading";
 
+function useQuery() {
+  const { search } = useLocation();
+  return useMemo(() => new URLSearchParams(search), [search]);
+}
+
+function resolveInitialFolder(mode) {
+  const m = String(mode || "").trim().toLowerCase();
+  if (m === "sent" || m === "outbox") return "outbox";
+  return "inbox";
+}
+
 export default function WandersMailboxScreen() {
+  const query = useQuery();
+  const mode = query.get("mode");
+
   const { ensureAnon } = useWandersAnon();
 
-  const [folder, setFolder] = useState("inbox"); // 'inbox' | 'outbox'
+  const [folder, setFolder] = useState(() => resolveInitialFolder(mode)); // 'inbox' | 'outbox'
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
@@ -47,9 +62,17 @@ export default function WandersMailboxScreen() {
     })();
   }, [ensureAnon]);
 
+  // ✅ If URL mode changes while mounted, sync folder (navigation)
+  useEffect(() => {
+    const next = resolveInitialFolder(mode);
+    setFolder(next);
+    setSelectedId(null);
+  }, [mode]);
+
   const mailbox = useWandersMailbox({ auto: false, folder, ownerRole: null, limit: 50 });
   const { items, loading, error, refresh, markRead } = mailbox || {};
 
+  // ✅ Refresh ONLY when folder changes (navigation)
   useEffect(() => {
     (async () => {
       try {
@@ -93,8 +116,29 @@ export default function WandersMailboxScreen() {
     return selectedItem.card_id || selectedItem.cardId || selectedItem.card?.id || null;
   }, [selectedItem]);
 
-  const replies = useWandersReplies(selectedCardId);
-  const { items: replyItems, loading: repliesLoading } = replies || {};
+  // ✅ Replies: only load when selectedCardId changes.
+  const replies = useWandersReplies({ cardId: selectedCardId, auto: false, limit: 200 });
+  const replyItems = replies?.replies; // ✅ hook returns "replies"
+  const repliesLoading = replies?.loading;
+
+  const normalizedReplyItems = useMemo(() => {
+    if (Array.isArray(replyItems)) return replyItems;
+    if (Array.isArray(replyItems?.items)) return replyItems.items;
+    if (Array.isArray(replyItems?.data)) return replyItems.data;
+    return [];
+  }, [replyItems]);
+
+  // ✅ Refresh replies ONLY on navigation (selectedCardId change)
+  useEffect(() => {
+    if (!selectedCardId) return;
+    (async () => {
+      try {
+        await Promise.resolve(replies?.refresh?.());
+      } catch {
+        // ignore
+      }
+    })();
+  }, [selectedCardId, replies]);
 
   useEffect(() => {
     if (!selectedItem) return;
@@ -136,7 +180,9 @@ export default function WandersMailboxScreen() {
     setSelectedId(String(filteredItems[0].id));
   }, [filteredItems, selectedId]);
 
-  const onItemClick = (item) => setSelectedId(String(item?.id));
+  const onItemClick = useCallback((item) => {
+    setSelectedId(String(item?.id));
+  }, []);
 
   const splitStyle = useMemo(
     () => ({
@@ -150,12 +196,24 @@ export default function WandersMailboxScreen() {
     () => ({
       currentFolder: folder,
       searchQuery: search,
-      onFolderChange: (next) => setFolder(next),
+      onFolderChange: (next) => {
+        setFolder(next);     // ✅ navigation triggers mailbox refresh
+        setSelectedId(null); // ✅ navigation reset
+      },
       onSearchChange: (q) => setSearch(q),
       disabled: !!loading,
     }),
     [folder, search, loading]
   );
+
+  // ✅ After sending a reply: refresh replies only (no mailbox spam)
+  const handleReplySent = useCallback(async () => {
+    try {
+      await Promise.resolve(replies?.refresh?.());
+    } catch {
+      // ignore
+    }
+  }, [replies]);
 
   if (loading) return <WandersLoading />;
 
@@ -203,18 +261,26 @@ export default function WandersMailboxScreen() {
                   replies={
                     <div>
                       <div style={styles.sectionTitle}>Replies</div>
-                      <WandersRepliesList
-                        loading={!!repliesLoading}
-                        items={Array.isArray(replyItems) ? replyItems : replyItems?.items || []}
-                        cardId={selectedCardId}
-                      />
+
+                      {/* ✅ FIX: pass "replies" prop (not items) */}
+                      {repliesLoading ? (
+                        <div className="py-6 text-center text-sm text-gray-500">
+                          Loading replies…
+                        </div>
+                      ) : (
+                        <WandersRepliesList replies={normalizedReplyItems} />
+                      )}
                     </div>
                   }
                 />
               </div>
 
               <div style={styles.composer}>
-                <WandersReplyComposer cardId={selectedCardId} mailboxItem={selectedItem} />
+                <WandersReplyComposer
+                  cardId={selectedCardId}
+                  mailboxItem={selectedItem}
+                  onSent={handleReplySent}
+                />
               </div>
             </div>
           )}
@@ -225,9 +291,12 @@ export default function WandersMailboxScreen() {
 }
 
 const styles = {
+  // ✅ Mobile scroll container: real viewport height + overflow
   page: {
     width: "100%",
-    minHeight: "100%",
+    height: "100dvh",            // iOS/modern browsers dynamic viewport
+    overflowY: "auto",           // allow scrolling
+    WebkitOverflowScrolling: "touch",
     boxSizing: "border-box",
     padding: 12,
   },
@@ -242,6 +311,7 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: 12,
+    alignItems: "start",
   },
   left: {
     borderRadius: 14,
@@ -267,11 +337,6 @@ const styles = {
     border: "1px solid rgba(0,0,0,0.08)",
     padding: 10,
     background: "rgba(0,0,0,0.02)",
-  },
-  replies: {
-    borderRadius: 12,
-    border: "1px solid rgba(0,0,0,0.08)",
-    padding: 10,
   },
   sectionTitle: {
     fontSize: 13,
