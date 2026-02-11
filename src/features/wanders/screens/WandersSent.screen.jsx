@@ -9,7 +9,6 @@ import WandersLoading from "../components/WandersLoading";
 import WandersEmptyState from "../components/WandersEmptyState";
 import { resolveRealm } from "@/features/upload/model/resolveRealm";
 
-// ✅ NEW: use the share+preview component
 import WandersSharePreview from "../components/WandersSharePreview";
 
 function useQuery() {
@@ -24,23 +23,30 @@ export default function WandersSentScreen() {
 
   const { readByPublicId } = useWandersCards();
 
-  // Support both:
-  // /wanders/sent/:cardPublicId
-  // /wanders/sent?card=:publicId
   const cardPublicId = (params.cardPublicId || query.get("card") || "").trim();
 
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
 
-  // keep consistent with AppRoutes (PUBLIC realm)
+  const [mailboxCopied, setMailboxCopied] = useState(false);
+
   const baseUrl = useMemo(() => {
     try {
-      if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
+      if (typeof window !== "undefined" && window.location?.origin) {
+        return window.location.origin;
+      }
     } catch {}
     return "";
   }, []);
+
   const realmId = resolveRealm(false);
+
+  // ✅ Stable mailbox link (user reuses later)
+  const mailboxLink = useMemo(() => {
+    if (!baseUrl) return "/wanders/mailbox?mode=sent";
+    return `${baseUrl}/wanders/mailbox?mode=sent`;
+  }, [baseUrl]);
 
   useEffect(() => {
     if (!cardPublicId) {
@@ -73,29 +79,18 @@ export default function WandersSentScreen() {
     };
   }, [cardPublicId, readByPublicId]);
 
-  // kept (harmless) in case you use it later; currently unused
-  const inboxLink = useMemo(() => {
-    const inboxPublicId =
-      card?.inboxPublicId || card?.inbox?.publicId || card?.inboxPublic?.id || card?.inbox?.id;
-
-    if (!inboxPublicId) return "";
-    if (typeof window === "undefined") return `/wanders/i/${inboxPublicId}`;
-    return `${window.location.origin}/wanders/i/${inboxPublicId}`;
-  }, [card]);
-
-  // kept (harmless) in case you use it later; currently unused
-  const handleCreateInbox = () => {
-    navigate("/wanders/create", { state: { realmId, baseUrl } });
-  };
-
-  // kept (harmless) in case you use it later; currently unused
-  const handleViewOutbox = () => {
-    navigate("/wanders/outbox");
-  };
-
   const goMailbox = () => navigate("/wanders/mailbox?mode=sent");
-  const goOutbox = () => navigate("/wanders/outbox");
   const goCreate = () => navigate("/wanders/create", { state: { realmId, baseUrl } });
+
+  const handleCopyMailbox = async () => {
+    try {
+      await navigator.clipboard.writeText(mailboxLink);
+      setMailboxCopied(true);
+      setTimeout(() => setMailboxCopied(false), 2000);
+    } catch (e) {
+      console.error("Failed to copy mailbox link", e);
+    }
+  };
 
   if (loading) return <WandersLoading />;
 
@@ -129,41 +124,54 @@ export default function WandersSentScreen() {
         <div className="mx-auto w-full max-w-4xl px-4">
           <div className="py-3">
             <h1 className="text-lg font-bold tracking-wide">Sent 🎉</h1>
-            <p className="mt-1 text-sm text-zinc-300">Your card is ready — share it or manage your inbox.</p>
+            <p className="mt-1 text-sm text-zinc-300">
+              Your card is ready — share it or manage your inbox.
+            </p>
           </div>
         </div>
       </header>
 
       <main className="relative mx-auto w-full max-w-4xl px-4 pb-24 pt-5">
-        {/* ✅ Preview + share panel moved to component */}
         <WandersSharePreview cardPublicId={cardPublicId} card={card} baseUrl={baseUrl} />
 
-        {/* ✅ The dashboard you want AFTER creating a card */}
+        {/* Dashboard */}
         <div className="mt-5 grid gap-3 md:gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
             <div className="text-sm font-semibold">Your WVOX</div>
-            <div className="mt-1 text-sm text-gray-700">View your incoming and sent cards.</div>
+            <div className="mt-1 text-sm text-gray-700">
+              View your incoming and sent cards.
+            </div>
 
-            <div className="mt-4">
+            <div className="mt-4 flex gap-2">
               <button
                 type="button"
                 onClick={goMailbox}
-                className="w-full rounded-xl bg-black text-white px-4 py-3 text-sm font-semibold transition active:scale-[0.99] hover:bg-black/90"
+                className="flex-1 rounded-xl bg-black text-white px-4 py-3 text-sm font-semibold transition hover:bg-black/90"
               >
-                Your WVOX
+                Open WVOX
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCopyMailbox}
+                className="flex-1 rounded-xl border border-black bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-100"
+              >
+                {mailboxCopied ? "Copied ✓" : "Copy Link"}
               </button>
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
             <div className="text-sm font-semibold">Send another</div>
-            <div className="mt-1 text-sm text-gray-700">Create a new Wander card and share it.</div>
+            <div className="mt-1 text-sm text-gray-700">
+              Create a new Wander card and share it.
+            </div>
 
             <div className="mt-4">
               <button
                 type="button"
                 onClick={goCreate}
-                className="w-full rounded-xl bg-black text-white px-4 py-3 text-sm font-semibold transition active:scale-[0.99] hover:bg-black/90"
+                className="w-full rounded-xl bg-black text-white px-4 py-3 text-sm font-semibold transition hover:bg-black/90"
               >
                 Create a Wander Card
               </button>
@@ -172,7 +180,7 @@ export default function WandersSentScreen() {
 
           <div className="md:col-span-2">
             <div className="pt-1 text-xs text-zinc-400">
-              Tip: Share your link — when they open it, the card will appear in your mailbox.
+              Tip: Save your mailbox link — it always shows your full Wander history.
             </div>
           </div>
         </div>

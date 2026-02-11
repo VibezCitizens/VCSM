@@ -67,12 +67,13 @@ export async function createReplyAsAnon(input) {
     bodyAlg: input.bodyAlg ?? "xchacha20poly1305",
   });
 
+  // ✅ attach reply id so you never need a second logger
   await createWandersCardEvent({
     cardId: input.cardId,
     anonId: anon.id,
     actorId: null,
     eventType: "replied",
-    meta: {},
+    meta: { reply_id: row.id },
   });
 
   return toWandersReply(row);
@@ -81,29 +82,20 @@ export async function createReplyAsAnon(input) {
 /**
  * List replies by card id.
  * ✅ MUST ensure anon identity so RLS has a viewer context.
- * Also (optional) enforce that viewer is sender or recipient once attached.
+ * Also enforce that viewer is sender or recipient once attached.
  *
  * @param {{ cardId: string, limit?: number }} input
  */
 export async function listRepliesForCard(input) {
   const anon = await ensureWandersAnonIdentity({ touch: true });
 
-  // Optional hard guard (recommended):
-  // If your RLS is strict, this prevents “empty list confusion” and enforces your intent.
-  // If you *want* sender to see replies, sender_anon_id must be allowed.
   const card = await getWandersCardById(input.cardId);
   if (!card) throw new Error("Card not found");
 
   const isSender = !!card.sender_anon_id && card.sender_anon_id === anon.id;
   const isRecipient = !!card.recipient_anon_id && card.recipient_anon_id === anon.id;
 
-  // If recipient not yet attached (link card), you can decide:
-  // - Allow sender to see none until a recipient claims (current behavior is fine), OR
-  // - Allow sender to see once replies exist.
-  // Here we allow sender always, and allow recipient only if attached or they are replying (handled on create).
   if (!isSender && !isRecipient) {
-    // If you want “public viewers” to see replies, remove this.
-    // Keeping this prevents random anon from fetching replies for any card_id.
     return [];
   }
 

@@ -2,6 +2,9 @@
 import { getWandersSupabase } from "../services/wandersSupabaseClient";
 import { nanoid } from "nanoid";
 
+import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
+import { buildWandersImageKey } from "@/features/wanders/utils/buildWandersImageKey";
+
 function stripTrailingSlashes(url) {
   return String(url || "").replace(/\/+$/, "");
 }
@@ -29,7 +32,7 @@ export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl
     payload?.message_text ??
     payload?.message?.messageText ??
     payload?.message?.messageText ??
-    payload?.message ?? // ✅ <-- THIS is the important line
+    payload?.message ?? // ✅ <-- important
     null;
 
   // ✅ Support multiple ways templates might provide template identity
@@ -41,8 +44,36 @@ export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl
     payload?.template?.key ??
     "classic";
 
+  // ✅ Pre-generate public_id so we can upload under wanders/cards/<publicId>/...
+  const publicId = nanoid(21);
+
+  // ✅ Pull image file (photo template should pass imageFile through)
+  // Accept multiple possible locations just in case
+  const imageFile =
+    payload?.imageFile ??
+    payload?.image_file ??
+    payload?.customization?.imageFile ??
+    payload?.customization?.image_file ??
+    null;
+
+  // ✅ If you already have an image_url (maybe uploaded earlier), respect it
+  let imageUrl =
+    payload?.imageUrl ??
+    payload?.image_url ??
+    payload?.customization?.imageUrl ??
+    payload?.customization?.image_url ??
+    null;
+
+  // ✅ Upload to Cloudflare R2 if we have a File/Blob and no URL yet
+  if (!imageUrl && imageFile) {
+    const key = buildWandersImageKey({ publicId, file: imageFile });
+    const up = await uploadToCloudflare(imageFile, key);
+    if (up?.error) throw new Error(up.error);
+    imageUrl = up?.url || null;
+  }
+
   const insertPayload = {
-    public_id: nanoid(21),
+    public_id: publicId,
     realm_id: realmId,
     status: "sent",
     sent_at: new Date().toISOString(),
@@ -61,6 +92,9 @@ export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl
       toName,
       fromName,
       kind: payload?.kind || "wanders",
+
+      // ✅ Save real URL for Sent/Public preview
+      image_url: imageUrl || null,
     },
 
     recipient_channel: "link",
@@ -72,6 +106,9 @@ export async function publishWandersFromBuilder({ realmId, senderAnonId, baseUrl
   console.log("senderAnonId:", senderAnonId);
   console.log("payload:", payload);
   console.log("resolved templateKey:", templateKey);
+  console.log("publicId:", publicId);
+  console.log("imageFile:", imageFile ? { type: imageFile.type, size: imageFile.size, name: imageFile.name } : null);
+  console.log("imageUrl:", imageUrl);
   console.log("insertPayload:", insertPayload);
   console.groupEnd();
   // === DEBUG END ===

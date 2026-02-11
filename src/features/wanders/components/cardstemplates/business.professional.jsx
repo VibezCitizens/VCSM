@@ -32,16 +32,25 @@ export const businessProfessionalTemplate = {
     };
   },
 
-  Form({ data, setData }) {
+  Form({ data, setData, ui }) {
+    const label =
+      ui?.labelBase ||
+      "block text-[13px] font-semibold tracking-[0.01em] text-gray-900 mb-1.5";
+    const input =
+      ui?.inputBase ||
+      "w-full rounded-2xl border px-4 py-3 text-[15px] leading-6 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 shadow-[0_1px_0_0_rgba(0,0,0,0.04)] transition duration-150 hover:border-gray-300 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-black/10";
+    const textarea =
+      ui?.textareaBase || `${input} align-top resize-none min-h-[120px]`;
+
     return (
-      <div className="space-y-4">
+      <div className="space-y-5">
         {/* To */}
-        <div className="space-y-1">
-          <label className="text-sm opacity-70">To</label>
+        <div>
+          <label className={label}>To</label>
           <input
             type="text"
             placeholder="Recipient name"
-            className="input input-bordered w-full"
+            className={input}
             value={data.toName}
             onChange={(e) =>
               setData((prev) => ({ ...prev, toName: e.target.value }))
@@ -50,14 +59,14 @@ export const businessProfessionalTemplate = {
         </div>
 
         {/* From + Company */}
-        {!data.sendAnonymously && (
+        {!data.sendAnonymously ? (
           <>
-            <div className="space-y-1">
-              <label className="text-sm opacity-70">From</label>
+            <div>
+              <label className={label}>From</label>
               <input
                 type="text"
                 placeholder="Your name"
-                className="input input-bordered w-full"
+                className={input}
                 value={data.fromName}
                 onChange={(e) =>
                   setData((prev) => ({ ...prev, fromName: e.target.value }))
@@ -65,12 +74,12 @@ export const businessProfessionalTemplate = {
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-sm opacity-70">Company</label>
+            <div>
+              <label className={label}>Company</label>
               <input
                 type="text"
                 placeholder="Company (optional)"
-                className="input input-bordered w-full"
+                className={input}
                 value={data.company}
                 onChange={(e) =>
                   setData((prev) => ({ ...prev, company: e.target.value }))
@@ -78,14 +87,14 @@ export const businessProfessionalTemplate = {
               />
             </div>
           </>
-        )}
+        ) : null}
 
         {/* Message */}
-        <div className="space-y-1">
-          <label className="text-sm opacity-70">Message</label>
+        <div>
+          <label className={label}>Message</label>
           <textarea
             placeholder="Write your note..."
-            className="textarea textarea-bordered w-full min-h-[120px]"
+            className={textarea}
             value={data.message}
             onChange={(e) =>
               setData((prev) => ({ ...prev, message: e.target.value }))
@@ -94,7 +103,7 @@ export const businessProfessionalTemplate = {
         </div>
 
         {/* Anonymous toggle */}
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex items-center gap-2 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={data.sendAnonymously}
@@ -105,7 +114,7 @@ export const businessProfessionalTemplate = {
               }))
             }
           />
-          <span>Send anonymously</span>
+          <span className="text-sm text-gray-800">Send anonymously</span>
         </label>
       </div>
     );
@@ -130,14 +139,12 @@ export const businessProfessionalTemplate = {
 
         <div className="mt-6">
           {!data.sendAnonymously &&
-            (data.fromName?.trim() || data.company?.trim()) && (
-              <p className="text-sm text-gray-500">
-                — {data.fromName?.trim() || "Anonymous"}
-                {data.company?.trim() ? `, ${data.company.trim()}` : ""}
-              </p>
-            )}
-
-          {data.sendAnonymously && (
+          (data.fromName?.trim() || data.company?.trim()) ? (
+            <p className="text-sm text-gray-500">
+              — {data.fromName?.trim() || "Anonymous"}
+              {data.company?.trim() ? `, ${data.company.trim()}` : ""}
+            </p>
+          ) : (
             <p className="text-sm text-gray-400">— Anonymous</p>
           )}
         </div>

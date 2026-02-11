@@ -16,6 +16,9 @@ import WandersReplyComposer from "../components/WandersReplyComposer";
 import WandersEmptyState from "../components/WandersEmptyState";
 import WandersLoading from "../components/WandersLoading";
 
+// ✅ ADD: controller used by screen (composer stays UI-only)
+import { createReplyAsAnon } from "@/features/wanders/controllers/wandersRepliescontroller";
+
 function useQuery() {
   const { search } = useLocation();
   return useMemo(() => new URLSearchParams(search), [search]);
@@ -42,6 +45,10 @@ export default function WandersMailboxScreen() {
     return window.innerWidth >= 980;
   });
 
+  // ✅ ADD: reply submit UI state (prevents silent fails)
+  const [replySending, setReplySending] = useState(false);
+  const [replyError, setReplyError] = useState(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -67,6 +74,7 @@ export default function WandersMailboxScreen() {
     const next = resolveInitialFolder(mode);
     setFolder(next);
     setSelectedId(null);
+    setReplyError(null);
   }, [mode]);
 
   const mailbox = useWandersMailbox({ auto: false, folder, ownerRole: null, limit: 50 });
@@ -118,7 +126,7 @@ export default function WandersMailboxScreen() {
 
   // ✅ Replies: only load when selectedCardId changes.
   const replies = useWandersReplies({ cardId: selectedCardId, auto: false, limit: 200 });
-  const replyItems = replies?.replies; // ✅ hook returns "replies"
+  const replyItems = replies?.replies; // hook returns "replies"
   const repliesLoading = replies?.loading;
 
   const normalizedReplyItems = useMemo(() => {
@@ -182,6 +190,7 @@ export default function WandersMailboxScreen() {
 
   const onItemClick = useCallback((item) => {
     setSelectedId(String(item?.id));
+    setReplyError(null);
   }, []);
 
   const splitStyle = useMemo(
@@ -197,8 +206,9 @@ export default function WandersMailboxScreen() {
       currentFolder: folder,
       searchQuery: search,
       onFolderChange: (next) => {
-        setFolder(next);     // ✅ navigation triggers mailbox refresh
-        setSelectedId(null); // ✅ navigation reset
+        setFolder(next);     // navigation triggers mailbox refresh
+        setSelectedId(null); // navigation reset
+        setReplyError(null);
       },
       onSearchChange: (q) => setSearch(q),
       disabled: !!loading,
@@ -214,6 +224,34 @@ export default function WandersMailboxScreen() {
       // ignore
     }
   }, [replies]);
+
+  // ✅ ADD: actual submit handler for UI-only composer
+  const handleReplySubmit = useCallback(
+    async ({ body }) => {
+      if (!selectedCardId) return;
+
+      setReplyError(null);
+      setReplySending(true);
+      try {
+        await Promise.resolve(
+          createReplyAsAnon({
+            cardId: selectedCardId,
+            body,
+          })
+        );
+
+        // refresh replies after successful send
+        await Promise.resolve(handleReplySent?.());
+      } catch (e) {
+        console.error("[Mailbox] reply submit failed", e);
+        setReplyError(String(e?.message || e));
+        throw e; // lets composer catch if it wants
+      } finally {
+        setReplySending(false);
+      }
+    },
+    [selectedCardId, handleReplySent]
+  );
 
   if (loading) return <WandersLoading />;
 
@@ -262,7 +300,6 @@ export default function WandersMailboxScreen() {
                     <div>
                       <div style={styles.sectionTitle}>Replies</div>
 
-                      {/* ✅ FIX: pass "replies" prop (not items) */}
                       {repliesLoading ? (
                         <div className="py-6 text-center text-sm text-gray-500">
                           Loading replies…
@@ -276,10 +313,19 @@ export default function WandersMailboxScreen() {
               </div>
 
               <div style={styles.composer}>
+                {replyError ? (
+                  <div className="mb-2 text-sm font-semibold text-red-600">
+                    {replyError}
+                  </div>
+                ) : null}
+
                 <WandersReplyComposer
-                  cardId={selectedCardId}
-                  mailboxItem={selectedItem}
+                  onSubmit={handleReplySubmit}
                   onSent={handleReplySent}
+                  loading={replySending}
+                  disabled={!selectedCardId}
+                  placeholder="Write a reply…"
+                  buttonLabel="Send"
                 />
               </div>
             </div>
@@ -291,11 +337,10 @@ export default function WandersMailboxScreen() {
 }
 
 const styles = {
-  // ✅ Mobile scroll container: real viewport height + overflow
   page: {
     width: "100%",
-    height: "100dvh",            // iOS/modern browsers dynamic viewport
-    overflowY: "auto",           // allow scrolling
+    height: "100dvh",
+    overflowY: "auto",
     WebkitOverflowScrolling: "touch",
     boxSizing: "border-box",
     padding: 12,

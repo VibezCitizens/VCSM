@@ -29,36 +29,60 @@ export const genericMinimalTemplate = {
     };
   },
 
-  Form({ data, setData }) {
+  Form({ data, setData, ui }) {
+    const label =
+      ui?.labelBase ||
+      "block text-[13px] font-semibold tracking-[0.01em] text-gray-900 mb-1.5";
+    const input =
+      ui?.inputBase ||
+      "w-full rounded-2xl border px-4 py-3 text-[15px] leading-6 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 shadow-[0_1px_0_0_rgba(0,0,0,0.04)] transition duration-150 hover:border-gray-300 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-black/10";
+    const textarea =
+      ui?.textareaBase || `${input} align-top resize-none min-h-[120px]`;
+
     return (
-      <div className="space-y-4">
+      <div className="space-y-5">
         {/* From */}
-        {!data.sendAnonymously && (
-          <input
-            type="text"
-            placeholder="Your name"
-            className="input input-bordered w-full"
-            value={data.fromName}
-            onChange={(e) => setData((prev) => ({ ...prev, fromName: e.target.value }))}
-          />
-        )}
+        {!data.sendAnonymously ? (
+          <div>
+            <label className={label}>From</label>
+            <input
+              type="text"
+              placeholder="Your name"
+              className={input}
+              value={data.fromName}
+              onChange={(e) =>
+                setData((prev) => ({ ...prev, fromName: e.target.value }))
+              }
+            />
+          </div>
+        ) : null}
 
         {/* Message */}
-        <textarea
-          placeholder="Write your message..."
-          className="textarea textarea-bordered w-full min-h-[120px]"
-          value={data.message}
-          onChange={(e) => setData((prev) => ({ ...prev, message: e.target.value }))}
-        />
+        <div>
+          <label className={label}>Message</label>
+          <textarea
+            placeholder="Write your message..."
+            className={textarea}
+            value={data.message}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, message: e.target.value }))
+            }
+          />
+        </div>
 
         {/* Anonymous toggle */}
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex items-center gap-2 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={data.sendAnonymously}
-            onChange={(e) => setData((prev) => ({ ...prev, sendAnonymously: e.target.checked }))}
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                sendAnonymously: e.target.checked,
+              }))
+            }
           />
-          <span>Send anonymously</span>
+          <span className="text-sm text-gray-800">Send anonymously</span>
         </label>
       </div>
     );
@@ -71,8 +95,10 @@ export const genericMinimalTemplate = {
           {data.message || "Your message preview will appear here..."}
         </p>
 
-        {!data.sendAnonymously && data.fromName && (
-          <p className="text-sm text-gray-500 mt-6">— {data.fromName}</p>
+        {!data.sendAnonymously && data.fromName?.trim() ? (
+          <p className="text-sm text-gray-500 mt-6">— {data.fromName.trim()}</p>
+        ) : (
+          <p className="text-sm text-gray-400 mt-6">— Anonymous</p>
         )}
       </div>
     );

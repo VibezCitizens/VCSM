@@ -55,12 +55,87 @@ export default function WandersSharePreview({
     } catch {}
   };
 
+  // ✅ Normalize whatever the DB card shape is into the preview/draft shape
+  const draftPayload = useMemo(() => {
+    if (!card) return null;
+
+    // Many DB shapes: try common places
+    const customization = card?.customization ?? card?.payload?.customization ?? card?.meta?.customization ?? {};
+
+    const templateKey =
+      card?.template_key ??
+      card?.templateKey ??
+      card?.payload?.template_key ??
+      card?.payload?.templateKey ??
+      customization?.template_key ??
+      customization?.templateKey ??
+      null;
+
+    // Photo fields (try multiple possible locations)
+    const imageUrl =
+      card?.imageUrl ??
+      card?.image_url ??
+      card?.payload?.imageUrl ??
+      card?.payload?.image_url ??
+      customization?.imageUrl ??
+      customization?.image_url ??
+      "";
+
+    const imageDataUrl =
+      card?.imageDataUrl ??
+      card?.image_data_url ??
+      card?.payload?.imageDataUrl ??
+      card?.payload?.image_data_url ??
+      customization?.imageDataUrl ??
+      customization?.imageDataUrl ??
+      customization?.image_data_url ??
+      "";
+
+    const title =
+      card?.title ??
+      card?.payload?.title ??
+      customization?.title ??
+      "";
+
+    const message =
+      card?.message ??
+      card?.message_text ??
+      card?.payload?.message ??
+      card?.payload?.messageText ??
+      card?.payload?.message_text ??
+      customization?.message ??
+      "";
+
+    return {
+      // keep original in case preview needs it
+      ...card,
+
+      // normalized keys your templates can read
+      templateKey: templateKey || "",
+      template_key: templateKey || "",
+
+      title,
+      message,
+
+      imageUrl,
+      imageDataUrl,
+
+      customization: {
+        ...(customization || {}),
+        imageUrl,
+        imageDataUrl,
+        title,
+        message,
+      },
+    };
+  }, [card]);
+
   return (
     <div className={["grid gap-4 md:grid-cols-2", className].join(" ")}>
       {/* PREVIEW */}
       <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
         <div className="mb-3 text-sm font-semibold text-gray-900">Preview</div>
-        <WandersCardPreview card={card} draftPayload={card} />
+        <WandersCardPreview card={card} draftPayload={draftPayload} />
       </div>
 
       {/* SHARE */}

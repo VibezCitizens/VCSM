@@ -10,14 +10,32 @@ function safeParseJson(value) {
   if (typeof value === "object") return value;
   if (typeof value !== "string") return null;
 
-  const s = value.trim();
+  let s = value.trim();
   if (!s) return null;
 
-  try {
-    return JSON.parse(s);
-  } catch {
-    return null;
+  // Unwrap up to 2 layers:
+  // - jsonb object -> returned as object
+  // - jsonb stored as JSON string -> parse once yields object OR yields string
+  // - double-encoded -> parse twice yields object
+  for (let i = 0; i < 2; i++) {
+    try {
+      const parsed = JSON.parse(s);
+
+      if (parsed && typeof parsed === "object") return parsed;
+
+      if (typeof parsed === "string") {
+        s = parsed.trim();
+        if (!s) return null;
+        continue;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
   }
+
+  return null;
 }
 
 /**

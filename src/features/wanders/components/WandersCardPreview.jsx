@@ -49,15 +49,34 @@ function safeParseJson(value) {
   if (typeof value === "object") return value;
   if (typeof value !== "string") return null;
 
-  const s = value.trim();
+  let s = value.trim();
   if (!s) return null;
 
-  try {
-    return JSON.parse(s);
-  } catch {
-    return null;
+  // Unwrap up to 2 layers:
+  // - jsonb object -> returned as object
+  // - jsonb stored as a JSON string -> parse once yields object OR yields string
+  // - double-encoded -> parse twice yields object
+  for (let i = 0; i < 2; i++) {
+    try {
+      const parsed = JSON.parse(s);
+
+      if (parsed && typeof parsed === "object") return parsed;
+
+      if (typeof parsed === "string") {
+        s = parsed.trim();
+        if (!s) return null;
+        continue;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
   }
+
+  return null;
 }
+
 
 function findTemplateById(templateId) {
   const id = String(templateId || "").trim();
@@ -79,20 +98,37 @@ function toTemplateData({ templateKey, isAnonymous, customization, messageText, 
   const data = {
     toName: (toName ?? "").toString(),
     fromName: (fromName ?? "").toString(),
+
+    // generic cards use this
     message: (messageText ?? "").toString(),
+
     sendAnonymously: !!isAnonymous,
   };
 
-  // Known per-template extras
   if (customization && typeof customization === "object") {
     if (customization.accent !== undefined) data.accent = customization.accent;
     if (customization.company !== undefined) data.company = customization.company;
 
-    // If you later add more template-specific knobs, you can whitelist them here too.
+    // ✅ Photo: pull overlay text from customization (what you save in DB)
+    data.title = String(customization.title ?? customization.card_title ?? customization.cardTitle ?? "").trim();
+    data.message = String(customization.message ?? customization.body ?? customization.text ?? data.message ?? "").trim();
+
+    // ✅ Photo: support all variants you are saving
+    data.imageUrl =
+      customization.imageUrl ??
+      customization.image_url ??      // <-- your DB row uses this
+      customization.imageURL ??
+      null;
+
+    data.imageDataUrl =
+      customization.imageDataUrl ??
+      customization.image_data_url ??
+      null;
   }
 
   return data;
 }
+
 
 /**
  * WandersCardPreview
@@ -212,7 +248,13 @@ export function WandersCardPreview({
   const displayFrom = view.isAnonymous ? "Anonymous 💌" : fromTrimmed || "Someone 💌";
   const displayMsg = (view.messageText || "").trim();
 
-  const bgImage = view.customization?.imageDataUrl || view.customization?.image_data_url || null;
+  // ✅ UPDATED: support saved URLs too (Cloudflare R2)
+  const bgImage =
+    view.customization?.imageUrl ||
+    view.customization?.image_url ||
+    view.customization?.imageDataUrl ||
+    view.customization?.image_data_url ||
+    null;
 
   const isMystery = view.templateKey === "mystery";
   const hasImage = !!bgImage;
