@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
-import { useWandersInboxes } from "@/features/wanders/core/hooks/useWandersInboxes.hook";
+import { useWandersInboxes } from "@/features/wanders/core/hooks/useWandersInboxes"; // ✅ FIXED PATH (.js)
 import { useWandersCards } from "@/features/wanders/core/hooks/useWandersCards.hook";
 
 import WandersSendCardForm from "../components/WandersSendCardForm";
@@ -61,7 +61,6 @@ export default function WandersInboxPublicScreen() {
     };
   }, [ensureUser]);
 
-  // ✅ IMPORTANT: avoid depending on readByPublicId identity directly
   const readByPublicIdStable = useCallback(
     (id) => Promise.resolve(readByPublicId?.(id)),
     [readByPublicId]
