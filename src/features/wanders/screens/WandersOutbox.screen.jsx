@@ -16,6 +16,21 @@ import WandersReplyComposer from "../components/WandersReplyComposer";
 import WandersEmptyState from "../components/WandersEmptyState";
 import WandersLoading from "../components/WandersLoading";
 
+function safeParseJson(value) {
+  if (!value) return null;
+  if (typeof value === "object") return value;
+  if (typeof value !== "string") return null;
+
+  const s = value.trim();
+  if (!s) return null;
+
+  try {
+    return JSON.parse(s);
+  } catch {
+    return null;
+  }
+}
+
 export default function WandersOutboxScreen() {
   // ✅ ensure auth user exists (guest user) so auth.uid() works in RLS
   const { ensureUser } = useWandersGuest({ auto: true });
@@ -28,9 +43,24 @@ export default function WandersOutboxScreen() {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
+  const [isWide, setIsWide] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth >= 980;
+  });
+
   // ✅ CORE mailbox
   const mailbox = useWandersMailbox({ auto: false, folder, ownerRole, limit: 50 });
   const { items, loading, error, refresh, markRead } = mailbox || {};
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const onResize = () => setIsWide(window.innerWidth >= 980);
+    onResize();
+
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -67,7 +97,15 @@ export default function WandersOutboxScreen() {
     return normalizedItems.filter((item) => {
       const card = item?.card ?? {};
       const msg = String(card?.messageText ?? card?.message_text ?? "").toLowerCase();
-      const customization = card?.customization ?? {};
+
+      const customizationRaw =
+        card?.customization ??
+        card?.customization_json ??
+        card?.customizationJson ??
+        null;
+
+      const customization = safeParseJson(customizationRaw) ?? customizationRaw ?? {};
+
       const fromName = String(customization?.fromName ?? customization?.from_name ?? "").toLowerCase();
       const toName = String(customization?.toName ?? customization?.to_name ?? "").toLowerCase();
       const templateKey = String(card?.templateKey ?? card?.template_key ?? "").toLowerCase();
@@ -84,6 +122,58 @@ export default function WandersOutboxScreen() {
   const selectedCardId = useMemo(() => {
     if (!selectedItem) return null;
     return selectedItem.card_id || selectedItem.cardId || selectedItem.card?.id || null;
+  }, [selectedItem]);
+
+  // ✅ Build a normalized card object for detail/preview rendering (photo template support)
+  const selectedCardForDetail = useMemo(() => {
+    if (!selectedItem) return null;
+
+    const rawCard = selectedItem?.card ?? selectedItem;
+
+    const customizationRaw =
+      rawCard?.customization ??
+      rawCard?.customization_json ??
+      rawCard?.customizationJson ??
+      null;
+
+    const customization = safeParseJson(customizationRaw) ?? customizationRaw ?? {};
+
+    const templateKey = rawCard?.templateKey ?? rawCard?.template_key ?? "";
+
+    if (String(templateKey).startsWith("photo.")) {
+      const imageUrl =
+        customization?.imageUrl ??
+        customization?.image_url ??
+        rawCard?.imageUrl ??
+        rawCard?.image_url ??
+        "";
+
+      const title = customization?.title ?? "";
+      const message =
+        customization?.message ??
+        rawCard?.message ??
+        rawCard?.messageText ??
+        rawCard?.message_text ??
+        "";
+
+      return {
+        ...rawCard,
+        templateKey,
+        template_key: templateKey,
+        customization,
+        imageUrl,
+        title,
+        message,
+        messageText: rawCard?.messageText ?? rawCard?.message_text ?? message,
+      };
+    }
+
+    return {
+      ...rawCard,
+      templateKey,
+      template_key: templateKey,
+      customization,
+    };
   }, [selectedItem]);
 
   // ✅ CORE replies (smart hook)
@@ -156,6 +246,14 @@ export default function WandersOutboxScreen() {
     [folder, search, loading]
   );
 
+  const splitStyle = useMemo(
+    () => ({
+      ...styles.split,
+      gridTemplateColumns: isWide ? "0.95fr 1.35fr" : "1fr",
+    }),
+    [isWide]
+  );
+
   if (loading) return <WandersLoading />;
 
   if (error) {
@@ -168,7 +266,7 @@ export default function WandersOutboxScreen() {
         <WandersMailboxToolbar {...toolbarModel} />
       </div>
 
-      <div style={styles.split}>
+      <div style={splitStyle}>
         <div style={styles.left}>
           {filteredItems.length ? (
             <WandersMailboxList
@@ -204,13 +302,17 @@ export default function WandersOutboxScreen() {
           ) : (
             <div style={styles.detailWrap}>
               <div style={styles.cardDetail}>
-                <WandersCardDetail card={selectedItem?.card ?? selectedItem} />
+                <WandersCardDetail card={selectedCardForDetail} />
                 <div style={{ marginTop: 12 }}>
                   <div style={styles.sectionTitle}>Replies</div>
                   {repliesLoading ? (
                     <div className="py-6 text-center text-sm text-gray-500">Loading replies…</div>
                   ) : (
-                    <WandersRepliesList replies={normalizedReplyItems} />
+                    <WandersRepliesList
+                      replies={normalizedReplyItems}
+                      currentAnonId={selectedItem?.owner_anon_id || selectedItem?.ownerAnonId || null}
+                      labelMode="fully-neutral"
+                    />
                   )}
                 </div>
               </div>
@@ -233,7 +335,9 @@ export default function WandersOutboxScreen() {
 const styles = {
   page: {
     width: "100%",
-    minHeight: "100%",
+    height: "100dvh",
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
     boxSizing: "border-box",
     padding: 12,
   },
@@ -248,6 +352,7 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: 12,
+    alignItems: "start",
   },
   left: {
     borderRadius: 14,
@@ -285,12 +390,3 @@ const styles = {
     padding: 10,
   },
 };
-
-if (typeof window !== "undefined") {
-  const applyResponsive = () => {
-    const isWide = window.innerWidth >= 980;
-    styles.split.gridTemplateColumns = isWide ? "0.95fr 1.35fr" : "1fr";
-  };
-  applyResponsive();
-  window.addEventListener("resize", applyResponsive);
-}

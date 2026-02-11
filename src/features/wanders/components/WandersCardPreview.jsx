@@ -77,7 +77,6 @@ function safeParseJson(value) {
   return null;
 }
 
-
 function findTemplateById(templateId) {
   const id = String(templateId || "").trim();
   if (!id) return null;
@@ -116,7 +115,7 @@ function toTemplateData({ templateKey, isAnonymous, customization, messageText, 
     // ✅ Photo: support all variants you are saving
     data.imageUrl =
       customization.imageUrl ??
-      customization.image_url ??      // <-- your DB row uses this
+      customization.image_url ?? // <-- your DB row uses this
       customization.imageURL ??
       null;
 
@@ -128,7 +127,6 @@ function toTemplateData({ templateKey, isAnonymous, customization, messageText, 
 
   return data;
 }
-
 
 /**
  * WandersCardPreview
@@ -168,8 +166,18 @@ export function WandersCardPreview({
       c?.is_anonymous ??
       false;
 
-    const pCustomizationRaw = p?.customization ?? p?.customization_json ?? null;
-    const cCustomizationRaw = c?.customization ?? c?.customization_json ?? null;
+    // ✅ FIX: support customizationJson too (payload + card)
+    const pCustomizationRaw =
+      p?.customization ??
+      p?.customization_json ??
+      p?.customizationJson ??
+      null;
+
+    const cCustomizationRaw =
+      c?.customization ??
+      c?.customization_json ??
+      c?.customizationJson ??
+      null;
 
     const pCustomization = safeParseJson(pCustomizationRaw) ?? pCustomizationRaw ?? {};
     const cCustomization = safeParseJson(cCustomizationRaw) ?? cCustomizationRaw ?? {};
@@ -270,9 +278,7 @@ export function WandersCardPreview({
   const messageTextClass = isMystery ? "text-white" : "text-gray-900";
 
   return (
-    <div
-      className={["relative overflow-hidden rounded-xl border shadow-sm", styles.wrapper, className].join(" ")}
-    >
+    <div className={["relative overflow-hidden rounded-xl border shadow-sm", styles.wrapper, className].join(" ")}>
       {bgImage ? <img src={bgImage} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
 
       {bgImage ? (

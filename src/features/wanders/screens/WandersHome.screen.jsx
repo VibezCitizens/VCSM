@@ -88,77 +88,125 @@ export default function WandersHomeScreen() {
   }
 
   return (
-    <div className="relative h-screen w-full overflow-y-auto touch-pan-y bg-black text-white">
+    <div className="relative min-h-screen w-full overflow-y-auto touch-pan-y bg-black text-white">
+      {/* neutral modern background */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_200px_at_50%_-80px,rgba(168,85,247,0.15),transparent)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_360px_at_50%_-140px,rgba(255,255,255,0.10),transparent)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_260px_at_15%_0%,rgba(148,163,184,0.14),transparent)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(650px_240px_at_85%_0%,rgba(203,213,225,0.10),transparent)]"
       />
 
       <header className="sticky top-0 z-20 border-b border-white/10 bg-black/70 backdrop-blur">
         <div className="mx-auto w-full max-w-4xl px-4">
-          <div className="py-3">
-            <h1 className="text-lg font-bold tracking-wide">Wanders</h1>
-            <p className="mt-1 text-sm text-zinc-300">Create a card, or open an inbox link.</p>
+          <div className="py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h1 className="text-lg font-bold tracking-wide">Wanders</h1>
+                <p className="mt-1 text-sm text-zinc-300">
+                  Simple cards and anonymous replies — fast, private, and clean.
+                </p>
+              </div>
+
+              <div className="hidden sm:block rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-200">
+                Neutral • Mobile-first
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="relative mx-auto w-full max-w-4xl px-4 pb-24 pt-6">
+      <main className="relative mx-auto w-full max-w-4xl px-4 pb-28 pt-6">
         <div className="grid gap-4">
-          {/* Primary actions */}
-          <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
-            <div className="text-sm font-semibold">Start</div>
-            <div className="mt-1 text-sm text-gray-700">Create your first card or manage your mailbox.</div>
+          {/* HERO / PRIMARY CTA */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-white">Start</div>
+                <div className="mt-1 text-sm text-zinc-300">
+                  Create a card in seconds or open your mailbox.
+                </div>
+              </div>
 
-            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
+              <div className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-zinc-200">
+                💌
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-2">
+              {/* PRIMARY */}
               <button
                 type="button"
                 onClick={goCreate}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-100 active:scale-[0.99]"
+                className="w-full rounded-xl border border-white/10 bg-white px-4 py-3 text-sm font-semibold text-black shadow-sm hover:bg-zinc-100 active:scale-[0.99]"
               >
                 Create a card
               </button>
 
+              {/* SECONDARY */}
               <button
                 type="button"
                 onClick={goMailbox}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-100 active:scale-[0.99]"
+                className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/15 active:scale-[0.99]"
               >
                 Open mailbox
               </button>
             </div>
+
+            <div className="mt-3 flex flex-wrap gap-2 text-xs text-zinc-300">
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1">
+                🔒 Guest-safe
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1">
+                🕊️ Anonymous-friendly
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1">
+                ⚡ Mobile-first
+              </span>
+            </div>
           </div>
 
-          {/* Open public inbox */}
-          <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
-            <div className="text-sm font-semibold">Open an inbox link</div>
-            <div className="mt-1 text-sm text-gray-700">Paste a public inbox link or id.</div>
+          {/* OPEN PUBLIC INBOX */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-white">Open an inbox</div>
+                <div className="mt-1 text-sm text-zinc-300">Paste an inbox link or just the id.</div>
+              </div>
+              <div className="text-xs text-zinc-400">Shareable</div>
+            </div>
 
-            <div className="mt-4 grid gap-2 sm:flex sm:items-center">
+            <div className="mt-4 grid gap-2">
               <input
                 value={publicInboxIdOrUrl}
                 onChange={(e) => setPublicInboxIdOrUrl(e.target.value)}
                 placeholder="Paste /wanders/i/:publicId or just :publicId"
                 onKeyDown={onKeyDown}
-                className="w-full flex-1 rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
 
               <button
                 type="button"
                 onClick={goPublicInbox}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-100 active:scale-[0.99]"
+                className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/15 active:scale-[0.99]"
               >
-                Go
+                Open inbox
               </button>
             </div>
 
-            <div className="mt-2 text-xs text-gray-600">
-              Example: <span className="font-mono">/wanders/i/abc123</span>
+            <div className="mt-2 text-xs text-zinc-400">
+              Example: <span className="font-mono text-zinc-300">/wanders/i/abc123</span>
             </div>
           </div>
 
-          <div className="text-xs text-zinc-400">
-            Tip: After you create a card, you’ll see the full dashboard on the “sent” screen.
+          <div className="text-xs text-zinc-500">
+            Tip: After you create a card, you’ll see the dashboard on the “sent” screen.
           </div>
         </div>
       </main>

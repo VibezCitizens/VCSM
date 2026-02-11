@@ -1,4 +1,4 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\functions\wanders\i\[publicId].js
+// C:\Users\trest\OneDrive\Desktop\VCSM\functions\wanders\c\[publicId].js
 export async function onRequest(context) {
   const { request, params, env } = context;
 
@@ -6,14 +6,14 @@ export async function onRequest(context) {
   const url = new URL(request.url);
 
   const ORIGIN = url.origin;
-  const CANONICAL = `${ORIGIN}/wanders/i/${publicId}`;
+  const CANONICAL = `${ORIGIN}/wanders/c/${publicId}`;
 
-  // Must exist at:
+  // Reuse your existing static OG image:
   // C:\Users\trest\OneDrive\Desktop\VCSM\public\og\wanders-envelope.jpeg
   const IMAGE = `${ORIGIN}/og/wanders-envelope.jpeg`;
 
-  const TITLE = "Wanders Inbox — Send me a card 💌";
-  const DESC = "Open this inbox to send an anonymous Wanders card.";
+  const TITLE = "Wanders Card 💌";
+  const DESC = "Open this Wanders card and reply anonymously.";
 
   const indexRes = await env.ASSETS.fetch(new Request("https://dummy/index.html"));
   if (!indexRes || indexRes.status !== 200) {

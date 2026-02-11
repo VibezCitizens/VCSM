@@ -47,10 +47,22 @@ export function toWandersMailboxItem(row) {
   // Some DALs join cards; support common shapes:
   const card = row.card ?? row.cards ?? row.card_row ?? null;
 
+  // ✅ IMPORTANT: support all customization shapes (including customizationJson)
   const cardCustomizationRaw =
-    card?.customization ?? card?.customization_json ?? row?.customization ?? row?.customization_json ?? null;
+    card?.customization ??
+    card?.customization_json ??
+    card?.customizationJson ??
+    row?.customization ??
+    row?.customization_json ??
+    row?.customizationJson ??
+    null;
 
   const customizationParsed = safeParseJson(cardCustomizationRaw) ?? cardCustomizationRaw ?? {};
+  const customization =
+    customizationParsed && typeof customizationParsed === "object" ? customizationParsed : {};
+
+  // ✅ normalize template key (provide both shapes)
+  const templateKey = card?.template_key ?? card?.templateKey ?? null;
 
   return {
     // mailbox_items fields
@@ -59,6 +71,9 @@ export function toWandersMailboxItem(row) {
 
     ownerActorId: row.owner_actor_id ?? row.ownerActorId ?? null,
     ownerAnonId: row.owner_anon_id ?? row.ownerAnonId ?? null,
+
+    // ✅ user-based mailbox support (your new core flow)
+    ownerUserId: row.owner_user_id ?? row.ownerUserId ?? null,
 
     ownerRole: row.owner_role ?? row.ownerRole ?? null,
     folder: row.folder ?? null,
@@ -84,6 +99,11 @@ export function toWandersMailboxItem(row) {
           expiresAt: card.expires_at ?? card.expiresAt ?? null,
 
           senderActorId: card.sender_actor_id ?? card.senderActorId ?? null,
+
+          // ✅ user-based sender/recipient ids (your new flow)
+          senderUserId: card.sender_user_id ?? card.senderUserId ?? null,
+          recipientUserId: card.recipient_user_id ?? card.recipientUserId ?? null,
+
           senderAnonId: card.sender_anon_id ?? card.senderAnonId ?? null,
           recipientActorId: card.recipient_actor_id ?? card.recipientActorId ?? null,
           recipientAnonId: card.recipient_anon_id ?? card.recipientAnonId ?? null,
@@ -99,8 +119,12 @@ export function toWandersMailboxItem(row) {
           messageNonce: card.message_nonce ?? card.messageNonce ?? null,
           messageAlg: card.message_alg ?? card.messageAlg ?? null,
 
-          templateKey: card.template_key ?? card.templateKey ?? null,
-          customization: customizationParsed && typeof customizationParsed === "object" ? customizationParsed : {},
+          // ✅ provide both for preview/template lookup
+          templateKey,
+          template_key: templateKey,
+
+          // ✅ parsed object always (so photo preview can read image_url / imageUrl)
+          customization,
 
           openedAt: card.opened_at ?? card.openedAt ?? null,
           lastOpenedAt: card.last_opened_at ?? card.lastOpenedAt ?? null,

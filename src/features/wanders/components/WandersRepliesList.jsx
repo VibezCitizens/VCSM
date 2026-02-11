@@ -20,6 +20,7 @@ import React from 'react'
  *  }>,
  *  currentActorId?: string | null,
  *  currentAnonId?: string | null,
+ *  labelMode?: 'classic' | 'neutral' | 'fully-neutral',
  *  emptyComponent?: React.ReactNode,
  *  className?: string,
  * }} props
@@ -28,6 +29,7 @@ export function WandersRepliesList({
   replies = [],
   currentActorId = null,
   currentAnonId = null,
+  labelMode = 'classic',
   emptyComponent = null,
   className = '',
 }) {
@@ -37,6 +39,12 @@ export function WandersRepliesList({
         No replies yet.
       </div>
     )
+  }
+
+  const getLabel = (isOwn) => {
+    if (labelMode === 'fully-neutral') return 'Message'
+    if (labelMode === 'neutral') return isOwn ? 'You' : 'Reply'
+    return isOwn ? 'You' : 'Them'
   }
 
   return (
@@ -75,7 +83,7 @@ export function WandersRepliesList({
 
             {/* META */}
             <div className="mt-1 text-[11px] opacity-60">
-              {isOwn ? 'You' : 'Them'}
+              {getLabel(isOwn)}
               {createdAt ? ` • ${createdAt}` : ''}
             </div>
           </div>
