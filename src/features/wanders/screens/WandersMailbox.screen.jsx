@@ -16,7 +16,6 @@ import WandersReplyComposer from "../components/WandersReplyComposer";
 import WandersEmptyState from "../components/WandersEmptyState";
 import WandersLoading from "../components/WandersLoading";
 
-// ✅ CORE controller
 import { createReplyAsAnon } from "@/features/wanders/core/controllers/replies.controller";
 
 function useQuery() {
@@ -38,7 +37,6 @@ function safeParseJson(value) {
   let s = value.trim();
   if (!s) return null;
 
-  // unwrap up to 2 layers for double-encoded JSON
   for (let i = 0; i < 2; i++) {
     try {
       const parsed = JSON.parse(s);
@@ -64,7 +62,6 @@ export default function WandersMailboxScreen() {
   const query = useQuery();
   const mode = query.get("mode");
 
-  // ✅ Guest auth (auth.users.id)
   const { ensureUser } = useWandersGuest({ auto: true });
 
   const [folder, setFolder] = useState(() => resolveInitialFolder(mode));
@@ -89,7 +86,6 @@ export default function WandersMailboxScreen() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ Ensure auth user exists (anonymous sign-in) so RLS auth.uid() works
   useEffect(() => {
     (async () => {
       try {
@@ -107,7 +103,6 @@ export default function WandersMailboxScreen() {
     setReplyError(null);
   }, [mode]);
 
-  // ✅ CORE mailbox (user-based)
   const mailbox = useWandersMailbox({ auto: false, folder, ownerRole: null, limit: 50 });
   const { items, loading, error, refresh, markRead } = mailbox || {};
 
@@ -162,17 +157,14 @@ export default function WandersMailboxScreen() {
     return selectedItem.card_id || selectedItem.cardId || selectedItem.card?.id || null;
   }, [selectedItem]);
 
-  // OPTIONAL: quick debug (remove after)
   useEffect(() => {
     if (!selectedItem) return;
     console.log("[Mailbox] selectedItem.card =", selectedItem?.card);
   }, [selectedItem]);
 
-  // ✅ Build a normalized card object for detail/preview rendering
   const selectedCardForDetail = useMemo(() => {
     if (!selectedItem) return null;
 
-    // ✅ IMPORTANT: do NOT fall back to selectedItem (mailbox row has no template/customization)
     const rawCard = selectedItem?.card ?? null;
     if (!rawCard) return null;
 
@@ -188,7 +180,6 @@ export default function WandersMailboxScreen() {
 
     const templateKey = rawCard?.templateKey ?? rawCard?.template_key ?? "";
 
-    // ✅ Photo template preview reads ONLY from customization.imageUrl / image_url
     if (String(templateKey).startsWith("photo.")) {
       const imageUrl =
         customization?.imageUrl ??
@@ -230,7 +221,6 @@ export default function WandersMailboxScreen() {
     };
   }, [selectedItem]);
 
-  // ✅ Replies (core user-based)
   const replies = useWandersReplies({ cardId: selectedCardId, auto: false, limit: 200 });
   const replyItems = replies?.replies;
   const repliesLoading = replies?.loading;
@@ -364,81 +354,96 @@ export default function WandersMailboxScreen() {
   }
 
   return (
-    <div className="wanders-mailbox" style={styles.page}>
-      <div style={styles.toolbar}>
-        <WandersMailboxToolbar {...toolbarProps} />
-      </div>
+    <div style={styles.pageOuter}>
+      {/* Background glow */}
+      <div style={styles.bgGlow} aria-hidden />
 
-      <div style={splitStyle}>
-        <div style={styles.left}>
-          {filteredItems.length ? (
-            <WandersMailboxList
-              items={filteredItems}
-              loading={false}
-              onItemClick={onItemClick}
-              selectedItemId={selectedId}
-              empty={
-                <WandersEmptyState
-                  title="No messages"
-                  subtitle={search ? "No items match your search." : "Your mailbox is empty in this folder."}
-                />
-              }
-            />
-          ) : (
-            <WandersEmptyState
-              title="No messages"
-              subtitle={search ? "No items match your search." : "Your mailbox is empty in this folder."}
-            />
-          )}
+      <div style={styles.page}>
+        <div style={styles.toolbar}>
+          <WandersMailboxToolbar {...toolbarProps} />
         </div>
 
-        <div style={styles.right}>
-          {!selectedItem ? (
-            <WandersEmptyState title="Select a message" subtitle="Choose an item to view it." />
-          ) : !selectedCardForDetail ? (
-            <WandersEmptyState
-              title="Card unavailable"
-              subtitle="This item loaded, but its card preview is not accessible (embed card is missing)."
-            />
-          ) : (
-            <div style={styles.detailWrap}>
-              <div style={styles.cardDetail}>
-                <WandersCardDetail
-                  card={selectedCardForDetail}
-                  replies={
-                    <div>
-                      <div style={styles.sectionTitle}>Replies</div>
+        <div style={splitStyle}>
+          {/* LEFT LIST */}
+          <div style={styles.panel}>
+            <div style={styles.glowTL} aria-hidden />
+            <div style={styles.glowBR} aria-hidden />
 
-                      {repliesLoading ? (
-                        <div className="py-6 text-center text-sm text-gray-500">Loading replies…</div>
-                      ) : (
-                        <WandersRepliesList
-                          replies={normalizedReplyItems}
-                          currentAnonId={selectedItem?.owner_anon_id || selectedItem?.ownerAnonId || null}
-                          labelMode="fully-neutral"
-                        />
-                      )}
-                    </div>
-                  }
+            {filteredItems.length ? (
+              <WandersMailboxList
+                items={filteredItems}
+                loading={false}
+                onItemClick={onItemClick}
+                selectedItemId={selectedId}
+                empty={
+                  <WandersEmptyState
+                    title="No messages"
+                    subtitle={search ? "No items match your search." : "Your mailbox is empty in this folder."}
+                  />
+                }
+              />
+            ) : (
+              <WandersEmptyState
+                title="No messages"
+                subtitle={search ? "No items match your search." : "Your mailbox is empty in this folder."}
+              />
+            )}
+          </div>
+
+          {/* RIGHT DETAIL */}
+          <div style={styles.panel}>
+            <div style={styles.glowTL} aria-hidden />
+            <div style={styles.glowBR} aria-hidden />
+
+            {!selectedItem ? (
+              <div style={styles.detailWrap}>
+                <WandersEmptyState title="Select a message" subtitle="Choose an item to view it." />
+              </div>
+            ) : !selectedCardForDetail ? (
+              <div style={styles.detailWrap}>
+                <WandersEmptyState
+                  title="Card unavailable"
+                  subtitle="This item loaded, but its card preview is not accessible (embed card is missing)."
                 />
               </div>
+            ) : (
+              <div style={styles.detailWrap}>
+                <div style={styles.subPanel}>
+                  <WandersCardDetail
+                    card={selectedCardForDetail}
+                    replies={
+                      <div>
+                        <div style={styles.sectionTitle}>Replies</div>
 
-              <div style={styles.composer}>
-                {replyError ? (
-                  <div className="mb-2 text-sm font-semibold text-red-600">{replyError}</div>
-                ) : null}
+                        {repliesLoading ? (
+                          <div style={styles.loadingText}>Loading replies…</div>
+                        ) : (
+                          <WandersRepliesList
+                            replies={normalizedReplyItems}
+                            currentAnonId={selectedItem?.owner_anon_id || selectedItem?.ownerAnonId || null}
+                            labelMode="fully-neutral"
+                          />
+                        )}
+                      </div>
+                    }
+                  />
+                </div>
 
-                <WandersReplyComposer
-                  onSubmit={handleReplySubmit}
-                  onSent={handleReplySent}
-                  loading={replySending}
-                  disabled={!selectedCardId}
-                  placeholder="Write a reply…"
-                  buttonLabel="Send"
-                />
+                <div style={styles.subPanel}>
+                  {replyError ? <div style={styles.replyError}>{replyError}</div> : null}
+
+                  <WandersReplyComposer
+                    onSubmit={handleReplySubmit}
+                    onSent={handleReplySent}
+                    loading={replySending}
+                    disabled={!selectedCardId}
+                    placeholder="Write a reply…"
+                    buttonLabel="Send"
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -446,14 +451,33 @@ export default function WandersMailboxScreen() {
 }
 
 const styles = {
-  page: {
+  pageOuter: {
+    position: "relative",
+    minHeight: "100dvh",
     width: "100%",
-    height: "100dvh",
+    background: "#000",
+    color: "#fff",
     overflowY: "auto",
     WebkitOverflowScrolling: "touch",
+  },
+
+  // same “Sent” background glow, but in CSS
+  bgGlow: {
+    pointerEvents: "none",
+    position: "absolute",
+    inset: 0,
+    background:
+      "radial-gradient(600px 200px at 50% -80px, rgba(168, 85, 247, 0.15), transparent)",
+  },
+
+  page: {
+    position: "relative",
+    width: "100%",
+    minHeight: "100dvh",
     boxSizing: "border-box",
     padding: 12,
   },
+
   toolbar: {
     position: "sticky",
     top: 0,
@@ -461,45 +485,88 @@ const styles = {
     paddingBottom: 10,
     background: "transparent",
   },
+
   split: {
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: 12,
     alignItems: "start",
   },
-  left: {
-    borderRadius: 14,
-    border: "1px solid rgba(0,0,0,0.08)",
+
+  // ✅ Main glass panel (matches Sent theme)
+  panel: {
+    position: "relative",
     overflow: "hidden",
+    borderRadius: 16,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(0,0,0,0.55)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    boxShadow:
+      "0 16px 40px rgba(0,0,0,0.55), 0 0 36px rgba(124,58,237,0.10)",
     minHeight: 280,
   },
-  right: {
-    borderRadius: 14,
-    border: "1px solid rgba(0,0,0,0.08)",
-    minHeight: 280,
-    overflow: "hidden",
+
+  glowTL: {
+    pointerEvents: "none",
+    position: "absolute",
+    top: -64,
+    left: -64,
+    width: 224,
+    height: 224,
+    borderRadius: 9999,
+    background: "rgba(124,58,237,0.10)",
+    filter: "blur(48px)",
   },
+
+  glowBR: {
+    pointerEvents: "none",
+    position: "absolute",
+    right: -80,
+    bottom: -80,
+    width: 288,
+    height: 288,
+    borderRadius: 9999,
+    background: "rgba(217,70,239,0.08)",
+    filter: "blur(56px)",
+  },
+
   detailWrap: {
+    position: "relative",
     padding: 12,
     display: "flex",
     flexDirection: "column",
     gap: 12,
     boxSizing: "border-box",
   },
-  cardDetail: {
-    borderRadius: 12,
-    border: "1px solid rgba(0,0,0,0.08)",
+
+  // ✅ Inner “content” panel (soft black inside big glass panel)
+  subPanel: {
+    borderRadius: 14,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(0,0,0,0.30)",
     padding: 10,
-    background: "rgba(0,0,0,0.02)",
+    boxSizing: "border-box",
   },
+
   sectionTitle: {
     fontSize: 13,
     fontWeight: 700,
     marginBottom: 10,
+    color: "rgba(255,255,255,0.80)",
   },
-  composer: {
-    borderRadius: 12,
-    border: "1px solid rgba(0,0,0,0.08)",
-    padding: 10,
+
+  loadingText: {
+    padding: "24px 0",
+    textAlign: "center",
+    fontSize: 14,
+    color: "rgba(255,255,255,0.55)",
+  },
+
+  replyError: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: 700,
+    color: "rgba(252,165,165,0.95)", // red-300-ish
   },
 };

@@ -1,9 +1,3 @@
-// @RefactorBatch: 2025-11
-// @Touched: 2025-11-21
-// @Status: FULLY MIGRATED
-// @Scope: Architecture rewrite
-// @Note: Do NOT remove, rename, or modify this block.
-
 import { useState } from 'react'
 import { signInWithPassword } from '@/features/auth/adapter/auth.adapter'
 import { ensureProfileDiscoverable } from '@/features/auth/controllers/profile.controller'
@@ -45,6 +39,23 @@ export function useLogin(navigate, location) {
         await ensureProfileDiscoverable(data.user.id)
       }
 
+      // ✅ 3.5) Wanders guest-claim (ONLY when coming from WandersShareVCSM)
+      const clientKey =
+        typeof location?.state?.wandersClientKey === 'string'
+          ? location.state.wandersClientKey
+          : null
+
+      if (data?.user?.id && clientKey) {
+        try {
+          await supabase.rpc('claim_guest_mailbox', {
+            p_client_key: clientKey,
+          })
+        } catch (claimErr) {
+          // fail open: do not block login
+          console.warn('[Wanders claim] failed', claimErr)
+        }
+      }
+
       // 4) Navigate
       const from = location.state?.from?.pathname
       const dest =
@@ -53,8 +64,10 @@ export function useLogin(navigate, location) {
           : '/feed'
 
       navigate(dest, { replace: true })
+      return true
     } catch (err) {
       setError(err?.message || 'Login failed')
+      return false
     } finally {
       setLoading(false)
     }

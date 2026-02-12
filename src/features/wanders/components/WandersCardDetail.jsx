@@ -5,8 +5,8 @@
 // No DAL, no controllers, no business rules.
 // ============================================================================
 
-import React, { useMemo } from 'react'
-import WandersCardPreview from '@/features/wanders/components/WandersCardPreview'
+import React, { useMemo } from "react";
+import WandersCardPreview from "@/features/wanders/components/WandersCardPreview";
 
 /**
  * @param {{
@@ -16,17 +16,12 @@ import WandersCardPreview from '@/features/wanders/components/WandersCardPreview
  *   className?: string,
  * }} props
  */
-export function WandersCardDetail({
-  card,
-  replies = null,
-  actions = null,
-  className = '',
-}) {
+export function WandersCardDetail({ card, replies = null, actions = null, className = "" }) {
   const meta = useMemo(() => {
-    if (!card) return null
+    if (!card) return null;
 
-    const sentAt = card?.sentAt ?? card?.sent_at ?? null
-    const createdAt = card?.createdAt ?? card?.created_at ?? null
+    const sentAt = card?.sentAt ?? card?.sent_at ?? null;
+    const createdAt = card?.createdAt ?? card?.created_at ?? null;
 
     // ✅ Prefer last_opened_at when present (your DB uses it)
     const openedAt =
@@ -34,24 +29,22 @@ export function WandersCardDetail({
       card?.last_opened_at ??
       card?.openedAt ??
       card?.opened_at ??
-      null
+      null;
 
     // ✅ open_count sometimes arrives as string from PostgREST — normalize
-    const rawOpenCount = card?.openCount ?? card?.open_count ?? 0
-    const openCount = Number.isFinite(Number(rawOpenCount))
-      ? Number(rawOpenCount)
-      : 0
+    const rawOpenCount = card?.openCount ?? card?.open_count ?? 0;
+    const openCount = Number.isFinite(Number(rawOpenCount)) ? Number(rawOpenCount) : 0;
 
-    const status = card?.status ?? 'draft'
+    const status = card?.status ?? "draft";
 
     const formatDate = (v) => {
-      if (!v) return null
+      if (!v) return null;
       try {
-        return new Date(v).toLocaleString()
+        return new Date(v).toLocaleString();
       } catch {
-        return null
+        return null;
       }
-    }
+    };
 
     return {
       status,
@@ -59,19 +52,19 @@ export function WandersCardDetail({
       sentAtLabel: formatDate(sentAt),
       openedAtLabel: formatDate(openedAt),
       openCount,
-    }
-  }, [card])
+    };
+  }, [card]);
 
   const normalizedCard = useMemo(() => {
-    if (!card) return card
+    if (!card) return card;
 
     // Parse customization if it arrived as JSON string
-    let customization = card?.customization ?? null
-    if (typeof customization === 'string') {
+    let customization = card?.customization ?? null;
+    if (typeof customization === "string") {
       try {
-        customization = JSON.parse(customization)
+        customization = JSON.parse(customization);
       } catch {
-        customization = null
+        customization = null;
       }
     }
 
@@ -90,75 +83,176 @@ export function WandersCardDetail({
       fromName: card?.fromName ?? customization?.fromName ?? customization?.from_name,
 
       customization: customization ?? {},
-    }
-  }, [card])
+    };
+  }, [card]);
+
+  // ✅ Sent theme styles (NO tailwind dependency)
+  const styles = {
+    empty: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 16,
+      border: "1px solid rgba(255,255,255,0.10)",
+      background: "rgba(0,0,0,0.40)",
+      color: "rgba(255,255,255,0.65)",
+      padding: 32,
+      fontSize: 13,
+      fontWeight: 700,
+      boxShadow: "0 10px 26px rgba(0,0,0,0.55)",
+      boxSizing: "border-box",
+    },
+
+    box: {
+      position: "relative",
+      width: "100%",
+      borderRadius: 16,
+      border: "1px solid rgba(255,255,255,0.10)",
+      background: "rgba(0,0,0,0.55)",
+      color: "#fff",
+      padding: 16,
+      boxSizing: "border-box",
+      overflow: "hidden",
+      backdropFilter: "blur(16px)",
+      WebkitBackdropFilter: "blur(16px)",
+      boxShadow: "0 16px 40px rgba(0,0,0,0.55), 0 0 36px rgba(124,58,237,0.10)",
+    },
+
+    glowTL: {
+      pointerEvents: "none",
+      position: "absolute",
+      top: -64,
+      left: -64,
+      width: 224,
+      height: 224,
+      borderRadius: 9999,
+      background: "rgba(139,92,246,0.10)",
+      filter: "blur(48px)",
+    },
+
+    glowBR: {
+      pointerEvents: "none",
+      position: "absolute",
+      right: -80,
+      bottom: -80,
+      width: 288,
+      height: 288,
+      borderRadius: 9999,
+      background: "rgba(217,70,239,0.08)",
+      filter: "blur(56px)",
+    },
+
+    inner: {
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      gap: 14,
+    },
+
+    metaGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      columnGap: 12,
+      rowGap: 10,
+      fontSize: 12,
+      color: "rgba(255,255,255,0.65)",
+    },
+
+    metaLabel: {
+      fontSize: 11,
+      fontWeight: 800,
+      opacity: 0.65,
+      letterSpacing: "0.01em",
+      marginBottom: 4,
+    },
+
+    metaValueStrong: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: "rgba(255,255,255,0.92)",
+    },
+
+    metaValue: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "rgba(255,255,255,0.86)",
+    },
+
+    actions: { paddingTop: 6 },
+
+    replies: {
+      paddingTop: 12,
+      borderTop: "1px solid rgba(255,255,255,0.10)",
+    },
+  };
+
+  // small responsive bump (2 -> 4 columns) without tailwind
+  const isWide = typeof window !== "undefined" ? window.innerWidth >= 640 : false;
+  const metaGridStyle = isWide
+    ? { ...styles.metaGrid, gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }
+    : styles.metaGrid;
 
   if (!card) {
     return (
-      <div
-        className={[
-          'flex items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-sm text-gray-500',
-          className,
-        ].join(' ')}
-      >
+      <div className={className} style={styles.empty}>
         No card selected.
       </div>
-    )
+    );
   }
 
   return (
-    <div
-      className={[
-        'w-full space-y-4 rounded-2xl border border-gray-200 bg-white p-4 md:p-5',
-        className,
-      ].join(' ')}
-    >
-      {/* CARD PREVIEW */}
-      <WandersCardPreview card={normalizedCard} />
+    <div className={className} style={styles.box}>
+      <div aria-hidden style={styles.glowTL} />
+      <div aria-hidden style={styles.glowBR} />
 
-      {/* META */}
-      {meta && (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-gray-500 sm:grid-cols-4">
-          <div>
-            <div className="opacity-60">Status</div>
-            <div className="font-semibold text-gray-800">{meta.status}</div>
+      <div style={styles.inner}>
+        {/* CARD PREVIEW */}
+        <WandersCardPreview card={normalizedCard} />
+
+        {/* META */}
+        {meta && (
+          <div style={metaGridStyle}>
+            <div>
+              <div style={styles.metaLabel}>Status</div>
+              <div style={styles.metaValueStrong}>{meta.status}</div>
+            </div>
+
+            {meta.createdAtLabel ? (
+              <div>
+                <div style={styles.metaLabel}>Created</div>
+                <div style={styles.metaValue}>{meta.createdAtLabel}</div>
+              </div>
+            ) : null}
+
+            {meta.sentAtLabel ? (
+              <div>
+                <div style={styles.metaLabel}>Sent</div>
+                <div style={styles.metaValue}>{meta.sentAtLabel}</div>
+              </div>
+            ) : null}
+
+            {meta.openedAtLabel ? (
+              <div>
+                <div style={styles.metaLabel}>Last opened</div>
+                <div style={styles.metaValue}>{meta.openedAtLabel}</div>
+              </div>
+            ) : null}
+
+            <div>
+              <div style={styles.metaLabel}>Opens</div>
+              <div style={styles.metaValue}>{meta.openCount}</div>
+            </div>
           </div>
+        )}
 
-          {meta.createdAtLabel && (
-            <div>
-              <div className="opacity-60">Created</div>
-              <div className="font-medium text-gray-800">{meta.createdAtLabel}</div>
-            </div>
-          )}
+        {/* ACTION SLOT */}
+        {actions ? <div style={styles.actions}>{actions}</div> : null}
 
-          {meta.sentAtLabel && (
-            <div>
-              <div className="opacity-60">Sent</div>
-              <div className="font-medium text-gray-800">{meta.sentAtLabel}</div>
-            </div>
-          )}
-
-          {meta.openedAtLabel && (
-            <div>
-              <div className="opacity-60">Last opened</div>
-              <div className="font-medium text-gray-800">{meta.openedAtLabel}</div>
-            </div>
-          )}
-
-          <div>
-            <div className="opacity-60">Opens</div>
-            <div className="font-medium text-gray-800">{meta.openCount}</div>
-          </div>
-        </div>
-      )}
-
-      {/* ACTION SLOT */}
-      {actions ? <div className="pt-2">{actions}</div> : null}
-
-      {/* REPLIES SLOT */}
-      {replies ? <div className="pt-2 border-t border-gray-100">{replies}</div> : null}
+        {/* REPLIES SLOT */}
+        {replies ? <div style={styles.replies}>{replies}</div> : null}
+      </div>
     </div>
-  )
+  );
 }
 
-export default WandersCardDetail
+export default WandersCardDetail;

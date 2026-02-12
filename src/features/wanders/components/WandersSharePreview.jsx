@@ -15,16 +15,38 @@ export default function WandersSharePreview({
 }) {
   const navigate = useNavigate();
 
-  // ✅ same style contract as templates (fallback defaults match valentinesRomanticTemplate)
-  const label =
-    ui?.labelBase || "block text-sm font-medium text-gray-800 mb-1.5";
+  const label = ui?.labelBase || "block text-sm font-medium text-white/80 mb-1.5";
+
   const input =
     ui?.inputBase ||
-    "w-full rounded-xl border bg-gray-100 px-3.5 py-2.5 text-[15px] leading-6 shadow-sm border-gray-300 text-gray-900 placeholder:text-gray-500 transition duration-150 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 focus:bg-gray-100";
+    "w-full rounded-xl border bg-black/30 px-3.5 py-2.5 text-[15px] leading-6 shadow-sm border-white/10 text-white placeholder:text-white/40 transition duration-150 focus:outline-none focus:ring-2 focus:ring-white/15 focus:border-white/20";
+
   const textarea = ui?.textareaBase || `${input} resize-none`;
+
+  // ✅ Match the new "more visual" button style (same vibe as Sent screen)
   const button =
     ui?.buttonBase ||
-    "w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 transition duration-150 hover:bg-gray-50 active:scale-[0.99]";
+    [
+      "relative overflow-hidden",
+      "w-full sm:w-auto",
+      "rounded-xl",
+      "bg-zinc-900/90",
+      "border border-white/15",
+      "px-4 py-2.5",
+      "text-sm font-semibold text-white",
+      "shadow-[0_10px_26px_rgba(0,0,0,0.75)]",
+      "transition",
+      "hover:bg-zinc-900 hover:border-white/25",
+      "hover:shadow-[0_14px_34px_rgba(0,0,0,0.78),0_0_26px_rgba(124,58,237,0.22)]",
+      "active:scale-[0.99]",
+      "focus:outline-none focus:ring-2 focus:ring-violet-500/35 focus:ring-offset-0",
+    ].join(" ");
+
+  // ✅ Same sheen/inner ring layers used in Sent screen buttons
+  const btnSheen =
+    "pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent_55%)]";
+  const btnInnerRing =
+    "pointer-events-none absolute inset-0 rounded-xl ring-1 ring-white/10";
 
   const resolvedBaseUrl = useMemo(() => {
     if (baseUrl) return baseUrl;
@@ -67,15 +89,11 @@ export default function WandersSharePreview({
     } catch {}
   };
 
-  // ✅ Normalize whatever the DB card shape is into the preview/draft shape
   const draftPayload = useMemo(() => {
     if (!card) return null;
 
     const customization =
-      card?.customization ??
-      card?.payload?.customization ??
-      card?.meta?.customization ??
-      {};
+      card?.customization ?? card?.payload?.customization ?? card?.meta?.customization ?? {};
 
     const templateKey =
       card?.template_key ??
@@ -133,66 +151,101 @@ export default function WandersSharePreview({
     };
   }, [card]);
 
+  const boxBase =
+    "relative overflow-hidden rounded-2xl border border-white/10 bg-black/55 p-4 text-white backdrop-blur-xl " +
+    "shadow-[0_16px_40px_rgba(0,0,0,0.55),0_0_36px_rgba(124,58,237,0.10)]";
+
+  const glowTL =
+    "pointer-events-none absolute -top-16 -left-16 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl";
+  const glowBR =
+    "pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-fuchsia-500/08 blur-3xl";
+
   return (
     <div className={["grid gap-4 md:grid-cols-2", className].join(" ")}>
       {/* PREVIEW */}
-      <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
-        <div className="mb-3 text-sm font-semibold text-gray-900">Preview</div>
-        <WandersCardPreview card={card} draftPayload={draftPayload} />
+      <div className={boxBase}>
+        <div aria-hidden="true" className={glowTL} />
+        <div aria-hidden="true" className={glowBR} />
+        <div className="relative">
+          <div className="mb-3 text-sm font-semibold text-white/90">Preview</div>
+          <WandersCardPreview card={card} draftPayload={draftPayload} />
+        </div>
       </div>
 
       {/* SHARE */}
-      <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
-        <div className="text-sm font-semibold">Share</div>
-        <div className="mt-1 text-sm text-gray-700">
-          Copy the message or share via email or SMS.
-        </div>
+      <div className={boxBase}>
+        <div aria-hidden="true" className={glowTL} />
+        <div aria-hidden="true" className={glowBR} />
+        <div className="relative">
+          <div className="text-sm font-semibold text-white/90">Share</div>
+          <div className="mt-1 text-sm text-white/60">
+            Copy the message or share via email or SMS.
+          </div>
 
-        {/* Share text only */}
-        <div className="mt-4">
-          <label className={label}>Share text</label>
+          <div className="mt-4">
+            <label className={label}>Share text</label>
 
-          <div className="grid gap-2">
-            <textarea
-              readOnly
-              value={shareText}
-              onFocus={(e) => e.target.select()}
-              className={`${textarea} min-h-[120px]`}
-            />
+            <div className="grid gap-2">
+              <textarea
+                readOnly
+                value={shareText}
+                onFocus={(e) => e.target.select()}
+                className={`${textarea} min-h-[120px]`}
+              />
 
-            <div className="grid gap-2 sm:flex sm:flex-wrap">
-              <button
-                type="button"
-                onClick={() => handleCopy(shareText)}
-                className={button}
-              >
-                Copy text
-              </button>
+              <div className="grid gap-2 sm:flex sm:flex-wrap">
+                <button type="button" onClick={() => handleCopy(shareText)} className={button}>
+                  <span aria-hidden className={btnSheen} />
+                  <span aria-hidden className={btnInnerRing} />
+                  <span className="relative">Copy text</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => openExternal(share?.mailtoUrl)}
-                className={button}
-              >
-                Email
-              </button>
+                <button type="button" onClick={() => openExternal(share?.mailtoUrl)} className={button}>
+                  <span aria-hidden className={btnSheen} />
+                  <span aria-hidden className={btnInnerRing} />
+                  <span className="relative">Email</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => openExternal(share?.smsUrl || share?.smsAltUrl)}
-                className={button}
-              >
-                SMS
-              </button>
+                <button
+                  type="button"
+                  onClick={() => openExternal(share?.smsUrl || share?.smsAltUrl)}
+                  className={button}
+                >
+                  <span aria-hidden className={btnSheen} />
+                  <span aria-hidden className={btnInnerRing} />
+                  <span className="relative">SMS</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Actions */}
-        <div className="mt-4">
-          <button type="button" onClick={handleSendAnother} className={button}>
-            Send another
-          </button>
+          {/* BIG VALENTINE CTA */}
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={handleSendAnother}
+              className={[
+                "relative overflow-hidden",
+                "w-full",
+                "rounded-2xl",
+                "bg-gradient-to-r from-pink-600 via-rose-500 to-red-500",
+                "px-6 py-3",
+                "text-base font-extrabold uppercase tracking-wide text-white",
+                "shadow-[0_14px_34px_rgba(0,0,0,0.8),0_0_40px_rgba(244,63,94,0.35)]",
+                "transition",
+                "hover:scale-[1.02]",
+                "hover:shadow-[0_18px_44px_rgba(0,0,0,0.85),0_0_55px_rgba(244,63,94,0.55)]",
+                "active:scale-[0.99]",
+                "focus:outline-none focus:ring-2 focus:ring-pink-400/50",
+              ].join(" ")}
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.20),transparent_60%)]"
+              />
+              <span className="relative">💖 SHOW LOVE TO 3 MORE PEOPLE 💖</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

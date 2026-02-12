@@ -1,7 +1,7 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\components\WandersEmptyState.jsx
 // ============================================================================
 // WANDERS COMPONENT — EMPTY STATE
-// UI-only reusable empty state.
+// UI-only reusable empty state (dark glass style to match Wanders UI).
 // ============================================================================
 
 import React from 'react'
@@ -25,19 +25,32 @@ export function WandersEmptyState({
   return (
     <div
       className={[
-        'w-full rounded-2xl border border-gray-200 bg-white p-8 text-center',
+        'w-full rounded-2xl border border-white/10 bg-white/5 p-8 text-center',
+        'shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-md',
         className,
       ].join(' ')}
     >
-      {icon ? <div className="mx-auto mb-3 flex justify-center">{icon}</div> : null}
-
-      <div className="text-base font-semibold text-gray-900">{title}</div>
-
-      {description ? (
-        <div className="mt-2 text-sm text-gray-600">{description}</div>
+      {icon ? (
+        <div className="mx-auto mb-4 flex justify-center text-white/70">
+          {icon}
+        </div>
       ) : null}
 
-      {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
+      <div className="text-base font-semibold text-white">
+        {title}
+      </div>
+
+      {description ? (
+        <div className="mt-2 text-sm text-white/70">
+          {description}
+        </div>
+      ) : null}
+
+      {action ? (
+        <div className="mt-5 flex justify-center">
+          {action}
+        </div>
+      ) : null}
     </div>
   )
 }

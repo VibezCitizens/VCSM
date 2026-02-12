@@ -5,7 +5,7 @@
 // No DAL, no controllers.
 // ============================================================================
 
-import React, { useMemo } from 'react'
+import React, { useMemo } from "react";
 
 /**
  * @param {{
@@ -20,65 +20,215 @@ import React, { useMemo } from 'react'
  */
 export function WandersMailboxToolbar({
   currentFolder,
-  searchQuery = '',
+  searchQuery = "",
   onFolderChange,
   onSearchChange,
   extraActions,
   disabled = false,
-  className = '',
+  className = "",
 }) {
   const folders = useMemo(
     () => [
-      { key: 'inbox', label: 'Inbox' },
-      { key: 'outbox', label: 'Outbox' },
+      { key: "inbox", label: "Inbox" },
+      { key: "outbox", label: "Outbox" },
     ],
     []
-  )
+  );
+
+  const styles = useMemo(
+    () => ({
+      wrap: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        boxSizing: "border-box",
+      },
+
+      // top row
+      topRow: {
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 8,
+      },
+      actions: {
+        marginLeft: "auto",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      },
+
+      // folder pills
+      pill: {
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 999,
+        padding: "8px 12px",
+        fontSize: 13,
+        fontWeight: 800,
+        letterSpacing: "0.2px",
+        border: "1px solid rgba(255,255,255,0.14)",
+        background: "rgba(0,0,0,0.30)",
+        color: "rgba(255,255,255,0.90)",
+        cursor: "pointer",
+        userSelect: "none",
+        transition:
+          "transform 120ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease",
+        boxShadow: "0 10px 22px rgba(0,0,0,0.22)",
+      },
+      pillActive: {
+        border: "1px solid rgba(124,58,237,0.40)",
+        background: "rgba(124,58,237,0.16)",
+        boxShadow: "0 12px 26px rgba(0,0,0,0.28), 0 0 22px rgba(124,58,237,0.18)",
+      },
+      pillHover: {
+        background: "rgba(0,0,0,0.40)",
+        borderColor: "rgba(255,255,255,0.22)",
+        boxShadow: "0 14px 28px rgba(0,0,0,0.30), 0 0 24px rgba(124,58,237,0.14)",
+      },
+      disabled: {
+        opacity: 0.6,
+        cursor: "not-allowed",
+        pointerEvents: "none",
+      },
+
+      // sheen + inner ring (matches your Sent buttons vibe)
+      sheen: {
+        pointerEvents: "none",
+        position: "absolute",
+        inset: 0,
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 55%)",
+      },
+      innerRing: {
+        pointerEvents: "none",
+        position: "absolute",
+        inset: 0,
+        borderRadius: 999,
+        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.10)",
+      },
+
+      // search row
+      searchRow: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+      },
+      searchWrap: {
+        position: "relative",
+        flex: 1,
+      },
+      input: {
+        width: "100%",
+        borderRadius: 14,
+        border: "1px solid rgba(255,255,255,0.12)",
+        background: "rgba(0,0,0,0.30)",
+        color: "rgba(255,255,255,0.92)",
+        padding: "11px 12px",
+        fontSize: 14,
+        lineHeight: "18px",
+        outline: "none",
+        boxSizing: "border-box",
+        boxShadow:
+          "0 10px 22px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.05)",
+        transition: "border-color 150ms ease, box-shadow 150ms ease, background 150ms ease",
+      },
+      inputFocus: {
+        borderColor: "rgba(124,58,237,0.40)",
+        boxShadow:
+          "0 12px 28px rgba(0,0,0,0.28), 0 0 0 2px rgba(124,58,237,0.22), inset 0 1px 0 rgba(255,255,255,0.06)",
+        background: "rgba(0,0,0,0.36)",
+      },
+
+      // clear button (same family as pills)
+      clearBtn: {
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 14,
+        border: "1px solid rgba(255,255,255,0.14)",
+        background: "rgba(0,0,0,0.30)",
+        color: "rgba(255,255,255,0.90)",
+        padding: "11px 12px",
+        fontSize: 13,
+        fontWeight: 800,
+        cursor: "pointer",
+        transition:
+          "transform 120ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease",
+        boxShadow: "0 10px 22px rgba(0,0,0,0.22)",
+        whiteSpace: "nowrap",
+      },
+    }),
+    []
+  );
+
+  // focus handling without tailwind
+  const [focused, setFocused] = React.useState(false);
 
   return (
-    <div className={['w-full space-y-3', className].join(' ')}>
+    <div className={className} style={styles.wrap}>
       {/* Folder pills */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div style={styles.topRow}>
         {folders.map((f) => {
-          const active = currentFolder === f.key
+          const active = currentFolder === f.key;
+
           return (
             <button
               key={f.key}
               type="button"
               disabled={disabled}
               onClick={() => onFolderChange(f.key)}
-              className={[
-                'rounded-full border px-3 py-1.5 text-sm font-semibold transition',
-                active ? 'border-pink-500 bg-pink-50 text-pink-700' : 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50',
-                disabled ? 'opacity-60 cursor-not-allowed' : '',
-              ].join(' ')}
+              style={{
+                ...styles.pill,
+                ...(active ? styles.pillActive : null),
+                ...(disabled ? styles.disabled : null),
+              }}
+              onMouseEnter={(e) => {
+                if (disabled) return;
+                if (!active) Object.assign(e.currentTarget.style, styles.pillHover);
+              }}
+              onMouseLeave={(e) => {
+                if (disabled) return;
+                // reset hover styles
+                e.currentTarget.style.background = (active ? styles.pillActive.background : styles.pill.background);
+                e.currentTarget.style.border = (active ? styles.pillActive.border : styles.pill.border);
+                e.currentTarget.style.boxShadow = (active ? styles.pillActive.boxShadow : styles.pill.boxShadow);
+              }}
+              onMouseDown={(e) => {
+                if (disabled) return;
+                e.currentTarget.style.transform = "scale(0.99)";
+              }}
+              onMouseUp={(e) => {
+                if (disabled) return;
+                e.currentTarget.style.transform = "scale(1)";
+              }}
             >
-              {f.label}
+              <span aria-hidden style={styles.sheen} />
+              <span aria-hidden style={styles.innerRing} />
+              <span style={{ position: "relative" }}>{f.label}</span>
             </button>
-          )
+          );
         })}
 
-        {/* Right-side actions */}
-        {extraActions ? (
-          <div className="ml-auto flex items-center gap-2">{extraActions}</div>
-        ) : null}
+        {extraActions ? <div style={styles.actions}>{extraActions}</div> : null}
       </div>
 
       {/* Search */}
-      <div className="flex items-center gap-2">
-        <div className="relative w-full">
+      <div style={styles.searchRow}>
+        <div style={styles.searchWrap}>
           <input
             type="text"
             value={searchQuery}
             disabled={disabled}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search messages…"
-            className={[
-              'w-full rounded-xl border bg-white px-3.5 py-2.5 text-[14px] leading-5 shadow-sm',
-              'border-gray-200 text-gray-900 placeholder:text-gray-500',
-              'focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-400',
-              disabled ? 'opacity-60 cursor-not-allowed' : '',
-            ].join(' ')}
+            style={{
+              ...styles.input,
+              ...(focused ? styles.inputFocus : null),
+              ...(disabled ? styles.disabled : null),
+            }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
         </div>
 
@@ -86,19 +236,34 @@ export function WandersMailboxToolbar({
           <button
             type="button"
             disabled={disabled}
-            onClick={() => onSearchChange('')}
-            className={[
-              'shrink-0 rounded-xl border bg-white px-3 py-2.5 text-sm font-semibold shadow-sm transition hover:bg-gray-50',
-              'border-gray-200 text-gray-800',
-              disabled ? 'opacity-60 cursor-not-allowed' : '',
-            ].join(' ')}
+            onClick={() => onSearchChange("")}
+            style={{
+              ...styles.clearBtn,
+              ...(disabled ? styles.disabled : null),
+            }}
+            onMouseDown={(e) => {
+              if (disabled) return;
+              e.currentTarget.style.transform = "scale(0.99)";
+            }}
+            onMouseUp={(e) => {
+              if (disabled) return;
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
-            Clear
+            <span aria-hidden style={styles.sheen} />
+            <span
+              aria-hidden
+              style={{
+                ...styles.innerRing,
+                borderRadius: 14,
+              }}
+            />
+            <span style={{ position: "relative" }}>Clear</span>
           </button>
         ) : null}
       </div>
     </div>
-  )
+  );
 }
 
-export default WandersMailboxToolbar
+export default WandersMailboxToolbar;

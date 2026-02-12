@@ -5,8 +5,8 @@
 // No DAL, no controllers.
 // ============================================================================
 
-import React from 'react'
-import WandersMailboxItemRow from '@/features/wanders/components/WandersMailboxItemRow'
+import React, { useMemo } from "react";
+import WandersMailboxItemRow from "@/features/wanders/components/WandersMailboxItemRow";
 
 /**
  * @param {{
@@ -24,39 +24,116 @@ export function WandersMailboxList({
   empty = null,
   onItemClick,
   selectedItemId = null,
-  className = '',
+  className = "",
 }) {
+  const styles = useMemo(
+    () => ({
+      shell: {
+        width: "100%",
+        boxSizing: "border-box",
+      },
+      listCard: {
+        width: "100%",
+        boxSizing: "border-box",
+        padding: 12,
+      },
+      dividerWrap: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+      },
+      // Loading skeleton card (matches dark/glass vibe)
+      loadingCard: {
+        width: "100%",
+        boxSizing: "border-box",
+        borderRadius: 16,
+        border: "1px solid rgba(255,255,255,0.10)",
+        background: "rgba(0,0,0,0.30)",
+        padding: 12,
+      },
+      skeletonLine: {
+        height: 10,
+        borderRadius: 10,
+        background: "rgba(255,255,255,0.12)",
+        overflow: "hidden",
+        position: "relative",
+      },
+      skeletonBlock: {
+        height: 56,
+        borderRadius: 14,
+        background: "rgba(255,255,255,0.10)",
+        overflow: "hidden",
+        position: "relative",
+      },
+      shimmer: {
+        position: "absolute",
+        inset: 0,
+        transform: "translateX(-60%)",
+        background:
+          "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.10) 45%, rgba(255,255,255,0) 100%)",
+        animation: "wandersShimmer 1.2s ease-in-out infinite",
+      },
+    }),
+    []
+  );
+
+  // Inject keyframes once (no tailwind)
+  const Keyframes = (
+    <style>
+      {`
+        @keyframes wandersShimmer {
+          0% { transform: translateX(-60%); }
+          100% { transform: translateX(60%); }
+        }
+      `}
+    </style>
+  );
+
   if (loading) {
     return (
-      <div className={['w-full rounded-2xl border border-gray-200 bg-white p-4', className].join(' ')}>
-        <div className="animate-pulse space-y-3">
-          <div className="h-4 w-1/2 rounded bg-gray-200" />
-          <div className="h-16 w-full rounded bg-gray-200" />
-          <div className="h-16 w-full rounded bg-gray-200" />
-          <div className="h-16 w-full rounded bg-gray-200" />
+      <div className={className} style={styles.shell}>
+        {Keyframes}
+        <div style={styles.loadingCard}>
+          <div style={{ display: "grid", gap: 10 }}>
+            <div style={{ ...styles.skeletonLine, width: "55%" }}>
+              <div style={styles.shimmer} />
+            </div>
+
+            <div style={styles.skeletonBlock}>
+              <div style={styles.shimmer} />
+            </div>
+            <div style={styles.skeletonBlock}>
+              <div style={styles.shimmer} />
+            </div>
+            <div style={styles.skeletonBlock}>
+              <div style={styles.shimmer} />
+            </div>
+          </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!items || items.length === 0) {
-    return <div className={className}>{empty}</div>
+    return <div className={className}>{empty}</div>;
   }
 
   return (
-    <div className={['w-full overflow-hidden rounded-2xl border border-gray-200 bg-white', className].join(' ')}>
-      <div className="divide-y divide-gray-100">
-        {items.map((item) => (
-          <WandersMailboxItemRow
-            key={item.id}
-            item={item}
-            onClick={onItemClick}
-            isSelected={selectedItemId ? selectedItemId === item.id : false}
-          />
-        ))}
+    <div className={className} style={styles.shell}>
+      <div style={styles.listCard}>
+        <div style={styles.dividerWrap}>
+          {items.map((item) => (
+            <WandersMailboxItemRow
+              key={String(item?.id)}
+              item={item}
+              onClick={onItemClick}
+              isSelected={selectedItemId ? String(selectedItemId) === String(item?.id) : false}
+            />
+          ))}
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default WandersMailboxList
+export default WandersMailboxList;

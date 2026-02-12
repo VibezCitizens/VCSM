@@ -5,7 +5,13 @@
 // No DAL, no controllers, no domain rules.
 // ============================================================================
 
-import React, { useMemo } from 'react'
+import React, { useMemo } from "react";
+
+/**
+ * NOTE:
+ * - No tailwind utility classes here.
+ * - Inline styles + minimal className passthrough.
+ */
 
 /**
  * @param {{
@@ -19,106 +25,177 @@ export function WandersMailboxItemRow({
   item,
   onClick,
   isSelected = false,
-  className = '',
+  className = "",
 }) {
   const view = useMemo(() => {
-    const card = item?.card ?? {}
+    const card = item?.card ?? {};
 
-    const templateKey = card?.templateKey ?? 'classic'
-    const messageText = card?.messageText ?? ''
-    const customization = card?.customization ?? {}
+    const templateKey = card?.templateKey ?? card?.template_key ?? "classic";
+    const messageText = card?.messageText ?? card?.message_text ?? "";
+    const customization = card?.customization ?? card?.customization_json ?? card?.customizationJson ?? {};
 
-    const toName =
-      customization?.toName ??
-      customization?.to_name ??
-      null
+    const toName = customization?.toName ?? customization?.to_name ?? null;
+    const fromName = customization?.fromName ?? customization?.from_name ?? null;
 
-    const fromName =
-      customization?.fromName ??
-      customization?.from_name ??
-      null
+    const isAnonymous = card?.isAnonymous ?? card?.is_anonymous ?? false;
 
-    const isAnonymous = card?.isAnonymous ?? false
+    const displayFrom = isAnonymous ? "Secret admirer 💌" : fromName || "Someone 💌";
 
-    const displayFrom = isAnonymous
-      ? 'Secret admirer 💌'
-      : (fromName || 'Someone 💌')
+    const previewMessage = String(messageText || "").trim();
 
-    const previewMessage = (messageText || '').trim()
+    const isRead =
+      typeof item?.isRead === "boolean"
+        ? item.isRead
+        : typeof item?.is_read === "boolean"
+        ? item.is_read
+        : false;
 
     return {
       templateKey,
       toName,
       displayFrom,
       previewMessage,
-      isRead: item?.isRead ?? false,
-      pinned: item?.pinned ?? false,
-      folder: item?.folder ?? 'inbox',
+      isRead,
+      pinned: !!(item?.pinned ?? false),
+      folder: item?.folder ?? "inbox",
       createdAt: item?.createdAt ?? item?.created_at ?? null,
-    }
-  }, [item])
+    };
+  }, [item]);
 
   const handleClick = () => {
-    if (typeof onClick === 'function') {
-      onClick(item)
-    }
-  }
+    if (typeof onClick === "function") onClick(item);
+  };
 
   const dateLabel = useMemo(() => {
-    if (!view.createdAt) return ''
+    if (!view.createdAt) return "";
     try {
-      const d = new Date(view.createdAt)
-      return d.toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-      })
+      const d = new Date(view.createdAt);
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     } catch {
-      return ''
+      return "";
     }
-  }, [view.createdAt])
+  }, [view.createdAt]);
+
+  const styles = useMemo(() => {
+    const baseBg = "rgba(0,0,0,0)";
+
+    const rowBg = isSelected ? "rgba(255,255,255,0.06)" : baseBg;
+    const rowBorder = isSelected ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.08)";
+
+    return {
+      btn: {
+        width: "100%",
+        textAlign: "left",
+        border: `1px solid ${rowBorder}`,
+        background: rowBg,
+        color: "rgba(255,255,255,0.92)",
+        borderRadius: 14,
+        padding: "12px 12px",
+        cursor: "pointer",
+        transition: "transform 120ms ease, background 120ms ease, border-color 120ms ease",
+        boxSizing: "border-box",
+      },
+      btnHover: {
+        background: isSelected ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.04)",
+        borderColor: "rgba(255,255,255,0.14)",
+      },
+      row: {
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: 12,
+      },
+      left: {
+        minWidth: 0,
+        flex: 1,
+      },
+      topLine: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        minWidth: 0,
+      },
+      unreadDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 999,
+        background: "rgba(236,72,153,0.95)", // pink-ish dot
+        flexShrink: 0,
+        boxShadow: "0 0 0 3px rgba(236,72,153,0.10)",
+      },
+      from: {
+        fontSize: 13,
+        fontWeight: 800,
+        color: "rgba(255,255,255,0.92)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        minWidth: 0,
+      },
+      pin: {
+        fontSize: 12,
+        opacity: 0.65,
+        flexShrink: 0,
+      },
+      preview: {
+        marginTop: 6,
+        fontSize: 13,
+        color: "rgba(255,255,255,0.65)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      },
+      right: {
+        flexShrink: 0,
+        fontSize: 12,
+        color: "rgba(255,255,255,0.45)",
+      },
+    };
+  }, [isSelected]);
+
+  const [isHover, setIsHover] = React.useState(false);
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      className={[
-        'w-full text-left transition',
-        'px-4 py-3',
-        isSelected ? 'bg-pink-50' : 'hover:bg-gray-50',
-        className,
-      ].join(' ')}
+      className={className}
+      style={{
+        ...styles.btn,
+        ...(isHover ? styles.btnHover : null),
+      }}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div style={styles.row}>
         {/* LEFT */}
-        <div className="min-w-0 flex-1">
+        <div style={styles.left}>
           {/* Top line */}
-          <div className="flex items-center gap-2">
-            {!view.isRead && (
-              <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-pink-500" />
-            )}
+          <div style={styles.topLine}>
+            {!view.isRead ? <span aria-hidden style={styles.unreadDot} /> : null}
 
-            <div className="truncate text-sm font-semibold text-gray-900">
+            <div style={styles.from} title={view.displayFrom}>
               {view.displayFrom}
             </div>
 
-            {view.pinned && (
-              <span className="text-xs opacity-60">📌</span>
-            )}
+            {view.pinned ? (
+              <span aria-hidden style={styles.pin}>
+                📌
+              </span>
+            ) : null}
           </div>
 
           {/* Message preview */}
-          <div className="mt-1 truncate text-sm text-gray-600">
-            {view.previewMessage || 'No message'}
+          <div style={styles.preview} title={view.previewMessage || "No message"}>
+            {view.previewMessage || "No message"}
           </div>
         </div>
 
         {/* RIGHT */}
-        <div className="shrink-0 text-xs text-gray-400">
-          {dateLabel}
-        </div>
+        <div style={styles.right}>{dateLabel}</div>
       </div>
     </button>
-  )
+  );
 }
 
-export default WandersMailboxItemRow
+export default WandersMailboxItemRow;

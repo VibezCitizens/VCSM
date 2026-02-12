@@ -8,38 +8,50 @@
 import React, { useMemo } from "react";
 import { templates } from "@/features/wanders/components/cardstemplates/registry";
 
-function getTemplateStyles(templateKey) {
+/**
+ * NOTE:
+ * - This file no longer emits Tailwind utility classNames.
+ * - It uses inline styles for the fallback renderer.
+ * - Registry templates (registryTemplate.Preview) are left untouched.
+ */
+
+function getTemplateTheme(templateKey) {
   switch (templateKey) {
     case "cute":
       return {
-        wrapper: "bg-pink-50 border-pink-200",
-        title: "text-pink-700",
-        accent: "text-pink-600",
+        wrapperBg: "rgba(253,242,248,1)",
+        wrapperBorder: "rgba(251,207,232,1)",
+        titleColor: "rgba(190,24,93,1)",
+        accentColor: "rgba(219,39,119,1)",
       };
     case "spicy":
       return {
-        wrapper: "bg-red-50 border-red-200",
-        title: "text-red-700",
-        accent: "text-red-600",
+        wrapperBg: "rgba(254,242,242,1)",
+        wrapperBorder: "rgba(254,202,202,1)",
+        titleColor: "rgba(185,28,28,1)",
+        accentColor: "rgba(220,38,38,1)",
       };
     case "mystery":
       return {
-        wrapper: "bg-gray-900 border-gray-700 text-white",
-        title: "text-white",
-        accent: "text-gray-200",
+        wrapperBg: "rgba(17,24,39,1)",
+        wrapperBorder: "rgba(55,65,81,1)",
+        titleColor: "rgba(255,255,255,1)",
+        accentColor: "rgba(229,231,235,1)",
       };
     case "generic-minimal":
       return {
-        wrapper: "bg-white border-gray-200",
-        title: "text-gray-900",
-        accent: "text-gray-700",
+        wrapperBg: "rgba(255,255,255,1)",
+        wrapperBorder: "rgba(229,231,235,1)",
+        titleColor: "rgba(17,24,39,1)",
+        accentColor: "rgba(55,65,81,1)",
       };
     case "classic":
     default:
       return {
-        wrapper: "bg-rose-50 border-rose-200",
-        title: "text-rose-900",
-        accent: "text-rose-600",
+        wrapperBg: "rgba(255,241,242,1)",
+        wrapperBorder: "rgba(254,205,211,1)",
+        titleColor: "rgba(136,19,55,1)",
+        accentColor: "rgba(190,18,60,1)",
       };
   }
 }
@@ -53,9 +65,6 @@ function safeParseJson(value) {
   if (!s) return null;
 
   // Unwrap up to 2 layers:
-  // - jsonb object -> returned as object
-  // - jsonb stored as a JSON string -> parse once yields object OR yields string
-  // - double-encoded -> parse twice yields object
   for (let i = 0; i < 2; i++) {
     try {
       const parsed = JSON.parse(s);
@@ -135,10 +144,7 @@ function toTemplateData({ templateKey, isAnonymous, customization, messageText, 
   const data = {
     toName: (toName ?? "").toString(),
     fromName: (fromName ?? "").toString(),
-
-    // generic cards use this
     message: (messageText ?? "").toString(),
-
     sendAnonymously: !!isAnonymous,
   };
 
@@ -146,13 +152,10 @@ function toTemplateData({ templateKey, isAnonymous, customization, messageText, 
     if (customization.accent !== undefined) data.accent = customization.accent;
     if (customization.company !== undefined) data.company = customization.company;
 
-    // ✅ Photo: pull overlay text from customization (what you save in DB)
     data.title = String(customization.title ?? customization.card_title ?? customization.cardTitle ?? "").trim();
     data.message = String(customization.message ?? customization.body ?? customization.text ?? data.message ?? "").trim();
 
-    // ✅ Photo: support all variants you are saving
     data.imageUrl = customization.imageUrl ?? customization.image_url ?? customization.imageURL ?? null;
-
     data.imageDataUrl = customization.imageDataUrl ?? customization.image_data_url ?? null;
   }
 
@@ -172,58 +175,39 @@ function toTemplateData({ templateKey, isAnonymous, customization, messageText, 
  * If template exists in registry, renders template.Preview (pretty).
  * Otherwise renders the generic preview (fallback).
  */
-export function WandersCardPreview({ payload, draftPayload, card, className = "", titleText = "Wanders" }) {
+export function WandersCardPreview({
+  payload,
+  draftPayload,
+  card,
+  className = "",
+  titleText = "Wanders",
+}) {
   const view = useMemo(() => {
     const p = payload ?? draftPayload ?? null;
     const c = card ?? null;
 
     const templateKey = p?.templateKey ?? p?.template_key ?? c?.templateKey ?? c?.template_key ?? "classic";
-
     const isAnonymous = p?.isAnonymous ?? p?.is_anonymous ?? c?.isAnonymous ?? c?.is_anonymous ?? false;
 
-    // ✅ FIX: support customizationJson too (payload + card)
     const pCustomizationRaw = p?.customization ?? p?.customization_json ?? p?.customizationJson ?? null;
     const cCustomizationRaw = c?.customization ?? c?.customization_json ?? c?.customizationJson ?? null;
 
-    // ✅ IMPORTANT FIX:
-    // If payload is null, do NOT default pCustomization to {} (which wrongly wins over card customization).
-    const pCustomization =
-      p
-        ? (safeParseJson(pCustomizationRaw) ?? pCustomizationRaw ?? {})
-        : null;
-
+    const pCustomization = p ? (safeParseJson(pCustomizationRaw) ?? pCustomizationRaw ?? {}) : null;
     const cCustomization = safeParseJson(cCustomizationRaw) ?? cCustomizationRaw ?? {};
 
-    // -----------------------------------------------------------------------
-    // ✅ NEW: also allow photo fields saved at top-level (card/payload) to work
-    // -----------------------------------------------------------------------
     const topImageUrl =
-      p?.imageUrl ??
-      p?.image_url ??
-      p?.imageURL ??
-      c?.imageUrl ??
-      c?.image_url ??
-      c?.imageURL ??
-      null;
+      p?.imageUrl ?? p?.image_url ?? p?.imageURL ?? c?.imageUrl ?? c?.image_url ?? c?.imageURL ?? null;
 
     const topImageDataUrl =
-      p?.imageDataUrl ??
-      p?.image_data_url ??
-      c?.imageDataUrl ??
-      c?.image_data_url ??
-      null;
+      p?.imageDataUrl ?? p?.image_data_url ?? c?.imageDataUrl ?? c?.image_data_url ?? null;
 
-    // ✅ Choose customization object:
-    // - payload wins ONLY when payload exists AND customization is an object
-    // - otherwise use card customization
     const baseCustomization =
-      (pCustomization && typeof pCustomization === "object")
+      pCustomization && typeof pCustomization === "object"
         ? pCustomization
-        : (cCustomization && typeof cCustomization === "object")
+        : cCustomization && typeof cCustomization === "object"
         ? cCustomization
         : {};
 
-    // Merge in top-level image fields ONLY if customization doesn't already have them
     const customization = { ...(baseCustomization || {}) };
 
     const hasCustomImageUrl =
@@ -233,7 +217,6 @@ export function WandersCardPreview({ payload, draftPayload, card, className = ""
       customization?.imageDataUrl != null || customization?.image_data_url != null;
 
     if (!hasCustomImageUrl && topImageUrl) {
-      // keep both keys for maximum compatibility
       customization.imageUrl = topImageUrl;
       customization.image_url = topImageUrl;
     }
@@ -263,27 +246,16 @@ export function WandersCardPreview({ payload, draftPayload, card, className = ""
 
     const messageText = p?.messageText ?? p?.message_text ?? c?.messageText ?? c?.message_text ?? "";
 
-    return {
-      templateKey,
-      isAnonymous,
-      toName,
-      fromName,
-      messageText,
-      customization,
-    };
+    return { templateKey, isAnonymous, toName, fromName, messageText, customization };
   }, [payload, draftPayload, card]);
 
   // ---------------------------------------------------------------------------
   // 1) If template is found in registry, render its Preview (the real card look)
   // ---------------------------------------------------------------------------
-  const registryDebug = useMemo(() => {
-    const res = findTemplateWithAliases(view.templateKey);
-    return res;
-  }, [view.templateKey]);
-
+  const registryDebug = useMemo(() => findTemplateWithAliases(view.templateKey), [view.templateKey]);
   const registryTemplate = registryDebug?.tpl ?? null;
 
-  // ✅ DEBUG LOGS (safe: only logs when templateKey changes)
+  // ✅ DEBUG LOGS
   useMemo(() => {
     try {
       const k = normalizeTemplateKey(view.templateKey);
@@ -317,7 +289,6 @@ export function WandersCardPreview({ payload, draftPayload, card, className = ""
       fromName: view.fromName,
     });
 
-    // ✅ DEBUG for template data
     useMemo(() => {
       try {
         console.log("[WandersCardPreview] template data =", {
@@ -334,24 +305,24 @@ export function WandersCardPreview({ payload, draftPayload, card, className = ""
       }
     }, [view.templateKey, data]);
 
+    // keep your external className passthrough (if you have app CSS)
     return (
-      <div className={["w-full", className].join(" ")}>
+      <div className={className} style={{ width: "100%" }}>
         <registryTemplate.Preview data={data} />
       </div>
     );
   }
 
   // ---------------------------------------------------------------------------
-  // 2) Fallback: your original generic preview box
+  // 2) Fallback: generic preview (NO tailwind)
   // ---------------------------------------------------------------------------
-  const styles = getTemplateStyles(view.templateKey);
+  const theme = getTemplateTheme(view.templateKey);
 
   const displayTo = (view.toName || "").trim();
   const fromTrimmed = (view.fromName || "").trim();
   const displayFrom = view.isAnonymous ? "Anonymous 💌" : fromTrimmed || "Someone 💌";
   const displayMsg = (view.messageText || "").trim();
 
-  // ✅ UPDATED: support saved URLs too (Cloudflare R2)
   const bgImage =
     view.customization?.imageUrl ||
     view.customization?.image_url ||
@@ -362,7 +333,6 @@ export function WandersCardPreview({ payload, draftPayload, card, className = ""
   const isMystery = view.templateKey === "mystery";
   const hasImage = !!bgImage;
 
-  // ✅ DEBUG: fallback reason
   useMemo(() => {
     try {
       console.warn("[WandersCardPreview] FALLBACK used (no registry template)", {
@@ -378,35 +348,96 @@ export function WandersCardPreview({ payload, draftPayload, card, className = ""
     }
   }, [view.templateKey, registryDebug, hasImage, bgImage]);
 
-  const panelClass = isMystery
-    ? ["bg-black/55", hasImage ? "backdrop-blur-md" : "", "border border-white/15", "text-white"].join(" ")
-    : [hasImage ? "bg-white/70 backdrop-blur-md border border-white/40" : "bg-white border border-black/5", "text-black"].join(" ");
-
-  const headerTextClass = isMystery ? "text-gray-200" : "text-gray-700";
-  const messageTextClass = isMystery ? "text-white" : "text-gray-900";
+  const styles = {
+    wrapper: {
+      position: "relative",
+      overflow: "hidden",
+      width: "100%",
+      borderRadius: 12,
+      border: `1px solid ${theme.wrapperBorder}`,
+      background: theme.wrapperBg,
+      boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+      boxSizing: "border-box",
+    },
+    bgImg: {
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+    },
+    bgOverlay: {
+      position: "absolute",
+      inset: 0,
+      background: isMystery ? "rgba(0,0,0,0.35)" : "rgba(0,0,0,0.25)",
+    },
+    panel: {
+      position: "relative",
+      zIndex: 1,
+      margin: 12,
+      borderRadius: 12,
+      padding: 16,
+      boxSizing: "border-box",
+      border: isMystery
+        ? "1px solid rgba(255,255,255,0.15)"
+        : hasImage
+        ? "1px solid rgba(255,255,255,0.40)"
+        : "1px solid rgba(0,0,0,0.06)",
+      background: isMystery
+        ? "rgba(0,0,0,0.55)"
+        : hasImage
+        ? "rgba(255,255,255,0.70)"
+        : "rgba(255,255,255,1)",
+      color: isMystery ? "rgba(255,255,255,0.92)" : "rgba(17,24,39,1)",
+      backdropFilter: hasImage || isMystery ? "blur(12px)" : "none",
+      WebkitBackdropFilter: hasImage || isMystery ? "blur(12px)" : "none",
+    },
+    headerRow: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+    },
+    toText: {
+      fontSize: 13,
+      color: isMystery ? "rgba(229,231,235,0.92)" : "rgba(55,65,81,0.95)",
+      fontWeight: 700,
+    },
+    titleText: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: theme.titleColor,
+      opacity: 0.9,
+      whiteSpace: "nowrap",
+    },
+    message: {
+      marginTop: 14,
+      whiteSpace: "pre-wrap",
+      fontSize: 16,
+      lineHeight: 1.45,
+      color: isMystery ? "rgba(255,255,255,0.95)" : "rgba(17,24,39,1)",
+    },
+    fromText: {
+      marginTop: 14,
+      fontSize: 13,
+      color: isMystery ? "rgba(229,231,235,0.92)" : "rgba(55,65,81,0.95)",
+      fontWeight: 700,
+    },
+  };
 
   return (
-    <div className={["relative overflow-hidden rounded-xl border shadow-sm", styles.wrapper, className].join(" ")}>
-      {bgImage ? <img src={bgImage} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
+    <div className={className} style={styles.wrapper}>
+      {bgImage ? <img src={bgImage} alt="" style={styles.bgImg} /> : null}
+      {bgImage ? <div aria-hidden style={styles.bgOverlay} /> : null}
 
-      {bgImage ? <div className={["absolute inset-0", isMystery ? "bg-black/35" : "bg-black/25"].join(" ")} /> : null}
-
-      <div className={["relative z-10 m-3 rounded-xl p-4", panelClass].join(" ")}>
-        <div className="flex items-center justify-between gap-3">
-          <div className={["text-sm", headerTextClass].join(" ")}>
-            {displayTo ? `To: ${displayTo}` : "To: (someone special)"}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className={["text-sm font-semibold opacity-80", styles.title].join(" ")}>{titleText}</div>
-          </div>
+      <div style={styles.panel}>
+        <div style={styles.headerRow}>
+          <div style={styles.toText}>{displayTo ? `To: ${displayTo}` : "To: (someone special)"}</div>
+          <div style={styles.titleText}>{titleText}</div>
         </div>
 
-        <div className={["mt-4 whitespace-pre-wrap text-base leading-relaxed", messageTextClass].join(" ")}>
-          {displayMsg ? displayMsg : "Write your message…"}
-        </div>
-
-        <div className={["mt-4 text-sm", headerTextClass].join(" ")}>From: {displayFrom}</div>
+        <div style={styles.message}>{displayMsg ? displayMsg : "Write your message…"}</div>
+        <div style={styles.fromText}>From: {displayFrom}</div>
       </div>
     </div>
   );

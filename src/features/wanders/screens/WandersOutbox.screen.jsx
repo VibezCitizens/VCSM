@@ -246,6 +246,7 @@ export default function WandersOutboxScreen() {
     [folder, search, loading]
   );
 
+  // ✅ Outbox "Sent" theme (same as WandersSent screen)
   const splitStyle = useMemo(
     () => ({
       ...styles.split,
@@ -261,71 +262,121 @@ export default function WandersOutboxScreen() {
   }
 
   return (
-    <div className="wanders-outbox" style={styles.page}>
-      <div style={styles.toolbar}>
+    <div className="relative h-screen w-full overflow-y-auto touch-pan-y bg-black text-white">
+      {/* page glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_200px_at_50%_-80px,rgba(168,85,247,0.15),transparent)]"
+      />
+
+      {/* keep your toolbar sticky behavior */}
+      <div style={styles.toolbar} className="relative z-10">
         <WandersMailboxToolbar {...toolbarModel} />
       </div>
 
-      <div style={splitStyle}>
-        <div style={styles.left}>
-          {filteredItems.length ? (
-            <WandersMailboxList
-              items={filteredItems}
-              selectedItemId={selectedId}
-              onItemClick={onSelectItem}
-              renderRow={(item) => (
-                <WandersMailboxItemRow
-                  key={String(item.id)}
-                  item={item}
-                  selected={String(item.id) === String(selectedId)}
-                  onClick={() => onSelectItem(item)}
-                />
-              )}
-              empty={
-                <WandersEmptyState
-                  title="No sent cards"
-                  subtitle={search ? "No items match your search." : "You haven’t sent anything yet."}
-                />
-              }
-            />
-          ) : (
-            <WandersEmptyState
-              title="No sent cards"
-              subtitle={search ? "No items match your search." : "You haven’t sent anything yet."}
-            />
-          )}
+      <div style={splitStyle} className="relative z-10">
+        {/* LEFT */}
+        <div
+          className={[
+            "relative overflow-hidden rounded-2xl border border-white/10 bg-black/55 text-white backdrop-blur-xl",
+            "shadow-[0_16px_40px_rgba(0,0,0,0.55),0_0_36px_rgba(124,58,237,0.10)]",
+          ].join(" ")}
+          style={styles.left}
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-16 -left-16 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-fuchsia-500/08 blur-3xl"
+          />
+
+          <div className="relative">
+            {filteredItems.length ? (
+              <WandersMailboxList
+                items={filteredItems}
+                selectedItemId={selectedId}
+                onItemClick={onSelectItem}
+                renderRow={(item) => (
+                  <WandersMailboxItemRow
+                    key={String(item.id)}
+                    item={item}
+                    selected={String(item.id) === String(selectedId)}
+                    onClick={() => onSelectItem(item)}
+                  />
+                )}
+                empty={
+                  <WandersEmptyState
+                    title="No sent cards"
+                    subtitle={search ? "No items match your search." : "You haven’t sent anything yet."}
+                  />
+                }
+              />
+            ) : (
+              <WandersEmptyState
+                title="No sent cards"
+                subtitle={search ? "No items match your search." : "You haven’t sent anything yet."}
+              />
+            )}
+          </div>
         </div>
 
-        <div style={styles.right}>
-          {!selectedItem ? (
-            <WandersEmptyState title="Select a message" subtitle="Choose an item to view it." />
-          ) : (
-            <div style={styles.detailWrap}>
-              <div style={styles.cardDetail}>
-                <WandersCardDetail card={selectedCardForDetail} />
-                <div style={{ marginTop: 12 }}>
-                  <div style={styles.sectionTitle}>Replies</div>
-                  {repliesLoading ? (
-                    <div className="py-6 text-center text-sm text-gray-500">Loading replies…</div>
-                  ) : (
-                    <WandersRepliesList
-                      replies={normalizedReplyItems}
-                      currentAnonId={selectedItem?.owner_anon_id || selectedItem?.ownerAnonId || null}
-                      labelMode="fully-neutral"
-                    />
-                  )}
-                </div>
-              </div>
+        {/* RIGHT */}
+        <div
+          className={[
+            "relative overflow-hidden rounded-2xl border border-white/10 bg-black/55 text-white backdrop-blur-xl",
+            "shadow-[0_16px_40px_rgba(0,0,0,0.55),0_0_36px_rgba(124,58,237,0.10)]",
+          ].join(" ")}
+          style={styles.right}
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-16 -left-16 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-fuchsia-500/08 blur-3xl"
+          />
 
-              <div style={styles.composer}>
-                <WandersReplyComposer
-                  disabled={!selectedCardId}
-                  cardId={selectedCardId}
-                  mailboxItem={selectedItem}
-                />
-              </div>
-            </div>
-          )}
+          <div style={styles.detailWrap} className="relative">
+            {!selectedItem ? (
+              <WandersEmptyState title="Select a message" subtitle="Choose an item to view it." />
+            ) : (
+              <>
+                <div
+                  className="rounded-2xl border border-white/10 bg-black/30 p-3 backdrop-blur"
+                  style={styles.cardDetail}
+                >
+                  <WandersCardDetail card={selectedCardForDetail} />
+
+                  <div style={{ marginTop: 12 }}>
+                    <div className="text-sm font-semibold text-white/90" style={styles.sectionTitle}>
+                      Replies
+                    </div>
+
+                    {repliesLoading ? (
+                      <div className="py-6 text-center text-sm text-white/60">Loading replies…</div>
+                    ) : (
+                      <WandersRepliesList
+                        replies={normalizedReplyItems}
+                        currentAnonId={selectedItem?.owner_anon_id || selectedItem?.ownerAnonId || null}
+                        labelMode="fully-neutral"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-3 backdrop-blur" style={styles.composer}>
+                  <WandersReplyComposer
+                    disabled={!selectedCardId}
+                    cardId={selectedCardId}
+                    mailboxItem={selectedItem}
+                  />
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -355,14 +406,13 @@ const styles = {
     alignItems: "start",
   },
   left: {
+    // keep sizing + overflow behavior, but visual theme now comes from className
     borderRadius: 14,
-    border: "1px solid rgba(0,0,0,0.08)",
     overflow: "hidden",
     minHeight: 280,
   },
   right: {
     borderRadius: 14,
-    border: "1px solid rgba(0,0,0,0.08)",
     minHeight: 280,
     overflow: "hidden",
   },
@@ -375,9 +425,7 @@ const styles = {
   },
   cardDetail: {
     borderRadius: 12,
-    border: "1px solid rgba(0,0,0,0.08)",
     padding: 10,
-    background: "rgba(0,0,0,0.02)",
   },
   sectionTitle: {
     fontSize: 13,
@@ -386,7 +434,6 @@ const styles = {
   },
   composer: {
     borderRadius: 12,
-    border: "1px solid rgba(0,0,0,0.08)",
     padding: 10,
   },
 };

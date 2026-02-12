@@ -1,22 +1,12 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\core\controllers\wandersInboxescontroller.js
-// ============================================================================
-// WANDERS CORE CONTROLLER — INBOXES
-// Contract: orchestration only (Supabase query + ensure guest user + model mapper).
-// No React. No UI state.
-// NOTE: This version does NOT import or call wandersInboxes.dal at all.
-// It talks to Supabase directly via getWandersSupabase().
-// ============================================================================
-
+// src/features/wanders/core/controllers/wandersInboxescontroller.js
 import { getWandersSupabase } from "@/features/wanders/services/wandersSupabaseClient";
 import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGuestUser";
-import { toWandersInbox } from "@/features/wanders/models/wandersInbox.model";
 
 function makePublicId(prefix = "w_inbox") {
   const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}_${Math.random()}`;
   return `${prefix}_${id}`;
 }
 
-// Keep projection explicit (no select "*")
 const INBOX_SELECT = [
   "id",
   "public_id",
@@ -32,14 +22,30 @@ const INBOX_SELECT = [
 ].join(",");
 
 function table() {
-  // ✅ schema-qualified table
   return "wanders.inboxes";
 }
 
-/**
- * Create a user-owned inbox (guest user / auth.uid()).
- * @param {{ realmId: string, publicId?: string, acceptsAnon?: boolean, defaultFolder?: 'inbox'|'requests', isActive?: boolean }} input
- */
+// ✅ tiny local mapper (no dependency on wandersInbox.model.js)
+function toInbox(row) {
+  if (!row) return null;
+  return {
+    id: row.id ?? null,
+    publicId: row.public_id ?? null,
+    realmId: row.realm_id ?? null,
+
+    ownerUserId: row.owner_user_id ?? null,
+    ownerActorId: row.owner_actor_id ?? null,
+    ownerAnonId: row.owner_anon_id ?? null,
+
+    acceptsAnon: !!row.accepts_anon,
+    defaultFolder: row.default_folder ?? "inbox",
+    isActive: !!row.is_active,
+
+    createdAt: row.created_at ?? null,
+    updatedAt: row.updated_at ?? null,
+  };
+}
+
 export async function createAnonWandersInbox(input) {
   const supabase = getWandersSupabase();
   const user = await ensureGuestUser();
@@ -62,13 +68,9 @@ export async function createAnonWandersInbox(input) {
     .single();
 
   if (error) throw error;
-  return toWandersInbox(data);
+  return toInbox(data);
 }
 
-/**
- * Read inbox by id (domain return).
- * @param {{ inboxId: string }} input
- */
 export async function readWandersInboxById(input) {
   const supabase = getWandersSupabase();
   const inboxId = input?.inboxId;
@@ -81,13 +83,9 @@ export async function readWandersInboxById(input) {
     .maybeSingle();
 
   if (error) throw error;
-  return data ? toWandersInbox(data) : null;
+  return toInbox(data);
 }
 
-/**
- * Public lookup by publicId.
- * @param {{ publicId: string }} input
- */
 export async function readWandersInboxByPublicId(input) {
   const supabase = getWandersSupabase();
   const publicId = input?.publicId;
@@ -100,13 +98,9 @@ export async function readWandersInboxByPublicId(input) {
     .maybeSingle();
 
   if (error) throw error;
-  return data ? toWandersInbox(data) : null;
+  return toInbox(data);
 }
 
-/**
- * List inboxes for current auth user (guest user).
- * @param {{ isActive?: boolean|null, limit?: number }} input
- */
 export async function listMyWandersInboxesAsAnon(input = {}) {
   const supabase = getWandersSupabase();
   const user = await ensureGuestUser();
@@ -118,20 +112,14 @@ export async function listMyWandersInboxesAsAnon(input = {}) {
     .order("created_at", { ascending: false })
     .limit(input?.limit ?? 50);
 
-  if (typeof input?.isActive === "boolean") {
-    q = q.eq("is_active", input.isActive);
-  }
+  if (typeof input?.isActive === "boolean") q = q.eq("is_active", input.isActive);
 
   const { data, error } = await q;
   if (error) throw error;
 
-  return (data ?? []).map(toWandersInbox);
+  return (data ?? []).map(toInbox);
 }
 
-/**
- * Update my inbox (user-owned; RLS enforces ownership).
- * @param {{ inboxId: string, acceptsAnon?: boolean, defaultFolder?: 'inbox'|'requests', isActive?: boolean }} input
- */
 export async function updateMyWandersInbox(input) {
   const supabase = getWandersSupabase();
   const inboxId = input?.inboxId;
@@ -150,5 +138,9 @@ export async function updateMyWandersInbox(input) {
     .single();
 
   if (error) throw error;
-  return toWandersInbox(data);
+  return toInbox(data);
 }
+
+// compatibility aliases
+export const listWandersInboxesForViewer = listMyWandersInboxesAsAnon;
+export const listMyInboxesAsGuest = listMyWandersInboxesAsAnon;

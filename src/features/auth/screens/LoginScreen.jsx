@@ -4,9 +4,10 @@
 // @Note: Do NOT remove, rename, or modify this block.
 
 import { useNavigate, Link, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { getActiveSeasonTheme } from '@/season'
 import { useLogin } from '@/features/auth/hooks/useLogin'
+import { supabase } from '@/services/supabase/supabaseClient'
 
 // iOS install modal
 import IosInstallPrompt from '@/app/platform/ios/components/IosInstallPrompt'
@@ -27,6 +28,16 @@ function LoginScreen() {
   } = useLogin(navigate, location)
 
   const canSubmit = !loading && email.trim() && password.trim()
+
+  const navState = useMemo(() => {
+    const s = location?.state || {}
+    return {
+      from: typeof s.from === 'string' ? s.from : null,
+      card: typeof s.card === 'string' ? s.card : null,
+      // ✅ only present when coming from WandersShareVCSM (or other intentional caller)
+      wandersClientKey: typeof s.wandersClientKey === 'string' ? s.wandersClientKey : null,
+    }
+  }, [location])
 
   // ------------------------------------------------------------
   // iOS install visibility logic
@@ -57,6 +68,29 @@ function LoginScreen() {
     }
   }, [])
 
+  // ✅ Wrap login submit so we can claim after a successful auth
+  const onSubmit = async (e) => {
+    await handleLogin(e)
+
+    // Only claim when they came from WandersShareVCSM (state includes token)
+    if (!navState?.wandersClientKey) return
+
+    try {
+      const { data } = await supabase.auth.getSession()
+      const userId = data?.session?.user?.id
+
+      // Only attempt claim if login actually succeeded
+      if (!userId) return
+
+      await supabase.rpc('claim_guest_mailbox', {
+        p_client_key: navState.wandersClientKey,
+      })
+    } catch (err) {
+      // fail open: login flow should never be blocked
+      console.warn('[Wanders claim] failed', err)
+    }
+  }
+
   return (
     <>
       <div
@@ -76,7 +110,7 @@ function LoginScreen() {
             )}
 
             <form
-              onSubmit={handleLogin}
+              onSubmit={onSubmit}
               className="
                 relative w-full space-y-5
                 bg-white/5 backdrop-blur-xl
@@ -84,7 +118,7 @@ function LoginScreen() {
                 p-6 sm:p-8 rounded-2xl
               "
             >
-              <h1 className="text-5xl font-['GFS Didot'] text-center">
+              <h1 className="text-4xl font-semibold text-center tracking-wide">
                 Vibez Citizens
               </h1>
 
@@ -117,30 +151,61 @@ function LoginScreen() {
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white"
+                className="
+                  w-full
+                  bg-gradient-to-r from-purple-600 to-violet-600
+                  hover:from-purple-500 hover:to-violet-500
+                  transition
+                  text-white font-semibold
+                  py-3 rounded-xl
+                  disabled:opacity-40
+                "
               >
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? 'Logging in…' : 'Login'}
               </button>
 
-              <p className="text-center text-sm">
-                <Link to="/forgot-password">Forgot password?</Link>
-              </p>
+              {/* Footer Row */}
+              <div className="flex items-center justify-between pt-2 text-sm">
+                <Link
+                  to="/forgot-password"
+                  className="
+                    text-purple-400
+                    font-medium
+                    hover:text-purple-300
+                    transition
+                    no-underline
+                  "
+                >
+                  Forgot password?
+                </Link>
 
-              <p className="text-sm text-center">
-                Don’t have an account?{' '}
-                <Link to="/register">Register</Link>
-              </p>
+                <Link
+                  to="/register"
+                  state={navState}
+                  className="
+                    text-purple-400
+                    font-medium
+                    hover:text-purple-300
+                    transition
+                    no-underline
+                  "
+                >
+                  Create account
+                </Link>
+              </div>
 
-              {/* ✅ CONDITIONAL iOS INSTALL CTA */}
+              {/* iOS INSTALL */}
               {canShowInstall && (
                 <button
                   type="button"
                   onClick={() => setShowInstall(true)}
                   className="
-                    mt-2 w-full
-                    rounded-lg border border-white/20
+                    mt-3 w-full
+                    rounded-xl
+                    border border-white/15
                     py-2 text-sm text-white/90
                     hover:bg-white/10
+                    transition
                   "
                 >
                   Install on iPhone
@@ -151,7 +216,6 @@ function LoginScreen() {
         </div>
       </div>
 
-      {/* ✅ CONTROLLED INSTALL MODAL */}
       <IosInstallPrompt
         open={showInstall}
         onClose={() => setShowInstall(false)}
