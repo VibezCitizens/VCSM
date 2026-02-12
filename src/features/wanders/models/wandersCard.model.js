@@ -1,10 +1,58 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\models\wandersCard.model.js
 // ============================================================================
 // WANDERS MODEL — CARD
+// Contract: map DB row -> UI-safe object.
+// No side effects.
 // ============================================================================
 
+function safeParseJson(value) {
+  if (!value) return null;
+  if (typeof value === "object") return value;
+  if (typeof value !== "string") return null;
+
+  let s = value.trim();
+  if (!s) return null;
+
+  // Unwrap up to 2 layers (jsonb string, double-encoded)
+  for (let i = 0; i < 2; i++) {
+    try {
+      const parsed = JSON.parse(s);
+
+      if (parsed && typeof parsed === "object") return parsed;
+
+      if (typeof parsed === "string") {
+        s = parsed.trim();
+        if (!s) return null;
+        continue;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
 export function toWandersCard(row) {
-  if (!row) return null
+  if (!row) return null;
+
+  const customizationRaw =
+    row.customization ??
+    row.customization_json ??
+    row.customizationJson ??
+    null;
+
+  const customizationParsed = safeParseJson(customizationRaw);
+
+  const customization =
+    (customizationParsed && typeof customizationParsed === "object")
+      ? customizationParsed
+      : (customizationRaw && typeof customizationRaw === "object")
+      ? customizationRaw
+      : {};
+
   return {
     id: row.id,
     publicId: row.public_id,
@@ -32,7 +80,9 @@ export function toWandersCard(row) {
     messageAlg: row.message_alg,
 
     templateKey: row.template_key,
-    customization: row.customization,
+
+    // ✅ critical: customization must be an object in UI
+    customization,
 
     openedAt: row.opened_at,
     lastOpenedAt: row.last_opened_at,
@@ -43,5 +93,5 @@ export function toWandersCard(row) {
 
     isVoid: row.is_void,
     inboxId: row.inbox_id,
-  }
+  };
 }

@@ -38,36 +38,55 @@ export async function createReplyAsAnon(input) {
 
   // Claim recipient for link card (only if current user isn't the sender)
   if (!recipientUserId && senderUserId && senderUserId !== user.id) {
-    const updated = await updateWandersCard({
-      cardId: card.id,
-      patch: {
-        recipient_user_id: user.id,
-        recipient_channel: card.recipient_channel ?? "link",
-      },
-    });
+    let updated = null;
 
-    // Seed recipient mailbox
-    await createWandersMailboxItem({
-      cardId: updated.id,
-      ownerActorId: null,
-      ownerUserId: user.id,
-      ownerRole: "recipient",
-      folder: "inbox",
-      isRead: false,
-      readAt: null,
-    });
+    try {
+      updated = await updateWandersCard({
+        cardId: card.id,
+        patch: {
+          recipient_user_id: user.id,
+          recipient_channel: card.recipient_channel ?? "link",
+        },
+      });
+    } catch (e) {
+      // claim is best-effort; do not block replies
+      // (RLS will commonly throw here)
+      console.warn("[replies.controller] recipient claim failed (continuing)", e);
+      updated = null;
+    }
 
-    // Event: recipient claimed
-    await createWandersCardEvent({
-      cardId: updated.id,
-      userId: user.id,
-      actorId: null,
-      eventType: "recipient_claimed",
-      meta: {},
-    });
+    const effectiveCardId = updated?.id ?? card.id;
+
+    // Seed recipient mailbox (best-effort)
+    try {
+      await createWandersMailboxItem({
+        cardId: effectiveCardId,
+        ownerActorId: null,
+        ownerUserId: user.id,
+        ownerRole: "recipient",
+        folder: "inbox",
+        isRead: false,
+        readAt: null,
+      });
+    } catch (e) {
+      console.warn("[replies.controller] seed recipient mailbox failed (continuing)", e);
+    }
+
+    // Event: recipient claimed (best-effort)
+    try {
+      await createWandersCardEvent({
+        cardId: effectiveCardId,
+        userId: user.id,
+        actorId: null,
+        eventType: "recipient_claimed",
+        meta: {},
+      });
+    } catch (e) {
+      console.warn("[replies.controller] recipient_claimed event failed (continuing)", e);
+    }
   }
 
-  // Create reply
+  // Create reply (this should be the only required write)
   const row = await createWandersReply({
     cardId: input.cardId,
     authorActorId: null,
@@ -78,14 +97,18 @@ export async function createReplyAsAnon(input) {
     bodyAlg: input.bodyAlg ?? "xchacha20poly1305",
   });
 
-  // Event: replied
-  await createWandersCardEvent({
-    cardId: input.cardId,
-    userId: user.id,
-    actorId: null,
-    eventType: "replied",
-    meta: { reply_id: row?.id ?? null },
-  });
+  // Event: replied (best-effort)
+  try {
+    await createWandersCardEvent({
+      cardId: input.cardId,
+      userId: user.id,
+      actorId: null,
+      eventType: "replied",
+      meta: { reply_id: row?.id ?? null },
+    });
+  } catch (e) {
+    console.warn("[replies.controller] replied event failed (continuing)", e);
+  }
 
   return toWandersReply(row);
 }

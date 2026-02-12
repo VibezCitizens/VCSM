@@ -11,14 +11,26 @@ export default function WandersSharePreview({
   card,
   baseUrl,
   className = "",
+  ui,
 }) {
   const navigate = useNavigate();
 
-  // keep consistent with AppRoutes (PUBLIC realm)
+  // ✅ same style contract as templates (fallback defaults match valentinesRomanticTemplate)
+  const label =
+    ui?.labelBase || "block text-sm font-medium text-gray-800 mb-1.5";
+  const input =
+    ui?.inputBase ||
+    "w-full rounded-xl border bg-gray-100 px-3.5 py-2.5 text-[15px] leading-6 shadow-sm border-gray-300 text-gray-900 placeholder:text-gray-500 transition duration-150 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 focus:bg-gray-100";
+  const textarea = ui?.textareaBase || `${input} resize-none`;
+  const button =
+    ui?.buttonBase ||
+    "w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 transition duration-150 hover:bg-gray-50 active:scale-[0.99]";
+
   const resolvedBaseUrl = useMemo(() => {
     if (baseUrl) return baseUrl;
     try {
-      if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
+      if (typeof window !== "undefined" && window.location?.origin)
+        return window.location.origin;
     } catch {}
     return "";
   }, [baseUrl]);
@@ -33,7 +45,6 @@ export default function WandersSharePreview({
     });
   }, [cardPublicId, resolvedBaseUrl]);
 
-  const cardLink = share?.url || "";
   const shareText = share?.shareText || "";
 
   const handleCopy = async (text) => {
@@ -43,9 +54,10 @@ export default function WandersSharePreview({
     } catch {}
   };
 
-  // ✅ same dynamic behavior: goes back to create card with realmId/baseUrl
   const handleSendAnother = () => {
-    navigate("/wanders/create", { state: { realmId, baseUrl: resolvedBaseUrl } });
+    navigate("/wanders/create", {
+      state: { realmId, baseUrl: resolvedBaseUrl },
+    });
   };
 
   const openExternal = (url) => {
@@ -59,8 +71,11 @@ export default function WandersSharePreview({
   const draftPayload = useMemo(() => {
     if (!card) return null;
 
-    // Many DB shapes: try common places
-    const customization = card?.customization ?? card?.payload?.customization ?? card?.meta?.customization ?? {};
+    const customization =
+      card?.customization ??
+      card?.payload?.customization ??
+      card?.meta?.customization ??
+      {};
 
     const templateKey =
       card?.template_key ??
@@ -71,7 +86,6 @@ export default function WandersSharePreview({
       customization?.templateKey ??
       null;
 
-    // Photo fields (try multiple possible locations)
     const imageUrl =
       card?.imageUrl ??
       card?.image_url ??
@@ -87,15 +101,10 @@ export default function WandersSharePreview({
       card?.payload?.imageDataUrl ??
       card?.payload?.image_data_url ??
       customization?.imageDataUrl ??
-      customization?.imageDataUrl ??
       customization?.image_data_url ??
       "";
 
-    const title =
-      card?.title ??
-      card?.payload?.title ??
-      customization?.title ??
-      "";
+    const title = card?.title ?? card?.payload?.title ?? customization?.title ?? "";
 
     const message =
       card?.message ??
@@ -107,19 +116,13 @@ export default function WandersSharePreview({
       "";
 
     return {
-      // keep original in case preview needs it
       ...card,
-
-      // normalized keys your templates can read
       templateKey: templateKey || "",
       template_key: templateKey || "",
-
       title,
       message,
-
       imageUrl,
       imageDataUrl,
-
       customization: {
         ...(customization || {}),
         imageUrl,
@@ -142,51 +145,26 @@ export default function WandersSharePreview({
       <div className="rounded-2xl border border-white/10 bg-white/95 p-4 text-black shadow-sm">
         <div className="text-sm font-semibold">Share</div>
         <div className="mt-1 text-sm text-gray-700">
-          Copy the link, or share via email, SMS, or WhatsApp.
+          Copy the message or share via email or SMS.
         </div>
 
-        {/* Card link */}
+        {/* Share text only */}
         <div className="mt-4">
-          <div className="text-xs font-semibold text-gray-700">Card link</div>
-          <div className="mt-2 grid gap-2 sm:flex sm:items-center">
-            <input
-              readOnly
-              value={cardLink}
-              onFocus={(e) => e.target.select()}
-              className="w-full flex-1 rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900"
-            />
-            <button
-              type="button"
-              onClick={() => handleCopy(cardLink)}
-              className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
-            >
-              Copy
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(`/wanders/c/${cardPublicId}`)}
-              className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
-            >
-              View
-            </button>
-          </div>
-        </div>
+          <label className={label}>Share text</label>
 
-        {/* Share text */}
-        <div className="mt-4">
-          <div className="text-xs font-semibold text-gray-700">Share text</div>
-          <div className="mt-2 grid gap-2">
+          <div className="grid gap-2">
             <textarea
               readOnly
               value={shareText}
               onFocus={(e) => e.target.select()}
-              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 min-h-[90px]"
+              className={`${textarea} min-h-[120px]`}
             />
+
             <div className="grid gap-2 sm:flex sm:flex-wrap">
               <button
                 type="button"
                 onClick={() => handleCopy(shareText)}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
+                className={button}
               >
                 Copy text
               </button>
@@ -194,7 +172,7 @@ export default function WandersSharePreview({
               <button
                 type="button"
                 onClick={() => openExternal(share?.mailtoUrl)}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
+                className={button}
               >
                 Email
               </button>
@@ -202,29 +180,17 @@ export default function WandersSharePreview({
               <button
                 type="button"
                 onClick={() => openExternal(share?.smsUrl || share?.smsAltUrl)}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
+                className={button}
               >
                 SMS
-              </button>
-
-              <button
-                type="button"
-                onClick={() => openExternal(share?.whatsappUrl)}
-                className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
-              >
-                WhatsApp
               </button>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
-          <button
-            type="button"
-            onClick={handleSendAnother}
-            className="w-full sm:w-auto rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 active:scale-[0.99]"
-          >
+        <div className="mt-4">
+          <button type="button" onClick={handleSendAnother} className={button}>
             Send another
           </button>
         </div>

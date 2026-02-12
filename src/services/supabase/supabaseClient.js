@@ -23,6 +23,9 @@ function getOrCreateClient() {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
+
+      // ✅ IMPORTANT: isolate main-app auth from Wanders auth
+      storageKey: 'sb-auth-main',
       // default localStorage is used internally
     },
   });

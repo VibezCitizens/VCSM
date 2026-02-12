@@ -5,7 +5,6 @@ import { getOrCreateWandersClientKey } from '@/features/wanders/lib/wandersClien
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '')
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Toggle verbose logging (set to "1" in .env.local if you want)
 const DEBUG_WANDERS_SB = import.meta.env.VITE_DEBUG_WANDERS_SB === '1'
 
 function dbg(...args) {
@@ -38,7 +37,6 @@ function mergeHeaders(input, initHeaders) {
   return base
 }
 
-// Parse PostgREST error bodies when status indicates failure
 async function tryReadJson(res) {
   try {
     const text = await res.clone().text()
@@ -49,7 +47,6 @@ async function tryReadJson(res) {
   }
 }
 
-// Small helper to identify schema allowlist failures quickly
 function isPgrst106(body) {
   return body && body.code === 'PGRST106'
 }
@@ -64,17 +61,11 @@ function withClientKeyFetch(clientKey) {
     const headers = mergeHeaders(input, init.headers)
     headers.set('x-client-key', clientKey)
 
-    // If you ever see Accept: */* in devtools, force JSON to keep PostgREST happy.
-    // This does not override more specific Accept headers supabase-js sets
-    // (e.g. application/vnd.pgrst.object+json), because we only set if missing.
     if (!headers.has('accept')) headers.set('accept', 'application/json')
 
-    // --- HARD BREAKPOINTS YOU CAN USE IN DEVTOOLS ---
-    // 1) Break when calling wanders schema
     // eslint-disable-next-line no-debugger
     if (DEBUG_WANDERS_SB && url && url.includes('/rest/v1/')) debugger
 
-    // 2) Break specifically for schema-profile routing issues
     const acceptProfile = headers.get('accept-profile')
     const contentProfile = headers.get('content-profile')
     if (DEBUG_WANDERS_SB && (acceptProfile === 'wanders' || contentProfile === 'wanders')) {
@@ -113,7 +104,6 @@ function withClientKeyFetch(clientKey) {
       body,
     })
 
-    // Break immediately on PGRST106 so you can inspect headers + URL in scope.
     if (res.status === 406 && isPgrst106(body)) {
       warn('PGRST106 schema allowlist failure', {
         url,
@@ -132,11 +122,14 @@ function withClientKeyFetch(clientKey) {
 export function getWandersSupabase() {
   const clientKey = getOrCreateWandersClientKey()
 
-  // HMR-safe singleton by key
+  // ✅ isolate auth storage per clientKey (guest identity per device)
+  const storageKey = `sb-auth-wanders-${clientKey}`
+
+  // HMR-safe singleton by key + storageKey
   const g = globalThis
   const existing = g.__WANDERS_SB__
-  if (existing && existing.__clientKey === clientKey) {
-    dbg('Reusing cached supabase client', { clientKey })
+  if (existing && existing.__clientKey === clientKey && existing.__storageKey === storageKey) {
+    dbg('Reusing cached supabase client', { clientKey, storageKey })
     return existing
   }
 
@@ -144,6 +137,7 @@ export function getWandersSupabase() {
     url: SUPABASE_URL,
     anonKey_present: Boolean(SUPABASE_ANON_KEY),
     clientKey,
+    storageKey,
   })
 
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -157,10 +151,14 @@ export function getWandersSupabase() {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
+
+      // ✅ THIS is the important part
+      storageKey,
     },
   })
 
   Object.defineProperty(client, '__clientKey', { value: clientKey })
+  Object.defineProperty(client, '__storageKey', { value: storageKey })
   g.__WANDERS_SB__ = client
   return client
 }

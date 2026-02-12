@@ -57,7 +57,8 @@ const CARD_COLS = [
   "updated_at",
 ].join(",");
 
-const COLS_WITH_CARD = `${COLS},card:cards(${CARD_COLS})`;
+// ✅ Force FK join so embedded card is not null
+const COLS_WITH_CARD = `${COLS},card:cards!mailbox_items_card_id_fkey(${CARD_COLS})`;
 
 /**
  * Create mailbox item.

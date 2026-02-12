@@ -152,8 +152,8 @@ export default function WandersCardPublicScreen() {
 
   const canSubmitReply = useMemo(() => {
     const text = String(replyBody ?? "").trim();
-    return Boolean(hasCard && text && !replying);
-  }, [hasCard, replyBody, replying]);
+    return Boolean(hasCard && cardId && text && !replying);
+  }, [hasCard, cardId, replyBody, replying]);
 
   useEffect(() => {
     console.log("[PublicCard] reply state:", {
@@ -174,12 +174,22 @@ export default function WandersCardPublicScreen() {
     const body = String(replyBody ?? "").trim();
     if (!body) return;
 
+    // ✅ hard guard so createReply never runs without cardId
+    if (!cardId) {
+      const err = new Error("Missing card id (cardId is null).");
+      setReplyError(err);
+      return;
+    }
+
     setReplying(true);
     setReplyError(null);
 
     try {
       console.log("[PublicCard] submitting reply:", { cardId, body });
-      const created = await createReply({ body });
+
+      // ✅ KEY FIX: pass cardId into createReply
+      const created = await Promise.resolve(createReply?.({ cardId, body }));
+
       console.log("[PublicCard] reply created OK:", created);
 
       setReplyBody("");
@@ -215,7 +225,6 @@ export default function WandersCardPublicScreen() {
 
   return (
     <div className="wanders-card-public" style={styles.page}>
-      {/* TOP: make both panels feel “parallel” */}
       <div style={styles.stack}>
         <div style={styles.panel}>
           <div style={styles.panelHeader}>
@@ -233,7 +242,6 @@ export default function WandersCardPublicScreen() {
           </div>
 
           <div style={styles.panelBody}>
-            {/* iOS zoom fix: fontSize >= 16 */}
             <textarea
               style={styles.textarea}
               placeholder="Write a reply…"
@@ -344,15 +352,11 @@ const styles = {
     maxWidth: 960,
     margin: "0 auto",
   },
-
-  // Keeps the two “boxes” aligned and consistent
   stack: {
     display: "flex",
     flexDirection: "column",
     gap: 14,
   },
-
-  // ✅ Parallel panel style (contrast for dark page)
   panel: {
     borderRadius: 16,
     border: "1px solid rgba(255,255,255,0.14)",
@@ -385,8 +389,6 @@ const styles = {
     padding: 12,
     boxSizing: "border-box",
   },
-
-  // ✅ More contrast + iOS zoom fix (fontSize 16)
   textarea: {
     width: "100%",
     resize: "vertical",
@@ -396,19 +398,17 @@ const styles = {
     color: "rgba(255,255,255,0.92)",
     padding: 12,
     boxSizing: "border-box",
-    fontSize: 16, // ✅ prevents iOS focus zoom
+    fontSize: 16,
     lineHeight: 1.35,
     outline: "none",
     WebkitTextSizeAdjust: "100%",
   },
-
   replyActions: {
     display: "flex",
     alignItems: "center",
     gap: 10,
     marginTop: 10,
   },
-
   primaryBtn: {
     padding: "10px 12px",
     borderRadius: 10,
@@ -431,21 +431,18 @@ const styles = {
     fontWeight: 800,
     opacity: 0.95,
   },
-
   divider: {
     height: 1,
     background: "rgba(255,255,255,0.10)",
     marginTop: 12,
     marginBottom: 12,
   },
-
   error: {
     marginTop: 10,
     fontSize: 12,
     fontWeight: 800,
     color: "rgba(255,190,190,0.95)",
   },
-
   repliesList: {
     display: "flex",
     flexDirection: "column",
@@ -483,7 +480,6 @@ const styles = {
     fontWeight: 800,
     color: "rgba(255,255,255,0.70)",
   },
-
   footer: {
     display: "flex",
     alignItems: "center",
