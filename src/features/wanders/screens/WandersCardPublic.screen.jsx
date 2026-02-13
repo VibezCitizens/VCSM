@@ -145,6 +145,73 @@ export default function WandersCardPublicScreen() {
     });
   };
 
+  // ============================================================================
+  // ✅ Share button (copy + email + sms)
+  // ============================================================================
+  const [copiedShare, setCopiedShare] = useState(false);
+
+  const shareUrl = useMemo(() => {
+    // Prefer a clean canonical link if possible; fallback to current URL.
+    try {
+      if (typeof window !== "undefined" && window.location?.origin && publicId) {
+        return `${window.location.origin}/wanders/c/${publicId}`;
+      }
+      if (typeof window !== "undefined" && window.location?.href) return window.location.href;
+    } catch {}
+    return publicId ? `/wanders/c/${publicId}` : "";
+  }, [publicId]);
+
+  const handleShareCopy = async () => {
+    try {
+      const text = String(shareUrl || "").trim();
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 1200);
+    } catch (e) {
+      console.error("Failed to copy share link", e);
+    }
+  };
+
+  const handleShareEmail = () => {
+    try {
+      const body = encodeURIComponent(String(shareUrl || "").trim());
+      const href = `mailto:?subject=${encodeURIComponent("Wander Card")}&body=${body}`;
+      window.location.href = href;
+    } catch {}
+  };
+
+  const handleShareSMS = () => {
+    try {
+      const body = encodeURIComponent(String(shareUrl || "").trim());
+      const href = `sms:&body=${body}`;
+      window.location.href = href;
+    } catch {}
+  };
+
+  // "Share with 3 other friends" behavior:
+  // 1) Copy link
+  // 2) Then try to open native share (mobile) if available
+  // 3) Otherwise fallback: email composer
+  const handleShareWith3 = async () => {
+    const text = String(shareUrl || "").trim();
+    if (!text) return;
+
+    await handleShareCopy();
+
+    try {
+      if (navigator?.share) {
+        await navigator.share({ title: "Wander Card", text, url: text });
+        return;
+      }
+    } catch {
+      // ignore (UI-only)
+    }
+
+    // fallback
+    handleShareEmail();
+  };
+
   const canSubmitReply = useMemo(() => {
     const text = String(replyBody ?? "").trim();
     return Boolean(hasCard && cardId && text && !replying);
@@ -346,15 +413,42 @@ export default function WandersCardPublicScreen() {
               <div style={styles.muted}> </div>
             )}
 
-            <button style={styles.footerBtn} onClick={handleCreateYourOwn} type="button">
-              <span aria-hidden style={styles.btnSheenSoft} />
-              <span aria-hidden style={styles.btnInnerRingSoft} />
-              <span style={styles.btnText}>Create your own</span>
+          
+
+            {/* ✅ Replaces "Create your own" with gradient CTA and still redirects to create screen */}
+            <button
+              type="button"
+              onClick={handleCreateYourOwn}
+              style={styles.showLoveBtn}
+            >
+              <span aria-hidden style={styles.showLoveSheen} />
+              <span aria-hidden style={styles.showLoveInnerRing} />
+              <span style={styles.showLoveText}>✨ SHOW LOVE TO 3 MORE PEOPLE ✨</span>
             </button>
           </div>
 
           <div style={styles.brand}>Wanders</div>
         </div>
+
+        {/*
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-start" }}>
+          <button style={styles.footerBtn} onClick={handleShareCopy} type="button">
+            <span aria-hidden style={styles.btnSheenSoft} />
+            <span aria-hidden style={styles.btnInnerRingSoft} />
+            <span style={styles.btnText}>{copiedShare ? "Copied ✓" : "Copy link"}</span>
+          </button>
+          <button style={styles.footerBtn} onClick={handleShareEmail} type="button">
+            <span aria-hidden style={styles.btnSheenSoft} />
+            <span aria-hidden style={styles.btnInnerRingSoft} />
+            <span style={styles.btnText}>Email</span>
+          </button>
+          <button style={styles.footerBtn} onClick={handleShareSMS} type="button">
+            <span aria-hidden style={styles.btnSheenSoft} />
+            <span aria-hidden style={styles.btnInnerRingSoft} />
+            <span style={styles.btnText}>SMS</span>
+          </button>
+        </div>
+        */}
       </div>
     </div>
   );
@@ -611,6 +705,45 @@ const styles = {
     fontWeight: 800,
     boxShadow: "0 8px 20px rgba(0,0,0,0.55)",
     transition: "transform 120ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease",
+  },
+
+  // ✅ MATCHES screenshot vibe (pink → red, thick, glossy)
+  showLoveBtn: {
+    position: "relative",
+    overflow: "hidden",
+    padding: "12px 18px",
+    borderRadius: 12,
+    border: "0px solid transparent",
+    background: "linear-gradient(135deg, #ec4899, #ef4444)",
+    color: "#fff",
+    fontSize: 13,
+    cursor: "pointer",
+    fontWeight: 900,
+    boxShadow: "0 10px 30px rgba(239,68,68,0.35), 0 0 40px rgba(236,72,153,0.25)",
+    transition: "transform 120ms ease, box-shadow 180ms ease",
+  },
+
+  showLoveSheen: {
+    pointerEvents: "none",
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(180deg, rgba(255,255,255,0.18), transparent 55%)",
+  },
+
+  showLoveInnerRing: {
+    pointerEvents: "none",
+    position: "absolute",
+    inset: 0,
+    borderRadius: 12,
+    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.22)",
+  },
+
+  showLoveText: {
+    position: "relative",
+    zIndex: 1,
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
+    whiteSpace: "nowrap",
   },
 
   brand: {
