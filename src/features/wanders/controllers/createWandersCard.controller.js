@@ -14,25 +14,47 @@ function getDefaultBaseUrl() {
   return "";
 }
 
+async function ensureGuestSession(supabase) {
+  const { data: sessData, error: sessErr } = await supabase.auth.getSession();
+  if (sessErr) throw sessErr;
+
+  if (sessData?.session?.user?.id) return sessData.session;
+
+  const { data, error } = await supabase.auth.signInAnonymously();
+  if (error) throw error;
+
+  if (!data?.session?.user?.id) {
+    throw new Error("Failed to establish guest session");
+  }
+
+  return data.session;
+}
+
 export async function createWandersCard(input) {
-  const supabase = getWandersSupabase(); // ✅ Wanders client
+  const supabase = getWandersSupabase(); // ✅ Wanders client (isolated storageKey)
 
   const realmId = input?.realmId || null;
   if (!realmId) throw new Error("createWandersCard requires { realmId }");
 
-  const senderAnonId = input?.senderAnonId || null;
   const templateKey = String(input?.templateKey || "classic");
-  const isAnonymous = !!input?.isAnonymous;
-  const messageText = input?.messageText || null;
+  const isAnonymous = !!input?.is_anonymous ?? !!input?.isAnonymous; // tolerate either
+  const messageText = input?.messageText ?? input?.message_text ?? null;
   const customization = input?.customization || {};
   const baseUrl = String(input?.baseUrl || "") || getDefaultBaseUrl();
+
+  // ✅ Option A: guest user is an anon auth.users row
+  const session = await ensureGuestSession(supabase);
+  const userId = session.user.id;
 
   const payload = {
     public_id: nanoid(21),
     realm_id: realmId,
     status: "sent",
     sent_at: new Date().toISOString(),
-    sender_anon_id: senderAnonId,
+
+    // ✅ schema-backed identity
+    sender_user_id: userId,
+
     is_anonymous: isAnonymous,
     message_text: messageText,
     template_key: templateKey,
@@ -48,20 +70,21 @@ export async function createWandersCard(input) {
     .single();
 
   if (error) throw error;
-  if (!card?.public_id) throw new Error("Card created but missing public_id");
+  if (!card?.id || !card?.public_id) throw new Error("Card created but missing id/public_id");
 
-  if (senderAnonId) {
-    await supabase
-      .schema("wanders")
-      .from("mailbox_items")
-      .insert({
-        card_id: card.id,
-        owner_anon_id: senderAnonId,
-        owner_role: "sender",
-        folder: "outbox",
-        is_read: true,
-      });
-  }
+  // ✅ outbox item tied to the same auth user (anon or upgraded later)
+  const { error: mbErr } = await supabase
+    .schema("wanders")
+    .from("mailbox_items")
+    .insert({
+      card_id: card.id,
+      owner_user_id: userId,
+      owner_role: "sender",
+      folder: "outbox",
+      is_read: true,
+    });
+
+  if (mbErr) throw mbErr;
 
   const url = baseUrl
     ? `${stripTrailingSlashes(baseUrl)}/wanders/v/${card.public_id}`

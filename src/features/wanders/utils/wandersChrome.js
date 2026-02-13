@@ -22,13 +22,13 @@ export const WANDERS_CHROME = {
 
   // Header
   header: "sticky top-0 z-20 border-b border-white/10 bg-black/70 backdrop-blur",
-  container: "mx-auto w-full max-w-4xl px-4",
+  container: "mx-auto w-full max-w-2xl px-4", // ✅ was max-w-4xl
   headerPad: "py-3",
   headerTitle: "text-lg font-bold tracking-wide",
   headerSub: "mt-1 text-sm text-zinc-300",
 
   // Main content
-  main: "relative mx-auto w-full max-w-4xl px-4 pb-24 pt-5",
+  main: "relative mx-auto w-full max-w-2xl px-4 pb-24 pt-5", // ✅ was max-w-4xl
 
   // Glass dashboard box
   dashBox:
@@ -54,7 +54,8 @@ export const WANDERS_CHROME = {
     "focus:outline-none focus:ring-2 focus:ring-violet-500/35 focus:ring-offset-0",
   ].join(" "),
 
-  btnSheen: "pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent_55%)]",
+  btnSheen:
+    "pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent_55%)]",
   btnInnerRing: "pointer-events-none absolute inset-0 rounded-xl ring-1 ring-white/10",
 
   // Helpers

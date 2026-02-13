@@ -1,22 +1,14 @@
-﻿// @RefactorBatch: 2025-11
-// @Touched: 2025-11-21
-// @Status: FULLY MIGRATED
-// @Scope: Architecture rewrite
-// @Note: Do NOT remove, rename, or modify this block.
-
+﻿// RegisterScreen.jsx
 import React, { useMemo, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '@/services/supabase/supabaseClient'
+import { getWandersSupabase } from '@/features/wanders/services/wandersSupabaseClient'
 
 export default function RegisterScreen() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  })
-
+  const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -26,10 +18,17 @@ export default function RegisterScreen() {
     return {
       from: typeof s.from === 'string' ? s.from : null,
       card: typeof s.card === 'string' ? s.card : null,
-      // ✅ only present when coming from WandersShareVCSM (or other intentional caller)
-      wandersClientKey: typeof s.wandersClientKey === 'string' ? s.wandersClientKey : null,
+      // keep other state as-is if you later add it
     }
   }, [location])
+
+  // ✅ Explicit Wanders flag (no guessing from route)
+  const isWandersFlow = Boolean(location?.state?.wandersFlow)
+
+  // ✅ Choose auth client (critical)
+  const authClient = useMemo(() => {
+    return isWandersFlow ? getWandersSupabase() : supabase
+  }, [isWandersFlow])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -38,10 +37,7 @@ export default function RegisterScreen() {
     if (successMessage) setSuccessMessage('')
   }
 
-  const canSubmit =
-    form.email.trim() !== '' &&
-    form.password.trim() !== '' &&
-    !loading
+  const canSubmit = form.email.trim() !== '' && form.password.trim() !== '' && !loading
 
   const handleRegister = async () => {
     if (!canSubmit) return
@@ -51,78 +47,97 @@ export default function RegisterScreen() {
     setSuccessMessage('')
 
     try {
-      const { data: authData, error: signUpError } =
-        await supabase.auth.signUp({
+      // ✅ Upgrade current session if present (anon/guest)
+      const { data: sess } = await authClient.auth.getSession()
+      const userId = sess?.session?.user?.id || null
+
+      if (userId) {
+        // Convert anon -> email/password (keeps same auth.uid for THIS CLIENT)
+        const { error: updErr } = await authClient.auth.updateUser({
           email: form.email,
           password: form.password,
         })
+        if (updErr) throw updErr
 
-      if (signUpError) throw signUpError
+        // Ensure profile exists (this table is global; auth.uid will match)
+        const { error: profileErr } = await authClient
+          .from('profiles')
+          .upsert({
+            id: userId,
+            email: form.email,
+            updated_at: new Date().toISOString(),
+          })
+        if (profileErr) throw profileErr
 
-      // Email confirmation flow
-      if (!authData?.user) {
-        setSuccessMessage(
-          'Registration initiated. Please check your email to confirm your account.'
-        )
+        // ✅ If this upgrade happened in Wanders client, “promote” session to main client
+        // so the rest of the app (using sb-auth-main) becomes logged in as the same user.
+        if (isWandersFlow) {
+          const { data: sess2, error: sess2Err } = await authClient.auth.getSession()
+          if (sess2Err) throw sess2Err
+
+          const s = sess2?.session || null
+          if (s?.access_token && s?.refresh_token) {
+            const { error: setSessErr } = await supabase.auth.setSession({
+              access_token: s.access_token,
+              refresh_token: s.refresh_token,
+            })
+            if (setSessErr) throw setSessErr
+          }
+        }
+
+        navigate('/onboarding', { replace: true })
         return
       }
 
-      const userId = authData.user.id
+      // Fallback: no session => normal signup
+      const { data: authData, error: signUpError } = await authClient.auth.signUp({
+        email: form.email,
+        password: form.password,
+      })
+      if (signUpError) throw signUpError
 
-      const { error: profileErr } = await supabase
+      if (!authData?.user) {
+        setSuccessMessage('Registration initiated. Please check your email to confirm your account.')
+        return
+      }
+
+      const newUserId = authData.user.id
+      const { error: profileErr } = await authClient
         .from('profiles')
         .upsert({
-          id: userId,
+          id: newUserId,
           email: form.email,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-
       if (profileErr) throw profileErr
 
-      // ✅ Claim ONLY when they came from WandersShareVCSM (state includes wandersClientKey)
-      if (navState?.wandersClientKey) {
-        try {
-          await supabase.rpc('claim_guest_mailbox', {
-            p_client_key: navState.wandersClientKey,
+      // If signup happened in Wanders flow, also promote to main
+      if (isWandersFlow) {
+        const { data: sess3 } = await authClient.auth.getSession()
+        const s = sess3?.session || null
+        if (s?.access_token && s?.refresh_token) {
+          const { error: setSessErr } = await supabase.auth.setSession({
+            access_token: s.access_token,
+            refresh_token: s.refresh_token,
           })
-        } catch (e) {
-          console.warn('[Wanders claim] failed', e)
-          // fail open: registration should still succeed
+          if (setSessErr) throw setSessErr
         }
       }
 
       navigate('/onboarding', { replace: true })
     } catch (err) {
       const msg = String(err?.message || 'Registration failed')
-      const lower = msg.toLowerCase()
-
-      // ✅ nice case: already registered
-      if (
-        lower.includes('already registered') ||
-        lower.includes('user already registered') ||
-        lower.includes('already exists')
-      ) {
-        setErrorMessage('Already registered. Log in instead.')
-        return
-      }
-
       setErrorMessage(msg)
     } finally {
       setLoading(false)
     }
   }
 
-  const showAlreadyRegistered = errorMessage
-    .toLowerCase()
-    .includes('already registered')
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-black text-white px-4">
       <div className="bg-zinc-900 p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-5 border border-purple-700/60">
-        <h1 className="text-2xl font-semibold text-center tracking-wide">
-          Join Vibez Citizens
-        </h1>
+        <h1 className="text-2xl font-semibold text-center tracking-wide">Join Vibez Citizens</h1>
 
         {successMessage && (
           <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
@@ -131,28 +146,8 @@ export default function RegisterScreen() {
         )}
 
         {errorMessage && (
-          <div className="flex items-center justify-between gap-3 rounded-xl border border-red-400/20 bg-red-500/10 px-3 py-2">
-            <div className="text-sm text-red-200">{errorMessage}</div>
-
-            {showAlreadyRegistered && (
-              <Link
-                to="/login"
-                state={navState}
-                className="
-                  shrink-0
-                  rounded-lg
-                  bg-white/10
-                  px-3 py-1.5
-                  text-sm font-semibold
-                  text-white
-                  hover:bg-white/15
-                  transition
-                  no-underline
-                "
-              >
-                Log in
-              </Link>
-            )}
+          <div className="rounded-xl border border-red-400/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+            {errorMessage}
           </div>
         )}
 
@@ -191,20 +186,14 @@ export default function RegisterScreen() {
             disabled:opacity-40
           "
         >
-          {loading ? 'Registering…' : 'Register'}
+          {loading ? 'Registering…' : 'Create account'}
         </button>
 
         <div className="flex items-center justify-between pt-2 text-sm">
           <Link
             to="/login"
             state={navState}
-            className="
-              text-purple-400
-              font-medium
-              hover:text-purple-300
-              transition
-              no-underline
-            "
+            className="text-purple-400 font-medium hover:text-purple-300 transition no-underline"
           >
             Already have an account?
           </Link>
@@ -212,15 +201,7 @@ export default function RegisterScreen() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="
-              px-3 py-1.5
-              rounded-lg
-              bg-white/5
-              border border-white/10
-              text-white/80
-              hover:bg-white/10
-              transition
-            "
+            className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 transition"
           >
             Back
           </button>

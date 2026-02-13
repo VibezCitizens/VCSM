@@ -1,8 +1,6 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\components\WandersShareVCSM.jsx
-
+// src/features/wanders/components/WandersShareVCSM.jsx
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { getOrCreateWandersClientKey } from "@/features/wanders/lib/wandersClientKey";
 import { getActiveSeasonTheme } from "@/season";
 
 export default function WandersShareVCSM({
@@ -10,28 +8,26 @@ export default function WandersShareVCSM({
   fromPath = "/wanders/sent",
   className = "",
   title = "Save your WVOX forever",
-  subtitle = "You’re using guest mode right now. Create an account to keep your mailbox across devices and never lose access.",
+  subtitle = "Create an account to keep your mailbox across devices and never lose access.",
   useSeasonFrame = false,
 }) {
   const navigate = useNavigate();
   const season = getActiveSeasonTheme("topRight");
 
   const navState = useMemo(() => {
-    let clientKey = null;
-    try {
-      clientKey = getOrCreateWandersClientKey?.() || null;
-    } catch {
-      clientKey = null;
-    }
-
     return {
       from: fromPath,
       card: (cardPublicId || "").trim() || null,
-      wandersClientKey: clientKey,
+      // ✅ Explicitly mark this as a Wanders upgrade flow
+      wandersFlow: true,
+      // ✅ no wandersClientKey in Option A
     };
   }, [fromPath, cardPublicId]);
 
+  // ✅ Register should UPGRADE current (anon) session (updateUser)
   const goRegister = () => navigate("/register", { state: navState });
+
+  // Login is still allowed, but it switches identity (won’t “merge” anon mailbox)
   const goLogin = () => navigate("/login", { state: navState });
 
   const Card = (
@@ -39,13 +35,11 @@ export default function WandersShareVCSM({
       className={[
         "relative overflow-hidden rounded-2xl",
         "border border-white/10 bg-black/55 text-white backdrop-blur-xl",
-        // ✅ subtle violet edge glow (premium)
         "shadow-[0_16px_40px_rgba(0,0,0,0.55),0_0_36px_rgba(124,58,237,0.12)]",
         "p-4",
         className,
       ].join(" ")}
     >
-      {/* ✅ corner glows (small + low opacity; does NOT muddy content) */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-16 -left-16 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl"
@@ -57,12 +51,8 @@ export default function WandersShareVCSM({
 
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-sm font-semibold tracking-wide text-white/95">
-            {title}
-          </div>
-          <div className="mt-1 text-sm leading-relaxed text-white/70">
-            {subtitle}
-          </div>
+          <div className="text-sm font-semibold tracking-wide text-white/95">{title}</div>
+          <div className="mt-1 text-sm leading-relaxed text-white/70">{subtitle}</div>
         </div>
 
         <div className="shrink-0">
@@ -83,11 +73,9 @@ export default function WandersShareVCSM({
             "focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:ring-offset-0",
           ].join(" ")}
         >
-          {/* 🔹 Beta tag */}
           <span className="absolute -top-2 -right-2 rounded-full bg-pink-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-lg">
             Beta
           </span>
-
           Create account
         </button>
 
@@ -106,7 +94,7 @@ export default function WandersShareVCSM({
       </div>
 
       <div className="relative mt-3 text-xs leading-relaxed text-white/45">
-        Tip: Guest mailboxes can be lost if you clear browser storage or switch devices.
+        Tip: Create account upgrades your current guest session so you keep everything.
       </div>
     </div>
   );

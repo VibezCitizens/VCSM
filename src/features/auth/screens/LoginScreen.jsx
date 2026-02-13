@@ -1,3 +1,4 @@
+// src/features/auth/screens/LoginScreen.jsx
 // @RefactorBatch: 2025-11
 // @Touched: 2025-11-21
 // @Scope: Global migration pass
@@ -7,7 +8,6 @@ import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState, useMemo } from 'react'
 import { getActiveSeasonTheme } from '@/season'
 import { useLogin } from '@/features/auth/hooks/useLogin'
-import { supabase } from '@/services/supabase/supabaseClient'
 
 // iOS install modal
 import IosInstallPrompt from '@/app/platform/ios/components/IosInstallPrompt'
@@ -34,8 +34,7 @@ function LoginScreen() {
     return {
       from: typeof s.from === 'string' ? s.from : null,
       card: typeof s.card === 'string' ? s.card : null,
-      // ✅ only present when coming from WandersShareVCSM (state includes token)
-      wandersClientKey: typeof s.wandersClientKey === 'string' ? s.wandersClientKey : null,
+      // ✅ Option A: no wandersClientKey
     }
   }, [location])
 
@@ -68,34 +67,13 @@ function LoginScreen() {
     }
   }, [])
 
-  // ✅ Wrap login submit so we can claim after a successful auth
   const onSubmit = async (e) => {
     await handleLogin(e)
-
-    // Only claim when they came from WandersShareVCSM (state includes token)
-    if (!navState?.wandersClientKey) return
-
-    try {
-      const { data } = await supabase.auth.getSession()
-      const userId = data?.session?.user?.id
-
-      // Only attempt claim if login actually succeeded
-      if (!userId) return
-
-      await supabase.rpc('claim_guest_mailbox', {
-        p_client_key: navState.wandersClientKey,
-      })
-    } catch (err) {
-      // fail open: login flow should never be blocked
-      console.warn('[Wanders claim] failed', err)
-    }
   }
 
   return (
     <>
-      <div
-        className={`${season.wrapper} min-h-screen flex items-center justify-center`}
-      >
+      <div className={`${season.wrapper} min-h-screen flex items-center justify-center`}>
         {season.fog1 && <div className={season.fog1} />}
         {season.fog2 && <div className={season.fog2} />}
 
@@ -149,36 +127,35 @@ function LoginScreen() {
               )}
 
               <button
-  type="submit"
-  disabled={!canSubmit}
-  className="
-    relative w-full
-    bg-gradient-to-r from-purple-600 to-violet-600
-    hover:from-purple-500 hover:to-violet-500
-    transition
-    text-white font-semibold
-    py-3 rounded-xl
-    disabled:opacity-40
-  "
->
-  {/* 🔹 Bigger Beta tag */}
-  <span className="
-    absolute -top-3 -right-3
-    rounded-full
-    bg-gradient-to-r from-pink-500 to-rose-500
-    px-3 py-1
-    text-xs font-bold uppercase tracking-wide
-    text-white
-    shadow-[0_0_16px_rgba(244,63,94,0.6)]
-  ">
-    Beta
-  </span>
+                type="submit"
+                disabled={!canSubmit}
+                className="
+                  relative w-full
+                  bg-gradient-to-r from-purple-600 to-violet-600
+                  hover:from-purple-500 hover:to-violet-500
+                  transition
+                  text-white font-semibold
+                  py-3 rounded-xl
+                  disabled:opacity-40
+                "
+              >
+                <span
+                  className="
+                    absolute -top-3 -right-3
+                    rounded-full
+                    bg-gradient-to-r from-pink-500 to-rose-500
+                    px-3 py-1
+                    text-xs font-bold uppercase tracking-wide
+                    text-white
+                    shadow-[0_0_16px_rgba(244,63,94,0.6)]
+                  "
+                >
+                  Beta
+                </span>
 
-  {loading ? 'Logging in…' : 'Login'}
-</button>
+                {loading ? 'Logging in…' : 'Login'}
+              </button>
 
-
-              {/* Footer Row */}
               <div className="flex items-center justify-between pt-2 text-sm">
                 <Link
                   to="/forgot-password"
@@ -205,13 +182,10 @@ function LoginScreen() {
                     no-underline
                   "
                 >
-                  
-
                   Create account
                 </Link>
               </div>
 
-              {/* iOS INSTALL */}
               {canShowInstall && (
                 <button
                   type="button"

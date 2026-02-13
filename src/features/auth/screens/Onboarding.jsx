@@ -118,7 +118,7 @@ export default function Onboarding() {
 
       const isAdult = age >= 18
 
-      // 3️⃣ Save profile (INCLUDING sex)
+      // 3️⃣ Save profile (INCLUDING sex) + ✅ publish after onboarding
       const { error: upsertErr } = await supabase.from('profiles').upsert({
         id: userId,
         display_name: form.display_name.trim(),
@@ -127,6 +127,8 @@ export default function Onboarding() {
         age,
         is_adult: isAdult,
         sex: form.sex || null, // ✅ FIX
+        publish: true,          // ✅ make public AFTER onboarding
+        discoverable: true,     // ✅ optional: set discoverable after onboarding
         updated_at: new Date().toISOString(),
       })
 
