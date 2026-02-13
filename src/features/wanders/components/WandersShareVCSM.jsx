@@ -77,12 +77,17 @@ export default function WandersShareVCSM({
           type="button"
           onClick={goRegister}
           className={[
-            "sm:flex-1 rounded-xl px-4 py-3 text-sm font-semibold",
+            "relative sm:flex-1 rounded-xl px-4 py-3 text-sm font-semibold",
             "bg-violet-600 text-white shadow-[0_10px_24px_rgba(124,58,237,0.20)]",
             "transition hover:bg-violet-500 active:scale-[0.99]",
             "focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:ring-offset-0",
           ].join(" ")}
         >
+          {/* 🔹 Beta tag */}
+          <span className="absolute -top-2 -right-2 rounded-full bg-pink-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-lg">
+            Beta
+          </span>
+
           Create account
         </button>
 

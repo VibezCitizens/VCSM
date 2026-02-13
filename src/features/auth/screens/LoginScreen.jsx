@@ -34,7 +34,7 @@ function LoginScreen() {
     return {
       from: typeof s.from === 'string' ? s.from : null,
       card: typeof s.card === 'string' ? s.card : null,
-      // ✅ only present when coming from WandersShareVCSM (or other intentional caller)
+      // ✅ only present when coming from WandersShareVCSM (state includes token)
       wandersClientKey: typeof s.wandersClientKey === 'string' ? s.wandersClientKey : null,
     }
   }, [location])
@@ -149,20 +149,34 @@ function LoginScreen() {
               )}
 
               <button
-                type="submit"
-                disabled={!canSubmit}
-                className="
-                  w-full
-                  bg-gradient-to-r from-purple-600 to-violet-600
-                  hover:from-purple-500 hover:to-violet-500
-                  transition
-                  text-white font-semibold
-                  py-3 rounded-xl
-                  disabled:opacity-40
-                "
-              >
-                {loading ? 'Logging in…' : 'Login'}
-              </button>
+  type="submit"
+  disabled={!canSubmit}
+  className="
+    relative w-full
+    bg-gradient-to-r from-purple-600 to-violet-600
+    hover:from-purple-500 hover:to-violet-500
+    transition
+    text-white font-semibold
+    py-3 rounded-xl
+    disabled:opacity-40
+  "
+>
+  {/* 🔹 Bigger Beta tag */}
+  <span className="
+    absolute -top-3 -right-3
+    rounded-full
+    bg-gradient-to-r from-pink-500 to-rose-500
+    px-3 py-1
+    text-xs font-bold uppercase tracking-wide
+    text-white
+    shadow-[0_0_16px_rgba(244,63,94,0.6)]
+  ">
+    Beta
+  </span>
+
+  {loading ? 'Logging in…' : 'Login'}
+</button>
+
 
               {/* Footer Row */}
               <div className="flex items-center justify-between pt-2 text-sm">
@@ -183,6 +197,7 @@ function LoginScreen() {
                   to="/register"
                   state={navState}
                   className="
+                    relative
                     text-purple-400
                     font-medium
                     hover:text-purple-300
@@ -190,6 +205,8 @@ function LoginScreen() {
                     no-underline
                   "
                 >
+                  
+
                   Create account
                 </Link>
               </div>

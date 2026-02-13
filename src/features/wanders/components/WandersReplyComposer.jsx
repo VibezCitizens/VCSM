@@ -1,4 +1,4 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\components\WandersReplyComposer.jsx
+// src/features/wanders/components/WandersReplyComposer.jsx
 // ============================================================================
 // WANDERS COMPONENT — REPLY COMPOSER
 // UI-only: controlled textarea + submit.
@@ -6,6 +6,7 @@
 // ============================================================================
 
 import React, { useMemo, useState } from "react";
+import { WANDERS_INPUT_BAR_CLASS } from "@/features/wanders/utils/wandersChrome";
 
 /**
  * @param {{
@@ -63,7 +64,7 @@ export function WandersReplyComposer({
         overflow: "hidden",
         borderRadius: 12,
         border: "1px solid rgba(255,255,255,0.15)",
-        background: "rgba(24,24,27,0.90)", // zinc-900/90
+        background: "rgba(24,24,27,0.90)",
         color: "rgba(255,255,255,0.95)",
         padding: "10px 14px",
         fontSize: 13,
@@ -82,8 +83,7 @@ export function WandersReplyComposer({
         pointerEvents: "none",
         position: "absolute",
         inset: 0,
-        background:
-          "linear-gradient(180deg, rgba(255,255,255,0.10), transparent 55%)",
+        background: "linear-gradient(180deg, rgba(255,255,255,0.10), transparent 55%)",
       },
 
       innerRing: {
@@ -116,17 +116,14 @@ export function WandersReplyComposer({
     }
   };
 
-  const inputBarClassName = `
-    w-full px-4 py-2 pr-10
-    rounded-2xl bg-neutral-900 text-white
-    border border-purple-700
-    focus:ring-2 focus:ring-purple-500
-    outline-none
-    disabled:opacity-60 disabled:cursor-not-allowed
-    placeholder:text-white/40
-    resize-none
-    text-[14px] leading-[22px]
-  `.trim();
+  const inputBarClassName = [
+    WANDERS_INPUT_BAR_CLASS,
+    "outline-none",
+    "disabled:opacity-60 disabled:cursor-not-allowed",
+    "placeholder:text-white/40",
+    "resize-none",
+    "text-[14px] leading-[22px]",
+  ].join(" ");
 
   return (
     <form onSubmit={handleSubmit} className={className} style={styles.form}>
@@ -140,9 +137,7 @@ export function WandersReplyComposer({
       />
 
       <div style={styles.row}>
-        <div style={styles.counter}>
-          {body.trim().length ? `${body.trim().length} chars` : ""}
-        </div>
+        <div style={styles.counter}>{body.trim().length ? `${body.trim().length} chars` : ""}</div>
 
         <button
           type="submit"

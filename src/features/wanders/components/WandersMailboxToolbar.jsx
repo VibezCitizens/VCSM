@@ -1,4 +1,4 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\wanders\components\WandersMailboxToolbar.jsx
+// src/features/wanders/components/WandersMailboxToolbar.jsx
 // ============================================================================
 // WANDERS COMPONENT — MAILBOX TOOLBAR
 // UI-only: folder picker + search box + optional actions slot.
@@ -6,6 +6,7 @@
 // ============================================================================
 
 import React, { useMemo } from "react";
+import WandersShareVCSM from "@/features/wanders/components/WandersShareVCSM";
 
 /**
  * @param {{
@@ -16,6 +17,12 @@ import React, { useMemo } from "react";
  *  extraActions?: React.ReactNode,
  *  disabled?: boolean,
  *  className?: string,
+ *
+ *  // ✅ optional “push to account” block
+ *  showAccountButtons?: boolean,
+ *  fromPath?: string,
+ *  accountTitle?: string,
+ *  accountSubtitle?: string,
  * }} props
  */
 export function WandersMailboxToolbar({
@@ -26,6 +33,12 @@ export function WandersMailboxToolbar({
   extraActions,
   disabled = false,
   className = "",
+
+  showAccountButtons = false,
+  fromPath = "/wanders/mailbox",
+  accountTitle = "Save your WVOX forever",
+  accountSubtitle =
+    "You’re using guest mode right now. Create an account to keep your mailbox across devices and never lose access.",
 }) {
   const folders = useMemo(
     () => [
@@ -42,6 +55,12 @@ export function WandersMailboxToolbar({
         display: "flex",
         flexDirection: "column",
         gap: 10,
+        boxSizing: "border-box",
+      },
+
+      // ✅ CTA spacing wrapper
+      ctaWrap: {
+        width: "100%",
         boxSizing: "border-box",
       },
 
@@ -162,11 +181,21 @@ export function WandersMailboxToolbar({
     []
   );
 
-  // focus handling without tailwind
   const [focused, setFocused] = React.useState(false);
 
   return (
     <div className={className} style={styles.wrap}>
+      {/* ✅ Push-to-account block (guest only) */}
+      {showAccountButtons ? (
+        <div style={styles.ctaWrap}>
+          <WandersShareVCSM
+            fromPath={fromPath}
+            title={accountTitle}
+            subtitle={accountSubtitle}
+          />
+        </div>
+      ) : null}
+
       {/* Folder pills */}
       <div style={styles.topRow}>
         {folders.map((f) => {
@@ -189,10 +218,9 @@ export function WandersMailboxToolbar({
               }}
               onMouseLeave={(e) => {
                 if (disabled) return;
-                // reset hover styles
-                e.currentTarget.style.background = (active ? styles.pillActive.background : styles.pill.background);
-                e.currentTarget.style.border = (active ? styles.pillActive.border : styles.pill.border);
-                e.currentTarget.style.boxShadow = (active ? styles.pillActive.boxShadow : styles.pill.boxShadow);
+                e.currentTarget.style.background = active ? styles.pillActive.background : styles.pill.background;
+                e.currentTarget.style.border = active ? styles.pillActive.border : styles.pill.border;
+                e.currentTarget.style.boxShadow = active ? styles.pillActive.boxShadow : styles.pill.boxShadow;
               }}
               onMouseDown={(e) => {
                 if (disabled) return;
@@ -251,13 +279,7 @@ export function WandersMailboxToolbar({
             }}
           >
             <span aria-hidden style={styles.sheen} />
-            <span
-              aria-hidden
-              style={{
-                ...styles.innerRing,
-                borderRadius: 14,
-              }}
-            />
+            <span aria-hidden style={{ ...styles.innerRing, borderRadius: 14 }} />
             <span style={{ position: "relative" }}>Clear</span>
           </button>
         ) : null}

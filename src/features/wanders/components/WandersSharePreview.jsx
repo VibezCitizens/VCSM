@@ -1,10 +1,13 @@
 // src/features/wanders/components/WandersSharePreview.jsx
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-import WandersCardPreview from "./WandersCardPreview";
+import WandersCardPreview from "@/features/wanders/components/WandersCardPreview";
 import { resolveRealm } from "@/features/upload/model/resolveRealm";
-import { buildWandersShareLinks } from "../utils/wandersShareLinks";
+import { buildWandersShareLinks } from "@/features/wanders/utils/wandersShareLinks";
+
+import Toast from "@/shared/components/components/Toast";
+import WandersShowLoveCTA from "@/features/wanders/components/WandersShowLoveCTA";
 
 export default function WandersSharePreview({
   cardPublicId,
@@ -15,6 +18,14 @@ export default function WandersSharePreview({
 }) {
   const navigate = useNavigate();
 
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+
+  const showToast = useCallback((msg) => {
+    setToastMsg(String(msg || ""));
+    setToastOpen(true);
+  }, []);
+
   const label = ui?.labelBase || "block text-sm font-medium text-white/80 mb-1.5";
 
   const input =
@@ -23,7 +34,6 @@ export default function WandersSharePreview({
 
   const textarea = ui?.textareaBase || `${input} resize-none`;
 
-  // ✅ Match the new "more visual" button style (same vibe as Sent screen)
   const button =
     ui?.buttonBase ||
     [
@@ -42,7 +52,6 @@ export default function WandersSharePreview({
       "focus:outline-none focus:ring-2 focus:ring-violet-500/35 focus:ring-offset-0",
     ].join(" ");
 
-  // ✅ Same sheen/inner ring layers used in Sent screen buttons
   const btnSheen =
     "pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent_55%)]";
   const btnInnerRing =
@@ -51,8 +60,7 @@ export default function WandersSharePreview({
   const resolvedBaseUrl = useMemo(() => {
     if (baseUrl) return baseUrl;
     try {
-      if (typeof window !== "undefined" && window.location?.origin)
-        return window.location.origin;
+      if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
     } catch {}
     return "";
   }, [baseUrl]);
@@ -69,12 +77,19 @@ export default function WandersSharePreview({
 
   const shareText = share?.shareText || "";
 
-  const handleCopy = async (text) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {}
-  };
+  const handleCopy = useCallback(
+    async (text) => {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied ✓");
+      } catch (e) {
+        console.error("[WandersSharePreview] clipboard copy failed", e);
+        showToast("Copy failed");
+      }
+    },
+    [showToast]
+  );
 
   const handleSendAnother = () => {
     navigate("/wanders/create", {
@@ -161,93 +176,76 @@ export default function WandersSharePreview({
     "pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-fuchsia-500/08 blur-3xl";
 
   return (
-    <div className={["grid gap-4 md:grid-cols-2", className].join(" ")}>
-      {/* PREVIEW */}
-      <div className={boxBase}>
-        <div aria-hidden="true" className={glowTL} />
-        <div aria-hidden="true" className={glowBR} />
-        <div className="relative">
-          <div className="mb-3 text-sm font-semibold text-white/90">Preview</div>
-          <WandersCardPreview card={card} draftPayload={draftPayload} />
-        </div>
-      </div>
+    <>
+      <Toast open={toastOpen} message={toastMsg} onClose={() => setToastOpen(false)} />
 
-      {/* SHARE */}
-      <div className={boxBase}>
-        <div aria-hidden="true" className={glowTL} />
-        <div aria-hidden="true" className={glowBR} />
-        <div className="relative">
-          <div className="text-sm font-semibold text-white/90">Share</div>
-          <div className="mt-1 text-sm text-white/60">
-            Copy the message or share via email or SMS.
+      <div className={["grid gap-4 md:grid-cols-2", className].join(" ")}>
+        {/* PREVIEW */}
+        <div className={boxBase}>
+          <div aria-hidden="true" className={glowTL} />
+          <div aria-hidden="true" className={glowBR} />
+          <div className="relative">
+            <div className="mb-3 text-sm font-semibold text-white/90">Preview</div>
+            <WandersCardPreview card={card} draftPayload={draftPayload} />
           </div>
+        </div>
 
-          <div className="mt-4">
-            <label className={label}>Share text</label>
+        {/* SHARE */}
+        <div className={boxBase}>
+          <div aria-hidden="true" className={glowTL} />
+          <div aria-hidden="true" className={glowBR} />
+          <div className="relative">
+            <div className="text-sm font-semibold text-white/90">Share</div>
+            <div className="mt-1 text-sm text-white/60">Copy the link or share via email or SMS.</div>
 
-            <div className="grid gap-2">
-              <textarea
-                readOnly
-                value={shareText}
-                onFocus={(e) => e.target.select()}
-                className={`${textarea} min-h-[120px]`}
-              />
+            <div className="mt-4">
+              <label className={label}>Share text</label>
 
-              <div className="grid gap-2 sm:flex sm:flex-wrap">
-                <button type="button" onClick={() => handleCopy(shareText)} className={button}>
-                  <span aria-hidden className={btnSheen} />
-                  <span aria-hidden className={btnInnerRing} />
-                  <span className="relative">Copy text</span>
-                </button>
+              <div className="grid gap-2">
+                <textarea
+                  readOnly
+                  value={shareText}
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="absolute left-[-9999px] top-[-9999px] h-0 w-0 opacity-0"
+                />
 
-                <button type="button" onClick={() => openExternal(share?.mailtoUrl)} className={button}>
-                  <span aria-hidden className={btnSheen} />
-                  <span aria-hidden className={btnInnerRing} />
-                  <span className="relative">Email</span>
-                </button>
+                <div className="grid gap-2 sm:flex sm:flex-wrap">
+                  <button type="button" onClick={() => handleCopy(shareText)} className={button}>
+                    <span aria-hidden className={btnSheen} />
+                    <span aria-hidden className={btnInnerRing} />
+                    <span className="relative">Link</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => openExternal(share?.smsUrl || share?.smsAltUrl)}
-                  className={button}
-                >
-                  <span aria-hidden className={btnSheen} />
-                  <span aria-hidden className={btnInnerRing} />
-                  <span className="relative">SMS</span>
-                </button>
+                  <button type="button" onClick={() => openExternal(share?.mailtoUrl)} className={button}>
+                    <span aria-hidden className={btnSheen} />
+                    <span aria-hidden className={btnInnerRing} />
+                    <span className="relative">Email</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => openExternal(share?.smsUrl || share?.smsAltUrl)}
+                    className={button}
+                  >
+                    <span aria-hidden className={btnSheen} />
+                    <span aria-hidden className={btnInnerRing} />
+                    <span className="relative">SMS</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* BIG VALENTINE CTA */}
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={handleSendAnother}
-              className={[
-                "relative overflow-hidden",
-                "w-full",
-                "rounded-2xl",
-                "bg-gradient-to-r from-pink-600 via-rose-500 to-red-500",
-                "px-6 py-3",
-                "text-base font-extrabold uppercase tracking-wide text-white",
-                "shadow-[0_14px_34px_rgba(0,0,0,0.8),0_0_40px_rgba(244,63,94,0.35)]",
-                "transition",
-                "hover:scale-[1.02]",
-                "hover:shadow-[0_18px_44px_rgba(0,0,0,0.85),0_0_55px_rgba(244,63,94,0.55)]",
-                "active:scale-[0.99]",
-                "focus:outline-none focus:ring-2 focus:ring-pink-400/50",
-              ].join(" ")}
-            >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.20),transparent_60%)]"
+            {/* BIG CTA */}
+            <div className="mt-4">
+              <WandersShowLoveCTA
+                onClick={handleSendAnother}
+                label="💖 SHOW LOVE TO MORE PEOPLE 💖"
               />
-              <span className="relative">💖 SHOW LOVE TO 3 MORE PEOPLE 💖</span>
-            </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
