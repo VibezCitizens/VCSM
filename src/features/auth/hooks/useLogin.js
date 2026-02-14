@@ -24,7 +24,14 @@ export function useLogin(navigate, location) {
         await ensureProfileDiscoverable(data.user.id)
       }
 
-      const from = location.state?.from?.pathname
+      const rawFrom = location?.state?.from
+      const from =
+        typeof rawFrom === 'string'
+          ? rawFrom
+          : (rawFrom && typeof rawFrom === 'object' && typeof rawFrom.pathname === 'string'
+              ? rawFrom.pathname + (rawFrom.search || '')
+              : null)
+
       const dest =
         from && !['/login', '/register', '/reset', '/forgot-password'].includes(from)
           ? from

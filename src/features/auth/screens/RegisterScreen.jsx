@@ -18,14 +18,12 @@ export default function RegisterScreen() {
     return {
       from: typeof s.from === 'string' ? s.from : null,
       card: typeof s.card === 'string' ? s.card : null,
-      // keep other state as-is if you later add it
+      wandersFlow: Boolean(s.wandersFlow),
     }
   }, [location])
 
-  // ✅ Explicit Wanders flag (no guessing from route)
   const isWandersFlow = Boolean(location?.state?.wandersFlow)
 
-  // ✅ Choose auth client (critical)
   const authClient = useMemo(() => {
     return isWandersFlow ? getWandersSupabase() : supabase
   }, [isWandersFlow])
@@ -39,6 +37,17 @@ export default function RegisterScreen() {
 
   const canSubmit = form.email.trim() !== '' && form.password.trim() !== '' && !loading
 
+  const goOnboarding = () => {
+    navigate('/onboarding', {
+      replace: true,
+      state: {
+        from: navState.from,
+        card: navState.card,
+        wandersFlow: navState.wandersFlow,
+      },
+    })
+  }
+
   const handleRegister = async () => {
     if (!canSubmit) return
 
@@ -47,19 +56,16 @@ export default function RegisterScreen() {
     setSuccessMessage('')
 
     try {
-      // ✅ Upgrade current session if present (anon/guest)
       const { data: sess } = await authClient.auth.getSession()
       const userId = sess?.session?.user?.id || null
 
       if (userId) {
-        // Convert anon -> email/password (keeps same auth.uid for THIS CLIENT)
         const { error: updErr } = await authClient.auth.updateUser({
           email: form.email,
           password: form.password,
         })
         if (updErr) throw updErr
 
-        // Ensure profile exists (this table is global; auth.uid will match)
         const { error: profileErr } = await authClient
           .from('profiles')
           .upsert({
@@ -69,8 +75,6 @@ export default function RegisterScreen() {
           })
         if (profileErr) throw profileErr
 
-        // ✅ If this upgrade happened in Wanders client, “promote” session to main client
-        // so the rest of the app (using sb-auth-main) becomes logged in as the same user.
         if (isWandersFlow) {
           const { data: sess2, error: sess2Err } = await authClient.auth.getSession()
           if (sess2Err) throw sess2Err
@@ -82,14 +86,22 @@ export default function RegisterScreen() {
               refresh_token: s.refresh_token,
             })
             if (setSessErr) throw setSessErr
+
+            // ✅ debug main client right after promoting tokens
+            console.log('MAIN session', await supabase.auth.getSession())
+            console.log('MAIN user', await supabase.auth.getUser())
+            console.log('MAIN storage key', supabase.auth.storageKey)
+
+            // ✅ force-warm the main client session before routing
+            const { error: warmErr } = await supabase.auth.getSession()
+            if (warmErr) throw warmErr
           }
         }
 
-        navigate('/onboarding', { replace: true })
+        goOnboarding()
         return
       }
 
-      // Fallback: no session => normal signup
       const { data: authData, error: signUpError } = await authClient.auth.signUp({
         email: form.email,
         password: form.password,
@@ -112,7 +124,6 @@ export default function RegisterScreen() {
         })
       if (profileErr) throw profileErr
 
-      // If signup happened in Wanders flow, also promote to main
       if (isWandersFlow) {
         const { data: sess3 } = await authClient.auth.getSession()
         const s = sess3?.session || null
@@ -122,10 +133,19 @@ export default function RegisterScreen() {
             refresh_token: s.refresh_token,
           })
           if (setSessErr) throw setSessErr
+
+          // ✅ debug main client right after promoting tokens
+          console.log('MAIN session', await supabase.auth.getSession())
+          console.log('MAIN user', await supabase.auth.getUser())
+          console.log('MAIN storage key', supabase.auth.storageKey)
+
+          // ✅ force-warm main session before routing
+          const { error: warmErr } = await supabase.auth.getSession()
+          if (warmErr) throw warmErr
         }
       }
 
-      navigate('/onboarding', { replace: true })
+      goOnboarding()
     } catch (err) {
       const msg = String(err?.message || 'Registration failed')
       setErrorMessage(msg)

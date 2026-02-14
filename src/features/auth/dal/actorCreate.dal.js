@@ -2,21 +2,30 @@ import { supabase } from '@/services/supabase/supabaseClient'
 
 /**
  * dalCreateUserActor
- * Inserts a user actor tied to a profile.
+ * Creates a user actor tied to a profile via RPC (RLS-safe).
  * Returns raw actor row.
  */
 export async function dalCreateUserActor(profileId) {
+  if (!profileId) {
+    throw new Error('profileId is required')
+  }
+
   const { data, error } = await supabase
-      .schema('vc')   
-    .from('actors')
-    .insert({
-      kind: 'user',
-      profile_id: profileId,
-      is_void: false,
+    .schema('vc')
+    .rpc('create_actor_for_user', {
+      p_kind: 'user',
+      p_profile_id: profileId,
+      p_vport_id: null,
+      p_is_void: false,
+      p_is_primary: true,
     })
-    .select('id, kind, profile_id, is_void')
-    .single()
 
   if (error) throw error
-  return data
+
+  return {
+    id: data.id,
+    kind: data.kind,
+    profile_id: data.profile_id,
+    is_void: data.is_void,
+  }
 }

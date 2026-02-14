@@ -17,54 +17,86 @@ export default function Onboarding() {
   const location = useLocation()
   const redirectTo = location.state?.from || '/'
 
-  // 🔑 REQUIRED
+  const isWandersFlow = Boolean(location.state?.wandersFlow)
+
   const [userId, setUserId] = useState(null)
 
   const [form, setForm] = useState({
     display_name: '',
     username_base: '',
     birthdate: '',
-    sex: '', // 👈 added
+    sex: '',
   })
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  const isAnonUser = (u) =>
+    Boolean(u?.is_anonymous) || Boolean(u?.app_metadata?.is_anonymous)
+
+  const bounceToRegister = () => {
+    navigate('/register', {
+      replace: true,
+      state: {
+        from: redirectTo,
+        card: location.state?.card || null,
+        wandersFlow: isWandersFlow,
+      },
+    })
+  }
+
   useEffect(() => {
     let isMounted = true
 
     ;(async () => {
-      const { data } = await supabase.auth.getUser()
-      const user = data?.user
+      try {
+        const { data: sessData, error: sessErr } = await supabase.auth.getSession()
+        if (sessErr) throw sessErr
 
-      if (!user) {
-        navigate('/login', { replace: true })
-        return
+        const session = sessData?.session || null
+        const user = session?.user || null
+
+        // ✅ debug: confirm main client identity on screen load
+        console.log('MAIN session', await supabase.auth.getSession())
+        console.log('MAIN user', await supabase.auth.getUser())
+        console.log('MAIN storage key', supabase.auth.storageKey)
+
+        if (!user) {
+          navigate('/login', { replace: true })
+          return
+        }
+
+        if (isAnonUser(user)) {
+          bounceToRegister()
+          return
+        }
+
+        setUserId(user.id)
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('username, birthdate')
+          .eq('id', user.id)
+          .maybeSingle()
+
+        if (!error && profile) {
+          setForm(prev => ({
+            ...prev,
+            username_base: profile.username || '',
+            birthdate: profile.birthdate || '',
+          }))
+        }
+      } catch (err) {
+        console.error('[Onboarding] init error', err)
+        setErrorMessage(err?.message || 'Failed to load onboarding.')
+      } finally {
+        if (isMounted) setLoading(false)
       }
-
-      setUserId(user.id)
-
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('username, birthdate')
-        .eq('id', user.id)
-        .maybeSingle()
-
-      if (!error && profile) {
-        setForm(prev => ({
-          ...prev,
-          // ❌ NEVER hydrate display_name during onboarding
-          username_base: profile.username || '',
-          birthdate: profile.birthdate || '',
-        }))
-      }
-
-      if (isMounted) setLoading(false)
     })()
 
     return () => { isMounted = false }
-  }, [navigate])
+  }, [navigate, redirectTo, location.state, isWandersFlow])
 
   const isValid =
     form.display_name.trim() !== '' &&
@@ -100,7 +132,31 @@ export default function Onboarding() {
     setErrorMessage('')
 
     try {
-      // 1️⃣ Generate username
+      const { data: sessData, error: sessErr } = await supabase.auth.getSession()
+      if (sessErr) throw sessErr
+
+      const session = sessData?.session || null
+      const user = session?.user || null
+
+      // ✅ debug: confirm main client identity right before privileged writes
+      console.log('MAIN session', await supabase.auth.getSession())
+      console.log('MAIN user', await supabase.auth.getUser())
+      console.log('MAIN storage key', supabase.auth.storageKey)
+
+      if (!user) {
+        navigate('/login', { replace: true })
+        return
+      }
+
+      if (isAnonUser(user)) {
+        bounceToRegister()
+        return
+      }
+
+      if (user.id !== userId) {
+        setUserId(user.id)
+      }
+
       const { data: genUname, error: genErr } = await supabase.rpc(
         'generate_username',
         {
@@ -112,38 +168,35 @@ export default function Onboarding() {
 
       const finalUsername = genUname
 
-      // 2️⃣ Compute age
       const age = computeAge(form.birthdate)
       if (age == null) throw new Error('Invalid birthdate.')
 
       const isAdult = age >= 18
 
-      // 3️⃣ Save profile (INCLUDING sex) + ✅ publish after onboarding
       const { error: upsertErr } = await supabase.from('profiles').upsert({
-        id: userId,
+        id: user.id,
         display_name: form.display_name.trim(),
         username: finalUsername,
         birthdate: form.birthdate,
         age,
         is_adult: isAdult,
-        sex: form.sex || null, // ✅ FIX
-        publish: true,          // ✅ make public AFTER onboarding
-        discoverable: true,     // ✅ optional: set discoverable after onboarding
+        sex: form.sex || null,
+        publish: true,
+        discoverable: true,
         updated_at: new Date().toISOString(),
       })
 
       if (upsertErr) throw upsertErr
 
-      // 4️⃣ Create actor (idempotent)
       await createUserActorForProfile({
-        profileId: userId,
-        userId,
+        profileId: user.id,
+        userId: user.id,
       })
 
       navigate(redirectTo, { replace: true })
     } catch (err) {
       console.error('[Onboarding] save error', err)
-      setErrorMessage(err.message || 'Failed to complete onboarding.')
+      setErrorMessage(err?.message || 'Failed to complete onboarding.')
     } finally {
       setSaving(false)
     }
@@ -174,7 +227,6 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Display name (NO PREFILL EVER) */}
         <div className="relative">
           <input
             className="w-full px-4 py-2 rounded-lg bg-zinc-200 relative z-10"
@@ -215,7 +267,6 @@ export default function Onboarding() {
           required
         />
 
-        {/* Sex (optional) */}
         <select
           className="w-full px-4 py-2 rounded-lg bg-zinc-200"
           name="sex"

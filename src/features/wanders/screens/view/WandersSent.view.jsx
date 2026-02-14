@@ -1,12 +1,6 @@
 // src/features/wanders/screens/view/WandersSent.view.jsx
-// ============================================================================
-// WANDERS VIEW SCREEN — SENT
-// Owns rendering + view-local composition. Calls hooks only.
-// No DAL, no controllers, no supabase.
-// ============================================================================
-
 import React, { useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useWandersCards } from "@/features/wanders/core/hooks/useWandersCards.hook";
 
@@ -20,6 +14,7 @@ import { WANDERS_CHROME as C } from "@/features/wanders/utils/wandersChrome";
 
 export default function WandersSentView({ cardPublicId, realmId, baseUrl }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { readByPublicId } = useWandersCards();
 
@@ -39,6 +34,12 @@ export default function WandersSentView({ cardPublicId, realmId, baseUrl }) {
     if (!resolvedBaseUrl) return "/wanders/mailbox?mode=sent";
     return `${String(resolvedBaseUrl).replace(/\/+$/, "")}/wanders/mailbox?mode=sent`;
   }, [resolvedBaseUrl]);
+
+  const fromPath = useMemo(() => {
+    const p = location?.pathname || "/wanders/sent";
+    const s = location?.search || "";
+    return `${p}${s}`;
+  }, [location?.pathname, location?.search]);
 
   React.useEffect(() => {
     if (!cardPublicId) {
@@ -152,7 +153,7 @@ export default function WandersSentView({ cardPublicId, realmId, baseUrl }) {
           </div>
 
           <div className="md:col-span-2">
-            <WandersShareVCSM cardPublicId={cardPublicId} fromPath="/wanders/sent" />
+            <WandersShareVCSM cardPublicId={cardPublicId} fromPath={fromPath} />
           </div>
 
           <div className="md:col-span-2">
