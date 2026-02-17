@@ -37,7 +37,6 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     const el = scrollRef.current;
     if (!el) return;
 
-    // scroll about 70% of visible width per click/tap
     const amount = Math.max(220, Math.floor(el.clientWidth * 0.7));
     el.scrollBy({ left: dir * amount, behavior: "smooth" });
   }, []);
@@ -99,6 +98,11 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
               px-2
+
+              select-none
+              [touch-action:pan-x]
+              [overscroll-behavior-x:contain]
+              [overscroll-behavior-y:none]
             "
           >
             {list.map((t) => {
