@@ -10,6 +10,9 @@ import CommentReplyNotificationItem from '@/features/notifications/types/comment
 import PostLikeNotificationItem from '@/features/notifications/types/reaction/PostLikeNotificationItem.view'
 import PostDislikeNotificationItem from '@/features/notifications/types/reaction/PostDislikeNotificationItem.view'
 import PostRoseNotificationItem from '@/features/notifications/types/reaction/PostRoseNotificationItem.view'
+import PostMentionNotificationItem from '@/features/notifications/types/mention/PostMentionNotificationItem.view'
+
+
 
 function DefaultNotification({ notification }) {
   return (
@@ -36,7 +39,7 @@ export default function NotificationItem({ notification }) {
     case 'comment_reply':
       return <CommentReplyNotificationItem notification={notification} />
 
-    // 🔥 POST REACTIONS (SPLIT)
+    // 🔥 POST REACTIONS
     case 'like':
       return <PostLikeNotificationItem notification={notification} />
 
@@ -46,7 +49,12 @@ export default function NotificationItem({ notification }) {
     case 'post_rose':
       return <PostRoseNotificationItem notification={notification} />
 
+    // 🔔 MENTIONS
+    case 'post_mention':
+      return <PostMentionNotificationItem notification={notification} />
+
     default:
       return <DefaultNotification notification={notification} />
   }
 }
+

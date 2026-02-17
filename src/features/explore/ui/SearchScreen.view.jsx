@@ -18,7 +18,7 @@ export default function SearchScreen() {
     { key: 'all', label: 'All' },
     { key: 'users', label: 'Citizens' },
     { key: 'vports', label: 'Vports' },
-    { key: 'posts', label: 'Vibes' },   // ✅ Posts → Vibes (UI label)
+    { key: 'posts', label: 'Vibes' }, // ✅ Posts → Vibes (UI label)
     { key: 'groups', label: 'Groups' },
   ]
 
@@ -47,8 +47,10 @@ export default function SearchScreen() {
 
         {canClear && (
           <button
+            type="button"
             onClick={() => setQuery('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+            aria-label="Clear"
           >
             ×
           </button>
@@ -63,6 +65,7 @@ export default function SearchScreen() {
 
             return (
               <button
+                type="button"
                 key={f.key}
                 onClick={() => setFilter(f.key)}
                 className={`

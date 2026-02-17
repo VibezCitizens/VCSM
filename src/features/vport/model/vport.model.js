@@ -35,7 +35,7 @@ function raise(message, meta) {
 
 /* ------------------------------ create ----------------------------- */
 
-export async function createVport({ name, slug, avatarUrl, bio, bannerUrl }) {
+export async function createVport({ name, slug, avatarUrl, bio, bannerUrl, vportType }) {
   await requireUser();
 
   const cleanName = ensureString(name).trim();
@@ -43,12 +43,17 @@ export async function createVport({ name, slug, avatarUrl, bio, bannerUrl }) {
 
   const cleanSlug = normalizeSlug(slug);
 
+  const cleanType = ensureString(vportType).trim().toLowerCase() || null;
+
   const { data, error } = await vc.rpc('create_vport', {
     p_name: cleanName,
     p_slug: cleanSlug,                  // may be null
     p_avatar_url: avatarUrl ?? null,
     p_bio: bio ?? null,
     p_banner_url: bannerUrl ?? null,    // optional in RPC
+
+    // ✅ NEW: persist category/type
+    p_vport_type: cleanType,
   });
 
   if (error) {

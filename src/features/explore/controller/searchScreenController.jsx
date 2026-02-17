@@ -47,6 +47,36 @@ export function useSearchScreenController() {
   }, [filter])
 
   // ------------------------------------------------------------
+  // Local feature injection (UI navigation cards)
+  // ------------------------------------------------------------
+  function buildFeatureResults(q, activeFilter) {
+    const needle = (q || '').trim().toLowerCase()
+    if (!needle) return []
+
+    // Only show features in "all" (so it appears under Citizens + Vports)
+    if (activeFilter !== 'all') return []
+
+    const wantsWanders =
+      needle.includes('wander') ||
+      needle.includes('wanders') ||
+      needle.startsWith('@wander') ||
+      needle === 'w'
+
+    if (!wantsWanders) return []
+
+    return [
+      {
+        result_type: 'feature',
+        id: 'wanders',
+        title: 'Wanders',
+        subtitle: 'Explore nearby Wanders',
+        icon: 'at-bubble', // UI-only hint
+        route: '/wanders',
+      },
+    ]
+  }
+
+  // ------------------------------------------------------------
   // Execute search
   // ------------------------------------------------------------
   useEffect(() => {
@@ -72,7 +102,14 @@ export function useSearchScreenController() {
           .map(normalizeResult)
           .filter(Boolean)
 
-        setResults(dedupeByKindAndId(normalized))
+        const features = buildFeatureResults(debounced, filter)
+          .map(normalizeResult)
+          .filter(Boolean)
+
+        // features first
+        const merged = [...features, ...normalized]
+
+        setResults(dedupeByKindAndId(merged))
       } catch (e) {
         if (!cancelled) {
           setError(e)
@@ -111,6 +148,13 @@ export function useSearchScreenController() {
 // - actor_id is the ONLY navigable identity
 // - user_id is legacy / auxiliary
 // - non-actor results keep id semantics
+//
+// Label mapping (UI semantics):
+// User -> Citizen
+// Vport -> Vport
+// Post -> Vibe
+// Comment -> Spark
+// Message/Conversation -> Vox
 // ============================================================
 
 export function normalizeResult(item) {
@@ -124,7 +168,7 @@ export function normalizeResult(item) {
       if (!item.actor_id) return null
 
       return {
-        result_type: 'actor',
+        result_type: 'actor', // Citizen
         actor_id: item.actor_id,
         user_id: item.user_id ?? null,
         display_name: item.display_name ?? '',
@@ -133,9 +177,20 @@ export function normalizeResult(item) {
         private: !!item.private,
       }
 
+    case 'feature':
+      if (!item.id) return null
+      return {
+        result_type: 'feature',
+        id: item.id,
+        title: item.title ?? '',
+        subtitle: item.subtitle ?? '',
+        icon: item.icon ?? null,
+        route: item.route ?? null,
+      }
+
     case 'vport':
       return {
-        result_type: 'vport',
+        result_type: 'vport', // Vport
         id: item.id ?? null,
         name: item.name ?? '',
         description: item.description ?? '',
@@ -145,10 +200,27 @@ export function normalizeResult(item) {
 
     case 'post':
       return {
-        result_type: 'post',
+        result_type: 'post', // Vibe
         id: item.id ?? item.post_id ?? null,
         title: item.title ?? '',
         text: item.text ?? '',
+      }
+
+    case 'comment':
+      return {
+        result_type: 'comment', // Spark
+        id: item.id ?? item.comment_id ?? null,
+        text: item.text ?? item.body ?? '',
+        post_id: item.post_id ?? null,
+      }
+
+    case 'message':
+    case 'conversation':
+      return {
+        result_type: t, // Vox
+        id: item.id ?? item.conversation_id ?? item.message_id ?? null,
+        title: item.title ?? '',
+        text: item.text ?? item.body ?? '',
       }
 
     case 'video':
@@ -174,7 +246,8 @@ export function normalizeResult(item) {
 // ============================================================
 // Deduplication (ACTOR-SAFE)
 // ------------------------------------------------------------
-// - Actors dedupe by actor_id
+// - Actors (Citizens) dedupe by actor_id
+// - Features dedupe by id
 // - Others dedupe by id
 // ============================================================
 

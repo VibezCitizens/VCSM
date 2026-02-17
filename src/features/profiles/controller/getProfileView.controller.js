@@ -28,7 +28,7 @@ export async function getProfileView({
   const {
     actor,
     profile: userProfile,
-    vport, // ✅ THIS EXISTS
+    vport,
   } = actorRow
 
   let isFollowing = false
@@ -46,7 +46,7 @@ export async function getProfileView({
   }
 
   /* ============================================================
-     BLOCK 1A — PROFILE PRESENTATION (FIXED)
+     BLOCK 1A — PROFILE PRESENTATION
      ============================================================ */
 
   let profile
@@ -56,7 +56,14 @@ export async function getProfileView({
       actorId: profileActorId,
       kind: 'vport',
 
-      // ✅ READ FROM actorRow.vport
+      // ✅ expose vport id at root for UI (vc.vports.id)
+      vportId: vport?.id ?? null,
+      vport_id: vport?.id ?? null,
+
+      // (optional) if you later include vport_type in rpc
+      vportType: vport?.vport_type ?? null,
+      vport_type: vport?.vport_type ?? null,
+
       displayName: vport?.name ?? null,
       username: vport?.slug ?? null,
       bio: vport?.bio ?? null,

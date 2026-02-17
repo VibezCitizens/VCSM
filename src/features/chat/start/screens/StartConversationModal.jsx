@@ -86,10 +86,10 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
         </div>
 
         {/* ================= SEARCH INPUT (MATCH Explore SearchScreen) ================= */}
-        <div className="mb-6 relative">
+        <div className="mb-4 relative">
           <input
             type="text"
-            placeholder="Search Citizens, Vports, Voxs…"
+            placeholder="Search Citizens, Vports…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="
@@ -98,6 +98,9 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
               border border-purple-700
               focus:ring-2 focus:ring-purple-500
             "
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') pickDirect()
+            }}
           />
 
           {canClear && (
@@ -111,20 +114,6 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
             </button>
           )}
         </div>
-
-        {/* START BUTTON (kept logic, visual aligned a bit more) */}
-        <button
-          type="button"
-          disabled={!query}
-          onClick={pickDirect}
-          className="mb-3 w-full rounded-2xl
-                     bg-neutral-900 border border-purple-700
-                     px-4 py-2 text-white
-                     hover:bg-neutral-800/70
-                     disabled:opacity-50 disabled:hover:bg-neutral-900"
-        >
-          Start
-        </button>
 
         {loading && (
           <div className="py-2 text-sm text-gray-400">Searching…</div>
@@ -140,13 +129,14 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
 
         {/* RESULTS */}
         {rows.length > 0 && (
-          <ul className="max-h-80 space-y-2 overflow-auto pr-1">
+          <ul className="max-h-80 space-y-2 overflow-auto">
             {rows.map((u) => (
               <li
                 key={u.id}
-                className="flex cursor-pointer items-center gap-3
+                className="w-full flex cursor-pointer items-center gap-3
                            rounded-2xl border border-purple-900/40
-                           p-3 bg-[#1d1d1d] hover:bg-[#242424]
+                           p-3
+                           bg-[#1d1d1d] hover:bg-[#242424]
                            shadow-[0_0_12px_-4px_rgba(128,0,255,0.4)]"
                 onClick={() => handlePickRow(u)}
               >
@@ -170,7 +160,11 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
                              px-2 py-1 text-xs text-purple-300 bg-purple-900/40
                              capitalize"
                 >
-                  {u._kind}
+                  {(u.kind ?? u._kind) === 'user'
+                    ? 'Citizen'
+                    : (u.kind ?? u._kind) === 'vport'
+                    ? 'Vport'
+                    : (u.kind ?? u._kind)}
                 </span>
               </li>
             ))}

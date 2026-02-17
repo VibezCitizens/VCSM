@@ -1,13 +1,12 @@
 // src/features/vport/CreateVportForm.jsx
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/app/providers/AuthProvider'; //transfer';
-import { createVport } from '@/features/vport/model/vport.model'; // <-- use RPC wrapper
+import { useAuth } from '@/app/providers/AuthProvider';
+import { createVport } from '@/features/vport/model/vport.model';
 
 const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
 
-// Grouped and alphabetized type taxonomy (UI only)
 const TYPE_GROUPS = {
   'Arts, Media & Entertainment': [
     'artist',
@@ -19,7 +18,6 @@ const TYPE_GROUPS = {
     'public figure',
     'videographer',
   ],
-
   'Beauty & Wellness': [
     'barber',
     'esthetician',
@@ -30,7 +28,6 @@ const TYPE_GROUPS = {
     'nail technician',
     'yoga instructor',
   ],
-
   'Education & Care': [
     'babysitter',
     'caregiver',
@@ -41,7 +38,6 @@ const TYPE_GROUPS = {
     'therapist',
     'tutor',
   ],
-
   'Food, Hospitality & Events': [
     'baker',
     'bartender',
@@ -51,7 +47,6 @@ const TYPE_GROUPS = {
     'restaurant',
     'server',
   ],
-
   'Health & Medical': [
     'chiropractor',
     'dentist',
@@ -59,7 +54,6 @@ const TYPE_GROUPS = {
     'nurse',
     'nutritionist',
   ],
-
   'Home, Maintenance & Trades': [
     'carpenter',
     'cleaning service',
@@ -72,7 +66,6 @@ const TYPE_GROUPS = {
     'painter',
     'plumber',
   ],
-
   'Professional & Business Services': [
     'accountant',
     'bookkeeper',
@@ -87,19 +80,16 @@ const TYPE_GROUPS = {
     'organization',
     'real estate',
   ],
-
   'Retail, Sales & Commerce': [
     'nonprofit',
     'shop',
     'vendor',
   ],
-
   'Sports & Fitness': [
     'athlete',
     'coach',
     'trainer',
   ],
-
   'Transport & Logistics': [
     'courier',
     'delivery',
@@ -109,12 +99,10 @@ const TYPE_GROUPS = {
     'towing',
     'truck driver',
   ],
-
   'Animal Care': [
     'dog walker',
     'pet sitter',
   ],
-
   Other: ['other'],
 };
 
@@ -195,6 +183,9 @@ export default function CreateVportForm({ onCreated }) {
         avatarUrl: finalAvatarUrl || null,
         bio: (description || '').trim() || null,
         ownerUserId: user?.id ?? null,
+
+        // ✅ IMPORTANT: persist category/type to DB
+        vportType: normalizedType,
       });
 
       if (onCreated) {
@@ -341,7 +332,6 @@ export default function CreateVportForm({ onCreated }) {
   );
 }
 
-/* -------------------- local helpers -------------------- */
 function nullIfEmpty(s) { return s && s.trim() ? s.trim() : null; }
 function slugifyMaybe(name) {
   return name

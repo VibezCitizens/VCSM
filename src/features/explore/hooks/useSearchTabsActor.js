@@ -69,7 +69,32 @@ export function useSearchTabsActor({
           return true
         })
 
-        setItems(cleaned)
+        // ------------------------------------------------------------
+        // Local feature injection (UI navigation cards)
+        // - Shows ONLY in "all"
+        // - Adds "Wanders" card when query matches wander(s)
+        // ------------------------------------------------------------
+        const needle = query.trim().toLowerCase()
+        const wantsWanders =
+          filter === 'all' &&
+          (needle.includes('wander') ||
+            needle.includes('wanders') ||
+            needle.startsWith('@wander'))
+
+        const features = wantsWanders
+          ? [
+              {
+                result_type: 'feature',
+                id: 'wanders',
+                title: 'Wanders',
+                subtitle: 'Explore nearby Wanders',
+                icon: 'at-bubble', // UI-only hint (used by FeatureSearchResultRow)
+                route: '/wanders',
+              },
+            ]
+          : []
+
+        setItems([...features, ...cleaned])
       } catch (e) {
         if (!cancelled) {
           setError(e)
