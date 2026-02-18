@@ -1,32 +1,42 @@
 // src/features/profiles/kinds/vport/screens/views/tabs/menu/VportMenuView.jsx
 
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo } from "react";
 
+import { useIdentity } from "@/state/identity/identityContext";
+import { useIsActorOwner } from "@/features/profiles/kinds/vport/hooks/menu/useIsActorOwner";
+
+import VportMenuManageView from "@/features/profiles/kinds/vport/screens/views/tabs/menu/VportMenuManageView";
 import VportActorMenuSection from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuSection";
 
 /**
- * Screen/View: Vport Menu tab (owner management UI)
- *
- * Expects:
- * - `actorId` passed in from parent (the vport's actor id)
- * - No DAL here, only UI composition
+ * Smart Menu Tab
+ * - Owner → full management
+ * - Viewer → public read-only menu
  */
-export function VportMenuView({ actorId } = {}) {
-  const [includeInactive, setIncludeInactive] = useState(false);
+export default function VportMenuView({ profile } = {}) {
+  const { identity } = useIdentity();
 
-  const canRender = useMemo(() => !!actorId, [actorId]);
+  const actorId = useMemo(() => {
+    return profile?.actorId ?? profile?.actor_id ?? null;
+  }, [profile]);
 
-  const handleToggleIncludeInactive = useCallback((next) => {
-    setIncludeInactive(!!next);
-  }, []);
+  const { isOwner, loading } = useIsActorOwner({
+    actorId,
+    viewerActorId: identity?.actorId,
+  });
 
-  if (!canRender) return null;
+  if (!actorId) return null;
+  if (loading) return null;
 
+  // ✅ OWNER → full manage UI
+  if (isOwner) {
+    return <VportMenuManageView actorId={actorId} />;
+  }
+
+  // ✅ VIEWER → read-only public menu
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <VportActorMenuSection actorId={actorId} includeInactive={includeInactive} />
+      <VportActorMenuSection actorId={actorId} mode="public" />
     </div>
   );
 }
-
-export default VportMenuView;

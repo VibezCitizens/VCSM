@@ -8,16 +8,6 @@ import React, { useCallback } from "react";
  * Contract:
  * - Pure UI
  * - No DAL / no Supabase
- *
- * Props:
- * - title?: string
- * - subtitle?: string
- * - loading?: boolean
- * - includeInactive?: boolean
- * - onToggleIncludeInactive?: (nextValue: boolean) => void
- * - onRefresh?: () => void
- * - onAddCategory?: () => void
- * - disabled?: boolean
  */
 export function VportActorMenuToolbar({
   title = "Menu",
@@ -46,6 +36,7 @@ export function VportActorMenuToolbar({
     fontWeight: 600,
     cursor: canInteract && !loading ? "pointer" : "not-allowed",
     opacity: canInteract && !loading ? 1 : 0.6,
+    whiteSpace: "nowrap",
   };
 
   const subtleText = {
@@ -61,16 +52,27 @@ export function VportActorMenuToolbar({
         alignItems: "flex-start",
         justifyContent: "space-between",
         gap: 12,
+        flexWrap: "wrap", // ✅ wrap on small screens
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0, flex: "1 1 240px" }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>
           {title}
         </div>
         <div style={subtleText}>{subtitle}</div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          flexWrap: "wrap", // ✅ wrap buttons instead of clipping
+          justifyContent: "flex-end",
+          flex: "0 1 auto",
+          maxWidth: "100%",
+        }}
+      >
         {typeof onToggleIncludeInactive === "function" ? (
           <label
             style={{
@@ -85,6 +87,7 @@ export function VportActorMenuToolbar({
               color: "#fff",
               fontSize: 13,
               opacity: canInteract && !loading ? 1 : 0.6,
+              whiteSpace: "nowrap",
             }}
           >
             <input

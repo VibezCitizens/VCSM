@@ -9,9 +9,26 @@ import getVportActorMenuController from "@/features/profiles/kinds/vport/control
  * - Calls controller only
  * - No DAL
  * - No business logic
+ *
+ * Expects controller to return:
+ * {
+ *   actorId,
+ *   categories: [
+ *     {
+ *       id, actorId, key, name, description, sortOrder, isActive, createdAt, updatedAt,
+ *       items: [
+ *         {
+ *           id, actorId, categoryId, key, name, description, sortOrder, isActive, createdAt, updatedAt,
+ *           price, priceCents, imageUrl
+ *         }
+ *       ]
+ *     }
+ *   ],
+ *   itemsOrphaned?: [...]
+ * }
  */
 export function useVportActorMenu({ actorId, includeInactive = false }) {
-  const [menu, setMenu] = useState({ actorId: null, categories: [] });
+  const [menu, setMenu] = useState({ actorId: null, categories: [], itemsOrphaned: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

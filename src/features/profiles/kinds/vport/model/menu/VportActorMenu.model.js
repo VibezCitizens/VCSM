@@ -11,7 +11,7 @@
  *
  * Inputs expected (domain-safe, already normalized by item/category models):
  * - categories: [{ id, actorId, key, name, description, sortOrder, isActive, createdAt, updatedAt }]
- * - items:      [{ id, actorId, categoryId, key, name, description, sortOrder, isActive, createdAt, updatedAt }]
+ * - items:      [{ id, actorId, categoryId, key, name, description, sortOrder, isActive, createdAt, updatedAt, price, priceCents, imageUrl }]
  *
  * Output:
  * {
@@ -85,7 +85,9 @@ export const VportActorMenuModel = {
       });
 
     // Items that reference a missing category
-    const categoryIdSet = new Set(safeCategories.map((c) => c?.id).filter(Boolean));
+    const categoryIdSet = new Set(
+      safeCategories.map((c) => c?.id).filter(Boolean)
+    );
     const itemsOrphaned = safeItems
       .filter((it) => {
         const cid = it?.categoryId ?? null;

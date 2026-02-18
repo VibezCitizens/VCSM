@@ -2,54 +2,40 @@
 
 import React, { useMemo, useState, useCallback } from "react";
 
-/**
- * UI: Render a single Vport Actor Menu Category + its items.
- *
- * Expected domain shapes (from your models):
- * category: {
- *   id, actorId, key, name, description, sortOrder, isActive, createdAt, updatedAt,
- *   items: [{ id, actorId, categoryId, key, name, description, sortOrder, isActive, createdAt, updatedAt }]
- * }
- *
- * This component is intentionally "dumb UI":
- * - No Supabase
- * - No DAL
- * - No controller calls directly
- * - Delegates actions via callbacks
- */
+import VportActorMenuCategoryHeader from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuCategoryHeader";
+import VportActorMenuCategoryInlineCreate from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuCategoryInlineCreate";
+import VportActorMenuCategoryItemList from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuCategoryItemList";
+
 export function VportActorMenuCategory({
   category,
-  items, // optional override; defaults to category.items
+  items,
   includeInactive = false,
 
-  // Category actions
   onEditCategory,
   onDeleteCategory,
 
-  // Item actions
   onCreateItem,
   onEditItem,
   onDeleteItem,
 
-  // UI flags (optional)
   disabled = false,
   deletingCategory = false,
   savingCategory = false,
-  deletingItemIds = null, // Set<string> | string[] | null
-  savingItemIds = null, // Set<string> | string[] | null
+  deletingItemIds = null,
+  savingItemIds = null,
 
   className = "",
 } = {}) {
   const [isCreatingItem, setIsCreatingItem] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
+  const [newItemPrice, setNewItemPrice] = useState("");
 
   const safeCategory = category ?? null;
 
   const effectiveItems = useMemo(() => {
     const list = Array.isArray(items) ? items : safeCategory?.items ?? [];
     if (includeInactive) return list;
-
     return list.filter((it) => it?.isActive !== false);
   }, [items, safeCategory, includeInactive]);
 
@@ -72,14 +58,12 @@ export function VportActorMenuCategory({
   const handleDeleteCategory = useCallback(async () => {
     if (!safeCategory?.id) return;
     if (!onDeleteCategory) return;
-
     await onDeleteCategory({ categoryId: safeCategory.id });
   }, [safeCategory, onDeleteCategory]);
 
   const handleEditCategory = useCallback(() => {
     if (!safeCategory?.id) return;
     if (!onEditCategory) return;
-
     onEditCategory(safeCategory);
   }, [safeCategory, onEditCategory]);
 
@@ -88,12 +72,14 @@ export function VportActorMenuCategory({
     setIsCreatingItem(true);
     setNewItemName("");
     setNewItemDescription("");
+    setNewItemPrice("");
   }, [canInteract]);
 
   const cancelCreateItem = useCallback(() => {
     setIsCreatingItem(false);
     setNewItemName("");
     setNewItemDescription("");
+    setNewItemPrice("");
   }, []);
 
   const submitCreateItem = useCallback(async () => {
@@ -103,10 +89,24 @@ export function VportActorMenuCategory({
     const name = (newItemName ?? "").trim();
     if (!name) return;
 
+    const rawPrice = (newItemPrice ?? "").trim();
+    const priceNum =
+      rawPrice === ""
+        ? null
+        : Number.isFinite(Number(rawPrice))
+        ? Number(rawPrice)
+        : NaN;
+
+    if (Number.isNaN(priceNum)) return;
+
+    const priceCents = priceNum == null ? null : Math.round(priceNum * 100);
+
     await onCreateItem({
       categoryId: safeCategory.id,
       name,
       description: (newItemDescription ?? "").trim() || null,
+      price: priceNum,
+      priceCents,
     });
 
     cancelCreateItem();
@@ -115,102 +115,160 @@ export function VportActorMenuCategory({
     onCreateItem,
     newItemName,
     newItemDescription,
+    newItemPrice,
     cancelCreateItem,
   ]);
 
-  const handleEditItem = useCallback(
-    (item) => {
-      if (!item?.id) return;
-      if (!onEditItem) return;
-      onEditItem(item);
-    },
-    [onEditItem]
-  );
+  const formatPrice = useCallback((it) => {
+    const cents =
+      typeof it?.priceCents === "number"
+        ? it.priceCents
+        : typeof it?.price_cents === "number"
+        ? it.price_cents
+        : null;
 
-  const handleDeleteItem = useCallback(
-    async (item) => {
-      if (!item?.id) return;
-      if (!onDeleteItem) return;
-      await onDeleteItem({ itemId: item.id });
-    },
-    [onDeleteItem]
-  );
+    if (cents != null && Number.isFinite(cents)) return `$${(cents / 100).toFixed(2)}`;
+
+    const price =
+      typeof it?.price === "number"
+        ? it.price
+        : typeof it?.price_amount === "number"
+        ? it.price_amount
+        : null;
+
+    if (price != null && Number.isFinite(price)) return `$${Number(price).toFixed(2)}`;
+
+    return null;
+  }, []);
 
   if (!safeCategory) return null;
 
+  // =========================
+  // Vibez theme styles (kept local)
+  // =========================
+  const card = {
+    border: "1px solid rgba(255,255,255,0.10)",
+    borderRadius: 16,
+    padding: 14,
+    background:
+      "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%)",
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
+  };
+
+  const pill = {
+    fontSize: 12,
+    padding: "3px 10px",
+    borderRadius: 999,
+    border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(255,255,255,0.06)",
+    color: "rgba(255,255,255,0.85)",
+    whiteSpace: "nowrap",
+  };
+
+  const codePill = {
+    fontFamily:
+      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+    fontSize: 12,
+    padding: "3px 8px",
+    borderRadius: 999,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(0,0,0,0.25)",
+    color: "rgba(255,255,255,0.82)",
+  };
+
+  const btn = {
+    padding: "8px 10px",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(255,255,255,0.06)",
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: 700,
+    cursor: canInteract ? "pointer" : "not-allowed",
+    opacity: canInteract ? 1 : 0.6,
+    whiteSpace: "nowrap",
+  };
+
+  const btnDanger = {
+    ...btn,
+    border: "1px solid rgba(239,68,68,0.35)",
+    background: "rgba(239,68,68,0.10)",
+  };
+
+  const inputStyle = {
+    padding: "10px 12px",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(0,0,0,0.35)",
+    color: "#fff",
+    outline: "none",
+  };
+
+  const inlineCreateWrap = {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 14,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(0,0,0,0.28)",
+  };
+
+  const emptyBox = {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 14,
+    border: "1px dashed rgba(255,255,255,0.14)",
+    background: "rgba(0,0,0,0.25)",
+    color: "rgba(255,255,255,0.70)",
+    fontSize: 13,
+  };
+
+  const itemRow = {
+    border: "1px solid rgba(255,255,255,0.10)",
+    borderRadius: 14,
+    padding: 12,
+    background: "rgba(0,0,0,0.22)",
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+  };
+
+  const thumbWrap = {
+    width: 54,
+    height: 54,
+    borderRadius: 12,
+    overflow: "hidden",
+    flexShrink: 0,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(0,0,0,0.35)",
+  };
+
   return (
-    <section className={className} style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12 }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <h3 style={{ margin: 0, fontSize: 16, lineHeight: "20px" }}>
-              {safeCategory.name || "Untitled Category"}
-            </h3>
+    <section className={className} style={card}>
+      <VportActorMenuCategoryHeader
+        category={safeCategory}
+        canInteract={canInteract}
+        pillStyle={pill}
+        codePillStyle={codePill}
+        btnStyle={btn}
+        btnDangerStyle={btnDanger}
+        deletingCategory={deletingCategory}
+        savingCategory={savingCategory}
+        onEditCategory={onEditCategory ? handleEditCategory : null}
+        onDeleteCategory={onDeleteCategory ? handleDeleteCategory : null}
+      />
 
-            {safeCategory.isActive === false ? (
-              <span
-                style={{
-                  fontSize: 12,
-                  padding: "2px 8px",
-                  borderRadius: 999,
-                  background: "#f3f4f6",
-                }}
-              >
-                Inactive
-              </span>
-            ) : null}
-
-            {safeCategory.key ? (
-              <code
-                style={{
-                  fontSize: 12,
-                  padding: "2px 6px",
-                  borderRadius: 6,
-                  background: "#f3f4f6",
-                }}
-              >
-                {safeCategory.key}
-              </code>
-            ) : null}
-          </div>
-
-          {safeCategory.description ? (
-            <p style={{ margin: "6px 0 0", color: "#4b5563", fontSize: 13, lineHeight: "18px" }}>
-              {safeCategory.description}
-            </p>
-          ) : null}
-        </div>
-
-        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-          {onEditCategory ? (
-            <button
-              type="button"
-              onClick={handleEditCategory}
-              disabled={!canInteract || savingCategory || deletingCategory}
-              style={{ padding: "6px 10px", borderRadius: 10 }}
-            >
-              Edit
-            </button>
-          ) : null}
-
-          {onDeleteCategory ? (
-            <button
-              type="button"
-              onClick={handleDeleteCategory}
-              disabled={!canInteract || deletingCategory}
-              style={{ padding: "6px 10px", borderRadius: 10 }}
-            >
-              {deletingCategory ? "Deleting..." : "Delete"}
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      {/* Items */}
       <div style={{ marginTop: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div style={{ fontSize: 13, color: "#374151" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+          }}
+        >
+          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.80)" }}>
             Items ({effectiveItems.length})
           </div>
 
@@ -219,7 +277,10 @@ export function VportActorMenuCategory({
               type="button"
               onClick={openCreateItem}
               disabled={!canInteract || isCreatingItem}
-              style={{ padding: "6px 10px", borderRadius: 10 }}
+              style={{
+                ...btn,
+                opacity: !canInteract || isCreatingItem ? 0.6 : 1,
+              }}
             >
               Add item
             </button>
@@ -227,140 +288,38 @@ export function VportActorMenuCategory({
         </div>
 
         {isCreatingItem ? (
-          <div style={{ marginTop: 10, padding: 10, borderRadius: 12, background: "#f9fafb" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <input
-                type="text"
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                placeholder="Item name"
-                disabled={!canInteract}
-                style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid #e5e7eb" }}
-              />
-
-              <textarea
-                value={newItemDescription}
-                onChange={(e) => setNewItemDescription(e.target.value)}
-                placeholder="Description (optional)"
-                disabled={!canInteract}
-                rows={3}
-                style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid #e5e7eb" }}
-              />
-
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                <button
-                  type="button"
-                  onClick={cancelCreateItem}
-                  disabled={!canInteract}
-                  style={{ padding: "6px 10px", borderRadius: 10 }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={submitCreateItem}
-                  disabled={!canInteract || !(newItemName ?? "").trim()}
-                  style={{ padding: "6px 10px", borderRadius: 10 }}
-                >
-                  Create
-                </button>
-              </div>
-            </div>
-          </div>
+          <VportActorMenuCategoryInlineCreate
+            canInteract={canInteract}
+            wrapStyle={inlineCreateWrap}
+            btnStyle={btn}
+            name={newItemName}
+            price={newItemPrice}
+            description={newItemDescription}
+            setName={setNewItemName}
+            setPrice={setNewItemPrice}
+            setDescription={setNewItemDescription}
+            onCancel={cancelCreateItem}
+            onSubmit={submitCreateItem}
+            inputStyle={inputStyle}
+          />
         ) : null}
 
-        {effectiveItems.length === 0 ? (
-          <div style={{ marginTop: 10, padding: 10, borderRadius: 12, background: "#f9fafb", color: "#6b7280", fontSize: 13 }}>
-            No items yet.
-          </div>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0, margin: "10px 0 0", display: "flex", flexDirection: "column", gap: 8 }}>
-            {effectiveItems.map((item) => {
-              const itemId = item?.id ?? "";
-              const isDeleting = itemId ? deletingItemSet.has(itemId) : false;
-              const isSaving = itemId ? savingItemSet.has(itemId) : false;
-
-              return (
-                <li
-                  key={itemId || Math.random()}
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    borderRadius: 12,
-                    padding: 10,
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    gap: 12,
-                  }}
-                >
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, lineHeight: "18px" }}>
-                        {item?.name || "Untitled item"}
-                      </div>
-
-                      {item?.isActive === false ? (
-                        <span
-                          style={{
-                            fontSize: 12,
-                            padding: "2px 8px",
-                            borderRadius: 999,
-                            background: "#f3f4f6",
-                          }}
-                        >
-                          Inactive
-                        </span>
-                      ) : null}
-
-                      {item?.key ? (
-                        <code
-                          style={{
-                            fontSize: 12,
-                            padding: "2px 6px",
-                            borderRadius: 6,
-                            background: "#f3f4f6",
-                          }}
-                        >
-                          {item.key}
-                        </code>
-                      ) : null}
-                    </div>
-
-                    {item?.description ? (
-                      <div style={{ marginTop: 4, fontSize: 13, color: "#4b5563", lineHeight: "18px" }}>
-                        {item.description}
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                    {onEditItem ? (
-                      <button
-                        type="button"
-                        onClick={() => handleEditItem(item)}
-                        disabled={!canInteract || isSaving || isDeleting}
-                        style={{ padding: "6px 10px", borderRadius: 10 }}
-                      >
-                        Edit
-                      </button>
-                    ) : null}
-
-                    {onDeleteItem ? (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteItem(item)}
-                        disabled={!canInteract || isDeleting}
-                        style={{ padding: "6px 10px", borderRadius: 10 }}
-                      >
-                        {isDeleting ? "Deleting..." : "Delete"}
-                      </button>
-                    ) : null}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <VportActorMenuCategoryItemList
+          items={effectiveItems}
+          canInteract={canInteract}
+          emptyBoxStyle={emptyBox}
+          itemRowStyle={itemRow}
+          pillStyle={pill}
+          codePillStyle={codePill}
+          btnStyle={btn}
+          btnDangerStyle={btnDanger}
+          thumbWrapStyle={thumbWrap}
+          deletingItemSet={deletingItemSet}
+          savingItemSet={savingItemSet}
+          formatPrice={formatPrice}
+          onEditItem={onEditItem}
+          onDeleteItem={onDeleteItem}
+        />
       </div>
     </section>
   );

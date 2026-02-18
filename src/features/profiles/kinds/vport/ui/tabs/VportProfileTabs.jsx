@@ -41,6 +41,10 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     el.scrollBy({ left: dir * amount, behavior: "smooth" });
   }, []);
 
+  // ✅ keeps tab labels from sitting underneath the overlay buttons
+  const leftPad = showLeft ? 52 : 8;
+  const rightPad = showRight ? 52 : 8;
+
   return (
     <div className="mt-4 px-4 relative z-30">
       <div className="mx-auto w-full max-w-3xl">
@@ -97,13 +101,18 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               [-webkit-overflow-scrolling:touch]
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
-              px-2
 
               select-none
               [touch-action:pan-x]
               [overscroll-behavior-x:contain]
               [overscroll-behavior-y:none]
             "
+            style={{
+              paddingLeft: leftPad,
+              paddingRight: rightPad,
+              scrollPaddingLeft: leftPad,
+              scrollPaddingRight: rightPad,
+            }}
           >
             {list.map((t) => {
               const active = tab === t.key;

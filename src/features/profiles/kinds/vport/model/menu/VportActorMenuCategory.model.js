@@ -56,7 +56,9 @@ export const VportActorMenuCategoryModel = {
    */
   fromRows(rows) {
     if (!Array.isArray(rows)) return [];
-    return rows.map((r) => VportActorMenuCategoryModel.fromRow(r)).filter(Boolean);
+    return rows
+      .map((r) => VportActorMenuCategoryModel.fromRow(r))
+      .filter(Boolean);
   },
 };
 

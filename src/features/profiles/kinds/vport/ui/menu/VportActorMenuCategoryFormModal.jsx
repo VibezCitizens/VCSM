@@ -101,52 +101,103 @@ export function VportActorMenuCategoryFormModal({
 
   if (!open) return null;
 
+  // =========================
+  // Vibez theme styles (dark)
+  // =========================
+  const overlayStyle = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 9999, // ✅ FIX: was 60, could be behind bottom nav / other fixed layers
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    background: "rgba(0,0,0,0.65)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+    pointerEvents: "auto", // ✅ ensure overlay receives clicks
+  };
+
+  const cardStyle = {
+    width: "100%",
+    maxWidth: 560,
+    borderRadius: 18,
+    background: "rgba(12,12,12,0.92)",
+    border: "1px solid rgba(255,255,255,0.10)",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+    overflow: "hidden",
+    color: "#fff",
+  };
+
+  const headerStyle = {
+    padding: "14px 16px",
+    borderBottom: "1px solid rgba(255,255,255,0.10)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  };
+
+  const titleStyle = { fontSize: 16, fontWeight: 800, letterSpacing: 0.2 };
+
+  const labelStyle = {
+    fontSize: 13,
+    fontWeight: 700,
+    color: "rgba(255,255,255,0.92)",
+  };
+  const helperStyle = {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.55)",
+    lineHeight: "16px",
+  };
+
+  const fieldBase = {
+    padding: "10px 12px",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.14)",
+    background: "rgba(255,255,255,0.06)",
+    color: "#fff",
+    outline: "none",
+  };
+
+  const buttonBase = {
+    padding: "8px 12px",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.14)",
+    background: "rgba(255,255,255,0.08)",
+    color: "#fff",
+    fontWeight: 700,
+    cursor: saving ? "not-allowed" : "pointer",
+    opacity: saving ? 0.6 : 1,
+    whiteSpace: "nowrap",
+  };
+
+  const primaryButton = {
+    ...buttonBase,
+    border: "1px solid rgba(255,255,255,0.18)",
+    background: "rgba(255,255,255,0.16)",
+  };
+
   return (
     <div
       className={className}
       role="dialog"
       aria-modal="true"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 50,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 16,
-        background: "rgba(0,0,0,0.35)",
-      }}
+      style={overlayStyle}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 560,
-          borderRadius: 16,
-          background: "#fff",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            padding: "14px 16px",
-            borderBottom: "1px solid #e5e7eb",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <div style={{ fontSize: 16, fontWeight: 700 }}>{modalTitle}</div>
+      <div style={cardStyle}>
+        {/* Header */}
+        <div style={headerStyle}>
+          <div style={titleStyle}>{modalTitle}</div>
 
           <button
             type="button"
             onClick={handleClose}
             disabled={saving}
-            style={{ padding: "6px 10px", borderRadius: 10 }}
+            style={buttonBase}
           >
             Close
           </button>
@@ -154,30 +205,26 @@ export function VportActorMenuCategoryFormModal({
 
         <form onSubmit={handleSubmit} style={{ padding: 16 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {/* Key */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 13, fontWeight: 600 }}>
-                Key (optional)
-              </label>
+              <label style={labelStyle}>Key (optional)</label>
               <input
                 type="text"
                 value={keyValue}
                 onChange={(e) => setKeyValue(e.target.value)}
                 placeholder="e.g. drinks, starters, desserts"
                 disabled={saving || disableKey}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  border: "1px solid #e5e7eb",
-                }}
+                style={fieldBase}
               />
-              <div style={{ fontSize: 12, color: "#6b7280" }}>
+              <div style={helperStyle}>
                 Used for stable identifiers. You can leave this blank.
               </div>
             </div>
 
+            {/* Name */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 13, fontWeight: 600 }}>
-                Name <span style={{ color: "#ef4444" }}>*</span>
+              <label style={labelStyle}>
+                Name <span style={{ color: "#fb7185" }}>*</span>
               </label>
               <input
                 type="text"
@@ -185,32 +232,24 @@ export function VportActorMenuCategoryFormModal({
                 onChange={(e) => setNameValue(e.target.value)}
                 placeholder="Category name"
                 disabled={saving}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  border: "1px solid #e5e7eb",
-                }}
+                style={fieldBase}
               />
             </div>
 
+            {/* Description */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 13, fontWeight: 600 }}>
-                Description (optional)
-              </label>
+              <label style={labelStyle}>Description (optional)</label>
               <textarea
                 value={descriptionValue}
                 onChange={(e) => setDescriptionValue(e.target.value)}
                 placeholder="Short description shown under the category"
                 disabled={saving}
                 rows={3}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  border: "1px solid #e5e7eb",
-                }}
+                style={{ ...fieldBase, resize: "vertical" }}
               />
             </div>
 
+            {/* Sort + Active */}
             <div
               style={{
                 display: "grid",
@@ -219,24 +258,18 @@ export function VportActorMenuCategoryFormModal({
               }}
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 13, fontWeight: 600 }}>
-                  Sort order
-                </label>
+                <label style={labelStyle}>Sort order</label>
                 <input
                   type="number"
                   value={sortOrderValue}
                   onChange={(e) => setSortOrderValue(e.target.value)}
                   disabled={saving}
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: 12,
-                    border: "1px solid #e5e7eb",
-                  }}
+                  style={fieldBase}
                 />
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <label style={{ fontSize: 13, fontWeight: 600 }}>Status</label>
+                <label style={labelStyle}>Status</label>
 
                 <label
                   style={{
@@ -245,7 +278,8 @@ export function VportActorMenuCategoryFormModal({
                     gap: 10,
                     padding: "10px 12px",
                     borderRadius: 12,
-                    border: "1px solid #e5e7eb",
+                    border: "1px solid rgba(255,255,255,0.14)",
+                    background: "rgba(255,255,255,0.05)",
                     userSelect: "none",
                   }}
                 >
@@ -254,38 +288,39 @@ export function VportActorMenuCategoryFormModal({
                     checked={!!isActiveValue}
                     onChange={(e) => setIsActiveValue(e.target.checked)}
                     disabled={saving}
-                    // ✅ force visibility even if global CSS resets checkbox styling
                     style={{
                       appearance: "auto",
                       WebkitAppearance: "checkbox",
                       width: 16,
                       height: 16,
                       margin: 0,
-                      accentColor: "#111827",
+                      accentColor: "#a78bfa",
                     }}
                   />
-                  <span style={{ fontSize: 13 }}>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.88)" }}>
                     Active (visible to customers)
                   </span>
                 </label>
               </div>
             </div>
 
+            {/* Error */}
             {error ? (
               <div
                 style={{
                   padding: 12,
                   borderRadius: 12,
-                  background: "#fef2f2",
-                  color: "#991b1b",
+                  background: "rgba(239,68,68,0.12)",
+                  color: "#fecaca",
                   fontSize: 13,
-                  border: "1px solid #fecaca",
+                  border: "1px solid rgba(239,68,68,0.30)",
                 }}
               >
                 {error?.message ?? "Something went wrong"}
               </div>
             ) : null}
 
+            {/* Actions */}
             <div
               style={{
                 display: "flex",
@@ -298,7 +333,7 @@ export function VportActorMenuCategoryFormModal({
                 type="button"
                 onClick={handleClose}
                 disabled={saving}
-                style={{ padding: "8px 12px", borderRadius: 12 }}
+                style={buttonBase}
               >
                 Cancel
               </button>
@@ -306,7 +341,11 @@ export function VportActorMenuCategoryFormModal({
               <button
                 type="submit"
                 disabled={!canSubmit}
-                style={{ padding: "8px 12px", borderRadius: 12 }}
+                style={{
+                  ...primaryButton,
+                  opacity: !canSubmit ? 0.5 : primaryButton.opacity,
+                  cursor: !canSubmit ? "not-allowed" : primaryButton.cursor,
+                }}
               >
                 {saving
                   ? effectiveMode === "edit"

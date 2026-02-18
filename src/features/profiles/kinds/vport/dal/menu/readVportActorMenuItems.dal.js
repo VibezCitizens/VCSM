@@ -1,7 +1,9 @@
+// src/features/profiles/kinds/vport/dal/menu/readVportActorMenuItem.dal.js
+
 import { supabase } from "@/services/supabase/supabaseClient";
 
 const ITEM_SELECT =
-  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at";
+  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
 
 /**
  * DAL: read a single vport actor menu item by id (raw db row).
@@ -9,9 +11,7 @@ const ITEM_SELECT =
  * - Deterministic
  * - No business meaning
  */
-export async function readVportActorMenuItemDAL({
-  itemId,
-} = {}) {
+export async function readVportActorMenuItemDAL({ itemId } = {}) {
   if (!itemId)
     throw new Error("readVportActorMenuItemDAL: itemId is required");
 

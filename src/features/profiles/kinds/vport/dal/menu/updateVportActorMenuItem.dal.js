@@ -1,7 +1,9 @@
+// src/features/profiles/kinds/vport/dal/menu/updateVportActorMenuItem.dal.js
+
 import { supabase } from "@/services/supabase/supabaseClient";
 
 const ITEM_SELECT =
-  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at";
+  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
 
 /**
  * DAL: update a vport actor menu item (raw db row).
@@ -9,10 +11,7 @@ const ITEM_SELECT =
  * - Deterministic
  * - No business meaning
  */
-export async function updateVportActorMenuItemDAL({
-  itemId,
-  patch,
-} = {}) {
+export async function updateVportActorMenuItemDAL({ itemId, patch } = {}) {
   if (!itemId)
     throw new Error("updateVportActorMenuItemDAL: itemId is required");
 

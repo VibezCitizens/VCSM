@@ -76,6 +76,22 @@ const VoidScreen = lazyWithLog(
   () => import('@/features/void/VoidScreen')
 )
 
+/* ================= VPORT MENU (PUBLIC) ================= */
+const VportActorMenuPublicScreen = lazyWithLog(
+  'VportActorMenuPublicScreen',
+  () => import('@/features/profiles/kinds/vport/screens/VportActorMenuPublicScreen')
+)
+
+const VportActorMenuQrScreen = lazyWithLog(
+  'VportActorMenuQrScreen',
+  () => import('@/features/profiles/kinds/vport/screens/VportActorMenuQrScreen')
+)
+
+const VportMenuRedirectScreen = lazyWithLog(
+  "VportMenuRedirectScreen",
+  () => import("@/features/profiles/kinds/vport/screens/VportMenuRedirectScreen")
+);
+
 /* ================= POSTS ================= */
 const PostFeedScreen = lazyWithLog(
   'PostFeedScreen',
@@ -234,6 +250,14 @@ export default function AppRoutes() {
         <Route path="/register" element={<RegisterScreen />} />
         <Route path="/reset" element={<ResetPasswordScreen />} />
         <Route path="/onboarding" element={<OnboardingScreen />} />
+
+
+       {/* ================= VPORT MENU (PUBLIC) ================= */}
+<Route path="/m/:actorId" element={<VportMenuRedirectScreen />} />
+
+<Route path="/vport/:actorId/menu" element={<VportActorMenuPublicScreen />} />
+<Route path="/vport/:actorId/menu/qr" element={<VportActorMenuQrScreen />} />
+
 
         {/* ================= LOVEDROP (PUBLIC) ================= */}
         <Route

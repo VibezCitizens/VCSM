@@ -3,15 +3,7 @@ import { supabase } from "@/services/supabase/supabaseClient";
 const CATEGORY_SELECT =
   "id,actor_id,key,name,description,sort_order,is_active,created_at,updated_at";
 
-/**
- * DAL: read a single vport actor menu category by id (raw db row).
- * - Explicit projection (no *)
- * - Deterministic
- * - No business meaning
- */
-export async function readVportActorMenuCategoryDAL({
-  categoryId,
-} = {}) {
+export async function readVportActorMenuCategoryDAL({ categoryId } = {}) {
   if (!categoryId)
     throw new Error("readVportActorMenuCategoryDAL: categoryId is required");
 
@@ -26,4 +18,7 @@ export async function readVportActorMenuCategoryDAL({
   return data ?? null;
 }
 
-export default readVportActorMenuCategoryDAL;
+// ✅ alias with the name your controllers use
+export const readVportActorMenuCategoriesDAL = readVportActorMenuCategoryDAL;
+
+export default readVportActorMenuCategoriesDAL;

@@ -9,12 +9,6 @@ import { VportActorMenuItemModel } from "@/features/profiles/kinds/vport/model/m
 
 /**
  * Controller: create or update a vport actor menu item
- *
- * Owns:
- * - Ownership enforcement (actor scope)
- * - Category ownership / actor-category match enforcement
- * - Idempotent branching (create vs update)
- * - Domain return shape (via model)
  */
 export async function saveVportActorMenuItemController({
   actorId,
@@ -25,6 +19,11 @@ export async function saveVportActorMenuItemController({
   description,
   sortOrder,
   isActive,
+
+  // ✅ NEW
+  priceCents,
+  currencyCode,
+  imageUrl,
 } = {}) {
   if (!actorId) {
     throw new Error("saveVportActorMenuItemController: actorId is required");
@@ -38,7 +37,7 @@ export async function saveVportActorMenuItemController({
     throw new Error("saveVportActorMenuItemController: name is required");
   }
 
-  // Validate category exists + belongs to actor (ownership / match)
+  // Validate category exists + belongs to actor
   const category = await readVportActorMenuCategoriesDAL({ categoryId });
   if (!category) {
     throw new Error("Category not found");
@@ -69,6 +68,12 @@ export async function saveVportActorMenuItemController({
           typeof sortOrder === "number" ? sortOrder : existing.sort_order,
         is_active:
           typeof isActive === "boolean" ? isActive : existing.is_active,
+
+        // ✅ NEW
+        price_cents:
+          typeof priceCents === "number" ? priceCents : priceCents ?? existing.price_cents ?? null,
+        currency_code: (currencyCode ?? existing.currency_code ?? "USD").toString(),
+        image_url: typeof imageUrl === "string" ? imageUrl : imageUrl ?? existing.image_url ?? null,
       },
     });
 
@@ -84,6 +89,11 @@ export async function saveVportActorMenuItemController({
     description: description ?? null,
     sortOrder: typeof sortOrder === "number" ? sortOrder : 0,
     isActive: typeof isActive === "boolean" ? isActive : true,
+
+    // ✅ NEW
+    priceCents: typeof priceCents === "number" ? priceCents : priceCents ?? null,
+    currencyCode: (currencyCode ?? "USD").toString(),
+    imageUrl: typeof imageUrl === "string" ? imageUrl : null,
   });
 
   return VportActorMenuItemModel.fromRow(created);

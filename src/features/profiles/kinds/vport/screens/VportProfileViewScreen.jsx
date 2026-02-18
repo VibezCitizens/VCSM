@@ -332,7 +332,8 @@ export default function VportProfileViewScreen({
             />
           )}
 
-          {tab === "services" && <VportServicesView profile={profile} />}
+         {tab === "services" && <VportServicesView profile={profile} viewerActorId={viewerActorId} />}
+
 
           {tab === "book" && <VportBookingView profile={profile} />}
 
@@ -341,7 +342,8 @@ export default function VportProfileViewScreen({
           )}
 
           {tab === "subscribers" && <VportSubscribersView profile={profile} />}
-          {tab === "reviews" && <VportReviewsView profile={profile} />}
+          {tab === "reviews" && <VportReviewsView profile={profile} viewerActorId={viewerActorId} />}
+
           {tab === "menu" && <VportMenuView profile={profile} />}
 
           {tab === "about" && publicDetailsLoading && !publicDetails && (

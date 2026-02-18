@@ -1,7 +1,7 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
 const ITEM_SELECT =
-  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at";
+  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
 
 /**
  * DAL: list menu items for a vport actor (raw db rows).

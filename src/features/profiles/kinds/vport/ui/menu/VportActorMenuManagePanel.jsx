@@ -1,6 +1,6 @@
 // src/features/profiles/kinds/vport/ui/menu/VportActorMenuManagePanel.jsx
 
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useRef } from "react";
 
 import useVportActorMenu from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenu";
 import useVportActorMenuCategoriesMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuCategoriesMutations";
@@ -8,31 +8,19 @@ import useVportActorMenuItemsMutations from "@/features/profiles/kinds/vport/hoo
 
 import VportActorMenuEmptyState from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuEmptyState";
 import VportActorMenuCategory from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuCategory";
-import VportActorMenuCategoryFormModal from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuCategoryFormModal";
-import VportActorMenuItemFormModal from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuItemFormModal";
-import VportActorMenuConfirmDeleteModal from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuConfirmDeleteModal";
 
-/**
- * UI: Owner management panel for Vport Actor Menu
- *
- * Contract:
- * - Owns UI state and orchestration of modals
- * - Calls hooks (controllers via hooks)
- * - No DAL / no direct Supabase
- */
+import VportActorMenuManageHeader from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuManageHeader";
+import VportActorMenuManageModals from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuManageModals";
+
 export function VportActorMenuManagePanel({
   actorId,
   includeInactive = false,
+  showHeader = true,
   className = "",
 } = {}) {
-  const {
-    categories,
-    loading: loadingMenu,
-    error: menuError,
-    refresh,
-  } = useVportActorMenu({ actorId, includeInactive });
+  const { categories, loading: loadingMenu, error: menuError, refresh } =
+    useVportActorMenu({ actorId, includeInactive });
 
-  // mutations
   const categoriesMut = useVportActorMenuCategoriesMutations({
     actorId,
     onSuccess: async () => {
@@ -47,7 +35,6 @@ export function VportActorMenuManagePanel({
     },
   });
 
-  // modal state
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [categoryModalCategory, setCategoryModalCategory] = useState(null);
 
@@ -61,9 +48,10 @@ export function VportActorMenuManagePanel({
     "Are you sure you want to delete this? This action cannot be undone."
   );
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const confirmActionRef = React.useRef(null);
 
-  // track per-item deleting ids (optional)
+  // ✅ FIX: don't access React.useRef without importing React default
+  const confirmActionRef = useRef(null);
+
   const [deletingItemIds, setDeletingItemIds] = useState(() => new Set());
 
   const hasCategories = (categories ?? []).length > 0;
@@ -83,19 +71,46 @@ export function VportActorMenuManagePanel({
     setCategoryModalCategory(null);
   }, []);
 
-  const openCreateItemForCategory = useCallback((categoryId) => {
-    setItemModalItem({
-      id: null,
-      categoryId,
-      key: null,
-      name: "",
-      description: null,
-      sortOrder: 0,
-      isActive: true,
-    });
-    setItemModalLockCategory(true);
-    setItemModalOpen(true);
-  }, []);
+  // accepts either (categoryId) OR ({ categoryId, name, description, price, priceCents })
+  const openCreateItemForCategory = useCallback(
+    (arg) => {
+      const categoryId = typeof arg === "string" ? arg : arg?.categoryId ?? null;
+
+      const prefillName = typeof arg === "object" ? arg?.name ?? "" : "";
+      const prefillDescription =
+        typeof arg === "object" ? arg?.description ?? null : null;
+
+      const prefillPriceCents =
+        typeof arg === "object" && typeof arg?.priceCents === "number"
+          ? arg.priceCents
+          : typeof arg === "object" && typeof arg?.price_cents === "number"
+          ? arg.price_cents
+          : null;
+
+      const prefillPrice =
+        typeof arg === "object" && typeof arg?.price === "number"
+          ? arg.price
+          : prefillPriceCents != null
+          ? prefillPriceCents / 100
+          : null;
+
+      setItemModalItem({
+        id: null,
+        actorId,
+        categoryId,
+        key: null,
+        name: prefillName,
+        description: prefillDescription,
+        price: prefillPrice,
+        priceCents: prefillPriceCents,
+        sortOrder: 0,
+        isActive: true,
+      });
+      setItemModalLockCategory(true);
+      setItemModalOpen(true);
+    },
+    [actorId]
+  );
 
   const openEditItem = useCallback((item) => {
     setItemModalItem(item ?? null);
@@ -132,7 +147,6 @@ export function VportActorMenuManagePanel({
     }
   }, [closeConfirm]);
 
-  // category save
   const handleSaveCategory = useCallback(
     async (payload) => {
       await categoriesMut.saveCategory(payload);
@@ -140,7 +154,6 @@ export function VportActorMenuManagePanel({
     [categoriesMut]
   );
 
-  // item save
   const handleSaveItem = useCallback(
     async (payload) => {
       await itemsMut.saveItem(payload);
@@ -148,7 +161,6 @@ export function VportActorMenuManagePanel({
     [itemsMut]
   );
 
-  // delete category with confirm
   const requestDeleteCategory = useCallback(
     ({ categoryId }) => {
       setConfirmTitle("Delete category");
@@ -163,7 +175,6 @@ export function VportActorMenuManagePanel({
     [categoriesMut]
   );
 
-  // delete item with confirm
   const requestDeleteItem = useCallback(
     ({ itemId }) => {
       setConfirmTitle("Delete item");
@@ -192,7 +203,6 @@ export function VportActorMenuManagePanel({
     [itemsMut]
   );
 
-  // derived categories for item modal select
   const categorySelectOptions = useMemo(() => {
     return (categories ?? []).map((c) => ({
       id: c?.id ?? "",
@@ -200,40 +210,23 @@ export function VportActorMenuManagePanel({
     }));
   }, [categories]);
 
-  // If menu load fails, still render something deterministic
   const errorMessage = menuError?.message ?? null;
 
   return (
-    <div className={className} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <div style={{ fontSize: 16, fontWeight: 800 }}>Menu</div>
-          <div style={{ fontSize: 13, color: "#6b7280" }}>
-            Create categories and items. Customers will see only active entries.
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            type="button"
-            onClick={refresh}
-            disabled={loadingMenu}
-            style={{ padding: "8px 12px", borderRadius: 12 }}
-          >
-            {loadingMenu ? "Refreshing..." : "Refresh"}
-          </button>
-
-          <button
-            type="button"
-            onClick={openCreateCategory}
-            disabled={!actorId || categoriesMut.saving || categoriesMut.deleting}
-            style={{ padding: "8px 12px", borderRadius: 12 }}
-          >
-            Add category
-          </button>
-        </div>
-      </div>
+    <div
+      className={className}
+      style={{ display: "flex", flexDirection: "column", gap: 12 }}
+    >
+      {showHeader ? (
+        <VportActorMenuManageHeader
+          loading={loadingMenu}
+          actorId={actorId}
+          onRefresh={refresh}
+          onAddCategory={openCreateCategory}
+          savingCategory={categoriesMut.saving}
+          deletingCategory={categoriesMut.deleting}
+        />
+      ) : null}
 
       {errorMessage ? (
         <div
@@ -250,7 +243,6 @@ export function VportActorMenuManagePanel({
         </div>
       ) : null}
 
-      {/* Empty state */}
       {!loadingMenu && !hasCategories ? (
         <VportActorMenuEmptyState
           title="No categories yet"
@@ -261,7 +253,16 @@ export function VportActorMenuManagePanel({
         />
       ) : null}
 
-      {/* Categories */}
+      {!loadingMenu && hasCategories ? (
+        <VportActorMenuEmptyState
+          title="Add another category"
+          subtitle="Restaurants usually need multiple categories (Drinks, Starters, Mains, Desserts)."
+          actionLabel="Add category"
+          onAction={openCreateCategory}
+          disabled={!actorId || categoriesMut.saving || categoriesMut.deleting}
+        />
+      ) : null}
+
       {hasCategories ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {(categories ?? []).map((cat) => (
@@ -271,7 +272,15 @@ export function VportActorMenuManagePanel({
               includeInactive={includeInactive}
               onEditCategory={openEditCategory}
               onDeleteCategory={requestDeleteCategory}
-              onCreateItem={({ categoryId }) => openCreateItemForCategory(categoryId)}
+              onCreateItem={({ categoryId, name, description, price, priceCents }) =>
+                openCreateItemForCategory({
+                  categoryId,
+                  name,
+                  description,
+                  price,
+                  priceCents,
+                })
+              }
               onEditItem={openEditItem}
               onDeleteItem={requestDeleteItem}
               disabled={!actorId}
@@ -283,37 +292,26 @@ export function VportActorMenuManagePanel({
         </div>
       ) : null}
 
-      {/* Category modal */}
-      <VportActorMenuCategoryFormModal
-        open={categoryModalOpen}
-        category={categoryModalCategory}
-        onSave={handleSaveCategory}
-        onClose={closeCategoryModal}
-        saving={categoriesMut.saving}
-      />
-
-      {/* Item modal */}
-      <VportActorMenuItemFormModal
-        open={itemModalOpen}
-        item={itemModalItem}
-        categories={categorySelectOptions}
-        onSave={handleSaveItem}
-        onClose={closeItemModal}
-        saving={itemsMut.saving}
+      <VportActorMenuManageModals
+        actorId={actorId}
+        categorySelectOptions={categorySelectOptions}
+        categoryModalOpen={categoryModalOpen}
+        categoryModalCategory={categoryModalCategory}
+        onCloseCategoryModal={closeCategoryModal}
+        onSaveCategory={handleSaveCategory}
+        savingCategory={categoriesMut.saving}
+        itemModalOpen={itemModalOpen}
+        itemModalItem={itemModalItem}
         lockCategory={itemModalLockCategory}
-      />
-
-      {/* Confirm delete */}
-      <VportActorMenuConfirmDeleteModal
-        open={confirmOpen}
-        title={confirmTitle}
-        description={confirmDescription}
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
-        loading={confirmLoading}
-        danger={true}
+        onCloseItemModal={closeItemModal}
+        onSaveItem={handleSaveItem}
+        savingItem={itemsMut.saving}
+        confirmOpen={confirmOpen}
+        confirmTitle={confirmTitle}
+        confirmDescription={confirmDescription}
+        confirmLoading={confirmLoading}
         onConfirm={runConfirm}
-        onClose={closeConfirm}
+        onCloseConfirm={closeConfirm}
       />
     </div>
   );

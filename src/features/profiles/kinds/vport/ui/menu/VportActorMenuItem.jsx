@@ -2,36 +2,6 @@
 
 import React, { useMemo, useCallback } from "react";
 
-/**
- * UI: Render a single Vport Actor Menu Item row/card
- *
- * Domain shape expected (from VportActorMenuItemModel):
- * {
- *   id,
- *   actorId,
- *   categoryId,
- *   key,
- *   name,
- *   description,
- *   sortOrder,
- *   isActive,
- *   createdAt,
- *   updatedAt
- * }
- *
- * Contract:
- * - Pure UI
- * - No DAL / no Supabase
- * - Delegates actions via callbacks
- *
- * Props:
- * - item: item domain object
- * - onEdit: (item) => void
- * - onDelete: ({ itemId }) => Promise<void> | void
- * - disabled: boolean
- * - deleting: boolean
- * - className: string
- */
 export function VportActorMenuItem({
   item,
   onEdit,
@@ -43,10 +13,8 @@ export function VportActorMenuItem({
   const safeItem = item ?? null;
 
   const title = useMemo(() => safeItem?.name ?? "Untitled item", [safeItem]);
-  const description = useMemo(
-    () => safeItem?.description ?? null,
-    [safeItem]
-  );
+  const description = useMemo(() => safeItem?.description ?? null, [safeItem]);
+  const imageUrl = useMemo(() => safeItem?.imageUrl ?? null, [safeItem]);
 
   const canInteract = !disabled;
 
@@ -77,44 +45,69 @@ export function VportActorMenuItem({
         gap: 12,
       }}
     >
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, lineHeight: "18px" }}>
-            {title}
-          </div>
-
-          {safeItem.isActive === false ? (
-            <span
-              style={{
-                fontSize: 12,
-                padding: "2px 8px",
-                borderRadius: 999,
-                background: "#f3f4f6",
-              }}
-            >
-              Inactive
-            </span>
-          ) : null}
-
-          {safeItem.key ? (
-            <code
-              style={{
-                fontSize: 12,
-                padding: "2px 6px",
-                borderRadius: 6,
-                background: "#f3f4f6",
-              }}
-            >
-              {safeItem.key}
-            </code>
-          ) : null}
-        </div>
-
-        {description ? (
-          <div style={{ marginTop: 4, fontSize: 13, color: "#4b5563", lineHeight: "18px" }}>
-            {description}
+      <div style={{ display: "flex", gap: 10, minWidth: 0, flex: 1 }}>
+        {/* ✅ NEW: image thumb */}
+        {imageUrl ? (
+          <div
+            style={{
+              width: 54,
+              height: 54,
+              borderRadius: 12,
+              overflow: "hidden",
+              flexShrink: 0,
+              border: "1px solid rgba(0,0,0,0.08)",
+              background: "#111827",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageUrl}
+              alt=""
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              loading="lazy"
+            />
           </div>
         ) : null}
+
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, lineHeight: "18px" }}>
+              {title}
+            </div>
+
+            {safeItem.isActive === false ? (
+              <span
+                style={{
+                  fontSize: 12,
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  background: "#f3f4f6",
+                }}
+              >
+                Inactive
+              </span>
+            ) : null}
+
+            {safeItem.key ? (
+              <code
+                style={{
+                  fontSize: 12,
+                  padding: "2px 6px",
+                  borderRadius: 6,
+                  background: "#f3f4f6",
+                }}
+              >
+                {safeItem.key}
+              </code>
+            ) : null}
+          </div>
+
+          {description ? (
+            <div style={{ marginTop: 4, fontSize: 13, color: "#4b5563", lineHeight: "18px" }}>
+              {description}
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>

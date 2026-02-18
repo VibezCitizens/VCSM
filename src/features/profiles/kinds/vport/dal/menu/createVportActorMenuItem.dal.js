@@ -1,7 +1,9 @@
+// src/features/profiles/kinds/vport/dal/menu/createVportActorMenuItem.dal.js
+
 import { supabase } from "@/services/supabase/supabaseClient";
 
 const ITEM_SELECT =
-  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at";
+  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
 
 /**
  * DAL: create a vport actor menu item (raw db row).
@@ -17,6 +19,11 @@ export async function createVportActorMenuItemDAL({
   description,
   sortOrder,
   isActive,
+
+  // ✅ NEW
+  priceCents,
+  currencyCode,
+  imageUrl,
 } = {}) {
   if (!actorId)
     throw new Error("createVportActorMenuItemDAL: actorId is required");
@@ -35,6 +42,15 @@ export async function createVportActorMenuItemDAL({
     description: description ?? null,
     sort_order: typeof sortOrder === "number" ? sortOrder : 0,
     is_active: typeof isActive === "boolean" ? isActive : true,
+
+    // ✅ NEW
+    price_cents:
+      priceCents == null ? null : Math.max(0, Math.round(Number(priceCents))),
+    currency_code:
+      typeof currencyCode === "string" && currencyCode.trim().length === 3
+        ? currencyCode.trim().toUpperCase()
+        : "USD",
+    image_url: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null,
   };
 
   const { data, error } = await supabase

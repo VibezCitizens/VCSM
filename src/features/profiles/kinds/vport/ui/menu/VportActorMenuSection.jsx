@@ -3,30 +3,39 @@
 import React, { useMemo } from "react";
 
 import VportActorMenuManagePanel from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuManagePanel";
+import VportActorMenuPublicPanel from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuPublicPanel";
 
-/**
- * UI Section: wraps the Vport Actor Menu management UI
- *
- * Contract:
- * - Pure composition wrapper
- * - No DAL / no Supabase
- *
- * Props:
- * - actorId: uuid (required)
- * - includeInactive: boolean
- */
 export function VportActorMenuSection({
   actorId,
   includeInactive = false,
+  mode = "manage",
   className = "",
 } = {}) {
   const canRender = useMemo(() => !!actorId, [actorId]);
 
   if (!canRender) return null;
 
+  if (mode === "public") {
+    return (
+      <section
+        className={className}
+        style={{ display: "flex", flexDirection: "column", gap: 12 }}
+      >
+        <VportActorMenuPublicPanel actorId={actorId} />
+      </section>
+    );
+  }
+
   return (
-    <section className={className} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <VportActorMenuManagePanel actorId={actorId} includeInactive={includeInactive} />
+    <section
+      className={className}
+      style={{ display: "flex", flexDirection: "column", gap: 12 }}
+    >
+      <VportActorMenuManagePanel
+        actorId={actorId}
+        includeInactive={includeInactive}
+        showHeader={true}
+      />
     </section>
   );
 }

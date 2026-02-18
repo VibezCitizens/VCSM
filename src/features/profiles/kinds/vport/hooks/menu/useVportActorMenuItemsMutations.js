@@ -11,6 +11,26 @@ import deleteVportActorMenuItemController from "@/features/profiles/kinds/vport/
  * - Calls controllers only
  * - No DAL
  * - No business logic
+ *
+ * saveItem(payload) forwards payload directly to controller.
+ * Expected payload shape (examples):
+ * {
+ *   itemId?: string | null,
+ *   categoryId: string,
+ *   key?: string | null,
+ *   name: string,
+ *   description?: string | null,
+ *   sortOrder?: number,
+ *   isActive?: boolean,
+ *
+ *   // ✅ prices
+ *   price?: number | null,        // optional (dollars)
+ *   priceCents?: number | null,   // optional (cents)
+ *
+ *   // ✅ pictures
+ *   imageUrl?: string | null,     // optional primary image URL
+ *   // media?: Array<{ url, sortOrder?, isActive? }>  // optional if you add gallery support later
+ * }
  */
 export function useVportActorMenuItemsMutations({ actorId, onSuccess }) {
   const [saving, setSaving] = useState(false);
