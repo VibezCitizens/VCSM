@@ -46,6 +46,9 @@ export default function VportProfileViewScreen({
   const [gateVersion, setGateVersion] = useState(0);
   const [postsVersion, setPostsVersion] = useState(0);
 
+  // ✅ one-shot default reviews tab (used when coming from Menu CTA)
+  const [reviewsDefaultTab, setReviewsDefaultTab] = useState(null);
+
   const navigate = useNavigate();
 
   const gate = useProfileGate({
@@ -70,6 +73,12 @@ export default function VportProfileViewScreen({
   // ✅ public details state
   const [publicDetails, setPublicDetails] = useState(null);
   const [publicDetailsLoading, setPublicDetailsLoading] = useState(false);
+
+  // ✅ Menu -> Reviews (Food) entrypoint
+  const openFoodReview = useCallback(() => {
+    setReviewsDefaultTab("food");
+    setTab("reviews");
+  }, []);
 
   useEffect(() => {
     if (!blockLoading && canViewProfile === false) {
@@ -123,7 +132,10 @@ export default function VportProfileViewScreen({
     (async () => {
       setPublicDetailsLoading(true);
       try {
-        console.log("[VportProfileViewScreen] fetching vport_public_details for:", vportId);
+        console.log(
+          "[VportProfileViewScreen] fetching vport_public_details for:",
+          vportId
+        );
 
         const d = await fetchVportPublicDetails(vportId);
 
@@ -166,24 +178,21 @@ export default function VportProfileViewScreen({
     setShareState({ open: false, url: "", postId: null });
   }, []);
 
-  const handleShare = useCallback(
-    async (postId) => {
-      if (!postId) return;
+  const handleShare = useCallback(async (postId) => {
+    if (!postId) return;
 
-      const url = `${window.location.origin}/post/${postId}`;
+    const url = `${window.location.origin}/post/${postId}`;
 
-      const res = await shareNative({
-        title: "Spread",
-        text: "",
-        url,
-      });
+    const res = await shareNative({
+      title: "Spread",
+      text: "",
+      url,
+    });
 
-      if (!res.ok) {
-        setShareState({ open: true, url, postId });
-      }
-    },
-    []
-  );
+    if (!res.ok) {
+      setShareState({ open: true, url, postId });
+    }
+  }, []);
 
   // ============================================================
   // REPORT FLOW
@@ -332,8 +341,9 @@ export default function VportProfileViewScreen({
             />
           )}
 
-         {tab === "services" && <VportServicesView profile={profile} viewerActorId={viewerActorId} />}
-
+          {tab === "services" && (
+            <VportServicesView profile={profile} viewerActorId={viewerActorId} />
+          )}
 
           {tab === "book" && <VportBookingView profile={profile} />}
 
@@ -342,9 +352,22 @@ export default function VportProfileViewScreen({
           )}
 
           {tab === "subscribers" && <VportSubscribersView profile={profile} />}
-          {tab === "reviews" && <VportReviewsView profile={profile} viewerActorId={viewerActorId} />}
 
-          {tab === "menu" && <VportMenuView profile={profile} />}
+          {tab === "reviews" && (
+            <VportReviewsView
+              profile={profile}
+              viewerActorId={viewerActorId}
+              initialReviewTab={reviewsDefaultTab}
+              onConsumedInitialTab={() => setReviewsDefaultTab(null)}
+            />
+          )}
+
+          {tab === "menu" && (
+            <VportMenuView
+              profile={profile}
+              onOpenFoodReview={openFoodReview}
+            />
+          )}
 
           {tab === "about" && publicDetailsLoading && !publicDetails && (
             <div className="mt-4 text-xs text-neutral-500">

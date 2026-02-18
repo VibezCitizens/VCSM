@@ -90,6 +90,17 @@ const VportActorMenuQrScreen = lazyWithLog(
 const VportMenuRedirectScreen = lazyWithLog(
   "VportMenuRedirectScreen",
   () => import("@/features/profiles/kinds/vport/screens/VportMenuRedirectScreen")
+)
+
+// ✅ NEW: Flyer + Dashboard
+const VportActorMenuFlyerScreen = lazyWithLog(
+  "VportActorMenuFlyerScreen",
+  () => import("@/features/profiles/kinds/vport/screens/VportActorMenuFlyerScreen")
+)
+
+const VportDashboardScreen = lazyWithLog(
+  "VportDashboardScreen",
+  () => import("@/features/profiles/kinds/vport/screens/VportDashboardScreen")
 );
 
 /* ================= POSTS ================= */
@@ -251,13 +262,15 @@ export default function AppRoutes() {
         <Route path="/reset" element={<ResetPasswordScreen />} />
         <Route path="/onboarding" element={<OnboardingScreen />} />
 
+        {/* ================= VPORT MENU (PUBLIC) ================= */}
+        <Route path="/m/:actorId" element={<VportMenuRedirectScreen />} />
 
-       {/* ================= VPORT MENU (PUBLIC) ================= */}
-<Route path="/m/:actorId" element={<VportMenuRedirectScreen />} />
+        <Route path="/vport/:actorId/menu" element={<VportActorMenuPublicScreen />} />
+        <Route path="/vport/:actorId/menu/qr" element={<VportActorMenuQrScreen />} />
 
-<Route path="/vport/:actorId/menu" element={<VportActorMenuPublicScreen />} />
-<Route path="/vport/:actorId/menu/qr" element={<VportActorMenuQrScreen />} />
-
+        {/* ✅ NEW: flyer + dashboard */}
+        <Route path="/vport/:actorId/menu/flyer" element={<VportActorMenuFlyerScreen />} />
+        <Route path="/vport/:actorId/dashboard" element={<VportDashboardScreen />} />
 
         {/* ================= LOVEDROP (PUBLIC) ================= */}
         <Route
@@ -285,26 +298,25 @@ export default function AppRoutes() {
           element={<LovedropRecipientScreen />}
         />
 
-       {/* ================= WANDERS (PUBLIC) ================= */}
-<Route path="/wanders" element={<WandersHomeScreen />} />
-<Route path="/wanders/i/:publicId" element={<WandersInboxPublicScreen />} />
-<Route path="/wanders/c/:publicId" element={<WandersCardPublicScreen />} />
+        {/* ================= WANDERS (PUBLIC) ================= */}
+        <Route path="/wanders" element={<WandersHomeScreen />} />
+        <Route path="/wanders/i/:publicId" element={<WandersInboxPublicScreen />} />
+        <Route path="/wanders/c/:publicId" element={<WandersCardPublicScreen />} />
 
-{/* ✅ MOVE THESE TO PUBLIC (anon-first flow) */}
-<Route
-  path="/wanders/create"
-  element={<WandersCreateScreen realmId={wandersRealmId} baseUrl={baseUrl} />}
-/>
-<Route path="/wanders/mailbox" element={<WandersMailboxScreen />} />
-<Route path="/wanders/outbox" element={<WandersOutboxScreen />} />
+        {/* ✅ MOVE THESE TO PUBLIC (anon-first flow) */}
+        <Route
+          path="/wanders/create"
+          element={<WandersCreateScreen realmId={wandersRealmId} baseUrl={baseUrl} />}
+        />
+        <Route path="/wanders/mailbox" element={<WandersMailboxScreen />} />
+        <Route path="/wanders/outbox" element={<WandersOutboxScreen />} />
 
-{/* sent confirmation supports both */}
-<Route path="/wanders/sent" element={<WandersSentScreen />} />
-<Route path="/wanders/sent/:cardPublicId" element={<WandersSentScreen />} />
+        {/* sent confirmation supports both */}
+        <Route path="/wanders/sent" element={<WandersSentScreen />} />
+        <Route path="/wanders/sent/:cardPublicId" element={<WandersSentScreen />} />
 
-<Route path="/wanders/claim" element={<WandersIntegrateActorScreen />} />
-<Route path="/wanders/connect" element={<WandersIntegrateActorScreen />} />
-
+        <Route path="/wanders/claim" element={<WandersIntegrateActorScreen />} />
+        <Route path="/wanders/connect" element={<WandersIntegrateActorScreen />} />
 
         {/* ================= PROTECTED ================= */}
         <Route element={<ProtectedRoute />}>
@@ -364,7 +376,7 @@ export default function AppRoutes() {
             <Route path="/v/:vportId" element={<VportScreen />} />
 
             {/* ================= WANDERS (APP - PROTECTED) ================= */}
-           
+
             {/* DEV PREVIEW */}
             <Route path="/_dev/nurse-home" element={<NurseHomeScreen />} />
 

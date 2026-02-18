@@ -31,6 +31,16 @@ export function VportMenuManageView({ actorId, profile } = {}) {
     navigate(`/vport/${effectiveActorId}/menu/qr`);
   }, [navigate, effectiveActorId]);
 
+  const openFlyer = useCallback(() => {
+    if (!effectiveActorId) return;
+    navigate(`/vport/${effectiveActorId}/menu/flyer`);
+  }, [navigate, effectiveActorId]);
+
+  const openDashboard = useCallback(() => {
+    if (!effectiveActorId) return;
+    navigate(`/vport/${effectiveActorId}/dashboard`);
+  }, [navigate, effectiveActorId]);
+
   if (!canRender) return null;
 
   const btn = {
@@ -47,7 +57,7 @@ export function VportMenuManageView({ actorId, profile } = {}) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {/* Top bar: existing toolbar + QR button */}
+      {/* Top bar: existing toolbar + buttons */}
       <div
         style={{
           display: "flex",
@@ -65,7 +75,15 @@ export function VportMenuManageView({ actorId, profile } = {}) {
           />
         </div>
 
-        <div style={{ flexShrink: 0, display: "flex", gap: 8 }}>
+        <div style={{ flexShrink: 0, display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button type="button" onClick={openDashboard} style={btn}>
+            Dashboard
+          </button>
+
+          <button type="button" onClick={openFlyer} style={btn}>
+            Flyer
+          </button>
+
           <button type="button" onClick={openQr} style={btn}>
             QR Code
           </button>

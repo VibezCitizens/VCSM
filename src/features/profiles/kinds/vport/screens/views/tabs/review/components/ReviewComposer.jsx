@@ -16,7 +16,7 @@ export default function ReviewComposer({
   saving,
   handleSave,
   msg,
-  disabledBecauseSelf, // ✅ NEW
+  disabledBecauseSelf,
 }) {
   return (
     <div
@@ -29,13 +29,9 @@ export default function ReviewComposer({
       }}
     >
       {disabledBecauseSelf ? (
-        <div className="text-sm text-neutral-300">
-          You can’t review your own vport.
-        </div>
+        <div className="text-sm text-neutral-300">You can’t review your own vport.</div>
       ) : !viewerActorId ? (
-        <div className="text-sm text-neutral-300">
-          Sign in to leave a {tabLabel.toLowerCase()} review.
-        </div>
+        <div className="text-sm text-neutral-300">Sign in to leave a {tabLabel.toLowerCase()} review.</div>
       ) : isServiceTab && !serviceId ? (
         <div className="text-sm text-neutral-300">Select a service to review.</div>
       ) : (
@@ -106,7 +102,7 @@ export default function ReviewComposer({
                 whiteSpace: "nowrap",
               }}
             >
-              {saving ? "Saving…" : "Save review"}
+              {saving ? "Submitting…" : "Submit review"}
             </button>
           </div>
 

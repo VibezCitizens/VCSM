@@ -8,12 +8,14 @@ import { useIsActorOwner } from "@/features/profiles/kinds/vport/hooks/menu/useI
 import VportMenuManageView from "@/features/profiles/kinds/vport/screens/views/tabs/menu/VportMenuManageView";
 import VportActorMenuSection from "@/features/profiles/kinds/vport/ui/menu/VportActorMenuSection";
 
+import MenuReviewCTA from "./components/MenuReviewCTA";
+
 /**
  * Smart Menu Tab
  * - Owner → full management
- * - Viewer → public read-only menu
+ * - Viewer → public read-only menu (+ Review Food CTA)
  */
-export default function VportMenuView({ profile } = {}) {
+export default function VportMenuView({ profile, onOpenFoodReview } = {}) {
   const { identity } = useIdentity();
 
   const actorId = useMemo(() => {
@@ -33,10 +35,15 @@ export default function VportMenuView({ profile } = {}) {
     return <VportMenuManageView actorId={actorId} />;
   }
 
-  // ✅ VIEWER → read-only public menu
+  // ✅ VIEWER → read-only public menu + CTA
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <VportActorMenuSection actorId={actorId} mode="public" />
+
+      {/* ✅ Review Food CTA */}
+      {typeof onOpenFoodReview === "function" ? (
+        <MenuReviewCTA onClick={onOpenFoodReview} label="Review Food" />
+      ) : null}
     </div>
   );
 }

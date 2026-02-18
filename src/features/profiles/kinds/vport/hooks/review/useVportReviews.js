@@ -30,8 +30,7 @@ function useAsyncEffect(effect, deps) {
       try {
         await effect(aliveFn);
       } catch {
-        // let callers handle inside effect if they want;
-        // swallow to avoid unhandled promise warnings
+        // swallow
       }
     })();
 
@@ -318,7 +317,7 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
         });
 
         svc.setMyServiceWeek(saved || null);
-        setMsg("Saved for this week.");
+        setMsg("Submitted for this week.");
 
         const [rows, s] = await Promise.all([
           listServiceReviewsController({ serviceId: svc.serviceId, limit: 50 }),
@@ -327,6 +326,10 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
 
         svc.setServiceList(rows);
         svc.setServiceStats(s);
+
+        // ✅ clear composer after submit
+        setRating(5);
+        setBody("");
       } else {
         if (!viewerActorId || !targetActorId) return;
 
@@ -339,7 +342,7 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
         });
 
         store.setMyWeek(saved || null);
-        setMsg("Saved for this week.");
+        setMsg("Submitted for this week.");
 
         const [rows, s] = await Promise.all([
           listVportReviewsController({ targetActorId, reviewType: tab, limit: 50 }),
@@ -348,9 +351,13 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
 
         store.setList(rows);
         store.setStats(s);
+
+        // ✅ clear composer after submit
+        setRating(5);
+        setBody("");
       }
     } catch (e) {
-      setMsg(e?.message ?? "Failed to save.");
+      setMsg(e?.message ?? "Failed to submit.");
     } finally {
       setSaving(false);
     }
