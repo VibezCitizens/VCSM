@@ -219,6 +219,20 @@ export function ClassicFlyer({
     <div style={page}>
       <style>
         {`
+          /* ✅ MOBILE: collapse to single column & scale down hero/QR */
+          @media (max-width: 640px) {
+            .classic-sheet { border-radius: 22px !important; }
+            .classic-hero { height: 170px !important; }
+            .classic-header { margin-top: -28px !important; padding: 14px !important; gap: 12px !important; }
+            .classic-avatar { width: 72px !important; height: 72px !important; border-radius: 18px !important; font-size: 14px !important; }
+            .classic-title { font-size: 22px !important; }
+            .classic-body { padding: 14px !important; padding-top: 6px !important; display: flex !important; flex-direction: column !important; gap: 12px !important; }
+            .classic-left, .classic-right { min-width: 0 !important; width: 100% !important; }
+            .classic-right { align-items: stretch !important; }
+            .classic-qrInner { padding: 14px !important; }
+            .classic-qrSvg { width: 220px !important; height: 220px !important; }
+          }
+
           @media print {
             html, body { height: auto !important; background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
@@ -234,16 +248,18 @@ export function ClassicFlyer({
       </style>
 
       <div className="print-page" style={{ width: "100%", maxWidth: 980 }}>
-        <div className="print-sheet" style={sheet}>
-          <div style={hero}>
+        <div className="print-sheet classic-sheet" style={sheet}>
+          <div className="classic-hero" style={hero}>
             <div style={heroOverlay} />
           </div>
 
-          <div style={header}>
-            <div style={avatar}>{!avatarImage ? "VC" : null}</div>
+          <div className="classic-header" style={header}>
+            <div className="classic-avatar" style={avatar}>
+              {!avatarImage ? "VC" : null}
+            </div>
 
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div className="print-text" style={title}>
+              <div className="print-text classic-title" style={title}>
                 {loading ? "Loading…" : profile.displayName}
               </div>
 
@@ -267,8 +283,8 @@ export function ClassicFlyer({
             </div>
           </div>
 
-          <div style={body}>
-            <div className="print-panel" style={left}>
+          <div className="classic-body" style={body}>
+            <div className="print-panel classic-left" style={left}>
               <div style={printRow}>
                 <div
                   style={{
@@ -381,7 +397,7 @@ export function ClassicFlyer({
               </div>
             </div>
 
-            <div className="print-panel" style={right}>
+            <div className="print-panel classic-right" style={right}>
               <div
                 style={{ fontSize: 14, fontWeight: 950, letterSpacing: 1.2 }}
                 className="print-text"
@@ -390,8 +406,10 @@ export function ClassicFlyer({
               </div>
 
               <div className="print-qrOuter" style={qrWrapOuter}>
-                <div style={qrWrapInner}>
-                  <QRCode value={menuUrl} size={240} />
+                <div className="classic-qrInner" style={qrWrapInner}>
+                  <div className="classic-qrSvg">
+                    <QRCode value={menuUrl} size={240} />
+                  </div>
                 </div>
               </div>
 

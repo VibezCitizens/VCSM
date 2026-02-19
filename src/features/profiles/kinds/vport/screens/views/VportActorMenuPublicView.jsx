@@ -96,12 +96,39 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
     boxShadow: "0 30px 90px rgba(0,0,0,0.65)",
   };
 
-  // ✅ Mobile-safe action row (wrap)
+  // ✅ actions row: keep wrap, but don't steal space from name
   const actionRow = {
     display: "flex",
     gap: 10,
     alignItems: "center",
     flexWrap: "wrap",
+    justifyContent: "flex-end",
+  };
+
+  // ✅ NEW: make the top header row wrap, and push buttons to next line when needed
+  const headerTopRow = {
+    position: "relative",
+    zIndex: 2,
+    padding: 16,
+    display: "flex",
+    gap: 14,
+    alignItems: "center",
+    marginTop: -34,
+
+    flexWrap: "wrap", // ✅ allow wrap instead of overlap
+  };
+
+  // ✅ NEW: ensure the name block has a sane minimum width so buttons wrap away
+  const nameCol = {
+    minWidth: 180, // ✅ gives the name room; buttons wrap below if not enough space
+    flex: 1,
+  };
+
+  // ✅ NEW: make actions take full width on wrap line (prevents overlay)
+  const actionsCol = {
+    marginLeft: "auto",
+    flexBasis: "100%", // ✅ when wrapping occurs, actions go to next line
+    display: "flex",
     justifyContent: "flex-end",
   };
 
@@ -151,17 +178,7 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
             />
           </div>
 
-          <div
-            style={{
-              position: "relative",
-              zIndex: 2,
-              padding: 16,
-              display: "flex",
-              gap: 14,
-              alignItems: "center",
-              marginTop: -34,
-            }}
-          >
+          <div style={headerTopRow}>
             <div
               style={{
                 width: 72,
@@ -185,12 +202,11 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
               {!avatarImage ? "VC" : null}
             </div>
 
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={nameCol}>
               <div style={{ fontSize: 20, fontWeight: 950, letterSpacing: 0.6 }}>
                 {loadingHeader ? "Loading…" : profile.displayName}
               </div>
 
-              {/* ✅ No more “venue”, no “Public Menu” label */}
               {profile.username?.trim() ? (
                 <div
                   style={{
@@ -211,48 +227,48 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
               ) : null}
             </div>
 
-            <div style={actionRow}>
-              <button
-                type="button"
-                style={btnBase(!!onLeaveReview || !!actions.reviewUrl)}
-                disabled={!onLeaveReview && !actions.reviewUrl}
-                onClick={() => {
-                  // ✅ prefer in-app
-                  if (typeof onLeaveReview === "function") {
-                    onLeaveReview();
-                    return;
-                  }
-                  // fallback: external url
-                  if (!actions.reviewUrl) return;
-                  window.open(actions.reviewUrl, "_blank", "noopener,noreferrer");
-                }}
-              >
-                Review
-              </button>
+            <div style={actionsCol}>
+              <div style={actionRow}>
+                <button
+                  type="button"
+                  style={btnBase(!!onLeaveReview || !!actions.reviewUrl)}
+                  disabled={!onLeaveReview && !actions.reviewUrl}
+                  onClick={() => {
+                    if (typeof onLeaveReview === "function") {
+                      onLeaveReview();
+                      return;
+                    }
+                    if (!actions.reviewUrl) return;
+                    window.open(actions.reviewUrl, "_blank", "noopener,noreferrer");
+                  }}
+                >
+                  Review
+                </button>
 
-              <button
-                type="button"
-                style={btnBase(!!actions.directionsUrl)}
-                disabled={!actions.directionsUrl}
-                onClick={() => {
-                  if (!actions.directionsUrl) return;
-                  window.open(actions.directionsUrl, "_blank", "noopener,noreferrer");
-                }}
-              >
-                Directions
-              </button>
+                <button
+                  type="button"
+                  style={btnBase(!!actions.directionsUrl)}
+                  disabled={!actions.directionsUrl}
+                  onClick={() => {
+                    if (!actions.directionsUrl) return;
+                    window.open(actions.directionsUrl, "_blank", "noopener,noreferrer");
+                  }}
+                >
+                  Directions
+                </button>
 
-              <button
-                type="button"
-                style={btnBase(!!actions.phone)}
-                disabled={!actions.phone}
-                onClick={() => {
-                  if (!actions.phone) return;
-                  window.location.href = `tel:${actions.phone}`;
-                }}
-              >
-                Call
-              </button>
+                <button
+                  type="button"
+                  style={btnBase(!!actions.phone)}
+                  disabled={!actions.phone}
+                  onClick={() => {
+                    if (!actions.phone) return;
+                    window.location.href = `tel:${actions.phone}`;
+                  }}
+                >
+                  Call
+                </button>
+              </div>
             </div>
           </div>
 

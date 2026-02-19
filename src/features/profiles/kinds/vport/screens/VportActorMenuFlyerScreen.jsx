@@ -3,7 +3,8 @@
 import React, { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 
-import VportActorMenuFlyerView from "./views/tabs/menu/VportActorMenuFlyerView";
+import VportActorMenuFlyerView from "@/features/profiles/kinds/vport/screens/views/tabs/menu/VportActorMenuFlyerView";
+
 
 export function VportActorMenuFlyerScreen() {
   const params = useParams();

@@ -1,17 +1,22 @@
 // src/features/profiles/kinds/vport/screens/views/tabs/menu/VportActorMenuFlyerView.jsx
 
 import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
-import ClassicFlyer from "@/features/qrcode/components/flyer/ClassicFlyer";
-import PosterFlyer from "@/features/qrcode/components/flyer/PosterFlyer";
+import ClassicFlyer from "@/features/dashboard/qrcode/components/flyer/ClassicFlyer";
+import PosterFlyer from "@/features/dashboard/qrcode/components/flyer/PosterFlyer";
 
 import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
 
-export function VportActorMenuFlyerView({ actorId, variant: initialVariant = "classic" }) {
+export function VportActorMenuFlyerView({
+  actorId,
+  variant: initialVariant = "classic",
+}) {
+  const navigate = useNavigate();
+
   const [publicDetails, setPublicDetails] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔥 Template state (switcher)
   const [variant, setVariant] = useState(initialVariant);
 
   const asText = useCallback((v) => {
@@ -51,7 +56,8 @@ export function VportActorMenuFlyerView({ actorId, variant: initialVariant = "cl
   }, [actorId]);
 
   const profile = useMemo(() => {
-    const displayNameRaw = publicDetails?.display_name ?? publicDetails?.name ?? "Menu";
+    const displayNameRaw =
+      publicDetails?.display_name ?? publicDetails?.name ?? "Menu";
 
     return {
       displayName: asText(displayNameRaw) || "Menu",
@@ -65,7 +71,9 @@ export function VportActorMenuFlyerView({ actorId, variant: initialVariant = "cl
           publicDetails?.street_address ??
           publicDetails?.streetAddress
       ),
-      hours: asText(publicDetails?.hours ?? publicDetails?.open_hours ?? publicDetails?.openHours),
+      hours: asText(
+        publicDetails?.hours ?? publicDetails?.open_hours ?? publicDetails?.openHours
+      ),
       website: asText(
         publicDetails?.website ??
           publicDetails?.website_url ??
@@ -120,55 +128,111 @@ export function VportActorMenuFlyerView({ actorId, variant: initialVariant = "cl
     } catch (_) {}
   }, []);
 
+  const onBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    if (actorId) {
+      navigate(`/vport/${actorId}`, { replace: true });
+      return;
+    }
+
+    navigate(`/feed`, { replace: true });
+  }, [navigate, actorId]);
+
   if (!actorId) return null;
 
-  return (
-    <div>
-      {/* 🔥 TEMPLATE SWITCHER UI */}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          padding: 16,
-          justifyContent: "center",
-          borderBottom: "1px solid rgba(0,0,0,0.08)",
-          background: "#fff",
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setVariant("classic")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: 8,
-            border: variant === "classic" ? "2px solid #000" : "1px solid #ccc",
-            background: variant === "classic" ? "#000" : "#fff",
-            color: variant === "classic" ? "#fff" : "#000",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Classic
-        </button>
+  // --- Scroll container (fixes iOS "not scrollable" issues) ---
+  const page = {
+    height: "100vh",
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
+    overscrollBehavior: "contain",
+    background:
+      "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
+  };
 
-        <button
-          type="button"
-          onClick={() => setVariant("poster")}
-          style={{
-            padding: "8px 16px",
-            borderRadius: 8,
-            border: variant === "poster" ? "2px solid #000" : "1px solid #ccc",
-            background: variant === "poster" ? "#000" : "#fff",
-            color: variant === "poster" ? "#fff" : "#000",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Poster
-        </button>
+  // --- Header styles (dark / glass like dashboard) ---
+  const headerWrap = {
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
+    padding: 14,
+    background:
+      "linear-gradient(180deg, rgba(5,6,11,0.92) 0%, rgba(7,8,18,0.86) 55%, rgba(5,6,11,0.65) 100%)",
+    backdropFilter: "blur(14px)",
+    WebkitBackdropFilter: "blur(14px)",
+    borderBottom: "1px solid rgba(255,255,255,0.08)",
+  };
+
+  const headerInner = {
+    width: "100%",
+    maxWidth: 980,
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  };
+
+  const pillBtn = (active = false, tone = "soft") => ({
+    padding: "10px 12px",
+    borderRadius: 14,
+    border:
+      tone === "accent"
+        ? "1px solid rgba(0,255,240,0.22)"
+        : "1px solid rgba(255,255,255,0.12)",
+    background: active
+      ? "rgba(255,255,255,0.12)"
+      : tone === "accent"
+      ? "linear-gradient(135deg, rgba(0,255,240,0.18), rgba(124,58,237,0.14), rgba(0,153,255,0.14))"
+      : "rgba(255,255,255,0.06)",
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: 900,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    letterSpacing: 0.3,
+    boxShadow: "0 18px 50px rgba(0,0,0,0.35)",
+  });
+
+  return (
+    <div style={page}>
+      <div style={headerWrap}>
+        <div style={headerInner}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+            <button type="button" onClick={onBack} style={pillBtn(false, "soft")}>
+              ← Back
+            </button>
+          </div>
+
+          <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            <button
+              type="button"
+              onClick={() => setVariant("classic")}
+              style={pillBtn(variant === "classic", "soft")}
+            >
+              Classic
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setVariant("poster")}
+              style={pillBtn(variant === "poster", "soft")}
+            >
+              Poster
+            </button>
+          </div>
+
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            <button type="button" onClick={onPrint} style={pillBtn(false, "accent")}>
+              Print
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* 🔥 TEMPLATE RENDER */}
       {variant !== "poster" ? (
         <ClassicFlyer
           loading={loading}

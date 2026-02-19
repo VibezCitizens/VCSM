@@ -1,13 +1,12 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
-export async function fetchVportPublicDetailsByActorId(actorId) {
+export async function fetchFlyerPublicDetailsByActorId(actorId) {
   if (!actorId) return null;
 
   const { data, error } = await supabase
     .schema("vc")
     .from("actors")
-    .select(
-      `
+    .select(`
       id,
       kind,
       vport:vports (
@@ -25,12 +24,8 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
           location_text,
           address,
           hours,
-          price_tier,
-          highlights,
-          languages,
-          payment_methods,
-          social_links,
           booking_url,
+
           logo_url,
           flyer_food_image_1,
           flyer_food_image_2,
@@ -40,21 +35,17 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
           accent_color
         )
       )
-    `
-    )
+    `)
     .eq("id", actorId)
     .maybeSingle();
 
-  if (error) {
-    console.error("[fetchVportPublicDetailsByActorId] failed", error);
-    throw error;
-  }
-
+  if (error) throw error;
   if (!data) return null;
 
   const v = data.vport || null;
   const pd = v?.public_details || null;
 
+  // flatten the shape so UI is easy
   return {
     actor_id: data.id,
     kind: data.kind,
@@ -65,22 +56,10 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
     bio: v?.bio ?? null,
     avatar_url: v?.avatar_url ?? null,
     banner_url: v?.banner_url ?? null,
-    is_active: v?.is_active ?? null,
 
     website_url: pd?.website_url ?? null,
-    email_public: pd?.email_public ?? null,
     phone_public: pd?.phone_public ?? null,
-    phone: pd?.phone_public ?? null,
-
-    location_text: pd?.location_text ?? null,
-    address: pd?.address ?? null,
     hours: pd?.hours ?? null,
-    price_tier: pd?.price_tier ?? null,
-    highlights: pd?.highlights ?? [],
-    languages: pd?.languages ?? [],
-    payment_methods: pd?.payment_methods ?? [],
-    social_links: pd?.social_links ?? {},
-    booking_url: pd?.booking_url ?? null,
 
     logo_url: pd?.logo_url ?? null,
     flyer_food_image_1: pd?.flyer_food_image_1 ?? null,

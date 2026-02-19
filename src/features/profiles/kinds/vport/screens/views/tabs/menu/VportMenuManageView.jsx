@@ -80,13 +80,7 @@ export function VportMenuManageView({ actorId, profile } = {}) {
             Dashboard
           </button>
 
-          <button type="button" onClick={openFlyer} style={btn}>
-            Flyer
-          </button>
-
-          <button type="button" onClick={openQr} style={btn}>
-            QR Code
-          </button>
+          
         </div>
       </div>
 

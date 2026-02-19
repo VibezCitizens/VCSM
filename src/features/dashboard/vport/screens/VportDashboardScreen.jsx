@@ -85,25 +85,36 @@ export function VportDashboardScreen() {
     navigate(`/vport/${actorId}/menu/flyer`);
   }, [navigate, actorId]);
 
+  const openFlyerEditor = useCallback(() => {
+    if (!actorId) return;
+    navigate(`/vport/${actorId}/menu/flyer/edit`);
+  }, [navigate, actorId]);
+
+  // ✅ NEW: preview online menu (uses your existing flyer preview route)
+  const openOnlineMenuPreview = useCallback(() => {
+    if (!actorId) return;
+    navigate(`/vport/${actorId}/menu/flyer`);
+  }, [navigate, actorId]);
+
   // loading / guard
   if (!actorId) return null;
 
   if (loading) {
-    return (
-      <div className="flex justify-center py-20 text-neutral-400">Loading…</div>
-    );
+    return <div className="flex justify-center py-20 text-neutral-400">Loading…</div>;
   }
 
   if (!isOwner) {
-    return (
-      <div className="flex justify-center py-20 text-neutral-400">
-        Owner access only.
-      </div>
-    );
+    return <div className="flex justify-center py-20 text-neutral-400">Owner access only.</div>;
   }
 
   const bannerImage = profile.bannerUrl?.trim() ? `url(${profile.bannerUrl})` : null;
   const avatarImage = profile.avatarUrl?.trim() ? `url(${profile.avatarUrl})` : null;
+
+  // ✅ desktop-only lock (simple + stable)
+  const desktopOnlyLocked =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(max-width: 820px)").matches;
 
   const page = {
     minHeight: "100vh",
@@ -165,14 +176,29 @@ export function VportDashboardScreen() {
     marginTop: 14,
   };
 
-  const card = {
+  const cardBase = {
     borderRadius: 18,
     border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.04)",
     padding: 16,
     boxShadow: "0 18px 50px rgba(0,0,0,0.45)",
-    cursor: "pointer",
     userSelect: "none",
+  };
+
+  const badge = {
+    marginTop: 10,
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "6px 10px",
+    borderRadius: 999,
+    border: "1px solid rgba(255,255,255,0.14)",
+    background: "rgba(255,255,255,0.06)",
+    fontSize: 11,
+    fontWeight: 900,
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
+    color: "rgba(255,255,255,0.75)",
+    width: "fit-content",
   };
 
   const cardTitle = {
@@ -198,13 +224,10 @@ export function VportDashboardScreen() {
               ← Back
             </button>
 
-            <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>
-              VPORT DASHBOARD
-            </div>
+            <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>VPORT DASHBOARD</div>
 
-            <button type="button" onClick={openMenuManage} style={btn("soft")}>
-              Manage Menu
-            </button>
+            {/* ✅ removed top "Manage Menu" button */}
+            <div style={{ width: 110 }} />
           </div>
 
           <div
@@ -298,38 +321,50 @@ export function VportDashboardScreen() {
 
           <div style={{ padding: "0 16px 16px 16px" }}>
             <div style={cardGrid}>
-              <div style={card} onClick={openQr}>
+              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openQr}>
                 <div style={cardTitle}>QR Code</div>
-                <div style={cardBody}>
-                  Open the QR screen for quick scanning and sharing.
-                </div>
+                <div style={cardBody}>Open the QR screen for quick scanning and sharing.</div>
               </div>
 
-              <div style={card} onClick={openFlyer}>
+              {/* Printable Flyer (desktop only for now) */}
+              <div
+                style={{
+                  ...cardBase,
+                  cursor: desktopOnlyLocked ? "not-allowed" : "pointer",
+                  opacity: desktopOnlyLocked ? 0.55 : 1,
+                }}
+                onClick={() => {
+                  if (desktopOnlyLocked) return;
+                  openFlyer();
+                }}
+              >
                 <div style={cardTitle}>Printable Flyer</div>
-                <div style={cardBody}>
-                  Open a print-optimized flyer with your QR for your menu.
-                </div>
+                <div style={cardBody}>Open a print-optimized flyer with your QR for your menu.</div>
+                {desktopOnlyLocked ? <div style={badge}>Desktop only</div> : null}
               </div>
 
-              <div style={card} onClick={openMenuManage}>
-                <div style={cardTitle}>Manage Menu</div>
-                <div style={cardBody}>
-                  Create categories and items, update photos, and toggle visibility.
-                </div>
+              {/* Edit Flyer (desktop only for now) */}
+              <div
+                style={{
+                  ...cardBase,
+                  cursor: desktopOnlyLocked ? "not-allowed" : "pointer",
+                  opacity: desktopOnlyLocked ? 0.55 : 1,
+                }}
+                onClick={() => {
+                  if (desktopOnlyLocked) return;
+                  openFlyerEditor();
+                }}
+              >
+                <div style={cardTitle}>Edit Flyer</div>
+                <div style={cardBody}>Update headline, note, accent color, hours, and images.</div>
+                {desktopOnlyLocked ? <div style={badge}>Desktop only</div> : null}
               </div>
-            </div>
 
-            <div
-              style={{
-                marginTop: 14,
-                fontSize: 12,
-                color: "rgba(255,255,255,0.45)",
-              }}
-            >
-              {headerLoading
-                ? "Loading business details…"
-                : "More dashboard modules can plug in here (reviews, bookings, subscribers, analytics, etc.)."}
+              {/* ✅ REPLACED: Manage Menu -> Preview Online Menu */}
+              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openOnlineMenuPreview}>
+                <div style={cardTitle}>Preview Online Menu</div>
+                <div style={cardBody}>Preview how your online menu looks to customers.</div>
+              </div>
             </div>
           </div>
         </div>

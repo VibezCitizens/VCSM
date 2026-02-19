@@ -98,10 +98,15 @@ const VportActorMenuFlyerScreen = lazyWithLog(
   () => import("@/features/profiles/kinds/vport/screens/VportActorMenuFlyerScreen")
 )
 
+const VportActorMenuFlyerEditorScreen = lazyWithLog(
+  "VportActorMenuFlyerEditorScreen",
+  () => import("@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerEditorScreen")
+)
+
 const VportDashboardScreen = lazyWithLog(
   "VportDashboardScreen",
-  () => import("@/features/profiles/kinds/vport/screens/VportDashboardScreen")
-);
+  () => import("@/features/dashboard/vport/screens/VportDashboardScreen")
+)
 
 /* ================= POSTS ================= */
 const PostFeedScreen = lazyWithLog(
@@ -270,6 +275,7 @@ export default function AppRoutes() {
 
         {/* ✅ NEW: flyer + dashboard */}
         <Route path="/vport/:actorId/menu/flyer" element={<VportActorMenuFlyerScreen />} />
+<Route path="/vport/:actorId/menu/flyer/edit" element={<VportActorMenuFlyerEditorScreen />} />
         <Route path="/vport/:actorId/dashboard" element={<VportDashboardScreen />} />
 
         {/* ================= LOVEDROP (PUBLIC) ================= */}

@@ -29,6 +29,7 @@ export function PosterFlyer({
   const websiteText = asText(profile.website);
 
   const logoUrl = asText(profile.logoUrl).trim();
+  const bannerUrl = asText(profile.bannerUrl).trim();
   const food1 = asText(actions.foodImage1);
   const food2 = asText(actions.foodImage2);
 
@@ -72,6 +73,23 @@ export function PosterFlyer({
     display: "flex",
     flexDirection: "column",
     gap: 14,
+  };
+
+  const hero = {
+    height: 150,
+    borderRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+    background:
+      "radial-gradient(900px 340px at 18% 20%, rgba(0,255,240,0.18), transparent 60%), radial-gradient(900px 340px at 82% 30%, rgba(124,58,237,0.16), transparent 62%), radial-gradient(700px 340px at 55% 90%, rgba(0,153,255,0.12), transparent 60%), linear-gradient(180deg, rgba(10,12,22,0.22), rgba(5,6,11,0.10))",
+    border: "1px solid rgba(0,0,0,0.06)",
+  };
+
+  const heroOverlay = {
+    position: "absolute",
+    inset: 0,
+    background:
+      "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.35) 100%)",
   };
 
   const smallTop = {
@@ -175,11 +193,32 @@ export function PosterFlyer({
   };
 
   return (
-    <div style={posterPage}>
+    // ✅ IMPORTANT: give the OUTER wrapper the .posterPage class so print CSS applies
+    <div className="posterPage" style={posterPage}>
       <style>
         {`
+          /* ✅ MOBILE: stack columns, scale down headline/QR, kill overflow */
+          @media (max-width: 720px) {
+            .posterSheet { border-radius: 16px !important; }
+            .posterInner { grid-template-columns: 1fr !important; min-height: auto !important; }
+            .posterLeft { padding: 16px !important; }
+            .posterRight { padding: 16px !important; }
+            .posterHeadline { font-size: 36px !important; }
+            .posterHero { height: 120px !important; }
+            .posterQR svg { width: 220px !important; height: 220px !important; }
+          }
+
+          /* ✅ EXTRA SMALL: even tighter */
+          @media (max-width: 380px) {
+            .posterHeadline { font-size: 32px !important; }
+            .posterQR svg { width: 200px !important; height: 200px !important; }
+          }
+
+          /* ✅ PRINT: remove UI + remove gray background + remove shadow/radius */
           @media print {
             html, body {
+              margin: 0 !important;
+              padding: 0 !important;
               height: auto !important;
               background: #fff !important;
               -webkit-print-color-adjust: exact;
@@ -189,6 +228,7 @@ export function PosterFlyer({
             .no-print { display: none !important; }
 
             .posterPage { padding: 0 !important; background: #fff !important; }
+
             .posterSheet {
               box-shadow: none !important;
               border: none !important;
@@ -210,8 +250,10 @@ export function PosterFlyer({
         `}
       </style>
 
-      <div className="posterPage" style={{ width: "100%", maxWidth: 980 }}>
+      {/* keep max width wrapper if you want (not printed anyway) */}
+      <div style={{ width: "100%", maxWidth: 980 }}>
         <div className="posterSheet" style={posterSheet}>
+          {/* ✅ This bar will NOT print */}
           <div
             className="no-print"
             style={{
@@ -229,16 +271,39 @@ export function PosterFlyer({
             </button>
           </div>
 
-          <div className="posterFit" style={posterInner}>
-            <div style={leftCol}>
-              <div style={smallTop}>
-                {loading ? "Loading…" : (profile.displayName || "YOUR RESTAURANT")}
+          <div className="posterFit posterInner" style={posterInner}>
+            <div className="posterLeft" style={leftCol}>
+              <div className="posterHero" style={hero}>
+                {bannerUrl ? (
+                  <img
+                    src={bannerUrl}
+                    alt="banner"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : null}
+                <div style={heroOverlay} />
               </div>
 
-              <div style={bigHeadline}>{headlineTop}</div>
+              <div style={smallTop}>
+                {loading ? "Loading…" : profile.displayName || "YOUR RESTAURANT"}
+              </div>
+
+              <div className="posterHeadline" style={bigHeadline}>
+                {headlineTop}
+              </div>
 
               <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
-                <div>
+                <div className="posterQR">
                   <div style={qrBox}>
                     <QRCode value={menuUrl} size={260} />
                   </div>
@@ -272,7 +337,7 @@ export function PosterFlyer({
               </div>
             </div>
 
-            <div style={rightCol}>
+            <div className="posterRight" style={rightCol}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
                 <div>
                   <div style={ctaTitle}>Order / View Menu</div>
