@@ -42,7 +42,13 @@ export default function VportProfileViewScreen({
   profileActorId,
   tabs = VPORT_TABS,
 }) {
-  const [tab, setTab] = useState("vibes");
+  // ✅ default to FIRST tab in the provided layout (restaurant => menu, etc.)
+  const initialTab = useMemo(() => {
+    const list = Array.isArray(tabs) ? tabs : [];
+    return list[0]?.key ?? "vibes";
+  }, [tabs]);
+
+  const [tab, setTab] = useState(initialTab);
   const [gateVersion, setGateVersion] = useState(0);
   const [postsVersion, setPostsVersion] = useState(0);
 
@@ -87,6 +93,7 @@ export default function VportProfileViewScreen({
   }, [blockLoading, canViewProfile, navigate]);
 
   // ✅ ensure selected tab exists in current tabs list
+  // - if tabs change (restaurant/service layouts), reset to new layout default
   useEffect(() => {
     const list = Array.isArray(tabs) ? tabs : [];
     if (!list.length) return;
@@ -139,12 +146,18 @@ export default function VportProfileViewScreen({
 
         const d = await fetchVportPublicDetails(vportId);
 
-        console.log("[VportProfileViewScreen] fetchVportPublicDetails result:", d);
+        console.log(
+          "[VportProfileViewScreen] fetchVportPublicDetails result:",
+          d
+        );
 
         if (!alive) return;
         setPublicDetails(d || null);
       } catch (e) {
-        console.error("[VportProfileViewScreen] fetchVportPublicDetails FAILED:", e);
+        console.error(
+          "[VportProfileViewScreen] fetchVportPublicDetails FAILED:",
+          e
+        );
         if (!alive) return;
         setPublicDetails(null);
       } finally {
@@ -363,10 +376,7 @@ export default function VportProfileViewScreen({
           )}
 
           {tab === "menu" && (
-            <VportMenuView
-              profile={profile}
-              onOpenFoodReview={openFoodReview}
-            />
+            <VportMenuView profile={profile} onOpenFoodReview={openFoodReview} />
           )}
 
           {tab === "about" && publicDetailsLoading && !publicDetails && (

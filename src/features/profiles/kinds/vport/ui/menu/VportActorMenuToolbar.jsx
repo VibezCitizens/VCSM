@@ -18,6 +18,9 @@ export function VportActorMenuToolbar({
   onRefresh,
   onAddCategory,
   disabled = false,
+
+  // ✅ NEW: hide title/subtitle area completely
+  hideHeader = false,
 } = {}) {
   const canInteract = !disabled;
 
@@ -28,15 +31,19 @@ export function VportActorMenuToolbar({
 
   const buttonBase = {
     padding: "8px 12px",
-    borderRadius: 12,
+    borderRadius: 999,
     border: "1px solid rgba(255,255,255,0.12)",
     background: "rgba(255,255,255,0.08)",
     color: "#fff",
-    fontSize: 13,
-    fontWeight: 600,
+    fontSize: 12,
+    fontWeight: 800,
     cursor: canInteract && !loading ? "pointer" : "not-allowed",
     opacity: canInteract && !loading ? 1 : 0.6,
     whiteSpace: "nowrap",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    lineHeight: 1,
   };
 
   const subtleText = {
@@ -45,6 +52,26 @@ export function VportActorMenuToolbar({
     lineHeight: "18px",
   };
 
+  const inactivePill = (active) => ({
+    padding: "8px 12px",
+    borderRadius: 999,
+    border: active
+      ? "1px solid rgba(168,85,247,0.38)"
+      : "1px solid rgba(255,255,255,0.12)",
+    background: active ? "rgba(168,85,247,0.14)" : "rgba(255,255,255,0.08)",
+    color: active ? "rgba(216,180,254,0.95)" : "rgba(255,255,255,0.88)",
+    fontSize: 12,
+    fontWeight: 900,
+    cursor: canInteract && !loading ? "pointer" : "not-allowed",
+    opacity: canInteract && !loading ? 1 : 0.6,
+    whiteSpace: "nowrap",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    lineHeight: 1,
+    userSelect: "none",
+  });
+
   return (
     <div
       style={{
@@ -52,52 +79,64 @@ export function VportActorMenuToolbar({
         alignItems: "flex-start",
         justifyContent: "space-between",
         gap: 12,
-        flexWrap: "wrap", // ✅ wrap on small screens
+        flexWrap: "wrap",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0, flex: "1 1 240px" }}>
-        <div style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>
-          {title}
+      {/* ✅ LEFT HEADER (OPTIONAL) */}
+      {!hideHeader ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            minWidth: 0,
+            flex: "1 1 240px",
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 900, color: "#fff" }}>
+            {title}
+          </div>
+          <div style={subtleText}>{subtitle}</div>
         </div>
-        <div style={subtleText}>{subtitle}</div>
-      </div>
+      ) : (
+        // spacer to keep right controls aligned when header is hidden
+        <div style={{ flex: "1 1 0px" }} />
+      )}
 
+      {/* RIGHT CONTROLS */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: 10,
-          flexWrap: "wrap", // ✅ wrap buttons instead of clipping
+          flexWrap: "wrap",
           justifyContent: "flex-end",
           flex: "0 1 auto",
           maxWidth: "100%",
         }}
       >
         {typeof onToggleIncludeInactive === "function" ? (
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 10px",
-              borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.12)",
-              userSelect: "none",
-              background: "rgba(255,255,255,0.06)",
-              color: "#fff",
-              fontSize: 13,
-              opacity: canInteract && !loading ? 1 : 0.6,
-              whiteSpace: "nowrap",
-            }}
+          <button
+            type="button"
+            onClick={handleToggle}
+            disabled={!canInteract || loading}
+            aria-pressed={!!includeInactive}
+            style={inactivePill(!!includeInactive)}
+            title="Toggle inactive menu entries"
           >
-            <input
-              type="checkbox"
-              checked={!!includeInactive}
-              onChange={handleToggle}
-              disabled={!canInteract || loading}
+            <span
+              aria-hidden
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 999,
+                background: includeInactive
+                  ? "rgba(168,85,247,1)"
+                  : "rgba(255,255,255,0.35)",
+              }}
             />
-            <span style={{ fontSize: 13 }}>Include inactive</span>
-          </label>
+            Inactive
+          </button>
         ) : null}
 
         {onRefresh ? (

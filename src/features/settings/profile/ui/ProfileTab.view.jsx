@@ -1,40 +1,23 @@
 // src/features/settings/profile/ui/ProfileTab.view.jsx
-// ============================================================
-// ProfileTab View
-// - Pure presentational component
-// - No data fetching
-// - No identity logic
-// - No uploads
-// ============================================================
 
 import { Link } from 'react-router-dom'
 import Card from '@/features/settings/ui/Card'
 import ProfessionalAccessButton from './ProfessionalAccessButton'
 
 export default function ProfileTabView({
-  // identity
-  mode, // 'user' | 'vport'
   username,
   displayName,
   email,
   bio,
-
-  // media
   photoUrl,
   bannerUrl,
   previewAvatar,
   previewBanner,
-
-  // state
   saving,
   error,
   saved,
-
-  // refs
   avatarInputRef,
   bannerInputRef,
-
-  // handlers
   onPickAvatar,
   onRemoveAvatar,
   onPickBanner,
@@ -42,35 +25,26 @@ export default function ProfileTabView({
   onChangeDisplayName,
   onChangeBio,
   onSave,
-
-  // navigation
   profilePath,
 }) {
-  const isVport = mode === 'vport'
-
   return (
     <div className="space-y-4">
       <Card>
-        {/* ================= HEADER ================= */}
+
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-semibold">
-            {isVport ? 'VPORT Profile' : 'Profile'}
-          </div>
+          <div className="text-sm font-semibold">Profile</div>
 
           <Link
             to={profilePath}
             className="text-white text-sm"
-            aria-label="View profile"
           >
-            View {isVport ? 'VPORT' : 'my'} profile
+            View my profile
           </Link>
         </div>
 
-        {/* ================= AVATAR BANNER ================= */}
+        {/* Banner */}
         <section className="space-y-1">
-          <label className="text-xs text-zinc-300">
-            {isVport ? 'VPORT avatar banner' : 'Avatar banner'}
-          </label>
+          <label className="text-xs text-zinc-300">Avatar banner</label>
 
           <div className="rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
             <div className="relative w-full h-32 sm:h-40 md:h-48">
@@ -112,33 +86,24 @@ export default function ProfileTabView({
             )}
 
             <span className="text-[11px] text-zinc-500">
-              Wide image recommended (PNG/JPG ≤ 5MB)
+              PNG/JPG ≤ 5MB
             </span>
           </div>
         </section>
 
-        {/* ================= AVATAR PHOTO ================= */}
+        {/* Avatar */}
         <section className="mt-4 space-y-1">
-          <label className="text-xs text-zinc-300">
-            {isVport ? 'VPORT avatar photo' : 'Avatar photo'}
-          </label>
+          <label className="text-xs text-zinc-300">Avatar photo</label>
 
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 rounded-xl overflow-hidden bg-zinc-800 flex items-center justify-center">
+            <div className="h-14 w-14 rounded-xl overflow-hidden bg-zinc-800">
               {(previewAvatar || photoUrl) ? (
                 <img
                   src={previewAvatar || photoUrl}
                   alt="avatar"
                   className="h-full w-full object-cover"
                 />
-              ) : (
-                <svg viewBox="0 0 24 24" className="h-7 w-7 text-zinc-500">
-                  <path
-                    fill="currentColor"
-                    d="M12 12a5 5 0 100-10 5 5 0 000 10Zm-7 9a7 7 0 0114 0v1H5v-1Z"
-                  />
-                </svg>
-              )}
+              ) : null}
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -169,46 +134,33 @@ export default function ProfileTabView({
                   Remove
                 </button>
               )}
-
-              <span className="text-[11px] text-zinc-500">
-                PNG/JPG ≤ 5MB
-              </span>
             </div>
           </div>
         </section>
 
-        {/* ================= USERNAME ================= */}
+        {/* Username */}
         <section className="mt-4 space-y-1">
           <label className="text-xs text-zinc-400">Username</label>
-          <div className="relative">
-            <input
-              value={username ? `@${username}` : '—'}
-              disabled
-              readOnly
-              className="w-full rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-2"
-            />
-            <span
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"
-              title="Usernames are permanent"
-            >
-              🔒
-            </span>
-          </div>
+          <input
+            value={username ? `@${username}` : '—'}
+            disabled
+            readOnly
+            className="w-full rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-2"
+          />
         </section>
 
-        {/* ================= DISPLAY NAME ================= */}
+        {/* Display Name */}
         <section className="mt-3 space-y-1">
           <label className="text-xs text-zinc-300">Display name</label>
           <input
             value={displayName}
             onChange={(e) => onChangeDisplayName(e.target.value)}
             className="w-full rounded-xl bg-zinc-950 border border-zinc-800 text-white px-3 py-2"
-            placeholder={isVport ? 'VPORT name' : 'Your name'}
             disabled={saving}
           />
         </section>
 
-        {/* ================= EMAIL ================= */}
+        {/* Email */}
         {email && (
           <section className="mt-3 space-y-1">
             <label className="text-xs text-zinc-400">Email</label>
@@ -221,11 +173,9 @@ export default function ProfileTabView({
           </section>
         )}
 
-        {/* ================= BIO ================= */}
+        {/* Bio */}
         <section className="mt-3 space-y-1">
-          <label className="text-xs text-zinc-300">
-            {isVport ? 'About' : 'Bio'}
-          </label>
+          <label className="text-xs text-zinc-300">Bio</label>
           <textarea
             value={bio}
             onChange={(e) => onChangeBio(e.target.value)}
@@ -235,22 +185,18 @@ export default function ProfileTabView({
           />
         </section>
 
-        {/* ================= ERROR ================= */}
         {error && (
           <div className="mt-3 rounded-lg bg-red-950/60 border border-red-900 text-red-200 px-3 py-2 text-sm">
             {error}
           </div>
         )}
 
-        {/* ================= SAVED CONFIRMATION ================= */}
         {saved && !saving && (
-          <div className="mt-3 text-sm text-green-400 flex items-center gap-1">
-            <span>✓</span>
-            <span>Changes saved</span>
+          <div className="mt-3 text-sm text-green-400">
+            ✓ Changes saved
           </div>
         )}
 
-        {/* ================= ACTIONS ================= */}
         <div className="mt-4 flex justify-end">
           <button
             onClick={onSave}
@@ -264,9 +210,9 @@ export default function ProfileTabView({
             {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
+
       </Card>
 
-      {/* ================= PROFESSIONAL ACCESS ================= */}
       <ProfessionalAccessButton />
     </div>
   )

@@ -43,7 +43,8 @@ export function toVportReview(row) {
     authorActorId: row.author_actor_id ?? null,
     targetActorId: row.target_actor_id ?? null,
 
-    reviewType: row.review_type ?? null, // "overall" | "food"
+    // dynamic dimension key (vibez/food/service/restrooms/whatever)
+    reviewType: row.review_type ?? null,
 
     rating: row.rating ?? null,
     body: row.body ?? null,
@@ -53,6 +54,7 @@ export function toVportReview(row) {
     createdAt: toIsoSafe(row.created_at),
     updatedAt: toIsoSafe(row.updated_at),
 
+    // legacy compatibility (you may delete column in DB; keep mapping safe)
     weekStart: row.week_start ?? null,
   };
 }
@@ -66,16 +68,16 @@ export function toVportReviewList(rows) {
 }
 
 /**
- * Stats model: tolerant mapper.
+ * Stats model (dynamic)
+ *
+ * Accepts either:
+ * - { [reviewTypeKey]: { count, avg } }  (recommended)
+ * - legacy shapes
+ *
+ * Returns:
+ * - { [reviewTypeKey]: { count, avg } }
  */
 export function toVportReviewStats(input) {
-  const fallback = {
-    overall: { count: 0, avg: null },
-    food: { count: 0, avg: null },
-  };
-
-  if (!input) return fallback;
-
   const normalizeAvg = (v) => {
     if (v == null) return null;
     const n = Number(v);
@@ -83,29 +85,69 @@ export function toVportReviewStats(input) {
     return Math.round(n * 10) / 10;
   };
 
-  // New refactor shape
-  if (input?.overall && input?.food) {
-    return {
-      overall: {
-        count: Number(input.overall?.count ?? 0) || 0,
-        avg: normalizeAvg(input.overall?.avg ?? null),
-      },
-      food: {
-        count: Number(input.food?.count ?? 0) || 0,
-        avg: normalizeAvg(input.food?.avg ?? null),
-      },
-    };
+  // 1) null/undefined
+  if (!input) return {};
+
+  // 2) if it already looks like a dynamic map: { vibez:{count,avg}, food:{...}, ... }
+  if (typeof input === "object" && !Array.isArray(input)) {
+    const keys = Object.keys(input);
+
+    // If it has at least one key that looks like {count,avg}, treat as dynamic
+    const looksDynamic = keys.some((k) => {
+      const v = input[k];
+      return v && typeof v === "object" && ("count" in v || "avg" in v);
+    });
+
+    if (looksDynamic) {
+      const out = {};
+      for (const k of keys) {
+        const v = input[k];
+        if (!v || typeof v !== "object") continue;
+        out[k] = {
+          count: Number(v.count ?? 0) || 0,
+          avg: normalizeAvg(v.avg ?? null),
+        };
+      }
+      return out;
+    }
   }
 
-  // Old/flat shape
-  return {
-    overall: {
+  // 3) legacy shapes you had before (overall/food)
+  const outLegacy = {};
+  if (input?.overall || input?.food) {
+    if (input?.overall) {
+      outLegacy.overall = {
+        count: Number(input.overall?.count ?? 0) || 0,
+        avg: normalizeAvg(input.overall?.avg ?? null),
+      };
+    }
+    if (input?.food) {
+      outLegacy.food = {
+        count: Number(input.food?.count ?? 0) || 0,
+        avg: normalizeAvg(input.food?.avg ?? null),
+      };
+    }
+    return outLegacy;
+  }
+
+  // 4) old/flat legacy
+  if (
+    "overall_count" in input ||
+    "overall_avg" in input ||
+    "food_count" in input ||
+    "food_avg" in input
+  ) {
+    outLegacy.overall = {
       count: Number(input.overall_count ?? 0) || 0,
       avg: normalizeAvg(input.overall_avg ?? null),
-    },
-    food: {
+    };
+    outLegacy.food = {
       count: Number(input.food_count ?? 0) || 0,
       avg: normalizeAvg(input.food_avg ?? null),
-    },
-  };
+    };
+    return outLegacy;
+  }
+
+  // fallback
+  return {};
 }

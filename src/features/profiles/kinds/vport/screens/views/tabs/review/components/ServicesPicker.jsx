@@ -1,6 +1,6 @@
 // src/features/profiles/kinds/vport/screens/views/tabs/review/components/ServicesPicker.jsx
 import React from "react";
-import { pill } from "../styles/reviewStyles";
+import { segWrap, segBtn } from "../styles/reviewStyles";
 
 export default function ServicesPicker({
   isServiceTab,
@@ -12,24 +12,47 @@ export default function ServicesPicker({
   if (!isServiceTab) return null;
 
   return (
-    <div style={{ marginTop: 12 }}>
+    <div style={{ marginTop: 16 }}>
       {loadingServices ? (
-        <div className="text-sm text-neutral-300">Loading services…</div>
+        <div className="text-sm text-neutral-400">
+          Loading services…
+        </div>
       ) : services?.length ? (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {services.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              style={pill(s.id === serviceId)}
-              onClick={() => setServiceId(s.id)}
-            >
-              {s.name}
-            </button>
-          ))}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+              color: "rgba(255,255,255,0.65)",
+              letterSpacing: 0.3,
+            }}
+          >
+            Select a service
+          </div>
+
+          <div style={segWrap()}>
+            {services.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                style={segBtn(s.id === serviceId)}
+                onClick={() => setServiceId(s.id)}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="text-sm text-neutral-300">No services yet.</div>
+        <div className="text-sm text-neutral-400">
+          No services available.
+        </div>
       )}
     </div>
   );

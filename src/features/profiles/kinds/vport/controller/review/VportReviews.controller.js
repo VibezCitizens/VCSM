@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js
 
 /**
- * Controller: Vport Store Reviews (overall + food)
+ * Controller: Vport Store Reviews (dimension-based, config-driven)
  *
  * Owns:
  * - Use-case orchestration
@@ -17,21 +17,20 @@
 import {
   fetchVportReviewsByActorId,
   fetchVportReviewStatsByActorId,
-  fetchMyCurrentWeekVportReview,
 } from "@/features/profiles/kinds/vport/dal/review/vportReviews.read.dal";
 
 import {
-  createOrUpdateMyCurrentWeekVportReview,
+  createVportReview,
+  updateVportReview,
 } from "@/features/profiles/kinds/vport/dal/review/vportReviews.write.dal";
 
 import {
   toVportReview,
   toVportReviewList,
-  toVportReviewStats,
 } from "@/features/profiles/kinds/vport/model/review/VportReview.model";
 
 /* ============================================================
-   LIST REVIEWS (overall | food)
+   LIST REVIEWS (dimension key)
 ============================================================ */
 
 export async function listVportReviewsController({
@@ -39,101 +38,105 @@ export async function listVportReviewsController({
   reviewType,
   limit = 50,
 }) {
-  if (!targetActorId) {
-    return [];
-  }
+  if (!targetActorId) return [];
 
   if (!reviewType) {
     throw new Error("reviewType is required.");
   }
 
-  const rows = await fetchVportReviewsByActorId(
-    targetActorId,
-    reviewType,
-    { limit }
-  );
+  if (reviewType === "overall") {
+    // overall is computed client-side (weighted avg)
+    return [];
+  }
+
+  const rows = await fetchVportReviewsByActorId(targetActorId, reviewType, {
+    limit,
+  });
 
   return toVportReviewList(rows);
 }
 
 /* ============================================================
-   GET STATS (overall + food aggregate)
+   GET STATS FOR A SINGLE DIMENSION
+   (use this per-dimension; overall is computed in app)
 ============================================================ */
 
 export async function getVportReviewStatsController({
   targetActorId,
-}) {
-  if (!targetActorId) {
-    return {
-      overall: { count: 0, avg: null },
-      food: { count: 0, avg: null },
-    };
-  }
-
-  // DAL already returns domain-shaped stats in the refactor.
-  // Model function is now tolerant of both shapes (see updated model below).
-  const stats = await fetchVportReviewStatsByActorId(targetActorId);
-
-  return toVportReviewStats(stats);
-}
-
-/* ============================================================
-   GET MY CURRENT WEEK REVIEW
-============================================================ */
-
-export async function getMyCurrentWeekVportReviewController({
-  viewerActorId,
-  targetActorId,
   reviewType,
+  limit = 500,
 }) {
-  if (!viewerActorId || !targetActorId || !reviewType) {
-    return null;
+  if (!targetActorId) return { count: 0, avg: null };
+
+  if (!reviewType) {
+    throw new Error("reviewType is required.");
   }
 
-  const row = await fetchMyCurrentWeekVportReview(
-    viewerActorId,
-    targetActorId,
-    reviewType
-  );
+  if (reviewType === "overall") {
+    return { count: 0, avg: null };
+  }
 
-  return toVportReview(row);
+  return fetchVportReviewStatsByActorId(targetActorId, reviewType, { limit });
 }
 
 /* ============================================================
-   SAVE (create or update)
+   SAVE (create new review row)
+   - unlimited (no 24h, no weekly)
 ============================================================ */
 
-export async function saveMyCurrentWeekVportReviewController({
+export async function createVportReviewController({
   viewerActorId,
   targetActorId,
   reviewType,
   rating,
   body,
 }) {
-  if (!viewerActorId) {
-    throw new Error("Authentication required.");
+  if (!viewerActorId) throw new Error("Authentication required.");
+  if (!targetActorId) throw new Error("Target actor is required.");
+  if (!reviewType) throw new Error("reviewType is required.");
+
+  if (reviewType === "overall") {
+    throw new Error("Overall is computed. Pick a category to review.");
   }
 
-  if (!targetActorId) {
-    throw new Error("Target actor is required.");
-  }
-
-  if (!reviewType) {
-    throw new Error("reviewType is required.");
-  }
-
-  if (!rating || rating < 1 || rating > 5) {
+  const r = Number(rating);
+  if (!Number.isFinite(r) || r < 1 || r > 5) {
     throw new Error("Invalid rating.");
   }
 
-  const savedRow =
-    await createOrUpdateMyCurrentWeekVportReview({
-      viewerActorId,
-      targetActorId,
-      reviewType,
-      rating,
-      body: body ?? null,
-    });
+  const savedRow = await createVportReview({
+    viewerActorId,
+    targetActorId,
+    reviewType,
+    rating: r,
+    body: body ?? null,
+  });
+
+  return toVportReview(savedRow);
+}
+
+/* ============================================================
+   OPTIONAL: UPDATE EXISTING REVIEW ROW
+   (only used if your UI supports editing a specific review)
+============================================================ */
+
+export async function updateVportReviewController({
+  reviewId,
+  rating,
+  body,
+}) {
+  if (!reviewId) throw new Error("reviewId is required.");
+
+  const r = Number(rating);
+  if (!Number.isFinite(r) || r < 1 || r > 5) {
+    throw new Error("Invalid rating.");
+  }
+
+  const savedRow = await updateVportReview({
+    reviewId,
+    rating: r,
+    body: body ?? null,
+  });
 
   return toVportReview(savedRow);
 }

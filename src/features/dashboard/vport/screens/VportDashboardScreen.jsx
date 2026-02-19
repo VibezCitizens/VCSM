@@ -50,7 +50,8 @@ export function VportDashboardScreen() {
 
   const profile = useMemo(() => {
     return {
-      displayName: publicDetails?.display_name ?? publicDetails?.name ?? "Dashboard",
+      displayName:
+        publicDetails?.display_name ?? publicDetails?.name ?? "Dashboard",
       username: publicDetails?.username ?? "",
       tagline: publicDetails?.tagline ?? "",
       bannerUrl: publicDetails?.banner_url ?? publicDetails?.bannerUrl ?? "",
@@ -59,21 +60,10 @@ export function VportDashboardScreen() {
   }, [publicDetails]);
 
   const goBack = useCallback(() => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-    if (actorId) {
-      navigate(`/profile/${actorId}`, { replace: true });
-      return;
-    }
-    navigate(`/feed`, { replace: true });
-  }, [navigate, actorId]);
+  if (!actorId) return;
+  navigate(`/profile/${actorId}`);
+}, [navigate, actorId]);
 
-  const openMenuManage = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/vport/${actorId}/menu`);
-  }, [navigate, actorId]);
 
   const openQr = useCallback(() => {
     if (!actorId) return;
@@ -90,21 +80,34 @@ export function VportDashboardScreen() {
     navigate(`/vport/${actorId}/menu/flyer/edit`);
   }, [navigate, actorId]);
 
-  // ✅ NEW: preview online menu (uses your existing flyer preview route)
   const openOnlineMenuPreview = useCallback(() => {
     if (!actorId) return;
     navigate(`/vport/${actorId}/menu/flyer`);
+  }, [navigate, actorId]);
+
+  // ✅ NEW: navigate to dedicated settings screen
+  const openSettings = useCallback(() => {
+    if (!actorId) return;
+    navigate(`/vport/${actorId}/settings`);
   }, [navigate, actorId]);
 
   // loading / guard
   if (!actorId) return null;
 
   if (loading) {
-    return <div className="flex justify-center py-20 text-neutral-400">Loading…</div>;
+    return (
+      <div className="flex justify-center py-20 text-neutral-400">
+        Loading…
+      </div>
+    );
   }
 
   if (!isOwner) {
-    return <div className="flex justify-center py-20 text-neutral-400">Owner access only.</div>;
+    return (
+      <div className="flex justify-center py-20 text-neutral-400">
+        Owner access only.
+      </div>
+    );
   }
 
   const bannerImage = profile.bannerUrl?.trim() ? `url(${profile.bannerUrl})` : null;
@@ -224,9 +227,11 @@ export function VportDashboardScreen() {
               ← Back
             </button>
 
-            <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>VPORT DASHBOARD</div>
+            <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>
+              VPORT DASHBOARD
+            </div>
 
-            {/* ✅ removed top "Manage Menu" button */}
+            {/* spacer */}
             <div style={{ width: 110 }} />
           </div>
 
@@ -323,10 +328,11 @@ export function VportDashboardScreen() {
             <div style={cardGrid}>
               <div style={{ ...cardBase, cursor: "pointer" }} onClick={openQr}>
                 <div style={cardTitle}>QR Code</div>
-                <div style={cardBody}>Open the QR screen for quick scanning and sharing.</div>
+                <div style={cardBody}>
+                  Open the QR screen for quick scanning and sharing.
+                </div>
               </div>
 
-              {/* Printable Flyer (desktop only for now) */}
               <div
                 style={{
                   ...cardBase,
@@ -339,11 +345,12 @@ export function VportDashboardScreen() {
                 }}
               >
                 <div style={cardTitle}>Printable Flyer</div>
-                <div style={cardBody}>Open a print-optimized flyer with your QR for your menu.</div>
+                <div style={cardBody}>
+                  Open a print-optimized flyer with your QR for your menu.
+                </div>
                 {desktopOnlyLocked ? <div style={badge}>Desktop only</div> : null}
               </div>
 
-              {/* Edit Flyer (desktop only for now) */}
               <div
                 style={{
                   ...cardBase,
@@ -356,14 +363,28 @@ export function VportDashboardScreen() {
                 }}
               >
                 <div style={cardTitle}>Edit Flyer</div>
-                <div style={cardBody}>Update headline, note, accent color, hours, and images.</div>
+                <div style={cardBody}>
+                  Update headline, note, accent color, hours, and images.
+                </div>
                 {desktopOnlyLocked ? <div style={badge}>Desktop only</div> : null}
               </div>
 
-              {/* ✅ REPLACED: Manage Menu -> Preview Online Menu */}
-              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openOnlineMenuPreview}>
+              <div
+                style={{ ...cardBase, cursor: "pointer" }}
+                onClick={openOnlineMenuPreview}
+              >
                 <div style={cardTitle}>Preview Online Menu</div>
-                <div style={cardBody}>Preview how your online menu looks to customers.</div>
+                <div style={cardBody}>
+                  Preview how your online menu looks to customers.
+                </div>
+              </div>
+
+              {/* ✅ SETTINGS CARD -> ROUTE */}
+              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openSettings}>
+                <div style={cardTitle}>Settings</div>
+                <div style={cardBody}>
+                  Edit public details, hours, highlights, and more.
+                </div>
               </div>
             </div>
           </div>

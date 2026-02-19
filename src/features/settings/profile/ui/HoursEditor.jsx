@@ -29,7 +29,8 @@ export default function HoursEditor({ value, onChange, disabled }) {
 
   function update(next) {
     onChange({
-      timezone: hours.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timezone:
+        hours.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
       always_open: false,
       weekly,
       ...next,
@@ -42,8 +43,7 @@ export default function HoursEditor({ value, onChange, disabled }) {
     } else {
       onChange({
         timezone:
-          hours.timezone ||
-          Intl.DateTimeFormat().resolvedOptions().timeZone,
+          hours.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
         always_open: true,
         weekly: {},
       });
@@ -127,14 +127,12 @@ export default function HoursEditor({ value, onChange, disabled }) {
                 <input
                   type="time"
                   value={ranges[0]?.start || ""}
-                  onChange={(e) =>
-                    setDayTime(d.key, "start", e.target.value)
-                  }
+                  onChange={(e) => setDayTime(d.key, "start", e.target.value)}
                   disabled={disabled}
                   className="
                     rounded-xl
                     bg-white border border-zinc-300 text-black
-                    px-2 py-1 text-sm outline-none
+                    px-2 py-1 text-base outline-none
                     focus:ring-2 focus:ring-violet-600
                     disabled:bg-zinc-200 disabled:text-zinc-500 disabled:cursor-not-allowed
                   "
@@ -143,14 +141,12 @@ export default function HoursEditor({ value, onChange, disabled }) {
                 <input
                   type="time"
                   value={ranges[0]?.end || ""}
-                  onChange={(e) =>
-                    setDayTime(d.key, "end", e.target.value)
-                  }
+                  onChange={(e) => setDayTime(d.key, "end", e.target.value)}
                   disabled={disabled}
                   className="
                     rounded-xl
                     bg-white border border-zinc-300 text-black
-                    px-2 py-1 text-sm outline-none
+                    px-2 py-1 text-base outline-none
                     focus:ring-2 focus:ring-violet-600
                     disabled:bg-zinc-200 disabled:text-zinc-500 disabled:cursor-not-allowed
                   "
@@ -161,9 +157,7 @@ export default function HoursEditor({ value, onChange, disabled }) {
             <button
               type="button"
               onClick={() =>
-                isClosed
-                  ? setDayTime(d.key, "start", "09:00")
-                  : toggleClosed(d.key)
+                isClosed ? setDayTime(d.key, "start", "09:00") : toggleClosed(d.key)
               }
               disabled={disabled}
               className="text-xs text-zinc-400 hover:text-white disabled:opacity-60 disabled:cursor-not-allowed"

@@ -254,14 +254,15 @@ export function VportActorMenuManagePanel({
       ) : null}
 
       {!loadingMenu && hasCategories ? (
-        <VportActorMenuEmptyState
-          title="Add another category"
-          subtitle="Restaurants usually need multiple categories (Drinks, Starters, Mains, Desserts)."
-          actionLabel="Add category"
-          onAction={openCreateCategory}
-          disabled={!actorId || categoriesMut.saving || categoriesMut.deleting}
-        />
-      ) : null}
+  <VportActorMenuEmptyState
+    title="Create a new category"
+    subtitle="Keep your VPORT menu structured by grouping items into clear sections."
+    actionLabel="Add category"
+    onAction={openCreateCategory}
+    disabled={!actorId || categoriesMut.saving || categoriesMut.deleting}
+  />
+) : null}
+
 
       {hasCategories ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

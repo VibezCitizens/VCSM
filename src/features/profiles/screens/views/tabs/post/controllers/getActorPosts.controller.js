@@ -1,6 +1,7 @@
 import { fetchPostsForActorDAL } from "../dal/fetchPostsForActor.dal";
 import { PostModel } from "../models/post.model";
 import { hydrateActorsFromRows } from "@/features/actors/controllers/hydrateActors.controller";
+import { useActorStore } from "@/state/actors/actorStore";
 
 /**
  * Controller — getActorPostsController
@@ -12,16 +13,8 @@ import { hydrateActorsFromRows } from "@/features/actors/controllers/hydrateActo
  *  - Domain-safe return shape
  * ------------------------------------------------------------
  */
-export async function getActorPostsController({
-  actorId,
-  page,
-  pageSize,
-}) {
-  console.log("[getActorPostsController] start", {
-    actorId,
-    page,
-    pageSize,
-  });
+export async function getActorPostsController({ actorId, page, pageSize }) {
+  console.log("[getActorPostsController] start", { actorId, page, pageSize });
 
   if (!actorId) {
     console.error("[getActorPostsController] ❌ actorId missing");
@@ -30,11 +23,7 @@ export async function getActorPostsController({
 
   const offset = page * pageSize;
 
-  console.log("[getActorPostsController] pagination", {
-    page,
-    pageSize,
-    offset,
-  });
+  console.log("[getActorPostsController] pagination", { page, pageSize, offset });
 
   const { data, error } = await fetchPostsForActorDAL({
     actorId,
@@ -47,17 +36,10 @@ export async function getActorPostsController({
     throw error;
   }
 
-  console.log(
-    "[getActorPostsController] DAL returned rows:",
-    data?.length,
-    data
-  );
+  console.log("[getActorPostsController] DAL returned rows:", data?.length, data);
 
   if (!Array.isArray(data)) {
-    console.error(
-      "[getActorPostsController] ❌ data is not an array",
-      data
-    );
+    console.error("[getActorPostsController] ❌ data is not an array", data);
     return { posts: [], done: true };
   }
 
@@ -75,17 +57,36 @@ export async function getActorPostsController({
   );
 
   // ------------------------------------------------------------
-  // HYDRATE ACTORS (side-effect)
+  // HYDRATE ACTORS (writes into useActorStore)
   // ------------------------------------------------------------
   console.log("[getActorPostsController] hydrateActorsFromRows → start");
   await hydrateActorsFromRows(data);
   console.log("[getActorPostsController] hydrateActorsFromRows → done");
 
   // ------------------------------------------------------------
-  // MODEL MAPPING
+  // READ BACK hydrated actors from store -> build quick lookup map
+  // ------------------------------------------------------------
+  const actorState = useActorStore.getState();
+  const storeActors = actorState?.actors || {};
+  const getStoredActor = actorState?.getActorById;
+
+  const lookupActor = (id) => {
+    if (!id) return null;
+
+    // if your store exposes a selector, prefer it
+    if (typeof getStoredActor === "function") return getStoredActor(id) ?? null;
+
+    // otherwise, assume actors is a map keyed by actor_id
+    return storeActors[id] ?? null;
+  };
+
+  // ------------------------------------------------------------
+  // MODEL MAPPING + ATTACH actor object
   // ------------------------------------------------------------
   const posts = data.map((row) => {
     const model = PostModel(row);
+
+    const hydratedActor = lookupActor(model?.actorId);
 
     if (!model?.actorId) {
       console.warn(
@@ -95,21 +96,25 @@ export async function getActorPostsController({
       );
     }
 
-    return model;
+    if (!hydratedActor) {
+      console.warn(
+        "[getActorPostsController] ⚠️ actor not hydrated/available",
+        { actorId: model?.actorId, row }
+      );
+    }
+
+    return {
+      ...model,
+      // ✅ IMPORTANT: give PostCardView what it needs
+      actor: hydratedActor ?? model.actor ?? null,
+    };
   });
 
-  console.log(
-    "[getActorPostsController] mapped PostModels:",
-    posts.length,
-    posts
-  );
+  console.log("[getActorPostsController] mapped posts (with actor):", posts.length, posts);
 
   const done = data.length < pageSize;
 
   console.log("[getActorPostsController] done flag:", done);
 
-  return {
-    posts,
-    done,
-  };
+  return { posts, done };
 }

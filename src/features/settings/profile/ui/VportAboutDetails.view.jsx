@@ -186,6 +186,9 @@ export default function VportAboutDetailsView({
   );
 }
 
+// src/features/settings/profile/ui/VportAboutDetails.view.jsx
+// ...keep everything else the same
+
 function Field({ label, value, onChange, placeholder, disabled }) {
   return (
     <section className="space-y-1">
@@ -196,6 +199,7 @@ function Field({ label, value, onChange, placeholder, disabled }) {
         className="
           w-full rounded-xl
           bg-white border border-zinc-300 text-black
+          text-base
           px-3 py-2 outline-none
           focus:ring-2 focus:ring-violet-600
           placeholder-black/50
@@ -236,6 +240,7 @@ function ChipsField({ label, value, onChange, placeholder, disabled }) {
         className="
           w-full rounded-xl
           bg-white border border-zinc-300 text-black
+          text-base
           px-3 py-2 outline-none
           focus:ring-2 focus:ring-violet-600
           placeholder-black/50

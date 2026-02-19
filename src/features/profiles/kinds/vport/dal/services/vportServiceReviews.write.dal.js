@@ -1,38 +1,35 @@
+// src/features/profiles/kinds/vport/dal/services/vportServiceReviews.write.dal.js
 import { supabase } from "@/services/supabase/supabaseClient";
 
-function utcWeekStartISO(d = new Date()) {
-  const dt = new Date(d);
-  const day = dt.getUTCDay(); // 0=Sun..6=Sat
-  const diffToMonday = (day + 6) % 7; // Mon=0 ... Sun=6
-  dt.setUTCDate(dt.getUTCDate() - diffToMonday);
-  dt.setUTCHours(0, 0, 0, 0);
-  return dt.toISOString().slice(0, 10);
-}
-
 /**
- * Create or update the user's service review for THIS WEEK.
- * Requires unique index on (author_actor_id, service_id, week_start) WHERE is_deleted=false
+ * Unlimited system:
+ * - no week_start
+ * - no 24h gate
+ * - insert new rows freely
  */
-export async function createOrUpdateMyCurrentWeekServiceReview({ viewerActorId, serviceId, rating, body }) {
+
+export async function createServiceReview({
+  viewerActorId,
+  serviceId,
+  rating,
+  body,
+}) {
   if (!viewerActorId) throw new Error("Missing viewerActorId");
   if (!serviceId) throw new Error("Missing serviceId");
 
-  const safeRating = Number(rating);
-  if (!Number.isFinite(safeRating) || safeRating < 1 || safeRating > 5) {
+  const r = Number(rating);
+  if (!Number.isFinite(r) || r < 1 || r > 5) {
     throw new Error("Rating must be a number from 1 to 5");
   }
-
-  const weekStart = utcWeekStartISO();
 
   const payload = {
     author_actor_id: viewerActorId,
     service_id: serviceId,
-    rating: safeRating,
+    rating: r,
     body: typeof body === "string" ? body.trim() : null,
   };
 
-  // 1) try insert
-  const ins = await supabase
+  const { data, error } = await supabase
     .schema("vc")
     .from("vport_service_reviews")
     .insert(payload)
@@ -45,46 +42,44 @@ export async function createOrUpdateMyCurrentWeekServiceReview({ viewerActorId, 
       body,
       created_at,
       updated_at,
-      week_start
-    `
+      is_deleted,
+      deleted_at
+      `
     )
     .maybeSingle();
 
-  if (!ins.error) return ins.data || null;
-
-  if (ins.error?.code !== "23505") {
-    console.error("[createOrUpdateMyCurrentWeekServiceReview] insert failed", ins.error);
-    throw ins.error;
+  if (error) {
+    console.error("[createServiceReview] failed", error);
+    throw error;
   }
 
-  // 2) fetch this week's row id
-  const { data: existing, error: selErr } = await supabase
-    .schema("vc")
-    .from("vport_service_reviews")
-    .select("id")
-    .eq("author_actor_id", viewerActorId)
-    .eq("service_id", serviceId)
-    .eq("is_deleted", false)
-    .eq("week_start", weekStart)
-    .maybeSingle();
+  return data || null;
+}
 
-  if (selErr) {
-    console.error("[createOrUpdateMyCurrentWeekServiceReview] select existing failed", selErr);
-    throw selErr;
+/**
+ * Optional edit-by-id (only if you support editing a specific review row)
+ */
+export async function updateServiceReview({
+  reviewId,
+  rating,
+  body,
+}) {
+  if (!reviewId) throw new Error("Missing reviewId");
+
+  const r = Number(rating);
+  if (!Number.isFinite(r) || r < 1 || r > 5) {
+    throw new Error("Rating must be a number from 1 to 5");
   }
 
-  if (!existing?.id) throw ins.error;
-
-  // 3) update existing
-  const { data: upd, error: updErr } = await supabase
+  const { data, error } = await supabase
     .schema("vc")
     .from("vport_service_reviews")
     .update({
-      rating: safeRating,
-      body: payload.body,
+      rating: r,
+      body: typeof body === "string" ? body.trim() : null,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", existing.id)
+    .eq("id", reviewId)
     .select(
       `
       id,
@@ -94,15 +89,16 @@ export async function createOrUpdateMyCurrentWeekServiceReview({ viewerActorId, 
       body,
       created_at,
       updated_at,
-      week_start
-    `
+      is_deleted,
+      deleted_at
+      `
     )
     .maybeSingle();
 
-  if (updErr) {
-    console.error("[createOrUpdateMyCurrentWeekServiceReview] update failed", updErr);
-    throw updErr;
+  if (error) {
+    console.error("[updateServiceReview] failed", error);
+    throw error;
   }
 
-  return upd || null;
+  return data || null;
 }

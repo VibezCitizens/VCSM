@@ -1,284 +1,49 @@
-// src/features/profiles/kinds/vport/screens/views/tabs/review/hooks/useVportReviews.js
+// src/features/profiles/kinds/vport/hooks/review/useVportReviews.js
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   listVportReviewsController,
-  getVportReviewStatsController,
-  getMyCurrentWeekVportReviewController,
-  saveMyCurrentWeekVportReviewController,
+  createVportReviewController,
 } from "@/features/profiles/kinds/vport/controller/review/VportReviews.controller";
 
 import {
-  listVportServicesController,
   listServiceReviewsController,
   getServiceReviewStatsController,
-  getMyCurrentWeekServiceReviewController,
-  saveMyCurrentWeekServiceReviewController,
+  createServiceReviewController,
 } from "@/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller";
 
-/**
- * Small helper to avoid repeating the "alive" pattern everywhere.
- * - runs async function
- * - provides `alive()` checker
- */
-function useAsyncEffect(effect, deps) {
-  useEffect(() => {
-    let alive = true;
-    const aliveFn = () => alive;
+import { getReviewDimensionsForVportType } from "@/features/profiles/kinds/vport/config/reviewDimensions.config";
 
-    (async () => {
-      try {
-        await effect(aliveFn);
-      } catch {
-        // swallow
-      }
-    })();
+import { useStoreReviewsFlow } from "@/features/profiles/kinds/vport/hooks/review/flows/useStoreReviewsFlow";
+import { useServiceReviewsFlow } from "@/features/profiles/kinds/vport/hooks/review/flows/useServiceReviewsFlow";
 
-    return () => {
-      alive = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-}
+export function useVportReviews({ targetActorId, viewerActorId, vportType }) {
+  const dimensions = useMemo(() => {
+    const dims = getReviewDimensionsForVportType(vportType);
+    return (Array.isArray(dims) ? dims : []).filter((d) => d?.key !== "vibez");
+  }, [vportType]);
 
-/* ============================================================
-   STORE REVIEWS (overall | food)
-============================================================ */
-
-function useStoreReviewsFlow({ targetActorId, viewerActorId, tab, isServiceTab, setRating, setBody }) {
-  const [stats, setStats] = useState({
-    overall: { count: 0, avg: null },
-    food: { count: 0, avg: null },
-  });
-
-  const [list, setList] = useState([]);
-  const [loadingList, setLoadingList] = useState(false);
-
-  const [myWeek, setMyWeek] = useState(null);
-  const [loadingMyWeek, setLoadingMyWeek] = useState(false);
-
-  // stats (overall + food)
-  useAsyncEffect(async (alive) => {
-    if (!targetActorId) return;
-
-    try {
-      const s = await getVportReviewStatsController({ targetActorId });
-      if (!alive()) return;
-      setStats(s);
-    } catch (e) {
-      if (!alive()) return;
-      setStats({ overall: { count: 0, avg: null }, food: { count: 0, avg: null } });
-    }
-  }, [targetActorId]);
-
-  // list for current store tab
-  useAsyncEffect(async (alive) => {
-    if (!targetActorId) return;
-    if (isServiceTab) return;
-
-    setLoadingList(true);
-    try {
-      const rows = await listVportReviewsController({
-        targetActorId,
-        reviewType: tab,
-        limit: 50,
-      });
-      if (!alive()) return;
-      setList(rows);
-    } catch (e) {
-      if (!alive()) return;
-      setList([]);
-    } finally {
-      if (!alive()) return;
-      setLoadingList(false);
-    }
-  }, [targetActorId, tab, isServiceTab]);
-
-  // my current week review for store tab
-  useAsyncEffect(async (alive) => {
-    if (isServiceTab) return;
-
-    if (!targetActorId || !viewerActorId) {
-      setMyWeek(null);
-      return;
-    }
-
-    setLoadingMyWeek(true);
-    try {
-      const r = await getMyCurrentWeekVportReviewController({
-        viewerActorId,
-        targetActorId,
-        reviewType: tab,
-      });
-      if (!alive()) return;
-      setMyWeek(r || null);
-      setRating(r?.rating ?? 5);
-      setBody(r?.body ?? "");
-    } catch (e) {
-      if (!alive()) return;
-      setMyWeek(null);
-    } finally {
-      if (!alive()) return;
-      setLoadingMyWeek(false);
-    }
-  }, [targetActorId, viewerActorId, tab, isServiceTab, setRating, setBody]);
-
-  return {
-    stats,
-    setStats,
-    list,
-    setList,
-    loadingList,
-    myWeek,
-    setMyWeek,
-    loadingMyWeek,
-  };
-}
-
-/* ============================================================
-   SERVICE REVIEWS (services tab)
-============================================================ */
-
-function useServiceReviewsFlow({ targetActorId, viewerActorId, isServiceTab, setRating, setBody }) {
-  const [services, setServices] = useState([]);
-  const [loadingServices, setLoadingServices] = useState(false);
-  const [serviceId, setServiceId] = useState(null);
-
-  const [serviceStats, setServiceStats] = useState({ count: 0, avg: null });
-  const [serviceList, setServiceList] = useState([]);
-  const [loadingServiceList, setLoadingServiceList] = useState(false);
-
-  const [myServiceWeek, setMyServiceWeek] = useState(null);
-  const [loadingMyServiceWeek, setLoadingMyServiceWeek] = useState(false);
-
-  const selectedService = useMemo(() => {
-    if (!isServiceTab) return null;
-    return services.find((s) => s.id === serviceId) ?? null;
-  }, [isServiceTab, services, serviceId]);
-
-  // catalog
-  useAsyncEffect(async (alive) => {
-    if (!targetActorId) return;
-    if (!isServiceTab) return;
-
-    setLoadingServices(true);
-    try {
-      const rows = await listVportServicesController({ targetActorId, limit: 200 });
-      if (!alive()) return;
-
-      const safe = Array.isArray(rows) ? rows : [];
-      setServices(safe);
-
-      setServiceId((prev) => {
-        if (prev && safe.some((x) => x.id === prev)) return prev;
-        return safe?.[0]?.id ?? null;
-      });
-    } catch (e) {
-      if (!alive()) return;
-      setServices([]);
-      setServiceId(null);
-    } finally {
-      if (!alive()) return;
-      setLoadingServices(false);
-    }
-  }, [targetActorId, isServiceTab]);
-
-  // stats
-  useAsyncEffect(async (alive) => {
-    if (!isServiceTab) return;
-    if (!serviceId) return;
-
-    try {
-      const s = await getServiceReviewStatsController({ serviceId });
-      if (!alive()) return;
-      setServiceStats(s);
-    } catch (e) {
-      if (!alive()) return;
-      setServiceStats({ count: 0, avg: null });
-    }
-  }, [isServiceTab, serviceId]);
-
-  // list
-  useAsyncEffect(async (alive) => {
-    if (!isServiceTab) return;
-    if (!serviceId) return;
-
-    setLoadingServiceList(true);
-    try {
-      const rows = await listServiceReviewsController({ serviceId, limit: 50 });
-      if (!alive()) return;
-      setServiceList(rows);
-    } catch (e) {
-      if (!alive()) return;
-      setServiceList([]);
-    } finally {
-      if (!alive()) return;
-      setLoadingServiceList(false);
-    }
-  }, [isServiceTab, serviceId]);
-
-  // my week
-  useAsyncEffect(async (alive) => {
-    if (!isServiceTab) return;
-
-    if (!viewerActorId || !serviceId) {
-      setMyServiceWeek(null);
-      return;
-    }
-
-    setLoadingMyServiceWeek(true);
-    try {
-      const r = await getMyCurrentWeekServiceReviewController({
-        viewerActorId,
-        serviceId,
-      });
-      if (!alive()) return;
-      setMyServiceWeek(r || null);
-      setRating(r?.rating ?? 5);
-      setBody(r?.body ?? "");
-    } catch (e) {
-      if (!alive()) return;
-      setMyServiceWeek(null);
-    } finally {
-      if (!alive()) return;
-      setLoadingMyServiceWeek(false);
-    }
-  }, [isServiceTab, viewerActorId, serviceId, setRating, setBody]);
-
-  return {
-    services,
-    loadingServices,
-    serviceId,
-    setServiceId,
-    selectedService,
-
-    serviceStats,
-    setServiceStats,
-    serviceList,
-    setServiceList,
-    loadingServiceList,
-
-    myServiceWeek,
-    setMyServiceWeek,
-    loadingMyServiceWeek,
-  };
-}
-
-/* ============================================================
-   PUBLIC HOOK
-============================================================ */
-
-export function useVportReviews({ targetActorId, viewerActorId }) {
-  const [tab, setTab] = useState("overall"); // overall | food | services
+  // ✅ default to overall (no vibez)
+  const [tab, setTab] = useState("overall");
   const isServiceTab = tab === "services";
 
-  const tabLabel = useMemo(() => {
-    if (tab === "food") return "Food";
-    if (tab === "services") return "Services";
-    return "Overall";
-  }, [tab]);
+  useEffect(() => {
+    const allowed = ["overall", ...dimensions.map((d) => d.key)];
+    if (allowed.length === 1) allowed.push("services");
+    else allowed.push("services");
 
-  // shared composer
+    if (!allowed.includes(tab)) {
+      setTab("overall");
+    }
+  }, [dimensions, tab]);
+
+  const tabLabel = useMemo(() => {
+    if (tab === "services") return "Services";
+    if (tab === "overall") return "Overall";
+    const d = dimensions.find((x) => x.key === tab);
+    return d?.label ?? "Review";
+  }, [tab, dimensions]);
+
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
@@ -291,6 +56,7 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
     isServiceTab,
     setRating,
     setBody,
+    dimensions,
   });
 
   const svc = useServiceReviewsFlow({
@@ -301,15 +67,57 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
     setBody,
   });
 
+  // ✅ cache lists per dimension so Overall can show "Top 3 recent comments"
+  const [dimListCache, setDimListCache] = useState({});
+
+  useEffect(() => {
+    if (isServiceTab) return;
+    if (tab === "overall") return;
+    if (!Array.isArray(store.list)) return;
+
+    setDimListCache((prev) => {
+      const next = { ...(prev || {}) };
+      next[tab] = store.list;
+      return next;
+    });
+  }, [isServiceTab, tab, store.list]);
+
+  const recentComments = useMemo(() => {
+    const all = Object.values(dimListCache || {}).flatMap((v) => (Array.isArray(v) ? v : []));
+    const withBody = all.filter((r) => r?.body);
+
+    withBody.sort((a, b) => {
+      const da = new Date(a.createdAt ?? a.created_at ?? 0).getTime();
+      const db = new Date(b.createdAt ?? b.created_at ?? 0).getTime();
+      return db - da;
+    });
+
+    // de-dupe by id if present
+    const seen = new Set();
+    const out = [];
+    for (const r of withBody) {
+      const id = r?.id ?? null;
+      const key = id ? `id:${id}` : `t:${r?.createdAt ?? r?.created_at}:${r?.body}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(r);
+      if (out.length >= 3) break;
+    }
+    return out;
+  }, [dimListCache]);
+
   const handleSave = useCallback(async () => {
     setMsg(null);
     setSaving(true);
 
     try {
+      // ===========================
+      // SERVICE REVIEWS (unlimited)
+      // ===========================
       if (isServiceTab) {
         if (!viewerActorId || !svc.serviceId) return;
 
-        const saved = await saveMyCurrentWeekServiceReviewController({
+        const saved = await createServiceReviewController({
           viewerActorId,
           serviceId: svc.serviceId,
           rating,
@@ -317,7 +125,7 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
         });
 
         svc.setMyServiceWeek(saved || null);
-        setMsg("Submitted for this week.");
+        setMsg("Submitted.");
 
         const [rows, s] = await Promise.all([
           listServiceReviewsController({ serviceId: svc.serviceId, limit: 50 }),
@@ -327,47 +135,83 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
         svc.setServiceList(rows);
         svc.setServiceStats(s);
 
-        // ✅ clear composer after submit
         setRating(5);
         setBody("");
-      } else {
-        if (!viewerActorId || !targetActorId) return;
-
-        const saved = await saveMyCurrentWeekVportReviewController({
-          viewerActorId,
-          targetActorId,
-          reviewType: tab,
-          rating,
-          body,
-        });
-
-        store.setMyWeek(saved || null);
-        setMsg("Submitted for this week.");
-
-        const [rows, s] = await Promise.all([
-          listVportReviewsController({ targetActorId, reviewType: tab, limit: 50 }),
-          getVportReviewStatsController({ targetActorId }),
-        ]);
-
-        store.setList(rows);
-        store.setStats(s);
-
-        // ✅ clear composer after submit
-        setRating(5);
-        setBody("");
+        return;
       }
+
+      // ===========================
+      // STORE REVIEWS (dimensions)
+      // ===========================
+      if (tab === "overall") {
+        // ✅ no writing here
+        return;
+      }
+
+      if (!viewerActorId || !targetActorId) return;
+
+      const saved = await createVportReviewController({
+        viewerActorId,
+        targetActorId,
+        reviewType: tab,
+        rating,
+        body,
+      });
+
+      store.setMyWeek(saved || null);
+      setMsg("Submitted.");
+
+      const rows = await listVportReviewsController({
+        targetActorId,
+        reviewType: tab,
+        limit: 50,
+      });
+      store.setList(rows);
+
+      setRating(5);
+      setBody("");
     } catch (e) {
       setMsg(e?.message ?? "Failed to submit.");
     } finally {
       setSaving(false);
     }
-  }, [isServiceTab, viewerActorId, svc.serviceId, rating, body, targetActorId, tab, store, svc]);
+  }, [
+    isServiceTab,
+    viewerActorId,
+    svc.serviceId,
+    rating,
+    body,
+    tab,
+    targetActorId,
+    store,
+    svc,
+  ]);
 
-  const avgForStoreTab = tab === "food" ? store.stats.food.avg : store.stats.overall.avg;
-  const cntForStoreTab = tab === "food" ? store.stats.food.count : store.stats.overall.count;
+  const displayAvg = useMemo(() => {
+    if (isServiceTab) return svc.serviceStats.avg;
+    if (tab === "overall") return store.overallComputed;
+    const s = store.dimStats?.[tab];
+    return s?.avg ?? null;
+  }, [
+    isServiceTab,
+    svc.serviceStats.avg,
+    tab,
+    store.overallComputed,
+    store.dimStats,
+  ]);
 
-  const displayAvg = isServiceTab ? svc.serviceStats.avg : avgForStoreTab;
-  const displayCnt = isServiceTab ? svc.serviceStats.count : cntForStoreTab;
+  const displayCnt = useMemo(() => {
+    if (isServiceTab) return svc.serviceStats.count;
+    if (tab === "overall") return store.overallCountComputed;
+    const s = store.dimStats?.[tab];
+    return s?.count ?? 0;
+  }, [
+    isServiceTab,
+    svc.serviceStats.count,
+    tab,
+    store.overallCountComputed,
+    store.dimStats,
+  ]);
 
   const activeList = isServiceTab ? svc.serviceList : store.list;
   const loadingActiveList = isServiceTab ? svc.loadingServiceList : store.loadingList;
@@ -375,21 +219,32 @@ export function useVportReviews({ targetActorId, viewerActorId }) {
   const myLoading = isServiceTab ? svc.loadingMyServiceWeek : store.loadingMyWeek;
   const myExists = isServiceTab ? !!svc.myServiceWeek : !!store.myWeek;
 
+  const selectedServiceName = svc.selectedService?.name ?? null;
+
   return {
+    dimensions,
+
     tab,
     setTab,
     tabLabel,
     isServiceTab,
 
-    stats: store.stats,
+    displayAvg,
+    displayCnt,
+
+    // ✅ expose computed stats for Overall dashboard
+    overallAvg: store.overallComputed ?? null,
+    overallCount: store.overallCountComputed ?? 0,
+    dimStats: store.dimStats ?? {},
+
+    // ✅ expose cached comments
+    recentComments,
+
     services: svc.services,
     loadingServices: svc.loadingServices,
     serviceId: svc.serviceId,
     setServiceId: svc.setServiceId,
-    selectedService: svc.selectedService,
-
-    displayAvg,
-    displayCnt,
+    selectedServiceName,
 
     activeList,
     loadingActiveList,

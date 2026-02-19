@@ -26,16 +26,6 @@ export function VportMenuManageView({ actorId, profile } = {}) {
     setIncludeInactive(!!next);
   }, []);
 
-  const openQr = useCallback(() => {
-    if (!effectiveActorId) return;
-    navigate(`/vport/${effectiveActorId}/menu/qr`);
-  }, [navigate, effectiveActorId]);
-
-  const openFlyer = useCallback(() => {
-    if (!effectiveActorId) return;
-    navigate(`/vport/${effectiveActorId}/menu/flyer`);
-  }, [navigate, effectiveActorId]);
-
   const openDashboard = useCallback(() => {
     if (!effectiveActorId) return;
     navigate(`/vport/${effectiveActorId}/dashboard`);
@@ -43,21 +33,25 @@ export function VportMenuManageView({ actorId, profile } = {}) {
 
   if (!canRender) return null;
 
-  const btn = {
-    padding: "8px 12px",
-    borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(255,255,255,0.06)",
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: 800,
+  const dashboardBtn = {
+    padding: "8px 14px",
+    borderRadius: 999,
+    border: "1px solid rgba(255,255,255,0.16)",
+    background: "rgba(255,255,255,0.08)",
+    color: "rgba(255,255,255,0.92)",
+    fontSize: 12,
+    fontWeight: 900,
     cursor: "pointer",
     whiteSpace: "nowrap",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    lineHeight: 1,
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {/* Top bar: existing toolbar + buttons */}
+      {/* Top row: just pills (no title/subtitle text) */}
       <div
         style={{
           display: "flex",
@@ -68,26 +62,31 @@ export function VportMenuManageView({ actorId, profile } = {}) {
       >
         <div style={{ minWidth: 0, flex: 1 }}>
           <VportActorMenuToolbar
-            title="Manage Menu"
-            subtitle="Create categories and items for your VPORT menu."
+            hideHeader={true} // ✅ hides "Manage Menu" + subtitle
             includeInactive={includeInactive}
             onToggleIncludeInactive={handleToggleIncludeInactive}
           />
         </div>
 
-        <div style={{ flexShrink: 0, display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button type="button" onClick={openDashboard} style={btn}>
+        <div
+          style={{
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            paddingTop: 2,
+          }}
+        >
+          <button type="button" onClick={openDashboard} style={dashboardBtn}>
+            <span style={{ fontSize: 13, lineHeight: 1 }}>▦</span>
             Dashboard
           </button>
-
-          
         </div>
       </div>
 
       <VportActorMenuManagePanel
         actorId={effectiveActorId}
         includeInactive={includeInactive}
-        showHeader={false} // ✅ removes duplicate header
+        showHeader={false}
       />
     </div>
   );

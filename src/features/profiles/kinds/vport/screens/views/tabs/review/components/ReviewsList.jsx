@@ -9,6 +9,27 @@ function formatDateSafe(v) {
   return d.toLocaleDateString();
 }
 
+function Stars({ value = 0 }) {
+  return (
+    <div style={{ display: "flex", gap: 3 }}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span
+          key={n}
+          style={{
+            fontSize: 14,
+            color:
+              n <= value
+                ? "rgba(255,255,255,0.95)"
+                : "rgba(255,255,255,0.20)",
+          }}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function ReviewRow({ r }) {
   const authorId = r.authorActorId ?? r.author_actor_id ?? null;
 
@@ -60,10 +81,14 @@ function ReviewRow({ r }) {
   return (
     <div
       style={{
-        borderRadius: 16,
-        border: "1px solid rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.03)",
-        padding: 14,
+        borderRadius: 20,
+        border: "1px solid rgba(255,255,255,0.06)",
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.28))",
+        boxShadow:
+          "0 12px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05)",
+        padding: 16,
+        transition: "transform 120ms ease",
       }}
     >
       {/* Header */}
@@ -80,7 +105,7 @@ function ReviewRow({ r }) {
             <ActorLink
               actor={actorUI}
               avatarSize="w-9 h-9"
-              avatarShape="rounded-lg"
+              avatarShape="rounded-xl"
               textSize="text-sm"
               showUsername={true}
               showTimestamp={false}
@@ -99,24 +124,17 @@ function ReviewRow({ r }) {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-end",
-            gap: 2,
+            gap: 6,
             flexShrink: 0,
           }}
         >
-          <div
-            style={{
-              color: "rgba(255,255,255,0.92)",
-              fontWeight: 900,
-            }}
-          >
-            {r.rating}★
-          </div>
+          <Stars value={r.rating} />
 
           <div
             style={{
               color: "rgba(255,255,255,0.45)",
               fontSize: 12,
-              fontWeight: 750,
+              fontWeight: 600,
               whiteSpace: "nowrap",
             }}
           >
@@ -129,10 +147,11 @@ function ReviewRow({ r }) {
       {r.body ? (
         <div
           style={{
-            marginTop: 10,
-            color: "rgba(255,255,255,0.70)",
-            fontSize: 13,
-            lineHeight: "18px",
+            marginTop: 12,
+            color: "rgba(255,255,255,0.78)",
+            fontSize: 14,
+            lineHeight: "20px",
+            letterSpacing: 0.2,
             wordBreak: "break-word",
           }}
         >
@@ -141,12 +160,12 @@ function ReviewRow({ r }) {
       ) : (
         <div
           style={{
-            marginTop: 10,
-            color: "rgba(255,255,255,0.45)",
+            marginTop: 12,
+            color: "rgba(255,255,255,0.35)",
             fontSize: 13,
           }}
         >
-          (no comment)
+          No comment provided.
         </div>
       )}
     </div>
@@ -155,9 +174,9 @@ function ReviewRow({ r }) {
 
 export default function ReviewsList({ loading, list }) {
   return (
-    <div style={{ marginTop: 14 }}>
+    <div style={{ marginTop: 18 }}>
       {loading ? (
-        <div className="text-sm text-neutral-300">
+        <div className="text-sm text-neutral-400">
           Loading reviews…
         </div>
       ) : list?.length ? (
@@ -165,7 +184,7 @@ export default function ReviewsList({ loading, list }) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 10,
+            gap: 14,
           }}
         >
           {list.map((r) => (
@@ -173,7 +192,13 @@ export default function ReviewsList({ loading, list }) {
           ))}
         </div>
       ) : (
-        <div className="text-sm text-neutral-300">
+        <div
+          style={{
+            marginTop: 8,
+            color: "rgba(255,255,255,0.45)",
+            fontSize: 14,
+          }}
+        >
           No reviews yet.
         </div>
       )}

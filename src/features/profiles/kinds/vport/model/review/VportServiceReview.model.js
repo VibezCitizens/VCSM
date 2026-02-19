@@ -47,6 +47,7 @@ export function toVportServiceReview(row) {
     createdAt: toIsoSafe(row.created_at),
     updatedAt: toIsoSafe(row.updated_at),
 
+    // legacy compatibility if column still exists somewhere
     weekStart: row.week_start ?? null,
   };
 }
@@ -63,9 +64,7 @@ export function toVportServiceReviewStats(row) {
   const avgRaw = row.avg ?? row.avg_rating ?? null;
 
   const avg =
-    avgRaw == null
-      ? null
-      : Math.round(Number(avgRaw) * 10) / 10;
+    avgRaw == null ? null : Math.round(Number(avgRaw) * 10) / 10;
 
   return {
     count: Number(count) || 0,
