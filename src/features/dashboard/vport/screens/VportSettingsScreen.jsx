@@ -7,7 +7,6 @@ import Card from "@/features/settings/ui/Card";
 import VportAboutDetailsView from "@/features/settings/profile/ui/VportAboutDetails.view";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { useIsActorOwner } from "@/features/profiles/kinds/vport/hooks/menu/useIsActorOwner";
 import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
 
 async function saveVportPublicDetailsByActorId(actorId, payload) {
@@ -58,11 +57,6 @@ export default function VportSettingsScreen() {
   const navigate = useNavigate();
   const { actorId } = useParams();
   const { identity } = useIdentity();
-
-  const { isOwner, loading } = useIsActorOwner({
-    actorId,
-    viewerActorId: identity?.actorId,
-  });
 
   const [draft, setDraft] = useState(null);
   const [loadingData, setLoadingData] = useState(false);
@@ -124,22 +118,6 @@ export default function VportSettingsScreen() {
   }, [actorId, draft]);
 
   if (!actorId) return null;
-
-  if (loading) {
-    return (
-      <div className="flex justify-center py-20 text-neutral-400">
-        Loading…
-      </div>
-    );
-  }
-
-  if (!isOwner) {
-    return (
-      <div className="flex justify-center py-20 text-neutral-400">
-        Owner access only.
-      </div>
-    );
-  }
 
   return (
     // ✅ make the page itself scrollable (mobile-safe)

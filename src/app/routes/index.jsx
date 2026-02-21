@@ -1,14 +1,19 @@
-// src/app/routes/index.jsx
+﻿// src/app/routes/index.jsx
 // ============================================================================
 // APP ROUTES — ACTOR-BASED (LOCKED, NO BLOCKGATE, NO MeScreen)
 // ============================================================================
 
-import { Suspense, lazy } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Suspense, lazy } from "react";
+import { Navigate, useRoutes } from "react-router-dom";
 
-import ProtectedRoute from '@/app/guards/ProtectedRoute'
-import RootLayout from '@/app/layout/RootLayout'
-import { resolveRealm } from '@/features/upload/model/resolveRealm'
+import ProtectedRoute from "@/app/guards/ProtectedRoute";
+import RootLayout from "@/app/layout/RootLayout";
+import { resolveRealm } from "@/features/upload/model/resolveRealm";
+
+import { authPublicRoutes } from "@/app/routes/public/auth.routes";
+import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
+import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
+import { protectedAppRoutes } from "@/app/routes/protected/app.routes";
 
 // ----------------------------------------------------------------------------
 // Lazy helper with debugging
@@ -16,395 +21,288 @@ import { resolveRealm } from '@/features/upload/model/resolveRealm'
 function lazyWithLog(label, importer) {
   return lazy(() =>
     importer().catch((e) => {
-      console.error(`[lazy import] ${label} failed`, e)
-      throw e
+      console.error(`[lazy import] ${label} failed`, e);
+      throw e;
     })
-  )
+  );
 }
 
-const UsernameProfileRedirect = lazyWithLog(
-  'UsernameProfileRedirect',
-  () => import('@/features/profiles/screens/UsernameProfileRedirect')
-)
+// ============================================================================
+// LAZY SCREENS (KEEP THESE DEFINED IN THIS FILE SCOPE)
+// ============================================================================
 
 /* ================= AUTH ================= */
-const LoginScreen         = lazyWithLog('LoginScreen', () => import('@/features/auth/screens/LoginScreen'))
-const RegisterScreen      = lazyWithLog('RegisterScreen', () => import('@/features/auth/screens/RegisterScreen'))
-const ResetPasswordScreen = lazyWithLog('ResetPasswordScreen', () => import('@/features/auth/screens/ResetPasswordScreen'))
-const OnboardingScreen    = lazyWithLog('OnboardingScreen', () => import('@/features/auth/screens/Onboarding'))
+const LoginScreen = lazyWithLog("LoginScreen", () =>
+  import("@/features/auth/screens/LoginScreen")
+);
+const RegisterScreen = lazyWithLog("RegisterScreen", () =>
+  import("@/features/auth/screens/RegisterScreen")
+);
+const ResetPasswordScreen = lazyWithLog("ResetPasswordScreen", () =>
+  import("@/features/auth/screens/ResetPasswordScreen")
+);
+const OnboardingScreen = lazyWithLog("OnboardingScreen", () =>
+  import("@/features/auth/screens/Onboarding")
+);
 
 /* ================= MAIN APP ================= */
-const CentralFeed   = lazyWithLog('CentralFeed', () => import('@/features/feed/screens/CentralFeed'))
-const ExploreScreen = lazyWithLog('Explore', () => import('@/features/explore/screens/ExploreScreen'))
+const CentralFeed = lazyWithLog("CentralFeed", () =>
+  import("@/features/feed/screens/CentralFeed")
+);
+const ExploreScreen = lazyWithLog("Explore", () =>
+  import("@/features/explore/screens/ExploreScreen")
+);
 
 /* ================= NOTIFICATIONS ================= */
-const NotificationsScreen = lazyWithLog(
-  'Notifications',
-  () => import('@/features/notifications/screen/NotificationsScreen')
-)
+const NotificationsScreen = lazyWithLog("Notifications", () =>
+  import("@/features/notifications/screen/NotificationsScreen")
+);
+const NotiViewPostScreen = lazyWithLog("NotiViewPost", () =>
+  import("@/features/notifications/screen/NotiViewPostScreen")
+);
 
 /* ================= UPLOAD ================= */
-const UploadScreen = lazyWithLog(
-  'UploadScreen',
-  () => import('@/features/upload/screens/UploadScreen')
-)
+const UploadScreen = lazyWithLog("UploadScreen", () =>
+  import("@/features/upload/screens/UploadScreen")
+);
+
+/* ================= ACCOUNT / MISC ================= */
+const SettingsScreen = lazyWithLog("Settings", () =>
+  import("@/features/settings/screen/SettingsScreen")
+);
+const VoidScreen = lazyWithLog("VoidScreen", () =>
+  import("@/features/void/VoidScreen")
+);
 
 /* ================= PROFILES ================= */
-const ActorProfileScreen = lazyWithLog(
-  'ActorProfileScreen',
-  () => import('@/features/profiles/screens/ActorProfileScreen')
-)
+const UsernameProfileRedirect = lazyWithLog("UsernameProfileRedirect", () =>
+  import("@/features/profiles/screens/UsernameProfileRedirect")
+);
+const ActorProfileScreen = lazyWithLog("ActorProfileScreen", () =>
+  import("@/features/profiles/screens/ActorProfileScreen")
+);
+const TopFriendsRankEditor = lazyWithLog("TopFriendsRankEditor", () =>
+  import(
+    "@/features/profiles/screens/views/tabs/friends/components/TopFriendsRankEditor"
+  )
+);
 
-const TopFriendsRankEditor = lazyWithLog(
-  'TopFriendsRankEditor',
-  () => import('@/features/profiles/screens/views/tabs/friends/components/TopFriendsRankEditor')
-)
-
-/* ================= VPORTS ================= */
-const VportScreen = lazyWithLog(
-  'VportScreen',
-  () => import('@/features/vport/screens/VportScreen')
-)
-
-const SettingsScreen = lazyWithLog(
-  'Settings',
-  () => import('@/features/settings/screen/SettingsScreen')
-)
-
-const VoidScreen = lazyWithLog(
-  'VoidScreen',
-  () => import('@/features/void/VoidScreen')
-)
-
-/* ================= VPORT MENU (PUBLIC) ================= */
-const VportActorMenuPublicScreen = lazyWithLog(
-  'VportActorMenuPublicScreen',
-  () => import('@/features/profiles/kinds/vport/screens/VportActorMenuPublicScreen')
-)
-
-const VportActorMenuQrScreen = lazyWithLog(
-  'VportActorMenuQrScreen',
-  () => import('@/features/profiles/kinds/vport/screens/VportActorMenuQrScreen')
-)
-
-const VportMenuRedirectScreen = lazyWithLog(
-  "VportMenuRedirectScreen",
-  () => import("@/features/profiles/kinds/vport/screens/VportMenuRedirectScreen")
-)
-
-// ✅ NEW: Flyer + Dashboard
-const VportActorMenuFlyerScreen = lazyWithLog(
-  "VportActorMenuFlyerScreen",
-  () => import("@/features/profiles/kinds/vport/screens/VportActorMenuFlyerScreen")
-)
-
+/* ================= OWNER / DASHBOARD (PROTECTED for now) ================= */
 const VportActorMenuFlyerEditorScreen = lazyWithLog(
   "VportActorMenuFlyerEditorScreen",
-  () => import("@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerEditorScreen")
-)
+  () =>
+    import(
+      "@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerEditorScreen"
+    )
+);
 
-const VportDashboardScreen = lazyWithLog(
-  "VportDashboardScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardScreen")
-)
+const VportDashboardScreen = lazyWithLog("VportDashboardScreen", () =>
+  import("@/features/dashboard/vport/screens/VportDashboardScreen")
+);
 
-// ✅ NEW: VPORT SETTINGS SCREEN
-const VportSettingsScreen = lazyWithLog(
-  "VportSettingsScreen",
-  () => import("@/features/dashboard/vport/screens/VportSettingsScreen")
-)
+// ✅ OWNER GAS DASHBOARD SCREEN
+const VportDashboardGasScreen = lazyWithLog("VportDashboardGasScreen", () =>
+  import("@/features/dashboard/vport/screens/VportDashboardGasScreen")
+);
+
+// ✅ OWNER REVIEWS DASHBOARD SCREEN
+const VportDashboardReviewScreen = lazyWithLog("VportDashboardReviewScreen", () =>
+  import("@/features/dashboard/vport/screens/VportDashboardReviewScreen")
+);
+
+const VportSettingsScreen = lazyWithLog("VportSettingsScreen", () =>
+  import("@/features/dashboard/vport/screens/VportSettingsScreen")
+);
+
+/* ================= GAS (PROTECTED) ================= */
+const VportGasPricesScreen = lazyWithLog("VportGasPricesScreen", () =>
+  import("@/features/profiles/kinds/vport/screens/gas/screens/VportGasPricesScreen")
+);
+
+/* ================= PUBLIC MENU (ACTOR-FIRST) ================= */
+const VportMenuRedirectScreen = lazyWithLog("VportMenuRedirectScreen", () =>
+  import("@/features/profiles/kinds/vport/screens/VportMenuRedirectScreen")
+);
+
+const VportActorMenuPublicScreen = lazyWithLog("VportActorMenuPublicScreen", () =>
+  import("@/features/profiles/kinds/vport/screens/menu/VportActorMenuPublicScreen")
+);
+
+const VportActorMenuQrScreen = lazyWithLog("VportActorMenuQrScreen", () =>
+  import("@/features/dashboard/qrcode/menu/VportActorMenuQrScreen")
+);
+
+const VportActorMenuFlyerScreen = lazyWithLog("VportActorMenuFlyerScreen", () =>
+  import("@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerScreen")
+);
 
 /* ================= POSTS ================= */
-const PostFeedScreen = lazyWithLog(
-  'PostFeedScreen',
-  () => import('@/features/post/screens/PostFeed.screen')
-)
-
-const PostDetailScreen = lazyWithLog(
-  'PostDetailScreen',
-  () => import('@/features/post/screens/PostDetail.screen')
-)
-
-const EditPostScreen = lazyWithLog(
-  'EditPostScreen',
-  () => import('@/features/post/postcard/ui/EditPost')
-)
+const PostFeedScreen = lazyWithLog("PostFeedScreen", () =>
+  import("@/features/post/screens/PostFeed.screen")
+);
+const PostDetailScreen = lazyWithLog("PostDetailScreen", () =>
+  import("@/features/post/screens/PostDetail.screen")
+);
+const EditPostScreen = lazyWithLog("EditPostScreen", () =>
+  import("@/features/post/postcard/ui/EditPost")
+);
 
 /* ================= CHAT ================= */
-const ChatInboxScreen = lazyWithLog(
-  'ChatInbox',
-  () => import('@/features/chat').then(m => ({ default: m.InboxScreen }))
-)
+const ChatInboxScreen = lazyWithLog("ChatInbox", () =>
+  import("@/features/chat").then((m) => ({ default: m.InboxScreen }))
+);
+const ChatConversationScreen = lazyWithLog("ChatConversation", () =>
+  import("@/features/chat").then((m) => ({ default: m.ConversationScreen }))
+);
+const NewChatScreen = lazyWithLog("NewChat", () =>
+  import("@/features/chat").then((m) => ({ default: m.NewConversationScreen }))
+);
 
-const ChatConversationScreen = lazyWithLog(
-  'ChatConversation',
-  () => import('@/features/chat').then(m => ({ default: m.ConversationScreen }))
-)
-
-const NewChatScreen = lazyWithLog(
-  'NewChat',
-  () => import('@/features/chat').then(m => ({ default: m.NewConversationScreen }))
-)
-
-const InboxChatSettingsScreen = lazyWithLog(
-  'InboxChatSettingsScreen',
-  () => import('@/features/chat/inbox/screens/InboxChatSettingsScreen')
-)
-
-// ✅ NEW: Inbox settings screen
-const InboxSettingsScreen = lazyWithLog(
-  'InboxSettingsScreen',
-  () => import('@/features/chat/inbox/screens/InboxSettingsScreen')
-)
-
-const MessagePrivacyScreen = lazyWithLog(
-  'MessagePrivacyScreen',
-  () => import('@/features/chat/inbox/screens/settings/MessagePrivacyScreen')
-)
-
-// ✅ NEW: folder screens
-const SpamInboxScreen = lazyWithLog(
-  'SpamInboxScreen',
-  () => import('@/features/chat/inbox/screens/SpamInboxScreen')
-)
-
-const RequestsInboxScreen = lazyWithLog(
-  'RequestsInboxScreen',
-  () => import('@/features/chat/inbox/screens/RequestsInboxScreen')
-)
-
-const ArchivedInboxScreen = lazyWithLog(
-  'ArchivedInboxScreen',
-  () => import('@/features/chat/inbox/screens/ArchivedInboxScreen')
-)
-
-const BlockedUsersScreen = lazyWithLog(
-  'BlockedUsersScreen',
-  () => import('@/features/chat/inbox/screens/settings/BlockedUsersScreen')
-)
-
-/* ================= NOTIFICATION DEEP LINKS ================= */
-const NotiViewPostScreen = lazyWithLog(
-  'NotiViewPost',
-  () => import('@/features/notifications/screen/NotiViewPostScreen')
-)
-
-/* ================= DEV / PREVIEW ================= */
-const NurseHomeScreen = lazyWithLog(
-  'NurseHomeScreen',
-  () => import('@/features/professional/professional-nurse/screens/NurseHomeScreen')
-)
-
-/* ================= LOVEDROP (PUBLIC) ================= */
-const LovedropCreateScreen = lazyWithLog(
-  'LovedropCreateScreen',
-  () => import('@/season/lovedrop/screens/LovedropCreate.screen')
-)
-
-const LovedropShareScreen = lazyWithLog(
-  'LovedropShareScreen',
-  () => import('@/season/lovedrop/screens/LovedropShare.screen')
-)
-
-const LovedropRecipientScreen = lazyWithLog(
-  'LovedropRecipientScreen',
-  () => import('@/season/lovedrop/screens/LovedropRecipient.screen')
-)
-
-const LovedropOutboxScreen = lazyWithLog(
-  'LovedropOutboxScreen',
-  () => import('@/season/lovedrop/screens/LovedropOutbox.screen')
-)
+const InboxChatSettingsScreen = lazyWithLog("InboxChatSettingsScreen", () =>
+  import("@/features/chat/inbox/screens/InboxChatSettingsScreen")
+);
+const InboxSettingsScreen = lazyWithLog("InboxSettingsScreen", () =>
+  import("@/features/chat/inbox/screens/InboxSettingsScreen")
+);
+const MessagePrivacyScreen = lazyWithLog("MessagePrivacyScreen", () =>
+  import("@/features/chat/inbox/screens/settings/MessagePrivacyScreen")
+);
+const SpamInboxScreen = lazyWithLog("SpamInboxScreen", () =>
+  import("@/features/chat/inbox/screens/SpamInboxScreen")
+);
+const RequestsInboxScreen = lazyWithLog("RequestsInboxScreen", () =>
+  import("@/features/chat/inbox/screens/RequestsInboxScreen")
+);
+const ArchivedInboxScreen = lazyWithLog("ArchivedInboxScreen", () =>
+  import("@/features/chat/inbox/screens/ArchivedInboxScreen")
+);
+const BlockedUsersScreen = lazyWithLog("BlockedUsersScreen", () =>
+  import("@/features/chat/inbox/screens/settings/BlockedUsersScreen")
+);
 
 /* ================= WANDERS (PUBLIC + APP) ================= */
-const WandersHomeScreen = lazyWithLog(
-  'WandersHomeScreen',
-  () => import('@/features/wanders/screens/WandersHome.screen')
-)
-
-const WandersInboxPublicScreen = lazyWithLog(
-  'WandersInboxPublicScreen',
-  () => import('@/features/wanders/screens/WandersInboxPublic.screen')
-)
-
-const WandersCardPublicScreen = lazyWithLog(
-  'WandersCardPublicScreen',
-  () => import('@/features/wanders/screens/WandersCardPublic.screen')
-)
-
-const WandersSentScreen = lazyWithLog(
-  'WandersSentScreen',
-  () => import('@/features/wanders/screens/WandersSent.screen')
-)
-
+const WandersHomeScreen = lazyWithLog("WandersHomeScreen", () =>
+  import("@/features/wanders/screens/WandersHome.screen")
+);
+const WandersInboxPublicScreen = lazyWithLog("WandersInboxPublicScreen", () =>
+  import("@/features/wanders/screens/WandersInboxPublic.screen")
+);
+const WandersCardPublicScreen = lazyWithLog("WandersCardPublicScreen", () =>
+  import("@/features/wanders/screens/WandersCardPublic.screen")
+);
+const WandersSentScreen = lazyWithLog("WandersSentScreen", () =>
+  import("@/features/wanders/screens/WandersSent.screen")
+);
 const WandersIntegrateActorScreen = lazyWithLog(
-  'WandersIntegrateActorScreen',
-  () => import('@/features/wanders/screens/WandersIntegrateActor.screen')
-)
-
-const WandersMailboxScreen = lazyWithLog(
-  'WandersMailboxScreen',
-  () => import('@/features/wanders/screens/WandersMailbox.screen')
-)
-
-const WandersOutboxScreen = lazyWithLog(
-  'WandersOutboxScreen',
-  () => import('@/features/wanders/screens/WandersOutbox.screen')
-)
-
-const WandersCreateScreen = lazyWithLog(
-  'WandersCreateScreen',
-  () => import('@/features/wanders/screens/WandersCreate.screen')
-)
+  "WandersIntegrateActorScreen",
+  () => import("@/features/wanders/screens/WandersIntegrateActor.screen")
+);
+const WandersMailboxScreen = lazyWithLog("WandersMailboxScreen", () =>
+  import("@/features/wanders/screens/WandersMailbox.screen")
+);
+const WandersOutboxScreen = lazyWithLog("WandersOutboxScreen", () =>
+  import("@/features/wanders/screens/WandersOutbox.screen")
+);
+const WandersCreateScreen = lazyWithLog("WandersCreateScreen", () =>
+  import("@/features/wanders/screens/WandersCreate.screen")
+);
 
 // ============================================================================
-// ROUTES
+// ROUTES (useRoutes)
 // ============================================================================
 export default function AppRoutes() {
-  const baseUrl = window.location.origin
-  const lovedropRealmId = resolveRealm(false) // false = PUBLIC realm, true = VOID realm
-  const wandersRealmId = resolveRealm(false)
+  const baseUrl = window.location.origin;
+  const wandersRealmId = resolveRealm(false);
+
+  const routes = [
+    ...authPublicRoutes({
+      LoginScreen,
+      RegisterScreen,
+      ResetPasswordScreen,
+      OnboardingScreen,
+    }),
+
+    ...wandersPublicRoutes({
+      baseUrl,
+      wandersRealmId,
+      WandersHomeScreen,
+      WandersInboxPublicScreen,
+      WandersCardPublicScreen,
+      WandersCreateScreen,
+      WandersMailboxScreen,
+      WandersOutboxScreen,
+      WandersSentScreen,
+      WandersIntegrateActorScreen,
+    }),
+
+    // ✅ PUBLIC MENU ROUTES (actor-first)
+    ...vportMenuPublicRoutes({
+      VportMenuRedirectScreen,
+      VportActorMenuPublicScreen,
+      VportActorMenuQrScreen,
+      VportActorMenuFlyerScreen,
+    }),
+
+    {
+      element: <ProtectedRoute />,
+      children: [
+        {
+          element: <RootLayout />,
+          children: protectedAppRoutes({
+            CentralFeed,
+            ExploreScreen,
+
+            PostFeedScreen,
+            PostDetailScreen,
+            EditPostScreen,
+
+            ChatInboxScreen,
+            NewChatScreen,
+            SpamInboxScreen,
+            RequestsInboxScreen,
+            ArchivedInboxScreen,
+            InboxChatSettingsScreen,
+            InboxSettingsScreen,
+            MessagePrivacyScreen,
+            BlockedUsersScreen,
+            ChatConversationScreen,
+
+            NotificationsScreen,
+            NotiViewPostScreen,
+
+            UploadScreen,
+            SettingsScreen,
+            VoidScreen,
+
+            UsernameProfileRedirect,
+            ActorProfileScreen,
+            TopFriendsRankEditor,
+
+            VportGasPricesScreen,
+
+            VportActorMenuFlyerEditorScreen,
+            VportDashboardScreen,
+            VportDashboardGasScreen, // ✅ ADDED
+            VportDashboardReviewScreen, // ✅ ADDED
+            VportSettingsScreen,
+
+            // ✅ so protected routes can render these too
+            VportActorMenuQrScreen,
+            VportActorMenuFlyerScreen,
+          }),
+        },
+      ],
+    },
+
+    // public fallback
+    { path: "*", element: <Navigate to="/login" replace /> },
+  ];
+
+  const element = useRoutes(routes);
+
   return (
     <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
-      <Routes>
-        {/* ================= PUBLIC ================= */}
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/reset" element={<ResetPasswordScreen />} />
-        <Route path="/onboarding" element={<OnboardingScreen />} />
-
-        {/* ================= VPORT MENU (PUBLIC) ================= */}
-        <Route path="/m/:actorId" element={<VportMenuRedirectScreen />} />
-
-        <Route path="/vport/:actorId/menu" element={<VportActorMenuPublicScreen />} />
-        <Route path="/vport/:actorId/menu/qr" element={<VportActorMenuQrScreen />} />
-
-        {/* ✅ NEW: flyer + dashboard */}
-        <Route path="/vport/:actorId/menu/flyer" element={<VportActorMenuFlyerScreen />} />
-        <Route path="/vport/:actorId/menu/flyer/edit" element={<VportActorMenuFlyerEditorScreen />} />
-
-        <Route path="/vport/:actorId/dashboard" element={<VportDashboardScreen />} />
-
-        {/* ✅ NEW: VPORT SETTINGS ROUTE */}
-        <Route path="/vport/:actorId/settings" element={<VportSettingsScreen />} />
-
-        {/* ================= LOVEDROP (PUBLIC) ================= */}
-        <Route
-          path="/lovedrop"
-          element={
-            <LovedropCreateScreen
-              realmId={lovedropRealmId}
-              baseUrl={baseUrl}
-            />
-          }
-        />
-
-        <Route
-          path="/lovedrop/outbox"
-          element={<LovedropOutboxScreen />}
-        />
-
-        <Route
-          path="/lovedrop/created/:publicId"
-          element={<LovedropShareScreen baseUrl={baseUrl} redirectToView={false} />}
-        />
-
-        <Route
-          path="/lovedrop/v/:publicId"
-          element={<LovedropRecipientScreen />}
-        />
-
-        {/* ================= WANDERS (PUBLIC) ================= */}
-        <Route path="/wanders" element={<WandersHomeScreen />} />
-        <Route path="/wanders/i/:publicId" element={<WandersInboxPublicScreen />} />
-        <Route path="/wanders/c/:publicId" element={<WandersCardPublicScreen />} />
-
-        {/* ✅ MOVE THESE TO PUBLIC (anon-first flow) */}
-        <Route
-          path="/wanders/create"
-          element={<WandersCreateScreen realmId={wandersRealmId} baseUrl={baseUrl} />}
-        />
-        <Route path="/wanders/mailbox" element={<WandersMailboxScreen />} />
-        <Route path="/wanders/outbox" element={<WandersOutboxScreen />} />
-
-        {/* sent confirmation supports both */}
-        <Route path="/wanders/sent" element={<WandersSentScreen />} />
-        <Route path="/wanders/sent/:cardPublicId" element={<WandersSentScreen />} />
-
-        <Route path="/wanders/claim" element={<WandersIntegrateActorScreen />} />
-        <Route path="/wanders/connect" element={<WandersIntegrateActorScreen />} />
-
-        {/* ================= PROTECTED ================= */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<RootLayout />}>
-            {/* MAIN */}
-            <Route path="/feed" element={<CentralFeed />} />
-            <Route path="/explore" element={<ExploreScreen />} />
-
-            {/* POSTS */}
-            <Route path="/posts" element={<PostFeedScreen />} />
-            <Route path="/posts/:postId" element={<PostDetailScreen />} />
-            <Route path="/post/:postId" element={<PostDetailScreen />} />
-            <Route path="/posts/:postId/edit" element={<EditPostScreen />} />
-            <Route path="/post/:postId/edit" element={<EditPostScreen />} />
-
-            {/* CHAT */}
-            <Route path="/chat" element={<ChatInboxScreen />} />
-            <Route path="/chat/new" element={<NewChatScreen />} />
-
-            <Route path="/chat/spam" element={<SpamInboxScreen />} />
-            <Route path="/chat/requests" element={<RequestsInboxScreen />} />
-            <Route path="/chat/archived" element={<ArchivedInboxScreen />} />
-
-            {/* ✅ SETTINGS ROUTES MUST COME BEFORE /chat/:conversationId */}
-            <Route path="/chat/settings" element={<InboxChatSettingsScreen />} />
-            <Route path="/chat/settings/inbox" element={<InboxSettingsScreen />} />
-            <Route path="/chat/settings/privacy" element={<MessagePrivacyScreen />} />
-            <Route path="/chat/settings/blocked" element={<BlockedUsersScreen />} />
-
-            {/* Conversation route AFTER settings */}
-            <Route path="/chat/:conversationId" element={<ChatConversationScreen />} />
-
-            {/* Legacy vport URLs */}
-            <Route path="/vport/inbox" element={<Navigate to="/chat" replace />} />
-            <Route path="/vport/chat/:conversationId" element={<ChatConversationScreen />} />
-            <Route path="/vport/chat" element={<Navigate to="/chat" replace />} />
-
-            {/* NOTIFICATIONS */}
-            <Route path="/notifications" element={<NotificationsScreen />} />
-            <Route path="/vport/notifications" element={<Navigate to="/notifications" replace />} />
-            <Route path="/noti/post/:postId" element={<NotiViewPostScreen />} />
-
-            {/* ACCOUNT */}
-            <Route path="/upload" element={<UploadScreen />} />
-            <Route path="/settings" element={<SettingsScreen />} />
-            <Route path="/void" element={<VoidScreen />} />
-
-            {/* PROFILES */}
-            <Route path="/me" element={<Navigate to="/profile/self" replace />} />
-            <Route path="/u/:username" element={<UsernameProfileRedirect />} />
-            <Route path="/profile/:actorId" element={<ActorProfileScreen />} />
-            <Route path="/profile/:id/friends/top/edit" element={<TopFriendsRankEditor />} />
-
-            {/* VPORTS */}
-            <Route path="/vport/:vportId" element={<VportScreen />} />
-            <Route path="/v/id/:vportId" element={<VportScreen />} />
-            <Route path="/v/:vportId" element={<VportScreen />} />
-
-            {/* ================= WANDERS (APP - PROTECTED) ================= */}
-
-            {/* DEV PREVIEW */}
-            <Route path="/_dev/nurse-home" element={<NurseHomeScreen />} />
-
-            {/* DEFAULTS */}
-            <Route path="/" element={<Navigate to="/feed" replace />} />
-            <Route path="*" element={<Navigate to="/feed" replace />} />
-          </Route>
-        </Route>
-
-        {/* PUBLIC FALLBACK */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+      {element}
     </Suspense>
-  )
+  );
 }

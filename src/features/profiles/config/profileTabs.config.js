@@ -58,6 +58,8 @@ export const TAB = Object.freeze({
   REVIEWS: T("reviews", "Reviews"),
   MENU: T("menu", "Menu"),
 
+  GAS: T("gas", "Gas"),
+
   // "shutdown-able" tabs (WIP or gated)
   SERVICES: T("services", "Services"),
   PORTFOLIO: T("portfolio", "Portfolio"),
@@ -169,6 +171,20 @@ export const VPORT_FOOD_TABS = makeTabs([
   "MENU",
   "REVIEWS",
   "ABOUT",
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
+]);
+
+/**
+ * VPORT_GAS_TABS
+ * --------------
+ * Layout intended for gas/fuel VPORTs.
+ */
+export const VPORT_GAS_TABS = makeTabs([
+  "GAS",
+  "ABOUT",
+  "REVIEWS",
   "PHOTOS",
   "VIBES",
   "SUBSCRIBERS",

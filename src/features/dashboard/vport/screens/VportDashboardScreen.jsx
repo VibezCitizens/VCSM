@@ -1,10 +1,10 @@
-// src/features/profiles/kinds/vport/screens/VportDashboardScreen.jsx
+// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\dashboard\vport\screens\VportDashboardScreen.jsx
 
 import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { useIsActorOwner } from "@/features/profiles/kinds/vport/hooks/menu/useIsActorOwner";
 
 import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
 
@@ -15,13 +15,31 @@ export function VportDashboardScreen() {
 
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
 
-  const { isOwner, loading } = useIsActorOwner({
-    actorId,
-    viewerActorId: identity?.actorId,
-  });
-
   const [publicDetails, setPublicDetails] = useState(null);
   const [headerLoading, setHeaderLoading] = useState(false);
+
+  // ✅ reactive desktop detection
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return false;
+    return window.matchMedia("(min-width: 821px)").matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const mq = window.matchMedia("(min-width: 821px)");
+    const onChange = () => setIsDesktop(mq.matches);
+
+    onChange();
+
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange);
+
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!actorId) return;
@@ -60,64 +78,60 @@ export function VportDashboardScreen() {
   }, [publicDetails]);
 
   const goBack = useCallback(() => {
-  if (!actorId) return;
-  navigate(`/profile/${actorId}`);
-}, [navigate, actorId]);
+    if (!actorId) return;
+    navigate(`/profile/${actorId}`);
+  }, [navigate, actorId]);
 
-
+  // ✅ QR Code
   const openQr = useCallback(() => {
     if (!actorId) return;
-    navigate(`/vport/${actorId}/menu/qr`);
+    navigate(`/actor/${actorId}/menu/qr`);
   }, [navigate, actorId]);
 
+  // ✅ Printable Flyer (preview)
   const openFlyer = useCallback(() => {
     if (!actorId) return;
-    navigate(`/vport/${actorId}/menu/flyer`);
+    navigate(`/actor/${actorId}/menu/flyer`);
   }, [navigate, actorId]);
 
+  // ✅ Edit Flyer
   const openFlyerEditor = useCallback(() => {
     if (!actorId) return;
-    navigate(`/vport/${actorId}/menu/flyer/edit`);
+    navigate(`/actor/${actorId}/menu/flyer/edit`);
   }, [navigate, actorId]);
 
+  // ✅ Preview Online Menu (PUBLIC MENU, not flyer)
   const openOnlineMenuPreview = useCallback(() => {
     if (!actorId) return;
-    navigate(`/vport/${actorId}/menu/flyer`);
+    navigate(`/actor/${actorId}/menu`);
   }, [navigate, actorId]);
 
-  // ✅ NEW: navigate to dedicated settings screen
   const openSettings = useCallback(() => {
     if (!actorId) return;
-    navigate(`/vport/${actorId}/settings`);
+    navigate(`/actor/${actorId}/settings`);
   }, [navigate, actorId]);
 
-  // loading / guard
+  const openGasPrices = useCallback(() => {
+    if (!actorId) return;
+    navigate(`/actor/${actorId}/dashboard/gas`);
+  }, [navigate, actorId]);
+
+  // ✅ Reviews (NEW)
+  const openReviews = useCallback(() => {
+    if (!actorId) return;
+    navigate(`/actor/${actorId}/dashboard/reviews`);
+  }, [navigate, actorId]);
+
   if (!actorId) return null;
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-20 text-neutral-400">
-        Loading…
-      </div>
-    );
-  }
+  const bannerImage = profile.bannerUrl?.trim()
+    ? `url(${profile.bannerUrl})`
+    : null;
+  const avatarImage = profile.avatarUrl?.trim()
+    ? `url(${profile.avatarUrl})`
+    : null;
 
-  if (!isOwner) {
-    return (
-      <div className="flex justify-center py-20 text-neutral-400">
-        Owner access only.
-      </div>
-    );
-  }
-
-  const bannerImage = profile.bannerUrl?.trim() ? `url(${profile.bannerUrl})` : null;
-  const avatarImage = profile.avatarUrl?.trim() ? `url(${profile.avatarUrl})` : null;
-
-  // ✅ desktop-only lock (simple + stable)
-  const desktopOnlyLocked =
-    typeof window !== "undefined" &&
-    window.matchMedia &&
-    window.matchMedia("(max-width: 820px)").matches;
+  const desktopOnlyLocked = !isDesktop;
 
   const page = {
     minHeight: "100vh",
@@ -130,7 +144,7 @@ export function VportDashboardScreen() {
 
   const container = {
     width: "100%",
-    maxWidth: 900,
+    maxWidth: isDesktop ? 1280 : 900,
     margin: "0 auto",
     paddingBottom: 56,
   };
@@ -174,7 +188,9 @@ export function VportDashboardScreen() {
 
   const cardGrid = {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gridTemplateColumns: isDesktop
+      ? "repeat(3, minmax(0, 1fr))"
+      : "repeat(auto-fit, minmax(240px, 1fr))",
     gap: 12,
     marginTop: 14,
   };
@@ -218,7 +234,7 @@ export function VportDashboardScreen() {
     lineHeight: 1.45,
   };
 
-  return (
+  const content = (
     <div style={page}>
       <div style={container}>
         <div style={headerWrap}>
@@ -231,7 +247,6 @@ export function VportDashboardScreen() {
               VPORT DASHBOARD
             </div>
 
-            {/* spacer */}
             <div style={{ width: 110 }} />
           </div>
 
@@ -379,7 +394,21 @@ export function VportDashboardScreen() {
                 </div>
               </div>
 
-              {/* ✅ SETTINGS CARD -> ROUTE */}
+              {/* ✅ Reviews (NEW CARD) */}
+              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openReviews}>
+                <div style={cardTitle}>Reviews</div>
+                <div style={cardBody}>
+                  View and manage your reviews and overall rating.
+                </div>
+              </div>
+
+              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openGasPrices}>
+                <div style={cardTitle}>Gas Prices</div>
+                <div style={cardBody}>
+                  Update official prices and review community suggestions.
+                </div>
+              </div>
+
               <div style={{ ...cardBase, cursor: "pointer" }} onClick={openSettings}>
                 <div style={cardTitle}>Settings</div>
                 <div style={cardBody}>
@@ -392,6 +421,25 @@ export function VportDashboardScreen() {
       </div>
     </div>
   );
+
+  if (isDesktop && typeof document !== "undefined") {
+    return createPortal(
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 9999,
+          overflow: "auto",
+          background: "#000",
+        }}
+      >
+        {content}
+      </div>,
+      document.body
+    );
+  }
+
+  return content;
 }
 
 export default VportDashboardScreen;

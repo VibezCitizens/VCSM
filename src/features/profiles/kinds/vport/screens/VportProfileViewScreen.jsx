@@ -1,6 +1,6 @@
 // src/features/profiles/kinds/vport/screens/VportProfileViewScreen.jsx
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
@@ -20,7 +20,6 @@ import VportSubscribersView from "@/features/profiles/kinds/vport/screens/views/
 import VportReviewsView from "@/features/profiles/kinds/vport/screens/views/tabs/VportReviewsView";
 import VportMenuView from "@/features/profiles/kinds/vport/screens/views/tabs/VportMenuView";
 
-// ✅ generalized tabs (barber, etc.)
 import VportPortfolioView from "@/features/profiles/kinds/vport/screens/views/tabs/VportPortfolioView";
 import VportServicesView from "@/features/profiles/kinds/vport/screens/views/tabs/VportServicesView";
 import VportBookingView from "@/features/profiles/kinds/vport/screens/views/tabs/VportBookingView";
@@ -34,26 +33,24 @@ import useReportFlow from "@/features/moderation/hooks/useReportFlow";
 import ReportModal from "@/features/moderation/components/ReportModal";
 import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
 
-// ✅ fetch public details
-import { fetchVportPublicDetails } from "@/features/settings/profile/dal/vportPublicDetails.read.dal";
+import { VportGasPricesView } from "@/features/profiles/kinds/vport/screens/gas/view/VportGasPricesView";
+import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportOwnerView";
+
+import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
+import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
+import { useIdentity } from "@/state/identity/identityContext";
 
 export default function VportProfileViewScreen({
   viewerActorId,
   profileActorId,
   tabs = VPORT_TABS,
 }) {
-  // ✅ default to FIRST tab in the provided layout (restaurant => menu, etc.)
-  const initialTab = useMemo(() => {
-    const list = Array.isArray(tabs) ? tabs : [];
-    return list[0]?.key ?? "vibes";
-  }, [tabs]);
-
-  const [tab, setTab] = useState(initialTab);
+  const [tab, setTab] = useState("vibes");
   const [gateVersion, setGateVersion] = useState(0);
   const [postsVersion, setPostsVersion] = useState(0);
 
-  // ✅ one-shot default reviews tab (used when coming from Menu CTA)
   const [reviewsDefaultTab, setReviewsDefaultTab] = useState(null);
+  const didInitTabRef = useRef(false);
 
   const navigate = useNavigate();
 
@@ -76,11 +73,16 @@ export default function VportProfileViewScreen({
     profileActorId
   );
 
-  // ✅ public details state
-  const [publicDetails, setPublicDetails] = useState(null);
-  const [publicDetailsLoading, setPublicDetailsLoading] = useState(false);
+  const { loading: publicDetailsLoading, details: publicDetails } =
+    useVportPublicDetails(profileActorId);
 
-  // ✅ Menu -> Reviews (Food) entrypoint
+  const identity = useIdentity();
+
+  const isOwner = useMemo(() => {
+    if (!viewerActorId || !profileActorId) return false;
+    return String(viewerActorId) === String(profileActorId);
+  }, [viewerActorId, profileActorId]);
+
   const openFoodReview = useCallback(() => {
     setReviewsDefaultTab("food");
     setTab("reviews");
@@ -92,91 +94,57 @@ export default function VportProfileViewScreen({
     }
   }, [blockLoading, canViewProfile, navigate]);
 
-  // ✅ ensure selected tab exists in current tabs list
-  // - if tabs change (restaurant/service layouts), reset to new layout default
-  useEffect(() => {
-    const list = Array.isArray(tabs) ? tabs : [];
-    if (!list.length) return;
-
-    const exists = list.some((t) => t.key === tab);
-    if (!exists) setTab(list[0].key);
-  }, [tabs, tab]);
-
   const visibleProfilePosts = useMemo(() => {
     const list = Array.isArray(posts) ? posts : [];
     return list.filter((p) => !p?.deleted_at);
   }, [posts]);
 
   // ============================================================
-  // LOAD PUBLIC DETAILS (with debug)
+  // TAB LAYOUT SELECTION (+ OWNER TAB ONLY IF isOwner)
   // ============================================================
-  useEffect(() => {
-    // vc.vport_public_details.vport_id references vc.vports.id
-    // so ONLY use vportId here.
-    const vportId = profile?.vportId ?? profile?.vport_id ?? null;
+  const effectiveTabs = useMemo(() => {
+    const fallbackTabs = Array.isArray(tabs) && tabs.length ? tabs : VPORT_TABS;
 
-    // ✅ DEBUG: show ids every time this effect runs
-    console.groupCollapsed("[VportProfileViewScreen] public details");
-    console.log("viewerActorId:", viewerActorId);
-    console.log("profileActorId (route):", profileActorId);
-    console.log("profile.actorId:", profile?.actorId);
-    console.log("profile.kind:", profile?.kind);
-    console.log("profile.vportId:", profile?.vportId);
-    console.log("profile.vport_id:", profile?.vport_id);
-    console.log("FINAL vportId used:", vportId);
-    console.groupEnd();
+    const vportType =
+      publicDetails?.vportType ??
+      profile?.vport_type ??
+      profile?.vportType ??
+      profile?.category ??
+      null;
 
-    if (!vportId) {
-      console.warn(
-        "[VportProfileViewScreen] missing vportId -> will NOT fetch vport_public_details"
-      );
-      setPublicDetails(null);
-      return;
+    const baseTabs = vportType ? getVportTabsByType(vportType) : fallbackTabs;
+
+    if (isOwner) {
+      if (baseTabs.some((t) => t.key === "owner")) return baseTabs;
+      return [...baseTabs, { key: "owner", label: "Owner" }];
     }
 
-    let alive = true;
+    // viewer → never include owner tab
+    return baseTabs.filter((t) => t.key !== "owner");
+  }, [tabs, publicDetails, profile, isOwner]);
 
-    (async () => {
-      setPublicDetailsLoading(true);
-      try {
-        console.log(
-          "[VportProfileViewScreen] fetching vport_public_details for:",
-          vportId
-        );
+  useEffect(() => {
+    const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
+    const firstKey = list[0]?.key;
+    if (!firstKey) return;
 
-        const d = await fetchVportPublicDetails(vportId);
+    if (didInitTabRef.current) return;
 
-        console.log(
-          "[VportProfileViewScreen] fetchVportPublicDetails result:",
-          d
-        );
+    if (tab === "vibes" && firstKey !== "vibes") {
+      setTab(firstKey);
+    }
 
-        if (!alive) return;
-        setPublicDetails(d || null);
-      } catch (e) {
-        console.error(
-          "[VportProfileViewScreen] fetchVportPublicDetails FAILED:",
-          e
-        );
-        if (!alive) return;
-        setPublicDetails(null);
-      } finally {
-        if (!alive) return;
-        setPublicDetailsLoading(false);
-      }
-    })();
+    didInitTabRef.current = true;
+  }, [effectiveTabs, tab]);
 
-    return () => {
-      alive = false;
-    };
-  }, [
-    viewerActorId,
-    profileActorId,
-    profile?.actorId,
-    profile?.kind,
-    profile?.vportId,
-    profile?.vport_id,
-  ]);
+  useEffect(() => {
+    setTab((prev) => {
+      const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
+      if (!list.length) return prev || "vibes";
+      const exists = list.some((t) => t.key === prev);
+      return exists ? prev : list[0]?.key ?? "vibes";
+    });
+  }, [effectiveTabs]);
 
   // ============================================================
   // SHARE
@@ -207,14 +175,8 @@ export default function VportProfileViewScreen({
     }
   }, []);
 
-  // ============================================================
-  // REPORT FLOW
-  // ============================================================
   const reportFlow = useReportFlow({ reporterActorId: viewerActorId });
 
-  // ============================================================
-  // POST MENU
-  // ============================================================
   const [postMenu, setPostMenu] = useState(null);
 
   const openPostMenu = useCallback(
@@ -277,9 +239,6 @@ export default function VportProfileViewScreen({
     closePostMenu();
   }, [viewerActorId, postMenu, closePostMenu]);
 
-  // ============================================================
-  // STATES
-  // ============================================================
   if (loading || blockLoading || gate.loading) {
     return (
       <div className="flex justify-center py-20 text-neutral-400">Loading…</div>
@@ -302,6 +261,8 @@ export default function VportProfileViewScreen({
     );
   }
 
+  const actorIdForOwnerView = profile?.actorId ?? profileActorId ?? null;
+
   return (
     <div className="h-full w-full overflow-y-auto touch-pan-y bg-black text-white">
       <VportProfileHeader
@@ -311,7 +272,7 @@ export default function VportProfileViewScreen({
         onSubscriptionChanged={() => setGateVersion((v) => v + 1)}
       />
 
-      <VportProfileTabs tab={tab} setTab={setTab} tabs={tabs} />
+      <VportProfileTabs tab={tab} setTab={setTab} tabs={effectiveTabs} />
 
       {!gate.canView && (
         <PrivateProfileNotice
@@ -378,6 +339,17 @@ export default function VportProfileViewScreen({
           {tab === "menu" && (
             <VportMenuView profile={profile} onOpenFoodReview={openFoodReview} />
           )}
+
+          {tab === "gas" && (
+            <div className="mt-4">
+              <VportGasPricesView actorId={profileActorId} identity={identity} />
+            </div>
+          )}
+
+          {/* ✅ HARD GATE: owner view only renders for owner */}
+          {tab === "owner" && isOwner ? (
+            <VportOwnerView actorId={actorIdForOwnerView} />
+          ) : null}
 
           {tab === "about" && publicDetailsLoading && !publicDetails && (
             <div className="mt-4 text-xs text-neutral-500">

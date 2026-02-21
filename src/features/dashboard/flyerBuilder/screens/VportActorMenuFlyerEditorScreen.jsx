@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { useIsActorOwner } from "@/features/profiles/kinds/vport/hooks/menu/useIsActorOwner";
 
 import FlyerEditorPanel from "@/features/dashboard/flyerBuilder/components/FlyerEditorPanel";
 import { fetchFlyerPublicDetailsByActorId } from "@/features/dashboard/flyerBuilder/dal/flyer.read.dal";
@@ -15,14 +15,32 @@ export function VportActorMenuFlyerEditorScreen() {
 
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
 
-  const { isOwner, loading } = useIsActorOwner({
-    actorId,
-    viewerActorId: identity?.actorId,
-  });
-
   const [publicDetails, setPublicDetails] = useState(null);
   const [draft, setDraft] = useState(null);
   const [screenLoading, setScreenLoading] = useState(false);
+
+  // ✅ reactive desktop detection
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return false;
+    return window.matchMedia("(min-width: 821px)").matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const mq = window.matchMedia("(min-width: 821px)");
+    const onChange = () => setIsDesktop(mq.matches);
+
+    onChange();
+
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange);
+
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!actorId) return;
@@ -52,11 +70,20 @@ export function VportActorMenuFlyerEditorScreen() {
     };
   }, [actorId]);
 
-  const vportId = useMemo(() => publicDetails?.vport_id ?? null, [publicDetails]);
+  const vportId = useMemo(
+    () => publicDetails?.vport_id ?? null,
+    [publicDetails]
+  );
 
+  // ✅ canonical routes (actor-first)
   const goBack = useCallback(() => {
     if (!actorId) return;
-    navigate(`/vport/${actorId}/dashboard`);
+    navigate(`/actor/${actorId}/dashboard`);
+  }, [navigate, actorId]);
+
+  const openPreview = useCallback(() => {
+    if (!actorId) return;
+    navigate(`/actor/${actorId}/menu/flyer`);
   }, [navigate, actorId]);
 
   const onSaved = useCallback((res) => {
@@ -67,9 +94,55 @@ export function VportActorMenuFlyerEditorScreen() {
     }));
   }, []);
 
+  if (!actorId) return null;
+
+  // ✅ desktop-only lock (since you said this screen is only desktop view)
+  if (!isDesktop) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          padding: 24,
+          background:
+            "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
+          color: "#fff",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ maxWidth: 520 }}>
+          <div style={{ fontWeight: 950, letterSpacing: 1.2, fontSize: 16 }}>
+            Desktop Only
+          </div>
+          <div style={{ marginTop: 10, color: "rgba(255,255,255,0.65)", fontSize: 13 }}>
+            Please open this editor on a desktop screen.
+          </div>
+          <button
+            type="button"
+            onClick={goBack}
+            style={{
+              marginTop: 16,
+              padding: "10px 12px",
+              borderRadius: 14,
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(255,255,255,0.06)",
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 900,
+              cursor: "pointer",
+              letterSpacing: 0.3,
+            }}
+          >
+            ← Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const page = {
-    height: "100vh",
-    overflowY: "auto",
+    minHeight: "100vh",
     width: "100%",
     background:
       "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
@@ -77,9 +150,10 @@ export function VportActorMenuFlyerEditorScreen() {
     padding: 18,
   };
 
+  // ✅ real desktop width
   const container = {
     width: "100%",
-    maxWidth: 900,
+    maxWidth: 1280,
     margin: "0 auto",
     paddingBottom: 80,
     display: "grid",
@@ -99,7 +173,7 @@ export function VportActorMenuFlyerEditorScreen() {
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
-    flexWrap: "wrap", // ✅ mobile: allow wrapping instead of squeezing
+    flexWrap: "wrap",
   };
 
   const btn = (variant = "soft") => ({
@@ -121,62 +195,8 @@ export function VportActorMenuFlyerEditorScreen() {
     letterSpacing: 0.3,
   });
 
-  if (!actorId) return null;
-
-  if (loading) {
-    return (
-      <div style={page}>
-        <div className="flex justify-center py-20 text-neutral-400">
-          Loading…
-        </div>
-      </div>
-    );
-  }
-
-  if (!isOwner) {
-    return (
-      <div style={page}>
-        <div className="flex justify-center py-20 text-neutral-400">
-          Owner access only.
-        </div>
-      </div>
-    );
-  }
-
-  return (
+  const content = (
     <div style={page}>
-      {/* ✅ MOBILE FIXES:
-          - prevent iOS input-zoom by setting 16px on inputs/textarea/select
-          - better header spacing on small screens
-      */}
-      <style>
-        {`
-          @media (max-width: 520px) {
-            .flyer-editor-header {
-              gap: 10px !important;
-            }
-            .flyer-editor-title {
-              width: 100% !important;
-              text-align: center !important;
-              order: 2 !important;
-            }
-            .flyer-editor-back {
-              order: 1 !important;
-            }
-            .flyer-editor-preview {
-              order: 3 !important;
-            }
-
-            /* ✅ iOS Safari zoom fix */
-            .flyer-editor-scope input,
-            .flyer-editor-scope textarea,
-            .flyer-editor-scope select {
-              font-size: 16px !important;
-            }
-          }
-        `}
-      </style>
-
       <div className="flyer-editor-scope" style={container}>
         <div className="flyer-editor-header" style={header}>
           <button
@@ -198,7 +218,7 @@ export function VportActorMenuFlyerEditorScreen() {
           <button
             className="flyer-editor-preview"
             type="button"
-            onClick={() => navigate(`/vport/${actorId}/menu/flyer`)}
+            onClick={openPreview}
             style={btn("soft")}
           >
             Preview
@@ -220,6 +240,26 @@ export function VportActorMenuFlyerEditorScreen() {
       </div>
     </div>
   );
+
+  // ✅ KEY FIX: escape RootLayout/mobile frame using portal overlay
+  if (typeof document !== "undefined") {
+    return createPortal(
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 9999,
+          overflow: "auto",
+          background: "#000",
+        }}
+      >
+        {content}
+      </div>,
+      document.body
+    );
+  }
+
+  return content;
 }
 
 export default VportActorMenuFlyerEditorScreen;

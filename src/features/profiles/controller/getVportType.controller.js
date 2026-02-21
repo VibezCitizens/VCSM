@@ -8,9 +8,12 @@ import { toVportType } from "@/features/profiles/model/VportTypeModel";
  *
  * Returns:
  * {
- *   vportId: string,
  *   type: "barber" | "restaurant" | "generic"
  * }
+ *
+ * NOTE:
+ * - vportId must NOT be exposed upward (locked identity rule).
+ * - If something needs vportId, it must be resolved internally in the controller that performs that use-case.
  */
 export async function getVportTypeController(actorId) {
   if (!actorId) return null;
@@ -20,7 +23,6 @@ export async function getVportTypeController(actorId) {
   if (!row || row.kind !== "vport") return null;
 
   return {
-    vportId: row.vport_id ?? null,
     type: toVportType(row),
   };
 }

@@ -1,90 +1,123 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\review\vportReviews.read.dal.js
+import vc from "@/services/supabase/vcClient";
 
-function normalizeType(t) {
-  const v = String(t || "vibez").toLowerCase().trim();
-  if (!v) return "vibez";
-  const ok = /^[a-z0-9_]+$/.test(v) && v.length <= 48;
-  return ok ? v : "vibez";
+/* ============================================================
+   DAL: READ (raw DB rows only)
+   - explicit selects
+   - no derived meaning
+   - deterministic
+   ============================================================ */
+
+export async function dalGetVportReviewFormConfig(targetActorId) {
+  const { data, error } = await vc.schema("vc").rpc("get_vport_review_form_config", {
+    p_target_actor_id: targetActorId,
+  });
+
+  if (error) throw error;
+  return data ?? [];
 }
 
-export async function fetchVportReviewsByActorId(
-  actorId,
-  reviewType = "vibez",
-  { limit = 50 } = {}
-) {
-  if (!actorId) return [];
-  const type = normalizeType(reviewType);
-  if (type === "overall") return [];
+export async function dalGetVportOfficialStats(targetActorId) {
+  const { data, error } = await vc.schema("vc").rpc("get_vport_official_stats", {
+    p_target_actor_id: targetActorId,
+  });
 
-  const { data, error } = await supabase
+  if (error) throw error;
+  // supabase rpc returns array
+  return (data && data[0]) ? data[0] : null;
+}
+
+export async function dalListVportReviews(targetActorId, limit = 25) {
+  const { data, error } = await vc
     .schema("vc")
     .from("vport_reviews")
     .select(
-      `
-      id,
-      author_actor_id,
-      target_actor_id,
-      review_type,
-      rating,
-      body,
-      created_at,
-      updated_at,
-      is_deleted,
-      deleted_at
-    `
+      [
+        "id",
+        "target_actor_id",
+        "author_actor_id",
+        "is_verified",
+        "rating_scale",
+        "overall_rating",
+        "body",
+        "created_at",
+        "updated_at",
+        "is_deleted",
+        "deleted_at",
+      ].join(",")
     )
-    .eq("target_actor_id", actorId)
-    .eq("review_type", type)
+    .eq("target_actor_id", targetActorId)
     .eq("is_deleted", false)
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) {
-    console.error("[fetchVportReviewsByActorId] failed", error);
-    throw error;
-  }
-
-  return Array.isArray(data) ? data : [];
+  if (error) throw error;
+  return data ?? [];
 }
 
-export async function fetchVportReviewStatsByActorId(
-  actorId,
-  reviewType = "vibez",
-  { limit = 500 } = {}
-) {
-  if (!actorId) return { count: 0, avg: null };
+export async function dalListVportReviewRatingsByReviewIds(reviewIds) {
+  if (!reviewIds?.length) return [];
 
-  const type = normalizeType(reviewType);
-  if (type === "overall") return { count: 0, avg: null };
+  const { data, error } = await vc
+    .schema("vc")
+    .from("vport_review_ratings")
+    .select(["review_id", "dimension_key", "rating", "created_at", "updated_at"].join(","))
+    .in("review_id", reviewIds);
 
-  const { data, error } = await supabase
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function dalGetActiveReviewByAuthor(targetActorId, authorActorId) {
+  const { data, error } = await vc
     .schema("vc")
     .from("vport_reviews")
-    .select("rating")
-    .eq("target_actor_id", actorId)
-    .eq("review_type", type)
+    .select(
+      [
+        "id",
+        "target_actor_id",
+        "author_actor_id",
+        "is_verified",
+        "rating_scale",
+        "overall_rating",
+        "body",
+        "created_at",
+        "updated_at",
+        "is_deleted",
+        "deleted_at",
+      ].join(",")
+    )
+    .eq("target_actor_id", targetActorId)
+    .eq("author_actor_id", authorActorId)
     .eq("is_deleted", false)
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    .maybeSingle();
 
-  if (error) {
-    console.error("[fetchVportReviewStatsByActorId] failed", error);
-    throw error;
-  }
+  if (error) throw error;
+  return data ?? null;
+}
 
-  const rows = Array.isArray(data) ? data : [];
-  let count = 0;
-  let sum = 0;
+export async function dalReadVportReviewById(reviewId) {
+  const { data, error } = await vc
+    .schema("vc")
+    .from("vport_reviews")
+    .select(
+      [
+        "id",
+        "target_actor_id",
+        "author_actor_id",
+        "is_verified",
+        "rating_scale",
+        "overall_rating",
+        "body",
+        "created_at",
+        "updated_at",
+        "is_deleted",
+        "deleted_at",
+      ].join(",")
+    )
+    .eq("id", reviewId)
+    .maybeSingle();
 
-  for (const r of rows) {
-    const n = Number(r?.rating);
-    if (!Number.isFinite(n)) continue;
-    count += 1;
-    sum += n;
-  }
-
-  return {
-    count,
-    avg: count ? Number((sum / count).toFixed(2)) : null,
-  };
+  if (error) throw error;
+  return data ?? null;
 }

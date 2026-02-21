@@ -1,264 +1,517 @@
-// src/features/profiles/kinds/vport/hooks/review/useVportReviews.js
-import { useCallback, useEffect, useMemo, useState } from "react";
+// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\hooks\review\useVportReviews.js
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useIdentity } from "@/state/identity/identityContext";
 
 import {
-  listVportReviewsController,
-  createVportReviewController,
+  ctrlGetMyActiveReview,
+  ctrlGetOfficialStats,
+  ctrlGetReviewFormConfig,
+  ctrlListReviews,
+  ctrlSubmitReview,
 } from "@/features/profiles/kinds/vport/controller/review/VportReviews.controller";
 
-import {
-  listServiceReviewsController,
-  getServiceReviewStatsController,
-  createServiceReviewController,
-} from "@/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller";
+// Optional (only if you have it; hook will gracefully no-op if missing)
+import * as ServiceCtrl from "@/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller";
 
-import { getReviewDimensionsForVportType } from "@/features/profiles/kinds/vport/config/reviewDimensions.config";
+/* ============================================================
+   Helpers
+   ============================================================ */
 
-import { useStoreReviewsFlow } from "@/features/profiles/kinds/vport/hooks/review/flows/useStoreReviewsFlow";
-import { useServiceReviewsFlow } from "@/features/profiles/kinds/vport/hooks/review/flows/useServiceReviewsFlow";
+function normalizeInput(input) {
+  if (!input) return { targetActorId: null, viewerActorId: null, vportType: null };
+  if (typeof input === "string") {
+    return { targetActorId: input, viewerActorId: null, vportType: null };
+  }
+  if (typeof input === "object") {
+    return {
+      targetActorId: input.targetActorId ?? null,
+      viewerActorId: input.viewerActorId ?? null,
+      vportType: input.vportType ?? null,
+    };
+  }
+  return { targetActorId: null, viewerActorId: null, vportType: null };
+}
 
-export function useVportReviews({ targetActorId, viewerActorId, vportType }) {
-  const dimensions = useMemo(() => {
-    const dims = getReviewDimensionsForVportType(vportType);
-    return (Array.isArray(dims) ? dims : []).filter((d) => d?.key !== "vibez");
-  }, [vportType]);
+function safeNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
 
-  // ✅ default to overall (no vibez)
-  const [tab, setTab] = useState("overall");
-  const isServiceTab = tab === "services";
+function round4(n) {
+  if (n == null) return null;
+  return Math.round(n * 10000) / 10000;
+}
 
-  useEffect(() => {
-    const allowed = ["overall", ...dimensions.map((d) => d.key)];
-    if (allowed.length === 1) allowed.push("services");
-    else allowed.push("services");
+function computeDimStatsFromReviews(reviews) {
+  const map = new Map(); // key -> { sum, count }
 
-    if (!allowed.includes(tab)) {
-      setTab("overall");
+  for (const r of reviews || []) {
+    const ratings = r?.ratings ?? r?.dimensionRatings ?? r?.dimension_ratings ?? [];
+    if (!Array.isArray(ratings)) continue;
+
+    for (const rr of ratings) {
+      const key = rr?.dimensionKey ?? rr?.dimension_key ?? rr?.key ?? null;
+      const rating = safeNum(rr?.rating);
+      if (!key || rating == null) continue;
+
+      const cur = map.get(key) ?? { sum: 0, count: 0 };
+      cur.sum += rating;
+      cur.count += 1;
+      map.set(key, cur);
     }
-  }, [dimensions, tab]);
+  }
 
-  const tabLabel = useMemo(() => {
-    if (tab === "services") return "Services";
-    if (tab === "overall") return "Overall";
-    const d = dimensions.find((x) => x.key === tab);
-    return d?.label ?? "Review";
-  }, [tab, dimensions]);
+  const out = {};
+  for (const [k, v] of map.entries()) {
+    out[k] = {
+      avg: v.count ? round4(v.sum / v.count) : null,
+      count: v.count,
+    };
+  }
+  return out;
+}
+
+function pickRecentComments(reviews, n = 6) {
+  const rows = Array.isArray(reviews) ? reviews : [];
+  return rows
+    .filter((r) => String(r?.body ?? "").trim().length > 0)
+    .slice(0, n)
+    .map((r) => ({
+      id: r?.id ?? null,
+      body: r?.body ?? "",
+      createdAt: r?.createdAt ?? r?.created_at ?? null,
+      overallRating: r?.overallRating ?? r?.overall_rating ?? null,
+    }));
+}
+
+/* ============================================================
+   Hook (legacy UI contract: tab/services/overall/composer)
+   - fixes "freeze" by removing dependency loops
+   - removes double-fetch of reviews for "my review"
+   ============================================================ */
+
+export function useVportReviews(input) {
+  const { identity } = useIdentity();
+  const authorActorId = identity?.actorId ?? null;
+
+  const { targetActorId, viewerActorId } = useMemo(() => normalizeInput(input), [input]);
+
+  /* ---------------- UI state ---------------- */
+  const [tab, setTab] = useState("overall");
+
+  // services
+  const [services, setServices] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(false);
+  const [serviceId, setServiceId] = useState(null);
+
+  // config + stats
+  const [dimensions, setDimensions] = useState([]);
+  const [officialStats, setOfficialStats] = useState(null);
+
+  // active list
+  const [activeList, setActiveList] = useState([]);
+  const [loadingActiveList, setLoadingActiveList] = useState(true);
+
+  // my composer state
+  const [myLoading, setMyLoading] = useState(false);
+  const [myExists, setMyExists] = useState(false);
 
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);
 
-  const store = useStoreReviewsFlow({
-    targetActorId,
-    viewerActorId,
-    tab,
-    isServiceTab,
-    setRating,
-    setBody,
-    dimensions,
-  });
+  // generic
+  const [error, setError] = useState(null);
 
-  const svc = useServiceReviewsFlow({
-    targetActorId,
-    viewerActorId,
-    isServiceTab,
-    setRating,
-    setBody,
-  });
+  /* ---------------- loop safety ---------------- */
+  const mountedRef = useRef(false);
+  const inFlightCoreRef = useRef(false);
+  const inFlightServicesRef = useRef(false);
+  const inFlightListRef = useRef(false);
+  const inFlightMyRef = useRef(false);
 
-  // ✅ cache lists per dimension so Overall can show "Top 3 recent comments"
-  const [dimListCache, setDimListCache] = useState({});
+  /* ---------------- derived ---------------- */
+  const canReview = useMemo(() => {
+    return Boolean(authorActorId) && Boolean(targetActorId) && identity?.kind === "user";
+  }, [authorActorId, targetActorId, identity?.kind]);
 
-  useEffect(() => {
-    if (isServiceTab) return;
-    if (tab === "overall") return;
-    if (!Array.isArray(store.list)) return;
+  const isServiceTab = useMemo(() => tab === "services", [tab]);
 
-    setDimListCache((prev) => {
-      const next = { ...(prev || {}) };
-      next[tab] = store.list;
-      return next;
-    });
-  }, [isServiceTab, tab, store.list]);
+  const selectedService = useMemo(() => {
+    if (!serviceId) return null;
+    return (services || []).find((s) => String(s?.id) === String(serviceId)) ?? null;
+  }, [services, serviceId]);
 
-  const recentComments = useMemo(() => {
-    const all = Object.values(dimListCache || {}).flatMap((v) => (Array.isArray(v) ? v : []));
-    const withBody = all.filter((r) => r?.body);
+  const tabLabel = useMemo(() => {
+    if (tab === "overall") return "Overall";
+    if (tab === "services") return selectedService?.name ?? "Services";
+    const d = (dimensions || []).find((x) => String(x?.dimensionKey) === String(tab));
+    return d?.label ?? "Reviews";
+  }, [tab, selectedService, dimensions]);
 
-    withBody.sort((a, b) => {
-      const da = new Date(a.createdAt ?? a.created_at ?? 0).getTime();
-      const db = new Date(b.createdAt ?? b.created_at ?? 0).getTime();
-      return db - da;
-    });
+  /* ============================================================
+     Load core (dimensions + official stats)
+     ============================================================ */
 
-    // de-dupe by id if present
-    const seen = new Set();
-    const out = [];
-    for (const r of withBody) {
-      const id = r?.id ?? null;
-      const key = id ? `id:${id}` : `t:${r?.createdAt ?? r?.created_at}:${r?.body}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push(r);
-      if (out.length >= 3) break;
-    }
-    return out;
-  }, [dimListCache]);
+  const loadCore = useCallback(async () => {
+    if (!targetActorId) return;
+    if (inFlightCoreRef.current) return;
+    inFlightCoreRef.current = true;
 
-  const handleSave = useCallback(async () => {
-    setMsg(null);
-    setSaving(true);
+    setError(null);
 
     try {
-      // ===========================
-      // SERVICE REVIEWS (unlimited)
-      // ===========================
-      if (isServiceTab) {
-        if (!viewerActorId || !svc.serviceId) return;
+      const [dims, st] = await Promise.all([
+        ctrlGetReviewFormConfig(targetActorId),
+        ctrlGetOfficialStats(targetActorId),
+      ]);
 
-        const saved = await createServiceReviewController({
-          viewerActorId,
-          serviceId: svc.serviceId,
-          rating,
-          body,
-        });
+      if (!mountedRef.current) return;
 
-        svc.setMyServiceWeek(saved || null);
-        setMsg("Submitted.");
+      const normalizedDims = (Array.isArray(dims) ? dims : [])
+        .map((d) => ({
+          vportType: d?.vportType ?? d?.vport_type ?? null,
+          dimensionKey: d?.dimensionKey ?? d?.dimension_key ?? d?.key ?? null,
+          label: d?.label ?? null,
+          weight: d?.weight ?? 1,
+          sortOrder: d?.sortOrder ?? d?.sort_order ?? 0,
+        }))
+        .filter((d) => d.dimensionKey);
 
-        const [rows, s] = await Promise.all([
-          listServiceReviewsController({ serviceId: svc.serviceId, limit: 50 }),
-          getServiceReviewStatsController({ serviceId: svc.serviceId }),
-        ]);
-
-        svc.setServiceList(rows);
-        svc.setServiceStats(s);
-
-        setRating(5);
-        setBody("");
-        return;
-      }
-
-      // ===========================
-      // STORE REVIEWS (dimensions)
-      // ===========================
-      if (tab === "overall") {
-        // ✅ no writing here
-        return;
-      }
-
-      if (!viewerActorId || !targetActorId) return;
-
-      const saved = await createVportReviewController({
-        viewerActorId,
-        targetActorId,
-        reviewType: tab,
-        rating,
-        body,
-      });
-
-      store.setMyWeek(saved || null);
-      setMsg("Submitted.");
-
-      const rows = await listVportReviewsController({
-        targetActorId,
-        reviewType: tab,
-        limit: 50,
-      });
-      store.setList(rows);
-
-      setRating(5);
-      setBody("");
+      setDimensions(normalizedDims);
+      setOfficialStats(st ?? null);
     } catch (e) {
-      setMsg(e?.message ?? "Failed to submit.");
+      if (!mountedRef.current) return;
+      setError(e);
     } finally {
-      setSaving(false);
+      inFlightCoreRef.current = false;
+    }
+  }, [targetActorId]);
+
+  // keep tab valid after dimensions load (NO dependency loop in loadCore)
+  useEffect(() => {
+    if (!dimensions?.length) return;
+
+    if (tab !== "overall" && tab !== "services") {
+      const ok = dimensions.some((d) => String(d.dimensionKey) === String(tab));
+      if (!ok) setTab("overall");
+    }
+  }, [dimensions, tab]);
+
+  /* ============================================================
+     Load services (optional)
+     ============================================================ */
+
+  const loadServices = useCallback(async () => {
+    if (!targetActorId) return;
+
+    const fn =
+      ServiceCtrl?.ctrlListReviewServices ||
+      ServiceCtrl?.ctrlListServicesForReviews ||
+      null;
+
+    if (!fn) {
+      setServices([]);
+      return;
+    }
+
+    if (inFlightServicesRef.current) return;
+    inFlightServicesRef.current = true;
+
+    setLoadingServices(true);
+
+    try {
+      const list = await fn(targetActorId);
+
+      if (!mountedRef.current) return;
+
+      const normalized = (Array.isArray(list) ? list : [])
+        .map((s) => ({
+          id: s?.id ?? s?.service_id ?? s?.serviceId ?? null,
+          name: s?.name ?? s?.label ?? null,
+        }))
+        .filter((x) => x.id && x.name);
+
+      setServices(normalized);
+
+      if (serviceId && !normalized.some((x) => String(x.id) === String(serviceId))) {
+        setServiceId(null);
+      }
+    } catch (_e) {
+      if (!mountedRef.current) return;
+      setServices([]);
+    } finally {
+      if (mountedRef.current) setLoadingServices(false);
+      inFlightServicesRef.current = false;
+    }
+  }, [targetActorId, serviceId]);
+
+  /* ============================================================
+     Load active list (tab-aware)
+     ============================================================ */
+
+  const loadActiveList = useCallback(async () => {
+    if (!targetActorId) return;
+    if (inFlightListRef.current) return;
+    inFlightListRef.current = true;
+
+    setLoadingActiveList(true);
+    setError(null);
+
+    try {
+      let list = await ctrlListReviews(targetActorId, 50);
+      list = Array.isArray(list) ? list : [];
+
+      if (tab === "services") {
+        const fn =
+          ServiceCtrl?.ctrlListServiceReviews ||
+          ServiceCtrl?.ctrlListReviewsForService ||
+          null;
+
+        if (fn && serviceId) {
+          const svcList = await fn({ targetActorId, serviceId, limit: 50 });
+          list = Array.isArray(svcList) ? svcList : [];
+        } else {
+          list = serviceId ? list : [];
+        }
+      }
+
+      if (tab !== "overall" && tab !== "services") {
+        const dimKey = tab;
+        list = list.filter((r) => {
+          const ratings = r?.ratings ?? [];
+          if (!Array.isArray(ratings)) return false;
+          return ratings.some((rr) => String(rr?.dimensionKey) === String(dimKey));
+        });
+      }
+
+      if (!mountedRef.current) return;
+      setActiveList(list);
+    } catch (e) {
+      if (!mountedRef.current) return;
+      setActiveList([]);
+      setError(e);
+    } finally {
+      if (mountedRef.current) setLoadingActiveList(false);
+      inFlightListRef.current = false;
+    }
+  }, [targetActorId, tab, serviceId]);
+
+  /* ============================================================
+     Load my review (fast)
+     ============================================================ */
+
+  const loadMy = useCallback(async () => {
+    if (!targetActorId || !authorActorId) {
+      setMyLoading(false);
+      setMyExists(false);
+      return;
+    }
+
+    if (inFlightMyRef.current) return;
+    inFlightMyRef.current = true;
+
+    setMyLoading(true);
+
+    try {
+      const mine = await ctrlGetMyActiveReview(targetActorId, authorActorId);
+
+      if (!mountedRef.current) return;
+
+      setMyExists(Boolean(mine));
+
+      if (mine) {
+        const overall = safeNum(mine?.overallRating);
+        setRating(overall != null ? Math.max(1, Math.min(5, Math.round(overall))) : 5);
+        setBody(String(mine?.body ?? ""));
+      }
+    } catch (_e) {
+      if (!mountedRef.current) return;
+      setMyExists(false);
+    } finally {
+      if (mountedRef.current) setMyLoading(false);
+      inFlightMyRef.current = false;
+    }
+  }, [targetActorId, authorActorId]);
+
+  /* ============================================================
+     Save handler (composer)
+     ============================================================ */
+
+  const handleSave = useCallback(async () => {
+    if (!canReview) {
+      setMsg("You must be signed in as a user to review.");
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+    setMsg(null);
+
+    try {
+      const dimKeys = (dimensions || []).map((d) => d.dimensionKey).filter(Boolean);
+
+      let ratingsPayload = [];
+
+      if (tab !== "overall" && tab !== "services") {
+        ratingsPayload = [{ dimensionKey: tab, rating }];
+      } else {
+        const preferred =
+          dimKeys.includes("overall_experience")
+            ? "overall_experience"
+            : dimKeys[0] ?? "service_quality";
+
+        ratingsPayload = [{ dimensionKey: preferred, rating }];
+      }
+
+      await ctrlSubmitReview({
+        targetActorId,
+        authorActorId,
+        body,
+        ratings: ratingsPayload,
+      });
+
+      if (!mountedRef.current) return;
+
+      setMsg("Saved.");
+      await Promise.all([loadCore(), loadActiveList(), loadMy()]);
+    } catch (e) {
+      if (!mountedRef.current) return;
+      setError(e);
+      setMsg(e?.message ?? "Failed to save.");
+    } finally {
+      if (mountedRef.current) setSaving(false);
     }
   }, [
-    isServiceTab,
-    viewerActorId,
-    svc.serviceId,
-    rating,
-    body,
-    tab,
+    canReview,
     targetActorId,
-    store,
-    svc,
+    authorActorId,
+    body,
+    rating,
+    tab,
+    dimensions,
+    loadCore,
+    loadActiveList,
+    loadMy,
   ]);
+
+  /* ============================================================
+     Overall dashboard derived stats
+     ============================================================ */
+
+  const overallAvg = useMemo(() => {
+    const v = safeNum(officialStats?.officialOverallAvg ?? officialStats?.official_overall_avg);
+    return v != null ? round4(v) : null;
+  }, [officialStats]);
+
+  const overallCount = useMemo(() => {
+    const v = officialStats?.verifiedReviewCount ?? officialStats?.verified_review_count ?? 0;
+    return Number(v) || 0;
+  }, [officialStats]);
+
+  const dimStats = useMemo(() => computeDimStatsFromReviews(activeList), [activeList]);
+  const recentComments = useMemo(() => pickRecentComments(activeList, 6), [activeList]);
 
   const displayAvg = useMemo(() => {
-    if (isServiceTab) return svc.serviceStats.avg;
-    if (tab === "overall") return store.overallComputed;
-    const s = store.dimStats?.[tab];
-    return s?.avg ?? null;
-  }, [
-    isServiceTab,
-    svc.serviceStats.avg,
-    tab,
-    store.overallComputed,
-    store.dimStats,
-  ]);
+    if (tab === "overall") return overallAvg;
+    const rows = Array.isArray(activeList) ? activeList : [];
+    const nums = rows
+      .map((r) => safeNum(r?.overallRating))
+      .filter((x) => x != null);
+
+    if (!nums.length) return null;
+    return round4(nums.reduce((a, b) => a + b, 0) / nums.length);
+  }, [tab, overallAvg, activeList]);
 
   const displayCnt = useMemo(() => {
-    if (isServiceTab) return svc.serviceStats.count;
-    if (tab === "overall") return store.overallCountComputed;
-    const s = store.dimStats?.[tab];
-    return s?.count ?? 0;
-  }, [
-    isServiceTab,
-    svc.serviceStats.count,
-    tab,
-    store.overallCountComputed,
-    store.dimStats,
-  ]);
+    if (tab === "overall") return overallCount;
+    return Array.isArray(activeList) ? activeList.length : 0;
+  }, [tab, overallCount, activeList]);
 
-  const activeList = isServiceTab ? svc.serviceList : store.list;
-  const loadingActiveList = isServiceTab ? svc.loadingServiceList : store.loadingList;
+  /* ============================================================
+     Effects
+     ============================================================ */
 
-  const myLoading = isServiceTab ? svc.loadingMyServiceWeek : store.loadingMyWeek;
-  const myExists = isServiceTab ? !!svc.myServiceWeek : !!store.myWeek;
+  useEffect(() => {
+    mountedRef.current = true;
 
-  const selectedServiceName = svc.selectedService?.name ?? null;
+    if (!targetActorId) {
+      setLoadingActiveList(false);
+      return () => {
+        mountedRef.current = false;
+      };
+    }
+
+    (async () => {
+      await loadCore();
+      await loadServices();
+      await Promise.all([loadActiveList(), loadMy()]);
+    })();
+
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [targetActorId, loadCore, loadServices, loadActiveList, loadMy]);
+
+  // reload active list on tab/service changes (list only)
+  useEffect(() => {
+    if (!targetActorId) return;
+    loadActiveList();
+  }, [targetActorId, tab, serviceId, loadActiveList]);
 
   return {
-    dimensions,
+    viewerActorId,
 
+    // tab contract
     tab,
     setTab,
     tabLabel,
     isServiceTab,
 
-    displayAvg,
-    displayCnt,
+    // services contract
+    services,
+    loadingServices,
+    serviceId,
+    setServiceId,
+    selectedService,
 
-    // ✅ expose computed stats for Overall dashboard
-    overallAvg: store.overallComputed ?? null,
-    overallCount: store.overallCountComputed ?? 0,
-    dimStats: store.dimStats ?? {},
-
-    // ✅ expose cached comments
-    recentComments,
-
-    services: svc.services,
-    loadingServices: svc.loadingServices,
-    serviceId: svc.serviceId,
-    setServiceId: svc.setServiceId,
-    selectedServiceName,
-
+    // lists
     activeList,
     loadingActiveList,
 
+    // overall dashboard contract
+    overallAvg,
+    overallCount,
+    dimStats,
+    recentComments,
+
+    // composer contract
     myLoading,
     myExists,
-
     rating,
     setRating,
     body,
     setBody,
-
     saving,
-    msg,
     handleSave,
+    msg,
+
+    // header display
+    displayAvg,
+    displayCnt,
+
+    // misc
+    canReview,
+    error,
+
+    // legacy-ish aliases
+    loading: loadingActiveList,
+    reviews: activeList,
+    stats: officialStats,
+    dimensions,
+    refresh: async () => {
+      await Promise.all([loadCore(), loadServices(), loadActiveList(), loadMy()]);
+    },
   };
 }

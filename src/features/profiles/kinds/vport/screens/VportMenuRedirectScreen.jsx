@@ -8,8 +8,8 @@ export function VportMenuRedirectScreen() {
   useEffect(() => {
     if (!actorId) return;
 
-    // Current internal destination
-    navigate(`/vport/${actorId}/menu`, { replace: true });
+    // Actor-first canonical route
+    navigate(`/profile/${actorId}?tab=menu`, { replace: true });
   }, [actorId, navigate]);
 
   return null;

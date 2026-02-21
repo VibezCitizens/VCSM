@@ -20,13 +20,7 @@ import { hydrateActorsFromRows } from '@/features/actors/controllers/hydrateActo
 
 const Ctx = createContext(null)
 
-export function MyBlocksProvider({
-  children,
-  scope,
-  actorId,
-  userId,
-  vportId,
-}) {
+export function MyBlocksProvider({ children, scope, actorId }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [blocks, setBlocks] = useState([])
@@ -53,7 +47,6 @@ export function MyBlocksProvider({
       const list = await ctrlListMyBlocks({
         actorId,
         scope,
-        vportId,
       })
 
       // 🔥 CRITICAL FIX:
@@ -70,7 +63,7 @@ export function MyBlocksProvider({
     } finally {
       setLoading(false)
     }
-  }, [actorId, scope, vportId])
+  }, [actorId, scope])
 
   /* ============================================================
      INITIAL LOAD
@@ -91,7 +84,6 @@ export function MyBlocksProvider({
           actorId,
           blockedActorId,
           scope,
-          vportId,
           existingBlockedIds: blockedIds,
         })
 
@@ -102,7 +94,7 @@ export function MyBlocksProvider({
         return false
       }
     },
-    [actorId, scope, vportId, blockedIds, refresh]
+    [actorId, scope, blockedIds, refresh]
   )
 
   /* ============================================================
@@ -117,7 +109,6 @@ export function MyBlocksProvider({
           actorId,
           blockedActorId,
           scope,
-          vportId,
           existingBlockedIds: blockedIds,
         })
 
@@ -128,7 +119,7 @@ export function MyBlocksProvider({
         return false
       }
     },
-    [actorId, scope, vportId, blockedIds, refresh]
+    [actorId, scope, blockedIds, refresh]
   )
 
   /* ============================================================
@@ -138,8 +129,6 @@ export function MyBlocksProvider({
     () => ({
       scope,
       actorId,
-      userId: userId || null,
-      vportId: vportId || null,
       loading,
       error,
       blocks,
@@ -148,19 +137,7 @@ export function MyBlocksProvider({
       block,
       unblock,
     }),
-    [
-      scope,
-      actorId,
-      userId,
-      vportId,
-      loading,
-      error,
-      blocks,
-      blockedIds,
-      refresh,
-      block,
-      unblock,
-    ]
+    [scope, actorId, loading, error, blocks, blockedIds, refresh, block, unblock]
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

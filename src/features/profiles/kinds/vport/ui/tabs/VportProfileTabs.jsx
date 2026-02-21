@@ -33,13 +33,42 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     };
   }, [updateEdges]);
 
+  // ✅ Arrow scroll: use remaining distance so you don't need multiple clicks to reach the end
   const scrollByAmount = useCallback((dir) => {
     const el = scrollRef.current;
     if (!el) return;
 
-    const amount = Math.max(220, Math.floor(el.clientWidth * 0.7));
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+
+    // more aggressive jump
+    const baseAmount = Math.max(320, Math.floor(clientWidth * 0.9));
+
+    const maxLeft = scrollWidth - clientWidth;
+    const remainingRight = Math.max(0, maxLeft - scrollLeft);
+    const remainingLeft = Math.max(0, scrollLeft);
+
+    const amount =
+      dir > 0 ? Math.min(baseAmount, remainingRight) : Math.min(baseAmount, remainingLeft);
+
     el.scrollBy({ left: dir * amount, behavior: "smooth" });
   }, []);
+
+  // ✅ Always bring active tab into view (fixes “need 3 clicks to reach last tab”)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (!tab) return;
+
+    const btn = el.querySelector(`[data-tab-key="${tab}"]`);
+    if (!btn) return;
+
+    // center the active tab so the user always sees where they landed
+    btn.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [tab, list]);
 
   // ✅ keeps tab labels from sitting underneath the overlay buttons
   const leftPad = showLeft ? 52 : 8;
@@ -120,6 +149,7 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               return (
                 <button
                   key={t.key}
+                  data-tab-key={t.key}
                   onClick={() => setTab(t.key)}
                   className={`
                     relative py-3

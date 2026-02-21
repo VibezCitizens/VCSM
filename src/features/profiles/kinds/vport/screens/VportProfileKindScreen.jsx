@@ -1,7 +1,6 @@
 import { useVportType } from "@/features/profiles/hooks/useVportType";
 import VportProfileViewScreen from "@/features/profiles/kinds/vport/screens/VportProfileViewScreen";
-import { getVportTabsByType } from "@/features/profiles/kinds/vport/vportTypeRegistry";
-
+import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 export default function VportProfileKindScreen({ viewerActorId, profileActorId }) {
   const { loading, vportType } = useVportType(profileActorId);
 

@@ -1,5 +1,27 @@
 // src/features/vport/config/vportTypes.config.js
 
+/**
+ * VPORT Types Configuration
+ * =========================
+ *
+ * What this file does
+ * -------------------
+ * This module defines the allowed `vport_type` values and their grouping for UI purposes
+ * (pickers, filters, category pages, etc).
+ *
+ * IMPORTANT: The values in VPORT_TYPE_GROUPS MUST match the DB constraint:
+ *   vc.vports.vport_type_check
+ *
+ * In other words:
+ * - Every allowed DB type should appear in exactly one group here (or at least appear here).
+ * - Types must be lowercase and match spacing exactly (ex: "gas station", "event planner").
+ *
+ * Public API
+ * ----------
+ * - getAllVportTypes(): returns all types as a flat array (for validation/pickers)
+ * - isValidVportType(type): validates a string against allowed types
+ */
+
 export const VPORT_TYPE_GROUPS = Object.freeze({
   "Arts, Media & Entertainment": [
     "artist",
@@ -11,6 +33,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "public figure",
     "videographer",
   ],
+
   "Beauty & Wellness": [
     "barber",
     "esthetician",
@@ -21,6 +44,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "nail technician",
     "yoga instructor",
   ],
+
   "Education & Care": [
     "babysitter",
     "caregiver",
@@ -31,6 +55,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "therapist",
     "tutor",
   ],
+
   "Food, Hospitality & Events": [
     "baker",
     "bartender",
@@ -40,6 +65,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "restaurant",
     "server",
   ],
+
   "Health & Medical": [
     "chiropractor",
     "dentist",
@@ -47,6 +73,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "nurse",
     "nutritionist",
   ],
+
   "Home, Maintenance & Trades": [
     "carpenter",
     "cleaning service",
@@ -59,6 +86,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "painter",
     "plumber",
   ],
+
   "Professional & Business Services": [
     "accountant",
     "bookkeeper",
@@ -73,12 +101,11 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "organization",
     "real estate",
   ],
-  "Retail, Sales & Commerce": [
-    "nonprofit",
-    "shop",
-    "vendor",
-  ],
+
+  "Retail, Sales & Commerce": ["nonprofit", "shop", "vendor"],
+
   "Sports & Fitness": ["athlete", "coach", "trainer"],
+
   "Transport & Logistics": [
     "courier",
     "delivery",
@@ -88,7 +115,15 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "towing",
     "truck driver",
   ],
+
+  /**
+   * DB includes "gas station" as an allowed vport_type and has a trigger that
+   * runs only when vport_type = 'gas station'.
+   */
+  "Gas & Fuel": ["gas station"],
+
   "Animal Care": ["dog walker", "pet sitter"],
+
   Other: ["other"],
 });
 

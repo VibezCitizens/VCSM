@@ -1,7 +1,32 @@
-Core Layer Contracts (Revised & Locked)
+Core Layer Contracts (Revised & Locked) — Updated
 
 This architecture enforces clear ownership of meaning, authority, and responsibility across layers.
 Each layer answers exactly one question and nothing more.
+
+Global Rules (New & Locked)
+
+1) Import Path Rule
+
+Always build imports using @/...
+
+Never use relative paths like ../../.. in new modules.
+
+2) Module Build Order (New & Locked)
+For all future modules we build in this order:
+
+DAL
+
+Model
+
+Controller
+
+Hooks
+
+Components
+
+View Screen
+
+Final Screen
 
 Data Access Layer (DAL) Contract
 Purpose
@@ -9,10 +34,10 @@ Purpose
 DAL functions are thin database adapters.
 
 They answer one question only:
-
 “What does the database say?”
 
 DAL Rules
+
 DAL files may:
 
 Import Supabase
@@ -39,16 +64,15 @@ Normalize, rename, or map fields
 
 Derive flags or meaning (isMine, isDeleted, etc.)
 
-Import models, controllers, hooks, or UI
+Import models, controllers, hooks, components, or screens
 
 Infer actor intent, ownership, or permissions
 
-🚫 .select('*') Rule (New)
+🚫 .select('*') Rule (Locked)
 
 .select('*') is forbidden in production DAL code.
-LOCKED DAL STYLE (ACKNOWLEDGED)
 
-Rules we will follow from now on:
+Locked DAL Style (Acknowledged)
 
 Always:
 
@@ -70,7 +94,7 @@ Never:
 
 Return derived meaning
 
-Import anything except supabase
+Import anything except Supabase
 
 Reasoning:
 
@@ -94,10 +118,10 @@ Purpose
 Models are pure translators between database shape and domain shape.
 
 They answer one question only:
-
 “What does this data mean to the application?”
 
 Model Rules
+
 Models must:
 
 Be pure functions (no side effects)
@@ -134,13 +158,13 @@ Purpose
 Controllers are use-case boundaries and the sole owners of business meaning.
 
 They answer one complete question:
-
 “Is this action allowed, and what is the correct domain result?”
 
 Controller Rules
+
 Controllers may:
 
-Import Supabase
+Import Supabase (only when needed for orchestration)
 
 Call DAL functions
 
@@ -174,10 +198,10 @@ Purpose
 Hooks manage UI lifecycle and orchestration timing.
 
 They answer one question only:
-
 “When should this use-case run, and how should the UI respond?”
 
 Hook Rules
+
 Hooks may:
 
 Use React APIs (useState, useEffect, useCallback, etc.)
@@ -210,56 +234,52 @@ Infer permissions or ownership
 
 Transform domain meaning
 
-Screen Contract (Routing Screens)
+Component Contract (New)
 Purpose
 
-Screens are routing-level composition boundaries.
+Components are reusable UI building blocks.
 
 They answer one question only:
+“How does this UI piece render given props/state?”
 
-“Given route + identity, which experience should exist?”
+Component Rules
 
-Screen Rules
-Screens may:
+Components may:
 
-Read route params and search state
+Receive data and callbacks via props
 
-Read global app context (identity, theme)
+Use local UI state (open/close, input text, animations)
 
-Perform hard guards (auth required, actor required)
+Render styling and layout
 
-Choose which View Screen to render
+Emit user intents (onSubmit, onApprove, onReject)
 
-Provide layout scaffolding
+Components must:
 
-Screens must:
+Be reusable and presentational by default
 
-Be deterministic from route + identity
+Remain predictable from props + local UI state
 
-Treat identity as read-only
+Avoid owning domain truth (that lives in hooks/controllers)
 
-Delegate all logic downward
+Components must not:
 
-Screens must not:
+Import Supabase or DAL
 
-Import DAL, models, or controllers
+Call controllers directly (controllers are called by hooks / view screens)
 
-Execute business logic
-
-Fetch or mutate data
-
-Interpret domain data
+Contain business rules or permissions logic
 
 View Screen Contract (Domain Views)
 Purpose
 
-View Screens assemble hooks + UI to express one domain experience.
+View Screens assemble hooks + components to express one domain experience.
 
 They answer one question only:
-
 “How does this domain experience behave and render?”
 
 View Screen Rules
+
 View Screens may:
 
 Call domain hooks
@@ -290,20 +310,95 @@ Interpret raw database data
 
 Perform navigation side-effects (except UI intents)
 
-Final Architectural Principle (Lock This In)
+Final Screen Contract (Routing Screens) — Updated Naming
+Purpose
+
+Final Screens are routing-level composition boundaries.
+
+They answer one question only:
+“Given route + identity, which experience should exist?”
+
+Final Screen Rules
+
+Final Screens may:
+
+Read route params and search state
+
+Read global app context (identity, theme)
+
+Perform hard guards (auth required, actor required)
+
+Choose which View Screen to render
+
+Provide layout scaffolding
+
+Final Screens must:
+
+Be deterministic from route + identity
+
+Treat identity as read-only
+
+Delegate all logic downward
+
+Final Screens must not:
+
+Import DAL, models, or controllers
+
+Execute business logic
+
+Fetch or mutate data
+
+Interpret domain data
+
+Final Architectural Principle (Locked)
 
 Security lives in RLS.
+
 Meaning lives in Controllers.
+
 Shape lives in Models.
+
 Timing lives in Hooks.
+
 Composition lives in Screens.
+
 Data access stays dumb, explicit, and boring.
 
-
-ALL INPUT BAR SETTING COLOR 
 className="
   w-full px-4 py-2 pr-10
   rounded-2xl bg-neutral-900 text-white
   border border-purple-700
   focus:ring-2 focus:ring-purple-500
 "
+
+ocked Rule: Identity MUST NOT expose profileId or vportId
+✅ Identity Surface Contract (LOCKED)
+
+The identity object returned by useIdentity() may never contain:
+
+profileId
+
+vportId
+
+Identity is actor-first only:
+
+identity.actorId is the only canonical ID used by the app to scope data.
+
+identity.kind is the only canonical discriminator ('user' | 'vport').
+
+Any profile/vport lookup stays internal to the provider (hydration only), not exposed.
+
+✅ Enforcement
+
+The provider must never return profileId / vportId.
+
+Optional: runtime assertion warns if these ever reappear.
+
+Correct Meaning of “Owner” in Your System
+Owner = Actor Owner
+
+Because:
+
+Everything meaningful in your domain (posts, chats, follows, vports, moderation, etc.) is tied to vc.actors
+
+actor_owners

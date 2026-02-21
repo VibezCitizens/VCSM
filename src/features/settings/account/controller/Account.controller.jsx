@@ -1,4 +1,5 @@
-import { useState } from 'react'
+// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\settings\account\controller\Account.controller.jsx
+import { useEffect, useState } from 'react'
 import { supabase } from '@/services/supabase/supabaseClient'
 import vc from '@/services/supabase/vcClient'
 
@@ -9,8 +10,43 @@ export function useAccountController() {
   const { user } = useAuth()
   const { identity } = useIdentity()
 
-  const isVport = identity?.kind === 'vport' && !!identity?.vportId
-  const vportId = identity?.vportId ?? null
+  // ✅ ACTOR-FIRST: kind decides scope (no identity.vportId)
+  const isVport = identity?.kind === 'vport'
+  const actorId = identity?.actorId ?? null
+
+  // ✅ internal resolution only (allowed). This is NOT identity surface.
+  const [vportId, setVportId] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function run() {
+      // only resolve when in vport scope
+      if (!isVport || !actorId) {
+        if (!cancelled) setVportId(null)
+        return
+      }
+
+      const { data, error } = await vc
+        .from('actors')
+        .select('vport_id')
+        .eq('id', actorId)
+        .maybeSingle()
+
+      if (error) {
+        console.error('[Account] failed to resolve vport_id from actor', error)
+        if (!cancelled) setVportId(null)
+        return
+      }
+
+      if (!cancelled) setVportId(data?.vport_id ?? null)
+    }
+
+    run()
+    return () => {
+      cancelled = true
+    }
+  }, [isVport, actorId])
 
   const [showConfirmAccount, setShowConfirmAccount] = useState(false)
   const [busyAccount, setBusyAccount] = useState(false)
@@ -66,6 +102,7 @@ export function useAccountController() {
 
     try {
       if (!user?.id) throw new Error('Not signed in.')
+      if (!isVport) throw new Error('Not in VPORT scope.')
       if (!vportId) throw new Error('No VPORT selected.')
 
       const { error: rpcErr } = await supabase.rpc('delete_my_vport', {

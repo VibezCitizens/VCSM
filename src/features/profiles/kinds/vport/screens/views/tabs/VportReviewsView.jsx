@@ -1,6 +1,6 @@
-// src/features/profiles/kinds/vport/screens/views/tabs/VportReviewsView.jsx
+﻿// src/features/profiles/kinds/vport/screens/views/tabs/VportReviewsView.jsx
 import React from "react";
-import VportReviewsView from "@/features/profiles/kinds/vport/screens/views/tabs/review/VportReviewsView";
+import VportReviewsView from "@/features/profiles/kinds/vport/screens/review/VportReviewsView";
 
 export default function VportReviewsTab({
   profile,
@@ -17,3 +17,4 @@ export default function VportReviewsTab({
     />
   );
 }
+

@@ -5,16 +5,32 @@ import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/state/identity/identityContext'
 
+import vc from '@/services/supabase/vcClient'
 import { useProfileUploads } from '../hooks/useProfileUploads'
 import { loadProfileCore, saveProfileCore } from './Profile.controller.core'
 
 const UUID_RX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
+async function resolveVportIdFromActor(actorId) {
+  if (!actorId) return null
+
+  const { data, error } = await vc
+    .from('actors')
+    .select('vport_id')
+    .eq('id', actorId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[ProfileController] resolveVportIdFromActor failed', error)
+    return null
+  }
+
+  return data?.vport_id ?? null
+}
+
 /* ============================================================
    useProfileController (HOOK)
-   - Resolves mode + subjectId (routing/identity)
-   - Calls PURE controller core for meaning + orchestration
 ============================================================ */
 export function useProfileController() {
   const { user } = useAuth()
@@ -25,7 +41,7 @@ export function useProfileController() {
   const [searchParams] = useSearchParams()
 
   /* ------------------------------------------------------------
-     MODE RESOLUTION
+     MODE RESOLUTION (PURE)
   ------------------------------------------------------------ */
   const mode = useMemo(() => {
     const qp = searchParams.get('mode')
@@ -40,14 +56,43 @@ export function useProfileController() {
   }, [searchParams, identity?.kind, location.pathname])
 
   /* ------------------------------------------------------------
-     SUBJECT ID RESOLUTION
+     SUBJECT ID RESOLUTION (STATEFUL, ACTOR-FIRST)
+     - Always resolves to a stable string or null
   ------------------------------------------------------------ */
-  const subjectId = useMemo(() => {
-    if (mode === 'vport') {
-      return params.vportId || identity?.vportId || null
+  const [subjectId, setSubjectId] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function resolve() {
+      // USER MODE: subject is current authed user
+      if (mode !== 'vport') {
+        if (!cancelled) setSubjectId(user?.id || null)
+        return
+      }
+
+      // VPORT MODE: route param wins
+      if (params.vportId) {
+        if (!cancelled) setSubjectId(params.vportId)
+        return
+      }
+
+      // Else resolve from identity.actorId (locked contract)
+      const actorId = identity?.actorId || null
+      if (!actorId) {
+        if (!cancelled) setSubjectId(null)
+        return
+      }
+
+      const vportId = await resolveVportIdFromActor(actorId)
+      if (!cancelled) setSubjectId(vportId || null)
     }
-    return user?.id || null
-  }, [mode, params.vportId, identity?.vportId, user?.id])
+
+    resolve()
+    return () => {
+      cancelled = true
+    }
+  }, [mode, params.vportId, identity?.actorId, user?.id])
 
   /* ------------------------------------------------------------
      STATE
@@ -57,6 +102,7 @@ export function useProfileController() {
   const [error, setError] = useState('')
   const [profile, setProfile] = useState(null)
 
+  // ✅ Always call hook. It must handle subjectId=null internally.
   const uploads = useProfileUploads({ mode, subjectId })
 
   /* ------------------------------------------------------------
@@ -66,6 +112,10 @@ export function useProfileController() {
     let cancelled = false
 
     async function load() {
+      // Reset loading when subject changes
+      setError('')
+      setProfile(null)
+
       if (!subjectId) {
         setLoading(false)
         return
@@ -79,7 +129,6 @@ export function useProfileController() {
 
       try {
         setLoading(true)
-        setError('')
 
         const mapped = await loadProfileCore({ subjectId, mode })
         if (cancelled) return

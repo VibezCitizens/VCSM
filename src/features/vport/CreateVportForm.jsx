@@ -3,108 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { createVport } from '@/features/vport/model/vport.model';
+import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from '@/features/profiles/kinds/vport/config/vportTypes.config';
 
 const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
-
-const TYPE_GROUPS = {
-  'Arts, Media & Entertainment': [
-    'artist',
-    'creator',
-    'dj',
-    'event planner',
-    'musician',
-    'photographer',
-    'public figure',
-    'videographer',
-  ],
-  'Beauty & Wellness': [
-    'barber',
-    'esthetician',
-    'fitness instructor',
-    'hairstylist',
-    'makeup artist',
-    'massage therapist',
-    'nail technician',
-    'yoga instructor',
-  ],
-  'Education & Care': [
-    'babysitter',
-    'caregiver',
-    'counselor',
-    'elder care',
-    'nanny',
-    'teacher',
-    'therapist',
-    'tutor',
-  ],
-  'Food, Hospitality & Events': [
-    'baker',
-    'bartender',
-    'caterer',
-    'chef',
-    'cook',
-    'restaurant',
-    'server',
-  ],
-  'Health & Medical': [
-    'chiropractor',
-    'dentist',
-    'doctor',
-    'nurse',
-    'nutritionist',
-  ],
-  'Home, Maintenance & Trades': [
-    'carpenter',
-    'cleaning service',
-    'contractor',
-    'electrician',
-    'gardener',
-    'handyman',
-    'landscaper',
-    'mechanic',
-    'painter',
-    'plumber',
-  ],
-  'Professional & Business Services': [
-    'accountant',
-    'bookkeeper',
-    'business',
-    'consultant',
-    'designer',
-    'developer',
-    'engineer',
-    'lawyer',
-    'marketer',
-    'notary',
-    'organization',
-    'real estate',
-  ],
-  'Retail, Sales & Commerce': [
-    'nonprofit',
-    'shop',
-    'vendor',
-  ],
-  'Sports & Fitness': [
-    'athlete',
-    'coach',
-    'trainer',
-  ],
-  'Transport & Logistics': [
-    'courier',
-    'delivery',
-    'driver',
-    'mover',
-    'rideshare',
-    'towing',
-    'truck driver',
-  ],
-  'Animal Care': [
-    'dog walker',
-    'pet sitter',
-  ],
-  Other: ['other'],
-};
 
 function cx(...xs) { return xs.filter(Boolean).join(' '); }
 
@@ -113,7 +15,7 @@ export default function CreateVportForm({ onCreated }) {
   const { user } = useAuth() || {};
 
   const [name, setName] = useState('');
-  const [type, setType] = useState('business');
+  const [type, setType] = useState('other'); // ✅ must be valid
   const [description, setDescription] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState('');
@@ -195,7 +97,7 @@ export default function CreateVportForm({ onCreated }) {
       }
 
       setName('');
-      setType('business');
+      setType('other');
       setAvatarFile(null);
       setAvatarPreview('');
       setAvatarUrl('');

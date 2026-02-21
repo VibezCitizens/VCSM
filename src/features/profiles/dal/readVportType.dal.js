@@ -3,13 +3,13 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
 /**
- * Reads actor kind + vport_type (if actor is vport)
- * Controller decides meaning.
+ * DAL: thin DB adapter only.
+ * Returns raw row shape exactly as selected.
  *
- * Returns:
+ * Raw return shape:
  * {
  *   kind: "user" | "vport",
- *   vport_type: string | null
+ *   vport: { vport_type: string | null } | null
  * }
  */
 export async function readVportTypeDAL(actorId) {
@@ -18,12 +18,7 @@ export async function readVportTypeDAL(actorId) {
   const { data, error } = await supabase
     .schema("vc")
     .from("actors")
-    .select(`
-      kind,
-      vport:vports (
-        vport_type
-      )
-    `)
+    .select("kind,vport:vports(vport_type)")
     .eq("id", actorId)
     .maybeSingle();
 
@@ -32,10 +27,5 @@ export async function readVportTypeDAL(actorId) {
     throw error;
   }
 
-  if (!data) return null;
-
-  return {
-    kind: data.kind,
-    vport_type: data.vport?.vport_type ?? null,
-  };
+  return data ?? null;
 }

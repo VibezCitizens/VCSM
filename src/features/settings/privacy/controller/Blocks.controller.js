@@ -8,6 +8,8 @@
 // - NO hydration here
 // ============================================================
 
+import vc from '@/services/supabase/vcClient'
+
 import {
   dalDeleteBlockByTarget,
   dalInsertBlock,
@@ -20,14 +22,32 @@ import {
   modelBlockRows,
 } from '@/features/settings/privacy/models/blocks.model'
 
+async function resolveVportIdFromActor(actorId) {
+  if (!actorId) return null
+
+  const { data, error } = await vc
+    .from('actors')
+    .select('vport_id, kind')
+    .eq('id', actorId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[Blocks.controller] resolveVportIdFromActor failed', error)
+    return null
+  }
+
+  return data?.vport_id ?? null
+}
+
 // ============================================================
 // LIST MY BLOCKS
 // ============================================================
-export async function ctrlListMyBlocks({ actorId, scope, vportId }) {
+export async function ctrlListMyBlocks({ actorId, scope }) {
   if (!actorId) throw new Error('Missing actorId')
-  if (scope !== 'user' && scope !== 'vport') {
-    throw new Error('Invalid scope')
-  }
+  if (scope !== 'user' && scope !== 'vport') throw new Error('Invalid scope')
+
+  // ✅ actor-first: vport_id resolved internally when needed
+  const vportId = scope === 'vport' ? await resolveVportIdFromActor(actorId) : null
   if (scope === 'vport' && !vportId) {
     throw new Error('Missing vportId for vport scope')
   }
@@ -55,17 +75,15 @@ export async function ctrlBlockActor({
   actorId,
   blockedActorId,
   scope,
-  vportId,
   existingBlockedIds,
 }) {
   if (!actorId) throw new Error('Missing actorId')
   if (!blockedActorId) throw new Error('Missing blockedActorId')
-  if (actorId === blockedActorId) {
-    throw new Error('You cannot block yourself.')
-  }
-  if (scope !== 'user' && scope !== 'vport') {
-    throw new Error('Invalid scope')
-  }
+  if (actorId === blockedActorId) throw new Error('You cannot block yourself.')
+  if (scope !== 'user' && scope !== 'vport') throw new Error('Invalid scope')
+
+  // ✅ actor-first
+  const vportId = scope === 'vport' ? await resolveVportIdFromActor(actorId) : null
   if (scope === 'vport' && !vportId) {
     throw new Error('Missing vportId for vport scope')
   }
@@ -86,14 +104,14 @@ export async function ctrlUnblockActor({
   actorId,
   blockedActorId,
   scope,
-  vportId,
   existingBlockedIds,
 }) {
   if (!actorId) throw new Error('Missing actorId')
   if (!blockedActorId) throw new Error('Missing blockedActorId')
-  if (scope !== 'user' && scope !== 'vport') {
-    throw new Error('Invalid scope')
-  }
+  if (scope !== 'user' && scope !== 'vport') throw new Error('Invalid scope')
+
+  // ✅ actor-first
+  const vportId = scope === 'vport' ? await resolveVportIdFromActor(actorId) : null
   if (scope === 'vport' && !vportId) {
     throw new Error('Missing vportId for vport scope')
   }

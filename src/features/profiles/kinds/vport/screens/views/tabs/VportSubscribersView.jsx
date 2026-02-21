@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/useSubscribers";
+import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/subscribers/useSubscribers";
 import ActorLink from "@/shared/components/ActorLink";
 
 export default function VportSubscribersView({ profile }) {
