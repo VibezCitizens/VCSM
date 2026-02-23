@@ -1,5 +1,98 @@
 // src/features/profiles/config/profileTabs.config.js
 
+const T = (key, label) => ({ key, label });
+
+export const TAB = Object.freeze({
+  VIBES: T("vibes", "Vibes"),
+  PHOTOS: T("photos", "Photos"),
+  ABOUT: T("about", "About"),
+  SUBSCRIBERS: T("subscribers", "Subscribers"),
+  REVIEWS: T("reviews", "Reviews"),
+  MENU: T("menu", "Menu"),
+
+  GAS: T("gas", "Gas"),
+
+  // ✅ NEW
+  SERVICES: T("services", "Services"),
+  RATES: T("rates", "Rates"),
+
+  PORTFOLIO: T("portfolio", "Portfolio"),
+  BOOK: T("book", "Book"),
+});
+
+export const TAB_FLAGS = Object.freeze({
+  // ✅ ENABLE TODAY
+  SERVICES: true,
+  RATES: true,
+
+  PORTFOLIO: false,
+  BOOK: false,
+});
+
+function makeTabs(keys) {
+  return Object.freeze(
+    keys
+      .map((k) => {
+        if (TAB_FLAGS[k] === false) return null;
+        const tab = TAB[k];
+        if (!tab) {
+          console.warn(`[profileTabs] Unknown TAB key: ${k}`);
+          return null;
+        }
+        return tab;
+      })
+      .filter(Boolean)
+  );
+}
+
+export const VPORT_TABS = makeTabs([
+  "VIBES",
+  "PHOTOS",
+  "ABOUT",
+  "SUBSCRIBERS",
+  "REVIEWS",
+]);
+
+export const VPORT_SERVICE_TABS = makeTabs([
+  "ABOUT",
+  "SERVICES",
+  "REVIEWS",
+  "VIBES",
+  "SUBSCRIBERS",
+  "PHOTOS",
+]);
+
+export const VPORT_FOOD_TABS = makeTabs([
+  "MENU",
+  "REVIEWS",
+  "ABOUT",
+  "SERVICES", // ✅ food can also show capabilities
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
+]);
+
+export const VPORT_GAS_TABS = makeTabs([
+  "GAS",
+  "SERVICES", // ✅ gas amenities live here
+  "ABOUT",
+  "REVIEWS",
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
+]);
+
+// ✅ NEW: money exchange / rates-driven layout
+export const VPORT_RATES_TABS = makeTabs([
+  "RATES",
+  "SERVICES",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
+]);
+
 /**
  * Profile Tabs Configuration
  * ==========================
@@ -33,12 +126,7 @@
  */
 
 /**
- * Helper factory for tab objects.
- * @param {string} key   - internal tab key used in routing/state (lowercase string)
- * @param {string} label - user-facing label for UI
- * @returns {{key: string, label: string}}
- */
-const T = (key, label) => ({ key, label });
+
 
 /**
  * TAB catalog
@@ -50,21 +138,7 @@ const T = (key, label) => ({ key, label });
  * - The "key" field (e.g., "services") is what UI/state/routing typically uses.
  * - Keeping WIP tabs here is safe; visibility is controlled by TAB_FLAGS + layouts.
  */
-export const TAB = Object.freeze({
-  VIBES: T("vibes", "Vibes"),
-  PHOTOS: T("photos", "Photos"),
-  ABOUT: T("about", "About"),
-  SUBSCRIBERS: T("subscribers", "Subscribers"),
-  REVIEWS: T("reviews", "Reviews"),
-  MENU: T("menu", "Menu"),
 
-  GAS: T("gas", "Gas"),
-
-  // "shutdown-able" tabs (WIP or gated)
-  SERVICES: T("services", "Services"),
-  PORTFOLIO: T("portfolio", "Portfolio"),
-  BOOK: T("book", "Book"),
-});
 
 /**
  * TAB_FLAGS (Feature Flags)
@@ -79,11 +153,7 @@ export const TAB = Object.freeze({
  * Use case:
  * - Shut down tabs until implementation is ready, then reactivate by flipping to true.
  */
-export const TAB_FLAGS = Object.freeze({
-  SERVICES: false,
-  PORTFOLIO: false,
-  BOOK: false,
-});
+
 
 /**
  * makeTabs(keys)
@@ -94,29 +164,6 @@ export const TAB_FLAGS = Object.freeze({
  *  1) For each key, skip if TAB_FLAGS[key] === false
  *  2) Validate that TAB[key] exists; warn if unknown
  *  3) Return a frozen array of tab objects
- *
- * @param {string[]} keys - array of TAB catalog keys (e.g. ["ABOUT", "PHOTOS"])
- * @returns {ReadonlyArray<{key: string, label: string}>}
- */
-function makeTabs(keys) {
-  return Object.freeze(
-    keys
-      .map((k) => {
-        // Feature flag: if explicitly disabled, skip
-        if (TAB_FLAGS[k] === false) return null;
-
-        // Validate key exists in catalog
-        const tab = TAB[k];
-        if (!tab) {
-          console.warn(`[profileTabs] Unknown TAB key: ${k}`);
-          return null;
-        }
-
-        return tab;
-      })
-      .filter(Boolean)
-  );
-}
 
 /* ============================================================
    BASE LAYOUTS
@@ -134,13 +181,6 @@ function makeTabs(keys) {
  * ----------
  * Default/general VPORT layout (fallback for "Other" group).
  */
-export const VPORT_TABS = makeTabs([
-  "VIBES",
-  "PHOTOS",
-  "ABOUT",
-  "SUBSCRIBERS",
-  "REVIEWS",
-]);
 
 /**
  * VPORT_SERVICE_TABS
@@ -151,44 +191,17 @@ export const VPORT_TABS = makeTabs([
  * - Includes SERVICES/PORTFOLIO/BOOK keys, but they are currently disabled via TAB_FLAGS.
  * - When ready, flip TAB_FLAGS.SERVICES/PORTFOLIO/BOOK to true to show them.
  */
-export const VPORT_SERVICE_TABS = makeTabs([
-  "ABOUT",
-  "SERVICES",
-  "PORTFOLIO",
-  "BOOK",
-  "REVIEWS",
-  "VIBES",
-  "SUBSCRIBERS",
-  "PHOTOS",
-]);
-
 /**
  * VPORT_FOOD_TABS
  * --------------
  * Layout intended for food/hospitality VPORTs (e.g., restaurants, catering).
  */
-export const VPORT_FOOD_TABS = makeTabs([
-  "MENU",
-  "REVIEWS",
-  "ABOUT",
-  "PHOTOS",
-  "VIBES",
-  "SUBSCRIBERS",
-]);
 
 /**
  * VPORT_GAS_TABS
  * --------------
  * Layout intended for gas/fuel VPORTs.
  */
-export const VPORT_GAS_TABS = makeTabs([
-  "GAS",
-  "ABOUT",
-  "REVIEWS",
-  "PHOTOS",
-  "VIBES",
-  "SUBSCRIBERS",
-]);
 
 /* ============================================================
    OPTIONAL NOTES / PENDING (FYI)

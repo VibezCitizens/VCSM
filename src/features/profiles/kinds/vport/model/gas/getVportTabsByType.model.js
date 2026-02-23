@@ -1,10 +1,11 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\model\gas\getVportTabsByType.model.js
+// src/features/profiles/kinds/vport/model/gas/getVportTabsByType.model.js
 
 import {
   VPORT_TABS,
   VPORT_SERVICE_TABS,
   VPORT_FOOD_TABS,
   VPORT_GAS_TABS,
+  VPORT_RATES_TABS, // ✅ ADD
 } from "@/features/profiles/config/profileTabs.config";
 
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
@@ -34,6 +35,9 @@ const GROUP_TABS = Object.freeze({
 
 const TYPE_TABS = Object.freeze({
   "gas station": VPORT_GAS_TABS,
+
+  // ✅ Money Exchange: rates-first layout
+  "exchange": VPORT_RATES_TABS,
 });
 
 export function getVportTabsByType(type) {

@@ -110,6 +110,18 @@ const VportDashboardReviewScreen = lazyWithLog("VportDashboardReviewScreen", () 
   import("@/features/dashboard/vport/screens/VportDashboardReviewScreen")
 );
 
+// ✅ OWNER SERVICES DASHBOARD SCREEN
+const VportDashboardServicesScreen = lazyWithLog(
+  "VportDashboardServicesScreen",
+  () => import("@/features/dashboard/vport/screens/VportDashboardServicesScreen")
+);
+
+// ✅ OWNER EXCHANGE DASHBOARD SCREEN
+const VportDashboardExchangeScreen = lazyWithLog(
+  "VportDashboardExchangeScreen",
+  () => import("@/features/dashboard/vport/screens/VportDashboardExchangeScreen")
+);
+
 const VportSettingsScreen = lazyWithLog("VportSettingsScreen", () =>
   import("@/features/dashboard/vport/screens/VportSettingsScreen")
 );
@@ -282,8 +294,10 @@ export default function AppRoutes() {
 
             VportActorMenuFlyerEditorScreen,
             VportDashboardScreen,
-            VportDashboardGasScreen, // ✅ ADDED
-            VportDashboardReviewScreen, // ✅ ADDED
+            VportDashboardGasScreen,
+            VportDashboardReviewScreen,
+            VportDashboardServicesScreen,
+            VportDashboardExchangeScreen, // ✅ ADDED
             VportSettingsScreen,
 
             // ✅ so protected routes can render these too

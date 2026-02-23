@@ -48,11 +48,21 @@ function VportToActorMenuFlyerRedirect() {
   );
 }
 
-// ✅ NEW: legacy reviews dashboard redirect
+// ✅ legacy reviews dashboard redirect
 function VportToActorDashboardReviewsRedirect() {
   const { actorId } = useParams();
   return actorId ? (
     <Navigate to={`/actor/${actorId}/dashboard/reviews`} replace />
+  ) : (
+    <Navigate to="/feed" replace />
+  );
+}
+
+// ✅ NEW: legacy exchange dashboard redirect
+function VportToActorDashboardExchangeRedirect() {
+  const { actorId } = useParams();
+  return actorId ? (
+    <Navigate to={`/actor/${actorId}/dashboard/exchange`} replace />
   ) : (
     <Navigate to="/feed" replace />
   );
@@ -93,8 +103,10 @@ export function protectedAppRoutes({
   // owner-only (auth only for now)
   VportActorMenuFlyerEditorScreen,
   VportDashboardScreen,
-  VportDashboardGasScreen, // ✅ ADDED
-  VportDashboardReviewScreen, // ✅ ADDED
+  VportDashboardGasScreen,
+  VportDashboardReviewScreen,
+  VportDashboardServicesScreen,
+  VportDashboardExchangeScreen, // ✅ ADDED
   VportSettingsScreen,
 
   // actor-first menu screens (used by dashboard navigation)
@@ -176,6 +188,18 @@ export function protectedAppRoutes({
       element: <VportDashboardReviewScreen />,
     },
 
+    // ✅ OWNER SERVICES DASHBOARD ROUTE
+    {
+      path: "/actor/:actorId/dashboard/services",
+      element: <VportDashboardServicesScreen />,
+    },
+
+    // ✅ OWNER EXCHANGE DASHBOARD ROUTE
+    {
+      path: "/actor/:actorId/dashboard/exchange",
+      element: <VportDashboardExchangeScreen />,
+    },
+
     { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
 
     // ✅ keep /vport/* entrypoints BUT ACTOR-ID ONLY and redirect to /actor/*
@@ -200,6 +224,12 @@ export function protectedAppRoutes({
     {
       path: "/vport/:actorId/dashboard/reviews",
       element: <VportToActorDashboardReviewsRedirect />,
+    },
+
+    // ✅ legacy exchange dashboard redirect (optional but consistent)
+    {
+      path: "/vport/:actorId/dashboard/exchange",
+      element: <VportToActorDashboardExchangeRedirect />,
     },
 
     {

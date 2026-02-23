@@ -1,24 +1,24 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\dashboard\vport\screens\VportDashboardScreen.jsx
+// src/features/dashboard/vport/screens/VportDashboardExchangeScreen.jsx
 
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useIdentity } from "@/state/identity/identityContext";
-
 import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
 
-export function VportDashboardScreen() {
+import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView.jsx";
+import VportRateEditorCard from "@/features/profiles/kinds/vport/screens/rates/components/VportRateEditorCard.jsx";
+import useUpsertVportRate from "@/features/profiles/kinds/vport/hooks/rates/useUpsertVportRate.js";
+
+export function VportDashboardExchangeScreen() {
   const navigate = useNavigate();
   const params = useParams();
-  const { identity } = useIdentity();
 
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
 
   const [publicDetails, setPublicDetails] = useState(null);
   const [headerLoading, setHeaderLoading] = useState(false);
 
-  // ✅ reactive desktop detection
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window === "undefined" || !window.matchMedia) return false;
     return window.matchMedia("(min-width: 821px)").matches;
@@ -69,70 +69,48 @@ export function VportDashboardScreen() {
   const profile = useMemo(() => {
     return {
       displayName:
-        publicDetails?.display_name ?? publicDetails?.name ?? "Dashboard",
+        publicDetails?.display_name ?? publicDetails?.name ?? "Exchange Rates",
       username: publicDetails?.username ?? "",
       tagline: publicDetails?.tagline ?? "",
       bannerUrl: publicDetails?.banner_url ?? publicDetails?.bannerUrl ?? "",
       avatarUrl: publicDetails?.avatar_url ?? publicDetails?.avatarUrl ?? "",
+      actorId: actorId,
+      actor_id: actorId,
     };
-  }, [publicDetails]);
+  }, [publicDetails, actorId]);
 
   const goBack = useCallback(() => {
     if (!actorId) return;
-    navigate(`/profile/${actorId}`);
+    navigate(`/actor/${actorId}/dashboard`);
   }, [navigate, actorId]);
 
-  // ✅ QR Code
-  const openQr = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/menu/qr`);
-  }, [navigate, actorId]);
+  // ---------------------------
+  // ✅ Owner editor state + hook
+  // ---------------------------
+  const [baseCurrency, setBaseCurrency] = useState("USD");
+  const [quoteCurrency, setQuoteCurrency] = useState("MXN");
+  const [buyRate, setBuyRate] = useState("");
+  const [sellRate, setSellRate] = useState("");
+  const [refreshSeed, setRefreshSeed] = useState(0);
 
-  // ✅ Printable Flyer (preview)
-  const openFlyer = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/menu/flyer`);
-  }, [navigate, actorId]);
+  const m = useUpsertVportRate({ actorId, rateType: "fx" });
 
-  // ✅ Edit Flyer
-  const openFlyerEditor = useCallback(() => {
+  const onSave = useCallback(async () => {
     if (!actorId) return;
-    navigate(`/actor/${actorId}/menu/flyer/edit`);
-  }, [navigate, actorId]);
 
-  // ✅ Preview Online Menu (PUBLIC MENU, not flyer)
-  const openOnlineMenuPreview = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/menu`);
-  }, [navigate, actorId]);
+    await m.upsert({
+      actorId,
+      rateType: "fx",
+      baseCurrency,
+      quoteCurrency,
+      buyRate,
+      sellRate,
+    });
 
-  const openSettings = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/settings`);
-  }, [navigate, actorId]);
-
-  const openGasPrices = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/dashboard/gas`);
-  }, [navigate, actorId]);
-
-  // ✅ Exchange Rates (NEW)
-  const openExchangeRates = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/dashboard/exchange`);
-  }, [navigate, actorId]);
-
-  // ✅ Reviews (NEW)
-  const openReviews = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/dashboard/reviews`);
-  }, [navigate, actorId]);
-
-  // ✅ Services (NEW)
-  const openServices = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/dashboard/services`);
-  }, [navigate, actorId]);
+    setBuyRate("");
+    setSellRate("");
+    setRefreshSeed((n) => n + 1); // ✅ force reload of VportRatesView (see note below)
+  }, [m, actorId, baseCurrency, quoteCurrency, buyRate, sellRate]);
 
   if (!actorId) return null;
 
@@ -142,8 +120,6 @@ export function VportDashboardScreen() {
   const avatarImage = profile.avatarUrl?.trim()
     ? `url(${profile.avatarUrl})`
     : null;
-
-  const desktopOnlyLocked = !isDesktop;
 
   const page = {
     minHeight: "100vh",
@@ -198,54 +174,6 @@ export function VportDashboardScreen() {
     letterSpacing: 0.3,
   });
 
-  const cardGrid = {
-    display: "grid",
-    gridTemplateColumns: isDesktop
-      ? "repeat(3, minmax(0, 1fr))"
-      : "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: 12,
-    marginTop: 14,
-  };
-
-  const cardBase = {
-    borderRadius: 18,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.04)",
-    padding: 16,
-    boxShadow: "0 18px 50px rgba(0,0,0,0.45)",
-    userSelect: "none",
-  };
-
-  const badge = {
-    marginTop: 10,
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "6px 10px",
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
-    fontSize: 11,
-    fontWeight: 900,
-    letterSpacing: 0.6,
-    textTransform: "uppercase",
-    color: "rgba(255,255,255,0.75)",
-    width: "fit-content",
-  };
-
-  const cardTitle = {
-    fontSize: 14,
-    fontWeight: 950,
-    letterSpacing: 0.6,
-    textTransform: "uppercase",
-  };
-
-  const cardBody = {
-    marginTop: 8,
-    fontSize: 13,
-    color: "rgba(255,255,255,0.6)",
-    lineHeight: 1.45,
-  };
-
   const content = (
     <div style={page}>
       <div style={container}>
@@ -256,7 +184,7 @@ export function VportDashboardScreen() {
             </button>
 
             <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>
-              VPORT DASHBOARD
+              EXCHANGE RATES
             </div>
 
             <div style={{ width: 110 }} />
@@ -337,120 +265,37 @@ export function VportDashboardScreen() {
                   @{profile.username}
                 </div>
               ) : null}
-
-              {profile.tagline?.trim() ? (
-                <div
-                  style={{
-                    marginTop: 8,
-                    fontSize: 13,
-                    color: "rgba(255,255,255,0.58)",
-                  }}
-                >
-                  {profile.tagline}
-                </div>
-              ) : null}
             </div>
           </div>
 
-          <div style={{ padding: "0 16px 16px 16px" }}>
-            <div style={cardGrid}>
-              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openQr}>
-                <div style={cardTitle}>QR Code</div>
-                <div style={cardBody}>
-                  Open the QR screen for quick scanning and sharing.
-                </div>
-              </div>
+          {/* ✅ OWNER EDITOR CARD */}
+          <div className="px-4 pb-2">
+            <VportRateEditorCard
+              title="Update Rate"
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              buyRate={buyRate}
+              sellRate={sellRate}
+              onChangeBaseCurrency={setBaseCurrency}
+              onChangeQuoteCurrency={setQuoteCurrency}
+              onChangeBuyRate={setBuyRate}
+              onChangeSellRate={setSellRate}
+              onSubmit={onSave}
+              submitting={m.isLoading}
+              error={m.error?.message ?? m.error ?? null}
+              disabled={false}
+            />
+          </div>
 
-              <div
-                style={{
-                  ...cardBase,
-                  cursor: desktopOnlyLocked ? "not-allowed" : "pointer",
-                  opacity: desktopOnlyLocked ? 0.55 : 1,
-                }}
-                onClick={() => {
-                  if (desktopOnlyLocked) return;
-                  openFlyer();
-                }}
-              >
-                <div style={cardTitle}>Printable Flyer</div>
-                <div style={cardBody}>
-                  Open a print-optimized flyer with your QR for your menu.
-                </div>
-                {desktopOnlyLocked ? <div style={badge}>Desktop only</div> : null}
-              </div>
-
-              <div
-                style={{
-                  ...cardBase,
-                  cursor: desktopOnlyLocked ? "not-allowed" : "pointer",
-                  opacity: desktopOnlyLocked ? 0.55 : 1,
-                }}
-                onClick={() => {
-                  if (desktopOnlyLocked) return;
-                  openFlyerEditor();
-                }}
-              >
-                <div style={cardTitle}>Edit Flyer</div>
-                <div style={cardBody}>
-                  Update headline, note, accent color, hours, and images.
-                </div>
-                {desktopOnlyLocked ? <div style={badge}>Desktop only</div> : null}
-              </div>
-
-              <div
-                style={{ ...cardBase, cursor: "pointer" }}
-                onClick={openOnlineMenuPreview}
-              >
-                <div style={cardTitle}>Preview Online Menu</div>
-                <div style={cardBody}>
-                  Preview how your online menu looks to customers.
-                </div>
-              </div>
-
-              {/* ✅ Exchange Rates (NEW CARD) */}
-              <div
-                style={{ ...cardBase, cursor: "pointer" }}
-                onClick={openExchangeRates}
-              >
-                <div style={cardTitle}>Exchange Rates</div>
-                <div style={cardBody}>
-                  View official exchange rates and last updated time.
-                </div>
-              </div>
-
-              {/* ✅ Services (NEW CARD) */}
-              <div
-                style={{ ...cardBase, cursor: "pointer" }}
-                onClick={openServices}
-              >
-                <div style={cardTitle}>Services</div>
-                <div style={cardBody}>
-                  Manage your services and add-ons shown on your profile.
-                </div>
-              </div>
-
-              {/* ✅ Reviews (NEW CARD) */}
-              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openReviews}>
-                <div style={cardTitle}>Reviews</div>
-                <div style={cardBody}>
-                  View and manage your reviews and overall rating.
-                </div>
-              </div>
-
-              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openGasPrices}>
-                <div style={cardTitle}>Gas Prices</div>
-                <div style={cardBody}>
-                  Update official prices and review community suggestions.
-                </div>
-              </div>
-
-              <div style={{ ...cardBase, cursor: "pointer" }} onClick={openSettings}>
-                <div style={cardTitle}>Settings</div>
-                <div style={cardBody}>
-                  Edit public details, hours, highlights, and more.
-                </div>
-              </div>
-            </div>
+          <div style={{ padding: "0 0 6px 0" }}>
+            <VportRatesView
+              profile={profile}
+              actorId={actorId}
+              rateType="fx"
+              title="Exchange Rates"
+              subtitle="Official rates • last updated shown per pair"
+              refreshSeed={refreshSeed}
+            />
           </div>
         </div>
       </div>
@@ -477,4 +322,4 @@ export function VportDashboardScreen() {
   return content;
 }
 
-export default VportDashboardScreen;
+export default VportDashboardExchangeScreen;

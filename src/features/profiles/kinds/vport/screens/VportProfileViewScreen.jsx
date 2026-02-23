@@ -21,7 +21,7 @@ import VportReviewsView from "@/features/profiles/kinds/vport/screens/views/tabs
 import VportMenuView from "@/features/profiles/kinds/vport/screens/views/tabs/VportMenuView";
 
 import VportPortfolioView from "@/features/profiles/kinds/vport/screens/views/tabs/VportPortfolioView";
-import VportServicesView from "@/features/profiles/kinds/vport/screens/views/tabs/VportServicesView";
+import VportServicesView from "@/features/profiles/kinds/vport/screens/services/view/VportServicesView";
 import VportBookingView from "@/features/profiles/kinds/vport/screens/views/tabs/VportBookingView";
 
 import { shareNative } from "@/shared/lib/shareNative";
@@ -39,6 +39,9 @@ import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportO
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
 import { useIdentity } from "@/state/identity/identityContext";
+
+// ✅ NEW: Rates tab view
+import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView";
 
 export default function VportProfileViewScreen({
   viewerActorId,
@@ -338,6 +341,13 @@ export default function VportProfileViewScreen({
 
           {tab === "menu" && (
             <VportMenuView profile={profile} onOpenFoodReview={openFoodReview} />
+          )}
+
+          {/* ✅ NEW: Rates tab */}
+          {tab === "rates" && (
+            <div className="mt-4">
+              <VportRatesView actorId={profileActorId} rateType="fx" />
+            </div>
           )}
 
           {tab === "gas" && (

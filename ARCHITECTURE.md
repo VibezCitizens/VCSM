@@ -104,7 +104,7 @@ Reduces network payload and memory pressure
 
 Enables Postgres covering indexes
 
-Makes DAL output stable and predictable
+Makes DAL output stable and predictable and only File to call database
 
 Rule:
 
@@ -164,13 +164,12 @@ Controller Rules
 
 Controllers may:
 
-Import Supabase (only when needed for orchestration)
 
-Call DAL functions
+
 
 Call Models
 
-Orchestrate multiple DAL calls
+May never Import DAtabase 
 
 Controllers must:
 
@@ -192,7 +191,7 @@ Return raw database rows
 
 Perform routing or navigation
 
-Hook Contract
+_____________________Hook Contract
 Purpose
 
 Hooks manage UI lifecycle and orchestration timing.
@@ -234,7 +233,7 @@ Infer permissions or ownership
 
 Transform domain meaning
 
-Component Contract (New)
+_____________________Component Contract (New)
 Purpose
 
 Components are reusable UI building blocks.
