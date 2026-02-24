@@ -5,10 +5,8 @@ import { Navigate, useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/state/identity/identityContext'
 
-// ✅ supabase for persistence
 import { supabase } from '@/services/supabase/supabaseClient'
 
-// ✅ USE ADAPTER (NOT VIEW)
 import PostCard from '@/features/post/postcard/adapters/PostCard'
 
 import PullToRefresh from '@/shared/components/PullToRefresh'
@@ -16,34 +14,30 @@ import { useFeed } from '@/features/feed/hooks/useFeed'
 
 import DebugPrivacyPanel from './DebugPrivacyPanel'
 
-// ✅ report flow
 import useReportFlow from '@/features/moderation/hooks/useReportFlow'
-
-// ✅ report modal (collect reason)
 import ReportModal from '@/features/moderation/components/ReportModal'
-
-// ✅ post menu
 import PostActionsMenu from '@/features/post/postcard/components/PostActionsMenu'
 
 import { softDeletePostController } from '@/features/post/postcard/controller/deletePost.controller'
 
-// ✅ SHARE (native + modal fallback)
 import { shareNative } from '@/shared/lib/shareNative'
 import ShareModal from '@/features/post/postcard/components/ShareModal'
 
-// ✅ cover component
 import ReportedPostCover from '@/features/moderation/components/ReportThanksOverlay'
 
 export default function CentralFeed() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { identity } = useIdentity()
+  const IS_DEV = import.meta.env.DEV
 
-  console.group('[CentralFeed][IDENTITY DEBUG]')
-  console.log('raw identity:', identity)
-  console.log('actorId:', identity?.actorId ?? null)
-  console.log('realmId:', identity?.realmId ?? null)
-  console.groupEnd()
+  if (IS_DEV) {
+    console.group('[CentralFeed][IDENTITY DEBUG]')
+    console.log('raw identity:', identity)
+    console.log('actorId:', identity?.actorId ?? null)
+    console.log('realmId:', identity?.realmId ?? null)
+    console.groupEnd()
+  }
 
   const actorId = identity?.actorId ?? null
   const realmId = identity?.realmId ?? null
@@ -57,18 +51,16 @@ export default function CentralFeed() {
     hasMore,
     fetchPosts,
     fetchViewer,
-    hiddenPostIds: serverHiddenPostIds, // ✅ persisted source of truth from useFeed
+    hiddenPostIds: serverHiddenPostIds,
   } = useFeed(actorId, realmId)
 
-  /* ============================================================
-     DEBUG
-     ============================================================ */
   useEffect(() => {
-    console.log('[CentralFeed] MOUNT')
-    return () => console.log('[CentralFeed] UNMOUNT')
-  }, [])
+    if (IS_DEV) console.log('[CentralFeed] MOUNT')
+    return () => {
+      if (IS_DEV) console.log('[CentralFeed] UNMOUNT')
+    }
+  }, [IS_DEV])
 
-  // ✅ POST ••• MENU STATE
   const [postMenu, setPostMenu] = useState(null)
 
   const openPostMenu = useCallback(
@@ -127,13 +119,12 @@ export default function CentralFeed() {
       postId: postMenu.postId,
       dedupeKey: `report:post:${postMenu.postId}`,
       title: 'Report Vibe',
-      subtitle: 'Tell us what’s wrong with this Vibe.',
+      subtitle: 'Tell us what is wrong with this Vibe.',
     })
 
     closePostMenu()
   }, [actorId, postMenu, reportFlow, closePostMenu])
 
-  // ✅ Persist "hide for me" on server
   const persistHideForMe = useCallback(
     async (postId) => {
       if (!actorId || !postId) return
@@ -153,7 +144,6 @@ export default function CentralFeed() {
     [actorId]
   )
 
-  // ✅ Report submit: persist hide (server will rehydrate cover after refresh)
   const handleReportSubmit = useCallback(
     async (payload) => {
       const targetPostId =
@@ -167,8 +157,6 @@ export default function CentralFeed() {
 
         if (targetPostId) {
           await persistHideForMe(targetPostId)
-
-          // ✅ refresh feed so serverHiddenPostIds includes it immediately
           await fetchPosts(true)
         }
 
@@ -181,14 +169,11 @@ export default function CentralFeed() {
   )
 
   const [search] = useSearchParams()
-  const debugPrivacy = (search.get('debug') || '').toLowerCase() === 'privacy'
+  const debugPrivacy = IS_DEV && (search.get('debug') || '').toLowerCase() === 'privacy'
 
   const ptrRef = useRef(null)
   const sentinelRef = useRef(null)
 
-  /* ============================================================
-     SHARE
-     ============================================================ */
   const [shareState, setShareState] = useState({
     open: false,
     postId: null,
@@ -213,17 +198,11 @@ export default function CentralFeed() {
     [posts]
   )
 
-  /* ============================================================
-     VIEWER CONTEXT
-     ============================================================ */
   useEffect(() => {
     if (!actorId) return
     fetchViewer()
   }, [actorId, fetchViewer])
 
-  /* ============================================================
-     INFINITE SCROLL
-     ============================================================ */
   const observeMore = useCallback(() => {
     const root = ptrRef.current
     const sentinel = sentinelRef.current
@@ -250,18 +229,12 @@ export default function CentralFeed() {
 
   useEffect(() => observeMore(), [observeMore])
 
-  /* ============================================================
-     PULL TO REFRESH
-     ============================================================ */
   const handleRefresh = useCallback(async () => {
     ptrRef.current?.scrollTo({ top: 0, behavior: 'auto' })
     await fetchViewer()
     await fetchPosts(true)
   }, [fetchViewer, fetchPosts])
 
-  /* ============================================================
-     RENDER
-     ============================================================ */
   if (!user) return <Navigate to="/login" replace />
 
   return (
@@ -273,51 +246,51 @@ export default function CentralFeed() {
       className="h-screen overflow-y-auto bg-black text-white px-0 py-2"
     >
       {viewerIsAdult === null && (
-        <p className="text-center text-gray-400 mt-6">Loading your feed…</p>
+        <p className="text-center text-gray-400 mt-6">Loading your feed...</p>
       )}
 
       {viewerIsAdult !== null && !loading && posts.length === 0 && (
         <p className="text-center text-gray-400">No Vibes found.</p>
       )}
 
-   {posts.map((post) => {
-  const hiddenServer =
-    !!post.is_hidden_for_viewer || (serverHiddenPostIds?.has?.(post.id) ?? false)
+      {posts.map((post) => {
+        const hiddenServer =
+          !!post.is_hidden_for_viewer || (serverHiddenPostIds?.has?.(post.id) ?? false)
 
-  const covered = hiddenServer
+        const covered = hiddenServer
 
-  // ✅ DEBUG: confirm mentionMap for each post
-  console.log("[CentralFeed][post mention debug]", {
-    postId: post.id,
-    text: post.text,
-    mentionMapKeys: Object.keys(post.mentionMap || {}),
-  })
+        if (IS_DEV) {
+          console.log('[CentralFeed][post mention debug]', {
+            postId: post.id,
+            text: post.text,
+            mentionMapKeys: Object.keys(post.mentionMap || {}),
+          })
+        }
 
-  return (
-    <div key={`post:${post.id}`} className="mb-2 last:mb-0">
-      <PostCard
-        post={{
-          ...post,
-          actorId:
-            post.actor?.actor_id ??
-            post.actor?.actorId ??
-            post.actorId ??
-            post.actor_id ??
-            null,
-        }}
-        onOpenPost={() => {
-          if (covered) return
-          navigate(`/post/${post.id}`)
-        }}
-        onOpenMenu={openPostMenu}
-        onShare={handleShare}
-        covered={covered}
-        cover={covered ? <ReportedPostCover /> : null}
-      />
-    </div>
-  )
-})}
-
+        return (
+          <div key={`post:${post.id}`} className="mb-2 last:mb-0">
+            <PostCard
+              post={{
+                ...post,
+                actorId:
+                  post.actor?.actor_id ??
+                  post.actor?.actorId ??
+                  post.actorId ??
+                  post.actor_id ??
+                  null,
+              }}
+              onOpenPost={() => {
+                if (covered) return
+                navigate(`/post/${post.id}`)
+              }}
+              onOpenMenu={openPostMenu}
+              onShare={handleShare}
+              covered={covered}
+              cover={covered ? <ReportedPostCover /> : null}
+            />
+          </div>
+        )
+      })}
 
       <PostActionsMenu
         open={!!postMenu}
@@ -345,7 +318,7 @@ export default function CentralFeed() {
         onClose={closeShare}
       />
 
-      {debugPrivacy && <DebugPrivacyPanel userId={actorId} posts={posts} />}
+      {debugPrivacy && <DebugPrivacyPanel actorId={actorId} posts={posts} />}
 
       {loading && posts.length === 0 && (
         <div className="space-y-3 px-4">
@@ -356,7 +329,7 @@ export default function CentralFeed() {
       )}
 
       {loading && posts.length > 0 && (
-        <p className="text-center text-white">Loading more…</p>
+        <p className="text-center text-white">Loading more...</p>
       )}
 
       {!hasMore && !loading && posts.length > 0 && (

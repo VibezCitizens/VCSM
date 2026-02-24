@@ -9,7 +9,6 @@ import SearchBar from '@/features/explore/ui/SearchBar'
 import FilterTabs from '@/features/explore/ui/FilterTabs'
 import ExploreFeed from '@/features/explore/ui/ExploreFeed'
 import ResultList from '@/features/explore/ui/ResultList'
-import EmptyState from '@/features/explore/ui/EmptyState'
 
 /**
  * ExploreView
@@ -70,11 +69,6 @@ export default function ExploreView({
           <>
             <ExploreFeed />
           </>
-        )}
-
-        {/* Empty fallback */}
-        {isSearching && query.length > 2 && false && (
-          <EmptyState />
         )}
 
       </main>

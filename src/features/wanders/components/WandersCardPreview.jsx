@@ -5,7 +5,7 @@
 // No DAL, no controllers, no derived permissions.
 // ============================================================================
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { templates } from "@/features/wanders/components/cardstemplates/registry";
 
 /**
@@ -140,7 +140,7 @@ function findTemplateWithAliases(templateId) {
  * Convert a DB card row / payload into the shape your templates expect:
  * { toName, fromName, message, sendAnonymously, accent?, company?, ... }
  */
-function toTemplateData({ templateKey, isAnonymous, customization, messageText, toName, fromName }) {
+function toTemplateData({ isAnonymous, customization, messageText, toName, fromName }) {
   const data = {
     toName: (toName ?? "").toString(),
     fromName: (fromName ?? "").toString(),
@@ -256,7 +256,7 @@ export function WandersCardPreview({
   const registryTemplate = registryDebug?.tpl ?? null;
 
   // ✅ DEBUG LOGS
-  useMemo(() => {
+  useEffect(() => {
     try {
       const k = normalizeTemplateKey(view.templateKey);
       const keys = listRegistryKeys();
@@ -279,39 +279,40 @@ export function WandersCardPreview({
     }
   }, [view.templateKey, registryDebug, registryTemplate, view.customization]);
 
-  if (registryTemplate?.Preview) {
-    const data = toTemplateData({
-      templateKey: view.templateKey,
+  const data = useMemo(() => {
+    if (!registryTemplate?.Preview) return null;
+    return toTemplateData({
       isAnonymous: view.isAnonymous,
       customization: view.customization,
       messageText: view.messageText,
       toName: view.toName,
       fromName: view.fromName,
     });
+  }, [
+    registryTemplate,
+    view.isAnonymous,
+    view.customization,
+    view.messageText,
+    view.toName,
+    view.fromName,
+  ]);
 
-    useMemo(() => {
-      try {
-        console.log("[WandersCardPreview] template data =", {
-          templateKey: view.templateKey,
-          toName: data?.toName,
-          fromName: data?.fromName,
-          title: data?.title,
-          message: data?.message,
-          imageUrl: data?.imageUrl,
-          imageDataUrlLen: typeof data?.imageDataUrl === "string" ? data.imageDataUrl.length : 0,
-        });
-      } catch {
-        // ignore
-      }
-    }, [view.templateKey, data]);
-
-    // keep your external className passthrough (if you have app CSS)
-    return (
-      <div className={className} style={{ width: "100%" }}>
-        <registryTemplate.Preview data={data} />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!data) return;
+    try {
+      console.log("[WandersCardPreview] template data =", {
+        templateKey: view.templateKey,
+        toName: data?.toName,
+        fromName: data?.fromName,
+        title: data?.title,
+        message: data?.message,
+        imageUrl: data?.imageUrl,
+        imageDataUrlLen: typeof data?.imageDataUrl === "string" ? data.imageDataUrl.length : 0,
+      });
+    } catch {
+      // ignore
+    }
+  }, [view.templateKey, data]);
 
   // ---------------------------------------------------------------------------
   // 2) Fallback: generic preview (NO tailwind)
@@ -333,7 +334,8 @@ export function WandersCardPreview({
   const isMystery = view.templateKey === "mystery";
   const hasImage = !!bgImage;
 
-  useMemo(() => {
+  useEffect(() => {
+    if (registryTemplate?.Preview) return;
     try {
       console.warn("[WandersCardPreview] FALLBACK used (no registry template)", {
         templateKey: view.templateKey,
@@ -346,7 +348,16 @@ export function WandersCardPreview({
     } catch {
       // ignore
     }
-  }, [view.templateKey, registryDebug, hasImage, bgImage]);
+  }, [view.templateKey, registryDebug, hasImage, bgImage, registryTemplate]);
+
+  if (registryTemplate?.Preview && data) {
+    // keep your external className passthrough (if you have app CSS)
+    return (
+      <div className={className} style={{ width: "100%" }}>
+        <registryTemplate.Preview data={data} />
+      </div>
+    );
+  }
 
   const styles = {
     wrapper: {

@@ -9,6 +9,8 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from '@/services/supabase/supabaseClient'; //transfer
 
 export default function DebugPrivacyPanel({ actorId, posts }) {
+  const isDev = import.meta.env.DEV;
+
   const [rows, setRows] = useState([]);
 
   // Extract post ids for efficient querying
@@ -18,6 +20,11 @@ export default function DebugPrivacyPanel({ actorId, posts }) {
     let cancelled = false;
 
     (async () => {
+      if (!isDev) {
+        setRows([]);
+        return;
+      }
+
       if (!actorId || postIds.length === 0) {
         setRows([]);
         return;
@@ -145,9 +152,9 @@ export default function DebugPrivacyPanel({ actorId, posts }) {
     return () => {
       cancelled = true;
     };
-  }, [actorId, postIds.join("|")]);
+  }, [actorId, postIds, isDev]);
 
-  if (!rows.length) return null;
+  if (!isDev || !rows.length) return null;
 
   return (
     <div className="mt-3 mx-3 rounded-xl border border-fuchsia-500/40 bg-fuchsia-900/10 p-2">

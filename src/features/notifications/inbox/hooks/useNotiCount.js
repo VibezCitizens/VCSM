@@ -4,6 +4,47 @@ import { getUnreadNotificationCount } from '../controller/notificationsCount.con
 const UUID_RX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
+const NOTI_CACHE_TTL_MS = 15_000
+const notiCountCache = new Map()
+const notiCountInflight = new Map()
+
+function getCachedNotiCount(actorId) {
+  const hit = notiCountCache.get(actorId)
+  if (!hit) return null
+  if (Date.now() > hit.expiresAt) {
+    notiCountCache.delete(actorId)
+    return null
+  }
+  return hit.count
+}
+
+function setCachedNotiCount(actorId, count) {
+  notiCountCache.set(actorId, {
+    count,
+    expiresAt: Date.now() + NOTI_CACHE_TTL_MS,
+  })
+}
+
+async function loadNotiCount(actorId) {
+  const cached = getCachedNotiCount(actorId)
+  if (cached != null) return cached
+
+  const inflight = notiCountInflight.get(actorId)
+  if (inflight) return inflight
+
+  const pending = getUnreadNotificationCount(actorId)
+    .then((count) => {
+      setCachedNotiCount(actorId, count)
+      return count
+    })
+    .finally(() => {
+      notiCountInflight.delete(actorId)
+    })
+
+  notiCountInflight.set(actorId, pending)
+  return pending
+}
+
 /**
  * useNotiCount
  *
@@ -20,23 +61,21 @@ export default function useNotiCount({
   const pollRef = useRef(null)
   const lastActorRef = useRef(null)
 
-  const log = (...a) => debug && console.log('[useNotiCount]', ...a)
-
   const validActor =
     typeof actorId === 'string' && UUID_RX.test(actorId)
 
   const fetchCount = useCallback(async () => {
     if (!validActor) {
-      log('skip fetch (invalid actorId)', actorId)
+      if (debug) console.log('[useNotiCount] skip fetch (invalid actorId)', actorId)
       setCount(0)
       return
     }
 
-    log('fetch start', actorId)
+    if (debug) console.log('[useNotiCount] fetch start', actorId)
 
     try {
-      const c = await getUnreadNotificationCount(actorId)
-      log('fetch done →', c)
+      const c = await loadNotiCount(actorId)
+      if (debug) console.log('[useNotiCount] fetch done ->', c)
       setCount(c)
     } catch (e) {
       console.error('[useNotiCount] fetch error', e)

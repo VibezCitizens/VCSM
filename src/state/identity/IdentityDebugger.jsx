@@ -2,15 +2,13 @@ import { useState } from 'react'
 import { useIdentity } from './identityContext'
 
 export default function IdentityDebugger() {
+  const isDev = import.meta.env.DEV
   const { identity, loading } = useIdentity()
   const [open, setOpen] = useState(false)
-
-  // ✅ Never show in production build
-  if (import.meta.env.PROD) return null
+  if (!isDev) return null
 
   return (
     <>
-      {/* COLLAPSED TOGGLE BUTTON */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
@@ -36,7 +34,6 @@ export default function IdentityDebugger() {
         </button>
       )}
 
-      {/* EXPANDED DEBUG PANEL */}
       {open && (
         <div
           style={{
@@ -69,7 +66,7 @@ export default function IdentityDebugger() {
                 fontSize: 12,
               }}
             >
-              ✕
+              x
             </button>
           </div>
 

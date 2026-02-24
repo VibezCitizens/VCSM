@@ -8,13 +8,14 @@ function readCssVar(name) {
 }
 
 export default function IOSDebugHUD() {
+  const isDev = import.meta.env.DEV
   const [open, setOpen] = useState(false)
   const [tick, setTick] = useState(0)
-
-  if (!isIOS()) return null
-  if (typeof document === 'undefined') return null
+  const ios = isIOS()
+  const isBrowser = typeof document !== 'undefined'
 
   const mountNode = useMemo(() => {
+    if (!isDev || !ios || !isBrowser) return null
     const el = document.createElement('div')
     el.setAttribute('data-ios-debug-hud', 'true')
     // ✅ ensure it always sits above your app
@@ -23,9 +24,10 @@ export default function IOSDebugHUD() {
     el.style.pointerEvents = 'none'
     el.style.zIndex = '2147483647'
     return el
-  }, [])
+  }, [isDev, ios, isBrowser])
 
   useEffect(() => {
+    if (!mountNode) return undefined
     document.body.appendChild(mountNode)
     return () => {
       mountNode.remove()
@@ -33,6 +35,7 @@ export default function IOSDebugHUD() {
   }, [mountNode])
 
   useEffect(() => {
+    if (!isDev || !ios || !isBrowser) return undefined
     if (!open) return
 
     const vv = window.visualViewport
@@ -62,7 +65,9 @@ export default function IOSDebugHUD() {
       window.removeEventListener('orientationchange', schedule)
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [open])
+  }, [open, isDev, ios, isBrowser])
+
+  if (!isDev || !ios || !isBrowser || !mountNode) return null
 
   const vvTop = window.visualViewport?.offsetTop ?? null
   const vvHeight = window.visualViewport?.height ?? null

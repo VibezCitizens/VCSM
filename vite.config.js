@@ -7,7 +7,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // NOTE: CSP removed for dev per request.
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -18,6 +18,7 @@ export default defineConfig({
   },
 
   build: { target: 'esnext' },
+  esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : undefined,
 
   // Make the dev server reachable from your phone
   server: {
@@ -59,4 +60,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+}))

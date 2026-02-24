@@ -5,6 +5,56 @@ import { searchDal } from '@/features/explore/dal/search.dal'
 
 const FILTERS = ['all', 'users', 'vports', 'Voxs', 'videos', 'groups']
 const LS_KEY = 'search:lastFilter'
+const SEARCH_CACHE_TTL_MS = 45_000
+const SEARCH_CACHE_MAX_ENTRIES = 120
+
+const searchResultCache = new Map()
+const searchInflight = new Map()
+
+function getSearchCacheKey(query, filter) {
+  return `${filter}:${String(query || '').trim().toLowerCase()}`
+}
+
+function readSearchCache(key) {
+  const hit = searchResultCache.get(key)
+  if (!hit) return null
+  if (Date.now() > hit.expiresAt) {
+    searchResultCache.delete(key)
+    return null
+  }
+  return hit.results
+}
+
+function writeSearchCache(key, results) {
+  searchResultCache.set(key, {
+    results,
+    expiresAt: Date.now() + SEARCH_CACHE_TTL_MS,
+  })
+
+  if (searchResultCache.size <= SEARCH_CACHE_MAX_ENTRIES) return
+  const oldestKey = searchResultCache.keys().next().value
+  if (oldestKey) searchResultCache.delete(oldestKey)
+}
+
+async function loadSearchCached(key, loader) {
+  const cached = readSearchCache(key)
+  if (cached) return cached
+
+  const inflight = searchInflight.get(key)
+  if (inflight) return inflight
+
+  const promise = loader()
+    .then((results) => {
+      writeSearchCache(key, results)
+      return results
+    })
+    .finally(() => {
+      searchInflight.delete(key)
+    })
+
+  searchInflight.set(key, promise)
+  return promise
+}
 
 // ============================================================
 // Search Screen Controller (ACTOR-FIRST)
@@ -85,6 +135,16 @@ export function useSearchScreenController() {
     async function run() {
       if (!debounced) {
         setResults([])
+        setError(null)
+        return
+      }
+
+      const cacheKey = getSearchCacheKey(debounced, filter)
+      const cached = readSearchCache(cacheKey)
+      if (cached) {
+        setError(null)
+        setLoading(false)
+        setResults(cached)
         return
       }
 
@@ -92,24 +152,25 @@ export function useSearchScreenController() {
       setError(null)
 
       try {
-        const calls = searchDal(debounced, filter, {})
-        const responses = await Promise.all(calls)
+        const merged = await loadSearchCached(cacheKey, async () => {
+          const calls = searchDal(debounced, filter, {})
+          const responses = await Promise.all(calls)
+
+          const flat = responses.flat()
+          const normalized = flat
+            .map(normalizeResult)
+            .filter(Boolean)
+
+          const features = buildFeatureResults(debounced, filter)
+            .map(normalizeResult)
+            .filter(Boolean)
+
+          // features first
+          return dedupeByKindAndId([...features, ...normalized])
+        })
 
         if (cancelled) return
-
-        const flat = responses.flat()
-        const normalized = flat
-          .map(normalizeResult)
-          .filter(Boolean)
-
-        const features = buildFeatureResults(debounced, filter)
-          .map(normalizeResult)
-          .filter(Boolean)
-
-        // features first
-        const merged = [...features, ...normalized]
-
-        setResults(dedupeByKindAndId(merged))
+        setResults(merged)
       } catch (e) {
         if (!cancelled) {
           setError(e)
@@ -170,7 +231,6 @@ export function normalizeResult(item) {
       return {
         result_type: 'actor', // Citizen
         actor_id: item.actor_id,
-        user_id: item.user_id ?? null,
         display_name: item.display_name ?? '',
         username: item.username ?? '',
         photo_url: item.photo_url ?? '/avatar.jpg',

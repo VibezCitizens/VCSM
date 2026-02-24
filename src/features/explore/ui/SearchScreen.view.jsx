@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react'
+import { Search, X } from 'lucide-react'
 import { useSearchActor } from '../hooks/useSearchActor'
 import ResultList from './ResultList'
 
@@ -15,23 +16,29 @@ export default function SearchScreen() {
 
   return (
     <div className="module-modern-shell w-full rounded-2xl px-4 pt-[calc(env(safe-area-inset-top)+12px)] pb-4">
-      <div className="relative mb-3 sm:mb-4">
+      <div className="module-modern-search-shell relative mb-3 sm:mb-4">
+        <Search
+          size={18}
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+          aria-hidden="true"
+        />
+
         <input
           type="text"
-          placeholder="Search Citizens, Vports, Vibes..."
+          placeholder="Search citizens, vports, vibes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="module-modern-input w-full rounded-2xl px-4 py-2 pr-10"
+          className="module-modern-input w-full rounded-[14px] py-3 pl-10 pr-10 text-[17px]"
         />
 
         {canClear && (
           <button
             type="button"
             onClick={() => setQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-slate-400 transition hover:bg-slate-800/60 hover:text-slate-100"
             aria-label="Clear"
           >
-            x
+            <X size={15} />
           </button>
         )}
       </div>

@@ -11,8 +11,8 @@ export default function RootLayout() {
   const { pathname } = useLocation()
 
   // ✅ any chat route (/chat, /chat/settings, /chat/spam, etc)
-  const isChatRoute = /^\/(vport\/)?chat(\/.*)?$/.test(pathname)
-  const isChatInboxRoot = /^\/(vport\/)?chat$/.test(pathname)
+  const isChatRoute = /^\/chat(\/.*)?$/.test(pathname)
+  const isChatInboxRoot = pathname === '/chat'
   const isChatSubScreen = isChatRoute && !isChatInboxRoot
 
   const isAuthRoute = ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
@@ -30,7 +30,7 @@ export default function RootLayout() {
   const mainClass =
     hideTopNav || hideBottomNav
       ? 'flex-1 min-h-0 overflow-y-auto'
-      : 'flex-1 min-h-0 overflow-y-auto pt-[calc(48px+env(safe-area-inset-top))] pb-[calc(64px+env(safe-area-inset-bottom))]'
+      : 'flex-1 min-h-0 overflow-y-auto pt-[calc(48px+env(safe-area-inset-top))] pb-[calc(56px+env(safe-area-inset-bottom))]'
 
   return (
     <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">

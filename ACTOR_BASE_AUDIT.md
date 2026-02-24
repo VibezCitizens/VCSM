@@ -1,0 +1,227 @@
+# Actor-Base Audit
+
+Generated: 2026-02-24 16:56:56
+Total matches: 896
+
+## Matches By Pattern
+- /vport/: 334
+- vportId: 134
+- user_id: 103
+- vport_id: 87
+- userId: 86
+- profileId: 78
+- profile_id: 74
+
+## Top Files To Migrate (By Match Count)
+- .\src\features\profiles\screens\views\tabs\post\dal\fetchPostsForActor.dal.js: 23
+- .\src\features\explore\dal\search.data.js: 18
+- .\src\features\settings\privacy\controller\Blocks.controller.js: 17
+- .\src\features\feed\model\buildMentionMaps.js: 16
+- .\src\features\post\postcard\hooks\usePostDetailPost.js: 16
+- .\src\features\profiles\kinds\vport\dal\review\vportReviewAuthors.read.dal.js: 16
+- .\src\features\post\bridge\profilePosts.bridge.js: 16
+- .\src\app\routes\protected\app.routes.jsx: 15
+- .\src\features\profiles\kinds\vport\screens\VportProfileViewScreen.jsx: 15
+- .\src\features\feed\screens\DebugPrivacyPanel.jsx: 15
+- .\src\features\feed\dal\feed.mentions.dal.js: 14
+- .\src\state\identity\actorResolver.js: 14
+- .\src\features\profiles\kinds\vport\debug\reviewAuthorVisibility.debug.js: 14
+- .\src\features\upload\dal\findPostMentionsByPostIds.js: 13
+- .\src\features\settings\account\controller\Account.controller.jsx: 13
+- .\src\features\wanders\core\controllers\replies.controller.js: 12
+- .\src\features\upload\dal\findActorsByHandles.js: 12
+- .\src\state\identity\identityContext.jsx: 12
+- .\src\features\feed\dal\feed.read.actorsBundle.dal.js: 11
+- .\src\features\notifications\inbox\lib\resolveSenders.js: 11
+- .\src\features\feed\hooks\useFeed.js: 11
+- .\src\features\settings\profile\controller\Profile.controller.jsx: 10
+- .\src\features\wanders\core\dal\read\mailbox.read.dal.js: 10
+- .\src\features\vport\model\vport.model.js: 9
+- .\src\features\dashboard\vport\screens\VportSettingsScreen.jsx: 9
+- .\src\app\routes\index.jsx: 9
+- .\src\features\profiles\kinds\vport\screens\menu\components\VportActorMenuManagePanel.jsx: 8
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx: 8
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx: 7
+- .\src\features\settings\profile\controller\VportPublicDetails.controller.jsx: 7
+- .\src\features\profiles\kinds\vport\controller\gas\submitFuelPriceSuggestion.controller.js: 7
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx: 7
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx: 7
+- .\src\features\notifications\inbox\lib\resolveInboxActor.js: 7
+- .\src\features\auth\screens\Onboarding.jsx: 7
+- .\src\features\profiles\kinds\vport\controller\services\getVportServices.controller.js: 7
+- .\src\features\profiles\kinds\vport\dal\services\readVportTypeByActorId.js: 6
+- .\src\features\profiles\kinds\vport\controller\gas\getVportGasPrices.controller.js: 6
+- .\src\features\wanders\core\dal\write\userFingerprints.write.dal.js: 6
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js: 6
+- .\src\features\profiles\kinds\vport\screens\services\view\VportServicesView.jsx: 6
+- .\src\features\auth\dal\actorCreate.dal.js: 6
+- .\src\features\profiles\kinds\vport\controller\gas\reviewFuelPriceSuggestion.controller.js: 6
+- .\src\features\auth\controllers\createUserActor.controller.js: 6
+- .\src\features\profiles\kinds\vport\controller\review\VportReviews.controller.js: 6
+- .\src\features\wanders\core\controllers\cards.controller.js: 6
+- .\src\features\actors\controllers\hydrateActors.controller.js: 6
+- .\src\features\profiles\kinds\vport\controller\menu\saveVportActorMenuItem.controller.js: 6
+- .\src\features\profiles\kinds\vport\controller\menu\getVportActorMenu.controller.js: 6
+- .\src\features\profiles\kinds\vport\controller\menu\saveVportActorMenuCategory.controller.js: 5
+- .\src\features\dashboard\flyerBuilder\designStudio\controller\designStudio.shared.controller.js: 5
+- .\src\features\profiles\kinds\vport\dal\rates\actorOwners.read.dal.js: 5
+- .\src\features\auth\screens\RegisterScreen.jsx: 5
+- .\src\features\wanders\core\dal\write\mailbox.write.dal.js: 5
+- .\src\features\settings\profile\hooks\useProfileUploads.js: 5
+- .\src\features\chat\z\chat.md: 5
+- .\src\features\settings\profile\dal\vportPublicDetails.write.dal.js: 5
+- .\src\features\dashboard\vport\screens\VportDashboardServicesScreen.jsx: 5
+- .\src\features\dashboard\vport\screens\VportDashboardReviewScreen.jsx: 5
+- .\src\features\vport\CreateVportForm.jsx: 5
+
+## Sample Findings (first 150)
+- .\src\app\routes\index.jsx:103 :: import("@/features/dashboard/vport/screens/VportDashboardScreen")
+- .\src\app\routes\index.jsx:108 :: import("@/features/dashboard/vport/screens/VportDashboardGasScreen")
+- .\src\app\routes\index.jsx:113 :: import("@/features/dashboard/vport/screens/VportDashboardReviewScreen")
+- .\src\app\routes\index.jsx:119 :: () => import("@/features/dashboard/vport/screens/VportDashboardServicesScreen")
+- .\src\app\routes\index.jsx:125 :: () => import("@/features/dashboard/vport/screens/VportDashboardExchangeScreen")
+- .\src\app\routes\index.jsx:129 :: import("@/features/dashboard/vport/screens/VportSettingsScreen")
+- .\src\app\routes\index.jsx:134 :: import("@/features/profiles/kinds/vport/screens/gas/screens/VportGasPricesScreen")
+- .\src\app\routes\index.jsx:139 :: import("@/features/profiles/kinds/vport/screens/VportMenuRedirectScreen")
+- .\src\app\routes\index.jsx:143 :: import("@/features/profiles/kinds/vport/screens/menu/VportActorMenuPublicScreen")
+- .\src\app\routes\protected\app.routes.jsx:26 :: return actorId ? <Navigate to={`/ads/vport/${actorId}`} replace /> : <Navigate to="/feed" replace />;
+- .\src\app\routes\protected\app.routes.jsx:146 :: { path: "/vport/inbox", element: <Navigate to="/chat" replace /> },
+- .\src\app\routes\protected\app.routes.jsx:147 :: { path: "/vport/chat/:conversationId", element: <ChatConversationScreen /> },
+- .\src\app\routes\protected\app.routes.jsx:148 :: { path: "/vport/chat", element: <Navigate to="/chat" replace /> },
+- .\src\app\routes\protected\app.routes.jsx:152 :: path: "/vport/notifications",
+- .\src\app\routes\protected\app.routes.jsx:159 :: { path: "/ads/vport/:actorId", element: <VportAdsSettingsScreen /> },
+- .\src\app\routes\protected\app.routes.jsx:212 :: // ? keep /vport/* entrypoints BUT ACTOR-ID ONLY and redirect to /actor/*
+- .\src\app\routes\protected\app.routes.jsx:214 :: path: "/vport/:actorId/menu/qr",
+- .\src\app\routes\protected\app.routes.jsx:218 :: path: "/vport/:actorId/menu/flyer",
+- .\src\app\routes\protected\app.routes.jsx:222 :: path: "/vport/:actorId/menu/flyer/edit",
+- .\src\app\routes\protected\app.routes.jsx:226 :: path: "/vport/:actorId/dashboard",
+- .\src\app\routes\protected\app.routes.jsx:232 :: path: "/vport/:actorId/dashboard/reviews",
+- .\src\app\routes\protected\app.routes.jsx:238 :: path: "/vport/:actorId/dashboard/exchange",
+- .\src\app\routes\protected\app.routes.jsx:243 :: path: "/vport/:actorId/settings",
+- .\src\app\routes\protected\app.routes.jsx:246 :: { path: "/vport/:actorId/ads", element: <VportToActorAdsRedirect /> },
+- .\src\features\actors\controllers\hydrateActors.controller.js:20 :: .select("id, kind, profile_id, vport_id")
+- .\src\features\actors\controllers\hydrateActors.controller.js:25 :: const profileIds = actors.filter(a => a.kind === 'user' && a.profile_id).map(a => a.profile_id);
+- .\src\features\actors\controllers\hydrateActors.controller.js:26 :: const vportIds = actors.filter(a => a.kind === 'vport' && a.vport_id).map(a => a.vport_id);
+- .\src\features\actors\controllers\hydrateActors.controller.js:29 :: profileIds.length ? supabase.from("profiles").select("*").in("id", profileIds) : { data: [] },
+- .\src\features\actors\controllers\hydrateActors.controller.js:30 :: vportIds.length ? supabase.schema("vc").from("vports").select("*").in("id", vportIds) : { data: [] }
+- .\src\features\actors\controllers\hydrateActors.controller.js:38 :: const meta = isUser ? profileMap[a.profile_id] : vportMap[a.vport_id];
+- .\src\features\ads\screens\VportAdsSettingsScreen.jsx:10 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\ads\screens\VportAdsSettingsScreen.jsx:11 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\ads\screens\VportAdsSettingsScreen.jsx:12 :: import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+- .\src\features\auth\controllers\createUserActor.controller.js:15 :: export async function createUserActorForProfile({ profileId, userId }) {
+- .\src\features\auth\controllers\createUserActor.controller.js:16 :: if (!profileId \\|\\| !userId) {
+- .\src\features\auth\controllers\createUserActor.controller.js:17 :: throw new Error('profileId and userId are required')
+- .\src\features\auth\controllers\createUserActor.controller.js:21 :: let actor = await dalGetActorByProfile(profileId)
+- .\src\features\auth\controllers\createUserActor.controller.js:24 :: actor = await dalCreateUserActor(profileId)
+- .\src\features\auth\controllers\createUserActor.controller.js:29 :: await dalCreateActorOwner(actor.id, userId)
+- .\src\features\auth\controllers\profile.controller.js:5 :: export async function ensureProfileDiscoverable(profileId) {
+- .\src\features\auth\controllers\profile.controller.js:6 :: const row = await dalGetProfileDiscoverable(profileId)
+- .\src\features\auth\controllers\profile.controller.js:18 :: .eq('id', profileId)
+- .\src\features\auth\dal\actorCreate.dal.js:8 :: export async function dalCreateUserActor(profileId) {
+- .\src\features\auth\dal\actorCreate.dal.js:9 :: if (!profileId) {
+- .\src\features\auth\dal\actorCreate.dal.js:10 :: throw new Error('profileId is required')
+- .\src\features\auth\dal\actorCreate.dal.js:17 :: p_profile_id: profileId,
+- .\src\features\auth\dal\actorCreate.dal.js:18 :: p_vport_id: null,
+- .\src\features\auth\dal\actorCreate.dal.js:28 :: profile_id: data.profile_id,
+- .\src\features\auth\dal\actorGetByProfile.dal.js:3 :: export async function dalGetActorByProfile(profileId) {
+- .\src\features\auth\dal\actorGetByProfile.dal.js:7 :: .select('id, kind, profile_id, is_void')
+- .\src\features\auth\dal\actorGetByProfile.dal.js:8 :: .eq('profile_id', profileId)
+- .\src\features\auth\dal\actorOwnerCreate.dal.js:3 :: export async function dalCreateActorOwner(actorId, userId) {
+- .\src\features\auth\dal\actorOwnerCreate.dal.js:8 :: { actor_id: actorId, user_id: userId },
+- .\src\features\auth\dal\actorOwnerCreate.dal.js:10 :: onConflict: 'actor_id,user_id',
+- .\src\features\auth\dal\profile.dal.js:3 :: export async function dalGetProfileDiscoverable(profileId) {
+- .\src\features\auth\dal\profile.dal.js:7 :: .eq('id', profileId)
+- .\src\features\auth\model\actor.model.js:7 :: profileId: row.profile_id,
+- .\src\features\auth\screens\Onboarding.jsx:22 :: const [userId, setUserId] = useState(null)
+- .\src\features\auth\screens\Onboarding.jsx:70 :: setUserId(user.id)
+- .\src\features\auth\screens\Onboarding.jsx:124 :: if (!isValid \\|\\| !userId) return
+- .\src\features\auth\screens\Onboarding.jsx:146 :: if (user.id !== userId) {
+- .\src\features\auth\screens\Onboarding.jsx:147 :: setUserId(user.id)
+- .\src\features\auth\screens\Onboarding.jsx:182 :: profileId: user.id,
+- .\src\features\auth\screens\Onboarding.jsx:183 :: userId: user.id,
+- .\src\features\auth\screens\RegisterScreen.jsx:60 :: const userId = sess?.session?.user?.id \\|\\| null
+- .\src\features\auth\screens\RegisterScreen.jsx:62 :: if (userId) {
+- .\src\features\auth\screens\RegisterScreen.jsx:72 :: id: userId,
+- .\src\features\auth\screens\RegisterScreen.jsx:111 :: const newUserId = authData.user.id
+- .\src\features\auth\screens\RegisterScreen.jsx:115 :: id: newUserId,
+- .\src\features\chat\conversation\components\MessageStatus.jsx:7 :: // - Actor-agnostic (no actorId, no userId)
+- .\src\features\chat\conversation\controllers\leaveConversation.controller.js:5 :: // - Actor-based (NO user_id logic)
+- .\src\features\chat\conversation\dal\conversations.write.dal.js:5 :: // - Actor-based (NO user_id logic)
+- .\src\features\chat\conversation\dal\members.read.dal.js:5 :: // - Actor-based (NO user_id logic)
+- .\src\features\chat\conversation\dal\messages.read.dal.js:42 :: profile_id,
+- .\src\features\chat\conversation\dal\messages.read.dal.js:43 :: vport_id
+- .\src\features\chat\conversation\dal\messages.write.dal.js:5 :: // - Actor-based (NO user_id logic)
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js:19 :: excludeProfileId,
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js:20 :: excludeVportId,
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js:31 :: if (excludeProfileId) {
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js:33 :: (r) => !(r.kind === 'user' && r.id === excludeProfileId)
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js:37 :: if (excludeVportId) {
+- .\src\features\chat\inbox\constants\inboxSearchAdapter.js:39 :: (r) => !(r.kind === 'vport' && r.id === excludeVportId)
+- .\src\features\chat\inbox\dal\inbox.write.dal.js:5 :: // - Actor-based (NO user_id logic)
+- .\src\features\chat\z\chat.md:58 :: ? Never use `userId`, `profileId`, `vportId` in chat
+- .\src\features\chat\z\chat.md:136 :: * user_id
+- .\src\features\chat\z\chat.md:137 :: * profile_id
+- .\src\features\chat\z\chat.md:138 :: * vport_id
+- .\src\features\chat\z\chat.md:276 :: ? `user_id` anywhere in chat
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:7 :: vportId,
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:78 :: if (!vportId) return;
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:81 :: const url = await uploadFlyerImage({ bucket, vportId, file, kind });
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:87 :: [bucket, vportId, setField]
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:91 :: if (!vportId) return;
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:94 :: const res = await saveFlyerPublicDetails({ vportId, patch: draft });
+- .\src\features\dashboard\flyerBuilder\components\FlyerEditorPanel.jsx:99 :: }, [vportId, draft, onSaved]);
+- .\src\features\dashboard\flyerBuilder\dal\flyer.read.dal.js:53 :: vport_id: v?.id ?? null,
+- .\src\features\dashboard\flyerBuilder\dal\flyer.upload.dal.js:6 :: * uploadFlyerImage({ bucket, vportId, file, kind })
+- .\src\features\dashboard\flyerBuilder\dal\flyer.upload.dal.js:10 :: export async function uploadFlyerImage({ vportId, file, kind }) {
+- .\src\features\dashboard\flyerBuilder\dal\flyer.upload.dal.js:11 :: if (!vportId) throw new Error("Missing vportId");
+- .\src\features\dashboard\flyerBuilder\dal\flyer.upload.dal.js:16 :: // flyers/<vportId>/assets/YYYY/MM/DD/<ts>-<rand>.<ext>
+- .\src\features\dashboard\flyerBuilder\dal\flyer.upload.dal.js:17 :: const key = buildR2Key("flyers", vportId, file, { extraPath: "assets" });
+- .\src\features\dashboard\flyerBuilder\dal\flyer.write.dal.js:3 :: export async function saveFlyerPublicDetails({ vportId, patch }) {
+- .\src\features\dashboard\flyerBuilder\dal\flyer.write.dal.js:4 :: if (!vportId) throw new Error("Missing vportId");
+- .\src\features\dashboard\flyerBuilder\dal\flyer.write.dal.js:30 :: .upsert({ vport_id: vportId, ...cleanPatch }, { onConflict: "vport_id" })
+- .\src\features\dashboard\flyerBuilder\designStudio\controller\designStudio.shared.controller.js:1 :: import { dalReadAuthenticatedUserId } from "@/features/dashboard/flyerBuilder/designStudio/dal/designStudio.auth.dal";
+- .\src\features\dashboard\flyerBuilder\designStudio\controller\designStudio.shared.controller.js:5 :: const userId = await dalReadAuthenticatedUserId();
+- .\src\features\dashboard\flyerBuilder\designStudio\controller\designStudio.shared.controller.js:6 :: if (!userId) throw new Error("Sign in required.");
+- .\src\features\dashboard\flyerBuilder\designStudio\controller\designStudio.shared.controller.js:10 :: userId,
+- .\src\features\dashboard\flyerBuilder\designStudio\controller\designStudio.shared.controller.js:17 :: return userId;
+- .\src\features\dashboard\flyerBuilder\designStudio\dal\designStudio.auth.dal.js:3 :: export async function dalReadAuthenticatedUserId() {
+- .\src\features\dashboard\flyerBuilder\designStudio\dal\designStudio.read.dal.js:5 :: export async function dalReadActorOwnerRow({ actorId, userId }) {
+- .\src\features\dashboard\flyerBuilder\designStudio\dal\designStudio.read.dal.js:8 :: .select("actor_id,user_id")
+- .\src\features\dashboard\flyerBuilder\designStudio\dal\designStudio.read.dal.js:10 :: .eq("user_id", userId)
+- .\src\features\dashboard\flyerBuilder\screens\VportActorMenuFlyerEditorScreen.jsx:6 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\flyerBuilder\screens\VportActorMenuFlyerEditorScreen.jsx:7 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\dashboard\flyerBuilder\screens\VportActorMenuFlyerScreen.jsx:1 :: // src/features/profiles/kinds/vport/screens/VportActorMenuFlyerScreen.jsx
+- .\src\features\dashboard\flyerBuilder\screens\VportActorMenuFlyerView.jsx:13 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\flyerBuilder\screens\VportActorMenuFlyerView.jsx:14 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\dashboard\flyerBuilder\screens\VportActorMenuFlyerView.jsx:70 :: navigate(`/vport/${actorId}`, { replace: true });
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:1 :: // src/features/dashboard/vport/screens/VportDashboardExchangeScreen.jsx
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:8 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:9 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:10 :: import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:12 :: import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView.jsx";
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:13 :: import VportRateEditorCard from "@/features/profiles/kinds/vport/screens/rates/components/VportRateEditorCard.jsx";
+- .\src\features\dashboard\vport\screens\VportDashboardExchangeScreen.jsx:14 :: import useUpsertVportRate from "@/features/profiles/kinds/vport/hooks/rates/useUpsertVportRate.js";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:1 :: // src/features/dashboard/vport/screens/VportDashboardGasScreen.jsx
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:8 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:10 :: import { useVportGasPrices } from "@/features/profiles/kinds/vport/hooks/gas/useVportGasPrices";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:11 :: import { useSubmitFuelPriceSuggestion } from "@/features/profiles/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:12 :: import { useOwnerPendingSuggestions } from "@/features/profiles/kinds/vport/hooks/gas/useOwnerPendingSuggestions";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:13 :: import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:14 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\dashboard\vport\screens\VportDashboardGasScreen.jsx:18 :: } from "@/features/dashboard/vport/screens/components/VportDashboardGasPanels";
+- .\src\features\dashboard\vport\screens\VportDashboardReviewScreen.jsx:1 :: // src/features/dashboard/vport/screens/VportDashboardReviewScreen.jsx
+- .\src\features\dashboard\vport\screens\VportDashboardReviewScreen.jsx:5 :: import VportReviewsView from "@/features/profiles/kinds/vport/screens/review/VportReviewsView";
+- .\src\features\dashboard\vport\screens\VportDashboardReviewScreen.jsx:7 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\vport\screens\VportDashboardReviewScreen.jsx:8 :: import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+- .\src\features\dashboard\vport\screens\VportDashboardReviewScreen.jsx:9 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:7 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:8 :: import { DashboardCard, VportBannerHeader } from "@/features/dashboard/vport/screens/components/VportDashboardParts";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:9 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:10 :: import { buildDashboardCards } from "@/features/dashboard/vport/screens/model/buildDashboardCards";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:11 :: import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:15 :: } from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
+- .\src\features\dashboard\vport\screens\VportDashboardScreen.jsx:69 :: const openAdsPipeline = useCallback(() => actorId && navigate(`/ads/vport/${actorId}`), [navigate, actorId]);
+- .\src\features\dashboard\vport\screens\VportDashboardServicesScreen.jsx:1 :: // src/features/dashboard/vport/screens/VportDashboardServicesScreen.jsx
+- .\src\features\dashboard\vport\screens\VportDashboardServicesScreen.jsx:8 :: import VportServicesView from "@/features/profiles/kinds/vport/screens/services/view/VportServicesView";
+- .\src\features\dashboard\vport\screens\VportDashboardServicesScreen.jsx:9 :: import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+- .\src\features\dashboard\vport\screens\VportDashboardServicesScreen.jsx:10 :: import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";

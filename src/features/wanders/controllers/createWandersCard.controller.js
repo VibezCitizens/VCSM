@@ -10,7 +10,9 @@ function stripTrailingSlashes(url) {
 function getDefaultBaseUrl() {
   try {
     if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-  } catch {}
+  } catch {
+    // no-op: non-browser environments fall back to ""
+  }
   return "";
 }
 
@@ -37,7 +39,7 @@ export async function createWandersCard(input) {
   if (!realmId) throw new Error("createWandersCard requires { realmId }");
 
   const templateKey = String(input?.templateKey || "classic");
-  const isAnonymous = !!input?.is_anonymous ?? !!input?.isAnonymous; // tolerate either
+  const isAnonymous = Boolean(input?.is_anonymous ?? input?.isAnonymous ?? false); // tolerate either
   const messageText = input?.messageText ?? input?.message_text ?? null;
   const customization = input?.customization || {};
   const baseUrl = String(input?.baseUrl || "") || getDefaultBaseUrl();

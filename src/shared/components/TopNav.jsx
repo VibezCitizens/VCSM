@@ -1,18 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useIdentity } from '@/state/identity/identityContext';
+import { Eye, LogOut } from 'lucide-react';
 
 export default function TopNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { identity } = useIdentity();
 
   const inVoid = pathname.startsWith('/void');
-  const isChatInboxRoot = /^\/(vport\/)?chat$/.test(pathname);
-
-  // ✅ FIX: new identity fields
-  const isVport = identity?.kind === 'vport' && !!identity?.vportId;
-
-  const personaLabel = isVport ? 'VPORT' : 'USER';
+  const isChatInboxRoot = pathname === '/chat';
 
   return (
     <div
@@ -21,25 +15,7 @@ export default function TopNav() {
       }`}
     >
       <div className="h-12 px-4 flex items-center justify-between gap-2">
-
-        <div className="min-w-[84px] flex justify-start">
-          <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[13px] font-medium border ${
-              isVport
-                ? 'bg-purple-950/40 text-purple-200 border-purple-700/40'
-                : 'bg-neutral-900 text-neutral-300 border-neutral-700/60'
-            }`}
-            title={isVport ? 'You are acting as a VPORT' : 'You are acting as a user'}
-          >
-            <span
-              className={`inline-block w-1.5 h-1.5 rounded-full ${
-                isVport ? 'bg-purple-400' : 'bg-neutral-400'
-              }`}
-              aria-hidden="true"
-            />
-            {personaLabel}
-          </span>
-        </div>
+        <div className="min-w-[84px]" aria-hidden="true" />
 
         <h1 className="text-xl font-bold text-center flex-1 select-none">
           {inVoid ? 'The Void' : 'Vibez Citizens'}
@@ -49,24 +25,23 @@ export default function TopNav() {
           {inVoid ? (
             <button
               onClick={() => navigate('/feed')}
-              title={`Exit the Void (${personaLabel})`}
+              title="Exit the Void"
               className="text-white opacity-80 hover:opacity-100 transition focus:outline-none"
               aria-label="Exit the Void"
             >
-              🚪
+              <LogOut size={18} />
             </button>
           ) : (
             <button
               onClick={() => navigate('/void')}
-              title={`Enter the Void (${personaLabel})`}
+              title="Enter the Void"
               className="text-white opacity-60 hover:opacity-100 transition focus:outline-none"
               aria-label="Enter the Void"
             >
-              👁️
+              <Eye size={18} />
             </button>
           )}
         </div>
-
       </div>
     </div>
   );
