@@ -8,7 +8,7 @@ export function GasStates({
 }) {
   if (loading) {
     return (
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 text-sm text-neutral-300">
+      <div className="profiles-subcard p-4 text-sm profiles-muted">
         Loading...
       </div>
     );
@@ -16,7 +16,7 @@ export function GasStates({
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-900/60 bg-red-950/40 p-4 text-sm text-red-300">
+      <div className="profiles-error rounded-2xl p-4 text-sm">
         {String(error?.message ?? error)}
       </div>
     );
@@ -24,7 +24,7 @@ export function GasStates({
 
   if (empty) {
     return (
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 text-sm text-neutral-400">
+      <div className="profiles-subcard p-4 text-sm profiles-muted">
         {emptyText}
       </div>
     );

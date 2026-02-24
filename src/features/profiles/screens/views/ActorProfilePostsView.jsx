@@ -86,7 +86,7 @@ export default function ActorProfilePostsView({
   if (loading && !posts.length) {
     console.warn("[ActorProfilePostsView] UI → Loading state");
     return (
-      <div className="flex items-center justify-center py-10 text-neutral-500">
+      <div className="flex items-center justify-center py-10 profiles-muted">
         Loading Vibes…
       </div>
     );
@@ -98,7 +98,7 @@ export default function ActorProfilePostsView({
   if (!posts.length) {
     console.warn("[ActorProfilePostsView] UI → Empty state");
     return (
-      <div className="flex items-center justify-center py-10 text-neutral-500">
+      <div className="flex items-center justify-center py-10 profiles-muted">
         No Vibes yet.
       </div>
     );
@@ -131,7 +131,7 @@ export default function ActorProfilePostsView({
               loadMore();
             }}
             disabled={loading}
-            className="rounded px-4 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50"
+            className="profiles-pill-btn px-4 py-2 text-sm disabled:opacity-50"
           >
             {loading ? "Loading…" : "Load more"}
           </button>

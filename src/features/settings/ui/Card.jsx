@@ -12,12 +12,12 @@ export default function Card({ title, children, className = '' }) {
   return (
     <section
       className={cx(
-        'rounded-2xl bg-zinc-900/80 text-white shadow-sm',
+        'settings-card-surface rounded-2xl text-white shadow-sm',
         className
       )}
     >
       {title ? (
-        <div className="px-4 pt-3 pb-2 text-xs tracking-wide text-zinc-400">
+        <div className="px-4 pt-3 pb-2 text-xs tracking-wide text-slate-400">
           {title}
         </div>
       ) : null}

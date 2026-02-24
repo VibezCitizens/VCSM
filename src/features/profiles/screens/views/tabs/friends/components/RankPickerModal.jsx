@@ -24,7 +24,7 @@ import { hydrateActorsIntoStore } from "../helpers/hydrateActorsIntoStore";
 // 🔒 block system
 import { filterBlockedActors } from "@/features/block/dal/block.read.dal";
 
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 import ActorLink from "@/shared/components/ActorLink";
 
 /**
@@ -201,8 +201,8 @@ export default function RankPickerModal({
    CANDIDATE ROW — SAFE HOOK USAGE
    ============================================================ */
 function CandidateRow({ actorId, onPick }) {
-  const actor = useActorPresentation(actorId);
-  if (!actor) return null;
+  const actor = useActorSummary(actorId);
+  if (!actor?.actorId) return null;
 
   return (
     <button

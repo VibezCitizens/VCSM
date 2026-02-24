@@ -9,80 +9,16 @@ import {
   ctrlListReviews,
   ctrlSubmitReview,
 } from "@/features/profiles/kinds/vport/controller/review/VportReviews.controller";
+import {
+  computeDimStatsFromReviews,
+  normalizeInput,
+  pickRecentComments,
+  round4,
+  safeNum,
+} from "@/features/profiles/kinds/vport/hooks/review/useVportReviews.helpers";
 
 // Optional (only if you have it; hook will gracefully no-op if missing)
 import * as ServiceCtrl from "@/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller";
-
-/* ============================================================
-   Helpers
-   ============================================================ */
-
-function normalizeInput(input) {
-  if (!input) return { targetActorId: null, viewerActorId: null, vportType: null };
-  if (typeof input === "string") {
-    return { targetActorId: input, viewerActorId: null, vportType: null };
-  }
-  if (typeof input === "object") {
-    return {
-      targetActorId: input.targetActorId ?? null,
-      viewerActorId: input.viewerActorId ?? null,
-      vportType: input.vportType ?? null,
-    };
-  }
-  return { targetActorId: null, viewerActorId: null, vportType: null };
-}
-
-function safeNum(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-function round4(n) {
-  if (n == null) return null;
-  return Math.round(n * 10000) / 10000;
-}
-
-function computeDimStatsFromReviews(reviews) {
-  const map = new Map(); // key -> { sum, count }
-
-  for (const r of reviews || []) {
-    const ratings = r?.ratings ?? r?.dimensionRatings ?? r?.dimension_ratings ?? [];
-    if (!Array.isArray(ratings)) continue;
-
-    for (const rr of ratings) {
-      const key = rr?.dimensionKey ?? rr?.dimension_key ?? rr?.key ?? null;
-      const rating = safeNum(rr?.rating);
-      if (!key || rating == null) continue;
-
-      const cur = map.get(key) ?? { sum: 0, count: 0 };
-      cur.sum += rating;
-      cur.count += 1;
-      map.set(key, cur);
-    }
-  }
-
-  const out = {};
-  for (const [k, v] of map.entries()) {
-    out[k] = {
-      avg: v.count ? round4(v.sum / v.count) : null,
-      count: v.count,
-    };
-  }
-  return out;
-}
-
-function pickRecentComments(reviews, n = 6) {
-  const rows = Array.isArray(reviews) ? reviews : [];
-  return rows
-    .filter((r) => String(r?.body ?? "").trim().length > 0)
-    .slice(0, n)
-    .map((r) => ({
-      id: r?.id ?? null,
-      body: r?.body ?? "",
-      createdAt: r?.createdAt ?? r?.created_at ?? null,
-      overallRating: r?.overallRating ?? r?.overall_rating ?? null,
-    }));
-}
 
 /* ============================================================
    Hook (legacy UI contract: tab/services/overall/composer)
@@ -238,7 +174,7 @@ export function useVportReviews(input) {
       if (serviceId && !normalized.some((x) => String(x.id) === String(serviceId))) {
         setServiceId(null);
       }
-    } catch (_e) {
+    } catch {
       if (!mountedRef.current) return;
       setServices([]);
     } finally {
@@ -326,7 +262,7 @@ export function useVportReviews(input) {
         setRating(overall != null ? Math.max(1, Math.min(5, Math.round(overall))) : 5);
         setBody(String(mine?.body ?? ""));
       }
-    } catch (_e) {
+    } catch {
       if (!mountedRef.current) return;
       setMyExists(false);
     } finally {

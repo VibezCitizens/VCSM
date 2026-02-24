@@ -33,6 +33,7 @@ import canReadConversation from '../permissions/canReadConversation'
 
 // ✅ Toast
 import Toast from '@/shared/components/components/Toast'
+import '@/features/ui/modern/module-modern.css'
 
 export default function ConversationView({ conversationId }) {
   const navigate = useNavigate()

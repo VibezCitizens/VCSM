@@ -9,17 +9,16 @@ export default function MediaCarousel({ media = [] }) {
   const startXRef = useRef(null);
   const deltaXRef = useRef(0);
 
-  const items = Array.isArray(media) ? media.filter(Boolean) : [];
+  const items = useMemo(
+    () => (Array.isArray(media) ? media.filter(Boolean) : []),
+    [media]
+  );
   const count = items.length;
 
   useEffect(() => {
     // keep index valid if media changes
     setIndex((i) => clamp(i, 0, Math.max(0, count - 1)));
   }, [count]);
-
-  if (!count) return null;
-
-  const current = items[index];
 
   const next = useCallback(
     () => setIndex((i) => (i + 1 < count ? i + 1 : i)),
@@ -40,6 +39,7 @@ export default function MediaCarousel({ media = [] }) {
   // Precompute what we will actually render as "current"
   // (still uses single-viewer style, but we control src loading)
   const renderNode = useMemo(() => {
+    const current = items[index];
     const type = current?.type;
     const url = current?.url;
 
@@ -70,7 +70,7 @@ export default function MediaCarousel({ media = [] }) {
         draggable={false}
       />
     );
-  }, [current]);
+  }, [items, index]);
 
   // ✅ Touch swipe (mobile)
   function onTouchStart(e) {
@@ -150,6 +150,8 @@ export default function MediaCarousel({ media = [] }) {
       void imgs;
     };
   }, [index, count, items, shouldLoad]);
+
+  if (!count) return null;
 
   return (
     <div

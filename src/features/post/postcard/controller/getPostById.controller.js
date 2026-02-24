@@ -18,7 +18,6 @@ import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
  *     displayName,
  *     username,
  *     photoUrl,
- *     kind,
  *     vportName?,
  *     vportSlug?
  *   },
@@ -77,7 +76,6 @@ export async function getPostById(postId) {
           displayName: row.actor.display_name,
           username: row.actor.username,
           photoUrl: row.actor.photo_url,
-          kind: row.actor.kind,
           vportName: row.actor.vport_name,
           vportSlug: row.actor.vport_slug,
         }

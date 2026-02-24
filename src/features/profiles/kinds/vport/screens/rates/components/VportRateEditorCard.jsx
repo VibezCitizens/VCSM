@@ -43,20 +43,19 @@ export default function VportRateEditorCard({
   }, [disabled, baseCurrency, quoteCurrency, buyRate, sellRate]);
 
   return (
-    <div className="rounded-2xl bg-neutral-900/60 border border-neutral-800 p-4 mb-3">
-      <div className="text-sm font-semibold text-white mb-3">{title}</div>
+    <div className="profiles-subcard p-4 mb-3">
+      <div className="text-sm font-semibold text-slate-100 mb-3">{title}</div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <div className="text-[10px] text-neutral-400 mb-1">BASE</div>
+          <div className="text-[10px] text-slate-400 mb-1">BASE</div>
           <input
             value={baseCurrency ?? ""}
             onChange={(e) => onChangeBaseCurrency?.(e.target.value)}
             className="
               w-full px-4 py-2 pr-10
-              rounded-2xl bg-neutral-900 text-white
-              border border-purple-700
-              focus:ring-2 focus:ring-purple-500
+              profiles-input
+              rounded-2xl
             "
             placeholder="USD"
             maxLength={10}
@@ -65,15 +64,14 @@ export default function VportRateEditorCard({
         </div>
 
         <div>
-          <div className="text-[10px] text-neutral-400 mb-1">QUOTE</div>
+          <div className="text-[10px] text-slate-400 mb-1">QUOTE</div>
           <input
             value={quoteCurrency ?? ""}
             onChange={(e) => onChangeQuoteCurrency?.(e.target.value)}
             className="
               w-full px-4 py-2 pr-10
-              rounded-2xl bg-neutral-900 text-white
-              border border-purple-700
-              focus:ring-2 focus:ring-purple-500
+              profiles-input
+              rounded-2xl
             "
             placeholder="MXN"
             maxLength={10}
@@ -82,15 +80,14 @@ export default function VportRateEditorCard({
         </div>
 
         <div>
-          <div className="text-[10px] text-neutral-400 mb-1">BUY</div>
+          <div className="text-[10px] text-slate-400 mb-1">BUY</div>
           <input
             value={buyRate ?? ""}
             onChange={(e) => onChangeBuyRate?.(e.target.value)}
             className="
               w-full px-4 py-2 pr-10
-              rounded-2xl bg-neutral-900 text-white
-              border border-purple-700
-              focus:ring-2 focus:ring-purple-500
+              profiles-input
+              rounded-2xl
             "
             placeholder="17.20"
             inputMode="decimal"
@@ -99,15 +96,14 @@ export default function VportRateEditorCard({
         </div>
 
         <div>
-          <div className="text-[10px] text-neutral-400 mb-1">SELL</div>
+          <div className="text-[10px] text-slate-400 mb-1">SELL</div>
           <input
             value={sellRate ?? ""}
             onChange={(e) => onChangeSellRate?.(e.target.value)}
             className="
               w-full px-4 py-2 pr-10
-              rounded-2xl bg-neutral-900 text-white
-              border border-purple-700
-              focus:ring-2 focus:ring-purple-500
+              profiles-input
+              rounded-2xl
             "
             placeholder="17.45"
             inputMode="decimal"
@@ -117,7 +113,7 @@ export default function VportRateEditorCard({
       </div>
 
       {error ? (
-        <div className="mt-3 text-sm text-red-400">{String(error)}</div>
+        <div className="mt-3 profiles-error rounded-xl p-3 text-sm">{String(error)}</div>
       ) : null}
 
       <div className="mt-3 flex items-center justify-end">
@@ -129,10 +125,10 @@ export default function VportRateEditorCard({
           }}
           className="
             px-4 py-2 rounded-2xl
-            border border-neutral-700
-            bg-white/10 text-white
+            border border-sky-300/30
+            bg-sky-300/10 text-sky-100
             font-extrabold text-sm
-            disabled:opacity-50
+            hover:bg-sky-300/20 disabled:opacity-50
           "
           disabled={!canSubmit || submitting}
         >

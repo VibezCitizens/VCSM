@@ -6,6 +6,7 @@ import UploadCard from "../ui/UploadCard";
 import SelectedThumbStrip from "../ui/SelectedThumbStrip";
 import CaptionCard from "../ui/CaptionCard";
 import PrimaryActionButton from "../ui/PrimaryActionButton";
+import "@/features/ui/modern/module-modern.css";
 
 import { useMediaSelection, MAX_VIBES_PHOTOS } from "../hooks/useMediaSelection";
 import { extractMentions } from "../lib/extractMentions";
@@ -80,15 +81,21 @@ export default function UploadScreenModern({ onSubmit }) {
   }
 
   return (
-    <div
-      className="
-        min-h-screen
-        max-w-xl mx-auto
-        px-4 pt-6
-        pb-[calc(env(safe-area-inset-bottom)+96px)]
-      "
-    >
-      <UploadHeader mode={mode} onChangeMode={handleChangeMode} />
+    <div className="module-modern-page min-h-[100dvh] w-full p-0 sm:p-4">
+      <div
+        className="
+          module-modern-shell
+          mx-auto
+          min-h-[100dvh]
+          max-w-xl
+          rounded-none
+          px-4 pt-6
+          pb-[calc(env(safe-area-inset-bottom)+96px)]
+          sm:min-h-[calc(100dvh-2rem)]
+          sm:rounded-2xl
+        "
+      >
+        <UploadHeader mode={mode} onChangeMode={handleChangeMode} />
 
       <UploadCard
         isVibes={isVibes}
@@ -123,11 +130,12 @@ export default function UploadScreenModern({ onSubmit }) {
 
       <PrimaryActionButton label={"Spread"} disabled={!!disabledReason()} onClick={submit} />
 
-      {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
-        <div className="mt-4 text-center text-xs text-white/35">
-          You can upload up to {MAX_VIBES_PHOTOS} photos at a time.
-        </div>
-      )}
+        {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
+          <div className="mt-4 text-center text-xs text-slate-500">
+            You can upload up to {MAX_VIBES_PHOTOS} photos at a time.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

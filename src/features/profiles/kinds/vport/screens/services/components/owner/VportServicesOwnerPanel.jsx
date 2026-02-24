@@ -52,17 +52,17 @@ export default function VportServicesOwnerPanel({
   );
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-neutral-900/50 p-6 space-y-5">
+    <div className="profiles-card rounded-2xl p-6 space-y-5">
       <VportServicesHeader title={title} subtitle={subtitle} right={right} />
 
       {loading ? (
-        <div className="rounded-2xl border border-white/10 bg-black/25 p-5 text-sm text-white/50">
+        <div className="profiles-subcard p-5 text-sm profiles-muted">
           Loading services…
         </div>
       ) : null}
 
       {!loading && error ? (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+        <div className="profiles-error rounded-2xl p-4 text-sm">
           {String(error?.message ?? error)}
         </div>
       ) : null}

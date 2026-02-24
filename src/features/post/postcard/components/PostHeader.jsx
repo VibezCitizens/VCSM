@@ -1,7 +1,6 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\postcard\components\PostHeader.jsx
 import React from "react";
 import ActorLink from "@/shared/components/ActorLink";
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 import { formatTimestamp } from "@/shared/lib/formatTimestamp";
 
 export default function PostHeader({
@@ -12,24 +11,13 @@ export default function PostHeader({
   onOpenMenu,
   postId,
 }) {
-  const actorUI = useActorPresentation(actor);
-  if (!actorUI) return null;
+  const actorSummary = useActorSummary(actor);
+  if (!actorSummary?.actorId) return null;
 
   const timestamp = createdAt ? formatTimestamp(createdAt) : null;
   const loc = String(locationText ?? "").trim();
-
-  const kind = actorUI.kind ?? "";
-  const displayName = String(
-    actorUI.displayName ?? actorUI.name ?? actorUI.title ?? ""
-  ).trim();
-
-  // ✅ for vport: prefer slug, else username
-  // ✅ for normal: prefer username, else slug
-  const rawHandle =
-    kind === "vport"
-      ? String(actorUI.slug ?? actorUI.username ?? "").trim()
-      : String(actorUI.username ?? actorUI.slug ?? "").trim();
-
+  const displayName = String(actorSummary.displayName ?? "User").trim() || "User";
+  const rawHandle = String(actorSummary.username ?? "").trim();
   const handle = rawHandle ? `@${rawHandle}` : "";
 
   return (
@@ -37,58 +25,52 @@ export default function PostHeader({
       className="
         flex items-start justify-between
         px-4 py-3 cursor-pointer
-        hover:bg-neutral-900/40 transition
+        border-b border-violet-300/10
+        hover:bg-white/[0.02] transition
       "
       onClick={onOpenPost}
     >
-      {/* LEFT */}
       <div className="flex gap-3 min-w-0">
-        {/* Avatar only (prevents double name/username) */}
         <ActorLink
-          actor={actorUI}
+          actor={{
+            id: actorSummary.actorId,
+            displayName: actorSummary.displayName,
+            username: actorSummary.username,
+            avatar: actorSummary.avatar,
+            route: actorSummary.route,
+          }}
           showText={false}
           avatarSize="w-11 h-11"
           avatarShape="rounded-lg"
         />
 
-        {/* Meta column */}
         <div className="flex flex-col min-w-0 gap-[2px]">
-          {/* Display name */}
-          {displayName ? (
-            <div className="text-sm font-medium text-white truncate leading-snug">
-              {displayName}
-            </div>
-          ) : null}
+          <div className="text-sm font-semibold text-slate-100 truncate leading-snug">
+            {displayName}
+          </div>
 
-          {/* Username/slug + timestamp */}
           {(handle || timestamp) ? (
-            <div className="flex items-center gap-2 min-w-0 text-xs text-white/50 leading-snug">
+            <div className="flex items-center gap-2 min-w-0 text-xs text-slate-400 leading-snug">
               {handle ? <span className="truncate">{handle}</span> : null}
-
               {timestamp ? (
-                <span className="shrink-0 text-white/40">
-                  {handle ? "· " : ""}
+                <span className="shrink-0 text-slate-500">
+                  {handle ? "- " : ""}
                   {timestamp}
                 </span>
               ) : null}
             </div>
           ) : null}
 
-          {/* Location */}
           {loc ? (
-            <div className="flex items-center gap-1 text-xs text-white/50 leading-snug mt-[2px]">
-              <span aria-hidden className="translate-y-[1px]">
-                
-              </span>
-              <span className="truncate">{loc}</span>
+            <div className="text-xs text-slate-400 leading-snug mt-[2px] truncate">
+              {loc}
             </div>
           ) : null}
         </div>
       </div>
 
-      {/* RIGHT */}
       <button
-        className="text-neutral-400 hover:text-white text-xl px-2"
+        className="text-slate-400 hover:text-slate-100 text-xl px-2"
         type="button"
         onClick={(e) => {
           e.stopPropagation();
@@ -101,7 +83,7 @@ export default function PostHeader({
         }}
         aria-label="Post options"
       >
-        •••
+        ...
       </button>
     </div>
   );

@@ -1,29 +1,19 @@
-// src/features/settings/privacy/ui/PrivacyTab.view.jsx
-// ============================================================
-// PrivacyTabView (ACTOR-FIRST / IDENTITY-SAFE)
-// ------------------------------------------------------------
-// Visibility + follow requests + blocking controls
-// ============================================================
-
 import { useMemo } from 'react'
-
 import { useIdentity } from '@/state/identity/identityContext'
 
 import ProfilePrivacyToggle from '@/features/settings/privacy/ui/ProfilePrivacyToggle'
 import UserLookup from '@/features/settings/privacy/ui/UserLookup'
 import BlockedUsersSimple from '@/features/settings/privacy/ui/BlockedUsersSimple'
 import PendingFollowRequests from '@/features/settings/privacy/ui/PendingFollowRequests'
-
 import { MyBlocksProvider } from '@/features/settings/privacy/hooks/useMyBlocks'
 
 export default function PrivacyTabView() {
   const { identity } = useIdentity()
 
   const actorId = identity?.actorId || null
-  const kind = identity?.kind || null // 'user' | 'vport'
+  const kind = identity?.kind || null
   const isVport = kind === 'vport'
 
-  // ✅ ACTOR-FIRST PROPS (NO userId / profileId / vportId)
   const actorProps = useMemo(() => {
     if (!actorId || !kind) return null
     return { actorId, scope: kind }
@@ -31,9 +21,9 @@ export default function PrivacyTabView() {
 
   if (!actorProps) {
     return (
-      <section className="rounded-xl border border-zinc-800 bg-neutral-900/60 p-4">
-        <div className="text-sm text-zinc-300">Preparing your identity…</div>
-        <div className="text-xs text-zinc-500">Privacy controls will load shortly.</div>
+      <section className="settings-card-surface rounded-xl p-4">
+        <div className="text-sm text-slate-300">Preparing your identity...</div>
+        <div className="text-xs text-slate-500">Privacy controls will load shortly.</div>
       </section>
     )
   }
@@ -49,32 +39,27 @@ export default function PrivacyTabView() {
   return (
     <MyBlocksProvider {...actorProps}>
       <div className="space-y-4">
-        {/* ================= VISIBILITY ================= */}
-        <section className="rounded-xl border border-zinc-800 bg-neutral-900/60 p-4">
-          <div className="mb-3 text-sm text-zinc-300">{visibilityHelp}</div>
+        <section className="settings-card-surface rounded-xl p-4">
+          <div className="mb-3 text-sm text-slate-300">{visibilityHelp}</div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-semibold">{visibilityTitle}</h3>
-              <div className="text-xs text-zinc-400">Public (default) or Private</div>
+              <h3 className="text-sm font-semibold text-slate-100">{visibilityTitle}</h3>
+              <div className="text-xs text-slate-400">Public (default) or Private</div>
             </div>
-
             <ProfilePrivacyToggle actorId={actorId} />
           </div>
         </section>
 
-        {/* ================= USER LOOKUP ================= */}
-        <section className="rounded-xl border border-zinc-800 bg-neutral-900/60 p-4">
-          <h3 className="text-sm font-semibold mb-1">{lookupTitle}</h3>
+        <section className="settings-card-surface rounded-xl p-4">
+          <h3 className="mb-1 text-sm font-semibold text-slate-100">{lookupTitle}</h3>
           <UserLookup />
         </section>
 
-        {/* ================= PENDING FOLLOW REQUESTS ================= */}
         <PendingFollowRequests actorId={actorId} />
 
-        {/* ================= BLOCKED USERS ================= */}
-        <section className="rounded-xl border border-zinc-800 bg-neutral-900/60 p-4">
-          <h3 className="text-sm font-semibold mb-1">{blockedTitle}</h3>
+        <section className="settings-card-surface rounded-xl p-4">
+          <h3 className="mb-1 text-sm font-semibold text-slate-100">{blockedTitle}</h3>
           <BlockedUsersSimple />
         </section>
       </div>

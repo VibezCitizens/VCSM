@@ -19,12 +19,11 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
         const d = await fetchVportPublicDetailsByActorId(actorId);
         if (!alive) return;
         setPublicDetails(d || null);
-      } catch (e) {
+      } catch {
         if (!alive) return;
         setPublicDetails(null);
       } finally {
-        if (!alive) return;
-        setLoadingHeader(false);
+        if (alive) setLoadingHeader(false);
       }
     })();
 

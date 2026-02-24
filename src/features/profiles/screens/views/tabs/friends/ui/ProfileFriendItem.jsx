@@ -13,14 +13,14 @@
 //   • Safe hook usage (no conditional hooks)
 // ============================================================
 
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 import ActorLink from "@/shared/components/ActorLink";
 
 export default function ProfileFriendItem({ actorId }) {
   // 🔒 Actor presentation is resolved here
-  const actor = useActorPresentation(actorId);
+  const actor = useActorSummary(actorId);
 
-  if (!actor) return null;
+  if (!actor?.actorId) return null;
 
   return (
     <ActorLink

@@ -1,23 +1,11 @@
-// src/features/chat/inbox/components/InboxList.jsx
 import React from 'react'
 import CardInbox from './CardInbox'
 
-export default function InboxList({
-  entries = [],
-  activeConversationId = null,
-  onSelect,
-  onContextMenu,
-  onDelete,
-
-  // ✅ ONLY PREVIEW TOGGLE
-  showThreadPreview = true,
-}) {
-  if (!Array.isArray(entries) || entries.length === 0) {
-    return null
-  }
+export default function InboxList({ entries = [], onSelect, onDelete, showThreadPreview = true }) {
+  if (!Array.isArray(entries) || entries.length === 0) return null
 
   return (
-    <div className="divide-y divide-neutral-800">
+    <div className="space-y-2 px-2 py-2">
       {entries.map((entry) => {
         if (!entry?.conversationId) return null
 

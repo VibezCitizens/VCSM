@@ -22,25 +22,25 @@ export default function VportRateCard({
   updatedAt,
 } = {}) {
   return (
-    <div className="rounded-2xl bg-neutral-900/60 border border-neutral-800 p-4 mb-3">
+    <div className="profiles-subcard p-4 mb-3">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-semibold text-white">
+        <div className="text-sm font-semibold text-slate-100">
           {baseCurrency ?? "—"} / {quoteCurrency ?? "—"}
         </div>
-        <div className="text-[11px] text-neutral-400">
+        <div className="text-[11px] text-slate-400">
           LAST UPDATE: {fmtTs(updatedAt)}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-black/30 border border-neutral-800 p-3">
-          <div className="text-[10px] text-neutral-400 mb-1">BUY</div>
-          <div className="text-xl font-bold text-white">{fmtNum(buyRate)}</div>
+        <div className="rounded-xl bg-slate-950/55 border border-sky-300/20 p-3">
+          <div className="text-[10px] text-slate-400 mb-1">BUY</div>
+          <div className="text-xl font-bold text-slate-100">{fmtNum(buyRate)}</div>
         </div>
 
-        <div className="rounded-xl bg-black/30 border border-neutral-800 p-3">
-          <div className="text-[10px] text-neutral-400 mb-1">SELL</div>
-          <div className="text-xl font-bold text-white">{fmtNum(sellRate)}</div>
+        <div className="rounded-xl bg-slate-950/55 border border-sky-300/20 p-3">
+          <div className="text-[10px] text-slate-400 mb-1">SELL</div>
+          <div className="text-xl font-bold text-slate-100">{fmtNum(sellRate)}</div>
         </div>
       </div>
     </div>

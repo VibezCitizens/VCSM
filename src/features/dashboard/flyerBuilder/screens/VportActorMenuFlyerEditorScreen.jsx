@@ -1,81 +1,27 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-
-import FlyerEditorPanel from "@/features/dashboard/flyerBuilder/components/FlyerEditorPanel";
-import { fetchFlyerPublicDetailsByActorId } from "@/features/dashboard/flyerBuilder/dal/flyer.read.dal";
-import { makeFlyerDraftFromPublicDetails } from "@/features/dashboard/flyerBuilder/model/flyerDraft.model";
+import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import { createFlyerEditorScreenStyles } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerEditorScreen.styles";
+import VportDesignStudioViewScreen from "@/features/dashboard/flyerBuilder/designStudio/screens/VportDesignStudioViewScreen";
 
 export function VportActorMenuFlyerEditorScreen() {
   const navigate = useNavigate();
   const params = useParams();
-  const { identity } = useIdentity();
+  const { identity, identityLoading } = useIdentity();
 
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
+  const isDesktop = useDesktopBreakpoint();
+  const viewerActorId = identity?.actorId ?? null;
+  const isOwner =
+    Boolean(actorId) &&
+    Boolean(viewerActorId) &&
+    String(viewerActorId) === String(actorId);
 
-  const [publicDetails, setPublicDetails] = useState(null);
-  const [draft, setDraft] = useState(null);
-  const [screenLoading, setScreenLoading] = useState(false);
+  const styles = useMemo(() => createFlyerEditorScreenStyles(), []);
 
-  // ✅ reactive desktop detection
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return false;
-    return window.matchMedia("(min-width: 821px)").matches;
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return;
-
-    const mq = window.matchMedia("(min-width: 821px)");
-    const onChange = () => setIsDesktop(mq.matches);
-
-    onChange();
-
-    if (mq.addEventListener) mq.addEventListener("change", onChange);
-    else mq.addListener(onChange);
-
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
-      else mq.removeListener(onChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!actorId) return;
-
-    let alive = true;
-
-    (async () => {
-      setScreenLoading(true);
-      try {
-        const d = await fetchFlyerPublicDetailsByActorId(actorId);
-        if (!alive) return;
-
-        setPublicDetails(d || null);
-        setDraft(makeFlyerDraftFromPublicDetails(d || {}));
-      } catch (e) {
-        if (!alive) return;
-        setPublicDetails(null);
-        setDraft(makeFlyerDraftFromPublicDetails({}));
-      } finally {
-        if (!alive) return;
-        setScreenLoading(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [actorId]);
-
-  const vportId = useMemo(
-    () => publicDetails?.vport_id ?? null,
-    [publicDetails]
-  );
-
-  // ✅ canonical routes (actor-first)
   const goBack = useCallback(() => {
     if (!actorId) return;
     navigate(`/actor/${actorId}/dashboard`);
@@ -86,31 +32,26 @@ export function VportActorMenuFlyerEditorScreen() {
     navigate(`/actor/${actorId}/menu/flyer`);
   }, [navigate, actorId]);
 
-  const onSaved = useCallback((res) => {
-    setPublicDetails((prev) => ({
-      ...(prev || {}),
-      ...(res || {}),
-      vport_id: prev?.vport_id ?? res?.vport_id ?? null,
-    }));
-  }, []);
-
   if (!actorId) return null;
+  if (identityLoading) {
+    return <div className="p-10 text-center text-neutral-400">Loading...</div>;
+  }
+  if (!identity) {
+    return (
+      <div className="p-10 text-center text-neutral-400">Sign in required.</div>
+    );
+  }
+  if (!isOwner) {
+    return (
+      <div className="p-10 text-center text-neutral-400">
+        You can only edit flyers for your own vport.
+      </div>
+    );
+  }
 
-  // ✅ desktop-only lock (since you said this screen is only desktop view)
   if (!isDesktop) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          padding: 24,
-          background:
-            "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
-          color: "#fff",
-          textAlign: "center",
-        }}
-      >
+      <div style={styles.mobileOnlyPage}>
         <div style={{ maxWidth: 520 }}>
           <div style={{ fontWeight: 950, letterSpacing: 1.2, fontSize: 16 }}>
             Desktop Only
@@ -121,127 +62,60 @@ export function VportActorMenuFlyerEditorScreen() {
           <button
             type="button"
             onClick={goBack}
-            style={{
-              marginTop: 16,
-              padding: "10px 12px",
-              borderRadius: 14,
-              border: "1px solid rgba(255,255,255,0.12)",
-              background: "rgba(255,255,255,0.06)",
-              color: "#fff",
-              fontSize: 13,
-              fontWeight: 900,
-              cursor: "pointer",
-              letterSpacing: 0.3,
-            }}
+            style={{ ...styles.btn("soft"), marginTop: 16 }}
           >
-            ← Back
+            {"<"}
           </button>
         </div>
       </div>
     );
   }
 
-  const page = {
-    minHeight: "100vh",
-    width: "100%",
-    background:
-      "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
-    color: "#fff",
-    padding: 18,
-  };
-
-  // ✅ real desktop width
-  const container = {
-    width: "100%",
-    maxWidth: 1280,
-    margin: "0 auto",
-    paddingBottom: 80,
-    display: "grid",
-    gap: 12,
-  };
-
-  const header = {
-    borderRadius: 24,
-    overflow: "hidden",
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(12,14,24,0.55)",
-    backdropFilter: "blur(14px)",
-    WebkitBackdropFilter: "blur(14px)",
-    boxShadow: "0 30px 90px rgba(0,0,0,0.65)",
-    padding: 14,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    flexWrap: "wrap",
-  };
-
-  const btn = (variant = "soft") => ({
-    padding: "10px 12px",
-    borderRadius: 14,
-    border:
-      variant === "soft"
-        ? "1px solid rgba(255,255,255,0.12)"
-        : "1px solid rgba(0,255,240,0.22)",
-    background:
-      variant === "soft"
-        ? "rgba(255,255,255,0.06)"
-        : "linear-gradient(135deg, rgba(0,255,240,0.18), rgba(124,58,237,0.14), rgba(0,153,255,0.14))",
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: 900,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    letterSpacing: 0.3,
-  });
-
   const content = (
-    <div style={page}>
-      <div className="flyer-editor-scope" style={container}>
-        <div className="flyer-editor-header" style={header}>
+    <div style={styles.page}>
+      <div className="flyer-editor-scope" style={styles.container}>
+        <div className="flyer-editor-header" style={styles.header}>
           <button
             className="flyer-editor-back"
             type="button"
             onClick={goBack}
-            style={btn("soft")}
+            style={styles.btn("soft")}
           >
-            ← Back
+            {"<- Back"}
           </button>
 
           <div
             className="flyer-editor-title"
             style={{ fontWeight: 950, letterSpacing: 1.2 }}
           >
-            EDIT FLYER
+            VPORT CANVAS STUDIO
           </div>
 
           <button
             className="flyer-editor-preview"
             type="button"
             onClick={openPreview}
-            style={btn("soft")}
+            style={styles.btn("glow")}
           >
-            Preview
+            Public preview
           </button>
         </div>
 
-        {screenLoading || !draft ? (
-          <div className="flex justify-center py-20 text-neutral-400">
-            Loading…
-          </div>
-        ) : (
-          <FlyerEditorPanel
-            vportId={vportId}
-            draft={draft}
-            setDraft={setDraft}
-            onSaved={onSaved}
-          />
-        )}
+        <VportDesignStudioViewScreen
+          actorId={actorId}
+          starter={{
+            documentTitle: "VPORT Flyer Studio",
+            title: "Digital Menu",
+            subtitle: "Scan and explore",
+            note: "Create premium page designs and export instantly",
+            accentColor: "#b572ff",
+          }}
+          onOpenPreview={openPreview}
+        />
       </div>
     </div>
   );
 
-  // ✅ KEY FIX: escape RootLayout/mobile frame using portal overlay
   if (typeof document !== "undefined") {
     return createPortal(
       <div
@@ -249,7 +123,7 @@ export function VportActorMenuFlyerEditorScreen() {
           position: "fixed",
           inset: 0,
           zIndex: 9999,
-          overflow: "auto",
+          overflow: "hidden",
           background: "#000",
         }}
       >

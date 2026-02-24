@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 
 export default function BlockConfirmModal({
   open,
@@ -12,7 +12,7 @@ export default function BlockConfirmModal({
   onConfirm,
   onCancel,
 }) {
-  const actor = useActorPresentation(targetActorId);
+  const actor = useActorSummary(targetActorId);
 
   useEffect(() => {
     if (!open) return;

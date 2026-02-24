@@ -11,18 +11,18 @@ export default function MenuReviewCTA({ onClick, label = "Review Food" }) {
         flex items-center gap-2
         px-4 py-2
         rounded-full
-        bg-white/10 backdrop-blur-md
-        border border-white/20
-        text-white text-sm font-semibold
+        bg-sky-300/12 backdrop-blur-md
+        border border-sky-300/35
+        text-sky-100 text-sm font-semibold
         shadow-lg
-        hover:bg-white/15
+        hover:bg-sky-300/20
         active:scale-95
         transition-all
       "
       style={{ WebkitBackdropFilter: "blur(12px)" }}
       aria-label={label}
     >
-      <Star size={16} className="text-yellow-400" />
+      <Star size={16} className="text-sky-300" />
       {label}
     </button>
   );

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import 'uno.css'
 import '@/styles/global.css'
+import '@/styles/citizens-theme.css'
 
 import App from './App'
 import { AuthProvider } from '@/app/providers/AuthProvider'

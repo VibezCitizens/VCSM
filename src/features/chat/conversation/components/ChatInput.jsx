@@ -17,10 +17,7 @@ export default function ChatInput({
 }) {
   const [value, setValue] = useState('')
   const [topBarOpen, setTopBarOpen] = useState(false)
-
-  // ✅ media preview state
   const [mediaPreview, setMediaPreview] = useState(null)
-  // { file, url, type }
 
   const composingRef = useRef(false)
   const topInputRef = useRef(null)
@@ -38,7 +35,9 @@ export default function ChatInput({
       const len = el.value?.length ?? 0
       try {
         el.setSelectionRange(len, len)
-      } catch {}
+      } catch {
+        // noop
+      }
     }
 
     trigger()
@@ -55,10 +54,7 @@ export default function ChatInput({
     }
   }, [inEdit, initialValue, focusInput])
 
-  const clamp = useCallback(
-    (s) => (s.length > maxLength ? s.slice(0, maxLength) : s),
-    [maxLength]
-  )
+  const clamp = useCallback((s) => (s.length > maxLength ? s.slice(0, maxLength) : s), [maxLength])
 
   const openKeyboard = useCallback(
     (e) => {
@@ -74,10 +70,8 @@ export default function ChatInput({
   const doPrimary = useCallback(async () => {
     if (actuallyDisabled) return
     const text = value.trim()
-
     if (!text && !mediaPreview) return
 
-    // ✅ send media first (await upload handler)
     if (mediaPreview) {
       try {
         await onAttach?.([mediaPreview.file])
@@ -87,14 +81,13 @@ export default function ChatInput({
       }
     }
 
-    // ✅ then send text (or edit)
     if (text) {
       if (inEdit) onSaveEdit?.(text)
       else onSend?.(text)
     }
 
     setValue('')
-  }, [actuallyDisabled, value, mediaPreview, onAttach, onSend, inEdit, onSaveEdit])
+  }, [actuallyDisabled, value, mediaPreview, onAttach, inEdit, onSaveEdit, onSend])
 
   const handleChange = (e) => {
     setValue(clamp(e.target.value))
@@ -106,6 +99,7 @@ export default function ChatInput({
       e.preventDefault()
       doPrimary()
     }
+
     if (e.key === 'Escape' && !composingRef.current) {
       if (inEdit) onCancelEdit?.()
       else {
@@ -115,30 +109,22 @@ export default function ChatInput({
     }
   }
 
-  // ✅ Handle file pick + preview
   const handleFilePick = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // only allow images/videos
     const t = String(file.type || '')
     if (!t.startsWith('image/') && !t.startsWith('video/')) {
       e.target.value = ''
       return
     }
 
-    // cleanup any previous preview url
     if (mediaPreview?.url) {
       URL.revokeObjectURL(mediaPreview.url)
     }
 
     const url = URL.createObjectURL(file)
-
-    setMediaPreview({
-      file,
-      url,
-      type: file.type,
-    })
+    setMediaPreview({ file, url, type: file.type })
 
     e.target.value = ''
     requestAnimationFrame(() => focusInput())
@@ -149,7 +135,6 @@ export default function ChatInput({
     setMediaPreview(null)
   }
 
-  // ✅ prevent leaking objectURLs on unmount
   useEffect(() => {
     return () => {
       if (mediaPreview?.url) URL.revokeObjectURL(mediaPreview.url)
@@ -158,13 +143,7 @@ export default function ChatInput({
 
   return (
     <>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*,video/*"
-        onChange={handleFilePick}
-        className="hidden"
-      />
+      <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFilePick} className="hidden" />
 
       <form
         onSubmit={(e) => {
@@ -172,98 +151,75 @@ export default function ChatInput({
           doPrimary()
         }}
         className={`chat-topbar transition-all duration-200 ${
-          topBarOpen
-            ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-2 pointer-events-none'
+          topBarOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
         }`}
       >
-        <div className="flex items-center gap-2 px-3 py-2 w-full">
-          {/* Attach */}
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="shrink-0 p-2 rounded-full text-purple-400 hover:text-purple-300 active:opacity-80"
-            disabled={actuallyDisabled}
-            aria-label="Attach"
-          >
-            <Paperclip size={22} />
-          </button>
+        <div className="w-full px-3 py-2">
+          <div className="module-modern-shell flex items-center gap-2 rounded-2xl px-2 py-2">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="module-modern-btn module-modern-btn--ghost shrink-0 rounded-full p-2 text-indigo-300"
+              disabled={actuallyDisabled}
+              aria-label="Attach"
+            >
+              <Paperclip size={20} />
+            </button>
 
-          {/* Media preview pill */}
-          {mediaPreview && (
-            <div className="relative shrink-0">
-              {String(mediaPreview.type || '').startsWith('video/') ? (
-                <video
-                  src={mediaPreview.url}
-                  className="w-12 h-12 rounded-xl object-cover border border-purple-700"
-                  muted
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={mediaPreview.url}
-                  alt=""
-                  className="w-12 h-12 rounded-xl object-cover border border-purple-700"
-                />
-              )}
+            {mediaPreview && (
+              <div className="relative shrink-0">
+                {String(mediaPreview.type || '').startsWith('video/') ? (
+                  <video src={mediaPreview.url} className="h-12 w-12 rounded-xl border border-indigo-300/35 object-cover" muted playsInline />
+                ) : (
+                  <img src={mediaPreview.url} alt="" className="h-12 w-12 rounded-xl border border-indigo-300/35 object-cover" />
+                )}
 
-              <button
-                type="button"
-                onClick={removeMedia}
-                className="absolute -top-2 -right-2 bg-black text-white rounded-full p-1"
-                aria-label="Remove media"
-              >
-                <X size={12} />
-              </button>
-            </div>
-          )}
+                <button
+                  type="button"
+                  onClick={removeMedia}
+                  className="absolute -right-2 -top-2 rounded-full bg-black p-1 text-white"
+                  aria-label="Remove media"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            )}
 
-          {/* Text input */}
-          <input
-            ref={topInputRef}
-            type="text"
-            value={value}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            onCompositionStart={() => (composingRef.current = true)}
-            onCompositionEnd={() => (composingRef.current = false)}
-            placeholder={inEdit ? 'Edit message…' : 'Type a message…'}
-            className="
-              flex-1
-              w-full px-4 py-3
-              rounded-2xl
-              bg-neutral-900 text-white
-              border border-purple-700
-              focus:ring-2 focus:ring-purple-500
-              outline-none
-              placeholder:text-neutral-400
-            "
-            disabled={actuallyDisabled}
-            autoComplete="off"
-            inputMode="text"
-            enterKeyHint={inEdit ? 'done' : 'send'}
-          />
+            <input
+              ref={topInputRef}
+              type="text"
+              value={value}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              onCompositionStart={() => (composingRef.current = true)}
+              onCompositionEnd={() => (composingRef.current = false)}
+              placeholder={inEdit ? 'Edit message...' : 'Type a message...'}
+              className="module-modern-input flex-1 rounded-2xl px-4 py-2.5"
+              disabled={actuallyDisabled}
+              autoComplete="off"
+              inputMode="text"
+              enterKeyHint={inEdit ? 'done' : 'send'}
+            />
 
-          {/* Send */}
-          <button
-            type="submit"
-            disabled={actuallyDisabled || (!value.trim() && !mediaPreview)}
-            className={
-              value.trim() || mediaPreview
-                ? 'shrink-0 w-11 h-11 rounded-full bg-purple-600 text-white flex items-center justify-center active:opacity-90'
-                : 'shrink-0 w-11 h-11 rounded-full bg-purple-900/40 text-purple-400 cursor-not-allowed flex items-center justify-center'
-            }
-            aria-label={inEdit ? 'Save' : 'Send'}
-          >
-            <Send size={18} />
-          </button>
+            <button
+              type="submit"
+              disabled={actuallyDisabled || (!value.trim() && !mediaPreview)}
+              className={
+                value.trim() || mediaPreview
+                  ? 'module-modern-btn module-modern-btn--primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white'
+                  : 'module-modern-btn flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-slate-600/30 bg-slate-800/40 text-slate-500'
+              }
+              aria-label={inEdit ? 'Save' : 'Send'}
+            >
+              <Send size={16} />
+            </button>
+          </div>
         </div>
       </form>
 
-      {/* Floating T button unchanged */}
       <button
         type="button"
-        className="chat-bottom-t fixed bottom-6 right-6 w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center font-bold text-xl z-40 border"
+        className="chat-bottom-t module-modern-btn module-modern-btn--primary fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full border font-bold text-xl"
         onPointerDown={openKeyboard}
         onClick={openKeyboard}
         aria-label="Open keyboard"

@@ -28,34 +28,34 @@ export default function VportRatesView({
   const error = q.error ?? null;
 
   if (!targetActorId) {
-    return <div className="p-6 text-sm text-neutral-400">Invalid vport.</div>;
+    return <div className="p-6 text-sm profiles-muted">Invalid vport.</div>;
   }
 
   if (q.isLoading) {
     return (
-      <div className="p-6">
-        <div className="h-5 w-40 bg-neutral-800 rounded mb-2" />
-        <div className="h-4 w-72 bg-neutral-800 rounded mb-6" />
-        <div className="h-28 bg-neutral-900/60 border border-neutral-800 rounded-2xl mb-3" />
-        <div className="h-28 bg-neutral-900/60 border border-neutral-800 rounded-2xl mb-3" />
-        <div className="h-28 bg-neutral-900/60 border border-neutral-800 rounded-2xl mb-3" />
+      <div className="profiles-card p-6">
+        <div className="h-5 w-40 bg-white/10 rounded mb-2" />
+        <div className="h-4 w-72 bg-white/10 rounded mb-6" />
+        <div className="h-28 profiles-subcard mb-3" />
+        <div className="h-28 profiles-subcard mb-3" />
+        <div className="h-28 profiles-subcard mb-3" />
       </div>
     );
   }
 
   return (
-    <div className="p-6">
+    <div className="profiles-card p-6">
       <div className="mb-4">
-        <div className="text-lg font-semibold text-white">{title}</div>
-        <div className="text-sm text-neutral-400">{subtitle}</div>
+        <div className="text-lg font-semibold text-slate-100">{title}</div>
+        <div className="text-sm text-slate-400">{subtitle}</div>
 
-        <div className="text-[12px] text-neutral-500 mt-2">
+        <div className="text-[12px] text-slate-500 mt-2">
           Last updated:{" "}
-          <span className="text-neutral-300">{fmtTs(lastUpdated)}</span>
+          <span className="text-slate-300">{fmtTs(lastUpdated)}</span>
         </div>
 
         {error ? (
-          <div className="mt-3 text-sm text-red-400">
+          <div className="mt-3 profiles-error rounded-xl p-3 text-sm">
             {String(error?.message ?? error)}
           </div>
         ) : null}

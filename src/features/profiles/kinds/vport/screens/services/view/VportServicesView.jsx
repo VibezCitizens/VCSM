@@ -8,51 +8,12 @@ import VportServicesOwnerPanel from "@/features/profiles/kinds/vport/screens/ser
 
 import useVportServices from "@/features/profiles/kinds/vport/hooks/services/useVportServices";
 import useUpsertVportServices from "@/features/profiles/kinds/vport/hooks/services/useUpsertVportServices";
-
-function toKey(v) {
-  return (v ?? "").toString().trim();
-}
-
-function buildEnabledMap(services) {
-  const m = new Map();
-  (services ?? []).forEach((s) => {
-    const k = toKey(s?.key ?? s?.serviceKey ?? s?.id);
-    if (!k) return;
-
-    const enabled =
-      typeof s?.enabled === "boolean"
-        ? s.enabled
-        : typeof s?.is_enabled === "boolean"
-          ? s.is_enabled
-          : s?.enabled !== false;
-
-    m.set(k, Boolean(enabled));
-  });
-  return m;
-}
-
-function applyEnabledMapToServices(services, enabledMap) {
-  return (services ?? []).map((s) => {
-    const k = toKey(s?.key ?? s?.serviceKey ?? s?.id);
-    if (!k) return s;
-
-    const nextEnabled = enabledMap.has(k) ? enabledMap.get(k) : s?.enabled;
-
-    return {
-      ...s,
-      key: s?.key ?? k,
-      enabled: Boolean(nextEnabled),
-    };
-  });
-}
-
-function mapsEqual(a, b) {
-  if (a.size !== b.size) return false;
-  for (const [k, v] of a.entries()) {
-    if (!b.has(k) || b.get(k) !== v) return false;
-  }
-  return true;
-}
+import {
+  applyEnabledMapToServices,
+  buildEnabledMap,
+  mapsEqual,
+  toServiceKey,
+} from "@/features/profiles/kinds/vport/screens/services/model/vportServicesEnabledMap.model";
 
 export default function VportServicesView({
   profile = null,
@@ -110,7 +71,10 @@ export default function VportServicesView({
   });
 
   const mode = s.data?.mode ?? "viewer";
-  const servicesFromApi = s.data?.services ?? [];
+  const servicesFromApi = useMemo(
+    () => (Array.isArray(s.data?.services) ? s.data.services : []),
+    [s.data?.services]
+  );
   const readError = s.error ?? s.data?.error ?? null;
 
   const resolvedVportType = useMemo(() => {
@@ -156,7 +120,7 @@ export default function VportServicesView({
   }, [servicesFromApi, draftEnabledMap]);
 
   const onToggleService = useCallback(({ key, enabled }) => {
-    const k = toKey(key);
+    const k = toServiceKey(key);
     if (!k) return;
 
     setDraftEnabledMap((prev) => {

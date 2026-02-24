@@ -1,26 +1,19 @@
-// src/features/post/postcard/components/RoseReactionButton.jsx
-
 import React from "react";
 
-export default function RoseReactionButton({
-  count,
-  onSend,
-  disabled,
-}) {
+export default function RoseReactionButton({ count, onSend, disabled }) {
   return (
     <button
       onClick={() => onSend?.(1)}
       disabled={disabled}
       className="
-        flex items-center gap-2 text-2xl transition-all duration-150
-        opacity-70 hover:opacity-100
+        flex items-center gap-2 text-xl px-1.5 py-1 rounded-lg transition-all duration-150
+        opacity-80 hover:opacity-100
       "
+      type="button"
+      aria-label="Rose"
     >
-      <span>🌹</span>
-
-      <span className="text-sm text-neutral-300 font-medium">
-        {count}
-      </span>
+      <span>{`\uD83C\uDF39`}</span>
+      <span className="text-sm text-slate-300 font-medium">{count}</span>
     </button>
   );
 }

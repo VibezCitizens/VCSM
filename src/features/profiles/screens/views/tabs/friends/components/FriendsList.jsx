@@ -15,6 +15,8 @@ export default function FriendsList({
   isPrivate,
   isOwnProfile,
 }) {
+  const { mutual, iAmFan, myFans, loading } = useFriendLists(actorId);
+
   /* ============================================================
      PRIVACY GATE
      ============================================================ */
@@ -25,8 +27,6 @@ export default function FriendsList({
       </p>
     );
   }
-
-  const { mutual, iAmFan, myFans, loading } = useFriendLists(actorId);
 
   /* ============================================================
      LOADING

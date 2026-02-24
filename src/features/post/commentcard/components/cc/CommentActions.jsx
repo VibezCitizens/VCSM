@@ -1,5 +1,3 @@
-// src/features/post/commentcard/components/cc/CommentActions.jsx
-
 export default function CommentActions({
   liked,
   likeCount,
@@ -9,39 +7,30 @@ export default function CommentActions({
   onReply,
 }) {
   return (
-    <div className="mt-2 flex items-center gap-6 text-xs text-neutral-300">
+    <div className="mt-2 flex items-center gap-6 text-xs text-slate-300">
       {canLike && (
         <button
           onClick={onLike}
           className={`
-            flex items-center gap-1.5
-            transition
+            flex items-center gap-1.5 transition
             ${liked
-              ? "text-red-500"
-              : "text-neutral-300 hover:text-red-400"}
+              ? "text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.45)]"
+              : "text-slate-300 hover:text-rose-300"}
           `}
+          type="button"
         >
-          {/* Use emoji heart for visibility */}
           <span className="text-base leading-none">
-            {liked ? "❤️" : "🤍"}
+            {liked ? "\u2764\uFE0F" : "\uD83E\uDD0D"}
           </span>
-
-          {likeCount > 0 && (
-            <span className="text-xs font-medium">
-              {likeCount}
-            </span>
-          )}
+          {likeCount > 0 && <span className="text-xs font-medium">{likeCount}</span>}
         </button>
       )}
 
       {canReply && (
         <button
           onClick={onReply}
-          className="
-            text-neutral-300
-            hover:text-white
-            transition
-          "
+          className="text-slate-300 hover:text-slate-100 transition"
+          type="button"
         >
           Reply
         </button>

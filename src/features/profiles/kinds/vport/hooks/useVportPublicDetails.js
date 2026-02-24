@@ -11,10 +11,7 @@ export function useVportPublicDetails(actorId) {
   useEffect(() => {
     let alive = true
 
-    const dev =
-      typeof process !== "undefined"
-        ? process.env.NODE_ENV !== "production"
-        : true
+    const dev = Boolean(import.meta?.env?.DEV)
 
     async function run() {
       if (!actorId) {
@@ -58,8 +55,7 @@ export function useVportPublicDetails(actorId) {
           console.groupEnd()
         }
       } finally {
-        if (!alive) return
-        setLoading(false)
+        if (alive) setLoading(false)
       }
     }
 

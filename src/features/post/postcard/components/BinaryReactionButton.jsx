@@ -3,7 +3,6 @@
 import React from "react";
 
 export default function BinaryReactionButton({
-  type,
   emoji,
   active,
   count,
@@ -15,8 +14,12 @@ export default function BinaryReactionButton({
       onClick={onClick}
       disabled={disabled}
       className={`
-        flex items-center gap-2 text-2xl transition-all duration-150
-        ${active ? "scale-125 opacity-100" : "opacity-70 hover:opacity-100"}
+        flex items-center gap-2 text-xl px-1.5 py-1 rounded-lg transition-all duration-150
+        ${
+          active
+            ? "scale-110 opacity-100 drop-shadow-[0_0_10px_rgba(196,124,255,0.65)]"
+            : "opacity-80 hover:opacity-100"
+        }
       `}
     >
       <span
@@ -29,7 +32,7 @@ export default function BinaryReactionButton({
         {emoji}
       </span>
 
-      <span className="text-sm text-neutral-300 font-medium">
+      <span className={`text-sm font-medium ${active ? "text-slate-100" : "text-slate-300"}`}>
         {count}
       </span>
     </button>

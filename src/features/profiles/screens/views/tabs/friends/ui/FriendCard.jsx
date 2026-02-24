@@ -15,12 +15,12 @@
 //   • No layout variance
 // ============================================================
 
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 import ActorLink from "@/shared/components/ActorLink";
 
 export default function FriendCard({ actorId }) {
-  const actor = useActorPresentation(actorId);
-  if (!actor) return null;
+  const actor = useActorSummary(actorId);
+  if (!actor?.actorId) return null;
 
   return (
     <ActorLink

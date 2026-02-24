@@ -35,7 +35,7 @@ export function VportGasPricesView({
   });
 
   return (
-    <div className="space-y-6">
+    <div className="profiles-card space-y-6 p-5">
       <GasPricesPanel
         loading={loading}
         error={error}
@@ -55,7 +55,7 @@ export function VportGasPricesView({
       />
 
       {submitError ? (
-        <div className="rounded-2xl border border-red-900/60 bg-red-950/40 p-4 text-sm text-red-300">
+        <div className="profiles-error rounded-2xl p-4 text-sm">
           {String(submitError?.message ?? submitError)}
         </div>
       ) : null}

@@ -134,7 +134,9 @@ export function VportActorMenuItemFormModal({
       if (imagePreviewUrl && imagePreviewUrl.startsWith("blob:")) {
         try {
           URL.revokeObjectURL(imagePreviewUrl);
-        } catch (_) {}
+        } catch {
+          // ignore revoke failures
+        }
       }
     };
   }, [imagePreviewUrl]);
@@ -169,7 +171,9 @@ export function VportActorMenuItemFormModal({
       if (prev && prev.startsWith("blob:")) {
         try {
           URL.revokeObjectURL(prev);
-        } catch (_) {}
+        } catch {
+          // ignore revoke failures
+        }
       }
       return blobUrl;
     });

@@ -27,7 +27,6 @@ export function VportActorMenuItemFormPhotoField({
         <div style={imageRow}>
           <div style={imagePreview}>
             {imagePreviewUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={imagePreviewUrl}
                 alt=""

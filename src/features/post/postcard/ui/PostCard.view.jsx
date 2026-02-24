@@ -1,6 +1,5 @@
-// src/features/post/postcard/ui/PostCard.view.jsx (or wherever PostCardView lives)
+﻿// src/features/post/postcard/ui/PostCard.view.jsx
 import React from "react";
-import { motion } from "framer-motion";
 
 import MediaCarousel from "../components/MediaCarousel";
 import ReactionBar from "../components/ReactionBar";
@@ -8,15 +7,12 @@ import ReactionBar from "../components/ReactionBar";
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
 import { useIdentity } from "@/state/identity/identityContext";
 
-// ✅ clickable mentions
 import LinkifiedMentions from "@/features/upload/ui/LinkifiedMentions";
-
-// ✅ NEW header
 import PostHeader from "../components/PostHeader";
+import "@/features/post/styles/post-modern.css";
 
 export default function PostCardView({
   post,
-  onReact,
   onOpenPost,
   onOpenMenu,
   onShare,
@@ -24,35 +20,36 @@ export default function PostCardView({
   covered = false,
   cover = null,
 }) {
-  if (!post) return null;
+  const safePost = post ?? {};
 
   const { identity } = useIdentity();
   const viewerActorId = identity?.actorId ?? null;
 
-  const commentCount = usePostCommentCount(post.id);
+  const commentCount = usePostCommentCount(safePost.id);
 
-  const locationText = String(post.location_text ?? post.locationText ?? "").trim();
+  const locationText = String(safePost.location_text ?? safePost.locationText ?? "").trim();
 
-  const createdAt = post.created_at ?? post.createdAt ?? null;
+  const createdAt = safePost.created_at ?? safePost.createdAt ?? null;
 
-  // keep ownership logic as-is
-  const isOwner = !!viewerActorId && post.actorId === viewerActorId;
+  const isOwner = !!viewerActorId && safePost.actorId === viewerActorId;
+
+  if (!post) return null;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18 }}
+    <div
       className="
+        post-modern post-card
         w-full
-        bg-neutral-900 border border-neutral-800
+        bg-gradient-to-b from-[#141024] to-[#0c0b16]
+        border border-violet-300/20
         rounded-2xl shadow-sm
         overflow-hidden
         relative
+        transition-transform duration-200
+        hover:-translate-y-[1px]
+        hover:shadow-[0_16px_34px_rgba(0,0,0,0.35)]
       "
     >
-      {/* ✅ COVER LAYER */}
       {covered ? (
         <div
           className="absolute inset-0 z-20"
@@ -65,12 +62,11 @@ export default function PostCardView({
         </div>
       ) : null}
 
-      {/* ✅ HEADER (username + timestamp + location) */}
       <PostHeader
-        actor={post.actorId}
+        actor={safePost.actorId}
         createdAt={createdAt}
         locationText={locationText}
-        postId={post.id}
+        postId={safePost.id}
         onOpenPost={covered ? undefined : onOpenPost}
         onOpenMenu={({ postId, postActorId, anchorRect }) => {
           if (covered) return;
@@ -85,21 +81,19 @@ export default function PostCardView({
         }}
       />
 
-      {/* ✅ BODY TEXT */}
-      {post.text ? (
+      {safePost.text ? (
         <div
           onClick={covered ? undefined : onOpenPost}
           className="
-            px-4 pb-3 text-sm text-neutral-200
+            px-4 pb-3 text-sm text-slate-100/95
             whitespace-pre-line cursor-pointer
           "
         >
-          <LinkifiedMentions text={post.text} mentionMap={post.mentionMap || {}} />
+          <LinkifiedMentions text={safePost.text} mentionMap={safePost.mentionMap || {}} />
         </div>
       ) : null}
 
-      {/* ✅ MEDIA */}
-      {post.media?.length > 0 ? (
+      {safePost.media?.length > 0 ? (
         <div
           className="px-0 mb-2"
           onClick={(e) => e.stopPropagation()}
@@ -107,11 +101,10 @@ export default function PostCardView({
           onTouchStart={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <MediaCarousel media={post.media} />
+          <MediaCarousel media={safePost.media} />
         </div>
       ) : null}
 
-      {/* ✅ REACTIONS */}
       <div className="px-4 pb-3">
         <div
           onClickCapture={(e) => {
@@ -131,13 +124,13 @@ export default function PostCardView({
           }}
         >
           <ReactionBar
-            postId={post.id}
+            postId={safePost.id}
             commentCount={commentCount}
             onOpenComments={covered ? undefined : onOpenPost}
             onShare={covered ? undefined : onShare}
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -15,6 +15,7 @@ import PostCardView from "@/features/post/postcard/ui/PostCard.view";
 
 import { shareNative } from "@/shared/lib/shareNative";
 import ShareModal from "@/features/post/postcard/components/ShareModal";
+import "@/features/post/styles/post-modern.css";
 
 // ✅ NEW
 import usePostCovers from "@/features/post/postcard/hooks/usePostCovers";
@@ -164,11 +165,11 @@ export default function PostFeedScreen() {
   }, [loading, hasMore, fetchPosts]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto pb-24">
-      <div className="px-4 py-3 text-lg font-semibold">Feed</div>
+    <div className="post-modern w-full max-w-2xl mx-auto pb-24">
+      <div className="px-4 py-3 text-lg font-semibold text-slate-100">Feed</div>
 
       {!loading && posts.length === 0 && (
-        <div className="p-6 text-center text-neutral-500">No Vibes yet.</div>
+        <div className="p-6 text-center text-slate-500">No Vibes yet.</div>
       )}
 
       {posts.map((post) => {
@@ -224,10 +225,10 @@ export default function PostFeedScreen() {
         onClose={closeShare}
       />
 
-      {loading && <div className="p-6 text-center text-neutral-500">Loading…</div>}
+      {loading && <div className="p-6 text-center text-slate-500">Loading...</div>}
 
       {!hasMore && posts.length > 0 && !loading && (
-        <div className="p-6 text-center text-neutral-600 text-sm">
+        <div className="p-6 text-center text-slate-600 text-sm">
           You reached the end.
         </div>
       )}

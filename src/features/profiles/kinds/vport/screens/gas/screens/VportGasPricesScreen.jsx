@@ -1,7 +1,14 @@
-// VportGasPricesScreen.jsx
+// src/features/profiles/kinds/vport/screens/gas/screens/VportGasPricesScreen.jsx
+
+import React, { useMemo } from "react";
+import { useParams } from "react-router-dom";
+
+import { useIdentity } from "@/state/identity/identityContext";
+import { VportGasPricesView } from "@/features/profiles/kinds/vport/screens/gas/view/VportGasPricesView";
+
 export function VportGasPricesScreen({ actorId: actorIdProp }) {
   const params = useParams();
-  const { identity } = useIdentity(); // ✅ destructure, pass actor
+  const { identity } = useIdentity();
 
   const actorId = useMemo(() => {
     return actorIdProp ?? params?.actorId ?? null;
@@ -17,3 +24,5 @@ export function VportGasPricesScreen({ actorId: actorIdProp }) {
     </div>
   );
 }
+
+export default VportGasPricesScreen;

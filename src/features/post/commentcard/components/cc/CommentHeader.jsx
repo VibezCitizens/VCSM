@@ -1,29 +1,32 @@
 import ActorLink from "@/shared/components/ActorLink";
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 import { formatTimestamp } from "@/shared/lib/formatTimestamp";
 
 export default function CommentHeader({
   actor,
   createdAt,
-
   canDelete,
   canReport = false,
-
   onOpenMenu,
   commentId,
   commentActorId,
 }) {
-  const actorUI = useActorPresentation(actor);
-  if (!actorUI) return null;
+  const actorSummary = useActorSummary(actor);
+  if (!actorSummary?.actorId) return null;
 
   const timestamp = createdAt ? formatTimestamp(createdAt) : null;
-
   const showMenu = !!canDelete || !!canReport;
 
   return (
     <div className="flex items-center justify-between">
       <ActorLink
-        actor={actorUI}
+        actor={{
+          id: actorSummary.actorId,
+          displayName: actorSummary.displayName,
+          username: actorSummary.username,
+          avatar: actorSummary.avatar,
+          route: actorSummary.route,
+        }}
         showUsername
         showTimestamp={Boolean(timestamp)}
         timestamp={timestamp}
@@ -42,10 +45,11 @@ export default function CommentHeader({
               anchorRect: rect,
             });
           }}
-          className="text-neutral-500 hover:text-white text-lg px-2"
+          className="text-slate-500 hover:text-slate-100 text-lg px-2"
           type="button"
+          aria-label="Comment options"
         >
-          •••
+          ...
         </button>
       )}
     </div>

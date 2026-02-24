@@ -7,7 +7,7 @@ import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
  *
  * NOTE: `bucket` is ignored now (Cloudflare R2 handles storage).
  */
-export async function uploadFlyerImage({ bucket, vportId, file, kind }) {
+export async function uploadFlyerImage({ vportId, file, kind }) {
   if (!vportId) throw new Error("Missing vportId");
   if (!file) throw new Error("Missing file");
   if (!kind) throw new Error("Missing kind");

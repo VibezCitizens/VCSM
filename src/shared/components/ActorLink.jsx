@@ -47,12 +47,12 @@ export default function ActorLink({
 
       {showText ? (
         <div className="flex flex-col leading-tight">
-          <span className={`${textSize} text-white font-medium`}>
+          <span className={`${textSize} text-slate-100 font-semibold`}>
             {actor.displayName}
           </span>
 
           {showUsername && actor.username && (
-            <span className="text-xs text-gray-400">@{actor.username}</span>
+            <span className="text-xs text-slate-400">@{actor.username}</span>
           )}
 
           {showTimestamp && timestamp && (

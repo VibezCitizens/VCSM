@@ -1,0 +1,26 @@
+.post-modern {
+  --post-surface: linear-gradient(180deg, rgba(20, 16, 34, 0.9), rgba(12, 10, 22, 0.92));
+  --post-subsurface: rgba(16, 13, 29, 0.76);
+  --post-border: rgba(196, 124, 255, 0.2);
+  --post-text: #f3efff;
+  --post-muted: #b5aacd;
+}
+
+.post-modern .post-card {
+  background: var(--post-surface);
+  border: 1px solid var(--post-border);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+}
+
+.post-modern .post-subcard {
+  background: var(--post-subsurface);
+  border-color: var(--post-border);
+}
+
+.post-modern .post-text {
+  color: var(--post-text);
+}
+
+.post-modern .post-muted {
+  color: var(--post-muted);
+}

@@ -20,8 +20,8 @@ export default function VportServicesOwnerCategorySection({
   const canEdit = typeof onEditServiceMeta === "function";
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-black/20 p-5">
-      <div className="text-xs font-black tracking-[0.6px] uppercase text-white/70">
+    <section className="profiles-subcard p-5">
+      <div className="text-xs font-black tracking-[0.6px] uppercase text-slate-300/80">
         {title || "Other"}
       </div>
 

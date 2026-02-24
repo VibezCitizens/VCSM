@@ -57,7 +57,7 @@ export default function VportRatesOwnerView({
   ]);
 
   return (
-    <div className="p-6">
+    <div className="space-y-4">
       <VportRateEditorCard
         title={isOwner ? "Update Rate" : "Rates (read-only)"}
         baseCurrency={baseCurrency}
@@ -74,16 +74,14 @@ export default function VportRatesOwnerView({
         disabled={!isOwner}
       />
 
-      <div className="-mx-6">
-        <VportRatesView
-          profile={profile}
-          actorId={targetActorId}
-          rateType={rateType}
-          title={title}
-          subtitle={subtitle}
-          refreshSeed={refreshSeed}
-        />
-      </div>
+      <VportRatesView
+        profile={profile}
+        actorId={targetActorId}
+        rateType={rateType}
+        title={title}
+        subtitle={subtitle}
+        refreshSeed={refreshSeed}
+      />
     </div>
   );
 }

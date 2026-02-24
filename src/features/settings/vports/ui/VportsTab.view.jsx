@@ -1,11 +1,10 @@
-// src/features/settings/vports/ui/VportsTab.view.jsx
-import { Plus, X } from "lucide-react";
+import { Plus, X } from 'lucide-react'
 
 import Card from '@/features/settings/ui/Card'
-import CreateVportForm from "@/features/vport/CreateVportForm.jsx";
-import OnemoredaysAd from "@/features/ads/widgets/OnemoredaysAd";
+import CreateVportForm from '@/features/vport/CreateVportForm.jsx'
+import OnemoredaysAd from '@/features/ads/widgets/OnemoredaysAd'
 
-import { useVportsController } from "../controller/Vports.controller";
+import { useVportsController } from '../controller/Vports.controller'
 
 export default function VportsTabView() {
   const {
@@ -19,139 +18,98 @@ export default function VportsTabView() {
     profileActorId,
     switchToProfile,
     switchToVport,
-  } = useVportsController();
+  } = useVportsController()
 
   return (
     <div className="space-y-5">
-
-      {/* ================= PROFILE ================= */}
-      <Card className="bg-neutral-950/60 border border-neutral-800/80 rounded-2xl">
-        <div className="mb-3 text-sm font-semibold text-white/90">
-          Your Profile
-        </div>
-
+      <Card>
+        <div className="mb-3 text-sm font-semibold text-slate-100">Your Profile</div>
         <button
           onClick={() => switchToProfile(profileActorId, setBusy)}
-          disabled={busy || activeActor === "profile"}
+          disabled={busy || activeActor === 'profile'}
           className={[
-            "w-full text-left px-4 py-3 rounded-xl transition",
-            "border flex items-center justify-between",
-            activeActor === "profile"
-              ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white border-purple-500"
-              : "bg-neutral-900/70 text-neutral-200 border-neutral-800 hover:bg-neutral-800",
-            busy && "opacity-60 cursor-wait",
-          ].join(" ")}
+            'settings-vport-row w-full px-4 py-3 text-left',
+            'flex items-center justify-between rounded-xl',
+            activeActor === 'profile' ? 'is-active' : '',
+            busy ? 'cursor-wait opacity-60' : '',
+          ].join(' ')}
         >
-          <span className="font-medium">
-            {activeActor === "profile"
-              ? "Current Profile"
-              : "Switch to My Profile"}
+          <span className="font-medium text-slate-100">
+            {activeActor === 'profile' ? 'Current Profile' : 'Switch to My Profile'}
           </span>
-
-          <span className="text-[10px] px-2 py-0.5 rounded-md uppercase bg-white/10">
-            Profile
-          </span>
+          <span className="settings-vport-tag px-2 py-0.5 text-[10px] uppercase">Profile</span>
         </button>
       </Card>
 
-      {/* ================= VPORTS ================= */}
-      <Card className="bg-neutral-950/60 border border-neutral-800/80 rounded-2xl">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-sm font-semibold text-white/90">
-            Your VPORTs
-          </div>
-
-          <button
-            onClick={() => setShowCreator(true)}
-            className="inline-flex items-center gap-2 text-xs px-3 py-1.5
-                       rounded-lg border bg-neutral-900/80 text-neutral-100
-                       border-neutral-800 hover:bg-neutral-800"
-          >
-            <Plus className="w-4 h-4" />
+      <Card>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-sm font-semibold text-slate-100">Your VPORTs</div>
+          <button onClick={() => setShowCreator(true)} className="settings-btn settings-btn--ghost inline-flex items-center gap-2 px-3 py-1.5 text-xs">
+            <Plus className="h-4 w-4" />
             Create VPORT
           </button>
         </div>
 
         {!items.length ? (
-          <div className="text-sm text-neutral-400 bg-neutral-900/60
-                          border border-neutral-800 rounded-xl px-4 py-3">
-            You don’t own any VPORTs yet.
+          <div className="settings-card-surface rounded-xl px-4 py-3 text-sm text-slate-400">
+            You do not own any VPORTs yet.
           </div>
         ) : (
-          <ul className="grid grid-cols-1 gap-2">
+          <ul className="m-0 grid list-none grid-cols-1 gap-2.5 p-0">
             {items.map((v) => {
-              const isActive = activeActor === `vport:${v.id}`;
-
+              const isActive = activeActor === `vport:${v.id}`
               return (
                 <li
                   key={v.id}
-                  className="flex items-center justify-between
-                             rounded-xl border px-3 py-2.5
-                             bg-neutral-900/60 border-neutral-800"
+                  className={[
+                    'settings-vport-row flex w-full items-center justify-between rounded-xl px-3 py-2.5',
+                    isActive ? 'is-active' : '',
+                  ].join(' ')}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex min-w-0 items-center gap-3">
                     <img
-                      src={v.avatar_url || "/avatar.jpg"}
+                      src={v.avatar_url || '/avatar.jpg'}
                       alt=""
-                      className="w-9 h-9 rounded-lg object-cover
-                                 border border-neutral-700/70"
+                      className="h-10 w-10 rounded-lg border border-slate-300/20 object-cover"
                     />
-                    <div className="min-w-0">
-                      <div className="text-sm text-white truncate">
-                        {v.name}
-                      </div>
-                    </div>
+                    <div className="min-w-0 text-[1rem] font-medium text-slate-100 truncate">{v.name}</div>
                   </div>
 
                   <button
                     onClick={() => switchToVport(v, setBusy)}
                     disabled={busy || isActive}
                     className={[
-                      "text-xs px-3 py-1.5 rounded-lg border",
-                      isActive
-                        ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white border-purple-500"
-                        : "bg-neutral-900/80 text-neutral-200 border-neutral-800 hover:bg-neutral-800",
-                    ].join(" ")}
+                      'settings-btn settings-btn--ghost border px-3 py-1.5 text-xs',
+                      isActive ? 'opacity-90' : '',
+                    ].join(' ')}
                   >
-                    {isActive ? "Current" : "Switch"}
+                    {isActive ? 'Current' : 'Switch'}
                   </button>
                 </li>
-              );
+              )
             })}
           </ul>
         )}
       </Card>
 
-      {/* ================= SPONSORED ================= */}
       <OnemoredaysAd />
 
-      {/* ================= CREATE MODAL ================= */}
       {showCreator && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/70"
-            onClick={() => setShowCreator(false)}
-          />
-          <div className="relative w-full max-w-[560px]
-                          rounded-2xl border border-neutral-800 bg-neutral-950">
-            <div className="flex items-center justify-between
-                            px-4 py-3 border-b border-neutral-800">
-              <div className="text-sm font-semibold text-white/90">
-                Create a VPORT
-              </div>
-              <button
-                onClick={() => setShowCreator(false)}
-                className="p-1.5 rounded-md hover:bg-white/5 text-white/70"
-              >
-                <X className="w-4 h-4" />
+          <div className="absolute inset-0 bg-black/70" onClick={() => setShowCreator(false)} />
+          <div className="settings-shell relative w-full max-w-[560px] rounded-2xl">
+            <div className="flex items-center justify-between border-b border-slate-300/10 px-4 py-3">
+              <div className="text-sm font-semibold text-slate-100">Create a VPORT</div>
+              <button onClick={() => setShowCreator(false)} className="settings-btn settings-btn--ghost p-1.5 text-slate-300">
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="p-4">
               <CreateVportForm
                 onCreated={(list) => {
-                  setItems(list);
-                  setShowCreator(false);
+                  setItems(list)
+                  setShowCreator(false)
                 }}
               />
             </div>
@@ -159,5 +117,5 @@ export default function VportsTabView() {
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -13,8 +13,8 @@ export default function ActorProfileTabs({
 }) {
   return (
     <div className="mt-4 px-4 relative z-30">
-      <div className="mx-auto w-full max-w-3xl">
-        <div className="flex justify-center gap-10 border-b border-white/15">
+      <div className="profiles-shell w-full">
+        <div className="profiles-tabbar flex justify-center gap-10">
           {DEFAULT_TABS.map((t) => {
             const active = tab === t.key
 
@@ -23,13 +23,10 @@ export default function ActorProfileTabs({
                 key={t.key}
                 onClick={() => setTab(t.key)}
                 className={`
+                  profiles-tab-btn
                   relative py-3
                   text-[18px] tracking-wide transition-colors
-                  ${
-                    active
-                      ? 'text-white font-semibold'
-                      : 'text-neutral-400 hover:text-neutral-200'
-                  }
+                  ${active ? 'is-active' : ''}
                 `}
                 aria-current={active ? 'page' : undefined}
               >
@@ -38,8 +35,9 @@ export default function ActorProfileTabs({
                 {active && (
                   <span
                     className="
+                      profiles-tab-indicator
                       absolute left-0 right-0 -bottom-[1px]
-                      h-[2px] bg-white/90 rounded-full
+                      h-[2px] rounded-full
                     "
                   />
                 )}

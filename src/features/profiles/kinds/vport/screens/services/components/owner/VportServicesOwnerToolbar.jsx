@@ -6,7 +6,6 @@ export default function VportServicesOwnerToolbar({
   dirty = false,
   isSaving = false,
   onSave = null,
-  onReset = null, // kept for compatibility, but unused
 }) {
   const canSave = dirty && !isSaving && typeof onSave === "function";
 
@@ -38,7 +37,7 @@ export default function VportServicesOwnerToolbar({
         className={[
           "rounded-xl px-3 py-2 text-xs font-black border",
           canSave
-            ? "border-purple-400/30 bg-purple-500/15 text-purple-100 hover:bg-purple-500/25"
+            ? "border-sky-300/35 bg-sky-300/12 text-sky-100 hover:bg-sky-300/20"
             : "border-white/5 bg-black/20 text-white/30 cursor-not-allowed",
         ].join(" ")}
         title={!canSave ? reasons : "Save changes"}

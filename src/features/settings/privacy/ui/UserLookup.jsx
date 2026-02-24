@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { ctrlSearchActors } from '@/features/settings/privacy/controller/Blocks.controller'
 import { useMyBlocks } from '@/features/settings/privacy/hooks/useMyBlocks'
 import ActorLink from '@/shared/components/ActorLink'
-import { useActorPresentation } from '@/state/actors/useActorPresentation'
+import { useActorSummary } from '@/state/actors/useActorSummary'
 
 export default function UserLookup() {
   const { loading, error, blockedIds, block, unblock } = useMyBlocks()
@@ -34,7 +34,7 @@ export default function UserLookup() {
   }, [q])
 
   const hint = useMemo(() => {
-    if (searching) return 'Searching…'
+    if (searching) return 'Searching...'
     return 'Search by username or display name'
   }, [searching])
 
@@ -46,11 +46,11 @@ export default function UserLookup() {
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => (e.key === 'Enter' ? runSearch() : null)}
           placeholder={hint}
-          className="w-full rounded-lg border border-zinc-800 bg-neutral-950 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-zinc-600"
+          className="settings-input w-full rounded-lg px-3 py-2 text-sm"
         />
         <button
           onClick={runSearch}
-          className="rounded-lg border border-zinc-800 bg-neutral-900 px-3 py-2 text-sm text-zinc-200 hover:bg-neutral-800"
+          className="settings-btn settings-btn--ghost px-3 py-2 text-sm"
         >
           Search
         </button>
@@ -85,16 +85,15 @@ export default function UserLookup() {
 }
 
 function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblock, busy }) {
-  // If you have actor store SSOT, prefer that presentation
-  const actor = useActorPresentation(actorId)
+  const actor = useActorSummary(actorId)
 
   const name = actor?.displayName || displayName
   const handle = actor?.username || username
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-neutral-950/40 px-3 py-2">
+    <div className="settings-card-surface flex items-center justify-between gap-3 rounded-lg px-3 py-2">
       <div className="min-w-0">
-        {actor ? (
+        {actor?.actorId ? (
           <ActorLink actor={actor} avatarSize="w-8 h-8" />
         ) : (
           <div className="text-sm text-zinc-200 truncate">{name}</div>
@@ -109,8 +108,8 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
           disabled={busy}
           className={`rounded-lg border px-3 py-1.5 text-xs ${
             busy
-              ? 'border-zinc-800 text-zinc-600'
-              : 'border-red-900/60 bg-red-950/30 text-red-200 hover:bg-red-950/50'
+              ? 'border-slate-600/30 text-slate-500'
+              : 'settings-btn settings-btn--danger'
           }`}
         >
           Unblock
@@ -121,8 +120,8 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
           disabled={busy}
           className={`rounded-lg border px-3 py-1.5 text-xs ${
             busy
-              ? 'border-zinc-800 text-zinc-600'
-              : 'border-zinc-700 bg-neutral-900 text-zinc-200 hover:bg-neutral-800'
+              ? 'border-slate-600/30 text-slate-500'
+              : 'settings-btn settings-btn--ghost'
           }`}
         >
           Block

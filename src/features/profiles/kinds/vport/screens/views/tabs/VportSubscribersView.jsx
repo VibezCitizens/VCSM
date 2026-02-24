@@ -1,98 +1,74 @@
-import { useEffect } from "react";
-import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/subscribers/useSubscribers";
 import ActorLink from "@/shared/components/ActorLink";
+import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/subscribers/useSubscribers";
+
+function buildSubscriberActor(row) {
+  const id = row?.actor_id ?? row?.id ?? null;
+  const kind = row?.kind ?? "user";
+  const handle =
+    kind === "vport"
+      ? String(row?.slug ?? row?.vport_slug ?? row?.username ?? "").trim()
+      : String(row?.username ?? row?.slug ?? row?.vport_slug ?? "").trim();
+
+  const route =
+    kind === "vport"
+      ? id
+        ? `/vport/${encodeURIComponent(id)}`
+        : "/feed"
+      : handle
+      ? `/u/${encodeURIComponent(handle)}`
+      : id
+      ? `/profile/${encodeURIComponent(id)}`
+      : "/feed";
+
+  return {
+    id,
+    kind,
+    displayName: row?.display_name || row?.username || "Unknown",
+    username: row?.username ?? null,
+    slug: row?.slug ?? row?.vport_slug ?? null,
+    avatar: row?.photo_url || "/avatar.jpg",
+    route,
+  };
+}
 
 export default function VportSubscribersView({ profile }) {
   const actorId = profile?.actorId ?? null;
-
   const { loading, count, rows, error } = useSubscribers(actorId);
-
-  // DEBUG
-  useEffect(() => {
-    console.groupCollapsed("[VportSubscribersView]");
-    console.log("profile.actorId:", profile?.actorId);
-    console.log("rows sample:", rows?.[0]);
-    console.groupEnd();
-  }, [profile?.actorId, rows]);
+  const list = Array.isArray(rows) ? rows : [];
 
   return (
-    <div
-      className="
-        rounded-3xl
-        bg-black border border-white/10
-        shadow-[0_0_40px_-16px_rgba(128,0,255,0.45)]
-        p-5
-      "
-    >
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Subscribers</h3>
-        <div className="text-sm text-white">{count}</div>
+    <section className="profiles-card rounded-2xl p-5">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-lg font-semibold text-white">Subscribers</div>
+          <div className="mt-1 text-xs profiles-muted">Citizens following this vport.</div>
+        </div>
+        <div className="profiles-pill-btn px-3 py-1 text-xs font-semibold">{count ?? 0}</div>
       </div>
 
-      {loading && <div className="mt-3 text-sm text-gray-400">Loading…</div>}
+      {loading ? (
+        <div className="profiles-subcard mt-4 p-4 text-sm profiles-muted">Loading subscribers...</div>
+      ) : null}
 
-      {!loading && error && (
-        <div className="mt-3 text-sm text-red-300">{error}</div>
-      )}
+      {!loading && error ? (
+        <div className="profiles-error mt-4 rounded-2xl p-4 text-sm">{String(error)}</div>
+      ) : null}
 
-      {!loading && !error && (rows?.length ?? 0) === 0 && (
-        <div className="mt-3 text-sm text-gray-500">No subscribers yet.</div>
-      )}
+      {!loading && !error && list.length === 0 ? (
+        <div className="profiles-subcard mt-4 p-4 text-sm profiles-muted">No subscribers yet.</div>
+      ) : null}
 
-      {!loading && !error && (rows?.length ?? 0) > 0 && (
+      {!loading && !error && list.length > 0 ? (
         <div className="mt-4 space-y-2">
-          {rows.map((r) => {
+          {list.map((row) => {
             const key =
-              r.actor_id ??
-              r.follower_actor_id ??
-              r.id ??
-              `${r.username ?? "u"}:${r.display_name ?? "d"}`;
-
-            const kind = r.kind ?? "user";
-            const id = r.actor_id ?? r.id ?? null;
-
-            // Match PostHeader handle preference:
-            // ✅ vport: prefer slug, else username
-            // ✅ normal: prefer username, else slug
-            const rawHandle =
-              kind === "vport"
-                ? String(r.slug ?? r.vport_slug ?? r.username ?? "").trim()
-                : String(r.username ?? r.slug ?? r.vport_slug ?? "").trim();
-
-            // Build route to match your router:
-            // - user with username => /u/:username
-            // - vport with vportId (or id if that's the vportId) => /vport/:vportId
-            // - fallback => /profile/:actorId
-            const route =
-              kind === "vport"
-                ? id
-                  ? `/vport/${encodeURIComponent(id)}`
-                  : `/profile/${encodeURIComponent(id ?? "")}`
-                : rawHandle
-                  ? `/u/${encodeURIComponent(rawHandle)}`
-                  : id
-                    ? `/profile/${encodeURIComponent(id)}`
-                    : "/feed";
-
-            const actor = {
-              id,
-              kind,
-              displayName: r.display_name || r.username || "Unknown",
-              username: r.username ?? null,
-              slug: r.slug ?? r.vport_slug ?? null,
-              avatar: r.photo_url || "/avatar.jpg",
-              route,
-            };
+              row?.actor_id ?? row?.follower_actor_id ?? row?.id ?? `${row?.username ?? "u"}:${row?.display_name ?? "d"}`;
+            const actor = buildSubscriberActor(row);
 
             return (
               <div
                 key={key}
-                className="
-                  rounded-2xl border border-purple-900/40
-                  bg-[#1d1d1d] hover:bg-[#242424]
-                  shadow-[0_0_12px_-4px_rgba(128,0,255,0.4)]
-                  p-3
-                "
+                className="profiles-subcard rounded-2xl p-3 transition-colors hover:bg-white/10"
               >
                 <ActorLink
                   actor={actor}
@@ -106,11 +82,9 @@ export default function VportSubscribersView({ profile }) {
             );
           })}
         </div>
-      )}
+      ) : null}
 
-      <div className="mt-4 text-xs text-neutral-400">
-        Vport: @{profile?.username || "unknown"}
-      </div>
-    </div>
+      <div className="mt-4 text-xs profiles-muted">Vport: @{profile?.username || "unknown"}</div>
+    </section>
   );
 }

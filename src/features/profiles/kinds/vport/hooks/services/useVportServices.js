@@ -82,7 +82,7 @@ export default function useVportServices({
     } finally {
       setIsLoading(false);
     }
-  }, [targetActorId, asOwner, vportType, identityActorId]);
+  }, [targetActorId, asOwner, vportType]);
 
   useEffect(() => {
     let alive = true;

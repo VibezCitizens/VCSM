@@ -23,7 +23,6 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     if (!el) return;
 
     updateEdges();
-
     el.addEventListener("scroll", updateEdges, { passive: true });
     window.addEventListener("resize", updateEdges);
 
@@ -33,14 +32,11 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     };
   }, [updateEdges]);
 
-  // ✅ Arrow scroll: use remaining distance so you don't need multiple clicks to reach the end
   const scrollByAmount = useCallback((dir) => {
     const el = scrollRef.current;
     if (!el) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = el;
-
-    // more aggressive jump
     const baseAmount = Math.max(320, Math.floor(clientWidth * 0.9));
 
     const maxLeft = scrollWidth - clientWidth;
@@ -53,16 +49,13 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     el.scrollBy({ left: dir * amount, behavior: "smooth" });
   }, []);
 
-  // ✅ Always bring active tab into view (fixes “need 3 clicks to reach last tab”)
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el) return;
-    if (!tab) return;
+    if (!el || !tab) return;
 
     const btn = el.querySelector(`[data-tab-key="${tab}"]`);
     if (!btn) return;
 
-    // center the active tab so the user always sees where they landed
     btn.scrollIntoView({
       behavior: "smooth",
       inline: "center",
@@ -70,15 +63,13 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
     });
   }, [tab, list]);
 
-  // ✅ keeps tab labels from sitting underneath the overlay buttons
   const leftPad = showLeft ? 52 : 8;
   const rightPad = showRight ? 52 : 8;
 
   return (
     <div className="mt-4 px-4 relative z-30">
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="profiles-shell w-full">
         <div className="relative">
-          {/* LEFT CLICKABLE OVERLAY */}
           {showLeft && (
             <button
               type="button"
@@ -87,17 +78,16 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               className="
                 absolute left-0 top-0 bottom-0 z-40
                 w-12
-                bg-gradient-to-r from-black to-transparent
+                bg-gradient-to-r from-[#060b14] to-transparent
                 flex items-center justify-start pl-2
                 cursor-pointer
                 touch-manipulation
               "
             >
-              <span className="text-white/45 text-xl select-none">‹</span>
+              <span className="text-white/60 text-xl select-none">&lsaquo;</span>
             </button>
           )}
 
-          {/* RIGHT CLICKABLE OVERLAY */}
           {showRight && (
             <button
               type="button"
@@ -106,22 +96,21 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               className="
                 absolute right-0 top-0 bottom-0 z-40
                 w-12
-                bg-gradient-to-l from-black to-transparent
+                bg-gradient-to-l from-[#060b14] to-transparent
                 flex items-center justify-end pr-2
                 cursor-pointer
                 touch-manipulation
               "
             >
-              <span className="text-white/45 text-xl select-none">›</span>
+              <span className="text-white/60 text-xl select-none">&rsaquo;</span>
             </button>
           )}
 
-          {/* TAB ROW */}
           <div
             ref={scrollRef}
             className="
+              profiles-tabbar
               flex items-center gap-10
-              border-b border-white/15
               overflow-x-auto
               flex-nowrap
               whitespace-nowrap
@@ -130,7 +119,6 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               [-webkit-overflow-scrolling:touch]
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
-
               select-none
               [touch-action:pan-x]
               [overscroll-behavior-x:contain]
@@ -152,14 +140,11 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
                   data-tab-key={t.key}
                   onClick={() => setTab(t.key)}
                   className={`
+                    profiles-tab-btn
                     relative py-3
                     text-[18px] tracking-wide transition-colors
                     snap-center
-                    ${
-                      active
-                        ? "text-white font-semibold"
-                        : "text-neutral-400 hover:text-neutral-200"
-                    }
+                    ${active ? "is-active" : ""}
                   `}
                   aria-current={active ? "page" : undefined}
                 >
@@ -168,8 +153,9 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
                   {active && (
                     <span
                       className="
+                        profiles-tab-indicator
                         absolute left-0 right-0 -bottom-[1px]
-                        h-[2px] bg-white/90 rounded-full
+                        h-[2px] rounded-full
                       "
                     />
                   )}

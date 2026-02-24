@@ -9,7 +9,7 @@ import { supabase } from "@/services/supabase/supabaseClient";
 import { fetchTopFriendActorIds } from "../dal/friends.read.dal";
 import { hydrateActorsIntoStore } from "../helpers/hydrateActorsIntoStore";
 
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 import ActorLink from "@/shared/components/ActorLink";
 import RankPickerModal from "./RankPickerModal";
 
@@ -199,8 +199,8 @@ export default function TopFriendsRankEditor() {
    RANK ROW
    ============================================================ */
 function RankRow({ actorId, index, total, onMoveUp, onMoveDown, onRemove }) {
-  const actor = useActorPresentation(actorId);
-  if (!actor) return null;
+  const actor = useActorSummary(actorId);
+  if (!actor?.actorId) return null;
 
   return (
     <div className="flex items-center justify-between p-2 rounded-lg

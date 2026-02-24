@@ -8,8 +8,7 @@
 // ============================================================
 
 import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useActorPresentation } from "@/state/actors/useActorPresentation";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 
 export default function CommentInputView({
   actorId,
@@ -18,7 +17,7 @@ export default function CommentInputView({
   autoFocus = false,
   disabled = false,
 }) {
-  const actorUI = useActorPresentation(actorId);
+  const actorSummary = useActorSummary(actorId);
 
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
@@ -46,16 +45,11 @@ export default function CommentInputView({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18 }}
-      className="flex gap-3 px-3 py-3 border-t border-neutral-900 bg-black/40"
-    >
+    <div className="flex gap-3 px-3 py-3 border-t border-violet-300/10 bg-[#0f0c1a]/70">
       {/* AVATAR */}
-      <div className="w-10 h-10 rounded-md overflow-hidden bg-neutral-800 flex-shrink-0">
+      <div className="w-10 h-10 rounded-md overflow-hidden bg-[#151125] border border-violet-300/15 flex-shrink-0">
         <img
-          src={actorUI?.avatar || "/avatar.jpg"}
+          src={actorSummary?.avatar || "/avatar.jpg"}
           alt=""
           className="w-full h-full object-cover"
         />
@@ -74,13 +68,13 @@ export default function CommentInputView({
           rows={1}
           className="
             w-full resize-none overflow-hidden
-            rounded-xl bg-neutral-900/60
-            px-3 py-2 text-sm text-neutral-100
-            placeholder-neutral-500
-            border border-neutral-700
+            rounded-xl bg-[#130f20]
+            px-3 py-2 text-sm text-slate-100
+            placeholder:text-slate-500
+            border border-violet-300/20
             focus:outline-none
-            focus:ring-2 focus:ring-purple-500
-            focus:border-purple-500
+            focus:ring-2 focus:ring-violet-400/45
+            focus:border-violet-300/45
           "
         />
 
@@ -91,13 +85,13 @@ export default function CommentInputView({
             className={
               !text.trim() || disabled
                 ? "bg-neutral-800 text-neutral-500 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-full text-sm"
+                : "bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400 text-white px-4 py-1.5 rounded-full text-sm shadow-[0_0_14px_rgba(196,124,255,0.35)]"
             }
           >
             Vibe
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

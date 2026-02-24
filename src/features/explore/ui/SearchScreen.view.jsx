@@ -1,93 +1,57 @@
-// src/features/explore/ui/SearchScreen.view.jsx
-
 import React, { Suspense } from 'react'
 import { useSearchActor } from '../hooks/useSearchActor'
 import ResultList from './ResultList'
 
 export default function SearchScreen() {
-  const {
-    query,
-    filter,
-    debounced,
-    canClear,
-    setQuery,
-    setFilter,
-  } = useSearchActor()
+  const { query, filter, debounced, canClear, setQuery, setFilter } = useSearchActor()
 
   const FILTERS = [
     { key: 'all', label: 'All' },
     { key: 'users', label: 'Citizens' },
     { key: 'vports', label: 'Vports' },
-    { key: 'posts', label: 'Vibes' }, // ✅ Posts → Vibes (UI label)
+    { key: 'posts', label: 'Vibes' },
     { key: 'groups', label: 'Groups' },
   ]
 
   return (
-    <div
-      className="
-        w-full
-        px-4
-        pt-[calc(env(safe-area-inset-top)+12px)]
-      "
-    >
-      {/* ================= SEARCH INPUT ================= */}
-      <div className="mb-6 relative">
+    <div className="module-modern-shell w-full rounded-2xl px-4 pt-[calc(env(safe-area-inset-top)+12px)] pb-4">
+      <div className="relative mb-6">
         <input
           type="text"
-          placeholder="Search Citizens, Vports, Vibes…"
+          placeholder="Search Citizens, Vports, Vibes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="
-            w-full px-4 py-2 pr-10
-            rounded-2xl bg-neutral-900 text-white
-            border border-purple-700
-            focus:ring-2 focus:ring-purple-500
-          "
+          className="module-modern-input w-full rounded-2xl px-4 py-2 pr-10"
         />
 
         {canClear && (
           <button
             type="button"
             onClick={() => setQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
             aria-label="Clear"
           >
-            ×
+            x
           </button>
         )}
       </div>
 
-      {/* ================= FILTER TABS (PROFILE STYLE) ================= */}
-      <div className="mb-6">
-        <div className="flex justify-center gap-10 border-b border-white/15">
+      <div className="mb-6 overflow-x-auto">
+        <div className="flex min-w-max justify-center gap-8 border-b border-slate-300/15 px-2">
           {FILTERS.map((f) => {
             const active = filter === f.key
-
             return (
               <button
                 type="button"
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`
-                  relative py-3
-                  text-[18px] tracking-wide
-                  transition-colors duration-200
-                  ${
-                    active
-                      ? 'text-white font-semibold'
-                      : 'text-neutral-400 hover:text-neutral-200'
-                  }
-                `}
+                className={`relative py-3 text-[17px] tracking-wide transition-colors duration-200 ${
+                  active ? 'font-semibold text-slate-100' : 'text-slate-400 hover:text-slate-200'
+                }`}
               >
                 {f.label}
-
                 {active && (
-                  <span
-                    className="
-                      absolute left-0 right-0 -bottom-[1px]
-                      h-[2px] bg-white/90 rounded-full
-                    "
-                  />
+                  <span className="absolute left-0 right-0 -bottom-[1px] h-[2px] rounded-full bg-indigo-300/90" />
                 )}
               </button>
             )
@@ -95,8 +59,7 @@ export default function SearchScreen() {
         </div>
       </div>
 
-      {/* ================= RESULTS ================= */}
-      <Suspense fallback={<div className="text-center">Loading…</div>}>
+      <Suspense fallback={<div className="text-center text-slate-300">Loading...</div>}>
         <ResultList query={debounced} filter={filter} />
       </Suspense>
     </div>

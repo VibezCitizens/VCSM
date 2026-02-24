@@ -45,8 +45,6 @@ export default function CentralFeed() {
   console.log('realmId:', identity?.realmId ?? null)
   console.groupEnd()
 
-  if (!user) return <Navigate to="/login" replace />
-
   const actorId = identity?.actorId ?? null
   const realmId = identity?.realmId ?? null
 
@@ -264,6 +262,8 @@ export default function CentralFeed() {
   /* ============================================================
      RENDER
      ============================================================ */
+  if (!user) return <Navigate to="/login" replace />
+
   return (
     <PullToRefresh
       ref={ptrRef}

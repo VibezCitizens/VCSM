@@ -52,7 +52,7 @@ export default function FlyerEditorPanel({
       color: "#fff",
       outline: "none",
       fontWeight: 800,
-      fontSize: 16, // ✅ iOS: prevents zoom on focus
+      fontSize: 16, // âœ… iOS: prevents zoom on focus
     }),
     []
   );
@@ -61,12 +61,14 @@ export default function FlyerEditorPanel({
 
   const card = useMemo(
     () => ({
-      borderRadius: 18,
-      border: "1px solid rgba(255,255,255,0.10)",
-      background: "rgba(10,12,22,0.55)",
-      padding: 14,
+      borderRadius: 20,
+      border: "1px solid rgba(255,255,255,0.12)",
+      background:
+        "linear-gradient(180deg, rgba(14,18,30,0.88), rgba(9,11,20,0.82))",
+      boxShadow: "0 22px 54px rgba(0,0,0,0.42)",
+      padding: 16,
       display: "grid",
-      gap: 12,
+      gap: 14,
     }),
     []
   );
@@ -123,7 +125,7 @@ export default function FlyerEditorPanel({
     <div style={{ display: "grid", gap: 12 }}>
       <style>
         {`
-          /* ✅ Mobile: reduce crowding + make hours stack + bigger touch targets */
+          /* âœ… Mobile: reduce crowding + make hours stack + bigger touch targets */
           @media (max-width: 560px) {
             .flyer-grid-hours-accent {
               grid-template-columns: 1fr !important;
@@ -150,7 +152,7 @@ export default function FlyerEditorPanel({
               height: 52px !important;
             }
 
-            /* ✅ ensure iOS won't zoom even if some inputs override */
+            /* âœ… ensure iOS won't zoom even if some inputs override */
             .flyer-scope input,
             .flyer-scope textarea,
             .flyer-scope select {
@@ -158,7 +160,7 @@ export default function FlyerEditorPanel({
             }
           }
 
-          /* ✅ Make native color well look clean across browsers */
+          /* âœ… Make native color well look clean across browsers */
           .flyer-color-input {
             -webkit-appearance: none;
             appearance: none;
@@ -217,7 +219,7 @@ export default function FlyerEditorPanel({
 
             <div
               style={{
-                borderRadius: 14,
+                borderRadius: 15,
                 border: "1px solid rgba(255,255,255,0.10)",
                 background: "rgba(255,255,255,0.03)",
                 padding: 10,
@@ -340,21 +342,21 @@ export default function FlyerEditorPanel({
         <div style={{ fontWeight: 950, letterSpacing: 0.6 }}>Images</div>
 
         <ImageDropzone
-          label={uploadingKey === "logo_url" ? "Logo (uploading…)" : "Logo"}
+          label={uploadingKey === "logo_url" ? "Logo (uploadingâ€¦)" : "Logo"}
           value={draft.logo_url || ""}
           onPickFile={(file) => uploadAndSet("logo", "logo_url", file)}
           onClear={() => setField("logo_url", "")}
         />
 
         <ImageDropzone
-          label={uploadingKey === "flyer_food_image_1" ? "Food 1 (uploading…)" : "Food 1"}
+          label={uploadingKey === "flyer_food_image_1" ? "Food 1 (uploadingâ€¦)" : "Food 1"}
           value={draft.flyer_food_image_1 || ""}
           onPickFile={(file) => uploadAndSet("food1", "flyer_food_image_1", file)}
           onClear={() => setField("flyer_food_image_1", "")}
         />
 
         <ImageDropzone
-          label={uploadingKey === "flyer_food_image_2" ? "Food 2 (uploading…)" : "Food 2"}
+          label={uploadingKey === "flyer_food_image_2" ? "Food 2 (uploadingâ€¦)" : "Food 2"}
           value={draft.flyer_food_image_2 || ""}
           onPickFile={(file) => uploadAndSet("food2", "flyer_food_image_2", file)}
           onClear={() => setField("flyer_food_image_2", "")}
@@ -365,19 +367,21 @@ export default function FlyerEditorPanel({
           onClick={onSave}
           disabled={saving}
           style={{
-            padding: "12px 12px",
-            borderRadius: 14,
+            marginTop: 4,
+            padding: "13px 14px",
+            borderRadius: 15,
             border: "1px solid rgba(0,255,240,0.22)",
             background:
               "linear-gradient(135deg, rgba(0,255,240,0.18), rgba(124,58,237,0.14), rgba(0,153,255,0.14))",
             color: "#fff",
             fontWeight: 950,
-            letterSpacing: 0.3,
+            letterSpacing: 0.5,
             cursor: saving ? "not-allowed" : "pointer",
             opacity: saving ? 0.75 : 1,
+            boxShadow: "0 18px 38px rgba(0,0,0,0.34)",
           }}
         >
-          {saving ? "Saving…" : "Save Flyer"}
+          {saving ? "Saving..." : "Save Flyer Changes"}
         </button>
       </div>
     </div>

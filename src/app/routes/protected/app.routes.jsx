@@ -21,6 +21,11 @@ function VportToActorSettingsRedirect() {
   );
 }
 
+function VportToActorAdsRedirect() {
+  const { actorId } = useParams();
+  return actorId ? <Navigate to={`/ads/vport/${actorId}`} replace /> : <Navigate to="/feed" replace />;
+}
+
 function VportToActorFlyerEditRedirect() {
   const { actorId } = useParams();
   return actorId ? (
@@ -91,6 +96,7 @@ export function protectedAppRoutes({
 
   UploadScreen,
   SettingsScreen,
+  VportAdsSettingsScreen,
   VoidScreen,
 
   UsernameProfileRedirect,
@@ -150,6 +156,7 @@ export function protectedAppRoutes({
 
     { path: "/upload", element: <UploadScreen /> },
     { path: "/settings", element: <SettingsScreen /> },
+    { path: "/ads/vport/:actorId", element: <VportAdsSettingsScreen /> },
     { path: "/void", element: <VoidScreen /> },
 
     { path: "/me", element: <Navigate to="/profile/self" replace /> },
@@ -236,6 +243,7 @@ export function protectedAppRoutes({
       path: "/vport/:actorId/settings",
       element: <VportToActorSettingsRedirect />,
     },
+    { path: "/vport/:actorId/ads", element: <VportToActorAdsRedirect /> },
 
     { path: "/", element: <Navigate to="/feed" replace /> },
     { path: "*", element: <Navigate to="/feed" replace /> },

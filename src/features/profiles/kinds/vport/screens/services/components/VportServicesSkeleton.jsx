@@ -7,7 +7,7 @@ function Block({ w = "w-full" }) {
 
 export default function VportServicesSkeleton() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-neutral-900/50 p-6 space-y-5">
+    <div className="profiles-card rounded-2xl p-6 space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-2 w-full">
           <Block w="w-40" />
@@ -15,7 +15,7 @@ export default function VportServicesSkeleton() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+      <div className="profiles-subcard p-5">
         <div className="space-y-3">
           <Block w="w-28" />
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">

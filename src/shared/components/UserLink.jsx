@@ -7,17 +7,16 @@
 // ============================================================
 
 import ActorLink from './ActorLink';
-import { useActorPresentation } from '@/state/actors/useActorPresentation';
+import { useActorSummary } from '@/state/actors/useActorSummary';
 
 /*
   ⚠️ DEPRECATED:
   This component exists ONLY to avoid breaking old screens.
-  New code MUST use <ActorLink /> + useActorPresentation().
+  New code MUST use <ActorLink /> + useActorSummary().
 */
 
 export default function UserLink({
   user,
-  authorType,
   avatarSize,
   avatarShape,
   textSize,
@@ -27,50 +26,36 @@ export default function UserLink({
   className,
   toOverride, // legacy escape hatch
 }) {
-  if (!user) return null;
+  const actorUI = useActorSummary(
+    user
+      ? {
+          id: user.id ?? user.actor_id ?? user.user_id,
+          displayName: user.displayName ?? user.display_name ?? user.name ?? 'User',
+          username: user.username ?? null,
+          slug: user.slug ?? user.vport_slug ?? null,
+          avatar: user.avatar ?? user.avatarUrl ?? user.photo_url ?? user.avatar_url ?? '/avatar.jpg',
+        }
+      : null
+  );
 
-  /**
-   * Minimal legacy → actor adaptation
-   * No guessing, no fallbacks beyond what already exists
-   */
-  const legacyActor = {
-    id: user.id ?? user.actor_id ?? user.user_id,
-    kind:
-      authorType ??
-      user.kind ??
-      user.actor_kind ??
-      (user.slug || user.vport_slug ? 'vport' : 'user'),
-
-    // normalized fields expected by useActorPresentation
-    displayName:
-      user.displayName ??
-      user.display_name ??
-      user.name ??
-      'User',
-
-    username: user.username ?? null,
-    slug: user.slug ?? user.vport_slug ?? null,
-
-    avatar:
-      user.avatar ??
-      user.avatarUrl ??
-      user.photo_url ??
-      user.avatar_url ??
-      '/avatar.jpg',
-  };
-
-  const actorUI = useActorPresentation(legacyActor);
-
-  if (!actorUI) return null;
+  if (!user || !actorUI?.actorId) return null;
 
   // Legacy override still respected
+  const actor = {
+    id: actorUI.actorId,
+    displayName: actorUI.displayName,
+    username: actorUI.username,
+    avatar: actorUI.avatar,
+    route: actorUI.route,
+  };
+
   if (toOverride) {
-    actorUI.route = toOverride;
+    actor.route = toOverride;
   }
 
   return (
     <ActorLink
-      actor={actorUI}
+      actor={actor}
       avatarSize={avatarSize}
       avatarShape={avatarShape}
       textSize={textSize}

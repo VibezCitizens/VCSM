@@ -1,4 +1,3 @@
-// src/features/settings/screen/SettingsScreen.jsx
 import {
   lazy,
   Suspense,
@@ -9,17 +8,18 @@ import {
   useState,
 } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import '@/features/settings/styles/settings-modern.css'
 
 const PrivacyView = lazy(() => import('../privacy/ui/PrivacyTab.view'))
 const ProfileView = lazy(() => import('../profile/adapter/ProfileTab'))
 const AccountView = lazy(() => import('../account/ui/AccountTab.view'))
-const VportsView  = lazy(() => import('../vports/ui/VportsTab.view'))
+const VportsView = lazy(() => import('../vports/ui/VportsTab.view'))
 
 const TABS = [
   { key: 'privacy', label: 'Privacy', View: PrivacyView },
   { key: 'profile', label: 'Profile', View: ProfileView },
   { key: 'account', label: 'Account', View: AccountView },
-  { key: 'vports',  label: 'VPORTs',  View: VportsView },
+  { key: 'vports', label: 'VPORTs', View: VportsView },
 ]
 
 export default function SettingsScreen() {
@@ -28,7 +28,7 @@ export default function SettingsScreen() {
 
   const initialTab = useMemo(() => {
     const q = (search.get('tab') || '').toLowerCase()
-    return TABS.some(t => t.key === q) ? q : 'privacy'
+    return TABS.some((t) => t.key === q) ? q : 'privacy'
   }, [search])
 
   const [tab, setTab] = useState(initialTab)
@@ -42,11 +42,7 @@ export default function SettingsScreen() {
     }
   }, [tab, search, setSearch])
 
-  const activeIndex = useMemo(
-    () => TABS.findIndex(t => t.key === tab),
-    [tab]
-  )
-
+  const activeIndex = useMemo(() => TABS.findIndex((t) => t.key === tab), [tab])
   const tabRefs = useRef([])
 
   const focusIdx = (idx) => {
@@ -81,36 +77,19 @@ export default function SettingsScreen() {
   )
 
   return (
-    /* 🔑 SCROLL OWNER */
-    <div
-      className="
-        relative
-        h-full
-        w-full
-        overflow-y-auto
-        touch-pan-y
-        bg-black
-        text-white
-      "
-    >
-      {/* ✅ SCROLL-SAFE AMBIENT BACKGROUND */}
+    <div className="settings-modern-page relative h-full w-full overflow-y-auto touch-pan-y text-slate-100">
       <div
         aria-hidden
-        className="
-          pointer-events-none
-          absolute inset-0
-          bg-[radial-gradient(600px_200px_at_50%_-80px,rgba(168,85,247,0.15),transparent)]
-        "
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_220px_at_50%_-80px,rgba(99,102,241,0.22),transparent)]"
       />
 
-      {/* HEADER */}
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-black/70 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/72 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl px-4">
           <div className="flex items-center justify-between py-3">
-            <h1 className="text-lg font-bold tracking-wide">Settings</h1>
+            <h1 className="text-lg font-bold tracking-wide text-slate-100">Settings</h1>
             <button
               onClick={() => navigate(-1)}
-              className="rounded-lg px-3 py-1.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5"
+              className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
             >
               Close
             </button>
@@ -120,7 +99,7 @@ export default function SettingsScreen() {
             role="tablist"
             aria-label="Settings sections"
             onKeyDown={onKeyTabs}
-            className="mb-3 grid gap-1 rounded-2xl bg-zinc-900/80 p-1 ring-1 ring-white/5"
+            className="settings-tablist mb-3 grid gap-1 rounded-2xl p-1"
             style={{ gridTemplateColumns: `repeat(${TABS.length}, minmax(0, 1fr))` }}
           >
             {TABS.map((t, i) => {
@@ -131,10 +110,8 @@ export default function SettingsScreen() {
                   ref={(el) => (tabRefs.current[i] = el)}
                   onClick={() => setTab(t.key)}
                   className={[
-                    'h-9 rounded-xl text-xs font-semibold transition',
-                    active
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-zinc-300 hover:text-white hover:bg-white/5',
+                    'settings-tab h-9 rounded-xl text-xs font-semibold transition',
+                    active ? 'settings-tab--active' : '',
                   ].join(' ')}
                 >
                   {t.label}
@@ -145,17 +122,19 @@ export default function SettingsScreen() {
         </div>
       </header>
 
-      {/* CONTENT */}
       <main className="relative mx-auto w-full max-w-3xl px-4 pb-24 pt-4">
-        {TABS.map(({ key, View }) => (
-          <section key={key} hidden={tab !== key}>
-            {tab === key && (
-              <Suspense fallback={<div className="py-10 text-center text-zinc-400">Loading…</div>}>
-                <View />
-              </Suspense>
-            )}
-          </section>
-        ))}
+        {TABS.map((item) => {
+          const ActiveView = item.View
+          return (
+            <section key={item.key} hidden={tab !== item.key}>
+              {tab === item.key && (
+                <Suspense fallback={<div className="py-10 text-center text-slate-400">Loading...</div>}>
+                  <ActiveView />
+                </Suspense>
+              )}
+            </section>
+          )
+        })}
       </main>
     </div>
   )

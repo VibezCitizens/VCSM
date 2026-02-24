@@ -1,0 +1,139 @@
+.settings-modern-page {
+  background:
+    radial-gradient(900px 360px at 50% -220px, rgba(99, 102, 241, 0.2), transparent 70%),
+    radial-gradient(600px 260px at 0% 0%, rgba(236, 72, 153, 0.12), transparent 72%),
+    #05070f;
+  color: #e5e7eb;
+}
+
+.settings-shell {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: linear-gradient(180deg, rgba(20, 24, 38, 0.76), rgba(11, 14, 23, 0.8));
+  box-shadow: 0 24px 45px rgba(0, 0, 0, 0.35);
+}
+
+.settings-tablist {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 21, 35, 0.85);
+}
+
+.settings-tab {
+  color: #c7d2fe;
+}
+
+.settings-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+.settings-tab--active {
+  color: #f8fafc;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.82), rgba(236, 72, 153, 0.78));
+  box-shadow: 0 0 20px rgba(129, 140, 248, 0.3);
+}
+
+.settings-card-surface {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.84), rgba(8, 12, 22, 0.78));
+}
+
+.settings-input {
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  background: rgba(2, 6, 23, 0.65);
+  color: #f1f5f9;
+}
+
+.settings-input::placeholder {
+  color: #94a3b8;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: rgba(129, 140, 248, 0.7);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.settings-btn {
+  border-radius: 0.75rem;
+  transition: all 0.16s ease;
+}
+
+.settings-btn--primary {
+  border: 1px solid rgba(129, 140, 248, 0.7);
+  color: #f8fafc;
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.95), rgba(168, 85, 247, 0.88));
+}
+
+.settings-btn--primary:hover {
+  filter: brightness(1.06);
+}
+
+.settings-btn--ghost {
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.settings-btn--ghost:hover {
+  background: rgba(30, 41, 59, 0.75);
+}
+
+.settings-btn--danger {
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  color: #ffe4e6;
+  background: linear-gradient(90deg, rgba(190, 24, 93, 0.72), rgba(220, 38, 38, 0.74));
+}
+
+.settings-btn--danger:hover {
+  filter: brightness(1.06);
+}
+
+.settings-danger-surface {
+  border: 1px solid rgba(251, 113, 133, 0.32);
+  background:
+    linear-gradient(120deg, rgba(127, 29, 29, 0.2), rgba(88, 28, 135, 0.1)),
+    rgba(15, 23, 42, 0.62);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+.settings-danger-row {
+  border-color: rgba(251, 113, 133, 0.28);
+  background:
+    linear-gradient(120deg, rgba(127, 29, 29, 0.26), rgba(88, 28, 135, 0.12)),
+    rgba(15, 23, 42, 0.55);
+}
+
+.settings-danger-error {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(251, 113, 133, 0.28);
+  background: rgba(127, 29, 29, 0.22);
+  color: #ffd6de;
+}
+
+.settings-vport-row {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background:
+    linear-gradient(180deg, rgba(17, 24, 39, 0.72), rgba(8, 12, 22, 0.62));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.settings-vport-row:hover {
+  border-color: rgba(148, 163, 184, 0.34);
+  background:
+    linear-gradient(180deg, rgba(24, 33, 56, 0.78), rgba(10, 14, 26, 0.68));
+}
+
+.settings-vport-row.is-active {
+  border-color: rgba(129, 140, 248, 0.48);
+  background:
+    linear-gradient(100deg, rgba(79, 70, 229, 0.2), rgba(168, 85, 247, 0.14)),
+    linear-gradient(180deg, rgba(17, 24, 39, 0.75), rgba(8, 12, 22, 0.7));
+}
+
+.settings-vport-tag {
+  border-radius: 0.5rem;
+  color: #dbeafe;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  background: rgba(15, 23, 42, 0.62);
+}

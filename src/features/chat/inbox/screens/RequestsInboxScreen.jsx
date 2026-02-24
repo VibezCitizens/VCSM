@@ -1,12 +1,11 @@
-// src/features/chat/inbox/screens/RequestsInboxScreen.jsx
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 
 import { useIdentity } from '@/state/identity/identityContext'
-
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useInboxFolder from '@/features/chat/inbox/hooks/useInboxFolder'
+import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
 
 import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
@@ -15,7 +14,6 @@ import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 function isRequestEntry(entry) {
   const folder = entry?.folder || entry?.inboxFolder || entry?.mailboxFolder
   const kind = entry?.kind || entry?.type
-
   const status =
     entry?.status ||
     entry?.requestStatus ||
@@ -53,100 +51,78 @@ function isRequestEntry(entry) {
 export default function RequestsInboxScreen() {
   const navigate = useNavigate()
   const { identity, loading: identityLoading } = useIdentity()
+  const { settings } = useVexSettings()
 
   const actorId = identity?.actorId ?? null
   const actorKind = identity?.kind ?? 'citizen'
-
   const isBlocked = identityLoading || !actorId
+  const hideEmptyThreads = settings?.hideEmptyConversations ?? false
+  const showThreadPreview = settings?.showThreadPreview ?? true
 
-  const {
-    entries = [],
-    loading: inboxLoading,
-    error,
-    hideConversation,
-  } = useInboxFolder({ actorId, folder: 'inbox' })
+  const { entries = [], loading: inboxLoading, error, hideConversation } = useInboxFolder({
+    actorId,
+    folder: 'inbox',
+  })
 
   const inboxActions = useInboxActions({ actorId })
 
-  useEffect(() => {
-    // optional debug:
-    // console.log('[RequestsInboxScreen] raw entries:', entries)
-  }, [entries])
-
-  // ✅ IMPORTANT: memos must run even when blocked (no early return before hooks)
   const requestEntries = useMemo(() => {
     if (isBlocked) return []
-    return (entries || []).filter(isRequestEntry)
+    return entries.filter(isRequestEntry)
   }, [entries, isBlocked])
+
+  const filteredEntries = useMemo(() => {
+    if (!hideEmptyThreads) return requestEntries
+    return requestEntries.filter((entry) => {
+      const hasLastMessage = Boolean(entry?.lastMessageId)
+      const hasUnread = Number(entry?.unreadCount || 0) > 0
+      const hasPreviewText =
+        String(entry?.preview || entry?.lastMessageBody || '').trim().length > 0
+      return hasLastMessage || hasUnread || hasPreviewText
+    })
+  }, [requestEntries, hideEmptyThreads])
 
   const previews = useMemo(() => {
     if (isBlocked) return []
-    return requestEntries
-      .map((entry) =>
-        buildInboxPreview({
-          entry,
-          currentActorId: actorId,
-        })
-      )
+    return filteredEntries
+      .map((entry) => buildInboxPreview({ entry, currentActorId: actorId }))
       .filter(Boolean)
-  }, [requestEntries, actorId, isBlocked])
+  }, [filteredEntries, actorId, isBlocked])
 
-  // guards (AFTER hooks)
   if (isBlocked) return null
-
-  if (error) {
-    return <div className="p-4 text-red-400">Failed to load Vox requests</div>
-  }
+  if (error) return <div className="p-4 text-red-400">Failed to load Vox requests</div>
 
   return (
-    <div className="flex flex-col min-h-0">
-      {/* HEADER (ChatHeader-style, centered title) */}
+    <div className="flex min-h-0 flex-col">
       <header
-        className="
-          sticky top-0 z-20
-          bg-black/90 backdrop-blur
-          border-b border-white/10
-          shrink-0
-        "
+        className="sticky top-0 z-20 shrink-0 border-b border-white/10 bg-black/90 backdrop-blur"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <div className="relative h-14 px-3 flex items-center">
-          {/* LEFT: Back */}
+        <div className="relative flex h-14 items-center px-3">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="
-              p-2 -ml-1 rounded-xl
-              text-violet-400
-              hover:bg-violet-500/15
-              active:bg-violet-500/25
-              transition
-            "
+            className="rounded-xl p-2 -ml-1 text-violet-400 transition hover:bg-violet-500/15 active:bg-violet-500/25"
             aria-label="Back"
           >
             <ChevronLeft size={22} />
           </button>
-
-          {/* CENTER: Title */}
           <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
             {actorKind === 'vport' ? 'Vox Requests (Vport)' : 'Vox Requests'}
           </h1>
-
-          {/* RIGHT: spacer */}
           <div className="ml-auto w-10" />
         </div>
       </header>
 
-      {/* CONTENT */}
       <div className="flex-1 overflow-y-auto pb-24">
         {!inboxLoading && previews.length === 0 ? (
           <InboxEmptyState />
         ) : (
           <InboxList
             entries={previews}
+            showThreadPreview={showThreadPreview}
             onSelect={(id) => navigate(`/chat/${id}`)}
             onDelete={(conversationId) => {
-              // ✅ Ignore request (NO deleting): move to spam
               hideConversation(conversationId)
               inboxActions.ignoreRequest(conversationId)
             }}

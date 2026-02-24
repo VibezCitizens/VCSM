@@ -70,6 +70,9 @@ const UploadScreen = lazyWithLog("UploadScreen", () =>
 const SettingsScreen = lazyWithLog("Settings", () =>
   import("@/features/settings/screen/SettingsScreen")
 );
+const VportAdsSettingsScreen = lazyWithLog("VportAdsSettingsScreen", () =>
+  import("@/features/ads/screens/VportAdsSettingsScreen")
+);
 const VoidScreen = lazyWithLog("VoidScreen", () =>
   import("@/features/void/VoidScreen")
 );
@@ -284,6 +287,7 @@ export default function AppRoutes() {
 
             UploadScreen,
             SettingsScreen,
+            VportAdsSettingsScreen,
             VoidScreen,
 
             UsernameProfileRedirect,

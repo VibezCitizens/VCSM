@@ -20,25 +20,24 @@ export default function ProfessionalAccessButton({ onClick }) {
       type="button"
       onClick={onClick}
       className="
+        settings-card-surface
+        settings-btn
         w-full
         mt-4
         px-4
         py-3
         rounded-xl
-        bg-white/10
-        hover:bg-white/15
-        active:bg-white/20
-        border
-        border-white/15
+        hover:bg-slate-800/80
+        active:bg-slate-800/95
         text-left
         transition
       "
     >
       <div className="flex flex-col">
-        <span className="text-[16px] font-semibold text-white">
+        <span className="text-[16px] font-semibold text-slate-100">
           Professional Access
         </span>
-        <span className="text-[13px] text-white/60 mt-0.5">
+        <span className="mt-0.5 text-[13px] text-slate-400">
           Apply or manage professional features
         </span>
       </div>

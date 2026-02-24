@@ -59,7 +59,6 @@ export function VportActorMenuItem({
               background: "#111827",
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
               alt=""

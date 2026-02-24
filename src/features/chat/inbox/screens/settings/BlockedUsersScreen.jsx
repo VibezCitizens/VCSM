@@ -16,30 +16,29 @@ import { useIdentity } from '@/state/identity/identityContext'
 // existing blocks provider/hook
 import { MyBlocksProvider, useMyBlocks } from '@/features/settings/privacy/hooks/useMyBlocks'
 
-// actor UI lookup (already used in your BlockConfirmModal)
-import { useActorPresentation } from '@/state/actors/useActorPresentation'
+import { useActorSummary } from '@/state/actors/useActorSummary'
 
 // confirm modal you already have
 import BlockConfirmModal from '@/features/block/ui/BlockConfirmModal'
 
 function BlockedRow({ blockedActorId, onUnblock }) {
-  const actor = useActorPresentation(blockedActorId)
+  const actor = useActorSummary(blockedActorId)
 
   return (
     <div className="w-full px-4 py-3 flex items-center gap-3">
       <img
-        src={actor?.photoUrl || actor?.photo_url || '/avatar.jpg'}
+        src={actor?.avatar || '/avatar.jpg'}
         alt=""
         className="w-10 h-10 rounded-xl object-cover border border-white/10 bg-black/30"
       />
 
       <div className="min-w-0 flex-1">
         <div className="text-white font-medium truncate">
-          {actor?.displayName || actor?.display_name || actor?.username || 'Unknown'}
+          {actor?.displayName || actor?.username || 'Unknown'}
         </div>
 
         <div className="text-xs text-neutral-400 truncate">
-          {actor?.username ? `@${actor.username}` : actor?.kind ? `${actor.kind}` : ''}
+          {actor?.username ? `@${actor.username}` : ''}
         </div>
       </div>
 

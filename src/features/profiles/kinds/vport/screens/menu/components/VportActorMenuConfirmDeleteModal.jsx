@@ -1,6 +1,18 @@
 // src/features/profiles/kinds/vport/ui/menu/VportActorMenuConfirmDeleteModal.jsx
 
 import React, { useMemo, useCallback, useEffect, useRef, useState } from "react";
+import {
+  ACTIONS_STYLE,
+  BODY_STYLE,
+  CANCEL_BTN_STYLE,
+  CLOSE_BTN_STYLE,
+  createConfirmBtnStyle,
+  DESCRIPTION_STYLE,
+  ERROR_STYLE,
+  HEADER_STYLE,
+  MODAL_STYLE,
+  OVERLAY_STYLE,
+} from "@/features/profiles/kinds/vport/screens/menu/model/vportActorMenuConfirmDeleteModal.styles";
 
 /**
  * UI Modal: Confirm delete (category or item)
@@ -38,7 +50,6 @@ export function VportActorMenuConfirmDeleteModal({
   const log = useCallback(
     (...args) => {
       if (!debug) return;
-      // eslint-disable-next-line no-console
       console.log(`[${debugLabel}]`, ...args);
     },
     [debug, debugLabel]
@@ -47,7 +58,6 @@ export function VportActorMenuConfirmDeleteModal({
   const warn = useCallback(
     (...args) => {
       if (!debug) return;
-      // eslint-disable-next-line no-console
       console.warn(`[${debugLabel}]`, ...args);
     },
     [debug, debugLabel]
@@ -56,7 +66,6 @@ export function VportActorMenuConfirmDeleteModal({
   const errLog = useCallback(
     (...args) => {
       if (!debug) return;
-      // eslint-disable-next-line no-console
       console.error(`[${debugLabel}]`, ...args);
     },
     [debug, debugLabel]
@@ -139,16 +148,7 @@ export function VportActorMenuConfirmDeleteModal({
       className={className}
       role="dialog"
       aria-modal="true"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 60,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 16,
-        background: "rgba(0,0,0,0.35)",
-      }}
+      style={OVERLAY_STYLE}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) {
           log("overlay click -> close");
@@ -156,64 +156,28 @@ export function VportActorMenuConfirmDeleteModal({
         }
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 520,
-          borderRadius: 16,
-          background: "#fff",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-          overflow: "hidden",
-        }}
-      >
+      <div style={MODAL_STYLE}>
         {/* Header */}
-        <div
-          style={{
-            padding: "14px 16px",
-            borderBottom: "1px solid #e5e7eb",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
+        <div style={HEADER_STYLE}>
           <div style={{ fontSize: 16, fontWeight: 700 }}>{title}</div>
 
           <button
             type="button"
             onClick={handleClose}
             disabled={loading}
-            style={{
-              padding: "6px 10px",
-              borderRadius: 10,
-            }}
+            style={CLOSE_BTN_STYLE}
           >
             Close
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: 16 }}>
-          <div style={{ fontSize: 13, color: "#374151", lineHeight: "18px" }}>
-            {description}
-          </div>
+        <div style={BODY_STYLE}>
+          <div style={DESCRIPTION_STYLE}>{description}</div>
 
           {/* ✅ Debug Error UI */}
           {showErrorUI && localError ? (
-            <div
-              style={{
-                marginTop: 12,
-                padding: 12,
-                borderRadius: 12,
-                background: "#fef2f2",
-                border: "1px solid #fecaca",
-                color: "#991b1b",
-                fontSize: 12,
-                lineHeight: "16px",
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-              }}
-            >
+            <div style={ERROR_STYLE}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>Delete failed</div>
               <div>
                 {localError?.message ?? String(localError)}
@@ -225,19 +189,12 @@ export function VportActorMenuConfirmDeleteModal({
           ) : null}
 
           {/* Actions */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 10,
-              paddingTop: 16,
-            }}
-          >
+          <div style={ACTIONS_STYLE}>
             <button
               type="button"
               onClick={handleClose}
               disabled={loading}
-              style={{ padding: "8px 12px", borderRadius: 12 }}
+              style={CANCEL_BTN_STYLE}
             >
               {cancelText}
             </button>
@@ -246,12 +203,7 @@ export function VportActorMenuConfirmDeleteModal({
               type="button"
               onClick={handleConfirm}
               disabled={loading}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 12,
-                border: danger ? "1px solid #fecaca" : "1px solid #e5e7eb",
-                background: danger ? "#fef2f2" : "#fff",
-              }}
+              style={createConfirmBtnStyle(danger)}
             >
               {loading ? "Deleting..." : confirmText}
             </button>

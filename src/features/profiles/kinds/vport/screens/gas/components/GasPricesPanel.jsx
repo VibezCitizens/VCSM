@@ -148,7 +148,7 @@ export function GasPricesPanel({
               <button
                 type="button"
                 onClick={() => setShowBulkModal(true)}
-                className="shrink-0 rounded-2xl bg-gradient-to-b from-purple-500 to-purple-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(168,85,247,0.25)] hover:from-purple-400 hover:to-purple-600 active:scale-[0.98] transition"
+                className="profiles-pill-btn shrink-0 px-4 py-2 text-sm font-semibold active:scale-[0.98] transition"
               >
                 Update prices
               </button>
@@ -165,7 +165,7 @@ export function GasPricesPanel({
               return (
                 <div
                   key={row.fuelKey}
-                  className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.55)] backdrop-blur"
+                  className="profiles-subcard relative overflow-hidden rounded-3xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur"
                 >
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-white/10" />
                   <div className="pointer-events-none absolute -top-24 right-[-60px] h-52 w-52 rounded-full bg-purple-500/10 blur-3xl" />
@@ -196,9 +196,9 @@ export function GasPricesPanel({
                             </div>
 
                             {hasCommunity ? (
-                              <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-[11px] text-purple-300">
-                                Community
-                              </span>
+                                <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[11px] text-sky-200">
+                                  Community
+                                </span>
                             ) : (
                               <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-neutral-400">
                                 None yet
@@ -267,7 +267,7 @@ function BulkUpdateFuelPricesModal({
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/70 px-3 py-6">
-      <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-neutral-950 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
+      <div className="profiles-card w-full max-w-lg rounded-3xl p-4 shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-lg font-semibold text-white">Update prices</div>
@@ -279,7 +279,7 @@ function BulkUpdateFuelPricesModal({
           <button
             type="button"
             onClick={submitting ? undefined : onClose}
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10 disabled:opacity-60"
+            className="profiles-pill-btn rounded-xl px-3 py-2 text-sm font-semibold disabled:opacity-60"
             disabled={submitting}
           >
             Close
@@ -311,7 +311,7 @@ function BulkUpdateFuelPricesModal({
                       const next = e.target.value;
                       setValues((s) => ({ ...s, [row.fuelKey]: next }));
                     }}
-                    className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-purple-500/50"
+                    className="profiles-input w-full rounded-xl px-3 py-2 text-sm placeholder:text-neutral-600"
                     disabled={submitting}
                   />
                 </div>
@@ -332,7 +332,7 @@ function BulkUpdateFuelPricesModal({
         </div>
 
         {localError ? (
-          <div className="mt-4 rounded-2xl border border-red-900/60 bg-red-950/40 p-3 text-sm text-red-300">
+          <div className="profiles-error mt-4 rounded-2xl p-3 text-sm">
             {String(localError?.message ?? localError)}
           </div>
         ) : null}
@@ -342,7 +342,7 @@ function BulkUpdateFuelPricesModal({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 disabled:opacity-60"
+            className="profiles-pill-btn rounded-2xl px-4 py-2 text-sm font-semibold disabled:opacity-60"
           >
             Cancel
           </button>
@@ -398,7 +398,7 @@ function BulkUpdateFuelPricesModal({
 
               onClose();
             }}
-            className="rounded-2xl bg-gradient-to-b from-purple-500 to-purple-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(168,85,247,0.25)] hover:from-purple-400 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-slate-100 shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? "Submitting..." : "Save updates"}
           </button>

@@ -6,6 +6,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 
 import { useActorKind } from "@/features/profiles/hooks/useActorKind";
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
+import "@/features/profiles/styles/profiles-modern.css";
 
 const UUID_REGEX = /^[0-9a-f-]{36}$/i;
 
@@ -76,12 +77,11 @@ export default function ActorProfileScreen() {
   useEffect(() => {
     // One line, easy to filter in console
     // Shows EXACTLY where ActorProfileScreen got its inputs + what branch it took.
-    // eslint-disable-next-line no-console
     console.log("[ACTOR PROFILE SCREEN DEBUG]", debug);
   }, [debug]);
 
   if (identityLoading) {
-    return <div className="p-10 text-center">Loading…</div>;
+    return <div className="profiles-modern p-10 text-center profiles-muted">Loading...</div>;
   }
 
   if (!identity) {
@@ -92,7 +92,6 @@ export default function ActorProfileScreen() {
   if (routeActorId === "self") {
     const Screen = PROFILE_KIND_REGISTRY.user;
 
-    // eslint-disable-next-line no-console
     console.log("[ACTOR PROFILE SCREEN DEBUG][render:self]", {
       viewerActorId: identity.actorId,
       profileActorId: identity.actorId,
@@ -109,7 +108,6 @@ export default function ActorProfileScreen() {
 
   // username route → redirect flow
   if (!UUID_REGEX.test(routeActorId)) {
-    // eslint-disable-next-line no-console
     console.log("[ACTOR PROFILE SCREEN DEBUG][redirect:username]", {
       from: routeActorId,
       to: `/u/${routeActorId}`,
@@ -120,12 +118,11 @@ export default function ActorProfileScreen() {
 
   // kind still resolving
   if (kindLoading) {
-    return <div className="p-10 text-center">Loading…</div>;
+    return <div className="profiles-modern p-10 text-center profiles-muted">Loading...</div>;
   }
 
   const Screen = PROFILE_KIND_REGISTRY[kind] ?? PROFILE_KIND_REGISTRY.user;
 
-  // eslint-disable-next-line no-console
   console.log("[ACTOR PROFILE SCREEN DEBUG][render:uuid]", {
     viewerActorId: identity.actorId, // SOURCE: useIdentity()
     profileActorId: routeActorId, // SOURCE: useParams()

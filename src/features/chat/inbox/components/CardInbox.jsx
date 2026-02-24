@@ -1,13 +1,7 @@
-// src/features/chat/inbox/components/CardInbox.jsx
 import React from 'react'
 import { Trash2 } from 'lucide-react'
 
-export default function CardInbox({
-  entry,
-  onClick,
-  onDelete,
-  showThreadPreview = true,
-}) {
+export default function CardInbox({ entry, onClick, onDelete, showThreadPreview = true }) {
   if (!entry) return null
 
   const {
@@ -25,61 +19,32 @@ export default function CardInbox({
     <div
       onClick={onClick}
       data-conversation-id={conversationId}
-      className="
-        mx-3 mt-3
-        rounded-2xl
-        bg-white/5
-        hover:bg-white/10
-        transition
-        cursor-pointer
-      "
+      className="module-modern-card cursor-pointer rounded-2xl transition hover:bg-slate-800/55"
     >
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex min-w-0 items-center gap-3">
           <img
             src={partnerPhotoUrl || '/avatar.jpg'}
             alt="profile"
-            className="w-12 h-12 rounded-xl object-cover shrink-0"
+            className="h-12 w-12 shrink-0 rounded-xl border border-slate-300/15 object-cover"
           />
 
-          <div className="flex flex-col min-w-0">
-            <span
-              className={`
-                text-sm truncate
-                ${hasUnread ? 'text-white font-semibold' : 'text-white'}
-              `}
-            >
+          <div className="flex min-w-0 flex-col">
+            <span className={`truncate text-sm ${hasUnread ? 'font-semibold text-slate-100' : 'text-slate-200'}`}>
               {partnerDisplayName || partnerUsername || 'Vox'}
             </span>
 
             {showThreadPreview && (
-              <span
-                className={`
-                  text-xs truncate mt-0.5
-                  ${hasUnread ? 'text-white/80' : 'text-white/50'}
-                `}
-                title={preview || ''}
-              >
+              <span className={`mt-0.5 truncate text-xs ${hasUnread ? 'text-slate-300' : 'text-slate-500'}`} title={preview || ''}>
                 {preview || 'No Vox yet'}
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex shrink-0 items-center gap-3">
           {hasUnread && (
-            <span
-              className="
-                min-w-[18px] h-[18px]
-                px-1
-                rounded-full
-                bg-white
-                text-black
-                text-[10px]
-                font-semibold
-                flex items-center justify-center
-              "
-            >
+            <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] font-semibold text-white">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
@@ -90,14 +55,7 @@ export default function CardInbox({
                 e.stopPropagation()
                 onDelete(conversationId)
               }}
-              className="
-                p-2
-                rounded-lg
-                text-white/40
-                hover:text-white
-                hover:bg-white/10
-                transition
-              "
+              className="module-modern-btn module-modern-btn--ghost p-2 text-slate-300"
               aria-label="Delete Vox"
             >
               <Trash2 size={16} />

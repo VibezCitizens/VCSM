@@ -42,6 +42,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 
 // ✅ NEW: Rates tab view
 import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView";
+import "@/features/profiles/styles/profiles-modern.css";
 
 export default function VportProfileViewScreen({
   viewerActorId,
@@ -244,13 +245,13 @@ export default function VportProfileViewScreen({
 
   if (loading || blockLoading || gate.loading) {
     return (
-      <div className="flex justify-center py-20 text-neutral-400">Loading…</div>
+      <div className="profiles-modern flex justify-center py-20 profiles-muted">Loading...</div>
     );
   }
 
   if (error || !profile) {
     return (
-      <div className="flex justify-center py-20 text-red-400">
+      <div className="profiles-modern flex justify-center py-20 text-rose-300">
         Failed to load profile.
       </div>
     );
@@ -258,7 +259,7 @@ export default function VportProfileViewScreen({
 
   if (profile.kind !== "vport") {
     return (
-      <div className="flex justify-center py-20 text-neutral-400">
+      <div className="profiles-modern flex justify-center py-20 profiles-muted">
         Profile kind mismatch.
       </div>
     );
@@ -267,7 +268,7 @@ export default function VportProfileViewScreen({
   const actorIdForOwnerView = profile?.actorId ?? profileActorId ?? null;
 
   return (
-    <div className="h-full w-full overflow-y-auto touch-pan-y bg-black text-white">
+    <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
       <VportProfileHeader
         profile={profile}
         viewerActorId={viewerActorId}
@@ -286,7 +287,7 @@ export default function VportProfileViewScreen({
       )}
 
       {gate.canView && (
-        <div className="px-4 pb-24 max-w-3xl mx-auto">
+        <div className="profiles-shell px-4 pb-24">
           {tab === "vibes" && (
             <ActorProfilePostsView
               profileActorId={profile.actorId}
@@ -362,8 +363,8 @@ export default function VportProfileViewScreen({
           ) : null}
 
           {tab === "about" && publicDetailsLoading && !publicDetails && (
-            <div className="mt-4 text-xs text-neutral-500">
-              Loading public details…
+            <div className="mt-4 text-xs profiles-muted">
+              Loading public details...
             </div>
           )}
         </div>

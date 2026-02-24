@@ -1,7 +1,18 @@
-// src/features/profiles/kinds/vport/screens/owner/VportOwnerView.jsx
-
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+
+function OwnerActionCard({ title, desc, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="profiles-subcard w-full rounded-2xl p-4 text-left transition hover:bg-white/10"
+    >
+      <div className="text-sm font-black tracking-[0.6px] uppercase text-white">{title}</div>
+      <div className="mt-2 text-sm profiles-muted leading-relaxed">{desc}</div>
+    </button>
+  );
+}
 
 export function VportOwnerView({ actorId }) {
   const navigate = useNavigate();
@@ -10,54 +21,44 @@ export function VportOwnerView({ actorId }) {
     () => [
       {
         title: "Dashboard",
-        desc: "Owner-only hub: tools and insights.",
-        // ✅ actor-first route (no vportId ambiguity)
+        desc: "Open your owner dashboard and manage all modules.",
         onClick: () => navigate(`/actor/${actorId}/dashboard`),
+      },
+      {
+        title: "Settings",
+        desc: "Edit public details, hours, links, and profile info.",
+        onClick: () => navigate(`/actor/${actorId}/settings`),
+      },
+      {
+        title: "Ads Pipeline",
+        desc: "Create and manage ads shown in your vport settings preview.",
+        onClick: () => navigate(`/ads/vport/${actorId}`),
       },
     ],
     [navigate, actorId]
   );
 
   return (
-    <div className="p-3">
-      <div className="mb-4">
-        <div className="text-base font-black">Owner</div>
-        <div className="mt-1 text-sm text-white/60">
-          Quick access to manage your vport.
+    <section className="profiles-card rounded-2xl p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-lg font-semibold text-white">Owner</div>
+          <div className="mt-1 text-sm profiles-muted">Quick access to owner-only tools.</div>
         </div>
+        <div className="profiles-pill-btn px-3 py-1 text-xs font-semibold">Private</div>
       </div>
 
-      <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
-        {links.map((x) => (
-          <div
-            key={x.title}
-            role="button"
-            tabIndex={0}
-            onClick={x.onClick}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") x.onClick();
-            }}
-            className="
-              select-none cursor-pointer
-              rounded-[18px]
-              border border-white/10
-              bg-white/5
-              p-4
-              shadow-[0_18px_50px_rgba(0,0,0,0.45)]
-              hover:bg-white/10
-              focus:outline-none focus:ring-2 focus:ring-white/20
-            "
-          >
-            <div className="text-sm font-black tracking-[0.6px] uppercase">
-              {x.title}
-            </div>
-            <div className="mt-2 text-sm text-white/60 leading-relaxed">
-              {x.desc}
-            </div>
-          </div>
+      <div className="mt-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+        {links.map((link) => (
+          <OwnerActionCard
+            key={link.title}
+            title={link.title}
+            desc={link.desc}
+            onClick={link.onClick}
+          />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 

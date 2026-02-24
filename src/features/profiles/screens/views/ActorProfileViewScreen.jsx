@@ -25,6 +25,7 @@ import ReportModal from "@/features/moderation/components/ReportModal";
 
 // ✅ delete controller (same as feed)
 import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
+import "@/features/profiles/styles/profiles-modern.css";
 
 export default function ActorProfileViewScreen({ viewerActorId, profileActorId }) {
   const [tab, setTab] = useState("posts");
@@ -185,13 +186,13 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
   // ============================================================
   if (loading || blockLoading || gate.loading) {
     return (
-      <div className="flex justify-center py-20 text-neutral-400">Loading…</div>
+      <div className="profiles-modern flex justify-center py-20 profiles-muted">Loading...</div>
     );
   }
 
   if (error || !profile) {
     return (
-      <div className="flex justify-center py-20 text-red-400">
+      <div className="profiles-modern flex justify-center py-20 text-rose-300">
         Failed to load profile.
       </div>
     );
@@ -200,12 +201,11 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
   return (
     <div
       className="
+        profiles-modern
         h-full
         w-full
         overflow-y-auto
         touch-pan-y
-        bg-black
-        text-white
       "
     >
       <ActorProfileHeader
@@ -226,7 +226,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
       )}
 
       {gate.canView && (
-        <div className="px-4 pb-24 max-w-3xl mx-auto">
+        <div className="profiles-shell px-4 pb-24">
           {tab === "posts" && (
             <ActorProfilePostsView
               profileActorId={profile.actorId}

@@ -1,6 +1,5 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\commentcard\ui\CommentCard.view.jsx
+﻿// src/features/post/commentcard/ui/CommentCard.view.jsx
 
-import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import CommentHeader from "../components/cc/CommentHeader";
@@ -27,37 +26,29 @@ export default function CommentCardView({
 
   onLike,
   onReply,
-  onDelete,
   onToggleReplies,
 
-  onReport,
-
-  // ✅ from PostDetail (opens the centralized menu there)
   onOpenMenu,
 
-  // ✅ centralized inline edit control (from PostDetail -> CommentList -> Container)
   editingCommentId = null,
   editingInitialText = "",
   onCancelInlineEdit,
   onEditedSaved,
 
-  // ✅ ADD: cover support
   covered = false,
   cover = null,
 }) {
-  if (!comment) return null;
+  const safeComment = comment ?? {};
 
   const { identity } = useIdentity();
 
-  const isEditing = editingCommentId === comment.id;
+  const isEditing = editingCommentId === safeComment.id;
 
-  // ✅ keep local displayed content so UI updates instantly after save
-  const [displayContent, setDisplayContent] = useState(comment.content ?? "");
+  const [displayContent, setDisplayContent] = useState(safeComment.content ?? "");
   useEffect(() => {
-    setDisplayContent(comment.content ?? "");
-  }, [comment.content]);
+    setDisplayContent(safeComment.content ?? "");
+  }, [safeComment.content]);
 
-  // ✅ draft text (seed when entering edit mode)
   const [draft, setDraft] = useState(displayContent);
 
   useEffect(() => {
@@ -80,13 +71,17 @@ export default function CommentCardView({
       setEditError(new Error("actorId required"));
       return;
     }
+    if (!safeComment?.id) {
+      setEditError(new Error("commentId required"));
+      return;
+    }
 
     setSaving(true);
     setEditError(null);
 
     const { ok, error, comment: updated } = await editCommentController({
       actorId: identity.actorId,
-      commentId: comment.id,
+      commentId: safeComment.id,
       text: draft,
     });
 
@@ -101,24 +96,22 @@ export default function CommentCardView({
     else setDisplayContent(String(draft ?? "").trim());
 
     onEditedSaved?.();
-  }, [identity?.actorId, comment.id, draft, onEditedSaved]);
+  }, [identity?.actorId, safeComment.id, draft, onEditedSaved]);
+
+  if (!comment) return null;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.12, ease: "easeOut" }}
+    <div
       className="
         w-full px-4 py-3
         rounded-xl
-        bg-neutral-900/35
-        hover:bg-neutral-900/50
+        bg-[#151125]/70
+        border border-violet-300/15
+        hover:bg-[#1a1430]/78
         transition
         relative overflow-hidden
       "
     >
-      {/* ✅ COVER LAYER (anchors to this comment card now) */}
       {covered ? (
         <div
           className="absolute inset-0 z-20"
@@ -135,12 +128,12 @@ export default function CommentCardView({
         <div className="flex-1 min-w-0">
           <CommentHeader
             actor={actor}
-            createdAt={comment.createdAt}
+            createdAt={safeComment.createdAt}
             canDelete={canDelete}
             canReport={canReport}
-            onOpenMenu={onOpenMenu} // ✅ centralized menu opener
-            commentId={comment.id}
-            commentActorId={comment.actorId}
+            onOpenMenu={onOpenMenu}
+            commentId={safeComment.id}
+            commentActorId={safeComment.actorId}
           />
 
           <div className="mt-1">
@@ -152,7 +145,7 @@ export default function CommentCardView({
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   rows={3}
-                  className="w-full bg-neutral-900 text-white border border-neutral-700 rounded p-2"
+                  className="w-full bg-[#130f20] text-slate-100 border border-violet-300/20 rounded p-2"
                 />
 
                 {editError && (
@@ -163,7 +156,7 @@ export default function CommentCardView({
                   <button
                     onClick={saveInlineEdit}
                     disabled={saving || !canSave}
-                    className="bg-purple-600 px-4 py-2 rounded text-white disabled:opacity-60"
+                    className="bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2 rounded text-white disabled:opacity-60 shadow-[0_0_14px_rgba(196,124,255,0.35)]"
                   >
                     Save
                   </button>
@@ -171,7 +164,7 @@ export default function CommentCardView({
                   <button
                     onClick={cancelInlineEdit}
                     disabled={saving}
-                    className="border border-neutral-600 px-4 py-2 rounded text-white disabled:opacity-60"
+                    className="border border-violet-300/25 px-4 py-2 rounded text-slate-100 disabled:opacity-60"
                   >
                     Cancel
                   </button>
@@ -180,7 +173,7 @@ export default function CommentCardView({
             )}
           </div>
 
-          <div className="mt-2 pt-1 border-t border-neutral-800/60">
+          <div className="mt-2 pt-1 border-t border-violet-300/10">
             <CommentActions
               liked={liked}
               likeCount={likeCount}
@@ -194,13 +187,13 @@ export default function CommentCardView({
           {hasReplies && (
             <button
               onClick={onToggleReplies}
-              className="mt-2 text-xs text-neutral-300 hover:text-white transition"
+              className="mt-2 text-xs text-slate-300 hover:text-slate-100 transition"
             >
               {showReplies ? "Hide replies" : "View replies"}
             </button>
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

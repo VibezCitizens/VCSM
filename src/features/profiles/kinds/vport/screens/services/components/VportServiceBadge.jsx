@@ -31,17 +31,17 @@ export default function VportServiceBadge({ label, enabled = true, meta = null }
       className={[
         "rounded-2xl border px-3 py-2",
         enabled
-          ? "border-white/10 bg-white/5"
-          : "border-white/5 bg-black/20 opacity-60",
+          ? "border-sky-300/25 bg-sky-300/10"
+          : "border-white/10 bg-slate-950/45 opacity-60",
       ].join(" ")}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-white/90 truncate">
+          <div className="text-sm font-semibold text-slate-100 truncate">
             {label}
           </div>
           {metaText ? (
-            <div className="mt-0.5 text-xs text-white/50 break-words">
+            <div className="mt-0.5 text-xs text-slate-400 break-words">
               {metaText}
             </div>
           ) : null}

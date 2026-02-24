@@ -10,7 +10,7 @@ import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGues
 
 // You should point these to your *core* DAL once you migrate cards/mailbox.
 // For now, these may still be legacy DAL paths in your repo.
-import { createWandersCard } from "@/features/wanders/dal/wandersCards.dal";
+import { createWandersCard as createWandersCardDAL } from "@/features/wanders/dal/wandersCards.dal";
 import { createWandersMailboxItem } from "@/features/wanders/dal/wandersMailbox.dal";
 
 function stripTrailingSlashes(url) {
@@ -20,7 +20,9 @@ function stripTrailingSlashes(url) {
 function getDefaultBaseUrl() {
   try {
     if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-  } catch {}
+  } catch {
+    // Ignore window access failures and fallback to relative URL.
+  }
   return "";
 }
 
@@ -64,7 +66,7 @@ export async function createWandersCard(input) {
   };
 
   // ✅ DAL call (raw row)
-  const card = await createWandersCard(payload);
+  const card = await createWandersCardDAL(payload);
   if (!card?.public_id) throw new Error("Card created but missing public_id");
 
   // Seed sender outbox

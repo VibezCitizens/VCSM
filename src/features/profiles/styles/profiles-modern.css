@@ -1,0 +1,106 @@
+.profiles-modern {
+  --profiles-bg: #07070f;
+  --profiles-bg-soft: #0d0d19;
+  --profiles-surface: rgba(24, 18, 38, 0.74);
+  --profiles-surface-strong: rgba(34, 22, 52, 0.84);
+  --profiles-border: rgba(172, 139, 224, 0.24);
+  --profiles-text: #f3f0fb;
+  --profiles-text-muted: #b4abc7;
+  --profiles-accent: #b572ff;
+  --profiles-accent-strong: #6f8fff;
+  color: var(--profiles-text);
+  background:
+    radial-gradient(80rem 40rem at -10% -20%, rgba(181, 114, 255, 0.1), transparent 55%),
+    radial-gradient(50rem 30rem at 110% 10%, rgba(111, 143, 255, 0.12), transparent 60%),
+    linear-gradient(180deg, var(--profiles-bg-soft) 0%, var(--profiles-bg) 55%);
+}
+
+.profiles-modern .profiles-shell {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.profiles-modern .profiles-card {
+  background: linear-gradient(
+      160deg,
+      rgba(64, 98, 164, 0.15) 0%,
+      rgba(16, 24, 40, 0.02) 45%
+    ),
+    var(--profiles-surface);
+  border: 1px solid var(--profiles-border);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.profiles-modern .profiles-subcard {
+  background: rgba(20, 14, 33, 0.7);
+  border: 1px solid rgba(172, 139, 224, 0.16);
+  border-radius: 1rem;
+}
+
+.profiles-modern .profiles-muted {
+  color: var(--profiles-text-muted);
+}
+
+.profiles-modern .profiles-error {
+  background: rgba(120, 28, 45, 0.22);
+  border: 1px solid rgba(251, 113, 133, 0.34);
+  color: #fecdd3;
+}
+
+.profiles-modern .profiles-input {
+  border: 1px solid rgba(172, 139, 224, 0.24);
+  border-radius: 0.9rem;
+  background: rgba(16, 11, 27, 0.74);
+  color: var(--profiles-text);
+}
+
+.profiles-modern .profiles-input:focus {
+  outline: none;
+  border-color: rgba(181, 114, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(181, 114, 255, 0.18);
+}
+
+.profiles-modern .profiles-tabbar {
+  border-bottom: 1px solid rgba(172, 139, 224, 0.22);
+}
+
+.profiles-modern .profiles-tab-btn {
+  color: var(--profiles-text-muted);
+}
+
+.profiles-modern .profiles-tab-btn:hover {
+  color: #d8e7ff;
+}
+
+.profiles-modern .profiles-tab-btn.is-active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.profiles-modern .profiles-tab-indicator {
+  background: linear-gradient(90deg, var(--profiles-accent), var(--profiles-accent-strong));
+  box-shadow: 0 0 12px rgba(181, 114, 255, 0.28);
+}
+
+.profiles-modern .profiles-pill-btn {
+  border: 1px solid rgba(172, 139, 224, 0.28);
+  border-radius: 9999px;
+  background: var(--profiles-surface-strong);
+  color: #eef4ff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.profiles-modern .profiles-pill-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(181, 114, 255, 0.5);
+  background: rgba(43, 26, 68, 0.92);
+}
+
+.profiles-modern .profiles-pill-btn:disabled {
+  opacity: 0.56;
+  cursor: not-allowed;
+  transform: none;
+}

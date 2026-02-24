@@ -23,26 +23,26 @@ export default function ActorProfileHeader({
   viewerActorId,
   profileIsPrivate,
 }) {
-  if (!profile) return null
-
   const navigate = useNavigate()
-  const isSelf = profile.actorId === viewerActorId
+  const actorId = profile?.actorId ?? null
+  const isSelf = actorId === viewerActorId
   const [showQR, setShowQR] = useState(false)
 
   useEffect(() => {
+    if (!actorId) return
     console.group('%c[ActorProfileHeader] PROFILE DEBUG', 'color:#22d3ee')
-    console.log('actorId:', profile.actorId)
+    console.log('actorId:', actorId)
     console.groupEnd()
-  }, [profile])
+  }, [actorId])
 
   const { handleMessage } = useProfileHeaderMessaging({
-    profileId: profile.actorId,
+    profileId: actorId,
   })
 
   const {
     count: followerCount,
     refresh: refreshFollowerCount,
-  } = useFollowerCount(profile.actorId)
+  } = useFollowerCount(actorId)
 
   const {
     label: subscribeLabel,
@@ -51,7 +51,7 @@ export default function ActorProfileHeader({
     isSubscribed,
   } = useSubscribeAction({
     viewerActorId,
-    targetActorId: profile.actorId,
+    targetActorId: actorId,
     profileIsPrivate,
     onAfterChange: () => {
       refreshFollowerCount()
@@ -61,7 +61,7 @@ export default function ActorProfileHeader({
     },
   })
 
-  const qrValue = `${window.location.origin}/profile/${profile.actorId}`
+  const qrValue = actorId ? `${window.location.origin}/profile/${actorId}` : ''
 
   const logAction = useCallback(
     (name, fn) => async (...args) => {
@@ -84,6 +84,8 @@ export default function ActorProfileHeader({
   const safeSubscribe = logAction('Subscribe.click', onSubscribe)
   const safeShowQR = logAction('ShowQR.click', () => setShowQR(true))
 
+  if (!profile) return null
+
   return (
     <div className="relative">
       {/* ================= BANNER ================= */}
@@ -99,14 +101,14 @@ export default function ActorProfileHeader({
       />
 
       <div className="px-4">
-        <div className="mx-auto w-full max-w-3xl">
-          <div className="-mt-20 relative z-20 rounded-2xl bg-neutral-900/95 border border-neutral-800 shadow-2xl p-5">
+        <div className="profiles-shell w-full">
+          <div className="-mt-20 relative z-20 profiles-card p-5">
             {/* ================= HEADER CONTENT ================= */}
             <div className="flex items-start gap-4">
               <img
                 src={profile.avatarUrl || '/avatar.jpg'}
                 alt={profile.displayName || 'Profile avatar'}
-                className="w-24 h-24 rounded-2xl object-cover"
+                className="w-24 h-24 rounded-2xl object-cover border border-white/20 shadow-xl"
               />
 
               {/* reserve room for absolute buttons */}
@@ -119,16 +121,16 @@ export default function ActorProfileHeader({
                   <h2 className="text-xl font-bold truncate text-white">
                     {profile.displayName || 'Unnamed'}
                   </h2>
-                  <div className="text-sm text-neutral-400 truncate">
+                  <div className="text-sm profiles-muted truncate">
                     @{profile.username || 'username'}
                   </div>
                 </div>
 
-                <div className="mt-3 text-sm text-neutral-300">
+                <div className="mt-3 text-sm text-slate-200">
                   {profile.bio || 'No bio provided.'}
                 </div>
 
-                <div className="mt-4 text-xs text-purple-400 uppercase">
+                <div className="mt-4 text-xs uppercase tracking-[0.12em] text-cyan-300">
                   {followerCount} Subscribers
                 </div>
               </div>
@@ -139,7 +141,7 @@ export default function ActorProfileHeader({
               <div className="absolute top-4 right-4">
                 <button
                   onClick={safeShowQR}
-                  className="px-4 py-1.5 rounded-full text-xs font-medium bg-purple-600 text-white hover:bg-purple-500"
+                  className="profiles-pill-btn px-4 py-1.5 text-xs font-medium"
                 >
                   QR
                 </button>
@@ -148,7 +150,7 @@ export default function ActorProfileHeader({
               <div className="absolute top-4 right-4">
                 <ActorActionsMenu
                   viewerActorId={viewerActorId}
-                  targetActorId={profile.actorId}
+                  targetActorId={actorId}
                   align="right"
                   onBlocked={() => navigate('/feed', { replace: true })}
                 />

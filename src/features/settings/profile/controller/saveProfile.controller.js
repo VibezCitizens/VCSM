@@ -1,5 +1,7 @@
 // src/features/settings/profile/controllers/saveProfile.controller.js
 
+import { supabase } from "@/services/supabase/supabaseClient";
+
 export async function saveProfile({
   profileId,
   displayName,

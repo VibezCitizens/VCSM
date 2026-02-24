@@ -15,10 +15,7 @@ export async function getVportPublicDetailsController(actorId) {
   const out = mapVportPublicDetailsModel(raw, vportTypeRow)
 
   // ✅ DEBUG (dev only)
-  const dev =
-    typeof process !== "undefined"
-      ? process.env.NODE_ENV !== "production"
-      : true
+  const dev = Boolean(import.meta?.env?.DEV)
 
   if (dev) {
     console.groupCollapsed("[VPORT PUBLIC DETAILS] hydrate probe")

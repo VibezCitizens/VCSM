@@ -1,7 +1,6 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\screens\PostDetail.view.jsx
 
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useMemo, useState, useCallback, useRef } from "react";
 
 import { useIdentity } from "@/state/identity/identityContext";
@@ -32,6 +31,7 @@ import ReportedObjectCover from "@/features/moderation/components/ReportedObject
 
 import CommentReplyModal from "@/features/post/commentcard/components/CommentReplyModal";
 import CommentComposeModal from "@/features/post/commentcard/components/CommentComposeModal";
+import "@/features/post/styles/post-modern.css";
 
 function detectIOS() {
   if (typeof navigator === "undefined") return false;
@@ -220,14 +220,9 @@ export default function PostDetailView() {
     post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
 
   return (
-    <div className="h-full w-full overflow-y-auto touch-pan-y relative">
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.18 }}
-        className="w-full max-w-2xl mx-auto pb-24"
-      >
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden mb-4">
+    <div className="post-modern h-full w-full overflow-y-auto touch-pan-y relative">
+      <div className="w-full max-w-2xl mx-auto pb-24">
+        <div className="post-card rounded-2xl overflow-hidden mb-4">
           <PostHeader
             actor={postActorId}
             createdAt={post.created_at}
@@ -251,8 +246,8 @@ export default function PostDetailView() {
           </div>
         </div>
 
-        <div className="bg-black/40 rounded-2xl border border-neutral-900">
-          <div className="px-4 py-3 border-b border-neutral-800 text-sm text-neutral-400">
+        <div className="post-subcard rounded-2xl border">
+          <div className="px-4 py-3 border-b border-violet-300/10 text-sm text-slate-400">
             Sparks
           </div>
 
@@ -302,7 +297,7 @@ export default function PostDetailView() {
               )}
 
               {isIOS && (
-                <div className="px-3 py-3 border-t border-neutral-900 bg-black/40 flex justify-end">
+                <div className="px-3 py-3 border-t border-violet-300/10 bg-[#0f0c1a]/70 flex justify-end">
                   <button
                     type="button"
                     onClick={openCompose}
@@ -310,7 +305,7 @@ export default function PostDetailView() {
                     className={
                       thread.posting
                         ? "bg-neutral-800 text-neutral-500 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
-                        : "bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-full text-sm"
+                        : "bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400 text-white px-4 py-1.5 rounded-full text-sm shadow-[0_0_14px_rgba(196,124,255,0.45)]"
                     }
                   >
                     Spark
@@ -320,7 +315,7 @@ export default function PostDetailView() {
             </>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* ✅ iOS reply modal (with ref for focus) */}
       <CommentReplyModal
@@ -369,7 +364,7 @@ export default function PostDetailView() {
   onSubmit={async (payload) => {
     try {
       await reporting.handleReportSubmit(payload);
-    } catch (e) {
+    } catch {
       reporting.clearReportedPost?.();
     }
   }}

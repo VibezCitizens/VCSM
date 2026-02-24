@@ -9,9 +9,9 @@ export default function VportServicesHeader({
   return (
     <div className="flex items-start justify-between gap-4">
       <div>
-        <div className="text-lg font-black text-white">{title}</div>
+        <div className="text-lg font-black text-slate-100">{title}</div>
         {subtitle ? (
-          <div className="mt-1 text-sm text-white/60">{subtitle}</div>
+          <div className="mt-1 text-sm text-slate-400">{subtitle}</div>
         ) : null}
       </div>
 

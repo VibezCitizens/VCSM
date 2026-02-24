@@ -1,0 +1,59 @@
+.module-modern-page {
+  background:
+    radial-gradient(900px 360px at 50% -220px, rgba(99, 102, 241, 0.2), transparent 70%),
+    radial-gradient(680px 260px at 0% 0%, rgba(236, 72, 153, 0.12), transparent 72%),
+    #04060e;
+  color: #e2e8f0;
+}
+
+.module-modern-shell {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.84), rgba(8, 12, 22, 0.78));
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.34);
+}
+
+.module-modern-card {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(16, 23, 38, 0.8), rgba(8, 12, 22, 0.74));
+}
+
+.module-modern-input {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(2, 6, 23, 0.62);
+  color: #f1f5f9;
+}
+
+.module-modern-input::placeholder {
+  color: #94a3b8;
+}
+
+.module-modern-input:focus {
+  outline: none;
+  border-color: rgba(129, 140, 248, 0.7);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.module-modern-btn {
+  border-radius: 0.75rem;
+  transition: all 0.16s ease;
+}
+
+.module-modern-btn--ghost {
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.56);
+}
+
+.module-modern-btn--ghost:hover {
+  background: rgba(30, 41, 59, 0.78);
+}
+
+.module-modern-btn--primary {
+  border: 1px solid rgba(129, 140, 248, 0.7);
+  color: #f8fafc;
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.95), rgba(168, 85, 247, 0.88));
+}
+
+.module-modern-btn--primary:hover {
+  filter: brightness(1.06);
+}
