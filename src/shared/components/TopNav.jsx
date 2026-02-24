@@ -16,11 +16,11 @@ export default function TopNav() {
 
   return (
     <div
-      className={`fixed top-0 inset-x-0 z-50 h-12 bg-black ${
+      className={`fixed top-0 inset-x-0 z-50 bg-black pt-[env(safe-area-inset-top)] ${
         isChatInboxRoot ? 'border-b-0' : 'border-b border-neutral-800'
       }`}
     >
-      <div className="h-full px-4 flex items-center justify-between gap-2">
+      <div className="h-12 px-4 flex items-center justify-between gap-2">
 
         <div className="min-w-[84px] flex justify-start">
           <span
