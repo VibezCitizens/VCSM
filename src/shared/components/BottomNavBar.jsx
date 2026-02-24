@@ -51,7 +51,7 @@ export default function BottomNavBar() {
       role="navigation"
       aria-label="Primary"
     >
-      <div className="mx-auto flex max-w-[600px] items-end justify-between px-5 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))] text-white">
+      <div className="mx-auto flex max-w-[600px] items-end justify-between px-5 pt-1 pb-[var(--vc-bottom-nav-safe-pad)] text-white">
         <Tab to="/feed" label="Home" icon={<Home size={22} />} end />
         <Tab to="/explore" label="Explore" icon={<Compass size={22} />} />
 
@@ -119,3 +119,4 @@ const Tab = React.memo(function Tab({
     </NavLink>
   )
 })
+

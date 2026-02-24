@@ -30,7 +30,7 @@ export default function RootLayout() {
   const mainClass =
     hideTopNav || hideBottomNav
       ? 'flex-1 min-h-0 overflow-y-auto'
-      : 'flex-1 min-h-0 overflow-y-auto pt-[calc(48px+env(safe-area-inset-top))] pb-[calc(56px+env(safe-area-inset-bottom))]'
+      : 'flex-1 min-h-0 overflow-y-auto pt-[calc(48px+env(safe-area-inset-top))] pb-[var(--vc-bottom-nav-height)]'
 
   return (
     <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
@@ -49,3 +49,4 @@ export default function RootLayout() {
     </div>
   )
 }
+

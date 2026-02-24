@@ -2,6 +2,7 @@
 /// <reference lib="WebWorker" />
 const SCOPE_URL = new URL(self.registration.scope);
 const IS_DEV = /^(http:\/\/localhost|http:\/\/127\.0\.0\.1)/.test(SCOPE_URL.origin);
+const swWarn = IS_DEV ? console.warn.bind(console) : () => {};
 
 const CACHE_PREFIX = "vcsm";
 const CACHE_NAMES = Object.freeze({
@@ -137,7 +138,7 @@ async function setupProdCaching() {
 
 if (!IS_DEV) {
   setupProdCaching().catch((error) => {
-    console.warn("[SW] setupProdCaching failed", error);
+    swWarn("[SW] setupProdCaching failed", error);
   });
 }
 
