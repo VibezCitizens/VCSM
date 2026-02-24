@@ -31,6 +31,7 @@ import ReportedObjectCover from "@/features/moderation/components/ReportedObject
 
 import CommentReplyModal from "@/features/post/commentcard/components/CommentReplyModal";
 import CommentComposeModal from "@/features/post/commentcard/components/CommentComposeModal";
+import Spinner from "@/shared/components/Spinner";
 import "@/features/post/styles/post-modern.css";
 
 function detectIOS() {
@@ -203,7 +204,11 @@ export default function PostDetailView() {
   // ✅ Early returns AFTER all hooks
   // ============================================================
   if (loadingPost) {
-    return <div className="p-6 text-center text-neutral-400">Loading Vibes…</div>;
+    return (
+      <div className="p-6">
+        <Spinner label="Loading Vibes..." />
+      </div>
+    );
   }
 
   if (!post) {
@@ -218,13 +223,14 @@ export default function PostDetailView() {
 
   const postActorId =
     post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
+  const postActorRef = post.actor ?? postActorId;
 
   return (
     <div className="post-modern h-full w-full overflow-y-auto touch-pan-y relative">
       <div className="w-full max-w-2xl mx-auto pb-24">
         <div className="post-card rounded-2xl overflow-hidden mb-4">
           <PostHeader
-            actor={postActorId}
+            actor={postActorRef}
             createdAt={post.created_at}
             locationText={locationText}
             postId={post.id}

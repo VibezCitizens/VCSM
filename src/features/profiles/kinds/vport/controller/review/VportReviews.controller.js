@@ -21,6 +21,9 @@ import {
   modelReviewsWithRatings,
   modelVportReviewRow,
 } from "@/features/profiles/kinds/vport/model/review/VportReview.model";
+import { detectSupportedLanguageFromText } from "@/shared/lib/language/detectSupportedLanguage";
+import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId";
+import { getReviewDimensionsForVportType } from "@/features/profiles/kinds/vport/config/reviewDimensions.config";
 
 // ✅ NEW: author cards (profiles + void fallbacks)
 import { dalListActorCardsByActorIds } from "@/features/profiles/kinds/vport/dal/review/vportReviewAuthors.read.dal";
@@ -61,6 +64,47 @@ function validateRatingsAgainstConfig(ratings, configDims) {
   if (errors.length) {
     throw new Error(`[VportReviews] ratings invalid: ${errors.join(",")}`);
   }
+}
+
+function toFallbackDimensionModel(row, idx = 0, vportType = null) {
+  const dimensionKey = String(row?.key ?? row?.dimensionKey ?? "").trim();
+  if (!dimensionKey) return null;
+
+  const weight = Number(row?.weight);
+  const sortOrder = Number(row?.sortOrder ?? row?.sort_order);
+
+  return {
+    vportType: vportType ?? null,
+    dimensionKey,
+    label: String(row?.label ?? dimensionKey),
+    weight: Number.isFinite(weight) ? weight : 1,
+    sortOrder: Number.isFinite(sortOrder) ? sortOrder : idx,
+  };
+}
+
+async function resolveConfigDimsWithFallback(targetActorId) {
+  const configDims = await resolveDbConfigDims(targetActorId);
+  if (configDims.length) return configDims;
+
+  let vportType = null;
+  try {
+    const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId });
+    vportType = actorTypeRow?.vport_type ?? null;
+  } catch {
+    vportType = null;
+  }
+
+  const fallbackDims = getReviewDimensionsForVportType(vportType, null);
+  return (fallbackDims ?? [])
+    .map((row, idx) => toFallbackDimensionModel(row, idx, vportType))
+    .filter(Boolean);
+}
+
+async function resolveDbConfigDims(targetActorId) {
+  const configRows = await dalGetVportReviewFormConfig(targetActorId);
+  return (configRows ?? [])
+    .map(modelReviewDimensionRow)
+    .filter((d) => d?.dimensionKey);
 }
 
 /* ============================================================
@@ -110,9 +154,7 @@ async function enrichReviewsWithAuthors(reviews) {
 
 export async function ctrlGetReviewFormConfig(targetActorId) {
   assertActorId(targetActorId, "targetActorId");
-
-  const rows = await dalGetVportReviewFormConfig(targetActorId);
-  return (rows ?? []).map(modelReviewDimensionRow).filter(Boolean);
+  return await resolveConfigDimsWithFallback(targetActorId);
 }
 
 export async function ctrlGetOfficialStats(targetActorId) {
@@ -151,9 +193,20 @@ export async function ctrlSubmitReview(input) {
     throw new Error("[VportReviews] cannot review self");
   }
 
-  // Load config (meaning boundary)
-  const configRows = await dalGetVportReviewFormConfig(targetActorId);
-  const configDims = (configRows ?? []).map(modelReviewDimensionRow).filter(Boolean);
+  // Load DB-backed config for writes (must satisfy FK in vc.vport_review_ratings)
+  const configDims = await resolveDbConfigDims(targetActorId);
+  if (!configDims.length) {
+    let safeVportType = "unknown";
+    try {
+      const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId });
+      safeVportType = actorTypeRow?.vport_type ?? "unknown";
+    } catch {
+      safeVportType = "unknown";
+    }
+    throw new Error(
+      `[VportReviews] review dimensions not configured in DB for vport type: ${safeVportType}`
+    );
+  }
 
   const normalizedRatings = normalizeRatingsInput(ratings);
 
@@ -162,6 +215,14 @@ export async function ctrlSubmitReview(input) {
   }
 
   validateRatingsAgainstConfig(normalizedRatings, configDims);
+
+  const normalizedBody = typeof body === "string" ? body.trim() : null;
+  if (normalizedBody) {
+    const detectedLanguage = detectSupportedLanguageFromText(normalizedBody);
+    if (detectedLanguage === "unknown") {
+      throw new Error("[VportReviews] body language must be English, Spanish, German, Portuguese, or Italian");
+    }
+  }
 
   // Idempotency: one active review per (target, author)
   let existing = await dalGetActiveReviewByAuthor(targetActorId, authorActorId);
@@ -172,12 +233,12 @@ export async function ctrlSubmitReview(input) {
       targetActorId,
       authorActorId,
       isVerified: true,
-      body: body ?? null,
+      body: normalizedBody,
     });
   } else {
     // Update body if provided (not required)
     if (typeof body !== "undefined") {
-      reviewRow = await dalUpdateVportReviewBody(existing.id, body ?? null);
+      reviewRow = await dalUpdateVportReviewBody(existing.id, normalizedBody);
     } else {
       reviewRow = existing;
     }

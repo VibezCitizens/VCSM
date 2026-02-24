@@ -159,7 +159,7 @@ export default function ChatInput({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="module-modern-btn module-modern-btn--ghost shrink-0 rounded-full p-2 text-indigo-300"
+              className="shrink-0 p-2 text-indigo-300 transition hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={actuallyDisabled}
               aria-label="Attach"
             >

@@ -33,7 +33,7 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
             <button
               type="button"
               onClick={onBack}
-              className="module-modern-btn module-modern-btn--ghost -ml-1 p-2 text-indigo-300"
+              className="-ml-1 p-2 text-indigo-300 transition hover:text-indigo-200"
               aria-label="Back"
             >
               <ChevronLeft size={22} />
@@ -62,7 +62,7 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
             const rect = e.currentTarget.getBoundingClientRect()
             onOpenMenu?.(rect)
           }}
-          className="module-modern-btn module-modern-btn--ghost p-2 text-slate-200"
+          className="p-2 text-slate-200 transition hover:text-slate-100"
           aria-label="Conversation options"
         >
           <MoreVertical size={22} />

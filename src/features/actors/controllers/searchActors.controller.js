@@ -1,10 +1,11 @@
 // src/features/actors/controllers/searchActors.controller.js
 
 import { supabase } from '@/services/supabase/supabaseClient'
+import { toContainsPattern } from '@/services/supabase/postgrestSafe'
 
 export async function searchActors({ query, limit = 12 }) {
-  const q = (query || '').trim()
-  if (!q) return []
+  const pattern = toContainsPattern(query)
+  if (!pattern) return []
 
   const { data, error } = await supabase
     .schema('vc')
@@ -21,7 +22,7 @@ export async function searchActors({ query, limit = 12 }) {
       vport_avatar_url
       `
     )
-    .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+    .or(`username.ilike.${pattern},display_name.ilike.${pattern}`)
     .limit(limit)
 
   if (error) throw error

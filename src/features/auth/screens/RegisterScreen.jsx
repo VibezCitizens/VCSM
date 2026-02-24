@@ -87,11 +87,6 @@ export default function RegisterScreen() {
             })
             if (setSessErr) throw setSessErr
 
-            // ✅ debug main client right after promoting tokens
-            console.log('MAIN session', await supabase.auth.getSession())
-            console.log('MAIN user', await supabase.auth.getUser())
-            console.log('MAIN storage key', supabase.auth.storageKey)
-
             // ✅ force-warm the main client session before routing
             const { error: warmErr } = await supabase.auth.getSession()
             if (warmErr) throw warmErr
@@ -133,11 +128,6 @@ export default function RegisterScreen() {
             refresh_token: s.refresh_token,
           })
           if (setSessErr) throw setSessErr
-
-          // ✅ debug main client right after promoting tokens
-          console.log('MAIN session', await supabase.auth.getSession())
-          console.log('MAIN user', await supabase.auth.getUser())
-          console.log('MAIN storage key', supabase.auth.storageKey)
 
           // ✅ force-warm main session before routing
           const { error: warmErr } = await supabase.auth.getSession()

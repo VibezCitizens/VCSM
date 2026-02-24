@@ -11,6 +11,7 @@ import { useVportGasPrices } from "@/features/profiles/kinds/vport/hooks/gas/use
 import { useSubmitFuelPriceSuggestion } from "@/features/profiles/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion";
 import { useOwnerPendingSuggestions } from "@/features/profiles/kinds/vport/hooks/gas/useOwnerPendingSuggestions";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import {
   VportDashboardOfficialGasPanel,
   VportDashboardPendingGasPanel,
@@ -124,11 +125,9 @@ export function VportDashboardGasScreen() {
       <div style={shell.container}>
         <div style={shell.headerWrap}>
           <div style={shell.topBar}>
-            <button type="button" onClick={goBack} style={shell.btn("soft")}>
-              {isDesktop ? "<- Back" : "<"}
-            </button>
+            <VportBackButton isDesktop={isDesktop} onClick={goBack} style={shell.btn("soft")} />
 
-            <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>GAS PRICES</div>
+            <div style={shell.title}>GAS PRICES</div>
 
             <div style={{ display: "flex", gap: 10 }}>
               <button type="button" onClick={onRefreshAll} style={shell.btn("soft")}>

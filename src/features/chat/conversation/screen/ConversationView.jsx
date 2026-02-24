@@ -4,32 +4,33 @@ import { useNavigate } from 'react-router-dom'
 import { useIdentity } from '@/state/identity/identityContext'
 import { ios } from '@/app/platform'
 
-import useConversation from '../hooks/conversation/useConversation'
-import useConversationMembers from '../hooks/conversation/useConversationMembers'
-import useConversationMessages from '../hooks/conversation/useConversationMessages'
-import useTypingChannel from '../hooks/realtime/useTypingChannel'
+import useConversation from '@/features/chat/conversation/hooks/conversation/useConversation'
+import useConversationMembers from '@/features/chat/conversation/hooks/conversation/useConversationMembers'
+import useConversationMessages from '@/features/chat/conversation/hooks/conversation/useConversationMessages'
+import useTypingChannel from '@/features/chat/conversation/hooks/realtime/useTypingChannel'
 import useReportFlow from '@/features/moderation/hooks/useReportFlow'
-import useMediaViewer from '../hooks/conversation/useMediaViewer'
-import useMessageActionsMenu from '../hooks/conversation/useMessageActionsMenu'
-import useConversationActionsMenu from '../hooks/conversation/useConversationActionsMenu'
+import useMediaViewer from '@/features/chat/conversation/hooks/conversation/useMediaViewer'
+import useMessageActionsMenu from '@/features/chat/conversation/hooks/conversation/useMessageActionsMenu'
+import useConversationActionsMenu from '@/features/chat/conversation/hooks/conversation/useConversationActionsMenu'
 import useConversationCover from '@/features/moderation/hooks/useConversationCover'
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useInboxEntryForConversation from '@/features/chat/inbox/hooks/useInboxEntryForConversation'
 
 // ✅ add this import
-import useSendMessageActions from '../hooks/conversation/useSendMessageActions'
+import useSendMessageActions from '@/features/chat/conversation/hooks/conversation/useSendMessageActions'
 
-import ChatHeader from '../components/ChatHeader'
-import MessageList from '../components/MessageList'
-import MessageActionsMenu from '../components/MessageActionsMenu'
-import ConversationActionsMenu from '../components/ConversationActionsMenu'
+import ChatHeader from '@/features/chat/conversation/components/ChatHeader'
+import MessageList from '@/features/chat/conversation/components/MessageList'
+import MessageActionsMenu from '@/features/chat/conversation/components/MessageActionsMenu'
+import ConversationActionsMenu from '@/features/chat/conversation/components/ConversationActionsMenu'
 import ReportModal from '@/features/moderation/components/ReportModal'
-import ChatScreenLayout from '../layout/ChatScreenLayout'
+import ChatScreenLayout from '@/features/chat/conversation/layout/ChatScreenLayout'
 import ChatSpamCover from '@/features/moderation/components/ChatSpamCover'
-import ChatInput from '../components/ChatInput'
+import ChatInput from '@/features/chat/conversation/components/ChatInput'
+import Spinner from '@/shared/components/Spinner'
 
-import resolvePartnerActor from '../lib/resolvePartnerActor'
-import canReadConversation from '../permissions/canReadConversation'
+import resolvePartnerActor from '@/features/chat/conversation/lib/resolvePartnerActor'
+import canReadConversation from '@/features/chat/conversation/permissions/canReadConversation'
 
 // ✅ Toast
 import Toast from '@/shared/components/components/Toast'
@@ -57,6 +58,7 @@ export default function ConversationView({ conversationId }) {
   const inboxActions = useInboxActions({ actorId })
   const { entry: inboxEntry } = useInboxEntryForConversation({ actorId, conversationId })
   const isArchived = inboxEntry?.folder === 'archived' || inboxEntry?.archived === true
+  const isSpamThread = inboxEntry?.folder === 'spam'
 
   const partnerActor = useMemo(
     () => resolvePartnerActor({ actorId, conversation, members }),
@@ -132,7 +134,13 @@ export default function ConversationView({ conversationId }) {
 
   // ✅ Now it’s safe to early-return
   if (error) return <div className="p-4 text-red-400">Failed to load</div>
-  if (loading || !conversation || !members?.length) return <div className="p-4">Loading…</div>
+  if (loading || !conversation || !members?.length) {
+    return (
+      <div className="p-6">
+        <Spinner label="Loading conversation..." />
+      </div>
+    )
+  }
   if (!canReadConversation({ actorId, members })) return <div className="p-4 text-neutral-400">Access denied</div>
 
   // ✅ EDITING IS DRIVEN BY `editing` (not `menu`)
@@ -213,7 +221,10 @@ export default function ConversationView({ conversationId }) {
       />
 
       {conversationCovered && (
-        <ChatSpamCover onPrimary={() => navigate('/chat')} onSecondary={handleUndoSpam} />
+        <ChatSpamCover
+          onPrimary={() => navigate(isSpamThread ? '/chat/spam' : '/chat')}
+          onSecondary={handleUndoSpam}
+        />
       )}
 
       {viewer && (

@@ -8,6 +8,7 @@
 // ============================================================
 
 import { supabase } from "@/services/supabase/supabaseClient";
+import { isUuid } from "@/services/supabase/postgrestSafe";
 
 /**
  * Check block status between two actors
@@ -22,7 +23,7 @@ import { supabase } from "@/services/supabase/supabaseClient";
  * }}
  */
 export async function checkBlockStatus(actorA, actorB) {
-  if (!actorA || !actorB || actorA === actorB) {
+  if (!actorA || !actorB || actorA === actorB || !isUuid(actorA) || !isUuid(actorB)) {
     return {
       isBlocked: false,
       blockedByMe: false,
@@ -87,7 +88,7 @@ export async function checkBlockStatus(actorA, actorB) {
  * @returns {boolean}
  */
 export async function isBlocked(actorA, actorB) {
-  if (!actorA || !actorB || actorA === actorB) return false;
+  if (!actorA || !actorB || actorA === actorB || !isUuid(actorA) || !isUuid(actorB)) return false;
 
   const { data, error } = await supabase
     .schema("vc")

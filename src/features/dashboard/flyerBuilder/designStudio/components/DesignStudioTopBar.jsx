@@ -1,5 +1,5 @@
 import React from "react";
-import { Download, Expand, PanelRightClose, PanelRightOpen, Save } from "lucide-react";
+import { Download, Expand, PanelRightClose, PanelRightOpen, RotateCw, Save } from "lucide-react";
 
 import DesignStudioTextColorPicker from "@/features/dashboard/flyerBuilder/designStudio/components/topBar/DesignStudioTextColorPicker";
 
@@ -20,6 +20,8 @@ export default function DesignStudioTopBar({
   onZoomOut,
   onZoomIn,
   onZoomFit,
+  orientationLabel,
+  onToggleOrientation,
   onSave,
   onExportPng,
   onExportPdf,
@@ -43,6 +45,10 @@ export default function DesignStudioTopBar({
           <button type="button" onClick={onOpenResize} style={stripBtn}>
             <Expand size={15} />
             Resize
+          </button>
+          <button type="button" onClick={onToggleOrientation} style={stripBtn}>
+            <RotateCw size={15} />
+            {orientationLabel || "Rotate"}
           </button>
 
           {showTextTools ? (

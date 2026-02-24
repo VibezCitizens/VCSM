@@ -38,7 +38,7 @@ export default defineConfig({
       injectManifest: {
         injectionPoint: 'self.__WB_MANIFEST',
         globDirectory: 'dist',
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,avif,gif,woff,woff2,ttf,json,webmanifest}'],
 
         // ✅ allow chunks up to 10 MB to be precached
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,

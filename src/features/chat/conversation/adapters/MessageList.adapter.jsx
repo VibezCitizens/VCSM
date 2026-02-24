@@ -15,11 +15,9 @@ import MessageGroupAdapter from './MessageGroup.adapter'
 export default function MessageListAdapter({
   messages = [],
   currentActorId,
-  isGroupChat,
 
   // infrastructure (from Screen)
   actorId,
-  supabase,
 
   // lifecycle hooks
   onEdited,
@@ -66,7 +64,6 @@ export default function MessageListAdapter({
 
           /* infra */
           actorId={actorId}
-          supabase={supabase}
 
           /* lifecycle */
           onEdited={onEdited}

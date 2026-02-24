@@ -44,16 +44,16 @@ export default function PostActionsMenu({
 
   const items = [
     isOwn && typeof onEdit === 'function'
-      ? { key: 'edit', label: '✏️ Edit', tone: 'text-white', fn: onEdit }
+      ? { key: 'edit', label: 'Edit', tone: 'text-white', fn: onEdit }
       : null,
 
     isOwn && typeof onDelete === 'function'
-      ? { key: 'delete', label: '🗑️ Delete', tone: 'text-red-400', fn: onDelete }
+      ? { key: 'delete', label: 'Delete', tone: 'text-red-400', fn: onDelete }
       : null,
 
-    // ✅ ONLY show report when NOT owner
+    // Only show report when NOT owner
     !isOwn && typeof onReport === 'function'
-      ? { key: 'report', label: '🚩 Report', tone: 'text-red-400', fn: onReport }
+      ? { key: 'report', label: 'Report', tone: 'text-red-400', fn: onReport }
       : null,
   ].filter(Boolean)
 

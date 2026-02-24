@@ -126,9 +126,6 @@ export function toWandersMailboxItem(row) {
           lastOpenedAt: card.last_opened_at ?? card.lastOpenedAt ?? null,
           openCount: card.open_count ?? card.openCount ?? 0,
 
-          senderClaimToken: card.sender_claim_token ?? card.senderClaimToken ?? null,
-          recipientClaimToken: card.recipient_claim_token ?? card.recipientClaimToken ?? null,
-
           isVoid: !!(card.is_void ?? card.isVoid ?? false),
           inboxId: card.inbox_id ?? card.inboxId ?? null,
 

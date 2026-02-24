@@ -3,6 +3,7 @@
 // ============================================================
 
 import { supabase } from "@/services/supabase/supabaseClient";
+import { assertUuid } from "@/services/supabase/postgrestSafe";
 
 export async function applyBlockSideEffects(
   blockerActorId,
@@ -15,6 +16,9 @@ export async function applyBlockSideEffects(
   if (blockerActorId === blockedActorId) {
     return;
   }
+
+  assertUuid(blockerActorId, "blockerActorId");
+  assertUuid(blockedActorId, "blockedActorId");
 
   /* ============================================================
      REMOVE FOLLOW RELATIONSHIPS (BIDIRECTIONAL)

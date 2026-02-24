@@ -11,11 +11,11 @@ import { useParams, Navigate } from 'react-router-dom'
 import { useIdentity } from '@/state/identity/identityContext'
 
 import ConversationView from '@/features/chat/conversation/screen/ConversationView'
+import '@/features/ui/modern/module-modern.css'
 
 export default function ConversationScreen() {
   const { conversationId } = useParams()
-  const { identity } = useIdentity()
-  const actorId = identity?.actorId ?? null
+  useIdentity()
 
   /* ============================================================
      Guards
@@ -30,9 +30,8 @@ export default function ConversationScreen() {
      ============================================================ */
 
   return (
-   <div className="flex flex-col flex-1 bg-black text-white min-h-0">
-    <ConversationView conversationId={conversationId} />
-  </div>
-)
-
+    <div className="module-modern-page flex min-h-0 flex-1 flex-col text-white">
+      <ConversationView conversationId={conversationId} />
+    </div>
+  )
 }

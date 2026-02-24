@@ -13,6 +13,7 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
       vport:vports (
         id,
         name,
+        vport_type,
         slug,
         bio,
         avatar_url,
@@ -61,6 +62,7 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
 
     vport_id: v?.id ?? null,
     name: v?.name ?? null,
+    vport_type: v?.vport_type ?? null,
     slug: v?.slug ?? null,
     bio: v?.bio ?? null,
     avatar_url: v?.avatar_url ?? null,

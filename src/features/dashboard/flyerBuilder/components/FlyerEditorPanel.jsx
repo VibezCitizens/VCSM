@@ -342,21 +342,21 @@ export default function FlyerEditorPanel({
         <div style={{ fontWeight: 950, letterSpacing: 0.6 }}>Images</div>
 
         <ImageDropzone
-          label={uploadingKey === "logo_url" ? "Logo (uploadingâ€¦)" : "Logo"}
+          label={uploadingKey === "logo_url" ? "Logo (uploading...)" : "Logo"}
           value={draft.logo_url || ""}
           onPickFile={(file) => uploadAndSet("logo", "logo_url", file)}
           onClear={() => setField("logo_url", "")}
         />
 
         <ImageDropzone
-          label={uploadingKey === "flyer_food_image_1" ? "Food 1 (uploadingâ€¦)" : "Food 1"}
+          label={uploadingKey === "flyer_food_image_1" ? "Food 1 (uploading...)" : "Food 1"}
           value={draft.flyer_food_image_1 || ""}
           onPickFile={(file) => uploadAndSet("food1", "flyer_food_image_1", file)}
           onClear={() => setField("flyer_food_image_1", "")}
         />
 
         <ImageDropzone
-          label={uploadingKey === "flyer_food_image_2" ? "Food 2 (uploadingâ€¦)" : "Food 2"}
+          label={uploadingKey === "flyer_food_image_2" ? "Food 2 (uploading...)" : "Food 2"}
           value={draft.flyer_food_image_2 || ""}
           onPickFile={(file) => uploadAndSet("food2", "flyer_food_image_2", file)}
           onClear={() => setField("flyer_food_image_2", "")}

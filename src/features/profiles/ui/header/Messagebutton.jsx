@@ -10,7 +10,7 @@ export default function MessageButton({ label = "Message", onClick, disabled = f
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}
       className={`profiles-pill-btn flex items-center justify-center gap-2 px-5 py-2
-        w-[140px]
+        w-full sm:w-[140px]
         font-medium active:scale-[0.98] transition-all duration-150
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >

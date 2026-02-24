@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Megaphone, Plus } from "lucide-react";
+import { Megaphone, Plus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import "@/features/settings/styles/settings-modern.css";
@@ -8,6 +8,8 @@ import { useVportAds } from "@/features/ads/hooks/useVportAds";
 import { AdEditor, AdsEmptyState, AdsList } from "@/features/ads/ui/adsPipeline.ui";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 
 export default function VportAdsSettingsScreen() {
   const navigate = useNavigate();
@@ -16,6 +18,10 @@ export default function VportAdsSettingsScreen() {
 
   const actorId = actorIdParam || identity?.actorId || null;
   const isDesktop = useDesktopBreakpoint();
+  const shell = useMemo(
+    () => createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 1100 }),
+    [isDesktop]
+  );
   const { ads, loading, saving, error, createDraft, saveDraft, publish, pause, archive, remove } = useVportAds(actorId);
 
   const [selectedId, setSelectedId] = useState(null);
@@ -52,13 +58,11 @@ export default function VportAdsSettingsScreen() {
       <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/72 backdrop-blur">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <button
+            <VportBackButton
+              isDesktop={isDesktop}
               onClick={() => navigate(-1)}
-              className="settings-btn settings-btn--ghost inline-flex items-center gap-1 px-2.5 py-1.5 text-xs"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              {isDesktop ? "Back" : null}
-            </button>
+              style={shell.btn("soft")}
+            />
             <div className="inline-flex items-center gap-2 text-sm font-semibold text-slate-100">
               <Megaphone className="h-4 w-4 text-indigo-300" />
               VPORT Ads Pipeline

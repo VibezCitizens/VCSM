@@ -78,8 +78,8 @@ export default function MessageActionsMenu({
         className="
           absolute
           min-w-[180px]
-          rounded-xl
-          bg-neutral-800/95
+          rounded-2xl
+          bg-neutral-900/96
           text-white
           shadow-2xl
           border border-white/10
@@ -95,7 +95,7 @@ export default function MessageActionsMenu({
           <li>
             <button
               className="
-                w-full text-left px-4 py-2
+                w-full text-left px-4 py-3
                 text-white
                 hover:bg-white/10
               "
@@ -104,16 +104,17 @@ export default function MessageActionsMenu({
                 onClose?.()
               }}
             >
-              📋 Copy
+              Copy
             </button>
+            <div className="h-px bg-white/10" />
           </li>
 
           {isOwn && (
             <li>
               <button
                 className="
-                  w-full text-left px-4 py-2
-                  text-red-400
+                  w-full text-left px-4 py-3
+                  text-rose-400
                   hover:bg-white/10
                 "
                 onClick={() => {
@@ -121,15 +122,16 @@ export default function MessageActionsMenu({
                   onClose?.()
                 }}
               >
-                🚫 Unsend
+                Unsend
               </button>
+              <div className="h-px bg-white/10" />
             </li>
           )}
 
           <li>
             <button
               className="
-                w-full text-left px-4 py-2
+                w-full text-left px-4 py-3
                 text-white
                 hover:bg-white/10
               "
@@ -138,15 +140,16 @@ export default function MessageActionsMenu({
                 onClose?.()
               }}
             >
-              🗑️ Delete for me
+              Delete for me
             </button>
+            <div className="h-px bg-white/10" />
           </li>
 
           {isOwn && (
             <li>
               <button
                 className="
-                  w-full text-left px-4 py-2
+                  w-full text-left px-4 py-3
                   text-white
                   hover:bg-white/10
                 "
@@ -155,16 +158,17 @@ export default function MessageActionsMenu({
                   onClose?.()
                 }}
               >
-                ✏️ Edit
+                Edit
               </button>
+              <div className="h-px bg-white/10" />
             </li>
           )}
 
           <li>
             <button
               className="
-                w-full text-left px-4 py-2
-                text-white
+                w-full text-left px-4 py-3
+                text-rose-400
                 hover:bg-white/10
               "
               onClick={() => {
@@ -172,7 +176,7 @@ export default function MessageActionsMenu({
                 onClose?.()
               }}
             >
-              🚩 Report
+              Report
             </button>
           </li>
         </ul>

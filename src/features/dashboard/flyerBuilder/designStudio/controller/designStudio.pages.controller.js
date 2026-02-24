@@ -31,9 +31,13 @@ const MAX_PAGES_PER_DOCUMENT = 1;
 
 export async function ctrlSaveDesignPageScene({ ownerActorId, documentId, pageId, scene }) {
   await requireOwnerActorAccess(ownerActorId);
+  if (!documentId) throw new Error("Document id is required.");
 
   const pageRow = await dalReadDesignPageById(pageId);
   if (!pageRow) throw new Error("Page not found.");
+  if (String(pageRow.document_id) !== String(documentId)) {
+    throw new Error("Page does not belong to this document.");
+  }
 
   const safeScene = ensureSceneContent(scene, {
     width: pageRow.width,

@@ -192,7 +192,6 @@ export async function deactivateConversationMember({
     .from('conversation_members')
     .update({
       is_active: false,
-      left_at: new Date().toISOString(),
     })
     .eq('conversation_id', conversationId)
     .eq('actor_id', actorId)

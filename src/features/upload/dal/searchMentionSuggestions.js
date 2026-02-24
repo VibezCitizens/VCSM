@@ -1,5 +1,6 @@
 // src/features/upload/dal/searchMentionSuggestions.js
 import { supabase } from "@/services/supabase/supabaseClient";
+import { toPrefixPattern } from "@/services/supabase/postgrestSafe";
 
 /**
  * Search mention suggestions by prefix.
@@ -17,8 +18,8 @@ import { supabase } from "@/services/supabase/supabaseClient";
  * ]
  */
 export async function searchMentionSuggestions(prefix, { limit = 8 } = {}) {
-  const q = String(prefix || "").trim().toLowerCase();
-  if (!q) return [];
+  const pattern = toPrefixPattern(prefix);
+  if (!pattern) return [];
 
   // This assumes vc.actor_presentation exists (you already use it elsewhere)
   const { data, error } = await supabase
@@ -36,7 +37,7 @@ export async function searchMentionSuggestions(prefix, { limit = 8 } = {}) {
       vport_avatar_url
     `
     )
-    .or(`username.ilike.${q}%,vport_slug.ilike.${q}%`)
+    .or(`username.ilike.${pattern},vport_slug.ilike.${pattern}`)
     .limit(limit);
 
   if (error) throw error;

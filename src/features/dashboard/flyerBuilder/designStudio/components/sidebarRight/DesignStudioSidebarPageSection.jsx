@@ -8,14 +8,22 @@ import {
   sectionTitle,
 } from "@/features/dashboard/flyerBuilder/designStudio/components/sidebarRight/designStudioSidebarRight.styles";
 
-export default function DesignStudioSidebarPageSection({ activePage, onPageMetaChange }) {
+export default function DesignStudioSidebarPageSection({
+  activePage,
+  sceneMeta,
+  onPageMetaChange,
+}) {
+  const pageWidth = Number(sceneMeta?.width || activePage?.width || 1080);
+  const pageHeight = Number(sceneMeta?.height || activePage?.height || 1350);
+  const pageBackground = sceneMeta?.background || activePage?.background || "#0b1020";
+
   return (
     <section style={{ display: "grid", gap: 8 }}>
       <div style={sectionTitle}>Page</div>
       <label style={fieldWrap}>
         <span style={fieldLabel}>Background</span>
         <DesignStudioInlineColorPicker
-          value={activePage?.background || "#0b1020"}
+          value={pageBackground}
           onChange={(next) => onPageMetaChange({ background: next })}
         />
       </label>
@@ -27,8 +35,10 @@ export default function DesignStudioSidebarPageSection({ activePage, onPageMetaC
             type="number"
             min={320}
             max={4000}
-            value={activePage?.width || 1080}
-            onChange={(e) => onPageMetaChange({ width: Number(e.target.value || 1080) })}
+            value={pageWidth}
+            onChange={(e) =>
+              onPageMetaChange({ width: toBoundedSize(e.target.value, pageWidth) })
+            }
             style={input}
           />
         </label>
@@ -38,12 +48,20 @@ export default function DesignStudioSidebarPageSection({ activePage, onPageMetaC
             type="number"
             min={320}
             max={4000}
-            value={activePage?.height || 1350}
-            onChange={(e) => onPageMetaChange({ height: Number(e.target.value || 1350) })}
+            value={pageHeight}
+            onChange={(e) =>
+              onPageMetaChange({ height: toBoundedSize(e.target.value, pageHeight) })
+            }
             style={input}
           />
         </label>
       </div>
     </section>
   );
+}
+
+function toBoundedSize(value, fallback) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(320, Math.min(4000, Math.round(n)));
 }

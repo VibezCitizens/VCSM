@@ -5,10 +5,39 @@
 // @Note: Do NOT remove, rename, or modify this block.
 
 // src/lib/uploadToCloudflare.js
+import { supabase } from '@/services/supabase/supabaseClient';
 
 // If you add auth later, you can inject a Bearer token here (or via headers in getBackgroundJob)
 export const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
 export const R2_PUBLIC = 'https://cdn.vibezcitizens.com'; // Your public R2 domain
+
+async function getUploadAuthHeaders() {
+  try {
+    let token = null;
+
+    const { data } = await supabase.auth.getSession();
+    token = data?.session?.access_token ?? null;
+
+    if (!token) {
+      const wandersClient = globalThis?.__WANDERS_SB__;
+      if (wandersClient?.auth?.getSession) {
+        const { data: wandersData } = await wandersClient.auth.getSession();
+        token = wandersData?.session?.access_token ?? null;
+      }
+    }
+
+    if (!token) {
+      return { 'x-requested-with': 'vc-web' };
+    }
+
+    return {
+      Authorization: `Bearer ${token}`,
+      'x-requested-with': 'vc-web',
+    };
+  } catch {
+    return { 'x-requested-with': 'vc-web' };
+  }
+}
 
 /** Build a deterministic public URL from a storage key. */
 export function publicUrlForKey(key) {
@@ -34,10 +63,12 @@ export async function uploadToCloudflare(file, key) {
     form.append('key', key);             // Full object key
     form.append('path', path);           // Folder prefix (if your Worker uses it)
 
+    const authHeaders = await getUploadAuthHeaders();
+
     const res = await fetch(UPLOAD_ENDPOINT, {
       method: 'POST',
       body: form,
-      // headers: { Authorization: `Bearer ${YOUR_TOKEN}` }, // if needed later
+      headers: authHeaders,
     });
 
     if (!res.ok) {
@@ -62,18 +93,20 @@ export async function uploadToCloudflare(file, key) {
  *
  * @param {File|Blob} file
  * @param {string} key
+ * @param {{ authToken?: string }} [options]
  * @returns {{url:string, method:string, headers:Object, fields:Object, filename:string, contentType:string, publicUrl:string}}
  */
-export function getBackgroundJob(file, key) {
+export function getBackgroundJob(file, key, options = {}) {
   const filename = (key.split('/').pop()) || 'upload.bin';
   const path = key.split('/').slice(0, -1).join('/');
+  const token = String(options?.authToken || '').trim();
 
   return {
     url: UPLOAD_ENDPOINT,
     method: 'POST',
     headers: {
-      // Add auth here if your Worker requires it, e.g.:
-      // Authorization: `Bearer ${YOUR_TOKEN}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'x-requested-with': 'vc-web',
       // Let the browser set multipart boundary — don't set Content-Type
     },
     fields: {

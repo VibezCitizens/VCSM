@@ -33,8 +33,8 @@ function getOrCreateClient() {
   Object.defineProperty(client, '__isSingleton', { value: true });
   g.__SB_CLIENT__ = client;
 
-  // Optional dev convenience (safe to remove if you want zero globals)
-  if (typeof window !== 'undefined') {
+  // Optional dev convenience only (never expose in production)
+  if (typeof window !== 'undefined' && import.meta.env.DEV && import.meta.env.VITE_EXPOSE_SB_CLIENT === '1') {
     window.__sb = client;
   }
 

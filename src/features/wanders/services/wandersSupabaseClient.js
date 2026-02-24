@@ -63,15 +63,8 @@ function withClientKeyFetch(clientKey) {
 
     if (!headers.has('accept')) headers.set('accept', 'application/json')
 
-    // eslint-disable-next-line no-debugger
-    if (DEBUG_WANDERS_SB && url && url.includes('/rest/v1/')) debugger
-
     const acceptProfile = headers.get('accept-profile')
     const contentProfile = headers.get('content-profile')
-    if (DEBUG_WANDERS_SB && (acceptProfile === 'wanders' || contentProfile === 'wanders')) {
-      // eslint-disable-next-line no-debugger
-      debugger
-    }
 
     if (DEBUG_WANDERS_SB) {
       dbg('REQUEST', {
@@ -111,8 +104,6 @@ function withClientKeyFetch(clientKey) {
         contentProfile,
         message: body?.message,
       })
-      // eslint-disable-next-line no-debugger
-      debugger
     }
 
     return res

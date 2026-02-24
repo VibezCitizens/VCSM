@@ -46,6 +46,24 @@ export function useDesignStudio({ ownerActorId, starter }) {
     setSelectedNodeId,
   });
 
+  const toggleCanvasOrientation = useCallback(() => {
+    setScene((prev) => {
+      const baseMeta = prev?.meta && typeof prev.meta === "object" ? prev.meta : {};
+      const width = clampCanvasSize(Number(baseMeta.width) || 1080);
+      const height = clampCanvasSize(Number(baseMeta.height) || 1350);
+
+      return {
+        ...(prev || {}),
+        meta: {
+          ...baseMeta,
+          width: height,
+          height: width,
+        },
+      };
+    });
+    setDirty(true);
+  }, []);
+
   const loadStudio = useCallback(async () => {
     if (!ownerActorId) return;
 
@@ -213,14 +231,23 @@ export function useDesignStudio({ ownerActorId, starter }) {
         let latestVersion = versionsByPageId?.[activePage.id] || null;
         if (dirty) {
           const saveRes = await saveCurrentPage();
-          latestVersion = saveRes?.version || latestVersion;
+          if (!saveRes?.version?.id) {
+            setError("Save failed. Resolve errors before exporting.");
+            return null;
+          }
+          latestVersion = saveRes.version;
+        }
+
+        if (!latestVersion?.id) {
+          setError("Save the page before exporting.");
+          return null;
         }
 
         const queued = await ctrlQueueDesignExport({
           ownerActorId,
           documentId: document.id,
           pageId: activePage.id,
-          versionId: latestVersion?.id || null,
+          versionId: latestVersion.id,
           format,
         });
 
@@ -291,6 +318,7 @@ export function useDesignStudio({ ownerActorId, starter }) {
     bringNodeForward: sceneActions.bringNodeForward,
     sendNodeBackward: sceneActions.sendNodeBackward,
     removeSelectedNode: sceneActions.removeSelectedNode,
+    toggleCanvasOrientation,
     saveCurrentPage,
     createPage,
     deletePage,
@@ -302,4 +330,9 @@ export function useDesignStudio({ ownerActorId, starter }) {
 
 function sortByOrder(pages) {
   return [...(pages || [])].sort((a, b) => (a.pageOrder || 0) - (b.pageOrder || 0));
+}
+
+function clampCanvasSize(value) {
+  if (!Number.isFinite(value)) return 1080;
+  return Math.max(320, Math.min(4000, Math.round(value)));
 }

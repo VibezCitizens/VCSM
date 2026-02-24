@@ -6,6 +6,7 @@
 
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState, useMemo } from 'react'
+import { ChevronRight, Smartphone, Sparkles } from 'lucide-react'
 import { getActiveSeasonTheme } from '@/season'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 
@@ -90,15 +91,23 @@ function LoginScreen() {
             <form
               onSubmit={onSubmit}
               className="
-                relative w-full space-y-5
+                relative w-full space-y-5 overflow-hidden
                 bg-white/5 backdrop-blur-xl
                 border border-white/10
                 p-6 sm:p-8 rounded-2xl
               "
             >
-              <h1 className="text-4xl font-semibold text-center tracking-wide">
-                Vibez Citizens
-              </h1>
+              <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-300/12 blur-3xl" />
+              <div className="pointer-events-none absolute -left-12 -bottom-14 h-36 w-36 rounded-full bg-rose-300/10 blur-3xl" />
+
+              <div className="relative text-center">
+                <h1 className="font-serif text-[clamp(2.45rem,9.6vw,3.35rem)] font-semibold leading-[0.96] tracking-[0.005em] whitespace-nowrap text-transparent bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 bg-clip-text">
+                  Vibez Citizens
+                </h1>
+                <p className="mt-2 text-sm tracking-[0.08em] text-amber-100/80">
+                  Where your vibez belongs.
+                </p>
+              </div>
 
               <input
                 type="email"
@@ -187,20 +196,42 @@ function LoginScreen() {
               </div>
 
               {canShowInstall && (
-                <button
-                  type="button"
-                  onClick={() => setShowInstall(true)}
-                  className="
-                    mt-3 w-full
-                    rounded-xl
-                    border border-white/15
-                    py-2 text-sm text-white/90
-                    hover:bg-white/10
-                    transition
-                  "
-                >
-                  Install on iPhone
-                </button>
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowInstall(true)}
+                    className="
+                      group relative w-full overflow-hidden rounded-2xl border border-cyan-300/30
+                      bg-gradient-to-r from-cyan-400/15 via-indigo-400/10 to-sky-400/10
+                      px-4 py-3 text-left transition hover:border-cyan-200/45 hover:brightness-110
+                    "
+                  >
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-cyan-300/25 blur-2xl" />
+                    <div className="pointer-events-none absolute -left-12 -bottom-10 h-24 w-24 rounded-full bg-indigo-300/20 blur-2xl" />
+
+                    <div className="relative flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="grid h-9 w-9 place-items-center rounded-xl border border-cyan-300/35 bg-cyan-300/15 text-cyan-100">
+                          <Smartphone size={17} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                            Install on iPhone
+                            <Sparkles size={14} className="text-cyan-200" />
+                          </div>
+                          <div className="text-xs text-slate-200/75">
+                            Guided setup in 3 quick steps
+                          </div>
+                        </div>
+                      </div>
+
+                      <ChevronRight
+                        size={17}
+                        className="text-cyan-100 transition-transform group-hover:translate-x-1"
+                      />
+                    </div>
+                  </button>
+                </div>
               )}
             </form>
           </div>

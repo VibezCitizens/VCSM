@@ -15,7 +15,7 @@ export default function SearchScreen() {
 
   return (
     <div className="module-modern-shell w-full rounded-2xl px-4 pt-[calc(env(safe-area-inset-top)+12px)] pb-4">
-      <div className="relative mb-6">
+      <div className="relative mb-3 sm:mb-4">
         <input
           type="text"
           placeholder="Search Citizens, Vports, Vibes..."
@@ -36,8 +36,8 @@ export default function SearchScreen() {
         )}
       </div>
 
-      <div className="mb-6 overflow-x-auto">
-        <div className="flex min-w-max justify-center gap-8 border-b border-slate-300/15 px-2">
+      <div className="mb-4 overflow-x-auto sm:mb-5">
+        <div className="flex min-w-max justify-center gap-6 border-b border-slate-300/15 px-1 sm:gap-8 sm:px-2">
           {FILTERS.map((f) => {
             const active = filter === f.key
             return (
@@ -45,7 +45,7 @@ export default function SearchScreen() {
                 type="button"
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`relative py-3 text-[17px] tracking-wide transition-colors duration-200 ${
+                className={`relative py-2 text-[17px] tracking-wide transition-colors duration-200 sm:py-3 ${
                   active ? 'font-semibold text-slate-100' : 'text-slate-400 hover:text-slate-200'
                 }`}
               >

@@ -1,6 +1,6 @@
 // src/features/dashboard/vport/screens/VportSettingsScreen.jsx
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -12,7 +12,13 @@ import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportP
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { useVportAds } from "@/features/ads/hooks/useVportAds";
 import VportSettingsAdsPreview from "@/features/dashboard/vport/screens/components/VportSettingsAdsPreview";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import { getDashboardCardMetaByKey } from "@/features/dashboard/vport/screens/model/buildDashboardCards";
+import {
+  getDashboardViewByVportType,
+  normalizeVportType,
+} from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
 import {
   mapPublicDetailsToDraft,
   saveVportPublicDetailsByActorId,
@@ -36,6 +42,21 @@ export default function VportSettingsScreen() {
     Boolean(actorId) &&
     Boolean(viewerActorId) &&
     String(viewerActorId) === String(actorId);
+  const vportType = useMemo(
+    () => normalizeVportType(identity?.vportType ?? null),
+    [identity?.vportType]
+  );
+  const dashboardView = useMemo(
+    () => getDashboardViewByVportType(vportType),
+    [vportType]
+  );
+  const dashboardTabs = useMemo(
+    () =>
+      (dashboardView?.cardKeys ?? [])
+        .map((key) => getDashboardCardMetaByKey(key))
+        .filter(Boolean),
+    [dashboardView]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -119,22 +140,48 @@ export default function VportSettingsScreen() {
       <div style={shell.container}>
         <div style={shell.headerWrap}>
           <div style={shell.topBar}>
-            <button
-              type="button"
+            <VportBackButton
+              isDesktop={isDesktop}
               onClick={() => navigate(`/actor/${actorId}/dashboard`)}
               style={shell.btn("soft")}
-            >
-              {isDesktop ? "<- Back" : "<"}
-            </button>
+            />
 
-            <div style={{ fontWeight: 950, letterSpacing: 1.2 }}>
-              VPORT SETTINGS
-            </div>
+            <div style={shell.title}>VPORT SETTINGS</div>
 
-            <div style={{ width: 110 }} />
+            <div style={shell.rightSpacer} />
           </div>
 
           <div style={{ padding: 16 }}>
+            <Card>
+              <div className="space-y-3">
+                <div className="text-sm font-semibold text-zinc-100">
+                  Dashboard Tabs
+                </div>
+                <div className="text-xs text-zinc-400">
+                  View: {dashboardView?.label ?? "Default"} • Type: {vportType}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {dashboardTabs.map((tab) => (
+                    <span
+                      key={tab.key}
+                      className="rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 text-xs text-zinc-200"
+                    >
+                      {tab.title}
+                    </span>
+                  ))}
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/actor/${actorId}/dashboard`)}
+                    className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-100 hover:bg-zinc-800"
+                  >
+                    Open Dashboard
+                  </button>
+                </div>
+              </div>
+            </Card>
+
             <Card>
               <VportSettingsAdsPreview
                 ads={ads}

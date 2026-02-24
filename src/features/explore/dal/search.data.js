@@ -2,6 +2,11 @@
 
 import { supabase } from '@/services/supabase/supabaseClient'
 import { vc } from '@/services/supabase/vcClient'
+import {
+  isUuid,
+  normalizeHandleTerm,
+  toContainsPattern,
+} from '@/services/supabase/postgrestSafe'
 
 // ============================================================
 // Search Data (ACTOR-FIRST)
@@ -67,18 +72,23 @@ export const search = {
         )
         .limit(limit)
 
-      if (currentUserId) {
+      if (currentUserId && isUuid(currentUserId)) {
         fb = fb.or(`discoverable.eq.true,id.eq.${currentUserId}`)
       } else {
         fb = fb.eq('discoverable', true)
       }
 
       if (byId && needle) {
-        fb = fb.ilike('id', `${needle}%`)
+        const idPrefix = String(needle).toLowerCase().replace(/[^0-9a-f-]/g, '')
+        if (!idPrefix) return []
+        fb = fb.ilike('id', `${idPrefix}%`)
       } else if (byHandle && needle) {
-        fb = fb.ilike('username', `${needle}%`)
+        const handlePrefix = normalizeHandleTerm(needle)
+        if (!handlePrefix) return []
+        fb = fb.ilike('username', `${handlePrefix}%`)
       } else {
-        const like = `%${needle}%`
+        const like = toContainsPattern(needle)
+        if (!like) return []
         fb = fb.or(
           `username.ilike.${like},display_name.ilike.${like}`
         )
@@ -108,7 +118,9 @@ export const search = {
           .select('blocked_id')
           .eq('blocker_id', currentUserId)
         iBlocked = new Set((data || []).map(r => r.blocked_id))
-      } catch {}
+      } catch {
+        void 0 // best-effort block filter only
+      }
 
       try {
         const ids = rows.map(r => r.user_id).filter(Boolean)
@@ -120,7 +132,9 @@ export const search = {
             .eq('blocked_id', currentUserId)
           blockedMe = new Set((data || []).map(r => r.blocker_id))
         }
-      } catch {}
+      } catch {
+        void 0 // best-effort block filter only
+      }
 
       rows = rows.filter(r => {
         if (!r.user_id) return true

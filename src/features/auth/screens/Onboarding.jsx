@@ -5,7 +5,7 @@
 // @Note: Do NOT remove, rename, or modify this block.
 
 // src/features/auth/screens/Onboarding.jsx
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '@/services/supabase/supabaseClient'
 
@@ -35,7 +35,7 @@ export default function Onboarding() {
   const isAnonUser = (u) =>
     Boolean(u?.is_anonymous) || Boolean(u?.app_metadata?.is_anonymous)
 
-  const bounceToRegister = () => {
+  const bounceToRegister = useCallback(() => {
     navigate('/register', {
       replace: true,
       state: {
@@ -44,7 +44,7 @@ export default function Onboarding() {
         wandersFlow: isWandersFlow,
       },
     })
-  }
+  }, [navigate, redirectTo, location.state, isWandersFlow])
 
   useEffect(() => {
     let isMounted = true
@@ -56,11 +56,6 @@ export default function Onboarding() {
 
         const session = sessData?.session || null
         const user = session?.user || null
-
-        // ✅ debug: confirm main client identity on screen load
-        console.log('MAIN session', await supabase.auth.getSession())
-        console.log('MAIN user', await supabase.auth.getUser())
-        console.log('MAIN storage key', supabase.auth.storageKey)
 
         if (!user) {
           navigate('/login', { replace: true })
@@ -96,7 +91,7 @@ export default function Onboarding() {
     })()
 
     return () => { isMounted = false }
-  }, [navigate, redirectTo, location.state, isWandersFlow])
+  }, [navigate, redirectTo, location.state, isWandersFlow, bounceToRegister])
 
   const isValid =
     form.display_name.trim() !== '' &&
@@ -137,11 +132,6 @@ export default function Onboarding() {
 
       const session = sessData?.session || null
       const user = session?.user || null
-
-      // ✅ debug: confirm main client identity right before privileged writes
-      console.log('MAIN session', await supabase.auth.getSession())
-      console.log('MAIN user', await supabase.auth.getUser())
-      console.log('MAIN storage key', supabase.auth.storageKey)
 
       if (!user) {
         navigate('/login', { replace: true })

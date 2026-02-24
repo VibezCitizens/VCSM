@@ -1,131 +1,72 @@
-// src/features/chat/hooks/conversation/useTypingChannel.js
-// ============================================================
-// useTypingChannel
-// ------------------------------------------------------------
-// - Actor-based (NO user_id logic)
-// - Realtime typing indicator using Supabase presence
-// - Safe for actor + conversation switching
-// - UI consumes returned actors array
-// ============================================================
+import { useEffect, useRef, useState, useCallback } from "react";
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { supabase } from '@/services/supabase/supabaseClient'
+import {
+  ctrlCreateTypingPresenceChannel,
+  ctrlRemoveTypingPresenceChannel,
+  ctrlTrackTypingPresence,
+} from "@/features/chat/conversation/controllers/realtime/typingPresence.controller";
 
-/**
- * useTypingChannel
- *
- * @param {Object} params
- * @param {string} params.conversationId
- * @param {string} params.actorId
- * @param {Object} params.actorPresentation
- *   {
- *     actor_id,
- *     kind,
- *     display_name?,
- *     username?,
- *     photo_url?
- *   }
- *
- * @param {number} [params.timeoutMs=3000]
- *
- * @returns {{
- *   typingActors: Array,
- *   notifyTyping: () => void
- * }}
- */
 export default function useTypingChannel({
   conversationId,
   actorId,
   actorPresentation,
   timeoutMs = 3000,
 }) {
-  const [typingActors, setTypingActors] = useState([])
+  const [typingActors, setTypingActors] = useState([]);
 
-  const channelRef = useRef(null)
-  const timeoutRef = useRef(null)
+  const channelRef = useRef(null);
+  const timeoutRef = useRef(null);
 
-  /* ============================================================
-     Subscribe to presence channel
-     ============================================================ */
   useEffect(() => {
-    if (!conversationId || !actorId) return
+    if (!conversationId || !actorId) return undefined;
 
-    // cleanup old channel
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current)
-      channelRef.current = null
-    }
+    ctrlRemoveTypingPresenceChannel(channelRef.current);
+    channelRef.current = null;
 
-    const channel = supabase.channel(
-      `vc-typing-${conversationId}`,
-      {
-        config: {
-          presence: {
-            key: actorId,
-          },
-        },
-      }
-    )
+    const channel = ctrlCreateTypingPresenceChannel({ conversationId, actorId });
 
     channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState()
-
+      .on("presence", { event: "sync" }, () => {
+        const state = channel.presenceState();
         const actors = Object.values(state)
           .flat()
-          .map((p) => p.actor)
-          .filter(
-            (a) =>
-              a &&
-              a.actor_id &&
-              a.actor_id !== actorId
-          )
-
-        setTypingActors(actors)
+          .map((presence) => presence.actor)
+          .filter((actor) => actor && actor.actor_id && actor.actor_id !== actorId);
+        setTypingActors(actors);
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({
-            actor: actorPresentation,
-            ts: Date.now(),
-          })
+        if (status === "SUBSCRIBED") {
+          await ctrlTrackTypingPresence({ channel, actorPresentation });
         }
-      })
+      });
 
-    channelRef.current = channel
+    channelRef.current = channel;
 
     return () => {
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current)
-        channelRef.current = null
-      }
-    }
-  }, [conversationId, actorId, actorPresentation])
+      ctrlRemoveTypingPresenceChannel(channelRef.current);
+      channelRef.current = null;
+    };
+  }, [conversationId, actorId, actorPresentation]);
 
-  /* ============================================================
-     Notify typing (debounced)
-     ============================================================ */
   const notifyTyping = useCallback(async () => {
-    if (!channelRef.current) return
+    if (!channelRef.current) return;
 
-    // reset local debounce
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+      clearTimeout(timeoutRef.current);
     }
 
-    await channelRef.current.track({
-      actor: actorPresentation,
-      ts: Date.now(),
-    })
+    await ctrlTrackTypingPresence({
+      channel: channelRef.current,
+      actorPresentation,
+    });
 
     timeoutRef.current = setTimeout(() => {
-      // allow presence entry to expire naturally
-      timeoutRef.current = null
-    }, timeoutMs)
-  }, [actorPresentation, timeoutMs])
+      timeoutRef.current = null;
+    }, timeoutMs);
+  }, [actorPresentation, timeoutMs]);
 
   return {
     typingActors,
     notifyTyping,
-  }
+  };
 }

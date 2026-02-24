@@ -34,8 +34,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-// RPC / controllers
-import { openConversation } from '@/features/chat/start/dal/rpc/openConversation.rpc'
+// controllers
+import { openConversationController } from '@/features/chat/conversation/controllers/openConversation.controller'
 import { markConversationRead } 
   from '@/features/chat/conversation/controllers/markConversationRead.controller'
 
@@ -68,7 +68,7 @@ export default function useConversation({
 
     try {
       // 1️⃣ Ensure membership / inbox via RPC (RLS-safe)
-      const convo = await openConversation({
+      const convo = await openConversationController({
         conversationId,
         actorId,
       })
@@ -80,10 +80,15 @@ export default function useConversation({
       setConversation(convo)
 
       // 2️⃣ Mark conversation as read (idempotent)
-      await markConversationRead({
-        conversationId,
-        actorId,
-      })
+      try {
+        await markConversationRead({
+          conversationId,
+          actorId,
+        })
+      } catch (readErr) {
+        // Read-pointer sync should never block rendering.
+        console.warn('[useConversation] markConversationRead failed (non-fatal)', readErr)
+      }
     } catch (err) {
       console.error('[useConversation] loadInitial failed', err)
       setError(err)

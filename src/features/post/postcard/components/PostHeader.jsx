@@ -77,7 +77,7 @@ export default function PostHeader({
           const rect = e.currentTarget.getBoundingClientRect();
           onOpenMenu?.({
             postId,
-            postActorId: actor,
+            postActorId: actorSummary.actorId,
             anchorRect: rect,
           });
         }}

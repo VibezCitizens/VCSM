@@ -46,7 +46,7 @@ export default function ConversationActionsMenu({
     typeof onUnarchiveConversation === 'function'
       ? {
           key: 'unarchive',
-          label: '📤 Unarchive Vox',
+          label: 'Unarchive Vox',
           tone: 'text-white',
           fn: onUnarchiveConversation,
         }
@@ -55,7 +55,7 @@ export default function ConversationActionsMenu({
     typeof onArchiveConversation === 'function'
       ? {
           key: 'archive',
-          label: '🗃️ Archive Vox',
+          label: 'Archive Vox',
           tone: 'text-white',
           fn: onArchiveConversation,
         }
@@ -64,8 +64,8 @@ export default function ConversationActionsMenu({
     typeof onReportConversation === 'function'
       ? {
           key: 'report',
-          label: '🚩 Report Vox',
-          tone: 'text-red-400',
+          label: 'Report Vox',
+          tone: 'text-rose-400',
           fn: onReportConversation,
         }
       : null,
@@ -73,18 +73,18 @@ export default function ConversationActionsMenu({
     typeof onMarkSpam === 'function'
       ? {
           key: 'spam',
-          label: '🚫 Mark Vox as spam',
-          tone: 'text-red-400',
+          label: 'Mark Vox as spam',
+          tone: 'text-rose-400',
           fn: onMarkSpam,
         }
       : null,
 
     typeof onBlockUser === 'function'
-      ? { key: 'block', label: '⛔ Block Citizen', tone: 'text-red-400', fn: onBlockUser }
+      ? { key: 'block', label: 'Block Citizen', tone: 'text-rose-400', fn: onBlockUser }
       : null,
 
     typeof onClearChat === 'function'
-      ? { key: 'clear', label: '🧹 Clear Vox', tone: 'text-white', fn: onClearChat }
+      ? { key: 'clear', label: 'Clear Vox', tone: 'text-white', fn: onClearChat }
       : null,
   ].filter(Boolean)
 
@@ -113,8 +113,8 @@ export default function ConversationActionsMenu({
         className="
           absolute
           min-w-[200px]
-          rounded-xl
-          bg-neutral-800/95
+          rounded-2xl
+          bg-neutral-900/96
           text-white
           shadow-2xl
           border border-white/10
@@ -127,11 +127,11 @@ export default function ConversationActionsMenu({
         }}
       >
         <ul className="m-0 list-none py-1 pl-0 pr-0">
-          {items.map((it) => (
+          {items.map((it, idx) => (
             <li key={it.key}>
               <button
                 className={`
-                  w-full text-left px-4 py-2
+                  w-full text-left px-4 py-3
                   hover:bg-white/10
                   ${it.tone}
                 `}
@@ -142,6 +142,7 @@ export default function ConversationActionsMenu({
               >
                 {it.label}
               </button>
+              {idx !== items.length - 1 ? <div className="h-px bg-white/10" /> : null}
             </li>
           ))}
         </ul>

@@ -7,17 +7,19 @@ export default function TopNav() {
   const { identity } = useIdentity();
 
   const inVoid = pathname.startsWith('/void');
+  const isChatInboxRoot = /^\/(vport\/)?chat$/.test(pathname);
 
   // ✅ FIX: new identity fields
   const isVport = identity?.kind === 'vport' && !!identity?.vportId;
 
-  // ✅ FIX: vportSlug → username
-  const personaLabel = isVport
-    ? `VPORT${identity?.username ? ` · ${identity.username}` : ''}`
-    : 'USER';
+  const personaLabel = isVport ? 'VPORT' : 'USER';
 
   return (
-    <div className="fixed top-0 inset-x-0 z-50 h-12 bg-black border-b border-neutral-800">
+    <div
+      className={`fixed top-0 inset-x-0 z-50 h-12 bg-black ${
+        isChatInboxRoot ? 'border-b-0' : 'border-b border-neutral-800'
+      }`}
+    >
       <div className="h-full px-4 flex items-center justify-between gap-2">
 
         <div className="min-w-[84px] flex justify-start">

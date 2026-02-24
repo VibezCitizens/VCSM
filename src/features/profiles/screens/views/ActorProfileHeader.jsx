@@ -114,7 +114,7 @@ export default function ActorProfileHeader({
               {/* reserve room for absolute buttons */}
               <div
                 className={`flex-1 min-w-0 pt-1 ${
-                  isSelf ? '' : 'pr-32 pb-5'
+                  isSelf ? '' : 'sm:pr-36 sm:pb-6'
                 }`}
               >
                 <div className="min-w-0">
@@ -159,7 +159,7 @@ export default function ActorProfileHeader({
 
             {/* ================= BOTTOM RIGHT ACTIONS ================= */}
             {!isSelf && (
-              <div className="absolute bottom-4 right-4 flex flex-col gap-2">
+              <div className="mt-4 flex w-full flex-col gap-2 sm:absolute sm:bottom-4 sm:right-4 sm:mt-0 sm:w-auto sm:items-end">
                 <MessageButton onClick={safeHandleMessage} />
                 <SubscribeButton
                   isSubscribed={isSubscribed}

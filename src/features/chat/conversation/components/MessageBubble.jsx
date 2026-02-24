@@ -18,9 +18,21 @@ export default function MessageBubble({
   onOpenActions,
   onOpenMedia,
 }) {
-  if (!message) return null
-
   const longPressTimer = useRef(null)
+
+  const timeText = useMemo(() => {
+    const createdAt = message?.createdAt
+    if (!createdAt) return ''
+    const d = createdAt instanceof Date ? createdAt : new Date(createdAt)
+    if (Number.isNaN(d.getTime())) return ''
+    try {
+      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    } catch {
+      return ''
+    }
+  }, [message?.createdAt])
+
+  if (!message) return null
 
   /* ============================================================
      System message
@@ -61,19 +73,6 @@ export default function MessageBubble({
   }
 
   const isMediaOnly = !!message.mediaUrl && !message.body
-
-  // ✅ timestamp text (for text bubbles too)
-  const timeText = useMemo(() => {
-    const createdAt = message?.createdAt
-    if (!createdAt) return ''
-    const d = createdAt instanceof Date ? createdAt : new Date(createdAt)
-    if (Number.isNaN(d.getTime())) return ''
-    try {
-      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-    } catch {
-      return ''
-    }
-  }, [message?.createdAt])
 
   const showTextTimestamp = !!timeText && !!message.body && !message.isDeleted
 

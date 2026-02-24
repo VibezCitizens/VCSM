@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 
 import { useIdentity } from '@/state/identity/identityContext'
 import useInbox from '@/features/chat/inbox/hooks/useInbox'
@@ -9,11 +10,12 @@ import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
 import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
 import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
+import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
+import Spinner from '@/shared/components/Spinner'
 
 import StartConversationModal from '@/features/chat/start/screens/StartConversationModal'
 import { inboxOnSearch } from '@/features/chat/inbox/constants/inboxSearchAdapter'
 import { useStartConversation } from '@/features/chat/start/hooks/useStartConversation'
-import ConversationSignalIcon from '@/shared/components/ConversationSignalIcon'
 import '@/features/ui/modern/module-modern.css'
 
 export default function InboxScreen() {
@@ -35,14 +37,9 @@ export default function InboxScreen() {
   const inboxActions = useInboxActions({ actorId })
 
   const visibleEntries = useMemo(() => {
-    if (!hideEmptyThreads) return entries
-
-    return entries.filter((entry) => {
-      const hasLastMessage = Boolean(entry?.lastMessageId)
-      const hasUnread = Number(entry?.unreadCount || 0) > 0
-      const hasPreviewText = String(entry?.preview || entry?.lastMessageBody || '').trim().length > 0
-      return hasLastMessage || hasUnread || hasPreviewText
-    })
+    return entries.filter((entry) =>
+      shouldShowInboxEntry(entry, { hideEmptyConversations: hideEmptyThreads })
+    )
   }, [entries, hideEmptyThreads])
 
   const previews = visibleEntries
@@ -58,8 +55,11 @@ export default function InboxScreen() {
   }
 
   return (
-    <div className="module-modern-page flex h-full flex-col">
-      <div className="module-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
+    <div className="module-modern-page flex h-full min-h-0 flex-col">
+      <div
+        className="module-modern-shell mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col rounded-2xl"
+        style={{ borderTopWidth: 0 }}
+      >
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-300/10 bg-[#070b16]/75 px-4 py-3 backdrop-blur">
           <h1 className="text-lg font-semibold text-slate-100">
             {actorKind === 'vport' ? 'Vport Vox' : actorKind === 'void' ? 'Void Vox' : 'Vox'}
@@ -68,10 +68,10 @@ export default function InboxScreen() {
           <div className="relative">
             <button
               onClick={() => setActionsOpen((v) => !v)}
-              className="module-modern-btn module-modern-btn--ghost flex items-center justify-center rounded-full p-2"
+              className="flex items-center justify-center p-1 text-slate-100 transition hover:text-white"
               aria-label="Vox actions"
             >
-              <ConversationSignalIcon size={20} className="text-white" />
+              <Plus size={22} strokeWidth={2.25} />
             </button>
 
             {actionsOpen && (
@@ -83,19 +83,19 @@ export default function InboxScreen() {
                   className="fixed inset-0 z-40 cursor-default"
                 />
 
-                <div className="module-modern-shell absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl">
+                <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/96 shadow-2xl">
                   <button
                     type="button"
                     onClick={() => {
                       setActionsOpen(false)
                       setStartOpen(true)
                     }}
-                    className="w-full px-4 py-3 text-left text-slate-100 hover:bg-white/5"
+                    className="w-full px-4 py-3 text-left text-slate-100 hover:bg-white/10"
                   >
-                    + New Vox
+                    New Vox
                   </button>
 
-                  <div className="h-px bg-slate-300/10" />
+                  <div className="h-px bg-white/10" />
 
                   <button
                     type="button"
@@ -103,7 +103,7 @@ export default function InboxScreen() {
                       setActionsOpen(false)
                       navigate('/chat/settings')
                     }}
-                    className="w-full px-4 py-3 text-left text-slate-100 hover:bg-white/5"
+                    className="w-full px-4 py-3 text-left text-slate-100 hover:bg-white/10"
                   >
                     More actions
                   </button>
@@ -113,8 +113,15 @@ export default function InboxScreen() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          {!inboxLoading && previews.length === 0 ? (
+        <div
+          className="flex-1 min-h-0 overflow-y-auto touch-pan-y pb-24"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {inboxLoading ? (
+            <div className="px-4 py-8">
+              <Spinner label="Loading Vox..." />
+            </div>
+          ) : previews.length === 0 ? (
             <InboxEmptyState />
           ) : (
             <InboxList

@@ -45,7 +45,7 @@ export async function leaveConversation({
     .select(
       `
       id,
-    isGroup,
+      is_group,
       conversation_members (
         actor_id,
         is_active
@@ -71,13 +71,12 @@ export async function leaveConversation({
   /* ============================================================
      STEP 2: Group conversation → deactivate membership
      ============================================================ */
-  if (convo.isGroup) {
+  if (convo.is_group) {
     const { error: updateError } = await supabase
       .schema('vc')
       .from('conversation_members')
       .update({
         is_active: false,
-        left_at: new Date().toISOString(),
       })
       .eq('conversation_id', conversationId)
       .eq('actor_id', actorId)
@@ -96,13 +95,16 @@ export async function leaveConversation({
     const { error: inboxError } = await supabase
       .schema('vc')
       .from('inbox_entries')
-      .update({
+      .upsert({
+        conversation_id: conversationId,
+        actor_id: actorId,
+        folder: 'archived',
         archived: true,
         archived_until_new: true,
         unread_count: 0,
+      }, {
+        onConflict: 'conversation_id,actor_id',
       })
-      .eq('conversation_id', conversationId)
-      .eq('actor_id', actorId)
 
     if (inboxError) {
       console.error(inboxError)

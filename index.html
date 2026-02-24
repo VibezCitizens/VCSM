@@ -25,7 +25,7 @@
     <!-- removed: <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
     <link rel="icon" type="image/png" sizes="32x32" href="/vibez-icon-32x32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/vibez-icon-192x192.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/vibez-icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="/manifest.json" />
 
@@ -80,16 +80,52 @@
       #splash {
         position: fixed;
         inset: 0;
-        background: #000;
+        background:
+          radial-gradient(900px 500px at 15% 20%, rgba(0, 194, 255, 0.18), transparent 55%),
+          radial-gradient(800px 450px at 85% 15%, rgba(255, 0, 128, 0.15), transparent 55%),
+          #000;
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 9999;
+        opacity: 1;
+        transition: opacity 320ms ease;
+      }
+      #splash.is-exiting {
+        opacity: 0;
       }
       #splash img {
         max-width: 80%;
         max-height: 80%;
         object-fit: contain;
+        border-radius: 20px;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 26px 60px rgba(0, 0, 0, 0.55),
+          0 0 60px rgba(115, 97, 255, 0.2);
+        animation:
+          vcFloat 2.8s ease-in-out infinite,
+          vcGlow 2.2s ease-in-out infinite,
+          vcHue 8.5s linear infinite;
+        transform-origin: center center;
+      }
+      @keyframes vcFloat {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-7px) scale(1.008); }
+      }
+      @keyframes vcGlow {
+        0%, 100% { filter: brightness(1) saturate(1); }
+        50% { filter: brightness(1.08) saturate(1.16); }
+      }
+      @keyframes vcHue {
+        0% { filter: hue-rotate(0deg) brightness(1) saturate(1); }
+        50% { filter: hue-rotate(10deg) brightness(1.08) saturate(1.16); }
+        100% { filter: hue-rotate(0deg) brightness(1) saturate(1); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #splash img {
+          animation: none;
+        }
       }
     </style>
   </head>
@@ -107,7 +143,12 @@
       // Remove splash once React takes over
       window.addEventListener('DOMContentLoaded', () => {
         const splash = document.getElementById('splash')
-        if (splash) splash.remove()
+        if (!splash) return
+
+        setTimeout(() => {
+          splash.classList.add('is-exiting')
+          setTimeout(() => splash.remove(), 340)
+        }, 650)
       })
     </script>
   </body>

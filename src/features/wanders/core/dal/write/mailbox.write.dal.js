@@ -50,8 +50,6 @@ const CARD_COLS = [
   "opened_at",
   "last_opened_at",
   "open_count",
-  "sender_claim_token",
-  "recipient_claim_token",
   "is_void",
   "created_at",
   "updated_at",

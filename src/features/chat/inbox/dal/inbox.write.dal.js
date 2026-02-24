@@ -150,6 +150,12 @@ export async function updateInboxLastMessage({
     return
   }
 
+  await upsertInboxEntry({
+    actorId,
+    conversationId,
+    defaults: { folder: 'inbox', archived: false, archived_until_new: false },
+  })
+
   const { error } = await supabase
     .schema('vc')
     .from('inbox_entries')
@@ -231,6 +237,12 @@ export async function archiveConversationForActor({
     throw new Error('[archiveConversationForActor] missing params')
   }
 
+  await upsertInboxEntry({
+    actorId,
+    conversationId,
+    defaults: { folder: 'inbox', archived: false, archived_until_new: false },
+  })
+
   const { error } = await supabase
     .schema('vc')
     .from('inbox_entries')
@@ -287,9 +299,16 @@ export async function moveConversationToFolder({
   const { error } = await supabase
     .schema('vc')
     .from('inbox_entries')
-    .update(patch)
-    .eq('actor_id', actorId)
-    .eq('conversation_id', conversationId)
+    .upsert(
+      {
+        actor_id: actorId,
+        conversation_id: conversationId,
+        ...patch,
+      },
+      {
+        onConflict: 'conversation_id,actor_id',
+      }
+    )
 
   if (error) {
     console.error(error)

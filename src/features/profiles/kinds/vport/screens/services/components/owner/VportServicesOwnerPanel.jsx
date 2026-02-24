@@ -5,6 +5,7 @@ import VportServicesEmptyState from "@/features/profiles/kinds/vport/screens/ser
 
 import VportServicesOwnerToolbar from "@/features/profiles/kinds/vport/screens/services/components/owner/VportServicesOwnerToolbar";
 import VportServicesOwnerCategorySection from "@/features/profiles/kinds/vport/screens/services/components/owner/VportServicesOwnerCategorySection";
+
 function normalizeCategory(v) {
   const raw = (v ?? "").toString().trim();
   return raw || "Other";
@@ -38,6 +39,7 @@ export default function VportServicesOwnerPanel({
 }) {
   const hasServices = (services?.length ?? 0) > 0;
   const grouped = useMemo(() => groupByCategory(services), [services]);
+  const categoryCount = grouped.size;
 
   const right = (
     <div className="flex items-center gap-3">
@@ -52,12 +54,24 @@ export default function VportServicesOwnerPanel({
   );
 
   return (
-    <div className="profiles-card rounded-2xl p-6 space-y-5">
-      <VportServicesHeader title={title} subtitle={subtitle} right={right} />
+    <div className="profiles-card relative overflow-hidden rounded-2xl p-6 space-y-5">
+      <div className="pointer-events-none absolute -top-28 right-[-56px] h-52 w-52 rounded-full bg-sky-400/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 left-[-56px] h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl" />
+
+      <VportServicesHeader
+        title={title}
+        subtitle={subtitle}
+        right={right}
+        stats={[
+          { label: "Catalog items", value: String(services?.length ?? 0) },
+          { label: "Categories", value: String(categoryCount) },
+          { label: "Draft state", value: dirty ? "Unsaved changes" : "Synced" },
+        ]}
+      />
 
       {loading ? (
-        <div className="profiles-subcard p-5 text-sm profiles-muted">
-          Loading services…
+        <div className="profiles-subcard rounded-3xl border border-white/12 bg-white/[0.02] p-5 text-sm profiles-muted">
+          Loading services...
         </div>
       ) : null}
 

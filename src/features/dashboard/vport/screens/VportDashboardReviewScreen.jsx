@@ -5,13 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import VportReviewsView from "@/features/profiles/kinds/vport/screens/review/VportReviewsView";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
-import {
-  ModernButton,
-  ModernContainer,
-  ModernPage,
-  ModernShell,
-  ModernTopBar,
-} from "@/features/ui/modern/ModernPrimitives";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 export default function VportDashboardReviewScreen({
   targetActorId: targetActorIdProp,
@@ -30,21 +25,26 @@ export default function VportDashboardReviewScreen({
     Boolean(targetActorId) &&
     Boolean(viewerActorId) &&
     String(viewerActorId) === String(targetActorId);
+  const shell = createVportDashboardShellStyles({
+    isDesktop,
+    maxWidthDesktop: 1100,
+  });
 
   if (!targetActorId) return null;
 
   const content = (
-    <ModernPage>
-      <ModernContainer isDesktop={isDesktop} style={{ maxWidth: isDesktop ? 1100 : 900 }}>
-        <ModernShell>
-          <ModernTopBar
-            title="REVIEWS"
-            left={
-              <ModernButton onClick={() => navigate(`/actor/${targetActorId}/dashboard`)}>
-                {isDesktop ? "<- Back" : "<"}
-              </ModernButton>
-            }
-          />
+    <div style={shell.page}>
+      <div style={shell.container}>
+        <div style={shell.headerWrap}>
+          <div style={shell.topBar}>
+            <VportBackButton
+              isDesktop={isDesktop}
+              onClick={() => navigate(`/actor/${targetActorId}/dashboard`)}
+              style={shell.btn("soft")}
+            />
+            <div style={shell.title}>REVIEWS</div>
+            <div style={shell.rightSpacer} />
+          </div>
           <div style={{ padding: 16 }}>
             <VportReviewsView
               targetActorId={targetActorId}
@@ -52,9 +52,9 @@ export default function VportDashboardReviewScreen({
               mode={isOwner ? "owner" : "public"}
             />
           </div>
-        </ModernShell>
-      </ModernContainer>
-    </ModernPage>
+        </div>
+      </div>
+    </div>
   );
 
   if (isDesktop && typeof document !== "undefined") {

@@ -9,6 +9,7 @@ export default function DesignStudioSidebarRight({
   nodes,
   selectedNodeId,
   activePage,
+  sceneMeta,
   selectedNode,
   onSelectNode,
   onPageMetaChange,
@@ -25,6 +26,7 @@ export default function DesignStudioSidebarRight({
     <aside style={panelStyle}>
       <DesignStudioSidebarPageSection
         activePage={activePage}
+        sceneMeta={sceneMeta}
         onPageMetaChange={onPageMetaChange}
       />
 

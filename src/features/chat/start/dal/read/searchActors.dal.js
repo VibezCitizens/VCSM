@@ -1,5 +1,9 @@
 // chat/start/search/dal/searchActors.dal.js
 import { supabase } from '@/services/supabase/supabaseClient'
+import {
+  normalizeHandleTerm,
+  toContainsPattern,
+} from '@/services/supabase/postgrestSafe'
 
 /**
  * DAL: searchActors
@@ -14,7 +18,7 @@ export async function searchActorsDAL(query, limit = 12) {
   const q = (query || '').trim()
   if (!q) return []
 
-  const exact = q.startsWith('@') ? q.slice(1) : q
+  const exact = normalizeHandleTerm(q.startsWith('@') ? q.slice(1) : q)
 
   // Exact match first
   if (exact) {
@@ -31,7 +35,8 @@ export async function searchActorsDAL(query, limit = 12) {
     if (data?.length) return data
   }
 
-  const pattern = `%${q}%`
+  const pattern = toContainsPattern(q)
+  if (!pattern) return []
 
   // Fuzzy search (⚠️ NO whitespace)
   const { data, error } = await supabase

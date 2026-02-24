@@ -6,14 +6,13 @@ import { useIdentity } from "@/state/identity/identityContext";
 import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { DashboardCard, VportBannerHeader } from "@/features/dashboard/vport/screens/components/VportDashboardParts";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { buildDashboardCards } from "@/features/dashboard/vport/screens/model/buildDashboardCards";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 import {
-  ModernButton,
-  ModernContainer,
-  ModernPage,
-  ModernShell,
-  ModernTopBar,
-} from "@/features/ui/modern/ModernPrimitives";
+  getDashboardViewByVportType,
+  normalizeVportType,
+} from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
 
 export function VportDashboardScreen() {
   const navigate = useNavigate();
@@ -70,10 +69,18 @@ export function VportDashboardScreen() {
   const openAdsPipeline = useCallback(() => actorId && navigate(`/ads/vport/${actorId}`), [navigate, actorId]);
   const openSettings = useCallback(() => actorId && navigate(`/actor/${actorId}/settings`), [navigate, actorId]);
 
+  const vportType = useMemo(
+    () => normalizeVportType(identity?.vportType ?? publicDetails?.vport_type ?? null),
+    [identity?.vportType, publicDetails?.vport_type]
+  );
+
+  const dashboardView = useMemo(() => getDashboardViewByVportType(vportType), [vportType]);
+
   const cards = useMemo(
     () =>
       buildDashboardCards({
         isDesktop,
+        vportType,
         handlers: {
           openQr,
           openFlyer,
@@ -89,6 +96,7 @@ export function VportDashboardScreen() {
       }),
     [
       isDesktop,
+      vportType,
       openQr,
       openFlyer,
       openFlyerEditor,
@@ -107,22 +115,37 @@ export function VportDashboardScreen() {
   if (!identity) return <div className="p-10 text-center text-neutral-400">Sign in required.</div>;
   if (!isOwner) return <div className="p-10 text-center text-neutral-400">You can only access the dashboard for your own vport.</div>;
 
+  const shell = createVportDashboardShellStyles({
+    isDesktop,
+    maxWidthDesktop: 1140,
+  });
+
   const content = (
-    <ModernPage>
-      <ModernContainer isDesktop={isDesktop} style={{ maxWidth: isDesktop ? 1140 : 900 }}>
-        <ModernShell>
-          <ModernTopBar
-            title="VPORT DASHBOARD"
-            left={
-              <ModernButton onClick={goBack}>
-                {isDesktop ? "<- Back" : "<"}
-              </ModernButton>
-            }
-          />
+    <div style={shell.page}>
+      <div style={shell.container}>
+        <div style={shell.headerWrap}>
+          <div style={shell.topBar}>
+            <VportBackButton isDesktop={isDesktop} onClick={goBack} style={shell.btn("soft")} />
+            <div style={shell.title}>VPORT DASHBOARD</div>
+            <div style={shell.rightSpacer} />
+          </div>
 
           <VportBannerHeader profile={profile} headerLoading={headerLoading} />
 
           <div style={{ padding: "0 20px 24px 20px" }}>
+            <div
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+                fontSize: 12,
+                color: "rgba(226,232,240,0.72)",
+                letterSpacing: 0.5,
+              }}
+            >
+              Dashboard view: <strong style={{ color: "#f8fafc" }}>{dashboardView.label}</strong>
+              {" • "}
+              Type: <strong style={{ color: "#f8fafc", textTransform: "capitalize" }}>{vportType}</strong>
+            </div>
             <div
               style={{
                 display: "grid",
@@ -142,9 +165,9 @@ export function VportDashboardScreen() {
               ))}
             </div>
           </div>
-        </ModernShell>
-      </ModernContainer>
-    </ModernPage>
+        </div>
+      </div>
+    </div>
   );
 
   if (isDesktop && typeof document !== "undefined") {

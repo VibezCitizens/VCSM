@@ -12,7 +12,7 @@ import { IdentityProvider } from '@/state/identity/identityContext'
 import { registerSW } from 'virtual:pwa-register'
 
 if (import.meta.env.PROD) {
-  registerSW()
+  registerSW({ immediate: true })
 } else if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) =>
     regs.forEach((r) => r.unregister())

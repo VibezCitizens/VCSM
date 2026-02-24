@@ -18,6 +18,7 @@
 // ============================================================
 
 import { supabase } from "@/services/supabase/supabaseClient";
+import { isUuid } from "@/services/supabase/postgrestSafe";
 
 /* ============================================================
    READ: ACTORS I BLOCKED
@@ -133,11 +134,11 @@ export async function filterBlockedActors(
   actorId,
   candidateActorIds = []
 ) {
-  if (!actorId || candidateActorIds.length === 0) {
+  if (!actorId || !isUuid(actorId) || candidateActorIds.length === 0) {
     return new Set();
   }
 
-  const unique = [...new Set(candidateActorIds)];
+  const unique = [...new Set(candidateActorIds.filter((id) => isUuid(id)))];
   if (unique.length === 0) return new Set();
 
   // ⚠️ PostgREST REQUIRES single-line logic trees

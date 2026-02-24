@@ -44,9 +44,6 @@ const COLS = [
   "last_opened_at",
   "open_count",
 
-  "sender_claim_token",
-  "recipient_claim_token",
-
   "is_void",
 ].join(",");
 

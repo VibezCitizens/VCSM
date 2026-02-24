@@ -99,7 +99,7 @@ export default function MessagePrivacyScreen() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="module-modern-btn module-modern-btn--ghost -ml-1 p-2 text-indigo-300"
+              className="-ml-1 p-2 text-indigo-300 transition hover:text-indigo-200"
               aria-label="Back"
             >
               <ChevronLeft size={22} />

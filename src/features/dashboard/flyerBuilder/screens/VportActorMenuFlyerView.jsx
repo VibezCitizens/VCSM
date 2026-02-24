@@ -11,6 +11,7 @@ import {
   createFlyerViewStyles,
 } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerView.model";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 export function VportActorMenuFlyerView({
   actorId,
@@ -79,9 +80,7 @@ export function VportActorMenuFlyerView({
       <div style={styles.headerWrap}>
         <div style={styles.headerInner}>
           <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
-            <button type="button" onClick={onBack} style={styles.pillBtn(false, "soft")}>
-              {isDesktop ? "<- Back" : "<"}
-            </button>
+            <VportBackButton isDesktop={isDesktop} onClick={onBack} style={styles.pillBtn(false, "soft")} />
           </div>
 
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>

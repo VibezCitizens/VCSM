@@ -204,7 +204,7 @@ export function createConversationViewHandlers({
 
       if (!String(file.type || '').startsWith('image/')) return
 
-      const safeName = String(file.name || 'image').replace(/[^\w.\-]+/g, '_')
+      const safeName = String(file.name || 'image').replace(/[^\w.-]+/g, '_')
       const key = `chat/${conversationId}/${actorId}/${Date.now()}-${safeName}`
 
       const { url, error: upErr } = await uploadToCloudflare(file, key)

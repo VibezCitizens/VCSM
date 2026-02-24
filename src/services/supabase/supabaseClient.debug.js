@@ -120,6 +120,6 @@ export async function debugAuthProbe(client, label = 'AuthProbe') {
 }
 
 // Optional: expose helpers for quick manual debugging from the console
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
   window.__sbDebug = { debugAuthProbe, timeit };
 }

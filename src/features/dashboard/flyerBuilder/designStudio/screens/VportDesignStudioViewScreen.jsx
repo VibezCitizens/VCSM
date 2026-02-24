@@ -21,6 +21,9 @@ export default function VportDesignStudioViewScreen({ actorId, starter, onOpenPr
   const currentZoom = zoomMode === "fit" ? fitZoom : manualZoom;
   const zoomLabel = `${Math.round(currentZoom * 100)}%`;
   const selectedTextNode = studio.selectedNode?.type === "text" ? studio.selectedNode : null;
+  const sceneWidth = Number(studio.scene?.meta?.width || 1080);
+  const sceneHeight = Number(studio.scene?.meta?.height || 1350);
+  const orientationLabel = sceneWidth >= sceneHeight ? "Landscape" : "Portrait";
 
   const applyZoom = React.useCallback(
     (nextZoom) => {
@@ -125,6 +128,8 @@ export default function VportDesignStudioViewScreen({ actorId, starter, onOpenPr
         onZoomOut={() => zoomStep(-0.1)}
         onZoomIn={() => zoomStep(0.1)}
         onZoomFit={() => setZoomMode("fit")}
+        orientationLabel={orientationLabel}
+        onToggleOrientation={studio.toggleCanvasOrientation}
         onSave={studio.saveCurrentPage}
         onExportPng={() => studio.queueExport("png")}
         onExportPdf={() => studio.queueExport("pdf")}
@@ -169,6 +174,7 @@ export default function VportDesignStudioViewScreen({ actorId, starter, onOpenPr
               nodes={studio.scene?.nodes || []}
               selectedNodeId={studio.selectedNodeId}
               activePage={studio.activePage}
+              sceneMeta={studio.scene?.meta || null}
               selectedNode={studio.selectedNode}
               onSelectNode={studio.setSelectedNodeId}
               onPageMetaChange={studio.updateSceneMeta}

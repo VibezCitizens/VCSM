@@ -16,7 +16,6 @@ export default function MessageGroupAdapter({
 
   // infrastructure
   actorId,
-  supabase, // kept for compatibility even if controllers don't use it
 
   // lifecycle hooks
   onEdited,

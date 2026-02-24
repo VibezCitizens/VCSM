@@ -2,12 +2,28 @@ import { useMemo } from 'react';
 import Card from '@/shared/components/PageContainer'; // change if your Card path differs
 import { ExternalLink } from 'lucide-react';
 
-function visit(url) {
+function toSafeExternalUrl(raw) {
+  const value = String(raw ?? '').trim();
+  if (!value) return null;
+
   try {
-    const w = window.open(url, '_blank', 'noopener,noreferrer');
-    if (!w) window.location.href = url;
+    const url = new URL(value);
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+    return url.toString();
   } catch {
-    window.location.href = url;
+    return null;
+  }
+}
+
+function visit(url) {
+  const safeUrl = toSafeExternalUrl(url);
+  if (!safeUrl) return;
+
+  try {
+    const w = window.open(safeUrl, '_blank', 'noopener,noreferrer');
+    if (!w) window.location.href = safeUrl;
+  } catch {
+    window.location.href = safeUrl;
   }
 }
 

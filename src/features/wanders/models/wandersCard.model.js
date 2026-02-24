@@ -88,9 +88,6 @@ export function toWandersCard(row) {
     lastOpenedAt: row.last_opened_at,
     openCount: row.open_count,
 
-    senderClaimToken: row.sender_claim_token,
-    recipientClaimToken: row.recipient_claim_token,
-
     isVoid: row.is_void,
     inboxId: row.inbox_id,
   };

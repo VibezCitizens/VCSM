@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createFlyerEditorScreenStyles } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerEditorScreen.styles";
 import VportDesignStudioViewScreen from "@/features/dashboard/flyerBuilder/designStudio/screens/VportDesignStudioViewScreen";
 
@@ -59,13 +60,11 @@ export function VportActorMenuFlyerEditorScreen() {
           <div style={{ marginTop: 10, color: "rgba(255,255,255,0.65)", fontSize: 13 }}>
             Please open this editor on a desktop screen.
           </div>
-          <button
-            type="button"
+          <VportBackButton
+            isDesktop={false}
             onClick={goBack}
             style={{ ...styles.btn("soft"), marginTop: 16 }}
-          >
-            {"<"}
-          </button>
+          />
         </div>
       </div>
     );
@@ -75,14 +74,11 @@ export function VportActorMenuFlyerEditorScreen() {
     <div style={styles.page}>
       <div className="flyer-editor-scope" style={styles.container}>
         <div className="flyer-editor-header" style={styles.header}>
-          <button
-            className="flyer-editor-back"
-            type="button"
+          <VportBackButton
+            isDesktop={isDesktop}
             onClick={goBack}
             style={styles.btn("soft")}
-          >
-            {"<- Back"}
-          </button>
+          />
 
           <div
             className="flyer-editor-title"

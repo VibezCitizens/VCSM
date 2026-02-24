@@ -25,6 +25,17 @@ export default function MessageMedia({
   createdAt,
   isMine = false,
 }) {
+  const timeText = useMemo(() => {
+    if (!createdAt) return ''
+    const d = createdAt instanceof Date ? createdAt : new Date(createdAt)
+    if (Number.isNaN(d.getTime())) return ''
+    try {
+      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    } catch {
+      return ''
+    }
+  }, [createdAt])
+
   if (!url) return null
 
   const t = String(type || '').toLowerCase()
@@ -39,17 +50,6 @@ export default function MessageMedia({
     e.stopPropagation()
     onOpen()
   }
-
-  const timeText = useMemo(() => {
-    if (!createdAt) return ''
-    const d = createdAt instanceof Date ? createdAt : new Date(createdAt)
-    if (Number.isNaN(d.getTime())) return ''
-    try {
-      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-    } catch {
-      return ''
-    }
-  }, [createdAt])
 
   const TimestampChip = () => {
     if (!timeText) return null

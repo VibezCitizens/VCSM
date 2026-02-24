@@ -76,7 +76,9 @@ export async function getInboxEntries({
   // ------------------------------------------------------------
   // Visibility rules (semantic correctness)
   // ------------------------------------------------------------
-  if (!includeArchived) {
+  // Archived flags are inbox-specific visibility controls.
+  // Folder screens (spam/requests) should rely on folder value directly.
+  if (!includeArchived && folder === 'inbox') {
     query = query
       .eq('archived', false)
       .eq('archived_until_new', false)

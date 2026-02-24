@@ -18,7 +18,7 @@ export async function fetchConversationMember({ conversationId, actorId }) {
   const { data, error } = await supabase
     .schema('vc')
     .from('conversation_members')
-    .select('*')
+    .select('conversation_id,actor_id,role,is_active,last_read_message_id,last_read_at,joined_at')
     .eq('conversation_id', conversationId)
     .eq('actor_id', actorId)
     .maybeSingle()

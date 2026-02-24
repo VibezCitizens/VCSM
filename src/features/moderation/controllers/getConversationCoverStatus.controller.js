@@ -12,8 +12,8 @@ export async function getConversationCoverStatus({ actorId, conversationId }) {
 
   try {
     const row = await dalGetConversationHideAction({ actorId, conversationId })
-    return !!row?.id
-  } catch (e) {
+    return row?.action_type === 'hide'
+  } catch {
     // treat failure as "not covered"
     return false
   }

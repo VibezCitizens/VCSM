@@ -8,6 +8,7 @@
 // ============================================================
 
 import { supabase } from '@/services/supabase/supabaseClient'
+import { toContainsPattern } from '@/services/supabase/postgrestSafe'
 
 /**
  * DAL Contract:
@@ -79,15 +80,15 @@ export async function dalDeleteBlockByTarget({ actorId, blockedActorId }) {
 // --------------------------------------------------
 
 export async function dalSearchActors({ query, limit = 12 }) {
-  const q = (query || '').trim()
-  if (!q) return []
+  const pattern = toContainsPattern(query)
+  if (!pattern) return []
 
   const { data, error } = await supabase
     .from(ACTOR_VIEW) // 👈 view is already exposed correctly
     .select(
       'actor_id, kind, display_name, username, photo_url, vport_name, vport_slug, vport_avatar_url'
     )
-    .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+    .or(`username.ilike.${pattern},display_name.ilike.${pattern}`)
     .limit(limit)
 
   if (error) throw error

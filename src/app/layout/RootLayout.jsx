@@ -10,19 +10,16 @@ import IdentityDebugger from '@/state/identity/IdentityDebugger'
 export default function RootLayout() {
   const { pathname } = useLocation()
 
-  // ✅ conversation screen only (/chat/:id and /vport/chat/:id)
-  const isConversationScreen = /^\/(vport\/)?chat\/[^/]+$/.test(pathname)
-
   // ✅ any chat route (/chat, /chat/settings, /chat/spam, etc)
   const isChatRoute = /^\/(vport\/)?chat(\/.*)?$/.test(pathname)
+  const isChatInboxRoot = /^\/(vport\/)?chat$/.test(pathname)
+  const isChatSubScreen = isChatRoute && !isChatInboxRoot
 
   const isAuthRoute = ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
 
-  // ✅ show Vibez Citizens (TopNav) on inbox/settings, but hide on conversation
-  const hideTopNav = isConversationScreen || isAuthRoute
-
-  // ✅ keep bottom nav visible on inbox/settings, but hide on conversation + auth
-  const hideBottomNav = isConversationScreen || isAuthRoute
+  // Hide app nav on chat sub-screens (settings/spam/requests/archived/conversation/new)
+  const hideTopNav = isChatSubScreen || isAuthRoute
+  const hideBottomNav = isChatSubScreen || isAuthRoute
 
   /**
    * ✅ SCROLL CONTRACT (LOCKED)

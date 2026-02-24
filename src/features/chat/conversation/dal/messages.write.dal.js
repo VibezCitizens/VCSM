@@ -37,7 +37,18 @@ export async function insertMessage({
       media_url: mediaUrl,
       reply_to_message_id: replyToMessageId,
     })
-    .select('*')
+    .select(`
+      id,
+      conversation_id,
+      sender_actor_id,
+      message_type,
+      body,
+      media_url,
+      reply_to_message_id,
+      edited_at,
+      deleted_at,
+      created_at
+    `)
     .single()
 
   if (error || !data) {

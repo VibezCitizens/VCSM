@@ -1,8 +1,33 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import VportActorMenuPublicPanel from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuPublicPanel";
 import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
+import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+
+function toSafeExternalUrl(raw) {
+  const value = String(raw ?? "").trim();
+  if (!value) return "";
+  const candidate = /^[a-z][a-z0-9+\-.]*:\/\//i.test(value) ? value : `https://${value}`;
+  try {
+    const url = new URL(candidate);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+function toSafePhone(raw) {
+  return String(raw ?? "")
+    .replace(/[^0-9+#*(),;.\-\s]/g, "")
+    .trim();
+}
 
 export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
+  const navigate = useNavigate();
+  const isDesktop = useDesktopBreakpoint();
   const [q, setQ] = useState("");
 
   const [publicDetails, setPublicDetails] = useState(null);
@@ -58,11 +83,24 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
       "";
 
     return {
-      reviewUrl: typeof reviewUrl === "string" ? reviewUrl.trim() : "",
-      directionsUrl: typeof directionsUrl === "string" ? directionsUrl.trim() : "",
-      phone: typeof phone === "string" ? phone.trim() : "",
+      reviewUrl: toSafeExternalUrl(reviewUrl),
+      directionsUrl: toSafeExternalUrl(directionsUrl),
+      phone: toSafePhone(phone),
     };
   }, [publicDetails]);
+
+  const shell = useMemo(
+    () => createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 900 }),
+    [isDesktop]
+  );
+
+  const onBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+    navigate(`/profile/${actorId}`, { replace: true });
+  }, [navigate, actorId]);
 
   if (!actorId) return null;
 
@@ -154,6 +192,27 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
         }}
       >
         <div style={headerWrap}>
+          <div
+            style={{
+              ...shell.topBar,
+              minHeight: "auto",
+              padding: "14px 16px 10px 16px",
+            }}
+          >
+            <button type="button" onClick={onBack} style={shell.btn("soft")}>
+              {isDesktop ? (
+                "Back"
+              ) : (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <ChevronLeft size={22} />
+                  <span>Back</span>
+                </span>
+              )}
+            </button>
+            <div style={{ ...shell.title, fontSize: isDesktop ? 14 : 13 }}>ONLINE MENU</div>
+            <div style={shell.rightSpacer} />
+          </div>
+
           <div
             style={{
               height: 190,
@@ -262,7 +321,7 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
                   disabled={!actions.phone}
                   onClick={() => {
                     if (!actions.phone) return;
-                    window.location.href = `tel:${actions.phone}`;
+                    window.location.href = `tel:${encodeURIComponent(actions.phone)}`;
                   }}
                 >
                   Call
