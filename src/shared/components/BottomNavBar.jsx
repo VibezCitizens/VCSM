@@ -51,7 +51,7 @@ export default function BottomNavBar() {
       role="navigation"
       aria-label="Primary"
     >
-      <div className="mx-auto flex max-w-[600px] items-center justify-between px-3 pt-0 pb-[var(--vc-bottom-nav-safe-pad)] text-white">
+      <div className="mx-auto flex h-11 max-w-[600px] items-end justify-between px-3 pb-0 text-white">
         <Tab to="/feed" label="Home" icon={<Home size={18} />} end />
         <Tab to="/explore" label="Explore" icon={<Compass size={18} />} />
 
@@ -101,7 +101,7 @@ const Tab = React.memo(function Tab({
       end={end}
       aria-label={label}
       className={({ isActive }) =>
-        `relative flex h-7 w-7 items-center justify-center transition-all duration-150 ${
+        `relative flex h-8 w-8 items-center justify-center transition-all duration-150 ${
           isActive ? 'text-white' : 'text-neutral-500 hover:text-white'
         }`
       }
