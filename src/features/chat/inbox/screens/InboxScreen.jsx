@@ -56,10 +56,7 @@ export default function InboxScreen() {
 
   return (
     <div className="module-modern-page flex h-full min-h-0 flex-col">
-      <div
-        className="module-modern-shell mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col rounded-2xl"
-        style={{ borderTopWidth: 0 }}
-      >
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-300/10 bg-[#070b16]/75 px-4 py-3 backdrop-blur">
           <h1 className="text-lg font-semibold text-slate-100">
             {actorKind === 'vport' ? 'Vport Vox' : actorKind === 'void' ? 'Void Vox' : 'Vox'}

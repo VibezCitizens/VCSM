@@ -1,0 +1,95 @@
+{
+  "runAt": "2026-02-25T00:21:08.644Z",
+  "config": {
+    "usersRequested": 8,
+    "usersReady": 8,
+    "concurrency": 4,
+    "seedConcurrency": 2,
+    "actionsPerUser": 6,
+    "thinkMinMs": 30,
+    "thinkMaxMs": 110,
+    "seedMissing": false,
+    "userPrefix": "vcsmphase2a",
+    "emailDomain": "load.vibezcitizens.local",
+    "realmId": "2d6c267f-9c43-48e4-aa5e-e0a0274e9bc2",
+    "failRateThreshold": 1
+  },
+  "totals": {
+    "actions": 48,
+    "successes": 48,
+    "failures": 0,
+    "byStatus": {
+      "200": 48
+    },
+    "byError": {},
+    "failRate": 0,
+    "durationSec": 5.675499299999999,
+    "throughputOps": 8.457405677065276
+  },
+  "users": {
+    "seeded": 0,
+    "existing": 8,
+    "failedSeed": 0,
+    "simulated": 8,
+    "failedSimulation": 0
+  },
+  "latency": {
+    "minMs": 88.49579999999969,
+    "maxMs": 335.4925000000003,
+    "avgMs": 155.13680000000005,
+    "p50Ms": 111.88370000000032,
+    "p95Ms": 329.17430000000013,
+    "p99Ms": 335.4925000000003
+  },
+  "operationSummary": [
+    {
+      "operation": "dm_message",
+      "actions": 16,
+      "successes": 16,
+      "failures": 0,
+      "minMs": 183.98169999999982,
+      "maxMs": 335.4925000000003,
+      "avgMs": 234.41649375000006,
+      "p50Ms": 206.6241,
+      "p95Ms": 335.4925000000003,
+      "p99Ms": 335.4925000000003
+    },
+    {
+      "operation": "create_post",
+      "actions": 15,
+      "successes": 15,
+      "failures": 0,
+      "minMs": 92.14700000000039,
+      "maxMs": 326.72500000000036,
+      "avgMs": 132.99051333333347,
+      "p50Ms": 106.0628999999999,
+      "p95Ms": 326.72500000000036,
+      "p99Ms": 326.72500000000036
+    },
+    {
+      "operation": "read_inbox",
+      "actions": 11,
+      "successes": 11,
+      "failures": 0,
+      "minMs": 88.49579999999969,
+      "maxMs": 122.38429999999971,
+      "avgMs": 97.99779090909091,
+      "p50Ms": 96.35909999999967,
+      "p95Ms": 122.38429999999971,
+      "p99Ms": 122.38429999999971
+    },
+    {
+      "operation": "read_feed",
+      "actions": 6,
+      "successes": 6,
+      "failures": 0,
+      "minMs": 96.22149999999965,
+      "maxMs": 114.4411,
+      "avgMs": 103.84484999999995,
+      "p50Ms": 103.48810000000003,
+      "p95Ms": 114.4411,
+      "p99Ms": 114.4411
+    }
+  ],
+  "seedFailures": []
+}

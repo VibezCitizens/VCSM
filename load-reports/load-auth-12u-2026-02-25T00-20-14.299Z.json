@@ -1,0 +1,78 @@
+{
+  "runAt": "2026-02-25T00:20:14.298Z",
+  "config": {
+    "usersRequested": 12,
+    "usersReady": 8,
+    "concurrency": 6,
+    "seedConcurrency": 4,
+    "actionsPerUser": 3,
+    "thinkMinMs": 30,
+    "thinkMaxMs": 110,
+    "seedMissing": true,
+    "userPrefix": "vcsmphase2a",
+    "emailDomain": "load.vibezcitizens.local",
+    "realmId": "2d6c267f-9c43-48e4-aa5e-e0a0274e9bc2",
+    "failRateThreshold": 1
+  },
+  "totals": {
+    "actions": 8,
+    "successes": 0,
+    "failures": 8,
+    "byStatus": {
+      "0": 8
+    },
+    "byError": {
+      "user_simulation_failed:rate_limited": 8
+    },
+    "failRate": 1,
+    "durationSec": 5.4186741000000005,
+    "throughputOps": 1.4763759274616644
+  },
+  "users": {
+    "seeded": 8,
+    "existing": 0,
+    "failedSeed": 4,
+    "simulated": 0,
+    "failedSimulation": 8
+  },
+  "latency": {
+    "minMs": 0,
+    "maxMs": 0,
+    "avgMs": 0,
+    "p50Ms": 0,
+    "p95Ms": 0,
+    "p99Ms": 0
+  },
+  "operationSummary": [
+    {
+      "operation": "user_session",
+      "actions": 8,
+      "successes": 0,
+      "failures": 8,
+      "minMs": 0,
+      "maxMs": 0,
+      "avgMs": 0,
+      "p50Ms": 0,
+      "p95Ms": 0,
+      "p99Ms": 0
+    }
+  ],
+  "seedFailures": [
+    {
+      "email": "vcsmphase2a+0009@load.vibezcitizens.local",
+      "error": "rate_limited"
+    },
+    {
+      "email": "vcsmphase2a+0010@load.vibezcitizens.local",
+      "error": "rate_limited"
+    },
+    {
+      "email": "vcsmphase2a+0011@load.vibezcitizens.local",
+      "error": "rate_limited"
+    },
+    {
+      "email": "vcsmphase2a+0012@load.vibezcitizens.local",
+      "error": "rate_limited"
+    }
+  ]
+}

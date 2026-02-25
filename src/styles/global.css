@@ -48,8 +48,8 @@ body {
 }
 
 :root {
-  --vc-bottom-nav-safe-pad: max(2px, calc(env(safe-area-inset-bottom) - 30px));
-  --vc-bottom-nav-height: calc(44px + var(--vc-bottom-nav-safe-pad));
+  --vc-bottom-nav-safe-pad: clamp(0px, calc(env(safe-area-inset-bottom) - 28px), 8px);
+  --vc-bottom-nav-height: calc(38px + var(--vc-bottom-nav-safe-pad));
 }
 
 /* ============================================================

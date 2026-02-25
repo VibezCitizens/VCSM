@@ -33,7 +33,7 @@ export default function RootLayout() {
       : 'flex-1 min-h-0 overflow-y-auto pt-[calc(48px+env(safe-area-inset-top))] pb-[var(--vc-bottom-nav-height)]'
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
       {!hideTopNav && <TopNav />}
 
       {/* ✅ GLOBAL SCROLL CONTAINER */}

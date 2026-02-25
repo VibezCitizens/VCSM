@@ -1,0 +1,1156 @@
+{
+  "runAt": "2026-02-25T00:13:36.589Z",
+  "config": {
+    "users": 50,
+    "concurrency": 25,
+    "stepsPerUser": 3,
+    "timeoutMs": 12000,
+    "thinkTimeMinMs": 30,
+    "thinkTimeMaxMs": 140,
+    "baseUrl": "https://vibezcitizens.com",
+    "includeSupabase": false,
+    "routeCount": 66,
+    "failRateThreshold": 1
+  },
+  "totals": {
+    "requests": 150,
+    "successes": 150,
+    "failures": 0,
+    "byStatus": {
+      "200": 150
+    },
+    "byError": {},
+    "failRate": 0,
+    "durationSec": 1.8021458,
+    "throughputRps": 83.23410902713866
+  },
+  "endpoints": {
+    "/": {
+      "requests": 50,
+      "successes": 50,
+      "failures": 0,
+      "statuses": {
+        "200": 50
+      },
+      "errors": {}
+    },
+    "/vport/sample-actorId/menu/flyer": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/chat/new": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/explore": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/vport/chat": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/wanders/connect": {
+      "requests": 4,
+      "successes": 4,
+      "failures": 0,
+      "statuses": {
+        "200": 4
+      },
+      "errors": {}
+    },
+    "/vport/notifications": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/wanders": {
+      "requests": 4,
+      "successes": 4,
+      "failures": 0,
+      "statuses": {
+        "200": 4
+      },
+      "errors": {}
+    },
+    "/chat/sample-conversationId": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/upload": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/chat/settings/blocked": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/chat/spam": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/dashboard/gas": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/onboarding": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/posts": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/menu/flyer/edit": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/login": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/post/sample-postId/edit": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/noti/post/sample-postId": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/wanders/create": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/dashboard/services": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/wanders/claim": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/chat": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/chat/requests": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/m/sample-actorId": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/reset": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/posts/sample-postId": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/settings": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/register": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/chat/settings": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/vport/sample-actorId/dashboard/reviews": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/dashboard/reviews": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/vport/sample-actorId/dashboard/exchange": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/menu/qr": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/wanders/c/sample-publicId": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/wanders/i/sample-publicId": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/vport/sample-actorId/dashboard": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/wanders/mailbox": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/feed": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/chat/archived": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/profile/sample-id/friends/top/edit": {
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "statuses": {
+        "200": 3
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/menu/flyer": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/profile/sample-actorId": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/posts/sample-postId/edit": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/ads/vport/sample-actorId": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/void": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/vport/sample-actorId/menu/flyer/edit": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/gas": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/wanders/outbox": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/chat/settings/inbox": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/vport/inbox": {
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "statuses": {
+        "200": 2
+      },
+      "errors": {}
+    },
+    "/vport/sample-actorId/ads": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    },
+    "/actor/sample-actorId/menu": {
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "statuses": {
+        "200": 1
+      },
+      "errors": {}
+    }
+  },
+  "userSummary": {
+    "completed": 50,
+    "failed": 0
+  },
+  "latency": {
+    "minMs": 38.30509999999981,
+    "maxMs": 549.7194,
+    "avgMs": 162.22690066666655,
+    "p50Ms": 57.1866,
+    "p95Ms": 501.2386,
+    "p99Ms": 546.8276999999999
+  },
+  "endpointSummary": [
+    {
+      "endpoint": "/",
+      "requests": 50,
+      "successes": 50,
+      "failures": 0,
+      "minMs": 39.93629999999985,
+      "maxMs": 532.0617000000001,
+      "avgMs": 322.6556360000001,
+      "p50Ms": 308.1732,
+      "p95Ms": 504.2575999999999,
+      "p99Ms": 532.0617000000001
+    },
+    {
+      "endpoint": "/wanders/connect",
+      "requests": 4,
+      "successes": 4,
+      "failures": 0,
+      "minMs": 48.07890000000003,
+      "maxMs": 59.05809999999997,
+      "avgMs": 51.769400000000005,
+      "p50Ms": 51.40930000000003,
+      "p95Ms": 59.05809999999997,
+      "p99Ms": 59.05809999999997
+    },
+    {
+      "endpoint": "/wanders",
+      "requests": 4,
+      "successes": 4,
+      "failures": 0,
+      "minMs": 44.62900000000002,
+      "maxMs": 55.03410000000008,
+      "avgMs": 49.909025000000014,
+      "p50Ms": 52.66120000000001,
+      "p95Ms": 55.03410000000008,
+      "p99Ms": 55.03410000000008
+    },
+    {
+      "endpoint": "/vport/sample-actorId/menu/flyer",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 47.76060000000001,
+      "maxMs": 54.37060000000008,
+      "avgMs": 50.96360000000002,
+      "p50Ms": 50.75959999999998,
+      "p95Ms": 54.37060000000008,
+      "p99Ms": 54.37060000000008
+    },
+    {
+      "endpoint": "/chat/new",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 47.375099999999975,
+      "maxMs": 48.52800000000002,
+      "avgMs": 47.82856666666667,
+      "p50Ms": 47.58260000000001,
+      "p95Ms": 48.52800000000002,
+      "p99Ms": 48.52800000000002
+    },
+    {
+      "endpoint": "/chat/settings/blocked",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 43.00710000000004,
+      "maxMs": 55.05390000000011,
+      "avgMs": 50.07483333333338,
+      "p50Ms": 52.1635,
+      "p95Ms": 55.05390000000011,
+      "p99Ms": 55.05390000000011
+    },
+    {
+      "endpoint": "/chat",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 59.28710000000001,
+      "maxMs": 113.3288,
+      "avgMs": 77.9185333333334,
+      "p50Ms": 61.139700000000175,
+      "p95Ms": 113.3288,
+      "p99Ms": 113.3288
+    },
+    {
+      "endpoint": "/reset",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 51.24939999999992,
+      "maxMs": 73.606,
+      "avgMs": 59.25653333333329,
+      "p50Ms": 52.91419999999994,
+      "p95Ms": 73.606,
+      "p99Ms": 73.606
+    },
+    {
+      "endpoint": "/chat/settings",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 44.49630000000002,
+      "maxMs": 60.223499999999945,
+      "avgMs": 53.96879999999999,
+      "p50Ms": 57.1866,
+      "p95Ms": 60.223499999999945,
+      "p99Ms": 60.223499999999945
+    },
+    {
+      "endpoint": "/wanders/i/sample-publicId",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 84.11659999999995,
+      "maxMs": 92.15049999999997,
+      "avgMs": 86.88559999999995,
+      "p50Ms": 84.38969999999995,
+      "p95Ms": 92.15049999999997,
+      "p99Ms": 92.15049999999997
+    },
+    {
+      "endpoint": "/chat/archived",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 55.7672,
+      "maxMs": 65.85310000000004,
+      "avgMs": 60.751900000000056,
+      "p50Ms": 60.63540000000012,
+      "p95Ms": 65.85310000000004,
+      "p99Ms": 65.85310000000004
+    },
+    {
+      "endpoint": "/profile/sample-id/friends/top/edit",
+      "requests": 3,
+      "successes": 3,
+      "failures": 0,
+      "minMs": 45.83010000000013,
+      "maxMs": 65.91439999999989,
+      "avgMs": 55.59333333333333,
+      "p50Ms": 55.035499999999956,
+      "p95Ms": 65.91439999999989,
+      "p99Ms": 65.91439999999989
+    },
+    {
+      "endpoint": "/vport/chat",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 63.12639999999999,
+      "maxMs": 503.74979999999994,
+      "avgMs": 283.43809999999996,
+      "p50Ms": 503.74979999999994,
+      "p95Ms": 503.74979999999994,
+      "p99Ms": 503.74979999999994
+    },
+    {
+      "endpoint": "/vport/notifications",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 44.43119999999999,
+      "maxMs": 53.77760000000001,
+      "avgMs": 49.1044,
+      "p50Ms": 53.77760000000001,
+      "p95Ms": 53.77760000000001,
+      "p99Ms": 53.77760000000001
+    },
+    {
+      "endpoint": "/chat/sample-conversationId",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 52.745499999999936,
+      "maxMs": 546.8276999999999,
+      "avgMs": 299.7865999999999,
+      "p50Ms": 546.8276999999999,
+      "p95Ms": 546.8276999999999,
+      "p99Ms": 546.8276999999999
+    },
+    {
+      "endpoint": "/upload",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 52.974699999999984,
+      "maxMs": 58.175899999999956,
+      "avgMs": 55.57529999999997,
+      "p50Ms": 58.175899999999956,
+      "p95Ms": 58.175899999999956,
+      "p99Ms": 58.175899999999956
+    },
+    {
+      "endpoint": "/chat/spam",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 49.475700000000074,
+      "maxMs": 53.67870000000005,
+      "avgMs": 51.57720000000006,
+      "p50Ms": 53.67870000000005,
+      "p95Ms": 53.67870000000005,
+      "p99Ms": 53.67870000000005
+    },
+    {
+      "endpoint": "/actor/sample-actorId/dashboard/gas",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 49.47379999999998,
+      "maxMs": 55.11979999999994,
+      "avgMs": 52.29679999999996,
+      "p50Ms": 55.11979999999994,
+      "p95Ms": 55.11979999999994,
+      "p99Ms": 55.11979999999994
+    },
+    {
+      "endpoint": "/onboarding",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 47.788200000000074,
+      "maxMs": 549.7194,
+      "avgMs": 298.7538,
+      "p50Ms": 549.7194,
+      "p95Ms": 549.7194,
+      "p99Ms": 549.7194
+    },
+    {
+      "endpoint": "/posts",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 46.80780000000004,
+      "maxMs": 54.6253999999999,
+      "avgMs": 50.71659999999997,
+      "p50Ms": 54.6253999999999,
+      "p95Ms": 54.6253999999999,
+      "p99Ms": 54.6253999999999
+    },
+    {
+      "endpoint": "/noti/post/sample-postId",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 55.97760000000005,
+      "maxMs": 62.15989999999988,
+      "avgMs": 59.068749999999966,
+      "p50Ms": 62.15989999999988,
+      "p95Ms": 62.15989999999988,
+      "p99Ms": 62.15989999999988
+    },
+    {
+      "endpoint": "/wanders/claim",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 38.635099999999966,
+      "maxMs": 41.947,
+      "avgMs": 40.291049999999984,
+      "p50Ms": 41.947,
+      "p95Ms": 41.947,
+      "p99Ms": 41.947
+    },
+    {
+      "endpoint": "/m/sample-actorId",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 52.97889999999995,
+      "maxMs": 58.07749999999987,
+      "avgMs": 55.52819999999991,
+      "p50Ms": 58.07749999999987,
+      "p95Ms": 58.07749999999987,
+      "p99Ms": 58.07749999999987
+    },
+    {
+      "endpoint": "/posts/sample-postId",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 47.394199999999955,
+      "maxMs": 61.256200000000035,
+      "avgMs": 54.325199999999995,
+      "p50Ms": 61.256200000000035,
+      "p95Ms": 61.256200000000035,
+      "p99Ms": 61.256200000000035
+    },
+    {
+      "endpoint": "/actor/sample-actorId/settings",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 52.76480000000004,
+      "maxMs": 65.85930000000008,
+      "avgMs": 59.312050000000056,
+      "p50Ms": 65.85930000000008,
+      "p95Ms": 65.85930000000008,
+      "p99Ms": 65.85930000000008
+    },
+    {
+      "endpoint": "/vport/sample-actorId/dashboard/reviews",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 50.4516000000001,
+      "maxMs": 55.97519999999997,
+      "avgMs": 53.213400000000036,
+      "p50Ms": 55.97519999999997,
+      "p95Ms": 55.97519999999997,
+      "p99Ms": 55.97519999999997
+    },
+    {
+      "endpoint": "/vport/sample-actorId/dashboard/exchange",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 40.49419999999998,
+      "maxMs": 56.89859999999999,
+      "avgMs": 48.69639999999998,
+      "p50Ms": 56.89859999999999,
+      "p95Ms": 56.89859999999999,
+      "p99Ms": 56.89859999999999
+    },
+    {
+      "endpoint": "/actor/sample-actorId/menu/qr",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 47.94010000000003,
+      "maxMs": 51.56479999999999,
+      "avgMs": 49.75245000000001,
+      "p50Ms": 51.56479999999999,
+      "p95Ms": 51.56479999999999,
+      "p99Ms": 51.56479999999999
+    },
+    {
+      "endpoint": "/vport/sample-actorId/dashboard",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 43.20700000000011,
+      "maxMs": 501.2386,
+      "avgMs": 272.22280000000006,
+      "p50Ms": 501.2386,
+      "p95Ms": 501.2386,
+      "p99Ms": 501.2386
+    },
+    {
+      "endpoint": "/wanders/mailbox",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 59.1857,
+      "maxMs": 445.8834999999999,
+      "avgMs": 252.53459999999995,
+      "p50Ms": 445.8834999999999,
+      "p95Ms": 445.8834999999999,
+      "p99Ms": 445.8834999999999
+    },
+    {
+      "endpoint": "/profile/sample-actorId",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 48.92079999999987,
+      "maxMs": 55.56079999999997,
+      "avgMs": 52.24079999999992,
+      "p50Ms": 55.56079999999997,
+      "p95Ms": 55.56079999999997,
+      "p99Ms": 55.56079999999997
+    },
+    {
+      "endpoint": "/posts/sample-postId/edit",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 38.30509999999981,
+      "maxMs": 59.553499999999985,
+      "avgMs": 48.9292999999999,
+      "p50Ms": 59.553499999999985,
+      "p95Ms": 59.553499999999985,
+      "p99Ms": 59.553499999999985
+    },
+    {
+      "endpoint": "/void",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 43.9991,
+      "maxMs": 59.47379999999998,
+      "avgMs": 51.73644999999999,
+      "p50Ms": 59.47379999999998,
+      "p95Ms": 59.47379999999998,
+      "p99Ms": 59.47379999999998
+    },
+    {
+      "endpoint": "/vport/sample-actorId/menu/flyer/edit",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 53.05160000000001,
+      "maxMs": 60.039600000000064,
+      "avgMs": 56.545600000000036,
+      "p50Ms": 60.039600000000064,
+      "p95Ms": 60.039600000000064,
+      "p99Ms": 60.039600000000064
+    },
+    {
+      "endpoint": "/chat/settings/inbox",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 47.608200000000124,
+      "maxMs": 54.36259999999993,
+      "avgMs": 50.98540000000003,
+      "p50Ms": 54.36259999999993,
+      "p95Ms": 54.36259999999993,
+      "p99Ms": 54.36259999999993
+    },
+    {
+      "endpoint": "/vport/inbox",
+      "requests": 2,
+      "successes": 2,
+      "failures": 0,
+      "minMs": 50.36909999999989,
+      "maxMs": 50.696100000000115,
+      "avgMs": 50.5326,
+      "p50Ms": 50.696100000000115,
+      "p95Ms": 50.696100000000115,
+      "p99Ms": 50.696100000000115
+    },
+    {
+      "endpoint": "/explore",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 53.858600000000024,
+      "maxMs": 53.858600000000024,
+      "avgMs": 53.858600000000024,
+      "p50Ms": 53.858600000000024,
+      "p95Ms": 53.858600000000024,
+      "p99Ms": 53.858600000000024
+    },
+    {
+      "endpoint": "/actor/sample-actorId/menu/flyer/edit",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 45.41999999999996,
+      "maxMs": 45.41999999999996,
+      "avgMs": 45.41999999999996,
+      "p50Ms": 45.41999999999996,
+      "p95Ms": 45.41999999999996,
+      "p99Ms": 45.41999999999996
+    },
+    {
+      "endpoint": "/login",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 50.829399999999964,
+      "maxMs": 50.829399999999964,
+      "avgMs": 50.829399999999964,
+      "p50Ms": 50.829399999999964,
+      "p95Ms": 50.829399999999964,
+      "p99Ms": 50.829399999999964
+    },
+    {
+      "endpoint": "/post/sample-postId/edit",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 40.452600000000075,
+      "maxMs": 40.452600000000075,
+      "avgMs": 40.452600000000075,
+      "p50Ms": 40.452600000000075,
+      "p95Ms": 40.452600000000075,
+      "p99Ms": 40.452600000000075
+    },
+    {
+      "endpoint": "/wanders/create",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 54.173400000000015,
+      "maxMs": 54.173400000000015,
+      "avgMs": 54.173400000000015,
+      "p50Ms": 54.173400000000015,
+      "p95Ms": 54.173400000000015,
+      "p99Ms": 54.173400000000015
+    },
+    {
+      "endpoint": "/actor/sample-actorId/dashboard/services",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 45.284200000000055,
+      "maxMs": 45.284200000000055,
+      "avgMs": 45.284200000000055,
+      "p50Ms": 45.284200000000055,
+      "p95Ms": 45.284200000000055,
+      "p99Ms": 45.284200000000055
+    },
+    {
+      "endpoint": "/chat/requests",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 48.14119999999991,
+      "maxMs": 48.14119999999991,
+      "avgMs": 48.14119999999991,
+      "p50Ms": 48.14119999999991,
+      "p95Ms": 48.14119999999991,
+      "p99Ms": 48.14119999999991
+    },
+    {
+      "endpoint": "/register",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 53.990800000000036,
+      "maxMs": 53.990800000000036,
+      "avgMs": 53.990800000000036,
+      "p50Ms": 53.990800000000036,
+      "p95Ms": 53.990800000000036,
+      "p99Ms": 53.990800000000036
+    },
+    {
+      "endpoint": "/actor/sample-actorId/dashboard/reviews",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 53.271799999999985,
+      "maxMs": 53.271799999999985,
+      "avgMs": 53.271799999999985,
+      "p50Ms": 53.271799999999985,
+      "p95Ms": 53.271799999999985,
+      "p99Ms": 53.271799999999985
+    },
+    {
+      "endpoint": "/wanders/c/sample-publicId",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 92.31280000000004,
+      "maxMs": 92.31280000000004,
+      "avgMs": 92.31280000000004,
+      "p50Ms": 92.31280000000004,
+      "p95Ms": 92.31280000000004,
+      "p99Ms": 92.31280000000004
+    },
+    {
+      "endpoint": "/feed",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 520.0894,
+      "maxMs": 520.0894,
+      "avgMs": 520.0894,
+      "p50Ms": 520.0894,
+      "p95Ms": 520.0894,
+      "p99Ms": 520.0894
+    },
+    {
+      "endpoint": "/actor/sample-actorId/menu/flyer",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 55.27590000000009,
+      "maxMs": 55.27590000000009,
+      "avgMs": 55.27590000000009,
+      "p50Ms": 55.27590000000009,
+      "p95Ms": 55.27590000000009,
+      "p99Ms": 55.27590000000009
+    },
+    {
+      "endpoint": "/ads/vport/sample-actorId",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 47.34590000000003,
+      "maxMs": 47.34590000000003,
+      "avgMs": 47.34590000000003,
+      "p50Ms": 47.34590000000003,
+      "p95Ms": 47.34590000000003,
+      "p99Ms": 47.34590000000003
+    },
+    {
+      "endpoint": "/actor/sample-actorId/gas",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 54.87699999999995,
+      "maxMs": 54.87699999999995,
+      "avgMs": 54.87699999999995,
+      "p50Ms": 54.87699999999995,
+      "p95Ms": 54.87699999999995,
+      "p99Ms": 54.87699999999995
+    },
+    {
+      "endpoint": "/wanders/outbox",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 50.732099999999946,
+      "maxMs": 50.732099999999946,
+      "avgMs": 50.732099999999946,
+      "p50Ms": 50.732099999999946,
+      "p95Ms": 50.732099999999946,
+      "p99Ms": 50.732099999999946
+    },
+    {
+      "endpoint": "/vport/sample-actorId/ads",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 50.5329999999999,
+      "maxMs": 50.5329999999999,
+      "avgMs": 50.5329999999999,
+      "p50Ms": 50.5329999999999,
+      "p95Ms": 50.5329999999999,
+      "p99Ms": 50.5329999999999
+    },
+    {
+      "endpoint": "/actor/sample-actorId/menu",
+      "requests": 1,
+      "successes": 1,
+      "failures": 0,
+      "minMs": 53.89869999999996,
+      "maxMs": 53.89869999999996,
+      "avgMs": 53.89869999999996,
+      "p50Ms": 53.89869999999996,
+      "p95Ms": 53.89869999999996,
+      "p99Ms": 53.89869999999996
+    }
+  ]
+}
