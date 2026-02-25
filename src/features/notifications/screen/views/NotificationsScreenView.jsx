@@ -14,7 +14,7 @@ export default function NotificationsScreenView() {
 
   return (
     <div className="module-modern-page flex h-full min-h-0 flex-col">
-      <div className="module-modern-shell mx-auto w-full max-w-2xl flex-1 min-h-0 rounded-2xl">
+      <div className="mx-auto w-full max-w-2xl flex-1 min-h-0">
         <NotificationsHeader
           unreadCount={headerState.unreadCount}
           onMarkAllSeen={headerState.markAllSeen}

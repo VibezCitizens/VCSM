@@ -51,34 +51,34 @@ export default function BottomNavBar() {
       role="navigation"
       aria-label="Primary"
     >
-      <div className="mx-auto flex max-w-[600px] items-end justify-between px-5 pt-1 pb-[var(--vc-bottom-nav-safe-pad)] text-white">
-        <Tab to="/feed" label="Home" icon={<Home size={22} />} end />
-        <Tab to="/explore" label="Explore" icon={<Compass size={22} />} />
+      <div className="mx-auto flex max-w-[600px] items-center justify-between px-4 pt-0.5 pb-[var(--vc-bottom-nav-safe-pad)] text-white">
+        <Tab to="/feed" label="Home" icon={<Home size={20} />} end />
+        <Tab to="/explore" label="Explore" icon={<Compass size={20} />} />
 
         <Tab
           to="/chat"
           label={chatUnread > 0 ? `Vox (${chatUnread})` : 'Vox'}
-          icon={<MessageCircle size={22} />}
+          icon={<MessageCircle size={20} />}
           badgeCount={chatUnread}
         />
 
         <button
           aria-label="New Upload"
           onClick={() => navigate('/upload')}
-          className="-mt-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow transition-transform hover:scale-95 focus:outline-none focus:ring-2 focus:ring-white/60"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-black shadow transition-transform hover:scale-95 focus:outline-none focus:ring-2 focus:ring-white/60"
         >
-          <Plus size={24} />
+          <Plus size={21} />
         </button>
 
         <Tab
           to="/notifications"
           label={notiCount > 0 ? `Notifications (${notiCount})` : 'Notifications'}
-          icon={<Bell size={22} />}
+          icon={<Bell size={20} />}
           badgeCount={notiCount}
         />
 
-        <Tab to={profilePath} label="Citizen" icon={<User size={22} />} />
-        <Tab to="/settings" label="Settings" icon={<Settings size={22} />} />
+        <Tab to={profilePath} label="Citizen" icon={<User size={20} />} />
+        <Tab to="/settings" label="Settings" icon={<Settings size={20} />} />
       </div>
     </nav>
   )
@@ -101,7 +101,7 @@ const Tab = React.memo(function Tab({
       end={end}
       aria-label={label}
       className={({ isActive }) =>
-        `relative flex h-9 w-9 items-center justify-center transition-all duration-150 ${
+        `relative flex h-8 w-8 items-center justify-center transition-all duration-150 ${
           isActive ? 'text-white' : 'text-neutral-500 hover:text-white'
         }`
       }
