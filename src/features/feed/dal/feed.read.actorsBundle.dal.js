@@ -29,12 +29,36 @@ export async function readActorsBundle(actorIds) {
   const { data: profiles } = profileIds.length
     ? await supabase
         .from("profiles")
-        .select("id, display_name, username, photo_url, private")
+        .select("id, display_name, username, photo_url")
         .in("id", profileIds)
     : { data: [] };
 
+  const profileBaseMap = {};
+  (profiles || []).forEach((p) => (profileBaseMap[p.id] = p));
+
+  const { data: privacyRows } = uniqueActorIds.length
+    ? await supabase
+        .schema("vc")
+        .from("actor_privacy_settings")
+        .select("actor_id, is_private")
+        .in("actor_id", uniqueActorIds)
+    : { data: [] };
+
+  const actorPrivacyMap = new Map(
+    (privacyRows || []).map((row) => [row.actor_id, row.is_private === true])
+  );
+
   const profileMap = {};
-  (profiles || []).forEach((p) => (profileMap[p.id] = p));
+  for (const actor of actors || []) {
+    if (!actor?.profile_id) continue;
+    const profile = profileBaseMap[actor.profile_id];
+    if (!profile) continue;
+
+    profileMap[actor.profile_id] = {
+      ...profile,
+      private: actorPrivacyMap.get(actor.id) ?? false,
+    };
+  }
 
   const vportIds = (actors || [])
     .filter((a) => a.vport_id)
@@ -51,5 +75,12 @@ export async function readActorsBundle(actorIds) {
   const vportMap = {};
   (vports || []).forEach((v) => (vportMap[v.id] = v));
 
-  return { actors: actors || [], actorMap, profiles: profiles || [], profileMap, vports: vports || [], vportMap };
+  return {
+    actors: actors || [],
+    actorMap,
+    profiles: Object.values(profileMap),
+    profileMap,
+    vports: vports || [],
+    vportMap,
+  };
 }

@@ -73,3 +73,6 @@ supabase/.temp/
 supabase/.branches/
 supabase/studio/
 supabase/docker/volumes/
+
+
+load-reports/

@@ -4,6 +4,9 @@ import { supabase } from "@/services/supabase/supabaseClient";
 import { useActorStore } from "@/state/actors/actorStore";
 import { fetchFeedPagePipeline } from "@/features/feed/pipeline/fetchFeedPage.pipeline";
 
+const PAGE_SIZE = 10;
+const MAX_EMPTY_PAGES_PER_FETCH = 6;
+
 export function useFeed(viewerActorId, realmId) {
   const [posts, setPosts] = useState([]);
   const [viewerIsAdult, setViewerIsAdult] = useState(null);
@@ -16,16 +19,12 @@ export function useFeed(viewerActorId, realmId) {
   const cursorRef = useRef(null);
   const didInitialFetchRef = useRef(false);
   const loadingRef = useRef(false);
+  const requestVersionRef = useRef(0);
 
   const upsertActors = useActorStore((s) => s.upsertActors);
 
   useEffect(() => {
-    console.log("[useFeed] MOUNT", { viewerActorId, realmId });
-    return () => console.log("[useFeed] UNMOUNT", { viewerActorId, realmId });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
+    requestVersionRef.current += 1;
     didInitialFetchRef.current = false;
     cursorRef.current = null;
     loadingRef.current = false;
@@ -82,6 +81,8 @@ export function useFeed(viewerActorId, realmId) {
      ============================================================ */
   const fetchPosts = useCallback(
     async (fresh = false) => {
+      const requestVersion = requestVersionRef.current;
+
       try {
         if (!viewerActorId || !realmId) return;
         if (loadingRef.current) return;
@@ -89,49 +90,80 @@ export function useFeed(viewerActorId, realmId) {
         loadingRef.current = true;
         setLoading(true);
 
-        if (fresh) cursorRef.current = null;
+        if (fresh) {
+          cursorRef.current = null;
+          setHiddenPostIds(new Set());
+        }
 
-        const PAGE = 10;
+        const targetVisibleCount = fresh ? PAGE_SIZE : 1;
+        const normalizedChunk = [];
+        let cursorCreatedAt = fresh ? null : cursorRef.current?.created_at ?? null;
+        let hasMoreNow = true;
+        let pagesFetched = 0;
 
-        const debugPostId = "54316847-5455-4a52-b704-8ac480e12c95";
+        while (hasMoreNow && pagesFetched < MAX_EMPTY_PAGES_PER_FETCH) {
+          pagesFetched += 1;
 
-        const res = await fetchFeedPagePipeline({
-          viewerActorId,
-          realmId,
-          cursorCreatedAt: cursorRef.current?.created_at ?? null,
-          pageSize: PAGE,
-          debugPostId,
-        });
+          const res = await fetchFeedPagePipeline({
+            viewerActorId,
+            realmId,
+            cursorCreatedAt,
+            pageSize: PAGE_SIZE,
+          });
 
-        const { normalized, hasMoreNow, nextCursorCreatedAt, hiddenByMeSet, actors, profileMap, vportMap } = res;
+          if (requestVersionRef.current !== requestVersion) return;
 
-        // UPSERT ACTORS (same shape as before)
-        upsertActors(
-          (actors || []).map((a) => ({
-            actor_id: a.id,
-            kind: a.kind,
-            display_name: a.profile_id ? profileMap[a.profile_id]?.display_name ?? null : null,
-            username: a.profile_id ? profileMap[a.profile_id]?.username ?? null : null,
-            photo_url: a.profile_id
-              ? profileMap[a.profile_id]?.photo_url ?? null
-              : vportMap[a.vport_id]?.avatar_url ?? null,
-            vport_name: a.vport_id ? vportMap[a.vport_id]?.name ?? null : null,
-            vport_slug: a.vport_id ? vportMap[a.vport_id]?.slug ?? null : null,
-          }))
-        );
+          const {
+            normalized,
+            hasMoreNow: nextHasMore,
+            nextCursorCreatedAt,
+            hiddenByMeSet,
+            actors,
+            profileMap,
+            vportMap,
+          } = res;
 
-        setHiddenPostIds((prev) => {
-          const next = fresh ? new Set() : new Set(prev);
-          hiddenByMeSet.forEach((id) => next.add(id));
-          return next;
-        });
+          upsertActors(
+            (actors || []).map((a) => ({
+              actor_id: a.id,
+              kind: a.kind,
+              display_name: a.profile_id ? profileMap[a.profile_id]?.display_name ?? null : null,
+              username: a.profile_id ? profileMap[a.profile_id]?.username ?? null : null,
+              photo_url: a.profile_id
+                ? profileMap[a.profile_id]?.photo_url ?? null
+                : vportMap[a.vport_id]?.avatar_url ?? null,
+              vport_name: a.vport_id ? vportMap[a.vport_id]?.name ?? null : null,
+              vport_slug: a.vport_id ? vportMap[a.vport_id]?.slug ?? null : null,
+            }))
+          );
 
-        if (nextCursorCreatedAt) cursorRef.current = { created_at: nextCursorCreatedAt };
+          setHiddenPostIds((prev) => {
+            const next = new Set(prev);
+            hiddenByMeSet.forEach((id) => next.add(id));
+            return next;
+          });
+
+          normalizedChunk.push(...(normalized || []));
+          hasMoreNow = !!nextHasMore;
+          cursorCreatedAt = nextCursorCreatedAt ?? null;
+
+          if (!hasMoreNow || !nextCursorCreatedAt || normalizedChunk.length >= targetVisibleCount) {
+            break;
+          }
+        }
+
+        // Fail-safe: stop pagination loops when we cannot surface any visible post
+        // after draining multiple backend pages in one fetch cycle.
+        if (normalizedChunk.length === 0 && hasMoreNow && pagesFetched >= MAX_EMPTY_PAGES_PER_FETCH) {
+          hasMoreNow = false;
+        }
+
+        cursorRef.current = cursorCreatedAt ? { created_at: cursorCreatedAt } : null;
 
         setPosts((prev) => {
-          if (fresh) return normalized;
+          if (fresh) return normalizedChunk;
           const map = new Map(prev.map((p) => [p.id, p]));
-          normalized.forEach((p) => map.set(p.id, p));
+          normalizedChunk.forEach((p) => map.set(p.id, p));
           return Array.from(map.values());
         });
 
@@ -141,7 +173,9 @@ export function useFeed(viewerActorId, realmId) {
         setHasMore(false);
       } finally {
         loadingRef.current = false;
-        setLoading(false);
+        if (requestVersionRef.current === requestVersion) {
+          setLoading(false);
+        }
       }
     },
     [viewerActorId, realmId, upsertActors]

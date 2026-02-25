@@ -48,10 +48,17 @@ export default function BottomNavBar() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-800/90 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/80"
+      style={{
+        height: 'var(--vc-bottom-nav-total-height)',
+        paddingBottom: 'var(--vc-bottom-nav-safe-pad)',
+      }}
       role="navigation"
       aria-label="Primary"
     >
-      <div className="mx-auto flex h-11 max-w-[600px] items-end justify-between px-3 pb-0 text-white">
+      <div
+        className="mx-auto flex max-w-[600px] items-center justify-between px-3 text-white"
+        style={{ height: 'var(--vc-bottom-nav-rail-height)' }}
+      >
         <Tab to="/feed" label="Home" icon={<Home size={18} />} end />
         <Tab to="/explore" label="Explore" icon={<Compass size={18} />} />
 

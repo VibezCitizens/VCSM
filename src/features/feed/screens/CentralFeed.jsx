@@ -213,7 +213,7 @@ export default function CentralFeed() {
     const io = new IntersectionObserver(
       (entries) => {
         const first = entries[0]
-        if (first?.isIntersecting && hasMore && !loading && !locked) {
+        if (first?.isIntersecting && posts.length > 0 && hasMore && !loading && !locked) {
           locked = true
           fetchPosts(false).finally(() => {
             locked = false
@@ -225,7 +225,7 @@ export default function CentralFeed() {
 
     io.observe(sentinel)
     return () => io.disconnect()
-  }, [hasMore, loading, fetchPosts])
+  }, [posts.length, hasMore, loading, fetchPosts])
 
   useEffect(() => observeMore(), [observeMore])
 
@@ -243,7 +243,7 @@ export default function CentralFeed() {
       onRefresh={handleRefresh}
       threshold={70}
       maxPull={120}
-      className="h-screen overflow-y-auto bg-black text-white px-0 py-2"
+      className="h-full min-h-full overflow-y-auto bg-black text-white px-0 py-2 pb-[var(--vc-bottom-nav-height)]"
     >
       {viewerIsAdult === null && (
         <p className="text-center text-gray-400 mt-6">Loading your feed...</p>
