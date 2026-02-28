@@ -81,17 +81,15 @@ export default function UploadScreenModern({ onSubmit }) {
   }
 
   return (
-    <div className="module-modern-page min-h-[100dvh] w-full p-0 sm:p-4">
+    <div className="module-modern-page h-full min-h-0 w-full p-0 sm:p-4">
       <div
         className="
           module-modern-shell
           mx-auto
-          min-h-[100dvh]
           max-w-xl
           rounded-none
           px-4 pt-6
-          pb-[calc(env(safe-area-inset-bottom)+96px)]
-          sm:min-h-[calc(100dvh-2rem)]
+          pb-6
           sm:rounded-2xl
         "
       >

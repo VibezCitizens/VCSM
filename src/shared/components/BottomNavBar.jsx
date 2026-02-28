@@ -11,6 +11,14 @@ export default function BottomNavBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const { identity } = useIdentity()
+  const browserToolbarLift = useMemo(() => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') return '0px'
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '')
+    if (!isIOS) return '0px'
+    const standalone =
+      window.matchMedia?.('(display-mode: standalone)').matches || window.navigator?.standalone === true
+    return standalone ? '0px' : '15px'
+  }, [])
 
   const personaActorId = useMemo(() => identity?.actorId ?? null, [identity?.actorId])
 
@@ -38,12 +46,14 @@ export default function BottomNavBar() {
   return (
     <div
       className="fixed inset-x-0 z-50 pointer-events-none"
-      style={{ bottom: 'calc(var(--vc-bottom-nav-safe-pad) + var(--vc-bottom-nav-float-gap))' }}
+      style={{
+        bottom: `calc(var(--vc-bottom-nav-safe-pad) + var(--vc-bottom-nav-float-gap) + ${browserToolbarLift})`,
+      }}
     >
       <nav
-        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-[20px] border border-white/15 bg-white/[0.07] px-3 text-white shadow-[0_12px_28px_rgba(0,0,0,0.46)] ring-1 ring-white/6 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/[0.09]"
+        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-full border border-white/16 bg-white/[0.01] px-3 text-white shadow-[0_6px_16px_rgba(0,0,0,0.2)] ring-1 ring-white/8 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/[0.02]"
         style={{
-          width: 'min(620px, calc(100% - 24px))',
+          width: 'min(560px, calc(100% - 36px))',
           height: 'var(--vc-bottom-nav-rail-height)',
         }}
         role="navigation"
@@ -100,8 +110,8 @@ const Tab = React.memo(function Tab({
       className={({ isActive }) =>
         `relative flex h-10 min-w-[40px] items-center justify-center rounded-full px-1 transition-all duration-150 ${
           isActive
-            ? 'border border-white/12 bg-white/16 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]'
-            : 'text-neutral-300/90 hover:bg-white/8 hover:text-white'
+            ? 'border border-white/20 bg-white/18 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+            : 'text-neutral-200/90 hover:bg-white/10 hover:text-white'
         }`
       }
     >

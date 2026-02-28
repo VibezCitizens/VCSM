@@ -52,10 +52,10 @@ body {
   --vc-safe-area-right: env(safe-area-inset-right, 0px);
   --vc-safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --vc-safe-area-left: env(safe-area-inset-left, 0px);
-  --vc-bottom-nav-rail-height: 58px;
+  --vc-bottom-nav-rail-height: --px;
   --vc-bottom-nav-safe-pad: var(--vc-safe-area-bottom);
   --vc-bottom-nav-safe-pad-ui: var(--vc-bottom-nav-safe-pad);
-  --vc-bottom-nav-float-gap: 16px;
+  --vc-bottom-nav-float-gap: -1px;
   --vc-bottom-nav-total-height: calc(
     var(--vc-bottom-nav-rail-height) + var(--vc-bottom-nav-safe-pad) + var(--vc-bottom-nav-float-gap)
   );

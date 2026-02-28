@@ -13,16 +13,13 @@ export default function NotificationsScreenView() {
   const headerState = useNotificationsHeader(identity?.actorId ?? null)
 
   return (
-    <div className="module-modern-page flex h-full min-h-0 flex-col">
-      <div className="mx-auto w-full max-w-2xl flex-1 min-h-0">
+    <div className="module-modern-page h-full min-h-0">
+      <div className="mx-auto w-full max-w-2xl px-3 py-3 sm:px-4">
         <NotificationsHeader
           unreadCount={headerState.unreadCount}
           onMarkAllSeen={headerState.markAllSeen}
         />
-
-        <div className="flex-1 min-h-0 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <NotificationsView {...listState} />
-        </div>
+        <NotificationsView {...listState} />
       </div>
     </div>
   )
