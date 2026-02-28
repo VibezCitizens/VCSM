@@ -7,6 +7,26 @@ function readCssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
 
+function readDisplayMode() {
+  if (typeof window === 'undefined') return 'unknown'
+  const standaloneMedia = window.matchMedia?.('(display-mode: standalone)').matches
+  const iosStandalone = window.navigator?.standalone === true
+  if (standaloneMedia || iosStandalone) return 'standalone'
+  return 'browser'
+}
+
+function readBottomNavMetrics() {
+  if (typeof document === 'undefined') return null
+  const nav = document.querySelector('nav[aria-label="Primary"]')
+  if (!nav) return null
+  const rect = nav.getBoundingClientRect()
+  return {
+    height: Math.round(rect.height),
+    bottomGap: Math.round(window.innerHeight - rect.bottom),
+    top: Math.round(rect.top),
+  }
+}
+
 export default function IOSDebugHUD() {
   const isDev = import.meta.env.DEV
   const [open, setOpen] = useState(false)
@@ -75,7 +95,13 @@ export default function IOSDebugHUD() {
 
   const cssVvTop = readCssVar('--vv-top')
   const cssVvHeight = readCssVar('--vv-height')
-  const cssKb = readCssVar('--ios-kb-offset')
+  const cssKb = readCssVar('--kb-inset')
+  const safeTop = readCssVar('--vc-safe-area-top')
+  const safeRight = readCssVar('--vc-safe-area-right')
+  const safeBottom = readCssVar('--vc-safe-area-bottom')
+  const safeLeft = readCssVar('--vc-safe-area-left')
+  const displayMode = readDisplayMode()
+  const nav = readBottomNavMetrics()
 
   const ui = (
     <>
@@ -133,12 +159,30 @@ export default function IOSDebugHUD() {
           <br />
           innerHeight: {innerH}
           <br />
+          displayMode: {displayMode}
+          <br />
           <br />
           --vv-top: {cssVvTop || '(unset)'}
           <br />
           --vv-height: {cssVvHeight || '(unset)'}
           <br />
-          --ios-kb-offset: {cssKb || '(unset)'}
+          --kb-inset: {cssKb || '(unset)'}
+          <br />
+          <br />
+          --vc-safe-area-top: {safeTop || '(unset)'}
+          <br />
+          --vc-safe-area-right: {safeRight || '(unset)'}
+          <br />
+          --vc-safe-area-bottom: {safeBottom || '(unset)'}
+          <br />
+          --vc-safe-area-left: {safeLeft || '(unset)'}
+          <br />
+          <br />
+          nav.height: {nav ? nav.height : '(no nav)'}
+          <br />
+          nav.bottomGap: {nav ? nav.bottomGap : '(no nav)'}
+          <br />
+          nav.top: {nav ? nav.top : '(no nav)'}
         </div>
       )}
     </>

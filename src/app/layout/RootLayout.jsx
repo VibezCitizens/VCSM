@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import TopNav from '@/shared/components/TopNav'
 import BottomNavBar from '@/shared/components/BottomNavBar'
 import PageContainer from '@/shared/components/PageContainer'
+import { IOSDebugHUD } from '@/app/platform/ios'
 
 // DEV ONLY
 import IdentityDebugger from '@/state/identity/IdentityDebugger'
@@ -49,6 +50,7 @@ export default function RootLayout() {
       {!hideBottomNav && <BottomNavBar />}
 
       {import.meta.env.DEV && <IdentityDebugger />}
+      {import.meta.env.DEV && <IOSDebugHUD />}
     </div>
   )
 }
