@@ -17,7 +17,7 @@ export default function BottomNavBar() {
     if (!isIOS) return '0px'
     const standalone =
       window.matchMedia?.('(display-mode: standalone)').matches || window.navigator?.standalone === true
-    return standalone ? '0px' : '15px'
+    return standalone ? '0px' : '5px'
   }, [])
 
   const personaActorId = useMemo(() => identity?.actorId ?? null, [identity?.actorId])
@@ -51,7 +51,7 @@ export default function BottomNavBar() {
       }}
     >
       <nav
-        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-full border border-white/16 bg-white/[0.01] px-3 text-white shadow-[0_6px_16px_rgba(0,0,0,0.2)] ring-1 ring-white/8 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/[0.02]"
+        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-full border border-white/45 bg-white/45 px-3 text-slate-900 shadow-[0_8px_22px_rgba(0,0,0,0.2)] ring-1 ring-black/8 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/35"
         style={{
           width: 'min(560px, calc(100% - 36px))',
           height: 'var(--vc-bottom-nav-rail-height)',
@@ -110,8 +110,8 @@ const Tab = React.memo(function Tab({
       className={({ isActive }) =>
         `relative flex h-10 min-w-[40px] items-center justify-center rounded-full px-1 transition-all duration-150 ${
           isActive
-            ? 'border border-white/20 bg-white/18 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
-            : 'text-neutral-200/90 hover:bg-white/10 hover:text-white'
+            ? 'border border-black/12 bg-white/72 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]'
+            : 'text-slate-800/85 hover:bg-white/38 hover:text-slate-950'
         }`
       }
     >
@@ -128,4 +128,3 @@ const Tab = React.memo(function Tab({
     </NavLink>
   )
 })
-
