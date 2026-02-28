@@ -334,7 +334,7 @@ export default function CentralFeed() {
       onRefresh={handleRefresh}
       threshold={70}
       maxPull={120}
-      className="h-full min-h-full overflow-y-auto bg-black text-white px-0 py-2 pb-[var(--vc-bottom-nav-height)]"
+      className="h-full min-h-full overflow-y-auto bg-black text-white px-0 py-2"
     >
       {showInitialSkeleton && <FeedSkeletonList count={3} />}
 

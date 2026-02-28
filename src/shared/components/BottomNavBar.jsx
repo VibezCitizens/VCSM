@@ -36,18 +36,18 @@ export default function BottomNavBar() {
   }, [location.pathname, personaActorId])
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/80"
-      style={{
-        height: 'var(--vc-bottom-nav-total-height)',
-        paddingBottom: 'var(--vc-bottom-nav-safe-pad-ui)',
-      }}
-      role="navigation"
-      aria-label="Primary"
+    <div
+      className="fixed inset-x-0 z-50 pointer-events-none"
+      style={{ bottom: 'calc(var(--vc-bottom-nav-safe-pad) + var(--vc-bottom-nav-float-gap))' }}
     >
-      <div
-        className="mx-auto flex max-w-[600px] items-center justify-between px-3 text-white"
-        style={{ height: 'var(--vc-bottom-nav-rail-height)' }}
+      <nav
+        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-[20px] border border-white/15 bg-white/[0.07] px-3 text-white shadow-[0_12px_28px_rgba(0,0,0,0.46)] ring-1 ring-white/6 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/[0.09]"
+        style={{
+          width: 'min(620px, calc(100% - 24px))',
+          height: 'var(--vc-bottom-nav-rail-height)',
+        }}
+        role="navigation"
+        aria-label="Primary"
       >
         <Tab to="/feed" label="Home" icon={<Home size={18} />} end />
         <Tab to="/explore" label="Explore" icon={<Compass size={18} />} />
@@ -62,9 +62,9 @@ export default function BottomNavBar() {
         <button
           aria-label="New Upload"
           onClick={() => navigate('/upload')}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black shadow transition-transform hover:scale-95 focus:outline-none focus:ring-2 focus:ring-white/60"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-[0_8px_20px_rgba(0,0,0,0.35)] transition-transform hover:scale-95 focus:outline-none focus:ring-2 focus:ring-white/60"
         >
-          <Plus size={18} />
+          <Plus size={20} />
         </button>
 
         <Tab
@@ -76,8 +76,8 @@ export default function BottomNavBar() {
 
         <Tab to={profilePath} label="Citizen" icon={<User size={18} />} />
         <Tab to="/settings" label="Settings" icon={<Settings size={18} />} />
-      </div>
-    </nav>
+      </nav>
+    </div>
   )
 }
 
@@ -98,8 +98,10 @@ const Tab = React.memo(function Tab({
       end={end}
       aria-label={label}
       className={({ isActive }) =>
-        `relative flex h-8 w-8 items-center justify-center transition-all duration-150 ${
-          isActive ? 'text-white' : 'text-neutral-500 hover:text-white'
+        `relative flex h-10 min-w-[40px] items-center justify-center rounded-full px-1 transition-all duration-150 ${
+          isActive
+            ? 'border border-white/12 bg-white/16 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]'
+            : 'text-neutral-300/90 hover:bg-white/8 hover:text-white'
         }`
       }
     >
