@@ -76,3 +76,5 @@ supabase/docker/volumes/
 
 
 load-reports/
+
+supabase/sql/
