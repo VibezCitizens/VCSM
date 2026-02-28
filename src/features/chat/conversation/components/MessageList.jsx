@@ -48,10 +48,12 @@ export default function MessageList({
   useEffect(() => {
     const count = messages.length
     const prev = lastCountRef.current
+    const isIOS =
+      typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(String(navigator.userAgent || ''))
 
     if (count === 0 || count > prev) {
       bottomRef.current?.scrollIntoView({
-        behavior: prev === 0 ? 'auto' : 'smooth',
+        behavior: prev === 0 || isIOS ? 'auto' : 'smooth',
         block: 'end',
       })
     }
@@ -65,16 +67,29 @@ export default function MessageList({
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
+    let raf = 0
+    let lastHeight = vv.height ?? 0
 
     const onResize = () => {
-      bottomRef.current?.scrollIntoView({
-        behavior: 'auto',
-        block: 'end',
+      const nextHeight = vv.height ?? 0
+      if (Math.abs(nextHeight - lastHeight) < 1) return
+      lastHeight = nextHeight
+
+      if (raf) cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        bottomRef.current?.scrollIntoView({
+          behavior: 'auto',
+          block: 'end',
+        })
       })
     }
 
     vv.addEventListener('resize', onResize)
-    return () => vv.removeEventListener('resize', onResize)
+    return () => {
+      vv.removeEventListener('resize', onResize)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [])
 
   return (

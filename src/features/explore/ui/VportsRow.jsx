@@ -1,6 +1,6 @@
 export default function VportsRow() {
   return (
-    <section className="px-4">
+    <section className="px-1">
       <h2 className="text-sm font-semibold mb-2">🏬 Trending VPORTs</h2>
 
       <div className="flex flex-col gap-2">

@@ -144,7 +144,7 @@ export default function useConversationMessages({
      Optimistic send lifecycle
      ============================================================ */
 
-  const addOptimistic = ({ body, type, mediaUrl }) => {
+  const addOptimistic = useCallback(({ body, type, mediaUrl }) => {
   const clientId = generateClientId()
 
   setMessages((prev) => [
@@ -162,10 +162,10 @@ export default function useConversationMessages({
   ])
 
   return clientId
-}
+}, [actorId])
 
 
-  const replaceOptimistic = (clientId, message) => {
+  const replaceOptimistic = useCallback((clientId, message) => {
     const shouldDeleteForMe = pendingDeleteForMeRef.current.has(clientId)
     const shouldUnsend = pendingUnsendRef.current.has(clientId)
 
@@ -204,11 +204,11 @@ export default function useConversationMessages({
         __optimistic: false,
       },
     ])
-  }
+  }, [actorId, conversationId, mergeMessages])
 
-  const removeOptimistic = (clientId) => {
+  const removeOptimistic = useCallback((clientId) => {
     setMessages((prev) => prev.filter((m) => m.id !== clientId))
-  }
+  }, [])
 
   /* ============================================================
      Intent API
@@ -222,7 +222,9 @@ export default function useConversationMessages({
     const hasBody = trimmed.length > 0
     const hasMedia = !!mediaUrl
 
-    if (!hasBody && !hasMedia) return
+    if (!hasBody && !hasMedia) {
+      return { ok: false, error: 'Message is empty.' }
+    }
 
     const clientId = addOptimistic({
       body: hasBody ? trimmed : '',
@@ -241,12 +243,14 @@ export default function useConversationMessages({
       })
 
       replaceOptimistic(clientId, message)
+      return { ok: true, message }
     } catch (err) {
       console.error('[useConversationMessages] send failed', err)
       removeOptimistic(clientId)
+      return { ok: false, error: err?.message || 'Failed to send message.' }
     }
   },
-  [conversationId, actorId]
+  [conversationId, actorId, addOptimistic, replaceOptimistic, removeOptimistic]
 )
 
 

@@ -175,6 +175,7 @@ export default function ConversationView({ conversationId }) {
         <ChatInput
           onSend={handleSend}
           onAttach={handleAttach}
+          onAttachError={(msg) => setToast(msg || 'Image failed to send.')}
           onTyping={notifyTyping}
 
           // ✅ edit wiring

@@ -17,8 +17,8 @@ export default function SearchScreen() {
   ]
 
   return (
-    <div className="module-modern-shell w-full rounded-2xl px-4 pt-2 pb-3">
-      <div className="module-modern-search-shell relative mb-2 sm:mb-3">
+    <div className="module-modern-shell w-full rounded-none border-x-0 border-t-0 px-2 pt-2 pb-2 sm:rounded-2xl sm:border sm:px-4 sm:pb-3">
+      <div className="module-modern-search-shell relative mb-2">
         <Search
           size={18}
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -45,8 +45,8 @@ export default function SearchScreen() {
         )}
       </div>
 
-      <div className="mb-2 overflow-x-auto sm:mb-3">
-        <div className="flex min-w-max justify-start gap-6 border-b border-slate-300/15 px-1 sm:gap-8 sm:px-2">
+      <div className="mb-2 border-b border-slate-300/15">
+        <div className="grid grid-cols-5 gap-0.5">
           {FILTERS.map((f) => {
             const active = filter === f.key
             return (
@@ -54,13 +54,13 @@ export default function SearchScreen() {
                 type="button"
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`relative py-2 text-[17px] tracking-wide transition-colors duration-200 sm:py-3 ${
+                className={`relative flex items-center justify-center py-2 text-center text-[15px] tracking-wide transition-colors duration-200 ${
                   active ? 'font-semibold text-slate-100' : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 {f.label}
                 {active && (
-                  <span className="absolute left-0 right-0 -bottom-[1px] h-[2px] rounded-full bg-indigo-300/90" />
+                  <span className="absolute left-2 right-2 -bottom-[1px] h-[2px] rounded-full bg-indigo-300/90" />
                 )}
               </button>
             )

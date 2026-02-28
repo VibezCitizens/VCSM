@@ -1,6 +1,6 @@
 export default function CitizensRow() {
   return (
-    <section className="px-4">
+    <section className="px-1">
       <h2 className="text-sm font-semibold mb-2">🔥 Vibez Citizens</h2>
 
       <div className="flex gap-3 overflow-x-auto">
@@ -16,11 +16,6 @@ export default function CitizensRow() {
             {/* Name */}
             <span className="text-xs truncate w-full text-center">
               Citizen_{i}
-            </span>
-
-            {/* Role */}
-            <span className="text-[10px] text-zinc-500 mt-1">
-              Influencer
             </span>
 
           </div>

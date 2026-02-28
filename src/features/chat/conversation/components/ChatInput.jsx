@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
-import { Paperclip, X, Send } from 'lucide-react'
+import { Paperclip, X, Send, Loader2 } from 'lucide-react'
 
 const DEFAULT_MAX = 4000
 
@@ -14,17 +14,20 @@ export default function ChatInput({
   onSaveEdit,
   onCancelEdit,
   onTyping,
+  onAttachError,
 }) {
   const [value, setValue] = useState('')
   const [topBarOpen, setTopBarOpen] = useState(false)
   const [mediaPreview, setMediaPreview] = useState(null)
+  const [submitBusy, setSubmitBusy] = useState(false)
 
   const composingRef = useRef(false)
   const topInputRef = useRef(null)
   const fileRef = useRef(null)
 
   const inEdit = !!editing
-  const actuallyDisabled = !!disabled || !!isSending
+  const actionDisabled = !!disabled || !!isSending || submitBusy
+  const inputDisabled = !!disabled || !!isSending
 
   const focusInput = useCallback(() => {
     const el = topInputRef.current
@@ -59,35 +62,72 @@ export default function ChatInput({
   const openKeyboard = useCallback(
     (e) => {
       if (e?.preventDefault) e.preventDefault()
-      if (actuallyDisabled) return
+      if (inputDisabled) return
       setTopBarOpen(true)
       focusInput()
       requestAnimationFrame(() => focusInput())
     },
-    [actuallyDisabled, focusInput]
+    [inputDisabled, focusInput]
   )
 
   const doPrimary = useCallback(async () => {
-    if (actuallyDisabled) return
+    if (actionDisabled) return
     const text = value.trim()
     if (!text && !mediaPreview) return
 
-    if (mediaPreview) {
-      try {
-        await onAttach?.([mediaPreview.file])
-      } finally {
-        if (mediaPreview?.url) URL.revokeObjectURL(mediaPreview.url)
-        setMediaPreview(null)
+    setSubmitBusy(true)
+
+    try {
+      let mediaSent = true
+      let textSent = true
+
+      if (mediaPreview) {
+        if (!onAttach) {
+          mediaSent = false
+          onAttachError?.('Attach is unavailable right now.')
+        } else {
+          const attachResult = await onAttach([mediaPreview.file])
+          mediaSent =
+            typeof attachResult === 'boolean'
+              ? attachResult
+              : Boolean(attachResult?.ok)
+
+          if (!mediaSent) {
+            onAttachError?.(attachResult?.error || 'Image failed to send. Please try again.')
+          }
+        }
+
+        if (mediaSent && mediaPreview?.url) {
+          URL.revokeObjectURL(mediaPreview.url)
+          setMediaPreview(null)
+        }
       }
-    }
 
-    if (text) {
-      if (inEdit) onSaveEdit?.(text)
-      else onSend?.(text)
-    }
+      if (text) {
+        const sendResult = inEdit ? await onSaveEdit?.(text) : await onSend?.(text)
+        textSent =
+          typeof sendResult === 'boolean'
+            ? sendResult
+            : sendResult?.ok !== false
 
-    setValue('')
-  }, [actuallyDisabled, value, mediaPreview, onAttach, inEdit, onSaveEdit, onSend])
+        if (!textSent) {
+          onAttachError?.(sendResult?.error || 'Message failed to send. Please try again.')
+        }
+      }
+
+      const sentOk = (!mediaPreview || mediaSent) && (!text || textSent)
+      if (sentOk) {
+        setValue('')
+
+        if (!inEdit) {
+          setTopBarOpen(false)
+          topInputRef.current?.blur()
+        }
+      }
+    } finally {
+      setSubmitBusy(false)
+    }
+  }, [actionDisabled, value, mediaPreview, onAttach, inEdit, onSaveEdit, onSend, onAttachError])
 
   const handleChange = (e) => {
     setValue(clamp(e.target.value))
@@ -154,16 +194,15 @@ export default function ChatInput({
           topBarOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
         }`}
       >
-        <div className="w-full px-3 py-2">
-          <div className="module-modern-shell flex items-center gap-2 rounded-2xl px-2 py-2">
+        <div className="mx-auto flex w-full max-w-[760px] items-center gap-2 px-3">
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="shrink-0 p-2 text-indigo-300 transition hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={actuallyDisabled}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-indigo-300 transition hover:bg-slate-900/40 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={actionDisabled}
               aria-label="Attach"
             >
-              <Paperclip size={20} />
+              <Paperclip size={18} />
             </button>
 
             {mediaPreview && (
@@ -194,8 +233,8 @@ export default function ChatInput({
               onCompositionStart={() => (composingRef.current = true)}
               onCompositionEnd={() => (composingRef.current = false)}
               placeholder={inEdit ? 'Edit message...' : 'Type a message...'}
-              className="module-modern-input flex-1 rounded-2xl px-4 py-2.5"
-              disabled={actuallyDisabled}
+              className="module-modern-input h-10 flex-1 rounded-[14px] px-4"
+              disabled={inputDisabled}
               autoComplete="off"
               inputMode="text"
               enterKeyHint={inEdit ? 'done' : 'send'}
@@ -203,7 +242,7 @@ export default function ChatInput({
 
             <button
               type="submit"
-              disabled={actuallyDisabled || (!value.trim() && !mediaPreview)}
+              disabled={actionDisabled || (!value.trim() && !mediaPreview)}
               className={
                 value.trim() || mediaPreview
                   ? 'module-modern-btn module-modern-btn--primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white'
@@ -211,9 +250,8 @@ export default function ChatInput({
               }
               aria-label={inEdit ? 'Save' : 'Send'}
             >
-              <Send size={16} />
+              {submitBusy ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             </button>
-          </div>
         </div>
       </form>
 
