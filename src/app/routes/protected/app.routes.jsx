@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Navigate, useParams } from "react-router-dom";
+import { releaseFlags } from "@/shared/config/releaseFlags";
 
 function VportToActorDashboardRedirect() {
   const { actorId } = useParams();
@@ -23,11 +24,13 @@ function VportToActorSettingsRedirect() {
 
 function VportToActorAdsRedirect() {
   const { actorId } = useParams();
+  if (!releaseFlags.vportAdsPipeline) return <Navigate to="/feed" replace />;
   return actorId ? <Navigate to={`/ads/vport/${actorId}`} replace /> : <Navigate to="/feed" replace />;
 }
 
 function VportToActorFlyerEditRedirect() {
   const { actorId } = useParams();
+  if (!releaseFlags.vportFlyerEditor) return <Navigate to="/feed" replace />;
   return actorId ? (
     <Navigate to={`/actor/${actorId}/menu/flyer/edit`} replace />
   ) : (
@@ -46,6 +49,7 @@ function VportToActorMenuQrRedirect() {
 
 function VportToActorMenuFlyerRedirect() {
   const { actorId } = useParams();
+  if (!releaseFlags.vportPrintableFlyer) return <Navigate to="/feed" replace />;
   return actorId ? (
     <Navigate to={`/actor/${actorId}/menu/flyer`} replace />
   ) : (
@@ -95,6 +99,8 @@ export function protectedAppRoutes({
   NotiViewPostScreen,
 
   UploadScreen,
+  ProfessionalAccessScreen,
+  ProfessionalBriefingsScreen,
   SettingsScreen,
   VportAdsSettingsScreen,
   VoidScreen,
@@ -115,9 +121,6 @@ export function protectedAppRoutes({
   VportDashboardExchangeScreen, // ✅ ADDED
   VportSettingsScreen,
 
-  // actor-first menu screens (used by dashboard navigation)
-  VportActorMenuQrScreen,
-  VportActorMenuFlyerScreen,
 }) {
   return [
     { path: "/feed", element: <CentralFeed /> },
@@ -155,8 +158,19 @@ export function protectedAppRoutes({
     { path: "/noti/post/:postId", element: <NotiViewPostScreen /> },
 
     { path: "/upload", element: <UploadScreen /> },
+    {
+      path: "/professional-access",
+      element: releaseFlags.professionalWorkspace ? <ProfessionalAccessScreen /> : <Navigate to="/settings?tab=profile" replace />,
+    },
+    {
+      path: "/professional/briefings",
+      element: releaseFlags.professionalWorkspace ? <ProfessionalBriefingsScreen /> : <Navigate to="/settings?tab=profile" replace />,
+    },
     { path: "/settings", element: <SettingsScreen /> },
-    { path: "/ads/vport/:actorId", element: <VportAdsSettingsScreen /> },
+    {
+      path: "/ads/vport/:actorId",
+      element: releaseFlags.vportAdsPipeline ? <VportAdsSettingsScreen /> : <Navigate to="/feed" replace />,
+    },
     { path: "/void", element: <VoidScreen /> },
 
     { path: "/me", element: <Navigate to="/profile/self" replace /> },
@@ -171,14 +185,9 @@ export function protectedAppRoutes({
     { path: "/profile/:id/friends/top/edit", element: <TopFriendsRankEditor /> },
 
     // canonical owner routes (actor-first)
-    { path: "/actor/:actorId/menu/qr", element: <VportActorMenuQrScreen /> },
-    {
-      path: "/actor/:actorId/menu/flyer",
-      element: <VportActorMenuFlyerScreen />,
-    },
     {
       path: "/actor/:actorId/menu/flyer/edit",
-      element: <VportActorMenuFlyerEditorScreen />,
+      element: releaseFlags.vportFlyerEditor ? <VportActorMenuFlyerEditorScreen /> : <Navigate to="/feed" replace />,
     },
 
     { path: "/actor/:actorId/dashboard", element: <VportDashboardScreen /> },

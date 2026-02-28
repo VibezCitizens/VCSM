@@ -19,25 +19,48 @@ import ReportModal from '@/features/moderation/components/ReportModal'
 import PostActionsMenu from '@/features/post/postcard/components/PostActionsMenu'
 
 import { softDeletePostController } from '@/features/post/postcard/controller/deletePost.controller'
+import { ctrlSubscribe } from '@/features/social/friend/subscribe/controllers/follow.controller'
+import { ctrlUnsubscribe } from '@/features/social/friend/subscribe/controllers/unsubscribe.controller'
+import { useFollowStatus } from '@/features/social/friend/subscribe/hooks/useFollowStatus'
+import { blockActorController } from '@/features/block/controllers/blockActor.controller'
 
 import { shareNative } from '@/shared/lib/shareNative'
 import ShareModal from '@/features/post/postcard/components/ShareModal'
 
 import ReportedPostCover from '@/features/moderation/components/ReportThanksOverlay'
 
+function FeedSkeletonList({ count = 3 }) {
+  return (
+    <div className="space-y-3 px-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={`feed-skeleton:${i}`}
+          className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/80"
+        >
+          <div className="flex items-center gap-3 px-4 py-3">
+            <div className="h-10 w-10 animate-pulse rounded-xl bg-neutral-800" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="h-3 w-32 animate-pulse rounded bg-neutral-800" />
+              <div className="h-2 w-20 animate-pulse rounded bg-neutral-800/80" />
+            </div>
+          </div>
+
+          <div className="space-y-2 px-4 pb-4">
+            <div className="h-3 w-11/12 animate-pulse rounded bg-neutral-800" />
+            <div className="h-3 w-8/12 animate-pulse rounded bg-neutral-800/80" />
+            <div className="mt-3 h-44 animate-pulse rounded-xl bg-neutral-800/70" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function CentralFeed() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { identity } = useIdentity()
   const IS_DEV = import.meta.env.DEV
-
-  if (IS_DEV) {
-    console.group('[CentralFeed][IDENTITY DEBUG]')
-    console.log('raw identity:', identity)
-    console.log('actorId:', identity?.actorId ?? null)
-    console.log('realmId:', identity?.realmId ?? null)
-    console.groupEnd()
-  }
 
   const actorId = identity?.actorId ?? null
   const realmId = identity?.realmId ?? null
@@ -50,18 +73,16 @@ export default function CentralFeed() {
     loading,
     hasMore,
     fetchPosts,
+    setPosts,
     fetchViewer,
     hiddenPostIds: serverHiddenPostIds,
   } = useFeed(actorId, realmId)
-
-  useEffect(() => {
-    if (IS_DEV) console.log('[CentralFeed] MOUNT')
-    return () => {
-      if (IS_DEV) console.log('[CentralFeed] UNMOUNT')
-    }
-  }, [IS_DEV])
-
   const [postMenu, setPostMenu] = useState(null)
+  const showInitialSkeleton = posts.length === 0 && (loading || viewerIsAdult === null)
+  const isMenuActorFollowing = useFollowStatus({
+    followerActorId: actorId,
+    followedActorId: postMenu?.postActorId ?? null,
+  })
 
   const openPostMenu = useCallback(
     ({ postId, postActorId, anchorRect }) => {
@@ -124,6 +145,76 @@ export default function CentralFeed() {
 
     closePostMenu()
   }, [actorId, postMenu, reportFlow, closePostMenu])
+
+  const handleFollowActor = useCallback(async () => {
+    if (!actorId || !postMenu?.postActorId) return
+    if (actorId === postMenu.postActorId) return
+
+    try {
+      if (isMenuActorFollowing) {
+        await ctrlUnsubscribe({
+          followerActorId: actorId,
+          followedActorId: postMenu.postActorId,
+        })
+      } else {
+        await ctrlSubscribe({
+          followerActorId: actorId,
+          followedActorId: postMenu.postActorId,
+        })
+      }
+      closePostMenu()
+    } catch (err) {
+      console.error('[CentralFeed] subscribe failed:', err)
+      window.alert(
+        err?.message ||
+          (isMenuActorFollowing
+            ? 'Failed to unsubscribe from actor'
+            : 'Failed to subscribe to actor')
+      )
+    }
+  }, [actorId, postMenu, closePostMenu, isMenuActorFollowing])
+
+  const handleOpenActorProfile = useCallback(() => {
+    if (!postMenu?.postActorId) return
+    closePostMenu()
+    navigate(`/profile/${postMenu.postActorId}`)
+  }, [postMenu, closePostMenu, navigate])
+
+  const handleBlockActor = useCallback(async () => {
+    if (!actorId || !postMenu?.postActorId) return
+    if (actorId === postMenu.postActorId) return
+
+    const okConfirm = window.confirm('Block this actor?')
+    if (!okConfirm) return
+
+    const blockedActorId = postMenu.postActorId
+    let snapshot = null
+
+    // Optimistic removal: hide blocked actor posts immediately.
+    setPosts((prev) => {
+      snapshot = prev
+      return prev.filter((p) => {
+        const pActorId =
+          p?.actor?.actor_id ??
+          p?.actor?.actorId ??
+          p?.actor_id ??
+          p?.actorId ??
+          null
+        return String(pActorId) !== String(blockedActorId)
+      })
+    })
+
+    closePostMenu()
+
+    try {
+      await blockActorController(actorId, blockedActorId)
+      await fetchPosts(true)
+    } catch (err) {
+      if (snapshot) setPosts(snapshot)
+      console.error('[CentralFeed] block failed:', err)
+      window.alert(err?.message || 'Failed to block actor')
+    }
+  }, [actorId, postMenu, closePostMenu, fetchPosts, setPosts])
 
   const persistHideForMe = useCallback(
     async (postId) => {
@@ -245,9 +336,7 @@ export default function CentralFeed() {
       maxPull={120}
       className="h-full min-h-full overflow-y-auto bg-black text-white px-0 py-2 pb-[var(--vc-bottom-nav-height)]"
     >
-      {viewerIsAdult === null && (
-        <p className="text-center text-gray-400 mt-6">Loading your feed...</p>
-      )}
+      {showInitialSkeleton && <FeedSkeletonList count={3} />}
 
       {viewerIsAdult !== null && !loading && posts.length === 0 && (
         <p className="text-center text-gray-400">No Vibes found.</p>
@@ -258,14 +347,6 @@ export default function CentralFeed() {
           !!post.is_hidden_for_viewer || (serverHiddenPostIds?.has?.(post.id) ?? false)
 
         const covered = hiddenServer
-
-        if (IS_DEV) {
-          console.log('[CentralFeed][post mention debug]', {
-            postId: post.id,
-            text: post.text,
-            mentionMapKeys: Object.keys(post.mentionMap || {}),
-          })
-        }
 
         return (
           <div key={`post:${post.id}`} className="mb-2 last:mb-0">
@@ -299,6 +380,10 @@ export default function CentralFeed() {
         onClose={closePostMenu}
         onEdit={handleEditPost}
         onDelete={handleDeletePost}
+        onFollow={handleFollowActor}
+        followLabel={isMenuActorFollowing ? 'Unsubscribe' : 'Subscribe'}
+        onProfile={handleOpenActorProfile}
+        onBlock={handleBlockActor}
         onReport={handleReportPost}
       />
 
@@ -319,14 +404,6 @@ export default function CentralFeed() {
       />
 
       {debugPrivacy && <DebugPrivacyPanel actorId={actorId} posts={posts} />}
-
-      {loading && posts.length === 0 && (
-        <div className="space-y-3 px-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-neutral-800 h-40 rounded-xl" />
-          ))}
-        </div>
-      )}
 
       {loading && posts.length > 0 && (
         <p className="text-center text-white">Loading more...</p>

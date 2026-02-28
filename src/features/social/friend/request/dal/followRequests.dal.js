@@ -78,12 +78,28 @@ export async function dalUpdateRequestStatus({
 
   // 🔥 LOG RLS / PERMISSION FAILURES
   if (error) {
+    const isNotificationRlsChain =
+      error?.code === '42501' &&
+      /notifications/i.test(String(error?.message ?? ''))
+
     console.error('[dalUpdateRequestStatus] FAILED', {
       requesterActorId,
       targetActorId,
       status,
       error,
     })
+
+    if (isNotificationRlsChain) {
+      const wrapped = new Error(
+        'Follow request update was blocked by notifications RLS (likely DB trigger side-effect). Apply follow request + notifications RLS policies in supabase/sql.'
+      )
+      wrapped.code = error.code
+      wrapped.details = error.details ?? null
+      wrapped.hint = error.hint ?? null
+      wrapped.cause = error
+      throw wrapped
+    }
+
     throw error
   }
 

@@ -1,4 +1,5 @@
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
+import { isDashboardCardEnabled } from "@/shared/config/releaseFlags";
 
 const DASHBOARD_VIEW_PRESETS = Object.freeze({
   default: {
@@ -72,6 +73,16 @@ const TYPE_TO_VIEW = Object.freeze({
   exchange: "exchange",
 });
 
+function withVisibleCardKeys(view) {
+  const baseKeys = Array.isArray(view?.cardKeys) ? view.cardKeys : [];
+  const visibleKeys = baseKeys.filter((key) => isDashboardCardEnabled(key));
+  if (visibleKeys.length === baseKeys.length) return view;
+  return {
+    ...view,
+    cardKeys: Object.freeze(visibleKeys),
+  };
+}
+
 export function normalizeVportType(type) {
   if (!type) return "other";
   return String(type).trim().toLowerCase();
@@ -92,15 +103,14 @@ export function resolveVportTypeGroup(type) {
 export function getDashboardViewByVportType(type) {
   const normalized = normalizeVportType(type);
   const overrideViewId = TYPE_TO_VIEW[normalized];
-  if (overrideViewId) return DASHBOARD_VIEW_PRESETS[overrideViewId];
+  if (overrideViewId) return withVisibleCardKeys(DASHBOARD_VIEW_PRESETS[overrideViewId]);
 
   const group = resolveVportTypeGroup(normalized);
   const groupViewId = GROUP_TO_VIEW[group] ?? "default";
-  return DASHBOARD_VIEW_PRESETS[groupViewId] ?? DASHBOARD_VIEW_PRESETS.default;
+  return withVisibleCardKeys(DASHBOARD_VIEW_PRESETS[groupViewId] ?? DASHBOARD_VIEW_PRESETS.default);
 }
 
 export function getDashboardCardKeysByVportType(type) {
   const view = getDashboardViewByVportType(type);
   return view?.cardKeys ?? DASHBOARD_VIEW_PRESETS.default.cardKeys;
 }
-

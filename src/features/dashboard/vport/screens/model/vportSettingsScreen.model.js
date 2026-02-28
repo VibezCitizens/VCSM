@@ -1,27 +1,14 @@
+import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
+import { upsertVportPublicDetails } from "@/features/settings/profile/dal/vportPublicDetails.write.dal";
+
 export async function saveVportPublicDetailsByActorId(actorId, payload) {
-  const res = await fetch(`/api/vport/${actorId}/public-details`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload || {}),
-  });
+  if (!actorId) throw new Error("saveVportPublicDetailsByActorId: actorId required");
 
-  if (!res.ok) {
-    let msg = "Failed to save VPORT details.";
-    try {
-      const data = await res.json();
-      if (data?.error) msg = data.error;
-      if (data?.message) msg = data.message;
-    } catch {
-      // Ignore error body parse failures and keep default message.
-    }
-    throw new Error(msg);
-  }
+  const details = await fetchVportPublicDetailsByActorId(actorId);
+  const vportId = details?.vport_id ?? null;
+  if (!vportId) throw new Error("Failed to save VPORT details.");
 
-  try {
-    return await res.json();
-  } catch {
-    return null;
-  }
+  return upsertVportPublicDetails(vportId, payload || {});
 }
 
 export function mapPublicDetailsToDraft(details) {
@@ -43,4 +30,3 @@ export function mapPublicDetailsToDraft(details) {
       : [],
   };
 }
-

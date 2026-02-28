@@ -35,11 +35,6 @@ export function VportDashboardGasScreen() {
     navigate(`/actor/${actorId}/dashboard`);
   }, [navigate, actorId]);
 
-  const openPublic = useCallback(() => {
-    if (!actorId) return;
-    navigate(`/actor/${actorId}/gas`);
-  }, [navigate, actorId]);
-
   const {
     loading,
     error,
@@ -78,22 +73,24 @@ export function VportDashboardGasScreen() {
       .filter((s) => String(s?.status ?? "pending") === "pending");
   }, [pendingByFuelKey]);
 
-  const onRefreshAll = useCallback(async () => {
-    await Promise.allSettled([refresh?.(), refreshPending?.()]);
-  }, [refresh, refreshPending]);
-
   const afterSubmitSuggestion = useCallback(
     async ({ submissionId }) => {
       if (!submissionId) return { ok: false, reason: "no_submission_id" };
 
-      return reviewSuggestion?.({
+      const res = await reviewSuggestion?.({
         submissionId,
         decision: "approved",
         reason: "Owner updated official prices",
         applyToOfficialOnApprove: true,
       });
+
+      if (res?.ok) {
+        await Promise.allSettled([refresh?.(), refreshPending?.()]);
+      }
+
+      return res;
     },
-    [reviewSuggestion]
+    [reviewSuggestion, refresh, refreshPending]
   );
 
   if (!actorId) return null;
@@ -129,14 +126,7 @@ export function VportDashboardGasScreen() {
 
             <div style={shell.title}>GAS PRICES</div>
 
-            <div style={{ display: "flex", gap: 10 }}>
-              <button type="button" onClick={onRefreshAll} style={shell.btn("soft")}>
-                Refresh
-              </button>
-              <button type="button" onClick={openPublic} style={shell.btn("glow")}>
-                Public page
-              </button>
-            </div>
+            <div style={shell.rightSpacer} />
           </div>
 
           <div style={section}>

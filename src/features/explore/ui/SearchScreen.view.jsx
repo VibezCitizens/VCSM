@@ -2,9 +2,11 @@ import React, { Suspense } from 'react'
 import { Search, X } from 'lucide-react'
 import { useSearchActor } from '../hooks/useSearchActor'
 import ResultList from './ResultList'
+import ExploreFeed from './ExploreFeed'
 
 export default function SearchScreen() {
   const { query, filter, debounced, canClear, setQuery, setFilter } = useSearchActor()
+  const isSearching = query.trim().length > 0 || debounced.trim().length > 0
 
   const FILTERS = [
     { key: 'all', label: 'All' },
@@ -15,8 +17,8 @@ export default function SearchScreen() {
   ]
 
   return (
-    <div className="module-modern-shell w-full rounded-2xl px-4 pt-[calc(env(safe-area-inset-top)+12px)] pb-4">
-      <div className="module-modern-search-shell relative mb-3 sm:mb-4">
+    <div className="module-modern-shell w-full rounded-2xl px-4 pt-2 pb-3">
+      <div className="module-modern-search-shell relative mb-2 sm:mb-3">
         <Search
           size={18}
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -43,8 +45,8 @@ export default function SearchScreen() {
         )}
       </div>
 
-      <div className="mb-4 overflow-x-auto sm:mb-5">
-        <div className="flex min-w-max justify-center gap-6 border-b border-slate-300/15 px-1 sm:gap-8 sm:px-2">
+      <div className="mb-2 overflow-x-auto sm:mb-3">
+        <div className="flex min-w-max justify-start gap-6 border-b border-slate-300/15 px-1 sm:gap-8 sm:px-2">
           {FILTERS.map((f) => {
             const active = filter === f.key
             return (
@@ -66,9 +68,13 @@ export default function SearchScreen() {
         </div>
       </div>
 
-      <Suspense fallback={<div className="text-center text-slate-300">Loading...</div>}>
-        <ResultList query={debounced} filter={filter} />
-      </Suspense>
+      {isSearching ? (
+        <Suspense fallback={<div className="text-center text-slate-300">Loading...</div>}>
+          <ResultList query={debounced || query} filter={filter} />
+        </Suspense>
+      ) : (
+        <ExploreFeed />
+      )}
     </div>
   )
 }

@@ -5,6 +5,7 @@ import vc from "@/services/supabase/vcClient";
 import { loadIdentity, saveIdentity } from "./identityStorage";
 
 const IdentityContext = createContext(null);
+const IS_DEV = import.meta.env.DEV;
 
 /* ============================================================
    REALM RESOLUTION
@@ -13,31 +14,32 @@ const IdentityContext = createContext(null);
 async function resolveRealmId(actor) {
   if (!actor) return null;
 
-  // Void actor → void realm
-  if (actor.is_void) {
-    const { data } = await vc
-      .from("realms")
-      .select("id")
-      .eq("is_void", true)
-      .maybeSingle();
-
-    return data?.id ?? null;
-  }
-
-  // Normal actor → public realm
-  const { data } = await vc
+  const { data: preferred, error: preferredError } = await vc
     .from("realms")
-    .select("id")
-    .eq("is_void", false)
+    .select("id,created_at")
+    .eq("is_void", Boolean(actor.is_void))
+    .order("created_at", { ascending: true })
+    .limit(1)
     .maybeSingle();
 
-  return data?.id ?? null;
+  if (preferredError && IS_DEV) {
+    console.warn("[Identity] resolveRealmId preferred query failed", preferredError);
+  }
+  if (preferred?.id) return preferred.id;
+
+  const { data: fallback, error: fallbackError } = await vc
+    .from("realms")
+    .select("id,created_at")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (fallbackError && IS_DEV) {
+    console.warn("[Identity] resolveRealmId fallback query failed", fallbackError);
+  }
+
+  return fallback?.id ?? null;
 }
-
-/* ============================================================
-   MAPPERS (LOCKED: NEVER EXPOSE profileId/vportId)
-   ============================================================ */
-
 function mapProfileActor(actor, profile, realmId) {
   return {
     actorId: actor.id,

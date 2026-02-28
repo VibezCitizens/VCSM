@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useIdentity } from '@/state/identity/identityContext'
 import { startDirectConversation } from
   '@/features/chat/start/controllers/startDirectConversation.controller'
+import { resolveRealm } from '@/features/upload/model/resolveRealm'
 
 /**
  * @Contract: HOOK
@@ -20,19 +21,20 @@ export function useStartConversation() {
   const [loading, setLoading] = useState(false)
 
   const start = useCallback(async (picked) => {
-    if (!identity?.actorId || !identity?.realmId) {
-     toast.error('You can’t message this user')
+    if (!identity?.actorId) {
+      toast.error('You can’t message this user')
       return
     }
 
     if (!picked) return
+    const effectiveRealmId = identity?.realmId ?? resolveRealm(Boolean(identity?.isVoid))
 
     try {
       setLoading(true)
 
       const { conversationId } = await startDirectConversation({
         fromActorId: identity.actorId,
-        realmId: identity.realmId,
+        realmId: effectiveRealmId,
         picked,
       })
 

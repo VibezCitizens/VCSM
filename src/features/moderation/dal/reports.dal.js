@@ -27,6 +27,16 @@ const MESSAGE_HIDE_COLUMNS =
 const INBOX_ENTRY_FOLDER_COLUMNS =
   'conversation_id,actor_id,folder,last_message_id,last_message_at,unread_count,pinned,archived,muted,history_cutoff_at,archived_until_new,partner_display_name,partner_username,partner_photo_url'
 
+function isRlsDenied(error) {
+  if (!error) return false
+  const code = String(error?.code ?? '')
+  const msg = String(error?.message ?? '')
+  const details = String(error?.details ?? '')
+  return code === '42501' || /row-level security/i.test(`${msg} ${details}`)
+}
+
+let skipReportEventsInsertForSession = false
+
 /**
  * upsertInboxEntryFolder (DAL)
  * - creates/updates inbox entry folder for an actor + conversation
@@ -233,15 +243,32 @@ export async function insertReportEventRow({
     created_at: createdAt,
   }
 
-  const { data: row, error } = await supabase
+  if (skipReportEventsInsertForSession) {
+    return { row: null, error: null, skipped: true }
+  }
+
+  const { error } = await supabase
     .schema('vc')
     .from('report_events')
     .insert(insert)
-    .select(REPORT_EVENT_COLUMNS)
-    .maybeSingle()
 
-  if (error) console.error('[DAL][report_events.insert] error', { insert, error })
-  return { row: row ?? null, error }
+  if (error) {
+    if (isRlsDenied(error)) {
+      skipReportEventsInsertForSession = true
+      console.warn('[DAL][report_events.insert] skipped by RLS (non-fatal)', {
+        reportId,
+        actorId,
+        eventType,
+        code: error?.code ?? null,
+        message: error?.message ?? null,
+      })
+    } else {
+      console.error('[DAL][report_events.insert] error', { insert, error })
+    }
+    return { row: null, error, skipped: false }
+  }
+
+  return { row: insert, error: null, skipped: false }
 }
 
 /**

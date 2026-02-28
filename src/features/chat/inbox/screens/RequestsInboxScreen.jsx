@@ -64,7 +64,7 @@ export default function RequestsInboxScreen() {
 
   const { entries = [], loading: inboxLoading, error, hideConversation } = useInboxFolder({
     actorId,
-    folder: 'inbox',
+    folder: 'requests',
   })
 
   const inboxActions = useInboxActions({ actorId })

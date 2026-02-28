@@ -219,9 +219,16 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
 
       {!gate.canView && (
         <PrivateProfileNotice
-          actor={profile.actor}
+          actor={{
+            id: profile?.actorId ?? profileActorId ?? null,
+            kind: profile?.kind ?? "user",
+            displayName: profile?.displayName ?? "Citizen",
+            username: profile?.username ?? "",
+            avatar: profile?.avatarUrl ?? "/avatar.jpg",
+            route: `/profile/${profile?.actorId ?? profileActorId}`,
+          }}
           onRequestFollow={gate.requestFollow}
-          canMessage
+          canMessage={false}
         />
       )}
 

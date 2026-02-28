@@ -102,9 +102,39 @@ import { resolvePickedActor } from
 
 import { getOrCreateDirectConversation } from '@/features/chat/start/controllers/getOrCreateDirectConversation.controller'
 import { openConversation } from '@/features/chat/start/dal/rpc/openConversation.rpc'
+import { resolveRealm } from '@/features/upload/model/resolveRealm'
+import { supabase } from '@/services/supabase/supabaseClient'
 
 // ✅ BLOCK CHECK (global)
 import { checkBlockStatus } from '@/features/block/dal/block.check.dal'
+
+function isUuid(value) {
+  return (
+    typeof value === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+  )
+}
+
+async function resolveChatRealmId({ fromActorId, realmId }) {
+  if (isUuid(realmId)) return realmId
+
+  try {
+    const { data: actor, error } = await supabase
+      .schema('vc')
+      .from('actors')
+      .select('is_void')
+      .eq('id', fromActorId)
+      .maybeSingle()
+
+    if (!error && actor) {
+      return resolveRealm(Boolean(actor.is_void))
+    }
+  } catch {
+    // Fallback below.
+  }
+
+  return resolveRealm(false)
+}
 
 export async function startDirectConversation({
   fromActorId,
@@ -112,7 +142,6 @@ export async function startDirectConversation({
   picked,
 }) {
   if (!fromActorId) throw new Error('Missing fromActorId')
-  if (!realmId) throw new Error('Missing realmId')
   if (!picked) throw new Error('Missing picked')
 
   // 🔒 INVARIANT GUARD — boundary protection
@@ -125,6 +154,11 @@ export async function startDirectConversation({
   // 1️⃣ Resolve target actor
   const toActorId = await resolvePickedActor(picked)
   if (!toActorId) throw new Error('Failed to resolve target actor')
+  if (!isUuid(toActorId)) {
+    throw new Error('[chat/start] target actor id is invalid')
+  }
+
+  const effectiveRealmId = await resolveChatRealmId({ fromActorId, realmId })
 
   // ✅ BLOCK ENFORCEMENT (GLOBAL)
   const { isBlocked } = await checkBlockStatus(fromActorId, toActorId)
@@ -136,7 +170,7 @@ export async function startDirectConversation({
   const { conversationId } = await getOrCreateDirectConversation({
     fromActorId,
     toActorId,
-    realmId,
+    realmId: effectiveRealmId,
   })
 
   // 3️⃣ Ensure inbox entry / open

@@ -65,6 +65,12 @@ const NotiViewPostScreen = lazyWithLog("NotiViewPost", () =>
 const UploadScreen = lazyWithLog("UploadScreen", () =>
   import("@/features/upload/screens/UploadScreen")
 );
+const ProfessionalAccessScreen = lazyWithLog("ProfessionalAccessScreen", () =>
+  import("@/features/professional/screens/ProfessionalAccessScreen")
+);
+const ProfessionalBriefingsScreen = lazyWithLog("ProfessionalBriefingsScreen", () =>
+  import("@/features/professional/briefings/screen/ProfessionalBriefingsScreen")
+);
 
 /* ================= ACCOUNT / MISC ================= */
 const SettingsScreen = lazyWithLog("Settings", () =>
@@ -136,15 +142,15 @@ const VportGasPricesScreen = lazyWithLog("VportGasPricesScreen", () =>
 
 /* ================= PUBLIC MENU (ACTOR-FIRST) ================= */
 const VportMenuRedirectScreen = lazyWithLog("VportMenuRedirectScreen", () =>
-  import("@/features/profiles/kinds/vport/screens/VportMenuRedirectScreen")
+  import("@/features/public/vportMenu/screen/VportPublicMenuRedirectScreen")
 );
 
 const VportActorMenuPublicScreen = lazyWithLog("VportActorMenuPublicScreen", () =>
-  import("@/features/profiles/kinds/vport/screens/menu/VportActorMenuPublicScreen")
+  import("@/features/public/vportMenu/screen/VportPublicMenuScreen")
 );
 
 const VportActorMenuQrScreen = lazyWithLog("VportActorMenuQrScreen", () =>
-  import("@/features/dashboard/qrcode/menu/VportActorMenuQrScreen")
+  import("@/features/public/vportMenu/screen/VportPublicMenuQrScreen")
 );
 
 const VportActorMenuFlyerScreen = lazyWithLog("VportActorMenuFlyerScreen", () =>
@@ -286,6 +292,8 @@ export default function AppRoutes() {
             NotiViewPostScreen,
 
             UploadScreen,
+            ProfessionalAccessScreen,
+            ProfessionalBriefingsScreen,
             SettingsScreen,
             VportAdsSettingsScreen,
             VoidScreen,
@@ -303,10 +311,6 @@ export default function AppRoutes() {
             VportDashboardServicesScreen,
             VportDashboardExchangeScreen, // ✅ ADDED
             VportSettingsScreen,
-
-            // ✅ so protected routes can render these too
-            VportActorMenuQrScreen,
-            VportActorMenuFlyerScreen,
           }),
         },
       ],

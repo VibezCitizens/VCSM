@@ -24,8 +24,28 @@ export async function fetchFeedPagePipeline({
   });
 
   const pagePostIds = pageRows.map((r) => r.id).filter(Boolean);
+  const actorIds = [...new Set(pageRows.map((r) => r.actor_id).filter(Boolean))];
 
-  const mediaMap = await readPostMediaMap(pagePostIds);
+  const hasPotentialMentions = pageRows.some(
+    (row) => typeof row?.text === "string" && row.text.includes("@")
+  );
+
+  const [
+    mediaMap,
+    mentionRows,
+    hiddenByMeSet,
+    { actors, actorMap, profileMap, vportMap },
+    blockedActorSet,
+  ] = await Promise.all([
+    readPostMediaMap(pagePostIds),
+    hasPotentialMentions ? fetchPostMentionRows(pagePostIds) : Promise.resolve([]),
+    readHiddenPostsForViewer({
+      viewerActorId,
+      postIds: pagePostIds,
+    }),
+    readActorsBundle(actorIds),
+    filterBlockedActors(viewerActorId, actorIds),
+  ]);
 
   // ✅ mentions
   if (debugPostId && pagePostIds.includes(debugPostId)) {
@@ -35,20 +55,7 @@ export async function fetchFeedPagePipeline({
     });
   }
 
-  const mentionRows = await fetchPostMentionRows(pagePostIds);
-
-  // ✅ FIX: buildMentionMaps is async → must await
-  const mentionMapsByPostId = await buildMentionMaps(mentionRows);
-
-  const hiddenByMeSet = await readHiddenPostsForViewer({
-    viewerActorId,
-    postIds: pagePostIds,
-  });
-
-  const actorIds = [...new Set(pageRows.map((r) => r.actor_id).filter(Boolean))];
-  const { actors, actorMap, profileMap, vportMap } = await readActorsBundle(actorIds);
-
-  const blockedActorSet = await filterBlockedActors(viewerActorId, actorIds);
+  const mentionMapsByPostId = buildMentionMaps(mentionRows);
 
   const normalized = normalizeFeedRows({
     pageRows,

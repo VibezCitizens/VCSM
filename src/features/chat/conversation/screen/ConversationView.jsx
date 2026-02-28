@@ -150,6 +150,7 @@ export default function ConversationView({ conversationId }) {
   return (
     <div className="chat-screen">
       <ChatScreenLayout
+        messagesRef={messagesRef}
         header={
           <ChatHeader
             conversation={conversation}
@@ -159,15 +160,13 @@ export default function ConversationView({ conversationId }) {
           />
         }
         messages={
-          <div ref={messagesRef} className="chat-messages">
-            <MessageList
-              messages={messages}
-              currentActorId={actorId}
-              isGroupChat={conversation.isGroup}
-              onOpenActions={conversationCovered ? undefined : openMenu}
-              onOpenMedia={conversationCovered ? undefined : openViewer}
-            />
-          </div>
+          <MessageList
+            messages={messages}
+            currentActorId={actorId}
+            isGroupChat={conversation.isGroup}
+            onOpenActions={conversationCovered ? undefined : openMenu}
+            onOpenMedia={conversationCovered ? undefined : openViewer}
+          />
         }
         footer={null}
       />

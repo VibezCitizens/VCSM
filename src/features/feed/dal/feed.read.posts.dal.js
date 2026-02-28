@@ -23,10 +23,13 @@ export async function readFeedPostsPage({
       deleted_by_actor_id,
       location_text
     `)
-    .eq("realm_id", realmId)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(pageSize + 1);
+
+  if (realmId) {
+    q = q.eq("realm_id", realmId);
+  }
 
   if (cursorCreatedAt) {
     q = q.lt("created_at", cursorCreatedAt);

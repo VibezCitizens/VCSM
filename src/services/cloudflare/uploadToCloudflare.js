@@ -27,15 +27,14 @@ async function getUploadAuthHeaders() {
     }
 
     if (!token) {
-      return { 'x-requested-with': 'vc-web' };
+      return {};
     }
 
     return {
       Authorization: `Bearer ${token}`,
-      'x-requested-with': 'vc-web',
     };
   } catch {
-    return { 'x-requested-with': 'vc-web' };
+    return {};
   }
 }
 
@@ -64,12 +63,21 @@ export async function uploadToCloudflare(file, key) {
     form.append('path', path);           // Folder prefix (if your Worker uses it)
 
     const authHeaders = await getUploadAuthHeaders();
+    const doUpload = (headers = null) =>
+      fetch(UPLOAD_ENDPOINT, {
+        method: 'POST',
+        body: form,
+        ...(headers && Object.keys(headers).length ? { headers } : {}),
+      });
 
-    const res = await fetch(UPLOAD_ENDPOINT, {
-      method: 'POST',
-      body: form,
-      headers: authHeaders,
-    });
+    let res;
+    try {
+      res = await doUpload(authHeaders);
+    } catch (firstErr) {
+      // CORS-safe fallback: retry once without custom headers if preflight/network fails.
+      if (!Object.keys(authHeaders || {}).length) throw firstErr;
+      res = await doUpload();
+    }
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -106,7 +114,6 @@ export function getBackgroundJob(file, key, options = {}) {
     method: 'POST',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      'x-requested-with': 'vc-web',
       // Let the browser set multipart boundary — don't set Content-Type
     },
     fields: {

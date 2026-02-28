@@ -221,6 +221,9 @@ export default function VportAboutView({ profile, details }) {
   const highlights = d.highlights ?? [];
   const languages = d.languages ?? [];
   const paymentMethods = d.paymentMethods ?? d.payment_methods ?? [];
+  const highlightsList = normalizeStringArray(highlights);
+  const languagesList = normalizeStringArray(languages);
+  const paymentMethodsList = normalizeStringArray(paymentMethods);
 
   // --- DEBUG + stable recompute key (supports string or object hours) ---
   const hoursKey = useMemo(() => {
@@ -302,28 +305,25 @@ export default function VportAboutView({ profile, details }) {
         )}
 
         {/* HIGHLIGHTS */}
-        <SectionCard title="Highlights">
-          <Chips items={highlights} />
-          {!normalizeStringArray(highlights).length && (
-            <div className="text-sm text-neutral-500">None listed.</div>
-          )}
-        </SectionCard>
+        {highlightsList.length > 0 && (
+          <SectionCard title="Highlights">
+            <Chips items={highlightsList} />
+          </SectionCard>
+        )}
 
         {/* LANGUAGES */}
-        <SectionCard title="Languages">
-          <Chips items={languages} />
-          {!normalizeStringArray(languages).length && (
-            <div className="text-sm text-neutral-500">None listed.</div>
-          )}
-        </SectionCard>
+        {languagesList.length > 0 && (
+          <SectionCard title="Languages">
+            <Chips items={languagesList} />
+          </SectionCard>
+        )}
 
         {/* PAYMENT METHODS */}
-        <SectionCard title="Payment Methods">
-          <Chips items={paymentMethods} />
-          {!normalizeStringArray(paymentMethods).length && (
-            <div className="text-sm text-neutral-500">None listed.</div>
-          )}
-        </SectionCard>
+        {paymentMethodsList.length > 0 && (
+          <SectionCard title="Payment Methods">
+            <Chips items={paymentMethodsList} />
+          </SectionCard>
+        )}
 
         {/* LOCATION */}
         {(locationText || addressText) && (

@@ -8,6 +8,7 @@ import {
 } from '../dal/followRequests.dal'
 
 import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
+import { dalInsertNotification } from '@/features/notifications/inbox/dal/notifications.create.dal'
 
 /**
  * ============================================================
@@ -42,6 +43,23 @@ export async function ctrlSendFollowRequest({
     targetActorId,
   })
 
+  try {
+    await dalInsertNotification({
+      recipientActorId: targetActorId,
+      actorId: requesterActorId,
+      kind: 'follow_request',
+      objectType: 'actor',
+      objectId: requesterActorId,
+      linkPath: `/profile/${requesterActorId}`,
+      context: {
+        requesterActorId,
+        targetActorId,
+      },
+    })
+  } catch (error) {
+    console.error('[ctrlSendFollowRequest] notification insert failed', error)
+  }
+
   return 'pending'
 }
 
@@ -74,6 +92,23 @@ export async function ctrlAcceptFollowRequest({
     targetActorId,
     status: 'accepted',
   })
+
+  try {
+    await dalInsertNotification({
+      recipientActorId: requesterActorId,
+      actorId: targetActorId,
+      kind: 'follow_request_accepted',
+      objectType: 'actor',
+      objectId: targetActorId,
+      linkPath: `/profile/${targetActorId}`,
+      context: {
+        requesterActorId,
+        targetActorId,
+      },
+    })
+  } catch (error) {
+    console.error('[ctrlAcceptFollowRequest] notification insert failed', error)
+  }
 
   return true
 }

@@ -1,6 +1,6 @@
 // src/features/profiles/screens/views/profileheader/ActorProfileHeader.jsx
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import ProfileHeaderQRCodeModal from '@/features/profiles/screens/views/profileheader/ProfileHeaderQRCodeModal'
@@ -27,13 +27,6 @@ export default function ActorProfileHeader({
   const actorId = profile?.actorId ?? null
   const isSelf = actorId === viewerActorId
   const [showQR, setShowQR] = useState(false)
-
-  useEffect(() => {
-    if (!actorId) return
-    console.group('%c[ActorProfileHeader] PROFILE DEBUG', 'color:#22d3ee')
-    console.log('actorId:', actorId)
-    console.groupEnd()
-  }, [actorId])
 
   const { handleMessage } = useProfileHeaderMessaging({
     profileId: actorId,
@@ -62,27 +55,6 @@ export default function ActorProfileHeader({
   })
 
   const qrValue = actorId ? `${window.location.origin}/profile/${actorId}` : ''
-
-  const logAction = useCallback(
-    (name, fn) => async (...args) => {
-      console.groupCollapsed(
-        `%c[ActorProfileHeader] ${name}`,
-        'color:#a855f7;font-weight:bold'
-      )
-      try {
-        await fn?.(...args)
-        console.log('✅ success')
-      } catch (e) {
-        console.error('❌ error', e)
-      }
-      console.groupEnd()
-    },
-    []
-  )
-
-  const safeHandleMessage = logAction('Message.click', handleMessage)
-  const safeSubscribe = logAction('Subscribe.click', onSubscribe)
-  const safeShowQR = logAction('ShowQR.click', () => setShowQR(true))
 
   if (!profile) return null
 
@@ -140,7 +112,7 @@ export default function ActorProfileHeader({
             {isSelf ? (
               <div className="absolute top-4 right-4">
                 <button
-                  onClick={safeShowQR}
+                  onClick={() => setShowQR(true)}
                   className="profiles-pill-btn px-4 py-1.5 text-xs font-medium"
                 >
                   QR
@@ -160,12 +132,12 @@ export default function ActorProfileHeader({
             {/* ================= BOTTOM RIGHT ACTIONS ================= */}
             {!isSelf && (
               <div className="mt-4 flex w-full flex-col gap-2 sm:absolute sm:bottom-4 sm:right-4 sm:mt-0 sm:w-auto sm:items-end">
-                <MessageButton onClick={safeHandleMessage} />
+                <MessageButton onClick={handleMessage} />
                 <SubscribeButton
                   isSubscribed={isSubscribed}
                   label={subscribeLabel}
                   disabled={subscribeDisabled}
-                  onClick={safeSubscribe}
+                  onClick={onSubscribe}
                 />
               </div>
             )}

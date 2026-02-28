@@ -19,10 +19,6 @@ export function useProfileView({
     let alive = true;
 
     async function load() {
-      console.group("[useProfileView LOAD]");
-      console.log({ viewerActorId, profileActorId, canViewContent, version });
-      console.groupEnd();
-
       try {
         setLoading(true);
         setLoadingPosts(true); // ✅ FIX (was missing on reruns)
@@ -46,15 +42,13 @@ export function useProfileView({
           try {
             const rows = await readActorPostsDAL(profileActorId);
             if (alive) setPosts(rows);
-          } catch (postErr) {
-            console.warn("[useProfileView] posts skipped", postErr);
+          } catch {
             if (alive) setPosts([]);
           }
         } else {
           if (alive) setPosts([]);
         }
       } catch (e) {
-        console.error("[useProfileView] PROFILE ERROR", e);
         if (alive) setError(e);
       } finally {
         if (alive) {

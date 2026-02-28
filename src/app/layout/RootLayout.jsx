@@ -1,4 +1,5 @@
 // src/layouts/RootLayout.jsx
+
 import { Outlet, useLocation } from 'react-router-dom'
 import TopNav from '@/shared/components/TopNav'
 import BottomNavBar from '@/shared/components/BottomNavBar'
@@ -15,7 +16,9 @@ export default function RootLayout() {
   const isChatInboxRoot = pathname === '/chat'
   const isChatSubScreen = isChatRoute && !isChatInboxRoot
 
-  const isAuthRoute = ['/login','/register','/reset','/forgot-password','/onboarding'].includes(pathname)
+  const isAuthRoute = ['/login', '/register', '/reset', '/forgot-password', '/onboarding'].includes(
+    pathname
+  )
 
   // Hide app nav on chat sub-screens (settings/spam/requests/archived/conversation/new)
   const hideTopNav = isChatSubScreen || isAuthRoute
@@ -49,4 +52,3 @@ export default function RootLayout() {
     </div>
   )
 }
-

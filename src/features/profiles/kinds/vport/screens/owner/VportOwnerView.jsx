@@ -29,11 +29,6 @@ export function VportOwnerView({ actorId }) {
         desc: "Edit public details, hours, links, and profile info.",
         onClick: () => navigate(`/actor/${actorId}/settings`),
       },
-      {
-        title: "Ads Pipeline",
-        desc: "Create and manage ads shown in your vport settings preview.",
-        onClick: () => navigate(`/ads/vport/${actorId}`),
-      },
     ],
     [navigate, actorId]
   );

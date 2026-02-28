@@ -26,23 +26,39 @@ export async function readActorsBundle(actorIds) {
     .filter((a) => a.profile_id)
     .map((a) => a.profile_id);
 
-  const { data: profiles } = profileIds.length
-    ? await supabase
-        .from("profiles")
-        .select("id, display_name, username, photo_url")
-        .in("id", profileIds)
-    : { data: [] };
+  const vportIds = (actors || [])
+    .filter((a) => a.vport_id)
+    .map((a) => a.vport_id);
+
+  // Resolve dependent bundles in parallel to reduce round-trips.
+  const [{ data: profiles }, { data: privacyRows }, { data: vports }] =
+    await Promise.all([
+      profileIds.length
+        ? supabase
+            .from("profiles")
+            .select("id, display_name, username, photo_url")
+            .in("id", profileIds)
+        : Promise.resolve({ data: [] }),
+
+      uniqueActorIds.length
+        ? supabase
+            .schema("vc")
+            .from("actor_privacy_settings")
+            .select("actor_id, is_private")
+            .in("actor_id", uniqueActorIds)
+        : Promise.resolve({ data: [] }),
+
+      vportIds.length
+        ? supabase
+            .schema("vc")
+            .from("vports")
+            .select("id, name, slug, avatar_url, is_active")
+            .in("id", vportIds)
+        : Promise.resolve({ data: [] }),
+    ]);
 
   const profileBaseMap = {};
   (profiles || []).forEach((p) => (profileBaseMap[p.id] = p));
-
-  const { data: privacyRows } = uniqueActorIds.length
-    ? await supabase
-        .schema("vc")
-        .from("actor_privacy_settings")
-        .select("actor_id, is_private")
-        .in("actor_id", uniqueActorIds)
-    : { data: [] };
 
   const actorPrivacyMap = new Map(
     (privacyRows || []).map((row) => [row.actor_id, row.is_private === true])
@@ -59,18 +75,6 @@ export async function readActorsBundle(actorIds) {
       private: actorPrivacyMap.get(actor.id) ?? false,
     };
   }
-
-  const vportIds = (actors || [])
-    .filter((a) => a.vport_id)
-    .map((a) => a.vport_id);
-
-  const { data: vports } = vportIds.length
-    ? await supabase
-        .schema("vc")
-        .from("vports")
-        .select("id, name, slug, avatar_url, is_active")
-        .in("id", vportIds)
-    : { data: [] };
 
   const vportMap = {};
   (vports || []).forEach((v) => (vportMap[v.id] = v));

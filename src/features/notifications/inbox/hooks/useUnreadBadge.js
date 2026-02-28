@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getInboxUnreadBadgeCount } from '../controller/inboxUnread.controller'
+import { supabase } from '@/services/supabase/supabaseClient'
 
 const UNREAD_CACHE_TTL_MS = 10_000
 const unreadCache = new Map()
@@ -22,11 +23,17 @@ function writeCachedUnread(actorId, count) {
   })
 }
 
-async function loadUnread(actorId) {
-  const cached = readCachedUnread(actorId)
+function invalidateUnread(actorId) {
+  unreadCache.delete(actorId)
+}
+
+async function loadUnread(actorId, { force = false } = {}) {
+  if (force) invalidateUnread(actorId)
+
+  const cached = force ? null : readCachedUnread(actorId)
   if (cached != null) return cached
 
-  const inflight = unreadInflight.get(actorId)
+  const inflight = force ? null : unreadInflight.get(actorId)
   if (inflight) return inflight
 
   const pending = getInboxUnreadBadgeCount(actorId)
@@ -42,17 +49,18 @@ async function loadUnread(actorId) {
   return pending
 }
 
-export default function useUnreadBadge({ actorId, refreshMs = 20000, debug = false } = {}) {
+export default function useUnreadBadge({ actorId, refreshMs = 20000 } = {}) {
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const aliveRef = useRef(true)
+  const realtimeRef = useRef(null)
 
   const canQuery = useMemo(
     () => typeof actorId === 'string' && actorId.length >= 32,
     [actorId]
   )
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (force = false) => {
     if (!canQuery) {
       setCount(0)
       setLoading(false)
@@ -61,20 +69,48 @@ export default function useUnreadBadge({ actorId, refreshMs = 20000, debug = fal
 
     setLoading(true)
     try {
-      const total = await loadUnread(actorId)
+      const total = await loadUnread(actorId, { force })
       if (aliveRef.current) setCount(total)
-      if (debug) console.log('[useUnreadBadge] count ->', total)
     } finally {
       if (aliveRef.current) setLoading(false)
     }
-  }, [actorId, canQuery, debug])
+  }, [actorId, canQuery])
 
   useEffect(() => {
     aliveRef.current = true
-    load()
+    load(true)
 
-    const onRefresh = () => load()
+    const onRefresh = () => load(true)
     window.addEventListener('noti:refresh', onRefresh)
+
+    if (realtimeRef.current) {
+      supabase.removeChannel(realtimeRef.current)
+      realtimeRef.current = null
+    }
+
+    if (canQuery) {
+      const channel = supabase.channel(`chat-badge-${actorId}`)
+      const onRealtime = () => load(true)
+
+      channel.on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'vc', table: 'inbox_entries', filter: `actor_id=eq.${actorId}` },
+        onRealtime
+      )
+      channel.on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'vc', table: 'inbox_entries', filter: `actor_id=eq.${actorId}` },
+        onRealtime
+      )
+      channel.on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'vc', table: 'inbox_entries', filter: `actor_id=eq.${actorId}` },
+        onRealtime
+      )
+
+      channel.subscribe()
+      realtimeRef.current = channel
+    }
 
     let timer = null
     if (refreshMs > 0) {
@@ -85,8 +121,12 @@ export default function useUnreadBadge({ actorId, refreshMs = 20000, debug = fal
       aliveRef.current = false
       window.removeEventListener('noti:refresh', onRefresh)
       if (timer) clearInterval(timer)
+      if (realtimeRef.current) {
+        supabase.removeChannel(realtimeRef.current)
+        realtimeRef.current = null
+      }
     }
-  }, [load, refreshMs])
+  }, [actorId, canQuery, load, refreshMs])
 
   return { count, loading }
 }

@@ -1,5 +1,4 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\feed\model\buildMentionMaps.js
-import { supabase } from "@/services/supabase/supabaseClient";
 
 function makeActorRoute({ kind, username, actorId, vportId }) {
   if (kind === "user" && username) return `/u/${username}`;
@@ -8,92 +7,29 @@ function makeActorRoute({ kind, username, actorId, vportId }) {
   return "/feed";
 }
 
-export async function buildMentionMaps(mentionRows) {
+export function buildMentionMaps(mentionRows) {
   const rows = Array.isArray(mentionRows) ? mentionRows : [];
   if (rows.length === 0) return {};
 
-  // 1) group mentioned actor ids
-  const mentionedActorIds = Array.from(
-    new Set(rows.map((r) => r?.mentioned_actor_id).filter(Boolean))
-  );
-
-  if (mentionedActorIds.length === 0) return {};
-
-  // 2) load vc.actors for mentioned actors
-  const { data: actors, error: actorsErr } = await supabase
-    .schema("vc")
-    .from("actors")
-    .select("id, kind, profile_id, vport_id")
-    .in("id", mentionedActorIds);
-
-  if (actorsErr) {
-    console.warn("[buildMentionMaps] actors fetch failed:", actorsErr);
-    return {};
-  }
-
-  const userProfileIds = [];
-  const vportIds = [];
-
-  for (const a of actors || []) {
-    if (a?.kind === "user" && a?.profile_id) userProfileIds.push(a.profile_id);
-    if (a?.kind === "vport" && a?.vport_id) vportIds.push(a.vport_id);
-  }
-
-  // 3) load profiles
-  const profilesById = new Map();
-  if (userProfileIds.length > 0) {
-    const { data: profiles, error: pErr } = await supabase
-      .from("profiles")
-      .select("id, username, display_name, photo_url")
-      .in("id", userProfileIds);
-
-    if (pErr) {
-      console.warn("[buildMentionMaps] profiles fetch failed:", pErr);
-    } else {
-      for (const p of profiles || []) profilesById.set(p.id, p);
-    }
-  }
-
-  // 4) load vports
-  const vportsById = new Map();
-  if (vportIds.length > 0) {
-    const { data: vports, error: vErr } = await supabase
-      .schema("vc")
-      .from("vports")
-      .select("id, slug, name, avatar_url")
-      .in("id", vportIds);
-
-    if (vErr) {
-      console.warn("[buildMentionMaps] vports fetch failed:", vErr);
-    } else {
-      for (const v of vports || []) vportsById.set(v.id, v);
-    }
-  }
-
-  // 5) actor_id -> presentation (handle key + payload)
+  // actor_id -> presentation (handle key + payload)
   const presentationByActorId = new Map();
 
-  for (const a of actors || []) {
-    const actorId = a?.id;
+  for (const row of rows) {
+    const actorId = row?.mentioned_actor_id;
     if (!actorId) continue;
+    if (presentationByActorId.has(actorId)) continue;
 
-    let username = null;
-    let displayName = null;
-    let avatar = null;
-    let vportId = null;
-
-    if (a.kind === "user") {
-      const p = profilesById.get(a.profile_id);
-      username = p?.username ?? null;
-      displayName = p?.display_name ?? p?.username ?? null;
-      avatar = p?.photo_url ?? "/avatar.jpg";
-    } else if (a.kind === "vport") {
-      vportId = a.vport_id ?? null;
-      const v = vportsById.get(a.vport_id);
-      username = v?.slug ?? null;
-      displayName = v?.name ?? v?.slug ?? null;
-      avatar = v?.avatar_url ?? "/avatar.jpg";
-    }
+    const kind = row?.kind === "vport" ? "vport" : "user";
+    const username = kind === "vport" ? row?.slug ?? null : row?.username ?? null;
+    const displayName =
+      kind === "vport"
+        ? row?.vport_name ?? row?.slug ?? null
+        : row?.display_name ?? row?.username ?? null;
+    const avatar =
+      kind === "vport"
+        ? row?.avatar_url ?? "/avatar.jpg"
+        : row?.photo_url ?? "/avatar.jpg";
+    const vportId = row?.vport_id ?? null;
 
     if (!username) continue;
 
@@ -103,12 +39,12 @@ export async function buildMentionMaps(mentionRows) {
       handleKey,
       payload: {
         id: actorId,
-        kind: a.kind,
+        kind,
         displayName,
         username,
         avatar,
         route: makeActorRoute({
-          kind: a.kind,
+          kind,
           username,
           actorId,
           vportId,
@@ -117,7 +53,7 @@ export async function buildMentionMaps(mentionRows) {
     });
   }
 
-  // 6) build per-post maps keyed by handleKey
+  // build per-post maps keyed by handleKey
   const mentionMapsByPostId = {};
 
   for (const r of rows) {

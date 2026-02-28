@@ -48,6 +48,7 @@ import toast from 'react-hot-toast';
 
 import { useIdentity } from '@/state/identity/identityContext';
 import { startDirectConversation } from '@/features/chat/start/controllers/startDirectConversation.controller';
+import { resolveRealm } from '@/features/upload/model/resolveRealm';
 
 export function useProfileHeaderMessaging({ profileId }) {
   const navigate = useNavigate();
@@ -60,11 +61,12 @@ export function useProfileHeaderMessaging({ profileId }) {
     }
 
     if (!profileId) return;
+    const effectiveRealmId = identity?.realmId ?? resolveRealm(Boolean(identity?.isVoid));
 
     try {
       const { conversationId } = await startDirectConversation({
         fromActorId: identity.actorId,
-        realmId: identity.realmId,
+        realmId: effectiveRealmId,
         picked: { id: profileId, kind: 'user' },
       });
 
@@ -73,7 +75,7 @@ export function useProfileHeaderMessaging({ profileId }) {
       console.error('[useProfileHeaderMessaging]', err);
       toast.error('Failed to open chat.');
     }
-  }, [identity?.actorId, identity?.realmId, profileId, navigate]);
+  }, [identity?.actorId, identity?.realmId, identity?.isVoid, profileId, navigate]);
 
   return { handleMessage };
 }

@@ -19,12 +19,15 @@ export default function useUpsertVportServices({
   const [isPending, setIsPending] = useState(false);
 
   const mutate = useCallback(
-    async ({ items } = {}) => {
-      if (!targetActorId) {
+    async ({ items, targetActorId: runtimeTargetActorId, vportType: runtimeVportType } = {}) => {
+      const targetActorIdSafe = runtimeTargetActorId ?? targetActorId;
+      const vportTypeSafe = runtimeVportType ?? vportType;
+
+      if (!targetActorIdSafe) {
         throw new Error("useUpsertVportServices: targetActorId is required");
       }
 
-      if (!vportType) {
+      if (!vportTypeSafe) {
         throw new Error("useUpsertVportServices: vportType is required");
       }
 
@@ -33,8 +36,8 @@ export default function useUpsertVportServices({
 
       try {
         const res = await upsertVportServicesController({
-          targetActorId,
-          vportType,
+          targetActorId: targetActorIdSafe,
+          vportType: vportTypeSafe,
           items,
         });
 

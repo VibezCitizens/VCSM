@@ -41,6 +41,15 @@ function normalizeKind(kind, ctx = {}) {
     return 'post_reaction'
   }
 
+  if (
+    v === 'follow' ||
+    v === 'followed_you' ||
+    v === 'subscribe' ||
+    v === 'subscribed'
+  ) {
+    return 'follow'
+  }
+
   return v
 }
 

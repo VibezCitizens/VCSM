@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { dalGetActorPrivacy } from '@/features/social/privacy/dal/actorPrivacy.dal'
 import { supabase } from '@/services/supabase/supabaseClient'
+import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
 
 async function dalIsFollowing({ followerActorId, followedActorId }) {
   if (!followerActorId || !followedActorId) return false
@@ -86,11 +87,28 @@ export function useProfileGate({
 
   const canView = !isPrivate || isSelf || isFollowing
 
+  const requestFollow = useCallback(async () => {
+    if (!viewerActorId || !targetActorId) return false
+    if (viewerActorId === targetActorId) return false
+
+    try {
+      await ctrlSendFollowRequest({
+        requesterActorId: viewerActorId,
+        targetActorId,
+      })
+      return true
+    } catch (err) {
+      console.error('[useProfileGate.requestFollow] failed', err)
+      return false
+    }
+  }, [viewerActorId, targetActorId])
+
   return {
     loading,
     isPrivate,
     isFollowing,
     isSelf,
     canView,
+    requestFollow,
   }
 }

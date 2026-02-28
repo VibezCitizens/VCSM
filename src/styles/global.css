@@ -49,9 +49,10 @@ body {
 
 :root {
   --vc-bottom-nav-safe-pad: env(safe-area-inset-bottom, 0px);
+  --vc-bottom-nav-safe-pad-ui: max(0px, calc(var(--vc-bottom-nav-safe-pad) - 10px));
   --vc-bottom-nav-rail-height: 44px;
   --vc-bottom-nav-height: var(--vc-bottom-nav-rail-height);
-  --vc-bottom-nav-total-height: calc(var(--vc-bottom-nav-rail-height) + var(--vc-bottom-nav-safe-pad));
+  --vc-bottom-nav-total-height: calc(var(--vc-bottom-nav-rail-height) + var(--vc-bottom-nav-safe-pad-ui));
 }
 
 /* ============================================================

@@ -28,46 +28,38 @@ export async function fetchPostMentionRows(postIds) {
   ];
   if (!mentionedActorIds.length) return [];
 
-  // actors -> profile_id/vport_id
-  const { data: actors, error: aErr } = await supabase
+  // Resolve mention identity in one read-model query.
+  const { data: presentations, error: presErr } = await supabase
     .schema("vc")
-    .from("actors")
-    .select("id, profile_id, vport_id")
-    .in("id", mentionedActorIds);
+    .from("actor_presentation")
+    .select(
+      "actor_id, kind, username, display_name, photo_url, vport_slug, vport_name, vport_avatar_url"
+    )
+    .in("actor_id", mentionedActorIds);
 
-  if (aErr) throw aErr;
+  if (presErr) throw presErr;
 
-  const actorById = {};
-  (actors || []).forEach((a) => (actorById[a.id] = a));
+  const presentationByActorId = new Map(
+    (presentations || [])
+      .filter((row) => row?.actor_id)
+      .map((row) => [row.actor_id, row])
+  );
 
-  const profileIds = (actors || []).map((a) => a.profile_id).filter(Boolean);
-  const vportIds = (actors || []).map((a) => a.vport_id).filter(Boolean);
-
-  const { data: profiles, error: pErr } = profileIds.length
-    ? await supabase.from("profiles").select("id, username").in("id", profileIds)
-    : { data: [], error: null };
-
-  if (pErr) throw pErr;
-
-  const { data: vports, error: vErr } = vportIds.length
-    ? await supabase.schema("vc").from("vports").select("id, slug").in("id", vportIds)
-    : { data: [], error: null };
-
-  if (vErr) throw vErr;
-
-  const usernameByProfileId = {};
-  (profiles || []).forEach((p) => (usernameByProfileId[p.id] = p.username));
-
-  const slugByVportId = {};
-  (vports || []).forEach((v) => (slugByVportId[v.id] = v.slug));
-
-  // enrich edges with username/slug so buildMentionMaps works
+  // enrich edges so buildMentionMaps can stay pure/no-I/O
   return safeEdges.map((e) => {
-    const a = actorById[e.mentioned_actor_id];
+    const p = presentationByActorId.get(e.mentioned_actor_id);
+
     return {
       ...e,
-      username: a?.profile_id ? usernameByProfileId[a.profile_id] : null,
-      slug: a?.vport_id ? slugByVportId[a.vport_id] : null,
+      kind: p?.kind ?? null,
+      profile_id: null,
+      vport_id: null,
+      username: p?.username ?? null,
+      display_name: p?.display_name ?? null,
+      photo_url: p?.photo_url ?? null,
+      slug: p?.vport_slug ?? null,
+      vport_name: p?.vport_name ?? null,
+      avatar_url: p?.vport_avatar_url ?? null,
     };
   });
 }

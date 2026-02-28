@@ -280,9 +280,16 @@ export default function VportProfileViewScreen({
 
       {!gate.canView && (
         <PrivateProfileNotice
-          actor={profile.actor}
+          actor={{
+            id: profile?.actorId ?? profileActorId ?? null,
+            kind: profile?.kind ?? "vport",
+            displayName: profile?.displayName ?? "Vport",
+            username: profile?.username ?? "",
+            avatar: profile?.avatarUrl ?? "/avatar.jpg",
+            route: `/profile/${profile?.actorId ?? profileActorId}`,
+          }}
           onRequestFollow={gate.requestFollow}
-          canMessage
+          canMessage={false}
         />
       )}
 

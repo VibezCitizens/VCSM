@@ -47,6 +47,31 @@ function detectIOS() {
   return isIPhoneIPadIPod || isIPadOS13Plus;
 }
 
+function CommentsSkeletonList({ count = 4 }) {
+  return (
+    <div className="space-y-3 px-2 py-3">
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={`comment-skeleton:${i}`}
+          className="rounded-2xl border border-violet-300/10 bg-[#0d0a18]/70 px-3 py-3"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 animate-pulse rounded-xl bg-neutral-800" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="h-3 w-28 animate-pulse rounded bg-neutral-800" />
+              <div className="h-2 w-20 animate-pulse rounded bg-neutral-800/80" />
+            </div>
+          </div>
+          <div className="mt-3 space-y-2 pl-[52px]">
+            <div className="h-3 w-11/12 animate-pulse rounded bg-neutral-800" />
+            <div className="h-3 w-8/12 animate-pulse rounded bg-neutral-800/80" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function PostDetailView() {
   const { postId } = useParams();
   const navigate = useNavigate();
@@ -259,9 +284,7 @@ export default function PostDetailView() {
 
           <div className="px-2">
             {thread.loading && (
-              <div className="py-6 text-center text-neutral-500 text-sm">
-                Loading sparks…
-              </div>
+              <CommentsSkeletonList count={4} />
             )}
 
             {!thread.loading && thread.comments.length === 0 && (

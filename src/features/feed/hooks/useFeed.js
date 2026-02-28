@@ -5,7 +5,9 @@ import { useActorStore } from "@/state/actors/actorStore";
 import { fetchFeedPagePipeline } from "@/features/feed/pipeline/fetchFeedPage.pipeline";
 
 const PAGE_SIZE = 10;
-const MAX_EMPTY_PAGES_PER_FETCH = 6;
+// Protect UX from long multi-page drains when many rows are filtered.
+const MAX_EMPTY_PAGES_PER_FETCH = 3;
+const INITIAL_VISIBLE_TARGET = 3;
 
 export function useFeed(viewerActorId, realmId) {
   const [posts, setPosts] = useState([]);
@@ -84,7 +86,7 @@ export function useFeed(viewerActorId, realmId) {
       const requestVersion = requestVersionRef.current;
 
       try {
-        if (!viewerActorId || !realmId) return;
+        if (!viewerActorId) return;
         if (loadingRef.current) return;
 
         loadingRef.current = true;
@@ -95,7 +97,9 @@ export function useFeed(viewerActorId, realmId) {
           setHiddenPostIds(new Set());
         }
 
-        const targetVisibleCount = fresh ? PAGE_SIZE : 1;
+        // Keep first paint fast: do not over-fetch 10 fully hydrated visible posts
+        // before showing anything to the user.
+        const targetVisibleCount = fresh ? INITIAL_VISIBLE_TARGET : 1;
         const normalizedChunk = [];
         let cursorCreatedAt = fresh ? null : cursorRef.current?.created_at ?? null;
         let hasMoreNow = true;
@@ -182,7 +186,7 @@ export function useFeed(viewerActorId, realmId) {
   );
 
   useEffect(() => {
-    if (!viewerActorId || !realmId) return;
+    if (!viewerActorId) return;
     if (didInitialFetchRef.current) return;
 
     didInitialFetchRef.current = true;

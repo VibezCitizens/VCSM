@@ -12,8 +12,9 @@ export async function dalGetActorPrivacy({ actorId }) {
 
   if (error) {
     console.error('[dalGetActorPrivacy] error', error)
-    // Phase-1 safe default: treat unknown as public
-    return { isPrivate: false }
+    // Privacy must fail closed. If we cannot read privacy state
+    // (including RLS denial), treat as private.
+    return { isPrivate: true }
   }
 
   return { isPrivate: Boolean(data?.is_private) }

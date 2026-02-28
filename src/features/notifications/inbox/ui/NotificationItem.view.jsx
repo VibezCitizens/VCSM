@@ -2,6 +2,7 @@
 
 import FollowRequestItem from '@/features/notifications/types/follow/FollowRequestItem.view'
 import AcceptFriendRequestItem from '@/features/notifications/types/follow/AcceptFriendRequestItem'
+import FollowNotificationItem from '@/features/notifications/types/follow/FollowNotificationItem.view'
 
 import CommentNotificationItem from '@/features/notifications/types/comment/CommentNotificationItem.view'
 import CommentLikeNotificationItem from '@/features/notifications/types/comment/CommentLikeNotificationItem.view'
@@ -29,6 +30,9 @@ export default function NotificationItem({ notification }) {
 
     case 'follow_request_accepted':
       return <AcceptFriendRequestItem notification={notification} />
+
+    case 'follow':
+      return <FollowNotificationItem notification={notification} />
 
     case 'comment':
       return <CommentNotificationItem notification={notification} />

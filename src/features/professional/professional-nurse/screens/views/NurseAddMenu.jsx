@@ -1,18 +1,3 @@
-/**
- * ============================================================
- * NurseAddMenu
- * ------------------------------------------------------------
- * Bubble-anchored "+" menu (Chat-style, matched 1:1)
- *
- * RULES:
- * - UI-only
- * - Uses anchorRect ONLY
- * - Auto-flips up near bottom
- * - No list bullets
- * - Inline emoji text
- * ============================================================
- */
-
 import { useEffect, useRef } from 'react'
 
 export default function NurseAddMenu({
@@ -21,20 +6,14 @@ export default function NurseAddMenu({
   onClose,
   onHousing,
   onFacility,
-  onFood,
 }) {
   const ref = useRef(null)
 
-  /* ============================================================
-     Close handlers (IDENTICAL)
-     ============================================================ */
   useEffect(() => {
     if (!open) return
 
     const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
-        onClose?.()
-      }
+      if (ref.current && !ref.current.contains(e.target)) onClose?.()
     }
 
     const handleEsc = (e) => {
@@ -43,7 +22,6 @@ export default function NurseAddMenu({
 
     document.addEventListener('mousedown', handleClick)
     document.addEventListener('keydown', handleEsc)
-
     return () => {
       document.removeEventListener('mousedown', handleClick)
       document.removeEventListener('keydown', handleEsc)
@@ -52,90 +30,51 @@ export default function NurseAddMenu({
 
   if (!open || !anchorRect) return null
 
-  /* ============================================================
-     Positioning (AUTO FLIP — IDENTICAL)
-     ============================================================ */
-  const GAP = 6
-  const MENU_WIDTH = 220
-  const MENU_HEIGHT = 120
-
+  const gap = 6
+  const menuWidth = 220
+  const menuHeight = 88
   const viewportHeight = window.innerHeight
   const spaceBelow = viewportHeight - anchorRect.bottom
-
-  const openUpward = spaceBelow < MENU_HEIGHT + GAP
-
+  const openUpward = spaceBelow < menuHeight + gap
   const top = openUpward
-    ? Math.max(8, anchorRect.top - MENU_HEIGHT - GAP)
-    : anchorRect.bottom + GAP
-
-  const left = Math.max(8, anchorRect.right - MENU_WIDTH)
+    ? Math.max(8, anchorRect.top - menuHeight - gap)
+    : anchorRect.bottom + gap
+  const left = Math.max(8, anchorRect.right - menuWidth)
 
   return (
     <div className="fixed inset-0 z-[9999]" aria-hidden={!open}>
       <div
         ref={ref}
-        className="
-          absolute
-          min-w-[220px]
-          rounded-xl
-          bg-neutral-800/95
-          text-white
-          shadow-2xl
-          border border-white/10
-          overflow-hidden
-        "
+        className="absolute min-w-[220px] overflow-hidden rounded-xl border border-white/10 bg-neutral-800/95 text-white shadow-2xl"
         style={{
           top,
           left,
           transformOrigin: openUpward ? 'bottom' : 'top',
         }}
       >
-        <ul className="m-0 list-none py-1 pl-0 pr-0">
+        <ul className="m-0 list-none p-0 py-1">
           <li>
             <button
-              className="
-                w-full text-left px-4 py-2
-                text-white
-                hover:bg-white/10
-              "
+              type="button"
+              className="w-full px-4 py-2 text-left text-white hover:bg-white/10"
               onClick={() => {
                 onHousing?.()
                 onClose?.()
               }}
             >
-              🏠 Add housing experience
+              Add housing note
             </button>
           </li>
-
           <li>
             <button
-              className="
-                w-full text-left px-4 py-2
-                text-white
-                hover:bg-white/10
-              "
+              type="button"
+              className="w-full px-4 py-2 text-left text-white hover:bg-white/10"
               onClick={() => {
                 onFacility?.()
                 onClose?.()
               }}
             >
-              🏥 Add facility insight
-            </button>
-          </li>
-
-          <li>
-            <button
-              className="
-                w-full text-left px-4 py-2
-                text-white
-                hover:bg-white/10
-              "
-              onClick={() => {
-                onFood?.()
-                onClose?.()
-              }}
-            >
-              🍽️ Add food / city note
+              Add hospital note
             </button>
           </li>
         </ul>

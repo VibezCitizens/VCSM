@@ -77,7 +77,7 @@ export async function createReportController({
   if (insertErr) return { ok: false, error: insertErr }
   if (!reportRow) return { ok: false, error: new Error('Failed to create report') }
 
-  await insertReportEventRow({
+  const { error: reportEventError, skipped: reportEventSkipped } = await insertReportEventRow({
     reportId: reportRow.id,
     actorId: reporterActorId,
     eventType: 'created',
@@ -88,6 +88,11 @@ export async function createReportController({
     },
     createdAt: nowIso,
   })
+
+  // Audit trail is best-effort from client; report creation is authoritative.
+  if (reportEventError && !reportEventSkipped) {
+    console.warn('[createReportController] report event not persisted (non-fatal)')
+  }
 
   return {
     ok: true,

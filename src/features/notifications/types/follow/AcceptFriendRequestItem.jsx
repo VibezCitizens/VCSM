@@ -16,11 +16,11 @@ export default function AcceptFriendRequestItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}          // 👈 actor who accepted
-      message="accepted your follow request"
+      message="accepted your request. This is the beginning of a friendship."
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       secondaryAction={{
-        label: 'View',
+        label: 'View profile',
         onClick: () => {
           if (notification.linkPath) {
             navigate(notification.linkPath)

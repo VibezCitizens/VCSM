@@ -12,7 +12,6 @@ export default function NotificationsHeader({ unreadCount, onMarkAllSeen }) {
           {unreadCount > 0 && ` (${unreadCount})`}
         </h1>
 
-        {isVport && <span className="text-xs text-slate-400">Acting as {identity.displayName}</span>}
       </div>
 
       {unreadCount > 0 && (

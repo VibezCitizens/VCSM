@@ -15,6 +15,7 @@ import VportSettingsAdsPreview from "@/features/dashboard/vport/screens/componen
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 import { getDashboardCardMetaByKey } from "@/features/dashboard/vport/screens/model/buildDashboardCards";
+import { releaseFlags } from "@/shared/config/releaseFlags";
 import {
   getDashboardViewByVportType,
   normalizeVportType,
@@ -182,13 +183,15 @@ export default function VportSettingsScreen() {
               </div>
             </Card>
 
-            <Card>
-              <VportSettingsAdsPreview
-                ads={ads}
-                actorId={actorId}
-                onOpen={(id) => navigate(`/ads/vport/${id}`)}
-              />
-            </Card>
+            {releaseFlags.vportAdsPipeline && (
+              <Card>
+                <VportSettingsAdsPreview
+                  ads={ads}
+                  actorId={actorId}
+                  onOpen={(id) => navigate(`/ads/vport/${id}`)}
+                />
+              </Card>
+            )}
 
             <Card>
               <VportAboutDetailsView

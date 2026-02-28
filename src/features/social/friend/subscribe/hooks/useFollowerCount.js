@@ -11,10 +11,6 @@ export function useFollowerCount(targetActorId) {
   }, [])
 
   useEffect(() => {
-    console.group('[useFollowerCount]')
-    console.log('targetActorId:', targetActorId)
-    console.groupEnd()
-
     let alive = true
 
     if (!targetActorId) {
@@ -33,9 +29,8 @@ export function useFollowerCount(targetActorId) {
 
         if (!alive) return
         setCount(value)
-      } catch (err) {
+      } catch {
         if (!alive) return
-        console.error('[useFollowerCount] error', err)
         setCount(0)
       } finally {
         if (alive) setLoading(false)

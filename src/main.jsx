@@ -12,6 +12,12 @@ import { IdentityProvider } from '@/state/identity/identityContext'
 
 import { registerSW } from 'virtual:pwa-register'
 
+// In this codebase many effects trigger network reads.
+// Keep strict mode opt-in to avoid dev-only double fetch/mount behavior.
+const RootMode = import.meta.env.VITE_REACT_STRICT_MODE === '1'
+  ? React.StrictMode
+  : React.Fragment
+
 if (import.meta.env.PROD) {
   registerSW({ immediate: true })
 } else if ('serviceWorker' in navigator) {
@@ -25,7 +31,7 @@ if (import.meta.env.PROD) {
 }
 
 createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <RootMode>
     <BrowserRouter>
       <AuthProvider>
         <IdentityProvider>
@@ -33,6 +39,6 @@ createRoot(document.getElementById('root')).render(
         </IdentityProvider>
       </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </RootMode>
 )
 

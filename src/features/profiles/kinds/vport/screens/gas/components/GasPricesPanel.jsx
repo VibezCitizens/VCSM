@@ -148,7 +148,7 @@ export function GasPricesPanel({
               <button
                 type="button"
                 onClick={() => setShowBulkModal(true)}
-                className="profiles-pill-btn shrink-0 px-4 py-2 text-sm font-semibold active:scale-[0.98] transition"
+                className="shrink-0 rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-slate-100 shadow-[0_10px_20px_rgba(56,189,248,0.22)] transition hover:from-sky-300/55 hover:to-blue-500/55 active:scale-[0.98]"
               >
                 Update prices
               </button>
@@ -245,7 +245,7 @@ function BulkUpdateFuelPricesModal({
   submitting,
   submitSuggestion,
 
-  // ✅ NEW: owner can auto-approve & apply to official
+  // owner can auto-approve and apply to official
   afterSubmitSuggestion = null,
 }) {
   const [values, setValues] = useState({});
@@ -266,10 +266,10 @@ function BulkUpdateFuelPricesModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/70 px-3 py-6">
-      <div className="profiles-card w-full max-w-lg rounded-3xl p-4 shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
-        <div className="flex items-start justify-between gap-3">
-          <div>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-3 sm:p-6">
+      <div className="profiles-card flex max-h-[88dvh] w-full max-w-lg flex-col overflow-hidden rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
+        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-4">
+          <div className="min-w-0">
             <div className="text-lg font-semibold text-white">Update prices</div>
             <div className="mt-1 text-xs text-neutral-400">
               Fill any fuels you want. Blank = skip.
@@ -278,66 +278,69 @@ function BulkUpdateFuelPricesModal({
 
           <button
             type="button"
+            aria-label="Close"
             onClick={submitting ? undefined : onClose}
-            className="profiles-pill-btn rounded-xl px-3 py-2 text-sm font-semibold disabled:opacity-60"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/90 hover:bg-black/50 disabled:opacity-60"
             disabled={submitting}
           >
-            Close
+            X
           </button>
         </div>
 
-        <div className="mt-4 space-y-3">
-          {rows.map((row) => (
-            <div
-              key={row.fuelKey}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-3"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-sm font-semibold text-white">{row.label}</div>
-                  <div className="mt-0.5 text-[11px] text-neutral-400">
-                    {row.official.currencyCode}/{row.official.unit}
+        <div className="overflow-y-auto px-4 py-4">
+          <div className="space-y-3">
+            {rows.map((row) => (
+              <div
+                key={row.fuelKey}
+                className="rounded-2xl border border-white/10 bg-white/[0.03] p-3"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-white">{row.label}</div>
+                    <div className="mt-0.5 text-[11px] text-neutral-400">
+                      {row.official.currencyCode}/{row.official.unit}
+                    </div>
+                  </div>
+
+                  <div className="w-40">
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      step="0.01"
+                      placeholder="e.g. 1.23"
+                      value={values[row.fuelKey] ?? ""}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setValues((s) => ({ ...s, [row.fuelKey]: next }));
+                      }}
+                      className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-black placeholder:text-zinc-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-300/25"
+                      disabled={submitting}
+                    />
                   </div>
                 </div>
 
-                <div className="w-40">
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    step="0.01"
-                    placeholder="e.g. 1.23"
-                    value={values[row.fuelKey] ?? ""}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setValues((s) => ({ ...s, [row.fuelKey]: next }));
-                    }}
-                    className="profiles-input w-full rounded-xl px-3 py-2 text-sm placeholder:text-neutral-600"
-                    disabled={submitting}
-                  />
+                <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-neutral-500">
+                  <div>
+                    Official:{" "}
+                    <span className="text-neutral-300">{row.official.price ?? "-"}</span>
+                  </div>
+                  <div>
+                    Last update:{" "}
+                    <span className="text-neutral-300">{row.community.price ?? "-"}</span>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-neutral-500">
-                <div>
-                  Official:{" "}
-                  <span className="text-neutral-300">{row.official.price ?? "—"}</span>
-                </div>
-                <div>
-                  Last update:{" "}
-                  <span className="text-neutral-300">{row.community.price ?? "—"}</span>
-                </div>
-              </div>
+          {localError ? (
+            <div className="profiles-error mt-4 rounded-2xl p-3 text-sm">
+              {String(localError?.message ?? localError)}
             </div>
-          ))}
+          ) : null}
         </div>
 
-        {localError ? (
-          <div className="profiles-error mt-4 rounded-2xl p-3 text-sm">
-            {String(localError?.message ?? localError)}
-          </div>
-        ) : null}
-
-        <div className="mt-4 flex items-center justify-end gap-2">
+        <div className="mt-auto flex items-center justify-end gap-2 border-t border-white/10 bg-black/20 px-4 py-3">
           <button
             type="button"
             onClick={onClose}
@@ -376,7 +379,6 @@ function BulkUpdateFuelPricesModal({
                   return;
                 }
 
-                // ✅ owner flow: auto-approve + apply to official (if provided)
                 if (afterSubmitSuggestion) {
                   const submissionId =
                     res?.submissionId ?? res?.id ?? res?.submission?.id ?? null;
@@ -398,7 +400,7 @@ function BulkUpdateFuelPricesModal({
 
               onClose();
             }}
-            className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-slate-100 shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-slate-100 shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Save updates"}
           </button>

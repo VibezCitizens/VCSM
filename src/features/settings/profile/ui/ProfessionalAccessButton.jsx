@@ -1,24 +1,21 @@
+import { useNavigate } from 'react-router-dom'
+import { releaseFlags } from '@/shared/config/releaseFlags'
+
 /**
- * ============================================================
- * ProfessionalAccessButton
- * ------------------------------------------------------------
- * UI-only button
- *
- * PURPOSE:
- * - Shows a "Professional Access" button in Profile Settings
- * - No routing
- * - No permissions
- * - No business logic
- *
- * Phase 1: visual only
- * ============================================================
+ * Settings entry point for the nurse notes workspace.
  */
 
 export default function ProfessionalAccessButton({ onClick }) {
+  const navigate = useNavigate()
+
+  if (!releaseFlags.professionalWorkspace) {
+    return null
+  }
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={onClick ?? (() => navigate('/professional-access'))}
       className="
         settings-card-surface
         settings-btn
@@ -35,10 +32,10 @@ export default function ProfessionalAccessButton({ onClick }) {
     >
       <div className="flex flex-col">
         <span className="text-[16px] font-semibold text-slate-100">
-          Professional Access
+          Nurse Notes Workspace
         </span>
         <span className="mt-0.5 text-[13px] text-slate-400">
-          Apply or manage professional features
+          Share housing and hospital notes with verified nurses
         </span>
       </div>
     </button>

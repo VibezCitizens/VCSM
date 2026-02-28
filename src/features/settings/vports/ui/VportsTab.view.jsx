@@ -107,8 +107,8 @@ export default function VportsTabView() {
 
             <div className="p-4">
               <CreateVportForm
-                onCreated={(list) => {
-                  setItems(list)
+                onCreated={({ list }) => {
+                  if (Array.isArray(list)) setItems(list)
                   setShowCreator(false)
                 }}
               />

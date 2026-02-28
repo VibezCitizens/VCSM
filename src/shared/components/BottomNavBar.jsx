@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide-react'
 
@@ -7,8 +7,6 @@ import useUnreadBadge from '@/features/notifications/inbox/hooks/useUnreadBadge'
 
 import { useIdentity } from '@/state/identity/identityContext'
 
-const DEBUG = import.meta.env.DEV
-
 export default function BottomNavBar() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -16,32 +14,24 @@ export default function BottomNavBar() {
 
   const personaActorId = useMemo(() => identity?.actorId ?? null, [identity?.actorId])
 
-  const lastActorRef = useRef()
-  useEffect(() => {
-    if (!DEBUG) return
-    if (lastActorRef.current !== personaActorId) {
-      console.log('[BottomNavBar] actorId=', personaActorId)
-      lastActorRef.current = personaActorId
-    }
-  }, [personaActorId])
-
   const notiCount = useNotiCount({
     actorId: personaActorId,
-    debug: DEBUG,
     pollMs: 45_000,
   })
 
   const { count: chatUnread } = useUnreadBadge({
     actorId: personaActorId,
     refreshMs: 15_000,
-    debug: DEBUG,
   })
 
   const profilePath = personaActorId ? `/profile/${personaActorId}` : '/feed'
 
   useEffect(() => {
     if (!personaActorId) return
-    if (DEBUG) console.log('[BottomNavBar] route change -> noti:refresh', location.pathname)
+    const path = location.pathname || ''
+    // Avoid global refresh storms on every route change.
+    // Pollers already keep badges updated.
+    if (!path.startsWith('/notifications') && !path.startsWith('/chat')) return
     window.dispatchEvent(new Event('noti:refresh'))
   }, [location.pathname, personaActorId])
 
@@ -50,7 +40,7 @@ export default function BottomNavBar() {
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-800/90 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/80"
       style={{
         height: 'var(--vc-bottom-nav-total-height)',
-        paddingBottom: 'var(--vc-bottom-nav-safe-pad)',
+        paddingBottom: 'var(--vc-bottom-nav-safe-pad-ui)',
       }}
       role="navigation"
       aria-label="Primary"

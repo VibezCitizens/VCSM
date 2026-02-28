@@ -12,6 +12,14 @@ import ActorLink from '@/shared/components/ActorLink'
 export default function PendingFollowRequests({ actorId }) {
   const { requests, loading } = useIncomingFollowRequests(actorId)
   const [hidden, setHidden] = useState(() => new Set())
+  const hide = (requesterActorId) =>
+    setHidden((prev) => new Set(prev).add(requesterActorId))
+  const unhide = (requesterActorId) =>
+    setHidden((prev) => {
+      const next = new Set(prev)
+      next.delete(requesterActorId)
+      return next
+    })
 
   useEffect(() => {
     if (!actorId) return
@@ -36,7 +44,8 @@ export default function PendingFollowRequests({ actorId }) {
             key={req.requesterActorId}
             requesterActorId={req.requesterActorId}
             targetActorId={req.targetActorId}
-            onOptimisticHide={() => setHidden((prev) => new Set(prev).add(req.requesterActorId))}
+            onOptimisticHide={() => hide(req.requesterActorId)}
+            onRollbackHide={() => unhide(req.requesterActorId)}
           />
         ))}
       </div>
@@ -44,7 +53,12 @@ export default function PendingFollowRequests({ actorId }) {
   )
 }
 
-function RequestRow({ requesterActorId, targetActorId, onOptimisticHide }) {
+function RequestRow({
+  requesterActorId,
+  targetActorId,
+  onOptimisticHide,
+  onRollbackHide,
+}) {
   const actor = useActorSummary(requesterActorId)
   const [busy, setBusy] = useState(false)
 
@@ -57,6 +71,8 @@ function RequestRow({ requesterActorId, targetActorId, onOptimisticHide }) {
       await ctrlAcceptFollowRequest({ requesterActorId, targetActorId })
     } catch (err) {
       console.error('Accept failed', err)
+      onRollbackHide?.()
+      setBusy(false)
     }
   }
 
@@ -69,6 +85,8 @@ function RequestRow({ requesterActorId, targetActorId, onOptimisticHide }) {
       await ctrlDeclineFollowRequest({ requesterActorId, targetActorId })
     } catch (err) {
       console.error('Decline failed', err)
+      onRollbackHide?.()
+      setBusy(false)
     }
   }
 

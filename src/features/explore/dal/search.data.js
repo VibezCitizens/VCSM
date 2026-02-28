@@ -18,6 +18,26 @@ import {
 // - result_type MUST reflect navigability
 // ============================================================
 
+function mergeActorRows(primaryRows = [], supplementalRows = []) {
+  const merged = new Map()
+
+  for (const row of primaryRows) {
+    if (!row) continue
+    const key = row.actor_id
+      ? `actor:${row.actor_id}`
+      : `legacy:${row.user_id ?? Math.random()}`
+    if (!merged.has(key)) merged.set(key, row)
+  }
+
+  for (const row of supplementalRows) {
+    if (!row?.actor_id) continue
+    const key = `actor:${row.actor_id}`
+    if (!merged.has(key)) merged.set(key, row)
+  }
+
+  return Array.from(merged.values())
+}
+
 export const search = {
   // ==========================================================
   // ACTORS (USERS)
@@ -48,7 +68,7 @@ export const search = {
     let rows = []
 
     // --------------------------------------------------------
-    // PRIMARY PATH — Actor-aware RPC
+    // PRIMARY PATH - Actor-aware RPC
     // --------------------------------------------------------
     try {
       const { data, error } = await supabase
@@ -63,13 +83,11 @@ export const search = {
       rows = Array.isArray(data) ? data : []
     } catch {
       // ------------------------------------------------------
-      // FALLBACK — profiles table (LEGACY, non-actor)
+      // FALLBACK - profiles table (LEGACY, non-actor)
       // ------------------------------------------------------
       let fb = supabase
         .from('profiles')
-        .select(
-          'id, display_name, username, photo_url, private, discoverable'
-        )
+        .select('id, display_name, username, photo_url, private, discoverable')
         .limit(limit)
 
       if (currentUserId && isUuid(currentUserId)) {
@@ -89,20 +107,135 @@ export const search = {
       } else {
         const like = toContainsPattern(needle)
         if (!like) return []
-        fb = fb.or(
-          `username.ilike.${like},display_name.ilike.${like}`
-        )
+        fb = fb.or(`username.ilike.${like},display_name.ilike.${like}`)
       }
 
       const { data } = await fb
-      rows = (data || []).map(u => ({
-        actor_id: null,          // ❌ NOT navigable
+      rows = (data || []).map((u) => ({
+        actor_id: null, // non-navigable legacy fallback
         user_id: u.id,
         display_name: u.display_name,
         username: u.username,
         photo_url: u.photo_url,
         is_private: !!u.private,
       }))
+    }
+
+    // --------------------------------------------------------
+    // SUPPLEMENTAL PATH - profiles + actors bridge
+    // --------------------------------------------------------
+    // Ensure private accounts are still searchable.
+    // Access control remains enforced by profile-open gate.
+    let supplemental = []
+    try {
+      let pq = supabase
+        .from('profiles')
+        .select('id,display_name,username,photo_url,private')
+        .limit(limit)
+
+      if (byId && needle) {
+        const idPrefix = String(needle).toLowerCase().replace(/[^0-9a-f-]/g, '')
+        if (!idPrefix) {
+          pq = null
+        } else {
+          pq = pq.ilike('id', `${idPrefix}%`)
+        }
+      } else if (byHandle && needle) {
+        const handlePrefix = normalizeHandleTerm(needle)
+        if (!handlePrefix) {
+          pq = null
+        } else {
+          pq = pq.ilike('username', `${handlePrefix}%`)
+        }
+      } else {
+        const like = toContainsPattern(needle)
+        if (!like) {
+          pq = null
+        } else {
+          pq = pq.or(`username.ilike.${like},display_name.ilike.${like}`)
+        }
+      }
+
+      if (pq) {
+        const { data: profileRows, error: profileErr } = await pq
+        if (!profileErr && Array.isArray(profileRows) && profileRows.length) {
+          const profileIds = profileRows.map((p) => p.id).filter(Boolean)
+
+          const { data: actorRows, error: actorErr } = await vc
+            .from('actors')
+            .select('id,profile_id,kind,is_void')
+            .eq('kind', 'user')
+            .eq('is_void', false)
+            .in('profile_id', profileIds)
+
+          if (!actorErr) {
+            const actorByProfileId = new Map(
+              (actorRows || [])
+                .filter((a) => a?.profile_id && a?.id)
+                .map((a) => [a.profile_id, a])
+            )
+
+            supplemental = profileRows
+              .map((p) => {
+                const actor = actorByProfileId.get(p.id)
+                if (!actor?.id) return null
+
+                return {
+                  actor_id: actor.id,
+                  user_id: p.id,
+                  display_name: p.display_name ?? '',
+                  username: p.username ?? '',
+                  photo_url: p.photo_url ?? '/avatar.jpg',
+                  is_private: !!p.private,
+                }
+              })
+              .filter(Boolean)
+          }
+        }
+      }
+    } catch {
+      supplemental = []
+    }
+
+    rows = mergeActorRows(rows, supplemental)
+
+    // Backfill user_id from actors for user-block legacy filtering.
+    try {
+      const actorIds = Array.from(
+        new Set(
+          rows
+            .filter((r) => r?.actor_id && !r?.user_id)
+            .map((r) => r.actor_id)
+            .filter(Boolean)
+        )
+      )
+
+      if (actorIds.length) {
+        const { data: actorRows, error: actorErr } = await vc
+          .from('actors')
+          .select('id,profile_id,kind')
+          .in('id', actorIds)
+          .eq('kind', 'user')
+
+        if (!actorErr) {
+          const actorToProfile = new Map(
+            (actorRows || [])
+              .filter((x) => x?.id && x?.profile_id)
+              .map((x) => [x.id, x.profile_id])
+          )
+
+          rows = rows.map((r) => {
+            if (!r?.actor_id || r?.user_id) return r
+            return {
+              ...r,
+              user_id: actorToProfile.get(r.actor_id) ?? null,
+            }
+          })
+        }
+      }
+    } catch {
+      // best effort only
+      void 0
     }
 
     // --------------------------------------------------------
@@ -117,38 +250,38 @@ export const search = {
           .from('user_blocks')
           .select('blocked_id')
           .eq('blocker_id', currentUserId)
-        iBlocked = new Set((data || []).map(r => r.blocked_id))
+        iBlocked = new Set((data || []).map((r) => r.blocked_id))
       } catch {
-        void 0 // best-effort block filter only
+        void 0
       }
 
       try {
-        const ids = rows.map(r => r.user_id).filter(Boolean)
+        const ids = rows.map((r) => r.user_id).filter(Boolean)
         if (ids.length) {
           const { data } = await vc
             .from('user_blocks')
             .select('blocker_id')
             .in('blocker_id', ids)
             .eq('blocked_id', currentUserId)
-          blockedMe = new Set((data || []).map(r => r.blocker_id))
+          blockedMe = new Set((data || []).map((r) => r.blocker_id))
         }
       } catch {
-        void 0 // best-effort block filter only
+        void 0
       }
 
-      rows = rows.filter(r => {
+      rows = rows.filter((r) => {
         if (!r.user_id) return true
         return !iBlocked.has(r.user_id) && !blockedMe.has(r.user_id)
       })
     }
 
     // --------------------------------------------------------
-    // FINAL SHAPE — ACTOR-FIRST
+    // FINAL SHAPE - ACTOR-FIRST
     // --------------------------------------------------------
-    return rows.map(r => ({
-      result_type: 'actor',     // 🔒 KEY FIX
-      actor_id: r.actor_id,     // PRIMARY
-      user_id: r.user_id ?? null, // LEGACY ONLY
+    return rows.map((r) => ({
+      result_type: 'actor',
+      actor_id: r.actor_id,
+      user_id: r.user_id ?? null,
       display_name: r.display_name || '',
       username: r.username || '',
       photo_url: r.photo_url || '/avatar.jpg',
@@ -159,36 +292,35 @@ export const search = {
   // ==========================================================
   // VPORTS (UNCHANGED)
   // ==========================================================
- async vports(rawQuery, opts = {}) {
-  const { minLength = 1, limit = 25 } = opts
+  async vports(rawQuery, opts = {}) {
+    const { minLength = 1, limit = 25 } = opts
 
-  const q = (rawQuery || '').trim()
-  if (q.length < minLength) return []
+    const q = (rawQuery || '').trim()
+    if (q.length < minLength) return []
 
-  const needle =
-    q.startsWith('@') || q.startsWith('#')
-      ? q.slice(1)
-      : q
+    const needle =
+      q.startsWith('@') || q.startsWith('#')
+        ? q.slice(1)
+        : q
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .rpc('search_vports', {
-      _q: needle,
-      _limit: limit,
-    })
+    const { data, error } = await supabase
+      .schema('vc')
+      .rpc('search_vports', {
+        _q: needle,
+        _limit: limit,
+      })
 
-  if (error) throw error
+    if (error) throw error
 
-  return (data || []).map(r => ({
-    result_type: 'actor',
-    actor_id: r.actor_id,
-    display_name: r.display_name,
-    username: r.username,
-    photo_url: r.photo_url || '/avatar.jpg',
-    private: false,
-  }))
-}
-,
+    return (data || []).map((r) => ({
+      result_type: 'actor',
+      actor_id: r.actor_id,
+      display_name: r.display_name,
+      username: r.username,
+      photo_url: r.photo_url || '/avatar.jpg',
+      private: false,
+    }))
+  },
 
   // ==========================================================
   // STUBS

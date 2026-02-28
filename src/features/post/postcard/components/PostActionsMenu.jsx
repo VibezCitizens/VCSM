@@ -11,6 +11,10 @@ export default function PostActionsMenu({
   onEdit,
   onDelete,
 
+  onFollow,
+  followLabel = 'Subscribe',
+  onProfile,
+  onBlock,
   onReport,
 }) {
   const ref = useRef(null)
@@ -49,6 +53,18 @@ export default function PostActionsMenu({
 
     isOwn && typeof onDelete === 'function'
       ? { key: 'delete', label: 'Delete', tone: 'text-red-400', fn: onDelete }
+      : null,
+
+    !isOwn && typeof onFollow === 'function'
+      ? { key: 'follow', label: followLabel, tone: 'text-white', fn: onFollow }
+      : null,
+
+    !isOwn && typeof onProfile === 'function'
+      ? { key: 'profile', label: 'Profile', tone: 'text-white', fn: onProfile }
+      : null,
+
+    !isOwn && typeof onBlock === 'function'
+      ? { key: 'block', label: 'Block', tone: 'text-red-400', fn: onBlock }
       : null,
 
     // Only show report when NOT owner

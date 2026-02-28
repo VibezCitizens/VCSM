@@ -1,12 +1,7 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 
 export async function dalCountSubscribers({ actorId }) {
-  console.group('[dalCountSubscribers]')
-  console.log('actorId:', actorId)
-
   if (!actorId) {
-    console.warn('❌ no actorId')
-    console.groupEnd()
     return 0
   }
 
@@ -19,10 +14,6 @@ export async function dalCountSubscribers({ actorId }) {
     })
     .eq('followed_actor_id', actorId)
     .eq('is_active', true)
-
-  console.log('count:', count)
-  console.log('error:', error)
-  console.groupEnd()
 
   if (error) throw error
   return count ?? 0

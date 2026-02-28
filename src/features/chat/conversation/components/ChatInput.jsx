@@ -219,7 +219,7 @@ export default function ChatInput({
 
       <button
         type="button"
-        className="chat-bottom-t module-modern-btn module-modern-btn--primary fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full border font-bold text-xl"
+        className="chat-bottom-t"
         onPointerDown={openKeyboard}
         onClick={openKeyboard}
         aria-label="Open keyboard"

@@ -1,78 +1,70 @@
 // src/features/profiles/ui/PrivateProfileGate.jsx
 
-import ActorLink from "@/shared/components/ActorLink";
-import MessageButton from "@/features/profiles/ui/header/Messagebutton";
-
 /**
  * ============================================================
  * PrivateProfileGate
  * ------------------------------------------------------------
  * UI-only gate shown when profile is private and viewer
  * does NOT have access.
- *
- * Rules:
- * - Actor-based (SSOT)
- * - No data fetching
- * - No side effects
- * - Follow request is primary action
  * ============================================================
  */
 export default function PrivateProfileGate({
   actor,
   onRequestFollow,
-  canMessage = true,
+  canMessage = false,
 }) {
   if (!actor) return null;
 
+  const canRequest = typeof onRequestFollow === "function";
+
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-10">
-      {/* ======================================================
-          CARD
-         ====================================================== */}
-      <div className="w-full max-w-sm rounded-2xl bg-neutral-900/90 border border-neutral-800 shadow-xl p-6 text-center">
+    <div className="flex justify-center px-4 py-8">
+      <div className="profiles-card w-full max-w-md rounded-2xl p-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-300/25 bg-amber-300/10">
+            <span className="text-sm text-amber-200">LOCK</span>
+          </div>
 
-        {/* Lock Icon */}
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-800">
-          <span className="text-xl">🔒</span>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-white">Private Profile</div>
+            <div className="text-xs text-slate-400">
+              Only approved subscribers can view full content.
+            </div>
+          </div>
         </div>
 
-        {/* Actor */}
-        <div className="flex justify-center mb-3">
-          <ActorLink
-            actor={actor}
-            avatarSize="w-12 h-12"
-            showName
-            showUsername
-            centered
+        <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5">
+          <img
+            src={actor?.avatar || "/avatar.jpg"}
+            alt={actor?.displayName || "Profile"}
+            className="h-10 w-10 rounded-lg border border-white/15 object-cover"
           />
+
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold text-white">
+              {actor?.displayName || "Citizen"}
+            </div>
+            {actor?.username ? (
+              <div className="truncate text-xs text-slate-400">@{actor.username}</div>
+            ) : null}
+          </div>
         </div>
 
-        {/* Copy */}
-        <p className="text-sm text-neutral-300 mt-2 font-medium">
-          This profile is private
+        <p className="mt-4 text-xs leading-5 text-slate-400">
+          Send a subscription request to unlock vibes, photos, videos, and friends.
         </p>
 
-        <p className="text-xs text-neutral-500 mt-1">
-          Only approved followers can see Vibes, photos, and friends.
-        </p>
-
-        {/* Primary CTA */}
         <button
           onClick={onRequestFollow}
-          className="mt-5 w-full rounded-lg bg-white text-black font-medium py-2
-                     hover:bg-neutral-200 active:scale-[0.98]
-                     transition-all duration-150"
+          disabled={!canRequest}
+          className="mt-4 w-full rounded-xl bg-white py-2.5 text-sm font-semibold text-black transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Request Follow
+          Request Access
         </button>
 
-        {/* Secondary CTA */}
         {canMessage && (
-          <div className="mt-3">
-            <MessageButton
-              label="Send Vox"
-              onClick={() => {}}
-            />
+          <div className="mt-2 text-center text-[11px] text-slate-500">
+            You can still send a message from the header.
           </div>
         )}
       </div>
