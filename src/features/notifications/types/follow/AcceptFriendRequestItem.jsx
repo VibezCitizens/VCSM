@@ -16,7 +16,7 @@ export default function AcceptFriendRequestItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}          // 👈 actor who accepted
-      message="accepted your request. This is the beginning of a friendship."
+      message="accepted your subscribe request."
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       secondaryAction={{

@@ -62,7 +62,7 @@ if (!requesterActorId || !targetActorId) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="sent you a follow request"
+      message="sent you a subscribe request"
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       actions={

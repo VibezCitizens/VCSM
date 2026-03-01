@@ -9,7 +9,7 @@ export default function FollowNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="started following you"
+      message="subscribed to you"
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       secondaryAction={{
@@ -23,4 +23,3 @@ export default function FollowNotificationItem({ notification }) {
     />
   )
 }
-
