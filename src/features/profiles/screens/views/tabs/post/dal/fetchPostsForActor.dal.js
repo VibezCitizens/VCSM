@@ -1,4 +1,3 @@
-// src/features/profiles/dal/fetchPostsForActor.dal.js
 import { supabase } from "@/services/supabase/supabaseClient";
 
 function makeActorRoute({ kind, username, actorId, vportId }) {
@@ -9,13 +8,6 @@ function makeActorRoute({ kind, username, actorId, vportId }) {
 }
 
 export async function fetchPostsForActorDAL({ actorId, limit, offset }) {
-  console.groupCollapsed("[fetchPostsForActorDAL] start");
-  console.log({ actorId, limit, offset });
-  console.groupEnd();
-
-  // ------------------------------------------------------------
-  // Base posts
-  // ------------------------------------------------------------
   const { data, error } = await supabase
     .schema("vc")
     .from("posts")
@@ -38,104 +30,76 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset }) {
     .range(offset, offset + limit - 1);
 
   if (error) {
-    console.error("[fetchPostsForActorDAL] posts query failed:", error);
     return { data, error };
   }
 
   const rows = Array.isArray(data) ? data : [];
-  console.log("[fetchPostsForActorDAL] posts rows:", rows.length);
   if (!rows.length) return { data: [], error: null };
 
   const postIds = rows.map((r) => r.id).filter(Boolean);
 
-  // ------------------------------------------------------------
-  // ✅ Fetch AUTHOR actor (single actorId) so display_name exists
-  // ------------------------------------------------------------
   let authorActorEntry = null;
 
   try {
-    console.groupCollapsed("[fetchPostsForActorDAL] author actor hydrate");
-    console.log("actorId:", actorId);
-
-    const { data: actorRow, error: actorErr } = await supabase
+    const { data: actorRow } = await supabase
       .schema("vc")
       .from("actors")
       .select("id, kind, profile_id, vport_id")
       .eq("id", actorId)
       .maybeSingle();
 
-    if (actorErr) {
-      console.warn("[fetchPostsForActorDAL] actors read failed:", actorErr);
-    } else {
-      console.log("actorRow:", actorRow);
+    if (actorRow?.kind === "user" && actorRow?.profile_id) {
+      const { data: pRow } = await supabase
+        .from("profiles")
+        .select("id, username, display_name, photo_url, banner_url, bio")
+        .eq("id", actorRow.profile_id)
+        .maybeSingle();
 
-      if (actorRow?.kind === "user" && actorRow?.profile_id) {
-        const { data: pRow, error: pErr } = await supabase
-          .from("profiles")
-          .select("id, username, display_name, photo_url, banner_url, bio")
-          .eq("id", actorRow.profile_id)
-          .maybeSingle();
-
-        if (pErr) {
-          console.warn("[fetchPostsForActorDAL] profile read failed:", pErr);
-        } else {
-          authorActorEntry = {
-            actor_id: actorRow.id,
-            kind: "user",
-            display_name: pRow?.display_name ?? pRow?.username ?? null,
-            username: pRow?.username ?? null,
-            photo_url: pRow?.photo_url ?? "/avatar.jpg",
-            banner_url: pRow?.banner_url ?? null,
-            bio: pRow?.bio ?? null,
-            route: makeActorRoute({
-              kind: "user",
-              username: pRow?.username ?? null,
-              actorId: actorRow.id,
-              vportId: null,
-            }),
-          };
-        }
-      }
-
-      if (actorRow?.kind === "vport" && actorRow?.vport_id) {
-        const { data: vRow, error: vErr } = await supabase
-          .schema("vc")
-          .from("vports")
-          .select("id, slug, name, avatar_url, banner_url, bio")
-          .eq("id", actorRow.vport_id)
-          .maybeSingle();
-
-        if (vErr) {
-          console.warn("[fetchPostsForActorDAL] vport read failed:", vErr);
-        } else {
-          authorActorEntry = {
-            actor_id: actorRow.id,
-            kind: "vport",
-            display_name: vRow?.name ?? vRow?.slug ?? null,
-            username: vRow?.slug ?? null,
-            photo_url: vRow?.avatar_url ?? "/avatar.jpg",
-            banner_url: vRow?.banner_url ?? null,
-            bio: vRow?.bio ?? null,
-            route: makeActorRoute({
-              kind: "vport",
-              username: vRow?.slug ?? null,
-              actorId: actorRow.id,
-              vportId: actorRow.vport_id,
-            }),
-          };
-        }
-      }
+      authorActorEntry = {
+        actor_id: actorRow.id,
+        kind: "user",
+        display_name: pRow?.display_name ?? pRow?.username ?? null,
+        username: pRow?.username ?? null,
+        photo_url: pRow?.photo_url ?? "/avatar.jpg",
+        banner_url: pRow?.banner_url ?? null,
+        bio: pRow?.bio ?? null,
+        route: makeActorRoute({
+          kind: "user",
+          username: pRow?.username ?? null,
+          actorId: actorRow.id,
+          vportId: null,
+        }),
+      };
     }
 
-    console.log("authorActorEntry:", authorActorEntry);
-    console.groupEnd();
-  } catch (e) {
-    console.warn("[fetchPostsForActorDAL] author hydrate exception:", e);
+    if (actorRow?.kind === "vport" && actorRow?.vport_id) {
+      const { data: vRow } = await supabase
+        .schema("vc")
+        .from("vports")
+        .select("id, slug, name, avatar_url, banner_url, bio")
+        .eq("id", actorRow.vport_id)
+        .maybeSingle();
+
+      authorActorEntry = {
+        actor_id: actorRow.id,
+        kind: "vport",
+        display_name: vRow?.name ?? vRow?.slug ?? null,
+        username: vRow?.slug ?? null,
+        photo_url: vRow?.avatar_url ?? "/avatar.jpg",
+        banner_url: vRow?.banner_url ?? null,
+        bio: vRow?.bio ?? null,
+        route: makeActorRoute({
+          kind: "vport",
+          username: vRow?.slug ?? null,
+          actorId: actorRow.id,
+          vportId: actorRow.vport_id,
+        }),
+      };
+    }
+  } catch {
+    // Non-fatal: return posts even if author hydration fails.
   }
 
-  // ------------------------------------------------------------
-  // ✅ Hydrate multi-media
-  // ------------------------------------------------------------
   const { data: mediaRows, error: mediaErr } = await supabase
     .schema("vc")
     .from("post_media")
@@ -158,18 +122,11 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset }) {
     });
   }
 
-  // ------------------------------------------------------------
-  // ✅ Hydrate mentions (NO joins) (unchanged)
-  // ------------------------------------------------------------
-  const { data: mentionRows, error: mentionErr } = await supabase
+  const { data: mentionRows } = await supabase
     .schema("vc")
     .from("post_mentions")
     .select("post_id, mentioned_actor_id")
     .in("post_id", postIds);
-
-  if (mentionErr) {
-    console.warn("[fetchPostsForActorDAL] post_mentions failed:", mentionErr);
-  }
 
   const safeMentionRows = Array.isArray(mentionRows) ? mentionRows : [];
 
@@ -188,17 +145,12 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset }) {
 
   let mentionedActors = [];
   if (allMentionedActorIds.size) {
-    const { data: actors, error: actorsErr } = await supabase
+    const { data: actors } = await supabase
       .schema("vc")
       .from("actors")
       .select("id, kind, profile_id, vport_id")
       .in("id", Array.from(allMentionedActorIds));
-
-    if (actorsErr) {
-      console.warn("[fetchPostsForActorDAL] actors fetch failed:", actorsErr);
-    } else {
-      mentionedActors = Array.isArray(actors) ? actors : [];
-    }
+    mentionedActors = Array.isArray(actors) ? actors : [];
   }
 
   const userProfileIds = [];
@@ -211,31 +163,21 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset }) {
 
   const profilesById = new Map();
   if (userProfileIds.length) {
-    const { data: profiles, error: pErr } = await supabase
+    const { data: profiles } = await supabase
       .from("profiles")
       .select("id, username, display_name, photo_url")
       .in("id", userProfileIds);
-
-    if (pErr) {
-      console.warn("[fetchPostsForActorDAL] profiles fetch failed:", pErr);
-    } else {
-      for (const p of profiles || []) profilesById.set(p.id, p);
-    }
+    for (const p of profiles || []) profilesById.set(p.id, p);
   }
 
   const vportsById = new Map();
   if (vportIds.length) {
-    const { data: vports, error: vErr } = await supabase
+    const { data: vports } = await supabase
       .schema("vc")
       .from("vports")
       .select("id, slug, name, avatar_url")
       .in("id", vportIds);
-
-    if (vErr) {
-      console.warn("[fetchPostsForActorDAL] vports fetch failed:", vErr);
-    } else {
-      for (const v of vports || []) vportsById.set(v.id, v);
-    }
+    for (const v of vports || []) vportsById.set(v.id, v);
   }
 
   const mentionEntryByActorId = new Map();
@@ -296,25 +238,20 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset }) {
     }
   }
 
-  // ------------------------------------------------------------
-  // attach media[] + mentionMap + location_text + ✅ actor object
-  // ------------------------------------------------------------
   const hydrated = rows.map((p) => {
     const media = mediaByPostId.get(p.id) || [];
-    const fallback =
-      p.media_url
-        ? [{ type: p.media_type || "image", url: p.media_url, sortOrder: 0 }]
-        : [];
+    const fallback = p.media_url
+      ? [{ type: p.media_type || "image", url: p.media_url, sortOrder: 0 }]
+      : [];
 
     return {
       ...p,
-      actor: authorActorEntry, // ✅ THIS is what fixes display name in PostCard header
+      actor: authorActorEntry,
       media: media.length ? media : fallback,
       mentionMap: mentionMapByPostId.get(p.id) || {},
       location_text: p.location_text ?? null,
     };
   });
 
-  console.log("[fetchPostsForActorDAL] hydrated sample:", hydrated[0]);
   return { data: hydrated, error: null };
 }

@@ -8,6 +8,18 @@ const PAGE_SIZE = 10;
 // Protect UX from long multi-page drains when many rows are filtered.
 const MAX_EMPTY_PAGES_PER_FETCH = 3;
 const INITIAL_VISIBLE_TARGET = 3;
+const FEED_FETCH_TIMEOUT_MS = 15_000;
+
+function withTimeout(promise, ms = FEED_FETCH_TIMEOUT_MS) {
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error("Feed fetch timeout")), ms);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    clearTimeout(timeoutId);
+  });
+}
 
 export function useFeed(viewerActorId, realmId) {
   const [posts, setPosts] = useState([]);
@@ -108,12 +120,14 @@ export function useFeed(viewerActorId, realmId) {
         while (hasMoreNow && pagesFetched < MAX_EMPTY_PAGES_PER_FETCH) {
           pagesFetched += 1;
 
-          const res = await fetchFeedPagePipeline({
-            viewerActorId,
-            realmId,
-            cursorCreatedAt,
-            pageSize: PAGE_SIZE,
-          });
+          const res = await withTimeout(
+            fetchFeedPagePipeline({
+              viewerActorId,
+              realmId,
+              cursorCreatedAt,
+              pageSize: PAGE_SIZE,
+            })
+          );
 
           if (requestVersionRef.current !== requestVersion) return;
 

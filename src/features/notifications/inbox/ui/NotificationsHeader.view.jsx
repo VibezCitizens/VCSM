@@ -5,7 +5,13 @@ export default function NotificationsHeader({ unreadCount, onMarkAllSeen }) {
   const isVport = identity?.kind === 'vport'
 
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-300/10 bg-[#070b16]/75 px-4 py-3 backdrop-blur">
+    <div
+      className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 backdrop-blur-sm"
+      style={{
+        background:
+          'linear-gradient(180deg, rgba(4,6,14,0.6) 0%, rgba(4,6,14,0.22) 68%, rgba(4,6,14,0) 100%)',
+      }}
+    >
       <div className="flex flex-col">
         <h1 className="text-lg font-semibold text-slate-100">
           {isVport ? 'Vport Notifications' : 'Notifications'}

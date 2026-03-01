@@ -17,7 +17,7 @@ export default function BottomNavBar() {
     if (!isIOS) return '0px'
     const standalone =
       window.matchMedia?.('(display-mode: standalone)').matches || window.navigator?.standalone === true
-    return standalone ? '0px' : '5px'
+    return standalone ? '0px' : '2px'
   }, [])
 
   const personaActorId = useMemo(() => identity?.actorId ?? null, [identity?.actorId])

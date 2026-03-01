@@ -17,8 +17,8 @@ export default function SearchScreen() {
   ]
 
   return (
-    <div className="module-modern-shell w-full rounded-none border-x-0 border-t-0 px-2 pt-2 pb-2 sm:rounded-2xl sm:border sm:px-4 sm:pb-3">
-      <div className="module-modern-search-shell relative mb-2">
+    <div className="w-full px-2 pt-2 pb-2 sm:px-4 sm:pb-3">
+      <div className="relative mb-3 rounded-2xl border border-slate-300/15 bg-slate-950/38 backdrop-blur-xl">
         <Search
           size={18}
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -30,7 +30,7 @@ export default function SearchScreen() {
           placeholder="Search citizens, vports, vibes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="module-modern-input w-full rounded-[14px] py-3 pl-10 pr-10 text-[17px]"
+          className="w-full rounded-2xl border border-transparent bg-transparent py-3 pl-10 pr-10 text-[17px] text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-300/40"
         />
 
         {canClear && (
@@ -45,8 +45,8 @@ export default function SearchScreen() {
         )}
       </div>
 
-      <div className="mb-2 border-b border-slate-300/15">
-        <div className="grid grid-cols-5 gap-0.5">
+      <div className="mb-2 p-1">
+        <div className="grid grid-cols-5 gap-1">
           {FILTERS.map((f) => {
             const active = filter === f.key
             return (
@@ -54,13 +54,15 @@ export default function SearchScreen() {
                 type="button"
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`relative flex items-center justify-center py-2 text-center text-[15px] tracking-wide transition-colors duration-200 ${
-                  active ? 'font-semibold text-slate-100' : 'text-slate-400 hover:text-slate-200'
+                className={`relative flex items-center justify-center py-2 text-center text-[14px] tracking-wide transition-colors duration-200 ${
+                  active
+                    ? 'font-semibold text-slate-100'
+                    : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 {f.label}
                 {active && (
-                  <span className="absolute left-2 right-2 -bottom-[1px] h-[2px] rounded-full bg-indigo-300/90" />
+                  <span className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-indigo-300/85" />
                 )}
               </button>
             )
@@ -73,7 +75,7 @@ export default function SearchScreen() {
           <ResultList query={debounced || query} filter={filter} />
         </Suspense>
       ) : (
-        <ExploreFeed />
+        <ExploreFeed filter={filter} />
       )}
     </div>
   )

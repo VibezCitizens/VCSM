@@ -69,7 +69,6 @@ export default function CentralFeed() {
 
   const {
     posts,
-    viewerIsAdult,
     loading,
     hasMore,
     fetchPosts,
@@ -78,7 +77,7 @@ export default function CentralFeed() {
     hiddenPostIds: serverHiddenPostIds,
   } = useFeed(actorId, realmId)
   const [postMenu, setPostMenu] = useState(null)
-  const showInitialSkeleton = posts.length === 0 && (loading || viewerIsAdult === null)
+  const showInitialSkeleton = posts.length === 0 && loading
   const isMenuActorFollowing = useFollowStatus({
     followerActorId: actorId,
     followedActorId: postMenu?.postActorId ?? null,
@@ -338,7 +337,7 @@ export default function CentralFeed() {
     >
       {showInitialSkeleton && <FeedSkeletonList count={3} />}
 
-      {viewerIsAdult !== null && !loading && posts.length === 0 && (
+      {!showInitialSkeleton && !loading && posts.length === 0 && (
         <p className="text-center text-gray-400">No Vibes found.</p>
       )}
 

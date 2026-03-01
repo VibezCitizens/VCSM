@@ -81,58 +81,58 @@ export default function UploadScreenModern({ onSubmit }) {
   }
 
   return (
-    <div className="module-modern-page h-full min-h-0 w-full p-0 sm:p-4">
-      <div
-        className="
-          module-modern-shell
-          mx-auto
-          max-w-xl
-          rounded-none
-          px-4 pt-6
-          pb-6
-          sm:rounded-2xl
-        "
-      >
-        <UploadHeader mode={mode} onChangeMode={handleChangeMode} />
+    <div className="module-modern-page h-full min-h-0 w-full">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
+        <div
+          className="flex-1 min-h-0 overflow-y-auto touch-pan-y px-3 pt-5 sm:px-4 sm:pt-6"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            paddingBottom: "calc(var(--vc-bottom-nav-total-height) + 20px)",
+          }}
+        >
+          <div className="mx-auto w-full max-w-xl">
+            <UploadHeader mode={mode} onChangeMode={handleChangeMode} />
 
-      <UploadCard
-        isVibes={isVibes}
-        selectedCount={media.files.length}
-        onPick={media.pick}
-        inputRef={media.inputRef}
-        onChosen={media.handleChosen}
-      />
+            <UploadCard
+              isVibes={isVibes}
+              selectedCount={media.files.length}
+              onPick={media.pick}
+              inputRef={media.inputRef}
+              onChosen={media.handleChosen}
+            />
 
-      <SelectedThumbStrip
-        fileUrls={media.fileUrls}
-        onClear={() => {
-          media.setError("");
-          media.clear();
-        }}
-        onRemoveAt={media.removeAt}
-      />
+            <SelectedThumbStrip
+              fileUrls={media.fileUrls}
+              onClear={() => {
+                media.setError("");
+                media.clear();
+              }}
+              onRemoveAt={media.removeAt}
+            />
 
-      {media.error && <div className="mt-3 text-red-400 text-sm">{media.error}</div>}
+            {media.error && <div className="mt-3 text-red-400 text-sm">{media.error}</div>}
 
-      <CaptionCard
-        caption={caption}
-        setCaption={setCaption}
-        mentions={mentionsResolved}
-        setMentions={setMentionsResolved}
-        onRemoveMention={removeMention}
-        locationText={locationText}
-        setLocationText={setLocationText}
-        visibility={visibility}
-        setVisibility={setVisibility}
-      />
+            <CaptionCard
+              caption={caption}
+              setCaption={setCaption}
+              mentions={mentionsResolved}
+              setMentions={setMentionsResolved}
+              onRemoveMention={removeMention}
+              locationText={locationText}
+              setLocationText={setLocationText}
+              visibility={visibility}
+              setVisibility={setVisibility}
+            />
 
-      <PrimaryActionButton label={"Spread"} disabled={!!disabledReason()} onClick={submit} />
+            <PrimaryActionButton label={"Spread"} disabled={!!disabledReason()} onClick={submit} />
 
-        {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
-          <div className="mt-4 text-center text-xs text-slate-500">
-            You can upload up to {MAX_VIBES_PHOTOS} photos at a time.
+            {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
+              <div className="mt-4 text-center text-xs text-slate-500">
+                You can upload up to {MAX_VIBES_PHOTOS} photos at a time.
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

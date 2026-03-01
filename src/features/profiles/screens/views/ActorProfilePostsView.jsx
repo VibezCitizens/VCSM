@@ -7,107 +7,39 @@ export default function ActorProfilePostsView({
   profileActorId,
   onShare,
   onOpenMenu,
-  version = 0, // ✅ ADD
+  version = 0,
 }) {
   const navigate = useNavigate();
 
-  const {
-    posts,
-    loading,
-    hasMore,
-    reset,
-    loadInitial,
-    loadMore,
-  } = useActorPosts();
+  const { posts, loading, hasMore, reset, loadInitial, loadMore } = useActorPosts();
 
-  /* ============================================================
-     DEBUG — RENDER SNAPSHOT (EVERY RENDER)
-     ============================================================ */
-  console.group("[ActorProfilePostsView][RENDER]");
-  console.log("profileActorId:", profileActorId);
-  console.log("posts.length:", posts.length);
-  console.log("loading:", loading);
-  console.log("hasMore:", hasMore);
-  console.log("onShare type:", typeof onShare);
-  console.log("onOpenMenu type:", typeof onOpenMenu);
-  console.log("version:", version); // ✅ ADD
-  console.groupEnd();
-
-  /* ============================================================
-     SCREEN LIFECYCLE (SSOT)
-     ============================================================ */
   useEffect(() => {
-    if (!profileActorId) {
-      console.warn("[ActorProfilePostsView][EFFECT] skipped — no profileActorId");
-      return;
-    }
-
-    console.group("[ActorProfilePostsView][EFFECT] reset + loadInitial");
-    console.log("profileActorId:", profileActorId);
-    console.log("version:", version);
-    console.groupEnd();
-
+    if (!profileActorId) return;
     reset(profileActorId);
     loadInitial();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileActorId, version]);
 
-  /* ============================================================
-     DEBUG — AFTER DATA ARRIVAL
-     ============================================================ */
-  useEffect(() => {
-    if (!posts.length) {
-      console.log("[ActorProfilePostsView][POSTS EFFECT] no posts yet");
-      return;
-    }
-
-    console.group("[ActorProfilePostsView][POSTS READY]");
-    console.log("count:", posts.length);
-    console.log("sample:", posts[0]);
-    console.groupEnd();
-  }, [posts]);
-
-  /* ============================================================
-     NAVIGATION HANDLER (PROFILE → VIBE DETAIL)
-     ============================================================ */
   const openPost = (postId) => {
-    if (!postId) {
-      console.warn("[ActorProfilePostsView] openPost called without postId");
-      return;
-    }
-
-    console.log("[ActorProfilePostsView] navigate → post detail:", postId);
+    if (!postId) return;
     navigate(`/post/${postId}`);
   };
 
-  /* ============================================================
-     LOADING (INITIAL)
-     ============================================================ */
   if (loading && !posts.length) {
-    console.warn("[ActorProfilePostsView] UI → Loading state");
     return (
       <div className="flex items-center justify-center py-10 profiles-muted">
-        Loading Vibes…
+        Loading Vibes...
       </div>
     );
   }
 
-  /* ============================================================
-     EMPTY STATE
-     ============================================================ */
   if (!posts.length) {
-    console.warn("[ActorProfilePostsView] UI → Empty state");
     return (
       <div className="flex items-center justify-center py-10 profiles-muted">
         No Vibes yet.
       </div>
     );
   }
-
-  /* ============================================================
-     RENDER VIBES
-     ============================================================ */
-  console.log("[ActorProfilePostsView] UI → Rendering PostCards");
 
   return (
     <div className="space-y-4">
@@ -124,16 +56,11 @@ export default function ActorProfilePostsView({
       {hasMore && (
         <div className="flex justify-center">
           <button
-            onClick={() => {
-              console.group("[ActorProfilePostsView][LOAD_MORE CLICK]");
-              console.log("currentCount:", posts.length);
-              console.groupEnd();
-              loadMore();
-            }}
+            onClick={loadMore}
             disabled={loading}
             className="profiles-pill-btn px-4 py-2 text-sm disabled:opacity-50"
           >
-            {loading ? "Loading…" : "Load more"}
+            {loading ? "Loading..." : "Load more"}
           </button>
         </div>
       )}
