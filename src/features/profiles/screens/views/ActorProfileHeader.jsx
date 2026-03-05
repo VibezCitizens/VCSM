@@ -62,13 +62,15 @@ export default function ActorProfileHeader({
     <div className="relative">
       {/* ================= BANNER ================= */}
       <div
-        className="h-48 w-full"
+        className="h-48 sm:h-56 w-full"
         style={{
           backgroundImage: profile.bannerUrl
             ? `url(${profile.bannerUrl})`
             : 'linear-gradient(90deg, #7c3aed, #ec4899, #7c3aed)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center 35%',
+          backgroundColor: '#07070f',
         }}
       />
 

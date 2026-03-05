@@ -13,7 +13,17 @@ export async function readPostMediaMap(postIds) {
     .in("post_id", postIds)
     .order("sort_order", { ascending: true });
 
-  if (pmErr || !Array.isArray(pm) || pm.length === 0) return mediaMap;
+  if (pmErr) {
+    console.warn("[feed.read.media] post_media fetch failed; falling back to legacy media_url", {
+      postCount: postIds.length,
+      error: pmErr.message || pmErr,
+    });
+    return mediaMap;
+  }
+
+  if (!Array.isArray(pm) || pm.length === 0) {
+    return mediaMap;
+  }
 
   for (const it of pm) {
     const pid = it?.post_id;

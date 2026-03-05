@@ -13,19 +13,19 @@ export default function FollowRequestItem({ notification }) {
 
   if (!notification || hidden) return null
 
-const requesterActorId =
-  notification.context?.requesterActorId
+  const requesterActorId =
+    notification.context?.requesterActorId
 
-const targetActorId =
-  notification.context?.targetActorId
-if (!requesterActorId || !targetActorId) {
-  console.error(
-    '[FollowRequestItem] missing actor ids',
-    notification
-  )
-  return null
-}
+  const targetActorId =
+    notification.context?.targetActorId
 
+  if (!requesterActorId || !targetActorId) {
+    console.error(
+      '[FollowRequestItem] missing actor ids',
+      notification
+    )
+    return null
+  }
 
   async function accept() {
     if (busy) return
@@ -37,9 +37,41 @@ if (!requesterActorId || !targetActorId) {
         requesterActorId,
         targetActorId,
       })
+
+      // ✅ Optimistically replace follow_request → follow
+      const optimisticFollow = {
+        ...notification,
+        id: `optimistic-follow-${notification.id}`,
+        kind: 'follow',
+        createdAt: new Date().toISOString(),
+        isRead: false,
+        isSeen: false,
+        // trigger uses object_type='actor' for follow
+        objectType: 'actor',
+        objectId: requesterActorId,
+        linkPath: notification.linkPath || `/profile/${requesterActorId}`,
+        context: {
+          ...(notification.context || {}),
+          followerActorId: requesterActorId,
+          followedActorId: targetActorId,
+        },
+      }
+
+      window.dispatchEvent(
+        new CustomEvent('noti:optimistic:replace', {
+          detail: {
+            removeId: notification.id,
+            add: optimisticFollow,
+          },
+        })
+      )
+
+      // optional: make sure header/badges update too
+      window.dispatchEvent(new Event('noti:refresh'))
     } catch (err) {
       console.error('Accept failed', err)
       setHidden(false)
+      setBusy(false)
     }
   }
 
@@ -56,6 +88,7 @@ if (!requesterActorId || !targetActorId) {
     } catch (err) {
       console.error('Decline failed', err)
       setHidden(false)
+      setBusy(false)
     }
   }
 

@@ -1,7 +1,18 @@
 // src/features/upload/ui/SelectedThumbStrip.jsx
+import { useRef } from "react";
 import { X } from "lucide-react";
 
 export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
+  const lastActionAtRef = useRef(0);
+  const ACTION_GUARD_MS = 300;
+
+  function runGuarded(action) {
+    const now = Date.now();
+    if (now - lastActionAtRef.current < ACTION_GUARD_MS) return;
+    lastActionAtRef.current = now;
+    action?.();
+  }
+
   if (!fileUrls.length) return null;
 
   return (
@@ -13,7 +24,7 @@ export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
 
         <button
           type="button"
-          onClick={onClear}
+          onClick={() => runGuarded(onClear)}
           className="text-xs text-neutral-400 hover:text-white"
         >
           Clear
@@ -44,7 +55,7 @@ export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onRemoveAt(idx);
+                runGuarded(() => onRemoveAt(idx));
               }}
               className="
                 absolute top-1.5 right-1.5

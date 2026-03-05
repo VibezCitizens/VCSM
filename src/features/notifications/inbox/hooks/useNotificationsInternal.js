@@ -20,5 +20,21 @@ export default function useNotificationsInternal(identity) {
     load()
   }, [load])
 
+  // ✅ optimistic list mutations (replace a notification with another)
+  useEffect(() => {
+    const onReplace = (e) => {
+      const { removeId, add } = e?.detail ?? {}
+      if (!removeId || !add) return
+
+      setRows((prev) => {
+        const next = prev.filter((n) => n.id !== removeId)
+        return [add, ...next]
+      })
+    }
+
+    window.addEventListener('noti:optimistic:replace', onReplace)
+    return () => window.removeEventListener('noti:optimistic:replace', onReplace)
+  }, [])
+
   return { rows, loading, reload: load }
 }

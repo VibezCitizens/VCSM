@@ -251,7 +251,7 @@ export default function PostDetailView() {
   const postActorRef = post.actor ?? postActorId;
 
   return (
-    <div className="post-modern h-full w-full overflow-y-auto touch-pan-y relative">
+    <div className="post-modern h-full w-full overflow-y-auto touch-auto relative">
       <div className="w-full max-w-2xl mx-auto pb-24">
         <div className="post-card rounded-2xl overflow-hidden mb-4">
           <PostHeader

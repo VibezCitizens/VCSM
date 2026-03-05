@@ -24,6 +24,8 @@ export async function fetchNotificationsPage({
       created_at
     `)
     .eq('recipient_actor_id', recipientActorId)
+    // hide "follow_request" once it's read
+    .or('kind.neq.follow_request,is_read.eq.false')
     .order('created_at', { ascending: false })
     .limit(limit + (before ? 1 : 0));
 

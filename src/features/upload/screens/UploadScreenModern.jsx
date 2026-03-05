@@ -1,5 +1,5 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\upload\screens\UploadScreenModern.jsx
-import React, { useMemo, useState } from "react";
+﻿// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\upload\screens\UploadScreenModern.jsx
+import React, { useMemo, useRef, useState } from "react";
 
 import UploadHeader from "../ui/UploadHeader";
 import UploadCard from "../ui/UploadCard";
@@ -16,8 +16,10 @@ export default function UploadScreenModern({ onSubmit }) {
   const [visibility, setVisibility] = useState("public");
   const [mode, setMode] = useState("post"); // post=vibes
   const [locationText, setLocationText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const submitLockRef = useRef(false);
 
-  // ✅ NEW: resolved mention objects (picked from typeahead)
+  // resolved mention objects (picked from typeahead)
   // Shape: { handle, actorId, kind, displayName, avatarUrl }
   const [mentionsResolved, setMentionsResolved] = useState([]);
 
@@ -34,40 +36,49 @@ export default function UploadScreenModern({ onSubmit }) {
     const next = caption.replace(re, "").replace(/\s{2,}/g, " ").trim();
     setCaption(next);
 
-    // ✅ keep resolved mentions in sync
+    // keep resolved mentions in sync
     setMentionsResolved((prev) =>
       (prev || []).filter((m) => String(m?.handle || "").toLowerCase() !== String(handle).toLowerCase())
     );
   }
 
   function disabledReason() {
+    if (submitting) return "Submitting";
     if (!caption.trim() && media.files.length === 0) return "Add text or media";
     return null;
   }
 
   async function submit() {
+    if (submitLockRef.current) return;
     if (disabledReason()) return;
 
+    submitLockRef.current = true;
+    setSubmitting(true);
     media.setError("");
 
-    await onSubmit({
-      caption,
-      visibility,
-      mode,
+    try {
+      await onSubmit({
+        caption,
+        visibility,
+        mode,
 
-      // media
-      files: media.files,
-      mediaTypes: media.mediaTypes,
+        // media
+        files: media.files,
+        mediaTypes: media.mediaTypes,
 
-      // UI-only fields
-      locationText,
+        // UI-only fields
+        locationText,
 
-      // ✅ send BOTH:
-      // - mentions: handles (string[]) used by older flow if needed
-      // - mentionsResolved: resolved actor ids for insertPostMentions
-      mentions,
-      mentionsResolved,
-    });
+        // send BOTH:
+        // - mentions: handles (string[]) used by older flow if needed
+        // - mentionsResolved: resolved actor ids for insertPostMentions
+        mentions,
+        mentionsResolved,
+      });
+    } finally {
+      submitLockRef.current = false;
+      setSubmitting(false);
+    }
   }
 
   function handleChangeMode(nextMode) {
@@ -75,9 +86,8 @@ export default function UploadScreenModern({ onSubmit }) {
     media.clear();
     media.setError("");
 
-    // ✅ mentions are caption-derived; keep caption as-is.
-    // But resolved mention objects may not match new caption changes later; keep them,
-    // CaptionCard will dedupe + user can remove.
+    // mentions are caption-derived; keep caption as-is.
+    // Resolved mention objects can stay and CaptionCard will sync/remove as needed.
   }
 
   return (
@@ -124,7 +134,11 @@ export default function UploadScreenModern({ onSubmit }) {
               setVisibility={setVisibility}
             />
 
-            <PrimaryActionButton label={"Spread"} disabled={!!disabledReason()} onClick={submit} />
+            <PrimaryActionButton
+              label={submitting ? "Spreading..." : "Spread"}
+              disabled={!!disabledReason()}
+              onClick={submit}
+            />
 
             {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
               <div className="mt-4 text-center text-xs text-slate-500">
