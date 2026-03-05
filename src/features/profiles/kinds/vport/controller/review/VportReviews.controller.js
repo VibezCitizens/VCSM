@@ -21,7 +21,6 @@ import {
   modelReviewsWithRatings,
   modelVportReviewRow,
 } from "@/features/profiles/kinds/vport/model/review/VportReview.model";
-import { detectSupportedLanguageFromText } from "@/shared/lib/language/detectSupportedLanguage";
 import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId";
 import { getReviewDimensionsForVportType } from "@/features/profiles/kinds/vport/config/reviewDimensions.config";
 
@@ -82,22 +81,33 @@ function toFallbackDimensionModel(row, idx = 0, vportType = null) {
   };
 }
 
-async function resolveConfigDimsWithFallback(targetActorId) {
-  const configDims = await resolveDbConfigDims(targetActorId);
-  if (configDims.length) return configDims;
+function normalizeVportType(v) {
+  const value = String(v ?? "").trim().toLowerCase();
+  return value || null;
+}
 
-  let vportType = null;
+async function resolveTargetVportType(targetActorId) {
   try {
     const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId });
-    vportType = actorTypeRow?.vport_type ?? null;
+    return normalizeVportType(actorTypeRow?.vport_type);
   } catch {
-    vportType = null;
+    return null;
   }
+}
 
+function resolveFallbackDims(vportType) {
   const fallbackDims = getReviewDimensionsForVportType(vportType, null);
   return (fallbackDims ?? [])
     .map((row, idx) => toFallbackDimensionModel(row, idx, vportType))
     .filter(Boolean);
+}
+
+async function resolveConfigDimsWithFallback(targetActorId) {
+  const configDims = await resolveDbConfigDims(targetActorId);
+  if (configDims.length) return configDims;
+
+  const vportType = await resolveTargetVportType(targetActorId);
+  return resolveFallbackDims(vportType);
 }
 
 async function resolveDbConfigDims(targetActorId) {
@@ -193,18 +203,17 @@ export async function ctrlSubmitReview(input) {
     throw new Error("[VportReviews] cannot review self");
   }
 
-  // Load DB-backed config for writes (must satisfy FK in vc.vport_review_ratings)
-  const configDims = await resolveDbConfigDims(targetActorId);
+  let configDims = await resolveDbConfigDims(targetActorId);
   if (!configDims.length) {
-    let safeVportType = "unknown";
-    try {
-      const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId });
-      safeVportType = actorTypeRow?.vport_type ?? "unknown";
-    } catch {
-      safeVportType = "unknown";
-    }
+    const targetVportType = await resolveTargetVportType(targetActorId);
+    const fallbackDims = resolveFallbackDims(targetVportType);
+    configDims = fallbackDims;
+  }
+
+  if (!configDims.length) {
+    const safeVportType = (await resolveTargetVportType(targetActorId)) ?? "unknown";
     throw new Error(
-      `[VportReviews] review dimensions not configured in DB for vport type: ${safeVportType}`
+      `[VportReviews] review dimensions unavailable for vport type: ${safeVportType}`
     );
   }
 
@@ -217,13 +226,6 @@ export async function ctrlSubmitReview(input) {
   validateRatingsAgainstConfig(normalizedRatings, configDims);
 
   const normalizedBody = typeof body === "string" ? body.trim() : null;
-  if (normalizedBody) {
-    const detectedLanguage = detectSupportedLanguageFromText(normalizedBody);
-    if (detectedLanguage === "unknown") {
-      throw new Error("[VportReviews] body language must be English, Spanish, German, Portuguese, or Italian");
-    }
-  }
-
   // Idempotency: one active review per (target, author)
   let existing = await dalGetActiveReviewByAuthor(targetActorId, authorActorId);
 

@@ -6,7 +6,6 @@ import vc from "@/services/supabase/vcClient";
    - explicit selects
    - no business logic
    ============================================================ */
-
 const REVIEW_SELECT = [
   "id",
   "target_actor_id",
@@ -22,6 +21,16 @@ const REVIEW_SELECT = [
 ].join(",");
 
 const RATING_SELECT = ["review_id", "dimension_key", "rating", "created_at", "updated_at"].join(",");
+const DIMENSION_SELECT = [
+  "vport_type",
+  "dimension_key",
+  "label",
+  "weight",
+  "sort_order",
+  "is_active",
+  "created_at",
+  "updated_at",
+].join(",");
 
 export async function dalInsertVportReviewRow(input) {
   const { targetActorId, authorActorId, isVerified, body } = input;
@@ -73,6 +82,48 @@ export async function dalUpsertVportReviewRatings(reviewId, ratings) {
     .from("vport_review_ratings")
     .upsert(payload, { onConflict: "review_id,dimension_key" })
     .select(RATING_SELECT);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function dalUpsertVportReviewDimensions(vportType, dimensions) {
+  const safeVportType = String(vportType ?? "").trim().toLowerCase();
+  if (!safeVportType) return [];
+
+  const rows = Array.isArray(dimensions) ? dimensions : [];
+  if (!rows.length) return [];
+
+  const nowIso = new Date().toISOString();
+
+  const payload = rows
+    .map((d, idx) => {
+      const key = String(d?.dimensionKey ?? d?.dimension_key ?? d?.key ?? "").trim();
+      if (!key) return null;
+
+      const label = String(d?.label ?? key).trim();
+      const weight = Number(d?.weight);
+      const sortOrder = Number(d?.sortOrder ?? d?.sort_order ?? idx);
+
+      return {
+        vport_type: safeVportType,
+        dimension_key: key,
+        label: label || key,
+        weight: Number.isFinite(weight) && weight > 0 ? weight : 1,
+        sort_order: Number.isFinite(sortOrder) ? sortOrder : idx,
+        is_active: true,
+        updated_at: nowIso,
+      };
+    })
+    .filter(Boolean);
+
+  if (!payload.length) return [];
+
+  const { data, error } = await vc
+    .schema("vc")
+    .from("vport_review_dimensions")
+    .upsert(payload, { onConflict: "vport_type,dimension_key" })
+    .select(DIMENSION_SELECT);
 
   if (error) throw error;
   return data ?? [];

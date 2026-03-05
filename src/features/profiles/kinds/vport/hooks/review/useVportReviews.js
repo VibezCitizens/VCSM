@@ -17,6 +17,9 @@ import {
   safeNum,
 } from "@/features/profiles/kinds/vport/hooks/review/useVportReviews.helpers";
 
+// ✅ ADDED: vc client to validate targetActorId is a vport actor
+import vc from "@/services/supabase/vcClient";
+
 // Optional (only if you have it; hook will gracefully no-op if missing)
 import * as ServiceCtrl from "@/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller";
 
@@ -66,6 +69,56 @@ export function useVportReviews(input) {
   const inFlightServicesRef = useRef(false);
   const inFlightListRef = useRef(false);
   const inFlightMyRef = useRef(false);
+
+  /* ============================================================
+     ✅ NEW: Validate targetActorId is a vport actor (kind='vport')
+     Prevents misleading "dimensions not configured" errors when a user actor id
+     is accidentally passed in as the target.
+     ============================================================ */
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      if (!targetActorId) return;
+
+      const { data, error: actorErr } = await vc
+        .schema("vc")
+        .from("actors")
+        .select("id, kind, vport_id, is_void")
+        .eq("id", targetActorId)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (actorErr) {
+        setError(actorErr);
+        return;
+      }
+
+      if (!data) {
+        setError(new Error(`[VportReviews] targetActorId not found: ${targetActorId}`));
+        return;
+      }
+
+      if (data.is_void) {
+        setError(new Error(`[VportReviews] target actor is void: ${targetActorId}`));
+        return;
+      }
+
+      // Must be a vport actor to have vport_id and vport_type-derived review dims
+      if (String(data.kind) !== "vport" || !data.vport_id) {
+        setError(
+          new Error(
+            `[VportReviews] targetActorId must be a vport actor (kind=vport). got kind=${data.kind}`
+          )
+        );
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [targetActorId]);
 
   /* ---------------- derived ---------------- */
   const canReview = useMemo(() => {
@@ -142,10 +195,7 @@ export function useVportReviews(input) {
   const loadServices = useCallback(async () => {
     if (!targetActorId) return;
 
-    const fn =
-      ServiceCtrl?.ctrlListReviewServices ||
-      ServiceCtrl?.ctrlListServicesForReviews ||
-      null;
+    const fn = ServiceCtrl?.ctrlListReviewServices || ServiceCtrl?.ctrlListServicesForReviews || null;
 
     if (!fn) {
       setServices([]);
@@ -200,10 +250,7 @@ export function useVportReviews(input) {
       list = Array.isArray(list) ? list : [];
 
       if (tab === "services") {
-        const fn =
-          ServiceCtrl?.ctrlListServiceReviews ||
-          ServiceCtrl?.ctrlListReviewsForService ||
-          null;
+        const fn = ServiceCtrl?.ctrlListServiceReviews || ServiceCtrl?.ctrlListReviewsForService || null;
 
         if (fn && serviceId) {
           const svcList = await fn({ targetActorId, serviceId, limit: 50 });
@@ -293,10 +340,9 @@ export function useVportReviews(input) {
       if (tab !== "overall" && tab !== "services") {
         ratingsPayload = [{ dimensionKey: tab, rating }];
       } else {
-        const preferred =
-          dimKeys.includes("overall_experience")
-            ? "overall_experience"
-            : dimKeys[0] ?? "service_quality";
+        const preferred = dimKeys.includes("overall_experience")
+          ? "overall_experience"
+          : dimKeys[0] ?? "service_quality";
 
         ratingsPayload = [{ dimensionKey: preferred, rating }];
       }
@@ -352,9 +398,7 @@ export function useVportReviews(input) {
   const displayAvg = useMemo(() => {
     if (tab === "overall") return overallAvg;
     const rows = Array.isArray(activeList) ? activeList : [];
-    const nums = rows
-      .map((r) => safeNum(r?.overallRating))
-      .filter((x) => x != null);
+    const nums = rows.map((r) => safeNum(r?.overallRating)).filter((x) => x != null);
 
     if (!nums.length) return null;
     return round4(nums.reduce((a, b) => a + b, 0) / nums.length);

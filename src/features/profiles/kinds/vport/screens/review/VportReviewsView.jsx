@@ -2,14 +2,11 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { ChevronDown, Star } from "lucide-react";
 import { useVportReviews } from "@/features/profiles/kinds/vport/hooks/review/useVportReviews";
+import { useIdentity } from "@/state/identity/identityContext";
 
 import ReviewsList from "./components/ReviewsList";
 import { TabButton } from "@/features/profiles/kinds/vport/screens/review/components/VportReviewsControls";
 import { ctrlSubmitReview } from "@/features/profiles/kinds/vport/controller/review/VportReviews.controller";
-import {
-  detectSupportedLanguageFromText,
-  getSupportedLanguageLabel,
-} from "@/shared/lib/language/detectSupportedLanguage";
 
 function formatAvg(value) {
   const n = Number(value);
@@ -70,10 +67,13 @@ function InputStars({ value, onChange, label }) {
 export default function VportReviewsView({
   targetActorId: targetActorIdProp = null,
   profile = null,
-  viewerActorId = null,
+  viewerActorId: _viewerActorId = null,
   mode = "public",
 }) {
+  const { identity } = useIdentity();
   const targetActorId = targetActorIdProp ?? profile?.actor_id ?? profile?.actorId ?? null;
+  const sessionActorId = identity?.actorId ?? null;
+  const reviewAuthorActorId = identity?.kind === "user" ? sessionActorId : null;
 
   const r = useVportReviews(targetActorId);
 
@@ -100,15 +100,8 @@ export default function VportReviewsView({
   const [submitting, setSubmitting] = useState(false);
   const [submitErr, setSubmitErr] = useState(null);
 
-  const canCompose = !isOwnerMode && !!viewerActorId && viewerActorId !== targetActorId;
+  const canCompose = !isOwnerMode && !!reviewAuthorActorId && reviewAuthorActorId !== targetActorId;
   const trimmedBody = body.trim();
-
-  const detectedBodyLanguage = useMemo(() => {
-    if (!trimmedBody) return "unknown";
-    return detectSupportedLanguageFromText(trimmedBody);
-  }, [trimmedBody]);
-
-  const hasUnsupportedBodyLanguage = Boolean(trimmedBody) && detectedBodyLanguage === "unknown";
 
   useEffect(() => {
     setRatingsMap((prev) => {
@@ -149,7 +142,7 @@ export default function VportReviewsView({
   const handleSubmit = useCallback(async () => {
     setSubmitErr(null);
 
-    if (!viewerActorId) {
+    if (!reviewAuthorActorId) {
       setSubmitErr(new Error("You must be signed in to leave a review."));
       return;
     }
@@ -159,17 +152,12 @@ export default function VportReviewsView({
       return;
     }
 
-    if (hasUnsupportedBodyLanguage) {
-      setSubmitErr(new Error("Review text must be English, Spanish, German, Portuguese, or Italian."));
-      return;
-    }
-
     setSubmitting(true);
 
     try {
       await ctrlSubmitReview({
         targetActorId,
-        authorActorId: viewerActorId,
+        authorActorId: reviewAuthorActorId,
         body: trimmedBody ? trimmedBody : null,
         ratings: normalizedRatings,
       });
@@ -185,11 +173,10 @@ export default function VportReviewsView({
       setSubmitting(false);
     }
   }, [
-    viewerActorId,
+    reviewAuthorActorId,
     normalizedRatings,
     targetActorId,
     trimmedBody,
-    hasUnsupportedBodyLanguage,
     r,
     dynamicDimensions,
   ]);
@@ -355,13 +342,6 @@ export default function VportReviewsView({
               value={body}
               onChange={(e) => setBody(e.target.value)}
             />
-            <div className={["mt-2 text-xs", hasUnsupportedBodyLanguage ? "text-amber-300" : "text-white/50"].join(" ")}>
-              {trimmedBody
-                ? hasUnsupportedBodyLanguage
-                  ? "Language not detected or unsupported. Use English, Spanish, German, Portuguese, or Italian."
-                  : `Detected language: ${getSupportedLanguageLabel(detectedBodyLanguage)}`
-                : "Supported languages: English, Spanish, German, Portuguese, Italian."}
-            </div>
 
             {submitErr ? (
               <div className="profiles-error mt-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-3 text-sm">
@@ -372,11 +352,11 @@ export default function VportReviewsView({
             <div className="mt-3 flex items-center justify-end">
               <button
                 type="button"
-                disabled={submitting || hasUnsupportedBodyLanguage}
+                disabled={submitting}
                 onClick={handleSubmit}
                 className={[
                   "profiles-pill-btn rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                  (submitting || hasUnsupportedBodyLanguage)
+                  submitting
                     ? "bg-white/10 text-white/40"
                     : "border-sky-300/40 bg-sky-300/15 text-sky-100 hover:bg-sky-300/20",
                 ].join(" ")}
@@ -387,7 +367,11 @@ export default function VportReviewsView({
           </div>
         ) : (
           <div className="mt-4 text-xs text-neutral-400">
-            {viewerActorId ? "You cannot review your own vport." : "Sign in to leave a review."}
+            {!sessionActorId
+              ? "Sign in to leave a review."
+              : !reviewAuthorActorId
+                ? "Switch to your user profile to leave a review."
+                : "You cannot review your own vport."}
           </div>
         )
       ) : null}
