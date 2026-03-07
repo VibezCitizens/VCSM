@@ -83,7 +83,7 @@ export default function SettingsScreen() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_220px_at_50%_-80px,rgba(99,102,241,0.22),transparent)]"
       />
 
-      <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/72 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/74 backdrop-blur-xl">
         <div className="mx-auto w-full max-w-3xl px-4">
           <div className="flex items-center justify-between py-3">
             <h1 className="text-lg font-bold tracking-wide text-slate-100">Settings</h1>

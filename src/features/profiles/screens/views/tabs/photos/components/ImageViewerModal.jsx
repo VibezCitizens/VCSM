@@ -1,5 +1,6 @@
-import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+﻿import { X } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+
 import BinaryReactionButton from "@/features/post/postcard/components/BinaryReactionButton";
 import RoseReactionButton from "@/features/post/postcard/components/RoseReactionButton";
 import CommentButton from "@/features/post/postcard/components/CommentButton";
@@ -10,6 +11,7 @@ export default function ImageViewerModal({
   activePost = null,
   activePostId,
   activeIndex,
+  viewerOrigin = "grid",
   setActiveIndex,
   onClose,
   toggleReaction,
@@ -18,14 +20,42 @@ export default function ImageViewerModal({
   openComments,
 }) {
   const [localImages, setLocalImages] = useState(imagePosts);
+  const [isOpen, setIsOpen] = useState(false);
+
   const containerRef = useRef(null);
   const itemRefs = useRef([]);
+  const closeTimerRef = useRef(null);
 
   useEffect(() => {
     setLocalImages(imagePosts);
   }, [imagePosts]);
 
-  // ✅ Freeze background scroll (iOS Safari safe) — same as PostDetail modals
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setIsOpen(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const requestClose = useCallback(() => {
+    setIsOpen(false);
+
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+    }
+
+    closeTimerRef.current = setTimeout(() => {
+      onClose?.();
+    }, 190);
+  }, [onClose]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Freeze background scroll (iOS Safari safe)
   useEffect(() => {
     const scrollY = window.scrollY || 0;
     const body = document.body;
@@ -60,7 +90,7 @@ export default function ImageViewerModal({
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
+      if (e.key === "Escape") requestClose();
       if (e.key === "ArrowRight") {
         setActiveIndex?.((i) => Math.min((i ?? 0) + 1, localImages.length - 1));
       }
@@ -71,7 +101,7 @@ export default function ImageViewerModal({
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, setActiveIndex, localImages.length]);
+  }, [requestClose, setActiveIndex, localImages.length]);
 
   const handleReaction = async (postId, type) => {
     if (!postId) return;
@@ -86,14 +116,16 @@ export default function ImageViewerModal({
   const canAct = !!activePostId;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
-      {/* BACKDROP */}
-      <div className="absolute inset-0" onClick={onClose} />
+    <div
+      className={`profiles-photo-viewer fixed inset-0 z-[70] ${isOpen ? "is-open" : ""} ${
+        viewerOrigin === "featured" ? "from-featured" : "from-grid"
+      }`}
+    >
+      <div className="profiles-photo-viewer-backdrop absolute inset-0" onClick={requestClose} />
 
-      {/* SCROLL CONTAINER */}
       <div
         ref={containerRef}
-        className="relative z-10 h-full w-full overflow-y-scroll snap-y snap-mandatory"
+        className="profiles-photo-viewer-track relative z-10 h-full w-full overflow-y-scroll snap-y snap-mandatory"
         onClick={(e) => e.stopPropagation()}
       >
         {localImages.map((img, index) => {
@@ -104,13 +136,13 @@ export default function ImageViewerModal({
             <div
               key={img?.id ? `${img.id}-${index}` : `${src || "img"}-${index}`}
               ref={(el) => (itemRefs.current[index] = el)}
-              className="snap-start h-full w-full flex items-center justify-center relative"
+              className="profiles-photo-viewer-frame snap-start h-full w-full flex items-center justify-center relative"
             >
               {src ? (
                 <img
                   src={src}
                   alt=""
-                  className="max-h-full max-w-full object-contain"
+                  className="profiles-photo-viewer-image max-h-full max-w-full object-contain"
                   draggable={false}
                 />
               ) : (
@@ -121,11 +153,13 @@ export default function ImageViewerModal({
         })}
       </div>
 
-      {/* ✅ SINGLE ACTION BAR (always reflects activePost) */}
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 z-20 bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-5 border border-white/10 flex flex-col gap-4 text-white text-xl">
+      <div
+        className="profiles-photo-viewer-actions absolute top-1/2 -translate-y-1/2 z-20 rounded-2xl px-4 py-5 flex flex-col gap-4 text-white text-xl"
+        style={{ right: "calc(env(safe-area-inset-right, 0px) + 8px)" }}
+      >
         <BinaryReactionButton
           type="like"
-          emoji="👍"
+          emoji={"\uD83D\uDC4D"}
           active={activePost?.userHasReacted === "like"}
           count={activePost?.likeCount || 0}
           onClick={() => handleReaction(activePostId, "like")}
@@ -134,7 +168,7 @@ export default function ImageViewerModal({
 
         <BinaryReactionButton
           type="dislike"
-          emoji="👎"
+          emoji={"\uD83D\uDC4E"}
           active={activePost?.userHasReacted === "dislike"}
           count={activePost?.dislikeCount || 0}
           onClick={() => handleReaction(activePostId, "dislike")}
@@ -166,10 +200,13 @@ export default function ImageViewerModal({
         />
       </div>
 
-      {/* CLOSE */}
       <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center text-white"
+        onClick={requestClose}
+        className="profiles-photo-viewer-close absolute z-30 h-11 w-11 rounded-full flex items-center justify-center text-white transition"
+        style={{
+          top: "calc(env(safe-area-inset-top, 0px) + 12px)",
+          right: "calc(env(safe-area-inset-right, 0px) + 12px)",
+        }}
         aria-label="Close"
       >
         <X size={20} />
@@ -177,3 +214,4 @@ export default function ImageViewerModal({
     </div>
   );
 }
+

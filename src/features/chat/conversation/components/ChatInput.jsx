@@ -190,7 +190,7 @@ export default function ChatInput({
           e.preventDefault()
           doPrimary()
         }}
-        className={`chat-topbar transition-all duration-200 ${
+        className={`chat-topbar chat-modern-topbar transition-all duration-200 ${
           topBarOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
         }`}
       >
@@ -245,7 +245,7 @@ export default function ChatInput({
               disabled={actionDisabled || (!value.trim() && !mediaPreview)}
               className={
                 value.trim() || mediaPreview
-                  ? 'module-modern-btn module-modern-btn--primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white'
+                  ? 'module-modern-btn module-modern-btn--primary chat-modern-send-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white'
                   : 'module-modern-btn flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-slate-600/30 bg-slate-800/40 text-slate-500'
               }
               aria-label={inEdit ? 'Save' : 'Send'}

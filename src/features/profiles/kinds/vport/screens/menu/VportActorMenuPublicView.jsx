@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import VportActorMenuPublicPanel from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuPublicPanel";
-import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
+import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 
@@ -29,58 +29,22 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
   const navigate = useNavigate();
   const isDesktop = useDesktopBreakpoint();
   const [q, setQ] = useState("");
-
-  const [publicDetails, setPublicDetails] = useState(null);
-  const [loadingHeader, setLoadingHeader] = useState(false);
-
-  useEffect(() => {
-    if (!actorId) return;
-
-    let alive = true;
-
-    (async () => {
-      setLoadingHeader(true);
-      try {
-        const d = await fetchVportPublicDetailsByActorId(actorId);
-        if (!alive) return;
-        setPublicDetails(d || null);
-      } catch {
-        if (!alive) return;
-        setPublicDetails(null);
-      } finally {
-        if (alive) setLoadingHeader(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [actorId]);
+  const { loading: loadingHeader, details: publicDetails } = useVportPublicDetails(actorId);
 
   const profile = useMemo(() => {
     return {
-      displayName: publicDetails?.display_name ?? publicDetails?.name ?? "Menu",
-      username: publicDetails?.username ?? "",
+      displayName: publicDetails?.name ?? "Menu",
+      username: publicDetails?.slug ?? "",
       tagline: publicDetails?.tagline ?? "",
-      bannerUrl: publicDetails?.banner_url ?? publicDetails?.bannerUrl ?? "",
-      avatarUrl: publicDetails?.avatar_url ?? publicDetails?.avatarUrl ?? "",
+      bannerUrl: publicDetails?.bannerUrl ?? "",
+      avatarUrl: publicDetails?.avatarUrl ?? "",
     };
   }, [publicDetails]);
 
   const actions = useMemo(() => {
     const reviewUrl = publicDetails?.review_url ?? publicDetails?.reviewUrl ?? "";
-    const directionsUrl =
-      publicDetails?.directions_url ??
-      publicDetails?.directionsUrl ??
-      publicDetails?.maps_url ??
-      publicDetails?.mapsUrl ??
-      "";
-
-    const phone =
-      publicDetails?.phone ??
-      publicDetails?.phone_number ??
-      publicDetails?.phoneNumber ??
-      "";
+    const directionsUrl = publicDetails?.directionsUrl ?? "";
+    const phone = publicDetails?.phonePublic ?? "";
 
     return {
       reviewUrl: toSafeExternalUrl(reviewUrl),

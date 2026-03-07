@@ -1,6 +1,6 @@
 // src/features/upload/hooks/useMentionAutocomplete.js
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { searchMentionSuggestions } from "../dal/searchMentionSuggestions";
+import { ctrlSearchMentionSuggestions } from "@/features/upload/controller/searchMentionSuggestions.controller";
 
 /**
  * Autocomplete mentions like Instagram:
@@ -75,7 +75,7 @@ export function useMentionAutocomplete({ value, inputRef }) {
 
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await searchMentionSuggestions(query, { limit: 8 });
+        const res = await ctrlSearchMentionSuggestions({ query, limit: 8 });
         setItems(res || []);
       } catch (e) {
         console.warn("[useMentionAutocomplete] search failed:", e);
@@ -107,7 +107,9 @@ export function useMentionAutocomplete({ value, inputRef }) {
           const pos = (before + `@${picked.handle} `).length;
           el.focus();
           el.setSelectionRange(pos, pos);
-        } catch {}
+        } catch (_ERR) {
+          void _ERR;
+        }
       });
 
       setOpen(false);

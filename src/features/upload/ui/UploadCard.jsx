@@ -9,15 +9,7 @@ export default function UploadCard({
 }) {
   return (
     <div
-      className="
-        module-modern-card
-        relative
-        cursor-pointer
-        overflow-hidden
-        rounded-3xl
-        px-6 py-8
-        text-center
-      "
+      className="upload-card upload-card-pressable relative overflow-hidden rounded-3xl px-6 py-8 text-center"
       onClick={onPick}
     >
       <input
@@ -34,8 +26,8 @@ export default function UploadCard({
       </div>
 
       <div className="relative z-10">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-300/20 bg-slate-900/50">
-          <span className="text-3xl text-slate-200">+</span>
+        <div className="upload-plus mx-auto mb-4">
+          <span>+</span>
         </div>
 
         <div className="text-lg font-semibold text-slate-100">

@@ -69,7 +69,8 @@ function injectMetaIntoHead(indexHtml, metaTags) {
 }
 
 // TODO: Replace this with real data fetch (Supabase/DB/etc)
-async function getLovedropById(id) {
+async function getLovedropById(_ID) {
+  void _ID;
   return null;
 }
 

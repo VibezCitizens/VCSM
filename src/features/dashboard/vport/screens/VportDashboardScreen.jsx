@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
+import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { DashboardCard, VportBannerHeader } from "@/features/dashboard/vport/screens/components/VportDashboardParts";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
@@ -18,41 +18,18 @@ export function VportDashboardScreen() {
   const navigate = useNavigate();
   const { actorId = null } = useParams();
   const { identity, identityLoading } = useIdentity();
-
-  const [publicDetails, setPublicDetails] = useState(null);
-  const [headerLoading, setHeaderLoading] = useState(false);
+  const { loading: headerLoading, details: publicDetails } = useVportPublicDetails(actorId);
 
   const isDesktop = useDesktopBreakpoint();
   const isOwner = Boolean(actorId) && Boolean(identity?.actorId) && String(identity.actorId) === String(actorId);
 
-  useEffect(() => {
-    if (!actorId) return;
-    let alive = true;
-
-    (async () => {
-      setHeaderLoading(true);
-      try {
-        const data = await fetchVportPublicDetailsByActorId(actorId);
-        if (alive) setPublicDetails(data || null);
-      } catch {
-        if (alive) setPublicDetails(null);
-      } finally {
-        if (alive) setHeaderLoading(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [actorId]);
-
   const profile = useMemo(
     () => ({
-      displayName: publicDetails?.display_name ?? publicDetails?.name ?? "Dashboard",
-      username: publicDetails?.username ?? "",
+      displayName: publicDetails?.name ?? "Dashboard",
+      username: publicDetails?.slug ?? "",
       tagline: publicDetails?.tagline ?? "",
-      bannerUrl: publicDetails?.banner_url ?? publicDetails?.bannerUrl ?? "",
-      avatarUrl: publicDetails?.avatar_url ?? publicDetails?.avatarUrl ?? "",
+      bannerUrl: publicDetails?.bannerUrl ?? "",
+      avatarUrl: publicDetails?.avatarUrl ?? "",
     }),
     [publicDetails]
   );
@@ -65,13 +42,14 @@ export function VportDashboardScreen() {
   const openExchangeRates = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/exchange`), [navigate, actorId]);
   const openServices = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/services`), [navigate, actorId]);
   const openReviews = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/reviews`), [navigate, actorId]);
+  const openCalendar = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/calendar`), [navigate, actorId]);
   const openGasPrices = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/gas`), [navigate, actorId]);
   const openAdsPipeline = useCallback(() => actorId && navigate(`/ads/vport/${actorId}`), [navigate, actorId]);
   const openSettings = useCallback(() => actorId && navigate(`/actor/${actorId}/settings`), [navigate, actorId]);
 
   const vportType = useMemo(
-    () => normalizeVportType(identity?.vportType ?? publicDetails?.vport_type ?? null),
-    [identity?.vportType, publicDetails?.vport_type]
+    () => normalizeVportType(identity?.vportType ?? publicDetails?.vportType ?? null),
+    [identity?.vportType, publicDetails?.vportType]
   );
 
   const dashboardView = useMemo(() => getDashboardViewByVportType(vportType), [vportType]);
@@ -89,6 +67,7 @@ export function VportDashboardScreen() {
           openExchangeRates,
           openServices,
           openReviews,
+          openCalendar,
           openGasPrices,
           openAdsPipeline,
           openSettings,
@@ -104,6 +83,7 @@ export function VportDashboardScreen() {
       openExchangeRates,
       openServices,
       openReviews,
+      openCalendar,
       openGasPrices,
       openAdsPipeline,
       openSettings,

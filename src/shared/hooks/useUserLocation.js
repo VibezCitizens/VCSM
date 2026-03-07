@@ -11,7 +11,9 @@ export default function useUserLocation() {
     try {
       if (value) sessionStorage.setItem(SESSION_KEY, value);
       else sessionStorage.removeItem(SESSION_KEY);
-    } catch {}
+    } catch (_ERR) {
+      void _ERR;
+    }
   };
 
   const getCachedLocation = () => {

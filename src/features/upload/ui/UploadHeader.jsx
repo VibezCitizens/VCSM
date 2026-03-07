@@ -4,10 +4,10 @@ import SegmentedButton from "./SegmentedButton";
 
 export default function UploadHeader({ mode, onChangeMode }) {
   return (
-    <div className="flex flex-col items-center gap-3 mb-4">
+    <div className="upload-header flex flex-col items-center gap-3 mb-4">
       <ActorPill />
 
-      <div className="flex gap-2">
+      <div className="upload-mode-wrap">
         <SegmentedButton
           active={mode === "post"}
           onClick={() => onChangeMode("post")}

@@ -6,7 +6,7 @@ import CommentHeader from "../components/cc/CommentHeader";
 import CommentBody from "../components/cc/CommentBody";
 import CommentActions from "../components/cc/CommentActions";
 
-import { editCommentController } from "@/features/post/commentcard/controller/editComment.controller";
+import { useEditCommentAction } from "@/features/post/commentcard/hooks/useEditCommentAction";
 import { useIdentity } from "@/state/identity/identityContext";
 
 export default function CommentCardView({
@@ -41,6 +41,7 @@ export default function CommentCardView({
   const safeComment = comment ?? {};
 
   const { identity } = useIdentity();
+  const editComment = useEditCommentAction({ actorId: identity?.actorId ?? null });
 
   const isEditing = editingCommentId === safeComment.id;
 
@@ -79,8 +80,7 @@ export default function CommentCardView({
     setSaving(true);
     setEditError(null);
 
-    const { ok, error, comment: updated } = await editCommentController({
-      actorId: identity.actorId,
+    const { ok, error, comment: updated } = await editComment({
       commentId: safeComment.id,
       text: draft,
     });
@@ -96,18 +96,19 @@ export default function CommentCardView({
     else setDisplayContent(String(draft ?? "").trim());
 
     onEditedSaved?.();
-  }, [identity?.actorId, safeComment.id, draft, onEditedSaved]);
+  }, [identity?.actorId, safeComment.id, draft, onEditedSaved, editComment]);
 
   if (!comment) return null;
 
   return (
     <div
       className="
+        post-comment-card profiles-subcard
         w-full px-4 py-3
         rounded-xl
-        bg-[#151125]/70
-        border border-violet-300/15
-        hover:bg-[#1a1430]/78
+        backdrop-blur-xl
+        shadow-[0_14px_30px_rgba(2,8,28,0.34)]
+        hover:shadow-[0_18px_34px_rgba(8,24,58,0.5)]
         transition
         relative overflow-hidden
       "

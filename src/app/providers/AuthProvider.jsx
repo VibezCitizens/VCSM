@@ -5,7 +5,9 @@
 
 // src/hooks/useAuth.jsx
 import { useEffect, useState, useContext, createContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/services/supabase/supabaseClient' //transfer
+import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 
 
 const AuthContext = createContext({
@@ -16,6 +18,7 @@ const AuthContext = createContext({
 })
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true) // initial hydration gate
@@ -58,12 +61,34 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = async () => {
+    // Optimistic local transition: show /login immediately.
+    setSession(null)
+    setUser(null)
+    setLoading(false)
+
+    localStorage.removeItem('actor_kind')
+    localStorage.removeItem('actor_vport_id')
+    localStorage.setItem('actor_touch', String(Date.now()))
+
+    window.dispatchEvent(
+      new CustomEvent('actor:changed', {
+        detail: { kind: 'profile', id: null },
+      })
+    )
+
+    hideLaunchSplash()
+    navigate('/login', { replace: true })
+
     try {
-      await supabase.auth.signOut()
+      await supabase.auth.signOut({ scope: 'local' })
     } catch (e) {
       console.error('[Auth] signOut error:', e)
-    } finally {
-      window.location.href = '/login'
+    }
+
+    try {
+      supabase.getChannels?.().forEach((ch) => supabase.removeChannel(ch))
+    } catch (e) {
+      console.warn('[Auth] channel cleanup skipped:', e)
     }
   }
 
@@ -74,6 +99,7 @@ export function AuthProvider({ children }) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext)
 }

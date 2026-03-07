@@ -3,8 +3,8 @@ import { getDashboardCardKeysByVportType } from "@/features/dashboard/vport/scre
 const CARD_CATALOG = Object.freeze({
   qr: {
     key: "qr",
-    title: "QR Code",
-    body: "Open the QR screen for quick scanning and sharing.",
+    title: "Menu QR",
+    body: "Generate a branded QR code that opens your online menu instantly.",
     handlerKey: "openQr",
   },
   flyer: {
@@ -44,6 +44,12 @@ const CARD_CATALOG = Object.freeze({
     title: "Reviews",
     body: "View and manage your reviews and overall rating.",
     handlerKey: "openReviews",
+  },
+  calendar: {
+    key: "calendar",
+    title: "Calendar & Slots",
+    body: "Set weekly working hours and manage availability rules for booking.",
+    handlerKey: "openCalendar",
   },
   gas: {
     key: "gas",

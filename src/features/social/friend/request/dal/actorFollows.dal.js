@@ -36,7 +36,24 @@ export async function dalInsertFollow({
     )
 
   if (error) {
-    console.error('[dalInsertFollow] error', error)
+    const message = String(error?.message ?? '')
+    const expectedActorPermission =
+      error?.code === '42501' && /not allowed for actor/i.test(message)
+
+    if (expectedActorPermission) {
+      error.expectedFollowPermissionDenied = true
+      throw error
+    }
+
+    console.error('[dalInsertFollow] error', {
+      followerActorId,
+      followedActorId,
+      message: error?.message ?? null,
+      code: error?.code ?? null,
+      details: error?.details ?? null,
+      hint: error?.hint ?? null,
+      error,
+    })
     throw error
   }
 

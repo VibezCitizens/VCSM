@@ -20,11 +20,9 @@
 import { useState, useCallback } from "react";
 
 import {
-  blockActor,
-  unblockActor,
-} from "@/features/block/dal/block.write.dal";
-
-import { applyBlockSideEffects } from "@/features/block/helpers/applyBlockSideEffects";
+  blockActorController,
+  unblockActorController,
+} from "@/features/block/controllers/blockActor.controller";
 
 /**
  * useBlockActions
@@ -46,11 +44,7 @@ export function useBlockActions(myActorId, targetActorId) {
     setError(null);
 
     try {
-      // 1. Write block row (idempotent)
-      await blockActor(myActorId, targetActorId);
-
-      // 2. Enforce side effects (follows, ranks, etc.)
-      await applyBlockSideEffects(myActorId, targetActorId);
+      await blockActorController(myActorId, targetActorId);
     } catch (err) {
       console.error("[useBlockActions] block failed:", err);
       setError(err);
@@ -70,7 +64,7 @@ export function useBlockActions(myActorId, targetActorId) {
     setError(null);
 
     try {
-      await unblockActor(myActorId, targetActorId);
+      await unblockActorController(myActorId, targetActorId);
     } catch (err) {
       console.error("[useBlockActions] unblock failed:", err);
       setError(err);

@@ -1,21 +1,30 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '@/services/supabase/supabaseClient'
-import { ensureProfileShell } from '../controllers/profileOnboarding.controller'
+import { evaluateCompleteProfileGateController } from '@/features/auth/controllers/completeProfileGate.controller'
 
 export function useCompleteProfileGate() {
   const [state, setState] = useState({ loading: true, needsOnboarding: false })
 
   useEffect(() => {
     let alive = true
-    ;(async () => {
-      const { data } = await supabase.auth.getUser()
-      if (!data?.user) {
-        alive && setState({ loading: false, needsOnboarding: false })
-        return
-      }
 
-      const result = await ensureProfileShell(data.user)
-      alive && setState({ loading: false, ...result })
+    ;(async () => {
+      try {
+        const result = await evaluateCompleteProfileGateController()
+        if (!alive) return
+
+        setState({
+          loading: false,
+          needsOnboarding: Boolean(result?.needsOnboarding),
+        })
+      } catch (error) {
+        console.error('[useCompleteProfileGate] failed', error)
+        if (!alive) return
+
+        setState({
+          loading: false,
+          needsOnboarding: false,
+        })
+      }
     })()
 
     return () => { alive = false }

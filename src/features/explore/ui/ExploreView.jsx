@@ -39,7 +39,7 @@ export default function ExploreView({
   const isSearching = query.trim().length > 0
 
   return (
-    <section className="flex flex-col h-full bg-black text-white">
+    <section className="flex flex-col h-full bg-transparent text-white">
 
       {/* Search input */}
       <SearchBar

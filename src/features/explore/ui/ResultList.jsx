@@ -2,6 +2,7 @@ import { useSearchTabsActor } from '@/features/explore/hooks/useSearchTabsActor'
 import ActorSearchResultRow from './ActorSearchResultRow'
 import WanderCardSearch from '@/features/explore/ui/features/WanderCardSearch'
 import EmptyState from '@/features/explore/ui/EmptyState'
+import FeaturedResultCard from './FeaturedResultCard'
 
 export default function ResultList({ query, filter }) {
   const { items, loading } = useSearchTabsActor({ query, filter })
@@ -10,9 +11,13 @@ export default function ResultList({ query, filter }) {
   if (loading) return <div className="text-center text-slate-400">Loading...</div>
   if (!items?.length) return <EmptyState />
 
+  const [featured, ...rest] = items
+
   return (
-    <div className="space-y-2">
-      {items.map((it) => {
+    <div className="explore-results-stack">
+      {featured ? <FeaturedResultCard item={featured} /> : null}
+
+      {rest.map((it) => {
         if (!it) return null
 
         if (it.result_type === 'feature') {

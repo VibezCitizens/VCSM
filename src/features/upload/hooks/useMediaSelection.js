@@ -27,7 +27,9 @@ export function useMediaSelection({ mode }) {
     (urls || []).forEach((u) => {
       try {
         URL.revokeObjectURL(u);
-      } catch {}
+      } catch (_ERR) {
+        void _ERR;
+      }
     });
   }
 
@@ -43,7 +45,9 @@ export function useMediaSelection({ mode }) {
     if (removedUrl) {
       try {
         URL.revokeObjectURL(removedUrl);
-      } catch {}
+      } catch (_ERR) {
+        void _ERR;
+      }
     }
 
     setFiles((prev) => prev.filter((_, i) => i !== idx));

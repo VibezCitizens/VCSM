@@ -7,16 +7,17 @@ import { useIdentity } from './identityContext'
 export default function IdentitySwitcher() {
   const { identity, switchActor } = useIdentity()
   const [actors, setActors] = useState([])
+  const profileId = identity?.profileId ?? null
 
   useEffect(() => {
-    if (!identity) return
+    if (!profileId) return
 
     supabase
       .from('vc.actor_owners')
       .select('actor_id, vc_actors:actor_id (id, kind, profile_id, vport_id)')
-      .eq('user_id', identity?.profileId)
+      .eq('user_id', profileId)
       .then(({ data }) => setActors(data || []))
-  }, [identity?.profileId])
+  }, [profileId])
 
   if (actors.length <= 1) return null
 

@@ -1,6 +1,6 @@
 // src/features/chat/inbox/hooks/useInboxEntryForConversation.js
 import { useCallback, useEffect, useState } from 'react'
-import { getInboxEntryDAL } from '@/features/chat/inbox/dal/inbox.entry.read.dal'
+import { ctrlGetInboxEntryForConversation } from '@/features/chat/inbox/controllers/getInboxEntryForConversation.controller'
 
 export default function useInboxEntryForConversation({
   actorId,
@@ -15,7 +15,10 @@ export default function useInboxEntryForConversation({
     setLoading(true)
     setError(null)
     try {
-      const data = await getInboxEntryDAL({ actorId, conversationId })
+      const data = await ctrlGetInboxEntryForConversation({
+        actorId,
+        conversationId,
+      })
       setEntry(data)
     } catch (e) {
       console.error('[useInboxEntryForConversation] failed', e)

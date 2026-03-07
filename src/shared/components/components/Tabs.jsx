@@ -1,5 +1,5 @@
 // src/ui/components/Tabs.jsx
-export function Tabs({ value, onChange, children, className = '' }) {
+export function Tabs({ children, className = '' }) {
   return <div className={`flex justify-around text-xs font-semibold ${className}`}>{children}</div>;
 }
 export function Tab({ value, current, onChange, children }) {

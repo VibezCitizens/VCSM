@@ -1,0 +1,179 @@
+.chat-modern-page {
+  --chat-bg-a: #040916;
+  --chat-bg-b: #09122d;
+  --chat-surface: rgba(12, 19, 40, 0.78);
+  --chat-surface-strong: rgba(17, 27, 54, 0.9);
+  --chat-border: rgba(143, 177, 255, 0.24);
+  --chat-text: #eaf0ff;
+  --chat-muted: #a8b8df;
+  --chat-accent-a: #8e6bff;
+  --chat-accent-b: #4ea4ff;
+  --chat-accent-c: #42d3ff;
+  background:
+    radial-gradient(920px 420px at 50% -240px, rgba(93, 93, 245, 0.28), transparent 72%),
+    radial-gradient(620px 260px at 5% 0%, rgba(172, 82, 255, 0.18), transparent 76%),
+    radial-gradient(600px 250px at 94% 2%, rgba(72, 160, 255, 0.2), transparent 74%),
+    linear-gradient(180deg, var(--chat-bg-b), var(--chat-bg-a) 58%);
+  color: var(--chat-text);
+}
+
+.chat-modern-shell,
+.chat-modern-page .module-modern-shell {
+  border: 1px solid var(--chat-border);
+  background: linear-gradient(180deg, rgba(18, 27, 52, 0.86), rgba(8, 14, 29, 0.88));
+  box-shadow: 0 24px 45px rgba(0, 0, 0, 0.36), 0 0 22px rgba(96, 141, 255, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.chat-modern-page .module-modern-card,
+.chat-modern-card {
+  border: 1px solid rgba(143, 177, 255, 0.22);
+  background: linear-gradient(180deg, rgba(16, 25, 50, 0.85), rgba(8, 13, 25, 0.82));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.chat-modern-page .module-modern-input {
+  border: 1px solid rgba(141, 175, 255, 0.32);
+  background: rgba(7, 12, 28, 0.78);
+  color: #eef4ff;
+}
+
+.chat-modern-page .module-modern-input::placeholder {
+  color: #9eb2dd;
+}
+
+.chat-modern-page .module-modern-input:focus {
+  border-color: rgba(134, 168, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24), 0 0 14px rgba(107, 144, 255, 0.28);
+}
+
+.chat-modern-page .module-modern-btn--ghost {
+  border: 1px solid rgba(141, 175, 255, 0.3);
+  color: #e3ecff;
+  background: rgba(11, 19, 40, 0.66);
+}
+
+.chat-modern-page .module-modern-btn--ghost:hover {
+  background: rgba(28, 40, 72, 0.72);
+}
+
+.chat-modern-page .module-modern-btn--primary {
+  border: 1px solid rgba(143, 177, 255, 0.45);
+  background: linear-gradient(90deg, rgba(94, 92, 243, 0.95), rgba(159, 92, 247, 0.88), rgba(89, 158, 255, 0.84));
+  color: #f8fbff;
+  box-shadow: 0 12px 24px rgba(15, 26, 70, 0.42), 0 0 14px rgba(114, 156, 255, 0.36);
+}
+
+.chat-modern-sticky-header {
+  border-bottom: 1px solid rgba(141, 175, 255, 0.2);
+  background:
+    linear-gradient(180deg, rgba(8, 13, 30, 0.86), rgba(8, 13, 30, 0.52)),
+    radial-gradient(460px 180px at 50% -90px, rgba(99, 102, 241, 0.22), transparent 72%);
+  backdrop-filter: blur(14px);
+}
+
+.chat-modern-page .chat-modern-quick-actions {
+  border: 1px solid rgba(141, 175, 255, 0.22);
+  background: linear-gradient(180deg, rgba(16, 24, 46, 0.94), rgba(8, 12, 22, 0.94));
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.36), 0 0 14px rgba(98, 136, 255, 0.24);
+  backdrop-filter: blur(12px);
+}
+
+.chat-modern-page .chat-modern-list-row:hover {
+  background: linear-gradient(90deg, rgba(81, 94, 235, 0.16), rgba(107, 166, 255, 0.08));
+}
+
+.chat-modern-settings-row {
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.chat-modern-settings-row:hover {
+  background: linear-gradient(90deg, rgba(84, 95, 232, 0.14), rgba(90, 168, 255, 0.08));
+}
+
+.chat-modern-toggle {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 10px rgba(92, 130, 255, 0.22);
+}
+
+.chat-modern-toggle-knob {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.chat-modern-radio {
+  background: rgba(9, 13, 24, 0.58);
+}
+
+.chat-modern-conversation .chat-header {
+  border-bottom-color: rgba(141, 175, 255, 0.2);
+}
+
+.chat-modern-conversation .chat-messages {
+  padding-bottom: calc(86px + env(safe-area-inset-bottom));
+}
+
+.chat-modern-conversation .chat-modern-message-list {
+  padding-bottom: 10px;
+}
+
+.chat-modern-conversation .chat-topbar {
+  top: auto;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  left: 10px;
+  right: 10px;
+}
+
+.chat-modern-conversation .chat-topbar > div {
+  border: 1px solid rgba(141, 175, 255, 0.24);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(18, 27, 50, 0.92), rgba(8, 13, 25, 0.9));
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+  padding: 8px 10px;
+  backdrop-filter: blur(10px);
+}
+
+.chat-modern-conversation .chat-bottom-t {
+  width: 52px;
+  height: 52px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  border: 1px solid rgba(171, 197, 255, 0.32);
+  background: linear-gradient(135deg, rgba(120, 118, 255, 0.96), rgba(93, 190, 255, 0.9));
+  color: #f8fbff;
+  box-shadow: 0 12px 28px rgba(14, 26, 66, 0.52), 0 0 16px rgba(105, 160, 255, 0.45);
+}
+
+.chat-modern-bubble {
+  border: 1px solid rgba(145, 176, 255, 0.22);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+.chat-modern-bubble--mine {
+  background: linear-gradient(140deg, rgba(84, 84, 231, 0.92), rgba(149, 84, 226, 0.9));
+  border-color: rgba(167, 167, 255, 0.42);
+}
+
+.chat-modern-bubble--other {
+  background: linear-gradient(140deg, rgba(18, 30, 58, 0.9), rgba(12, 18, 36, 0.9));
+  border-color: rgba(141, 175, 255, 0.28);
+}
+
+.chat-modern-bubble--media {
+  box-shadow: none;
+  border: 0;
+}
+
+.chat-modern-popover {
+  border: 1px solid rgba(145, 177, 255, 0.24);
+  background: linear-gradient(180deg, rgba(16, 24, 46, 0.96), rgba(7, 11, 22, 0.96));
+  box-shadow: 0 20px 34px rgba(0, 0, 0, 0.42), 0 0 16px rgba(99, 137, 255, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.chat-modern-empty-icon {
+  border: 1px solid rgba(145, 177, 255, 0.2);
+  background: rgba(16, 24, 42, 0.76);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28), inset 0 0 16px rgba(107, 121, 255, 0.18);
+}
+
+.chat-modern-page code {
+  color: #c9d8ff;
+}

@@ -61,19 +61,14 @@ export function useWandersPublicCardExperience({ publicId }) {
   useEffect(() => {
     if (!cardId) return;
 
-    let cancelled = false;
-
     (async () => {
       try {
         await Promise.resolve(markOpened?.(cardId));
-      } catch {
+      } catch (_ERR) {
         // UI-only: ignore
+        void _ERR;
       }
     })();
-
-    return () => {
-      cancelled = true;
-    };
   }, [cardId, markOpened]);
 
   return {

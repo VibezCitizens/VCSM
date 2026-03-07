@@ -5,29 +5,28 @@ import { Navigate, useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/state/identity/identityContext'
 
-import { supabase } from '@/services/supabase/supabaseClient'
-
 import PostCard from '@/features/post/postcard/adapters/PostCard'
 
 import PullToRefresh from '@/shared/components/PullToRefresh'
 import { useFeed } from '@/features/feed/hooks/useFeed'
+import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 
 import DebugPrivacyPanel from './DebugPrivacyPanel'
 
 import useReportFlow from '@/features/moderation/hooks/useReportFlow'
 import ReportModal from '@/features/moderation/components/ReportModal'
 import PostActionsMenu from '@/features/post/postcard/components/PostActionsMenu'
-
-import { softDeletePostController } from '@/features/post/postcard/controller/deletePost.controller'
-import { ctrlSubscribe } from '@/features/social/friend/subscribe/controllers/follow.controller'
-import { ctrlUnsubscribe } from '@/features/social/friend/subscribe/controllers/unsubscribe.controller'
+import { useDeletePostAction } from '@/features/post/postcard/hooks/useDeletePostAction'
+import { useFollowActorToggle } from '@/features/social/friend/subscribe/hooks/useFollowActorToggle'
 import { useFollowStatus } from '@/features/social/friend/subscribe/hooks/useFollowStatus'
-import { blockActorController } from '@/features/block/controllers/blockActor.controller'
+import { useBlockActorAction } from '@/features/block/hooks/useBlockActorAction'
+import { useHidePostForActor } from '@/features/moderation/hooks/useHidePostForActor'
 
 import { shareNative } from '@/shared/lib/shareNative'
 import ShareModal from '@/features/post/postcard/components/ShareModal'
 
 import ReportedPostCover from '@/features/moderation/components/ReportThanksOverlay'
+import '@/features/profiles/styles/profiles-modern.css'
 
 function FeedSkeletonList({ count = 3 }) {
   return (
@@ -35,20 +34,20 @@ function FeedSkeletonList({ count = 3 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={`feed-skeleton:${i}`}
-          className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/80"
+          className="profiles-card overflow-hidden rounded-2xl"
         >
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="h-10 w-10 animate-pulse rounded-xl bg-neutral-800" />
+            <div className="h-10 w-10 animate-pulse rounded-xl bg-slate-700/50" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3 w-32 animate-pulse rounded bg-neutral-800" />
-              <div className="h-2 w-20 animate-pulse rounded bg-neutral-800/80" />
+              <div className="h-3 w-32 animate-pulse rounded bg-slate-700/50" />
+              <div className="h-2 w-20 animate-pulse rounded bg-slate-700/40" />
             </div>
           </div>
 
           <div className="space-y-2 px-4 pb-4">
-            <div className="h-3 w-11/12 animate-pulse rounded bg-neutral-800" />
-            <div className="h-3 w-8/12 animate-pulse rounded bg-neutral-800/80" />
-            <div className="mt-3 h-44 animate-pulse rounded-xl bg-neutral-800/70" />
+            <div className="h-3 w-11/12 animate-pulse rounded bg-slate-700/50" />
+            <div className="h-3 w-8/12 animate-pulse rounded bg-slate-700/40" />
+            <div className="mt-3 h-44 animate-pulse rounded-xl bg-slate-700/35" />
           </div>
         </div>
       ))}
@@ -66,6 +65,10 @@ export default function CentralFeed() {
   const realmId = identity?.realmId ?? null
 
   const reportFlow = useReportFlow({ reporterActorId: actorId })
+  const deletePost = useDeletePostAction({ actorId })
+  const toggleFollow = useFollowActorToggle()
+  const blockActor = useBlockActorAction()
+  const hidePost = useHidePostForActor()
 
   const {
     posts,
@@ -75,9 +78,10 @@ export default function CentralFeed() {
     setPosts,
     fetchViewer,
     hiddenPostIds: serverHiddenPostIds,
+    firstBatchReady,
   } = useFeed(actorId, realmId)
   const [postMenu, setPostMenu] = useState(null)
-  const showInitialSkeleton = posts.length === 0 && loading
+  const showInitialSkeleton = !firstBatchReady
   const isMenuActorFollowing = useFollowStatus({
     followerActorId: actorId,
     followedActorId: postMenu?.postActorId ?? null,
@@ -115,8 +119,7 @@ export default function CentralFeed() {
     const okConfirm = window.confirm('Delete this Vibe?')
     if (!okConfirm) return
 
-    const res = await softDeletePostController({
-      actorId,
+    const res = await deletePost({
       postId: postMenu.postId,
     })
 
@@ -127,7 +130,7 @@ export default function CentralFeed() {
 
     await fetchPosts(true)
     closePostMenu()
-  }, [actorId, postMenu, fetchPosts, closePostMenu])
+  }, [actorId, postMenu, fetchPosts, closePostMenu, deletePost])
 
   const handleReportPost = useCallback(() => {
     if (!actorId) return
@@ -151,14 +154,16 @@ export default function CentralFeed() {
 
     try {
       if (isMenuActorFollowing) {
-        await ctrlUnsubscribe({
+        await toggleFollow({
           followerActorId: actorId,
           followedActorId: postMenu.postActorId,
+          isFollowing: true,
         })
       } else {
-        await ctrlSubscribe({
+        await toggleFollow({
           followerActorId: actorId,
           followedActorId: postMenu.postActorId,
+          isFollowing: false,
         })
       }
       closePostMenu()
@@ -171,7 +176,7 @@ export default function CentralFeed() {
             : 'Failed to subscribe to actor')
       )
     }
-  }, [actorId, postMenu, closePostMenu, isMenuActorFollowing])
+  }, [actorId, postMenu, closePostMenu, isMenuActorFollowing, toggleFollow])
 
   const handleOpenActorProfile = useCallback(() => {
     if (!postMenu?.postActorId) return
@@ -206,32 +211,32 @@ export default function CentralFeed() {
     closePostMenu()
 
     try {
-      await blockActorController(actorId, blockedActorId)
+      await blockActor({
+        blockerActorId: actorId,
+        blockedActorId,
+      })
       await fetchPosts(true)
     } catch (err) {
       if (snapshot) setPosts(snapshot)
       console.error('[CentralFeed] block failed:', err)
       window.alert(err?.message || 'Failed to block actor')
     }
-  }, [actorId, postMenu, closePostMenu, fetchPosts, setPosts])
+  }, [actorId, postMenu, closePostMenu, fetchPosts, setPosts, blockActor])
 
   const persistHideForMe = useCallback(
     async (postId) => {
       if (!actorId || !postId) return
       try {
-        const { error } = await supabase.schema('vc').from('moderation_actions').insert({
-          actor_id: actorId,
-          object_type: 'post',
-          object_id: postId,
-          action_type: 'hide',
+        await hidePost({
+          actorId,
+          postId,
           reason: 'user_reported',
         })
-        if (error) console.warn('[CentralFeed] persist hide failed:', error)
       } catch (e) {
         console.warn('[CentralFeed] persist hide threw:', e)
       }
     },
-    [actorId]
+    [actorId, hidePost]
   )
 
   const handleReportSubmit = useCallback(
@@ -293,6 +298,11 @@ export default function CentralFeed() {
     fetchViewer()
   }, [actorId, fetchViewer])
 
+  useEffect(() => {
+    if (!firstBatchReady) return
+    hideLaunchSplash()
+  }, [firstBatchReady])
+
   const observeMore = useCallback(() => {
     const root = ptrRef.current
     const sentinel = sentinelRef.current
@@ -333,7 +343,7 @@ export default function CentralFeed() {
       onRefresh={handleRefresh}
       threshold={70}
       maxPull={120}
-      className="h-full min-h-full overflow-y-auto bg-black text-white px-0 py-2"
+      className="profiles-modern post-modern h-full min-h-full overflow-y-auto text-white px-0 py-2"
     >
       {showInitialSkeleton && <FeedSkeletonList count={3} />}
 
@@ -341,7 +351,7 @@ export default function CentralFeed() {
         <p className="text-center text-gray-400">No Vibes found.</p>
       )}
 
-      {posts.map((post) => {
+      {posts.map((post, index) => {
         const hiddenServer =
           !!post.is_hidden_for_viewer || (serverHiddenPostIds?.has?.(post.id) ?? false)
 
@@ -365,6 +375,7 @@ export default function CentralFeed() {
               }}
               onOpenMenu={openPostMenu}
               onShare={handleShare}
+              prioritizeMedia={index < 3}
               covered={covered}
               cover={covered ? <ReportedPostCover /> : null}
             />

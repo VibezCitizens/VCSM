@@ -1,17 +1,19 @@
 .profiles-modern {
-  --profiles-bg: #07070f;
-  --profiles-bg-soft: #0d0d19;
-  --profiles-surface: rgba(24, 18, 38, 0.74);
-  --profiles-surface-strong: rgba(34, 22, 52, 0.84);
-  --profiles-border: rgba(172, 139, 224, 0.24);
+  --profiles-bg: #050818;
+  --profiles-bg-soft: #0a0f22;
+  --profiles-surface: rgba(18, 28, 54, 0.66);
+  --profiles-surface-strong: rgba(24, 35, 64, 0.84);
+  --profiles-border: rgba(139, 167, 255, 0.24);
   --profiles-text: #f3f0fb;
-  --profiles-text-muted: #b4abc7;
-  --profiles-accent: #b572ff;
-  --profiles-accent-strong: #6f8fff;
+  --profiles-text-muted: #a9b4d3;
+  --profiles-accent: #9a6bff;
+  --profiles-accent-strong: #39a6ff;
+  --profiles-accent-soft: #6f8fff;
   color: var(--profiles-text);
   background:
-    radial-gradient(80rem 40rem at -10% -20%, rgba(181, 114, 255, 0.1), transparent 55%),
-    radial-gradient(50rem 30rem at 110% 10%, rgba(111, 143, 255, 0.12), transparent 60%),
+    radial-gradient(72rem 38rem at -8% -18%, rgba(128, 83, 255, 0.16), transparent 56%),
+    radial-gradient(58rem 32rem at 112% 12%, rgba(31, 151, 255, 0.18), transparent 62%),
+    radial-gradient(44rem 20rem at 50% 38%, rgba(74, 94, 255, 0.09), transparent 68%),
     linear-gradient(180deg, var(--profiles-bg-soft) 0%, var(--profiles-bg) 55%);
 }
 
@@ -63,25 +65,35 @@
 }
 
 .profiles-modern .profiles-tabbar {
-  border-bottom: 1px solid rgba(172, 139, 224, 0.22);
+  border-bottom: 1px solid rgba(125, 156, 255, 0.2);
+  -webkit-overflow-scrolling: touch;
 }
 
 .profiles-modern .profiles-tab-btn {
   color: var(--profiles-text-muted);
+  font-family: 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif !important;
+  letter-spacing: 0.01em;
+  transform: translateY(0);
 }
 
 .profiles-modern .profiles-tab-btn:hover {
-  color: #d8e7ff;
+  color: #dde9ff;
+  transform: translateY(-1px);
 }
 
 .profiles-modern .profiles-tab-btn.is-active {
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 0 0 18px rgba(97, 130, 255, 0.32);
 }
 
 .profiles-modern .profiles-tab-indicator {
-  background: linear-gradient(90deg, var(--profiles-accent), var(--profiles-accent-strong));
-  box-shadow: 0 0 12px rgba(181, 114, 255, 0.28);
+  background: linear-gradient(90deg, var(--profiles-accent) 0%, var(--profiles-accent-soft) 46%, var(--profiles-accent-strong) 100%);
+  box-shadow:
+    0 0 10px rgba(154, 107, 255, 0.5),
+    0 0 18px rgba(57, 166, 255, 0.4),
+    0 0 26px rgba(57, 166, 255, 0.3);
+  transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), width 300ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 180ms ease;
 }
 
 .profiles-modern .profiles-pill-btn {
@@ -103,4 +115,122 @@
   opacity: 0.56;
   cursor: not-allowed;
   transform: none;
+}
+
+.profiles-modern .profiles-tags-wrap {
+  padding-top: 0.25rem;
+}
+
+.profiles-modern .profiles-tags-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(137, 167, 255, 0.22);
+  background:
+    linear-gradient(145deg, rgba(108, 132, 255, 0.13), rgba(60, 81, 142, 0.06) 38%, rgba(7, 15, 33, 0.78)),
+    rgba(10, 16, 34, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -28px 55px rgba(8, 16, 38, 0.28),
+    0 20px 40px rgba(2, 7, 20, 0.46),
+    0 0 22px rgba(73, 106, 255, 0.2);
+  backdrop-filter: blur(16px);
+}
+
+.profiles-modern .profiles-tags-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(145deg, rgba(178, 153, 255, 0.48), rgba(60, 178, 255, 0.18) 45%, rgba(255, 255, 255, 0.05)) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.profiles-modern .profiles-tags-card::after {
+  content: '';
+  position: absolute;
+  inset: -30% 22% auto;
+  height: 68%;
+  background: radial-gradient(circle at top, rgba(92, 124, 255, 0.2), transparent 66%);
+  pointer-events: none;
+}
+
+.profiles-modern .profiles-tags-title {
+  font-family: 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif !important;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #f8fbff;
+}
+
+.profiles-modern .profiles-tag-chip {
+  position: relative;
+  border-radius: 9999px;
+  border: 1px solid rgba(141, 167, 255, 0.36);
+  background: linear-gradient(135deg, rgba(116, 77, 255, 0.27), rgba(28, 97, 220, 0.22) 55%, rgba(34, 169, 255, 0.22));
+  color: #dbe8ff;
+  padding: 0.48rem 0.9rem;
+  font-size: 0.77rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 8px 20px rgba(5, 13, 33, 0.42),
+    0 0 0 rgba(72, 135, 255, 0);
+  transition: transform 160ms ease, box-shadow 220ms ease, border-color 220ms ease, background 220ms ease;
+  transform: translateY(0) scale(1);
+}
+
+.profiles-modern .profiles-tag-chip:hover,
+.profiles-modern .profiles-tag-chip:focus-visible {
+  transform: translateY(-1px) scale(1.02);
+  border-color: rgba(165, 191, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 12px 24px rgba(4, 11, 31, 0.44),
+    0 0 14px rgba(87, 139, 255, 0.33);
+}
+
+.profiles-modern .profiles-tag-chip:active {
+  transform: scale(0.97);
+}
+
+.profiles-modern .profiles-tag-chip.is-active {
+  border-color: rgba(188, 211, 255, 0.78);
+  background: linear-gradient(125deg, rgba(144, 88, 255, 0.44), rgba(63, 128, 255, 0.35), rgba(30, 194, 255, 0.35));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 14px 28px rgba(6, 12, 32, 0.48),
+    0 0 18px rgba(111, 148, 255, 0.52);
+  animation: profiles-tag-glow 2.2s ease-in-out infinite;
+}
+
+.profiles-modern .profiles-tag-chip-add {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(107, 126, 170, 0.2));
+  border-style: dashed;
+}
+
+@keyframes profiles-tag-glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.24),
+      0 14px 28px rgba(6, 12, 32, 0.48),
+      0 0 16px rgba(111, 148, 255, 0.44);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      0 14px 30px rgba(6, 12, 32, 0.52),
+      0 0 24px rgba(123, 177, 255, 0.68);
+  }
 }

@@ -140,16 +140,25 @@
 
     <script type="module" src="/src/main.jsx"></script>
     <script>
-      // Remove splash once React takes over
-      window.addEventListener('DOMContentLoaded', () => {
+      ;(() => {
         const splash = document.getElementById('splash')
         if (!splash) return
 
-        setTimeout(() => {
+        let done = false
+
+        const hideSplash = () => {
+          if (done) return
+          done = true
           splash.classList.add('is-exiting')
           setTimeout(() => splash.remove(), 340)
-        }, 650)
-      })
+        }
+
+        // React can trigger this once data/UI is actually ready.
+        window.addEventListener('vc:splash:hide', hideSplash, { once: true })
+
+        // Safety fallback: never block forever if app crashes before signaling.
+        setTimeout(hideSplash, 12000)
+      })()
     </script>
   </body>
 </html>

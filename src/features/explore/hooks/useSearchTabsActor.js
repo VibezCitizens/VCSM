@@ -1,7 +1,7 @@
 // src/features/explore/hooks/useSearchTabsActor.js
 
 import { useEffect, useRef, useState } from 'react'
-import { searchDal } from '@/features/explore/dal/search.dal'
+import { ctrlSearchTabs } from '@/features/explore/controller/searchTabs.controller'
 
 // ============================================================
 // useSearchTabsActor
@@ -45,16 +45,14 @@ export function useSearchTabsActor({
       setError(null)
 
       try {
-        const calls = searchDal(query, filter, {
+        const flat = await ctrlSearchTabs({
+          query,
+          filter,
           limit,
           offset,
         })
 
-        const responses = await Promise.all(calls)
-
         if (cancelled || reqId !== requestIdRef.current) return
-
-        const flat = responses.flat()
 
         // IMPORTANT:
         // search.data already returns actor-first objects.

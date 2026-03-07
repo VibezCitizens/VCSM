@@ -17,7 +17,7 @@ export const TAB = Object.freeze({
   RATES: T("rates", "Rates"),
 
   PORTFOLIO: T("portfolio", "Portfolio"),
-  BOOK: T("book", "Book"),
+  BOOK: T("book", "Calendar"),
 });
 
 export const TAB_FLAGS = Object.freeze({
@@ -25,8 +25,8 @@ export const TAB_FLAGS = Object.freeze({
   SERVICES: true,
   RATES: true,
 
-  PORTFOLIO: false,
-  BOOK: false,
+  PORTFOLIO: true,
+  BOOK: true,
 });
 
 function makeTabs(keys) {
@@ -60,6 +60,17 @@ export const VPORT_SERVICE_TABS = makeTabs([
   "VIBES",
   "SUBSCRIBERS",
   "PHOTOS",
+]);
+
+export const VPORT_BARBER_TABS = makeTabs([
+  "PORTFOLIO",
+  "BOOK",
+  "SERVICES",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
 ]);
 
 export const VPORT_FOOD_TABS = makeTabs([

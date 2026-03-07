@@ -35,19 +35,27 @@ function raise(message, meta) {
 
 /* ------------------------------ create ----------------------------- */
 
-export async function createVport({ name, slug, avatarUrl, bio, bannerUrl, vportType }) {
+export async function createVport({
+  name,
+  slug = null, // optional base for DB-side random handle generation
+  avatarUrl,
+  bio,
+  bannerUrl,
+  vportType,
+} = {}) {
   await requireUser();
 
   const cleanName = ensureString(name).trim();
   if (!cleanName) raise('Vport name is required');
 
-  const cleanSlug = normalizeSlug(slug);
+  const cleanSlugBase = normalizeSlug(slug);
 
   const cleanType = ensureString(vportType).trim().toLowerCase() || null;
 
   const { data, error } = await vc.rpc('create_vport', {
     p_name: cleanName,
-    p_slug: cleanSlug,                  // may be null
+    // if null, DB falls back to username/name and always appends random digits
+    p_slug: cleanSlugBase,
     p_avatar_url: avatarUrl ?? null,
     p_bio: bio ?? null,
     p_banner_url: bannerUrl ?? null,    // optional in RPC
@@ -63,13 +71,29 @@ export async function createVport({ name, slug, avatarUrl, bio, bannerUrl, vport
     if (msg.includes('owner profile') || msg.includes('23503')) {
       raise('Owner profile not found. Ensure profiles row exists for this user.');
     }
-    if (msg.includes('duplicate') || msg.includes('unique')) {
-      raise('Slug already in use. Pick a different one.');
+    if (
+      msg.includes('uniqueness conflict') ||
+      msg.includes('duplicate') ||
+      msg.includes('unique')
+    ) {
+      raise('Handle generation conflicted. Please retry.');
     }
     raise('Failed to create Vport', { error });
   }
 
-  return data; // { vport_id, actor_id }
+  const payload = data && typeof data === 'object' ? data : {};
+  const fallbackType = cleanType || 'other';
+
+  return {
+    ...payload,
+    ok: payload.ok === true,
+    vport_id: payload.vport_id ?? null,
+    actor_id: payload.actor_id ?? null,
+    slug: payload.slug ?? null,
+    handle: payload.handle ?? (payload.slug ? `@${payload.slug}` : null),
+    name: payload.name ?? cleanName,
+    vport_type: payload.vport_type ?? fallbackType,
+  };
 }
 
 /* ------------------------------ reads ------------------------------ */

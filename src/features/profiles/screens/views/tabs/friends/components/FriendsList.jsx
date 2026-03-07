@@ -22,7 +22,7 @@ export default function FriendsList({
      ============================================================ */
   if (isPrivate) {
     return (
-      <p className="text-sm text-neutral-500 py-4">
+      <p className="profiles-subcard text-sm text-slate-300/80 py-4 px-4">
         This list is private.
       </p>
     );
@@ -33,7 +33,7 @@ export default function FriendsList({
      ============================================================ */
   if (loading) {
     return (
-      <p className="text-sm text-neutral-500 py-4">
+      <p className="profiles-subcard text-sm text-slate-300/80 py-4 px-4">
         Loading friends…
       </p>
     );

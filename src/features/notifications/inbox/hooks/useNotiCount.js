@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getUnreadNotificationCount } from '../controller/notificationsCount.controller'
-import { supabase } from '@/services/supabase/supabaseClient'
+import { subscribeNotificationBadge } from '@/features/notifications/inbox/realtime/badgeSubscriptions'
 
 const UUID_RX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -65,7 +65,7 @@ export default function useNotiCount({
   const [count, setCount] = useState(0)
 
   const pollRef = useRef(null)
-  const realtimeRef = useRef(null)
+  const unsubscribeRealtimeRef = useRef(null)
   const lastActorRef = useRef(null)
 
   const validActor =
@@ -100,32 +100,16 @@ export default function useNotiCount({
     const onRefresh = () => fetchCount(true)
     window.addEventListener('noti:refresh', onRefresh)
 
-    if (realtimeRef.current) {
-      supabase.removeChannel(realtimeRef.current)
-      realtimeRef.current = null
+    if (unsubscribeRealtimeRef.current) {
+      unsubscribeRealtimeRef.current()
+      unsubscribeRealtimeRef.current = null
     }
 
-    const channel = supabase.channel(`noti-badge-${actorId}`)
-
     const onRealtime = () => fetchCount(true)
-    channel.on(
-      'postgres_changes',
-      { event: 'INSERT', schema: 'vc', table: 'notifications', filter: `recipient_actor_id=eq.${actorId}` },
-      onRealtime
-    )
-    channel.on(
-      'postgres_changes',
-      { event: 'UPDATE', schema: 'vc', table: 'notifications', filter: `recipient_actor_id=eq.${actorId}` },
-      onRealtime
-    )
-    channel.on(
-      'postgres_changes',
-      { event: 'DELETE', schema: 'vc', table: 'notifications', filter: `recipient_actor_id=eq.${actorId}` },
-      onRealtime
-    )
-
-    channel.subscribe()
-    realtimeRef.current = channel
+    unsubscribeRealtimeRef.current = subscribeNotificationBadge({
+      actorId,
+      onChange: onRealtime,
+    })
 
     if (pollRef.current) clearInterval(pollRef.current)
     pollRef.current = setInterval(fetchCount, pollMs)
@@ -133,9 +117,9 @@ export default function useNotiCount({
     return () => {
       window.removeEventListener('noti:refresh', onRefresh)
       if (pollRef.current) clearInterval(pollRef.current)
-      if (realtimeRef.current) {
-        supabase.removeChannel(realtimeRef.current)
-        realtimeRef.current = null
+      if (unsubscribeRealtimeRef.current) {
+        unsubscribeRealtimeRef.current()
+        unsubscribeRealtimeRef.current = null
       }
     }
   }, [actorId, validActor, pollMs, fetchCount])

@@ -5,8 +5,9 @@ function clamp(n, a, b) {
   return Math.max(a, Math.min(b, n));
 }
 
-export default function MediaCarousel({ media = [] }) {
+export default function MediaCarousel({ media = [], prioritizeMedia = false }) {
   const [index, setIndex] = useState(0);
+  const [currentLoaded, setCurrentLoaded] = useState(false);
   const startXRef = useRef(null);
   const deltaXRef = useRef(0);
 
@@ -15,10 +16,25 @@ export default function MediaCarousel({ media = [] }) {
     [media]
   );
   const count = items.length;
+  const current = items[index] ?? null;
+  const currentType = current?.type;
+  const currentUrl = current?.url ?? null;
+  const hasCurrentUrl = typeof currentUrl === "string" && currentUrl.length > 0;
 
   useEffect(() => {
     setIndex((i) => clamp(i, 0, Math.max(0, count - 1)));
   }, [count]);
+
+  useEffect(() => {
+    setCurrentLoaded(!hasCurrentUrl);
+  }, [hasCurrentUrl, index, currentUrl]);
+
+  useEffect(() => {
+    if (!hasCurrentUrl || currentType !== "image") return;
+    const probe = new Image();
+    probe.src = currentUrl;
+    if (probe.complete) setCurrentLoaded(true);
+  }, [hasCurrentUrl, currentType, currentUrl]);
 
   const next = useCallback(
     () => setIndex((i) => (i + 1 < count ? i + 1 : i)),
@@ -30,14 +46,11 @@ export default function MediaCarousel({ media = [] }) {
   const shouldLoad = useCallback((i) => Math.abs(i - index) <= 1, [index]);
 
   const renderNode = useMemo(() => {
-    const current = items[index];
     const type = current?.type;
     const url = current?.url;
 
     if (!url) {
-      return (
-        <div className="w-full max-h-[450px] h-[350px] bg-neutral-950 animate-pulse rounded-xl" />
-      );
+      return <div className="absolute inset-0 bg-neutral-950" />;
     }
 
     if (type === "video") {
@@ -46,7 +59,10 @@ export default function MediaCarousel({ media = [] }) {
           src={url}
           controls
           preload="metadata"
-          className="w-full object-cover max-h-[450px] rounded-xl"
+          className="absolute inset-0 h-full w-full object-cover"
+          onLoadedData={() => setCurrentLoaded(true)}
+          onCanPlay={() => setCurrentLoaded(true)}
+          onError={() => setCurrentLoaded(true)}
         />
       );
     }
@@ -55,13 +71,16 @@ export default function MediaCarousel({ media = [] }) {
       <img
         src={url}
         alt=""
-        loading="lazy"
+        loading={prioritizeMedia ? "eager" : "lazy"}
+        fetchPriority={prioritizeMedia ? "high" : "auto"}
         decoding="async"
-        className="w-full object-cover max-h-[450px] rounded-xl"
+        className="absolute inset-0 h-full w-full object-cover"
         draggable={false}
+        onLoad={() => setCurrentLoaded(true)}
+        onError={() => setCurrentLoaded(true)}
       />
     );
-  }, [items, index]);
+  }, [current, prioritizeMedia]);
 
   function onTouchStart(e) {
     if (!e.touches || e.touches.length !== 1) return;
@@ -144,10 +163,15 @@ export default function MediaCarousel({ media = [] }) {
       onPointerUp={count > 1 ? onPointerUp : undefined}
       onPointerCancel={count > 1 ? onPointerUp : undefined}
     >
-      {renderNode}
+      <div className="relative w-full max-h-[450px] aspect-[4/3] bg-neutral-950">
+        {renderNode}
+        {!currentLoaded && (
+          <div className="absolute inset-0 animate-pulse bg-neutral-950/85" />
+        )}
+      </div>
 
       {/* 1/N */}
-      {count > 1 && (
+      {count > 1 && currentLoaded && (
         <div className="pointer-events-none absolute top-3 right-3 z-10">
           <div className="rounded-full bg-black/60 text-white text-xs px-2.5 py-1">
             {index + 1} / {count}
@@ -156,7 +180,7 @@ export default function MediaCarousel({ media = [] }) {
       )}
 
       {/* arrows */}
-      {count > 1 && (
+      {count > 1 && currentLoaded && (
         <>
           <button
             onClick={(e) => {
@@ -187,7 +211,7 @@ export default function MediaCarousel({ media = [] }) {
       )}
 
       {/* dots */}
-      {count > 1 && (
+      {count > 1 && currentLoaded && (
         <div className="absolute bottom-3 w-full flex justify-center gap-2 z-10 pointer-events-none">
           {items.map((m, i) => {
             const loaded = shouldLoad(i);

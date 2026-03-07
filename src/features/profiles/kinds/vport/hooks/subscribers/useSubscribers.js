@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { dalCountSubscribers } from "@/features/profiles/kinds/vport/dal/subscribersCount.dal";
-import { dalListSubscribers } from "@/features/profiles/kinds/vport/dal/subscribersList.dal";
+import { getSubscribersController } from "@/features/profiles/kinds/vport/controller/subscribers/getSubscribers.controller";
 
 export function useSubscribers(actorId) {
   const [loading, setLoading] = useState(true);
@@ -20,13 +19,14 @@ export function useSubscribers(actorId) {
     setError("");
 
     try {
-      const [c, list] = await Promise.all([
-        dalCountSubscribers(actorId),
-        dalListSubscribers({ actorId, limit: 50, offset: 0 }),
-      ]);
+      const result = await getSubscribersController({
+        actorId,
+        limit: 50,
+        offset: 0,
+      });
 
-      setCount(c ?? 0);
-      setRows(Array.isArray(list) ? list : []);
+      setCount(result.count ?? 0);
+      setRows(Array.isArray(result.rows) ? result.rows : []);
     } catch (e) {
       setError(e?.message || "Failed to load subscribers");
       setCount(0);

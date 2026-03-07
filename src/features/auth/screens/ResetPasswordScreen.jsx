@@ -4,32 +4,11 @@
 // @Scope: Architecture rewrite
 // @Note: Do NOT remove, rename, or modify this block.
 
-import { useState } from 'react';
-import { supabase } from '@/services/supabase/supabaseClient'; //transfer
 import { Link } from 'react-router-dom';
+import { useResetPassword } from '@/features/auth/hooks/useResetPassword';
 
 export default function ResetPasswordScreen() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleReset = async (e) => {
-    e.preventDefault();
-    setStatus('');
-    setLoading(true);
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://vibezcitizens.com/reset-confirm',
-    });
-
-    if (error) {
-      setStatus('Error sending reset email. Please try again.');
-    } else {
-      setStatus('Check your email for the reset link.');
-    }
-
-    setLoading(false);
-  };
+  const { email, setEmail, status, loading, handleReset } = useResetPassword();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black px-4">

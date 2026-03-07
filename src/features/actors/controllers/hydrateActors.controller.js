@@ -26,8 +26,19 @@ export async function hydrateActorsFromRows(rows) {
   const vportIds = actors.filter(a => a.kind === 'vport' && a.vport_id).map(a => a.vport_id);
 
   const [pRes, vRes] = await Promise.all([
-    profileIds.length ? supabase.from("profiles").select("*").in("id", profileIds) : { data: [] },
-    vportIds.length ? supabase.schema("vc").from("vports").select("*").in("id", vportIds) : { data: [] }
+    profileIds.length
+      ? supabase
+          .from("profiles")
+          .select("id,display_name,username,photo_url,banner_url,bio")
+          .in("id", profileIds)
+      : { data: [] },
+    vportIds.length
+      ? supabase
+          .schema("vc")
+          .from("vports")
+          .select("id,name,slug,avatar_url,banner_url,bio")
+          .in("id", vportIds)
+      : { data: [] }
   ]);
 
   const profileMap = Object.fromEntries(pRes.data?.map(p => [p.id, p]) || []);

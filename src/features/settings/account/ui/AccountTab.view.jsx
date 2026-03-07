@@ -1,4 +1,4 @@
-import { useAccountController } from '../controller/Account.controller'
+import { useAccountController } from '@/features/settings/account/hooks/useAccountController'
 
 export default function AccountTabView() {
   const ctrl = useAccountController()

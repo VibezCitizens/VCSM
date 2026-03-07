@@ -38,7 +38,7 @@ export default function UserProfileTab({ controller }) {
   }, [saved]);
 
   if (!ready || loading || !draft) {
-    return <div className="py-6 text-sm text-zinc-400">Loading profile…</div>;
+    return <div className="py-6 text-sm text-slate-400">Loading profile...</div>;
   }
 
   const onPickAvatar = (e) => {
@@ -114,12 +114,12 @@ export default function UserProfileTab({ controller }) {
             fixed bottom-24 left-1/2 -translate-x-1/2
             z-50
             px-4 py-2 rounded-full
-            bg-green-600 text-white text-sm font-medium
-            shadow-lg
-            animate-fade-in
+            settings-card-surface border border-emerald-300/30
+            text-emerald-200 text-sm font-medium
+            shadow-lg animate-fade-in
           "
         >
-          Saved ✓
+          Saved
         </div>
       )}
     </>

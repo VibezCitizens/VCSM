@@ -1,6 +1,6 @@
 // src/features/settings/vports/hooks/useProfileActor.js
 import { useEffect, useState } from "react";
-import { supabase } from "@/services/supabase/supabaseClient";
+import { ctrlGetProfileActorId } from "@/features/settings/vports/controller/getProfileActorId.controller";
 
 export function useProfileActor(userId) {
   const [profileActorId, setProfileActorId] = useState(null);
@@ -12,25 +12,9 @@ export function useProfileActor(userId) {
 
     (async () => {
       try {
-        const { data, error } = await supabase
-          .schema("vc")
-          .from("actor_owners")
-          .select(`
-            actor:actors (
-              id,
-              kind
-            )
-          `)
-          .eq("user_id", userId);
-
-        if (error) throw error;
-
-        const userActor = data
-          ?.map((r) => r.actor)
-          ?.find((a) => a?.kind === "user");
-
+        const userActorId = await ctrlGetProfileActorId({ userId });
         if (alive) {
-          setProfileActorId(userActor?.id ?? null);
+          setProfileActorId(userActorId ?? null);
         }
       } catch (e) {
         console.error("[useProfileActor] failed", e);

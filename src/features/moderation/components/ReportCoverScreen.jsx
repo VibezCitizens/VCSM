@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 
 export default function ReportCoverScreen({
   open = false,
@@ -11,7 +11,7 @@ export default function ReportCoverScreen({
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <Motion.div
           className="fixed inset-0 z-[999999] bg-black"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -47,7 +47,7 @@ export default function ReportCoverScreen({
               <div className="mt-4 text-sm text-neutral-400">Submitting…</div>
             ) : null}
           </div>
-        </motion.div>
+        </Motion.div>
       )}
     </AnimatePresence>
   );

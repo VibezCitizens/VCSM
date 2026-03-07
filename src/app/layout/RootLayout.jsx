@@ -1,10 +1,12 @@
 // src/layouts/RootLayout.jsx
 
+import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import TopNav from '@/shared/components/TopNav'
 import BottomNavBar from '@/shared/components/BottomNavBar'
 import PageContainer from '@/shared/components/PageContainer'
 import { IOSDebugHUD } from '@/app/platform/ios'
+import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 
 // DEV ONLY
 import IdentityDebugger from '@/state/identity/IdentityDebugger'
@@ -31,13 +33,19 @@ export default function RootLayout() {
    * - <main> is the ONE scroll container
    * - Screens NEVER control scrolling
    */
-  const mainClass =
-    hideTopNav || hideBottomNav
+  const mainClass = isChatSubScreen
+    ? 'flex-1 min-h-0 overflow-hidden'
+    : hideTopNav || hideBottomNav
       ? 'flex-1 min-h-0 overflow-y-auto'
       : 'flex-1 min-h-0 overflow-y-auto pt-[calc(48px+env(safe-area-inset-top))] pb-[var(--vc-bottom-nav-height)]'
 
+  useEffect(() => {
+    if (pathname === '/feed') return
+    hideLaunchSplash()
+  }, [pathname])
+
   return (
-    <div className="h-[100dvh] bg-black text-white flex flex-col overflow-hidden">
+    <div className="vc-dynamic-gradient h-[100dvh] text-white flex flex-col overflow-hidden">
       {!hideTopNav && <TopNav />}
 
       {/* ✅ GLOBAL SCROLL CONTAINER */}

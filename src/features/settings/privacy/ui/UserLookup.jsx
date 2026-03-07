@@ -1,55 +1,38 @@
 // src/features/settings/privacy/ui/UserLookup.jsx
 
-import { useCallback, useMemo, useState } from 'react'
-import { ctrlSearchActors } from '@/features/settings/privacy/controller/Blocks.controller'
+import { useCallback } from 'react'
+import { useActorLookup } from '@/features/settings/privacy/hooks/useActorLookup'
 import { useMyBlocks } from '@/features/settings/privacy/hooks/useMyBlocks'
 import ActorLink from '@/shared/components/ActorLink'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 
 export default function UserLookup() {
   const { loading, error, blockedIds, block, unblock } = useMyBlocks()
-
-  const [q, setQ] = useState('')
-  const [searching, setSearching] = useState(false)
-  const [results, setResults] = useState([])
-  const [searchErr, setSearchErr] = useState(null)
-
-  const runSearch = useCallback(async () => {
-    const query = (q || '').trim()
-    if (!query) {
-      setResults([])
-      return
-    }
-
-    setSearching(true)
-    setSearchErr(null)
-    try {
-      const r = await ctrlSearchActors({ query })
-      setResults(r)
-    } catch (e) {
-      setSearchErr(e?.message || String(e))
-    } finally {
-      setSearching(false)
-    }
-  }, [q])
-
-  const hint = useMemo(() => {
-    if (searching) return 'Searching...'
-    return 'Search by username or display name'
-  }, [searching])
+  const {
+    query,
+    setQuery,
+    searching,
+    results,
+    searchErr,
+    hint,
+    runSearch,
+  } = useActorLookup()
+  const handleSearch = useCallback(() => {
+    runSearch(query)
+  }, [query, runSearch])
 
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
         <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => (e.key === 'Enter' ? runSearch() : null)}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => (e.key === 'Enter' ? handleSearch() : null)}
           placeholder={hint}
           className="settings-input w-full rounded-lg px-3 py-2 text-sm"
         />
         <button
-          onClick={runSearch}
+          onClick={handleSearch}
           className="settings-btn settings-btn--ghost px-3 py-2 text-sm"
         >
           Search
@@ -77,7 +60,7 @@ export default function UserLookup() {
         ))}
 
         {!searching && results.length === 0 && (
-          <div className="text-xs text-zinc-500">No results yet.</div>
+          <div className="text-xs text-slate-500">No results yet.</div>
         )}
       </div>
     </div>
@@ -96,10 +79,10 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
         {actor?.actorId ? (
           <ActorLink actor={actor} avatarSize="w-8 h-8" />
         ) : (
-          <div className="text-sm text-zinc-200 truncate">{name}</div>
+          <div className="text-sm text-slate-200 truncate">{name}</div>
         )}
-        {handle && <div className="text-xs text-zinc-500 truncate">@{handle}</div>}
-        {!handle && <div className="text-xs text-zinc-600 truncate">{actorId}</div>}
+        {handle && <div className="text-xs text-slate-500 truncate">@{handle}</div>}
+        {!handle && <div className="text-xs text-slate-600 truncate">{actorId}</div>}
       </div>
 
       {isBlocked ? (

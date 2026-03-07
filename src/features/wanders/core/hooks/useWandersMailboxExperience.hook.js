@@ -108,17 +108,18 @@ export default function useWandersMailboxExperience({ mode }) {
   const repliesHook = useWandersReplies({ cardId: selectedCardId, auto: false, limit: 200 });
   const repliesLoading = repliesHook?.loading;
   const replyItems = useMemo(() => normalizeList(repliesHook?.replies), [repliesHook?.replies]);
+  const refreshReplies = useCallback(async () => {
+    try {
+      await Promise.resolve(repliesHook?.refresh?.());
+    } catch {
+      // ignore
+    }
+  }, [repliesHook]);
 
   useEffect(() => {
     if (!selectedCardId) return;
-    (async () => {
-      try {
-        await Promise.resolve(repliesHook?.refresh?.());
-      } catch {
-        // ignore
-      }
-    })();
-  }, [selectedCardId, repliesHook?.refresh]);
+    refreshReplies();
+  }, [selectedCardId, refreshReplies]);
 
   // ---- Mark read on select (inbox only)
   useEffect(() => {
@@ -169,12 +170,8 @@ export default function useWandersMailboxExperience({ mode }) {
   );
 
   const handleReplySent = useCallback(async () => {
-    try {
-      await Promise.resolve(repliesHook?.refresh?.());
-    } catch {
-      // ignore
-    }
-  }, [repliesHook?.refresh]);
+    await refreshReplies();
+  }, [refreshReplies]);
 
   const handleReplySubmit = useCallback(
     async ({ body }) => {

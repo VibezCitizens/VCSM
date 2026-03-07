@@ -22,6 +22,7 @@ export default function ActorProfileHeader({
   profile,
   viewerActorId,
   profileIsPrivate,
+  loading = false,
 }) {
   const navigate = useNavigate()
   const actorId = profile?.actorId ?? null
@@ -55,6 +56,32 @@ export default function ActorProfileHeader({
   })
 
   const qrValue = actorId ? `${window.location.origin}/profile/${actorId}` : ''
+
+  if (loading) {
+    return (
+      <div className="relative" aria-hidden="true">
+        <div className="h-48 sm:h-56 w-full animate-pulse bg-slate-800/55" />
+
+        <div className="px-4">
+          <div className="profiles-shell w-full">
+            <div className="-mt-20 relative z-20 profiles-card p-5">
+              <div className="flex items-start gap-4">
+                <div className="h-24 w-24 shrink-0 animate-pulse rounded-2xl bg-slate-700/55" />
+
+                <div className="flex-1 min-w-0 pt-1 space-y-3">
+                  <div className="h-6 w-40 animate-pulse rounded bg-slate-700/60" />
+                  <div className="h-4 w-28 animate-pulse rounded bg-slate-700/45" />
+                  <div className="h-4 w-11/12 animate-pulse rounded bg-slate-700/40" />
+                  <div className="h-4 w-8/12 animate-pulse rounded bg-slate-700/35" />
+                  <div className="h-3 w-24 animate-pulse rounded bg-slate-700/40" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!profile) return null
 

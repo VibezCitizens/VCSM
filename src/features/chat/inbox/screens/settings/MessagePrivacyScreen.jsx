@@ -4,16 +4,18 @@ import { ChevronLeft } from 'lucide-react'
 
 import useMessagePrivacySettings from '@/features/chat/inbox/hooks/useMessagePrivacySettings'
 import '@/features/ui/modern/module-modern.css'
+import '@/features/chat/styles/chat-modern.css'
 
 function RadioRow({ title, subtitle, selected, onClick }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-white/5"
+      className="chat-modern-settings-row flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-white/5"
     >
       <span
         className={[
+          'chat-modern-radio',
           'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
           selected ? 'border-indigo-300/70' : 'border-slate-300/25',
         ].join(' ')}
@@ -35,7 +37,7 @@ function ToggleRow({ title, subtitle, value, onChange }) {
     <button
       type="button"
       onClick={() => onChange(!value)}
-      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-white/5"
+      className="chat-modern-settings-row flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-white/5"
     >
       <div className="min-w-0 flex-1">
         <div className="font-medium text-slate-100">{title}</div>
@@ -44,6 +46,7 @@ function ToggleRow({ title, subtitle, value, onChange }) {
 
       <span
         className={[
+          'chat-modern-toggle',
           'inline-flex h-6 w-11 rounded-full border transition',
           value ? 'border-indigo-300/55 bg-indigo-400/35' : 'border-slate-300/20 bg-slate-900/70',
         ].join(' ')}
@@ -51,6 +54,7 @@ function ToggleRow({ title, subtitle, value, onChange }) {
       >
         <span
           className={[
+            'chat-modern-toggle-knob',
             'm-[2px] block h-5 w-5 rounded-full bg-white transition',
             value ? 'translate-x-5' : 'translate-x-0',
           ].join(' ')}
@@ -89,10 +93,10 @@ export default function MessagePrivacyScreen() {
   )
 
   return (
-    <div className="module-modern-page flex h-full flex-col">
-      <div className="module-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
+    <div className="module-modern-page chat-modern-page flex h-full flex-col">
+      <div className="module-modern-shell chat-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
         <header
-          className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <div className="relative flex h-14 items-center px-3">

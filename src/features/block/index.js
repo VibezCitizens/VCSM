@@ -12,10 +12,18 @@
 // ============================================================
 
 /* ===================== DAL ===================== */
-export { isActorBlocked } from "./dal/block.check.dal";
 export {
-  fetchBlockedActors,
-  fetchBlockedByActors,
+  isBlocked,
+  isBlocked as isActorBlocked,
+  checkBlockStatus,
+} from "./dal/block.check.dal";
+export {
+  fetchActorsIBlocked,
+  fetchActorsWhoBlockedMe,
+  fetchBlockGraph,
+  filterBlockedActors,
+  fetchActorsIBlocked as fetchBlockedActors,
+  fetchActorsWhoBlockedMe as fetchBlockedByActors,
 } from "./dal/block.read.dal";
 export {
   blockActor,

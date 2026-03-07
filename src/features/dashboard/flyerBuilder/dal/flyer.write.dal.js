@@ -28,7 +28,19 @@ export async function saveFlyerPublicDetails({ vportId, patch }) {
     .schema("vc")
     .from("vport_public_details")
     .upsert({ vport_id: vportId, ...cleanPatch }, { onConflict: "vport_id" })
-    .select("*")
+    .select(`
+      vport_id,
+      website_url,
+      phone_public,
+      hours,
+      logo_url,
+      flyer_food_image_1,
+      flyer_food_image_2,
+      flyer_headline,
+      flyer_subheadline,
+      flyer_note,
+      accent_color
+    `)
     .maybeSingle();
 
   if (error) throw error;

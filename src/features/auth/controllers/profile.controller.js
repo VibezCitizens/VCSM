@@ -1,6 +1,8 @@
-import { dalGetProfileDiscoverable } from '../dal/profile.dal'
+import {
+  dalGetProfileDiscoverable,
+  dalUpdateProfileDiscoverable,
+} from '../dal/profile.dal'
 import { ProfileModel } from '../model/profile.model'
-import { supabase } from '@/services/supabase/supabaseClient'
 
 export async function ensureProfileDiscoverable(profileId) {
   const row = await dalGetProfileDiscoverable(profileId)
@@ -9,14 +11,10 @@ export async function ensureProfileDiscoverable(profileId) {
   if (!profile) return
 
   if (!profile.isDiscoverable) {
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        discoverable: true,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', profileId)
-
-    if (error) throw error
+    await dalUpdateProfileDiscoverable({
+      profileId,
+      discoverable: true,
+      updatedAt: new Date().toISOString(),
+    })
   }
 }

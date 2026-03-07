@@ -13,12 +13,8 @@
 
 import { useEffect, useState } from "react";
 
-import { fetchFollowGraph } from "../dal/friends.read.dal";
-import { deriveFriendLists } from "../dal/friendGraph.utils";
+import { getFriendListsController } from "../controller/getFriendLists.controller";
 import { hydrateActorsIntoStore } from "../helpers/hydrateActorsIntoStore";
-
-// 🔒 BLOCK READ GATE
-import { filterBlockedActors } from "@/features/block/dal/block.read.dal";
 
 /**
  * useFriendLists
@@ -53,43 +49,12 @@ export function useFriendLists(actorId) {
 
       try {
         // ------------------------------------------------------------
-        // 1. Load follow graph
+        // 1. Compute filtered friend buckets
         // ------------------------------------------------------------
-        const graph = await fetchFollowGraph(actorId);
+        const filtered = await getFriendListsController({ actorId });
 
         // ------------------------------------------------------------
-        // 2. Derive friend buckets (PURE)
-        // ------------------------------------------------------------
-        const derived = deriveFriendLists(graph);
-
-        // ------------------------------------------------------------
-        // 3. Block filter (BIDIRECTIONAL)
-        // ------------------------------------------------------------
-        const allCandidateIds = [
-          ...derived.mutual,
-          ...derived.iAmFan,
-          ...derived.myFans,
-        ];
-
-        const blockedSet = await filterBlockedActors(
-          actorId,
-          allCandidateIds
-        );
-
-        const filtered = {
-          mutual: derived.mutual.filter(
-            (id) => !blockedSet.has(id)
-          ),
-          iAmFan: derived.iAmFan.filter(
-            (id) => !blockedSet.has(id)
-          ),
-          myFans: derived.myFans.filter(
-            (id) => !blockedSet.has(id)
-          ),
-        };
-
-        // ------------------------------------------------------------
-        // 4. Hydrate ONLY safe actors
+        // 2. Hydrate ONLY safe actors
         // ------------------------------------------------------------
         await hydrateActorsIntoStore([
           ...filtered.mutual,

@@ -215,7 +215,9 @@ export function VportActorMenuQrView({ actorId }) {
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(menuUrl);
-                } catch (_) {}
+                } catch (_) {
+                  void _;
+                }
               }}
               style={{
                 padding: "11px 16px",

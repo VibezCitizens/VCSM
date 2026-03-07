@@ -31,7 +31,7 @@ export async function undoConversationCover({ actorId, conversationId }) {
     }
 
     return { ok: true }
-  } catch (e) {
+  } catch (_ERR) {
     return { ok: false }
   }
 }

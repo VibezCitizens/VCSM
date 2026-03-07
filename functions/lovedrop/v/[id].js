@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const { request, params, env } = context;
+  const { params, env } = context;
   const id = params.id;
 
   // Your real domain

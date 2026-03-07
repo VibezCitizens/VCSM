@@ -1,35 +1,14 @@
 // ============================================================
 //  FRIENDS SYSTEM — RANK PICKER MODAL (ACTOR-BASED)
-// ------------------------------------------------------------
-//  @System: FriendsModule
-//  @RefactorBatch: 2025-12
-//  @Status: FINAL
-//  @Scope:
-//    • Pick an actor to add into Top Friends ranking
-//    • Only actors the owner already follows
-//    • BLOCK-SAFE (bi-directional)
-// ------------------------------------------------------------
-//  RULES:
-//   • actorId is the ONLY identity
-//   • No DB writes here
-//   • No profile/vport branching
-//   • Presentation via actor store
 // ============================================================
 
-import { useEffect, useState } from "react";
+import { useActorSummary } from '@/state/actors/useActorSummary'
+import ActorLink from '@/shared/components/ActorLink'
 
-import { fetchFollowGraph } from "../dal/friends.read.dal";
-import { hydrateActorsIntoStore } from "../helpers/hydrateActorsIntoStore";
-
-// 🔒 block system
-import { filterBlockedActors } from "@/features/block/dal/block.read.dal";
-
-import { useActorSummary } from "@/state/actors/useActorSummary";
-import ActorLink from "@/shared/components/ActorLink";
+import { useTopFriendCandidates } from '@/features/profiles/screens/views/tabs/friends/hooks/useTopFriendCandidates'
 
 /**
  * PROPS
- * ------------------------------------------------------------
  * ownerActorId  uuid
  * existingIds   uuid[]   (already ranked)
  * maxRanks      number   (default 10)
@@ -43,134 +22,44 @@ export default function RankPickerModal({
   onSelect,
   onClose,
 }) {
-  const [loading, setLoading] = useState(true);
-  const [candidateIds, setCandidateIds] = useState([]);
+  const { loading, candidateIds } = useTopFriendCandidates({
+    ownerActorId,
+    existingIds,
+    maxRanks,
+    open: true,
+  })
 
-  /* ============================================================
-     LOAD FOLLOWING ACTORS (BLOCK-SAFE)
-     ============================================================ */
-  useEffect(() => {
-    if (!ownerActorId) return;
-
-    let cancelled = false;
-
-    (async () => {
-      setLoading(true);
-
-      try {
-        // --------------------------------------------------------
-        // 1. Load follow graph
-        // --------------------------------------------------------
-        const { following } = await fetchFollowGraph(ownerActorId);
-        const followingIds = [...following];
-
-        if (!followingIds.length) {
-          if (!cancelled) {
-            setCandidateIds([]);
-            setLoading(false);
-          }
-          return;
-        }
-
-        // --------------------------------------------------------
-        // 2. Remove already-ranked actors
-        // --------------------------------------------------------
-        const notRanked = followingIds.filter(
-          (id) => !existingIds.includes(id)
-        );
-
-        if (!notRanked.length) {
-          if (!cancelled) {
-            setCandidateIds([]);
-            setLoading(false);
-          }
-          return;
-        }
-
-        // --------------------------------------------------------
-        // 🔒 3. Block filter (bi-directional)
-        // --------------------------------------------------------
-        const blockedSet = await filterBlockedActors(
-          ownerActorId,
-          notRanked
-        );
-
-        const visible = notRanked.filter(
-          (id) => !blockedSet.has(id)
-        );
-
-        if (!visible.length) {
-          if (!cancelled) {
-            setCandidateIds([]);
-            setLoading(false);
-          }
-          return;
-        }
-
-        // --------------------------------------------------------
-        // 4. Hydrate presentation store (SSOT)
-        // --------------------------------------------------------
-        await hydrateActorsIntoStore(visible);
-
-        if (!cancelled) {
-          setCandidateIds(visible.slice(0, maxRanks));
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("[RankPickerModal] failed:", err);
-        if (!cancelled) {
-          setCandidateIds([]);
-          setLoading(false);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [ownerActorId, existingIds, maxRanks]);
-
-  /* ============================================================
-     UI
-     ============================================================ */
   return (
     <div
-      className="fixed inset-0 z-50
-                 bg-black/60 backdrop-blur-sm
-                 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/68 backdrop-blur-md"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md
-                   bg-neutral-950 border border-neutral-800
-                   rounded-xl p-4"
+        className="profiles-card profiles-friends-picker w-full max-w-md rounded-xl p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ---------- Header ---------- */}
         <header className="mb-3">
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-semibold text-slate-100">
             Add Top Friend
           </h3>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-slate-300/75">
             Pick someone you already follow
           </p>
         </header>
 
-        {/* ---------- States ---------- */}
         {loading && (
-          <p className="text-sm text-neutral-500 py-4">
-            Loading…
+          <p className="profiles-subcard py-4 px-3 text-sm text-slate-300/75">
+            Loading...
           </p>
         )}
 
         {!loading && candidateIds.length === 0 && (
-          <p className="text-sm text-neutral-500 py-4">
+          <p className="profiles-subcard py-4 px-3 text-sm text-slate-300/75">
             No available friends to add.
           </p>
         )}
 
-        {/* ---------- List ---------- */}
-        <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+        <div className="max-h-[50vh] space-y-2 overflow-y-auto">
           {candidateIds.map((actorId) => (
             <CandidateRow
               key={actorId}
@@ -180,47 +69,39 @@ export default function RankPickerModal({
           ))}
         </div>
 
-        {/* ---------- Footer ---------- */}
-        <footer className="pt-4 flex justify-end">
+        <footer className="flex justify-end pt-4">
           <button
             onClick={onClose}
-            className="text-sm px-4 py-2 rounded-lg
-                       border border-neutral-700
-                       text-neutral-300
-                       hover:bg-neutral-800"
+            className="profiles-pill-btn px-4 py-2 text-sm text-slate-200/90"
           >
             Cancel
           </button>
         </footer>
       </div>
     </div>
-  );
+  )
 }
 
-/* ============================================================
-   CANDIDATE ROW — SAFE HOOK USAGE
-   ============================================================ */
 function CandidateRow({ actorId, onPick }) {
-  const actor = useActorSummary(actorId);
-  if (!actor?.actorId) return null;
+  const actor = useActorSummary(actorId)
+  if (!actor?.actorId) return null
 
   return (
     <button
       onClick={onPick}
-      className="w-full flex items-center justify-between
-                 p-2 rounded-lg
-                 hover:bg-neutral-900 transition"
+      className="profiles-friend-picker-row"
     >
       <ActorLink
         actor={actor}
         avatarSize="w-9 h-9"
-        avatarShape="rounded-md"
+        avatarShape="rounded-lg"
         showUsername
       />
 
-      <span className="text-xs text-purple-400">
+      <span className="profiles-friend-picker-cta">
         Add
       </span>
     </button>
-  );
+  )
 }
+

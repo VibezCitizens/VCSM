@@ -146,6 +146,7 @@ export function MyBlocksProvider({ children, scope, actorId }) {
 /* ============================================================
    HOOK
    ============================================================ */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useMyBlocks() {
   const v = useContext(Ctx)
   if (!v) {

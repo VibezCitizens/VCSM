@@ -1,26 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { dalGetActorPrivacy } from '@/features/social/privacy/dal/actorPrivacy.dal'
-import { supabase } from '@/services/supabase/supabaseClient'
+import { ctrlGetActorPrivacy } from '@/features/social/privacy/controllers/getActorPrivacy.controller'
+import { ctrlGetFollowStatus } from '@/features/social/friend/subscribe/controllers/getFollowStatus.controller'
 import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
-
-async function dalIsFollowing({ followerActorId, followedActorId }) {
-  if (!followerActorId || !followedActorId) return false
-
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('actor_follows')
-    .select('is_active')
-    .eq('follower_actor_id', followerActorId)
-    .eq('followed_actor_id', followedActorId)
-    .maybeSingle()
-
-  if (error) {
-    console.error('[dalIsFollowing] error', error)
-    return false
-  }
-
-  return Boolean(data?.is_active)
-}
 export function useProfileGate({
   viewerActorId,
   targetActorId,
@@ -62,8 +43,8 @@ export function useProfileGate({
         }
 
         const [{ isPrivate: priv }, following] = await Promise.all([
-          dalGetActorPrivacy({ actorId: targetActorId }),
-          dalIsFollowing({
+          ctrlGetActorPrivacy({ actorId: targetActorId }),
+          ctrlGetFollowStatus({
             followerActorId: viewerActorId,
             followedActorId: targetActorId,
           }),

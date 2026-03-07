@@ -8,7 +8,8 @@ export async function copyToClipboard(text) {
       await navigator.clipboard.writeText(value);
       return { ok: true };
     }
-  } catch (e) {
+  } catch (_ERR) {
+    void _ERR;
     // fall through
   }
 

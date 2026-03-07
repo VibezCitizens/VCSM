@@ -165,7 +165,7 @@ export default function CaptionCard({
   }
 
   return (
-    <div className="module-modern-card mt-6 overflow-visible rounded-3xl">
+    <div className="upload-card module-modern-card mt-6 overflow-visible rounded-3xl">
       <textarea
         ref={taRef}
         value={safeCaption}
@@ -174,26 +174,26 @@ export default function CaptionCard({
         onKeyUp={(e) => setCaret(e.currentTarget.selectionStart ?? 0)}
         rows={3}
         placeholder="Write a caption... (use @ to tag)"
-        className="w-full resize-none bg-transparent px-5 py-4 text-slate-100 placeholder:text-slate-500 focus:outline-none"
+        className="upload-caption-area w-full resize-none bg-transparent px-5 py-4 placeholder:text-slate-500 focus:outline-none"
       />
 
       <div className="px-5">
         <MentionTypeahead open={open} items={items} onPick={handlePick} />
-        {loading && open ? <div className="py-2 text-xs text-slate-500">Searching...</div> : null}
+        {loading && open ? <div className="py-2 text-xs text-slate-400">Searching...</div> : null}
       </div>
 
       <div className="px-5 pb-3">
         <MentionChips mentions={mentions} onRemove={onRemoveMention} />
       </div>
 
-      <div className="h-px bg-slate-300/10" />
+      <div className="upload-divider" />
 
       <div className="flex items-center gap-3 px-5 py-3">
         <div className="relative flex min-w-0 flex-1 items-center gap-3">
           <button
             type="button"
             onClick={handleUseMyLocation}
-            className="text-slate-500 transition hover:text-slate-200"
+            className="text-slate-400 transition hover:text-slate-200"
             aria-label="Use my location"
           >
             {locating ? "..." : <MapPin size={17} />}
@@ -206,14 +206,14 @@ export default function CaptionCard({
               setCityQuery(e.target.value);
             }}
             placeholder="Add location"
-            className="min-w-0 flex-1 bg-transparent text-slate-300 placeholder:text-slate-500 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-slate-200 placeholder:text-slate-500 focus:outline-none"
           />
 
           {locationText ? (
             <button
               type="button"
               onClick={handleRemoveLocation}
-              className="text-slate-500 transition hover:text-slate-200"
+              className="text-slate-400 transition hover:text-slate-200"
               aria-label="Remove location"
             >
               x
@@ -221,12 +221,12 @@ export default function CaptionCard({
           ) : null}
 
           {cityResults.length > 0 ? (
-            <div className="module-modern-shell absolute top-full z-20 mt-2 w-full overflow-hidden rounded-xl">
+            <div className="upload-typeahead absolute top-full z-20 mt-2 w-full overflow-hidden rounded-xl">
               {cityResults.map((city) => (
                 <button
                   key={city}
                   onClick={() => handlePickCity(city)}
-                  className="block w-full px-4 py-2 text-left text-sm text-slate-200 hover:bg-white/10"
+                  className="block w-full px-4 py-2 text-left text-sm text-slate-200 hover:bg-white/10 transition-colors"
                 >
                   {city}
                 </button>

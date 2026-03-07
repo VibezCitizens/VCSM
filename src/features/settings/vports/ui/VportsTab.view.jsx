@@ -4,7 +4,7 @@ import Card from '@/features/settings/ui/Card'
 import CreateVportForm from '@/features/vport/CreateVportForm.jsx'
 import OnemoredaysAd from '@/features/ads/widgets/OnemoredaysAd'
 
-import { useVportsController } from '../controller/Vports.controller'
+import { useVportsController } from '@/features/settings/vports/hooks/useVportsController'
 
 export default function VportsTabView() {
   const {

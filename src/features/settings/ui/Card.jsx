@@ -12,7 +12,7 @@ export default function Card({ title, children, className = '' }) {
   return (
     <section
       className={cx(
-        'settings-card-surface rounded-2xl text-white shadow-sm',
+        'settings-card-surface rounded-2xl text-white shadow-sm backdrop-blur',
         className
       )}
     >

@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ClassicFlyer from "@/features/dashboard/qrcode/components/flyer/ClassicFlyer";
 import PosterFlyer from "@/features/dashboard/qrcode/components/flyer/PosterFlyer";
-import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
+import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
 import {
   asTextValue,
   buildFlyerActions,
@@ -18,35 +18,13 @@ export function VportActorMenuFlyerView({
   variant: initialVariant = "classic",
 }) {
   const navigate = useNavigate();
-  const [publicDetails, setPublicDetails] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, details: publicDetails } = useVportPublicDetails(actorId);
   const [variant, setVariant] = useState(initialVariant);
   const isDesktop = useDesktopBreakpoint();
 
   const menuUrl = useMemo(() => {
     if (!actorId) return "";
     return `${window.location.origin}/m/${actorId}`;
-  }, [actorId]);
-
-  useEffect(() => {
-    if (!actorId) return;
-
-    let alive = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const details = await fetchVportPublicDetailsByActorId(actorId);
-        if (alive) setPublicDetails(details || null);
-      } catch {
-        if (alive) setPublicDetails(null);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
   }, [actorId]);
 
   const profile = useMemo(() => buildFlyerProfile(publicDetails), [publicDetails]);

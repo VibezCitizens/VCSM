@@ -1,17 +1,10 @@
 // src/features/settings/vports/hooks/useVportSwitch.js
-import { supabase } from "@/services/supabase/supabaseClient";
+import { ctrlGetAuthedUserId } from "@/features/settings/vports/controller/getAuthedUserId.controller";
 
 export function useVportSwitch({ user, identity, switchActor, navigate }) {
   const getAuthedUserId = async () => {
     if (user?.id) return user.id;
-
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-
-    const uid = data?.user?.id;
-    if (!uid) throw new Error("Not authenticated");
-
-    return uid;
+    return ctrlGetAuthedUserId();
   };
 
   const switchToProfile = async (profileActorId, setBusy) => {

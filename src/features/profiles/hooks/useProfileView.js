@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getProfileView } from "@/features/profiles/controller/getProfileView.controller";
-import { readActorPostsDAL } from "@/features/profiles/dal/readActorPosts.dal";
 
 export function useProfileView({
   viewerActorId,
@@ -30,24 +29,12 @@ export function useProfileView({
         const result = await getProfileView({
           viewerActorId,
           profileActorId,
+          canViewContent,
         });
 
         if (!alive) return;
         setProfile(result.profile);
-
-        // ======================================================
-        // POSTS — GATED BY PRIVACY
-        // ======================================================
-        if (canViewContent === true) {
-          try {
-            const rows = await readActorPostsDAL(profileActorId);
-            if (alive) setPosts(rows);
-          } catch {
-            if (alive) setPosts([]);
-          }
-        } else {
-          if (alive) setPosts([]);
-        }
+        setPosts(Array.isArray(result.posts) ? result.posts : []);
       } catch (e) {
         if (alive) setError(e);
       } finally {

@@ -2,6 +2,8 @@
 // Chat Feature Entry (STABLE MODE)
 // ============================================================
 
+import '@/features/chat/styles/chat-modern.css'
+
 /* =========================
    SCREENS
    ========================= */

@@ -135,10 +135,9 @@ export default function CreateVportForm({ onCreated }) {
 
       const res = await createVport({
         name: name.trim(),
-        slug: nullIfEmpty(slugifyMaybe(name)),
+        slug: null,
         avatarUrl: finalAvatarUrl || null,
         bio: (description || '').trim() || null,
-        ownerUserId: user?.id ?? null,
         vportType: normalizedType,
       });
 
@@ -160,7 +159,8 @@ export default function CreateVportForm({ onCreated }) {
         const list = await listMyVports().catch(() => null);
         onCreated({ created: res, list });
       } else {
-        navigate(`/vport/${res.vport_id}`);
+        if (res?.actor_id) navigate(`/profile/${res.actor_id}`);
+        else navigate('/settings?tab=vports');
       }
 
       setName('');
@@ -190,6 +190,9 @@ export default function CreateVportForm({ onCreated }) {
           className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-violet-600"
           required
         />
+        <p className="mt-1 text-xs text-zinc-500">
+          Handle is generated automatically (example: @jorsh4821).
+        </p>
       </div>
 
       <div>
@@ -398,10 +401,6 @@ export default function CreateVportForm({ onCreated }) {
   );
 }
 
-function nullIfEmpty(s) {
-  return s && s.trim() ? s.trim() : null;
-}
-
 function setsEqual(a, b) {
   if (a.size !== b.size) return false;
   for (const value of a.values()) {
@@ -420,13 +419,4 @@ function groupServicesByCategory(services) {
   }
 
   return [...groups.entries()];
-}
-
-function slugifyMaybe(name) {
-  return name
-    ?.toLowerCase()
-    .replace(/[^a-z0-9\s-]+/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
 }

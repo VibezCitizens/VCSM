@@ -1,3 +1,5 @@
+import AuthPublicRoute from '@/app/routes/public/AuthPublicRoute'
+
 export function authPublicRoutes({
   LoginScreen,
   RegisterScreen,
@@ -5,9 +7,37 @@ export function authPublicRoutes({
   OnboardingScreen,
 }) {
   return [
-    { path: "/login", element: <LoginScreen /> },
-    { path: "/register", element: <RegisterScreen /> },
-    { path: "/reset", element: <ResetPasswordScreen /> },
-    { path: "/onboarding", element: <OnboardingScreen /> },
-  ];
+    {
+      path: '/login',
+      element: (
+        <AuthPublicRoute>
+          <LoginScreen />
+        </AuthPublicRoute>
+      ),
+    },
+    {
+      path: '/register',
+      element: (
+        <AuthPublicRoute>
+          <RegisterScreen />
+        </AuthPublicRoute>
+      ),
+    },
+    {
+      path: '/reset',
+      element: (
+        <AuthPublicRoute>
+          <ResetPasswordScreen />
+        </AuthPublicRoute>
+      ),
+    },
+    {
+      path: '/onboarding',
+      element: (
+        <AuthPublicRoute>
+          <OnboardingScreen />
+        </AuthPublicRoute>
+      ),
+    },
+  ]
 }

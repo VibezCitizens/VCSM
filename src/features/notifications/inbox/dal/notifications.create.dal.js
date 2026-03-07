@@ -24,7 +24,7 @@ export async function dalInsertNotification({
 
   const safeContext = context && typeof context === 'object' ? context : {}
 
-  const { data: rpcId, error: rpcError } = await supabase
+  const { error: rpcError } = await supabase
     .schema('vc')
     .rpc('create_notification', {
       p_recipient: recipientActorId,

@@ -1,9 +1,9 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\screens\hooks\usePostDetailEditing.js
 
 import { useCallback, useState } from "react";
-import { deleteComment } from "@/features/post/commentcard/dal/comments.dal";
+import { softDeleteCommentController } from "@/features/post/commentcard/controller/deleteComment.controller";
 
-export default function usePostDetailEditing({ threadComments, onReload }) {
+export default function usePostDetailEditing({ actorId, threadComments, onReload }) {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingInitialText, setEditingInitialText] = useState("");
 
@@ -32,20 +32,24 @@ export default function usePostDetailEditing({ threadComments, onReload }) {
 
   const deleteCommentById = useCallback(
     async (commentId) => {
+      if (!actorId) return;
       if (!commentId) return;
 
       const okConfirm = window.confirm("Delete this comment?");
       if (!okConfirm) return;
 
       try {
-        await deleteComment(commentId);
+        const result = await softDeleteCommentController({ actorId, commentId });
+        if (!result?.ok) {
+          throw result?.error || new Error("Failed to delete comment");
+        }
         await onReload?.();
       } catch (err) {
         console.error("[PostDetail] delete comment failed:", err);
         window.alert("Failed to delete comment");
       }
     },
-    [onReload]
+    [actorId, onReload]
   );
 
   return {

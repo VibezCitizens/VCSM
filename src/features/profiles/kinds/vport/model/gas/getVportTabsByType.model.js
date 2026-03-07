@@ -2,10 +2,11 @@
 
 import {
   VPORT_TABS,
+  VPORT_BARBER_TABS,
   VPORT_SERVICE_TABS,
   VPORT_FOOD_TABS,
   VPORT_GAS_TABS,
-  VPORT_RATES_TABS, // ✅ ADD
+  VPORT_RATES_TABS,
 } from "@/features/profiles/config/profileTabs.config";
 
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
@@ -34,20 +35,17 @@ const GROUP_TABS = Object.freeze({
 });
 
 const TYPE_TABS = Object.freeze({
+  barber: VPORT_BARBER_TABS,
   "gas station": VPORT_GAS_TABS,
-
-  // ✅ Money Exchange: rates-first layout
-  "exchange": VPORT_RATES_TABS,
+  exchange: VPORT_RATES_TABS,
 });
 
 export function getVportTabsByType(type) {
   const t = normalizeType(type);
 
-  // Type-specific override
   if (TYPE_TABS[t]) {
     const list = TYPE_TABS[t];
 
-    // Gas station → ensure "gas" tab is first
     if (t === "gas station") {
       const ordered = [
         ...list.filter((x) => x.key === "gas"),
@@ -59,9 +57,7 @@ export function getVportTabsByType(type) {
     return Object.freeze([...list]);
   }
 
-  // Group-based resolution
   const group = resolveGroup(t);
   const resolved = GROUP_TABS[group] ?? GROUP_TABS.Other;
-
   return Object.freeze([...resolved]);
 }

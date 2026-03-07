@@ -8,7 +8,7 @@ export default function ActorPill() {
   const avatar = identity.avatar || identity.photoUrl || "/avatar.jpg";
 
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-indigo-300/25 bg-slate-900/65 px-3.5 py-1.5 shadow-[0_6px_18px_rgba(18,24,55,0.32)]">
+    <div className="upload-chip inline-flex items-center gap-2 px-3.5 py-1.5 shadow-[0_6px_18px_rgba(18,24,55,0.32)]">
       <img
         src={avatar}
         alt={name}

@@ -6,7 +6,7 @@ export default function MentionTypeahead({ open, items, onPick }) {
   if (!items?.length) return null;
 
   return (
-    <div className="mt-2 rounded-2xl overflow-hidden border border-white/10 bg-black/60 backdrop-blur">
+    <div className="upload-typeahead mt-2">
       {items.map((it, idx) => {
         const actorId = it?.actor_id ?? it?.actorId ?? null;
         const handle = it?.handle ?? "";
@@ -17,7 +17,7 @@ export default function MentionTypeahead({ open, items, onPick }) {
           <button
             key={`${actorId || "na"}:${handle || "na"}:${idx}`}
             type="button"
-            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left"
+            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left transition-colors"
             onClick={() => onPick(it)}
           >
             <img

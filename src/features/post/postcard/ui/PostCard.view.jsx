@@ -16,6 +16,7 @@ export default function PostCardView({
   onOpenPost,
   onOpenMenu,
   onShare,
+  prioritizeMedia = false,
 
   covered = false,
   cover = null,
@@ -38,10 +39,8 @@ export default function PostCardView({
   return (
     <div
       className="
-        post-modern post-card
+        post-modern post-card profiles-card
         w-full
-        bg-gradient-to-b from-[#141024] to-[#0c0b16]
-        border border-violet-300/20
         rounded-2xl shadow-sm
         overflow-hidden
         relative
@@ -101,7 +100,7 @@ export default function PostCardView({
           onTouchStart={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <MediaCarousel media={safePost.media} />
+          <MediaCarousel media={safePost.media} prioritizeMedia={prioritizeMedia} />
         </div>
       ) : null}
 

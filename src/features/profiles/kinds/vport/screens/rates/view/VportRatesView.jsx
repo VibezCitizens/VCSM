@@ -29,17 +29,17 @@ export default function VportRatesView({
 
   const q = useVportRates({ targetActorId, rateType });
 
-  const rates = q.data?.rates ?? [];
   const lastUpdated = q.data?.lastUpdated ?? null;
   const error = q.error ?? null;
 
   const rankedRates = useMemo(() => {
+    const rates = q.data?.rates ?? [];
     return [...rates].sort((a, b) => {
       const aMs = new Date(a?.updatedAt ?? 0).getTime();
       const bMs = new Date(b?.updatedAt ?? 0).getTime();
       return (Number.isFinite(bMs) ? bMs : 0) - (Number.isFinite(aMs) ? aMs : 0);
     });
-  }, [rates]);
+  }, [q.data?.rates]);
 
   const pairCount = rankedRates.length;
 

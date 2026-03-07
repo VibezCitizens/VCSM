@@ -26,7 +26,9 @@ export default function WandersSentView({ cardPublicId, realmId, baseUrl }) {
     if (baseUrl) return baseUrl;
     try {
       if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-    } catch {}
+    } catch (_ERR) {
+      void _ERR;
+    }
     return "";
   }, [baseUrl]);
 

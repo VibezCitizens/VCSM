@@ -10,7 +10,7 @@ export default function TopNav() {
 
   return (
     <div
-      className={`fixed top-0 inset-x-0 z-50 bg-black pt-[env(safe-area-inset-top)] ${
+      className={`fixed top-0 inset-x-0 z-50 bg-[#050814]/72 backdrop-blur-md pt-[env(safe-area-inset-top)] ${
         isChatInboxRoot ? 'border-b-0' : 'border-b border-neutral-800'
       }`}
     >

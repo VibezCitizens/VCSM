@@ -14,6 +14,7 @@ import { readPostRoseCountsDAL } from '@/features/profiles/dal/readPostRoseCount
 export async function getProfileView({
   viewerActorId,
   profileActorId,
+  canViewContent,
 }) {
   /* ============================================================
      BLOCK 1 — ACTOR IDENTITY
@@ -98,40 +99,42 @@ export async function getProfileView({
 
   let posts = []
 
-  try {
-    const rows = await readActorPostsDAL(profileActorId)
+  if (canViewContent === true) {
+    try {
+      const rows = await readActorPostsDAL(profileActorId)
 
-    if (rows?.length) {
-      const postIds = rows.map(p => p.id)
+      if (rows?.length) {
+        const postIds = rows.map(p => p.id)
 
-      const reactions = await readPostReactionsDAL(postIds)
-      const roses = await readPostRoseCountsDAL(postIds)
+        const reactions = await readPostReactionsDAL(postIds)
+        const roses = await readPostRoseCountsDAL(postIds)
 
-      const reactionMap = {}
-      const roseMap = {}
+        const reactionMap = {}
+        const roseMap = {}
 
-      for (const r of reactions ?? []) {
-        reactionMap[r.post_id] ??= {}
-        reactionMap[r.post_id][r.reaction] =
-          (reactionMap[r.post_id][r.reaction] || 0) + 1
-      }
+        for (const r of reactions ?? []) {
+          reactionMap[r.post_id] ??= {}
+          reactionMap[r.post_id][r.reaction] =
+            (reactionMap[r.post_id][r.reaction] || 0) + 1
+        }
 
-      for (const r of roses ?? []) {
-        roseMap[r.post_id] =
-          (roseMap[r.post_id] || 0) + r.qty
-      }
+        for (const r of roses ?? []) {
+          roseMap[r.post_id] =
+            (roseMap[r.post_id] || 0) + r.qty
+        }
 
-      posts = rows.map(p =>
-        PostModel(
-          p,
-          reactionMap[p.id] ?? {},
-          roseMap[p.id] ?? 0
+        posts = rows.map(p =>
+          PostModel(
+            p,
+            reactionMap[p.id] ?? {},
+            roseMap[p.id] ?? 0
+          )
         )
-      )
+      }
+    } catch (err) {
+      console.warn('[getProfileView] posts failed', err)
+      posts = []
     }
-  } catch (err) {
-    console.warn('[getProfileView] posts failed', err)
-    posts = []
   }
 
   return { profile, posts }

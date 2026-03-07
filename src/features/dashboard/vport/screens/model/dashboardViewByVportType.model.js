@@ -1,4 +1,5 @@
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
+import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 import { isDashboardCardEnabled } from "@/shared/config/releaseFlags";
 
 const DASHBOARD_VIEW_PRESETS = Object.freeze({
@@ -19,6 +20,11 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
     id: "service",
     label: "Service",
     cardKeys: Object.freeze(["qr", "services", "reviews", "ads", "settings"]),
+  },
+  barber: {
+    id: "barber",
+    label: "Barber",
+    cardKeys: Object.freeze(["calendar", "services", "reviews", "ads", "settings"]),
   },
   food: {
     id: "food",
@@ -69,6 +75,7 @@ const GROUP_TO_VIEW = Object.freeze({
 });
 
 const TYPE_TO_VIEW = Object.freeze({
+  barber: "barber",
   "gas station": "gas",
   exchange: "exchange",
 });
@@ -80,6 +87,20 @@ function withVisibleCardKeys(view) {
   return {
     ...view,
     cardKeys: Object.freeze(visibleKeys),
+  };
+}
+
+function withCalendarCardIfVportHasBookingTab(view, type) {
+  const baseKeys = Array.isArray(view?.cardKeys) ? view.cardKeys : [];
+  if (baseKeys.includes("calendar")) return view;
+
+  const tabs = getVportTabsByType(type);
+  const hasBookTab = Array.isArray(tabs) && tabs.some((tab) => tab?.key === "book");
+  if (!hasBookTab) return view;
+
+  return {
+    ...view,
+    cardKeys: Object.freeze(["calendar", ...baseKeys]),
   };
 }
 
@@ -103,11 +124,15 @@ export function resolveVportTypeGroup(type) {
 export function getDashboardViewByVportType(type) {
   const normalized = normalizeVportType(type);
   const overrideViewId = TYPE_TO_VIEW[normalized];
-  if (overrideViewId) return withVisibleCardKeys(DASHBOARD_VIEW_PRESETS[overrideViewId]);
+  if (overrideViewId) {
+    const overrideView = DASHBOARD_VIEW_PRESETS[overrideViewId];
+    return withVisibleCardKeys(withCalendarCardIfVportHasBookingTab(overrideView, normalized));
+  }
 
   const group = resolveVportTypeGroup(normalized);
   const groupViewId = GROUP_TO_VIEW[group] ?? "default";
-  return withVisibleCardKeys(DASHBOARD_VIEW_PRESETS[groupViewId] ?? DASHBOARD_VIEW_PRESETS.default);
+  const baseView = DASHBOARD_VIEW_PRESETS[groupViewId] ?? DASHBOARD_VIEW_PRESETS.default;
+  return withVisibleCardKeys(withCalendarCardIfVportHasBookingTab(baseView, normalized));
 }
 
 export function getDashboardCardKeysByVportType(type) {

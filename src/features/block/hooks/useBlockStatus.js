@@ -8,7 +8,7 @@
 // ============================================================
 
 import { useEffect, useState } from "react";
-import { checkBlockStatus } from "@/features/block/dal/block.check.dal";
+import { ctrlGetBlockStatus } from "@/features/block/controllers/getBlockStatus.controller";
 
 /**
  * useBlockStatus
@@ -43,7 +43,10 @@ export function useBlockStatus(myActorId, targetActorId) {
       setLoading(true);
 
       try {
-        const result = await checkBlockStatus(myActorId, targetActorId);
+        const result = await ctrlGetBlockStatus({
+          actorId: myActorId,
+          targetActorId,
+        });
 
         if (!cancelled) {
           setIsBlocked(result.isBlocked);

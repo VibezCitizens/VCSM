@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 /**
  * mentions: Array<{
- *   handle: string,      // username (citizen) OR slug (vport)
+ *   handle: string,
  *   actorId?: string,
  *   kind?: "user" | "vport",
  *   displayName?: string,
@@ -35,7 +35,7 @@ export default function MentionChips({ mentions, onRemove }) {
               aria-label={`Remove @${handle}`}
               title={`Remove @${handle}`}
             >
-              ×
+              x
             </button>
           </>
         );
@@ -45,7 +45,7 @@ export default function MentionChips({ mentions, onRemove }) {
             <Link
               key={`${actorId}:${handle}:${idx}`}
               to={`/actor/${actorId}`}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white/80 border border-white/10 text-sm hover:bg-white/10"
+              className="upload-chip inline-flex items-center gap-2 px-3 py-1 text-sm hover:bg-white/10"
               onClick={(e) => e.stopPropagation()}
               title={`Open @${handle}`}
             >
@@ -57,7 +57,7 @@ export default function MentionChips({ mentions, onRemove }) {
         return (
           <span
             key={`unresolved:${handle}:${idx}`}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white/80 border border-white/10 text-sm"
+            className="upload-chip inline-flex items-center gap-2 px-3 py-1 text-sm"
             title={`@${handle}`}
           >
             {ChipInner}

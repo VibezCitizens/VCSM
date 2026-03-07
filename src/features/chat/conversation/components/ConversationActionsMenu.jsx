@@ -114,10 +114,8 @@ export default function ConversationActionsMenu({
           absolute
           min-w-[200px]
           rounded-2xl
-          bg-neutral-900/96
+          chat-modern-popover
           text-white
-          shadow-2xl
-          border border-white/10
           overflow-hidden
         "
         style={{

@@ -1,5 +1,3 @@
-// src/features/settings/profile/ui/VportAboutDetails.view.jsx
-
 import Card from "@/features/settings/ui/Card";
 import HoursEditor from "@/features/settings/profile/ui/HoursEditor";
 
@@ -15,7 +13,7 @@ export default function VportAboutDetailsView({
   if (loading) {
     return (
       <Card>
-        <div className="py-6 text-sm text-zinc-400">Loading About…</div>
+        <div className="py-6 text-sm text-slate-400">Loading About...</div>
       </Card>
     );
   }
@@ -26,10 +24,8 @@ export default function VportAboutDetailsView({
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between">
-        <div className="text-sm font-semibold">VPORT About (Public)</div>
-        {saved && !saving && (
-          <div className="text-xs text-green-400">✓ Saved</div>
-        )}
+        <div className="text-sm font-semibold text-slate-100">VPORT About (Public)</div>
+        {saved && !saving && <div className="text-xs text-emerald-300">Saved</div>}
       </div>
 
       <div className="space-y-4">
@@ -73,11 +69,8 @@ export default function VportAboutDetailsView({
           disabled={saving}
         />
 
-        {/* ADDRESS (structured) */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 space-y-3">
-          <div className="text-xs text-zinc-300 font-semibold">
-            Address (optional)
-          </div>
+        <div className="settings-card-surface rounded-xl p-3 space-y-3">
+          <div className="text-xs text-slate-300 font-semibold">Address (optional)</div>
 
           <Field
             label="Line 1"
@@ -122,16 +115,13 @@ export default function VportAboutDetailsView({
             <Field
               label="Country"
               value={address.country || ""}
-              onChange={(v) =>
-                onChange({ address: { ...address, country: v } })
-              }
+              onChange={(v) => onChange({ address: { ...address, country: v } })}
               placeholder="US"
               disabled={saving}
             />
           </div>
         </div>
 
-        {/* HOURS (visual editor) */}
         <HoursEditor
           value={hours}
           onChange={(next) => onChange({ hours: next })}
@@ -163,7 +153,7 @@ export default function VportAboutDetailsView({
         />
 
         {error && (
-          <div className="rounded-xl bg-red-950 border border-red-900 text-red-200 px-3 py-2 text-sm">
+          <div className="settings-danger-error rounded-xl px-3 py-2 text-sm">
             {error}
           </div>
         )}
@@ -172,13 +162,9 @@ export default function VportAboutDetailsView({
           <button
             onClick={onSave}
             disabled={saving}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold ${
-              saving
-                ? "bg-zinc-800 text-zinc-400"
-                : "bg-violet-600 hover:bg-violet-700 text-white"
-            }`}
+            className="settings-btn settings-btn--primary px-4 py-2 text-sm font-semibold"
           >
-            {saving ? "Saving…" : "Save About"}
+            {saving ? "Saving..." : "Save About"}
           </button>
         </div>
       </div>
@@ -186,25 +172,14 @@ export default function VportAboutDetailsView({
   );
 }
 
-// src/features/settings/profile/ui/VportAboutDetails.view.jsx
-// ...keep everything else the same
-
 function Field({ label, value, onChange, placeholder, disabled }) {
   return (
     <section className="space-y-1">
-      <label className="text-xs text-zinc-300">{label}</label>
+      <label className="text-xs text-slate-300">{label}</label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="
-          w-full rounded-xl
-          bg-white border border-zinc-300 text-black
-          text-base
-          px-3 py-2 outline-none
-          focus:ring-2 focus:ring-violet-600
-          placeholder-black/50
-          disabled:bg-zinc-200 disabled:text-zinc-500 disabled:cursor-not-allowed
-        "
+        className="settings-input w-full rounded-xl px-3 py-2 text-base disabled:opacity-60 disabled:cursor-not-allowed"
         placeholder={placeholder}
         disabled={disabled}
       />
@@ -233,19 +208,11 @@ function ChipsField({ label, value, onChange, placeholder, disabled }) {
 
   return (
     <section className="space-y-2">
-      <label className="text-xs text-zinc-300">{label}</label>
+      <label className="text-xs text-slate-300">{label}</label>
 
       <input
         onKeyDown={onKeyDown}
-        className="
-          w-full rounded-xl
-          bg-white border border-zinc-300 text-black
-          text-base
-          px-3 py-2 outline-none
-          focus:ring-2 focus:ring-violet-600
-          placeholder-black/50
-          disabled:bg-zinc-200 disabled:text-zinc-500 disabled:cursor-not-allowed
-        "
+        className="settings-input w-full rounded-xl px-3 py-2 text-base disabled:opacity-60 disabled:cursor-not-allowed"
         placeholder={placeholder}
         disabled={disabled}
       />
@@ -257,16 +224,10 @@ function ChipsField({ label, value, onChange, placeholder, disabled }) {
             type="button"
             onClick={() => remove(chip)}
             disabled={disabled}
-            className="
-              px-3 py-1 rounded-full text-xs
-              bg-zinc-900 text-white/85
-              border border-zinc-700
-              hover:bg-zinc-800
-              disabled:opacity-60 disabled:cursor-not-allowed
-            "
+            className="settings-btn settings-btn--ghost px-3 py-1 text-xs disabled:opacity-60 disabled:cursor-not-allowed"
             title="Remove"
           >
-            {chip} <span className="text-white/40">×</span>
+            {chip} <span className="text-white/40">x</span>
           </button>
         ))}
       </div>

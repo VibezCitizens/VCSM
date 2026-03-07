@@ -20,33 +20,26 @@ export default function ActorSearchResultRow({ actor }) {
     <button
       type="button"
       onClick={() => navigate(`/profile/${actor.actor_id}`)}
-      className="
-        w-full flex items-center gap-3
-        px-2 py-3
-        text-left
-        hover:bg-white/5
-        transition-colors
-      "
+      className="explore-result-row"
     >
-      {/* Avatar */}
       <img
         src={actor.photo_url || '/avatar.jpg'}
         alt={actor.display_name || actor.username}
-    className="w-10 h-10 rounded-lg object-cover"
-
+        className="explore-result-avatar"
       />
 
-      {/* Text */}
-      <div className="flex flex-col">
-        <span className="text-white font-medium leading-tight">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-slate-100 truncate">
           {actor.display_name || actor.username}
-        </span>
+        </p>
         {actor.username && (
-          <span className="text-sm text-neutral-400">
+          <p className="text-xs text-slate-300/80 truncate">
             @{actor.username}
-          </span>
+          </p>
         )}
       </div>
+
+      <span className="explore-result-pill">Profile</span>
     </button>
   )
 }

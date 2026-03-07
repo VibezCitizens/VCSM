@@ -12,6 +12,7 @@ import { useIdentity } from '@/state/identity/identityContext'
 
 import ConversationView from '@/features/chat/conversation/screen/ConversationView'
 import '@/features/ui/modern/module-modern.css'
+import '@/features/chat/styles/chat-modern.css'
 
 export default function ConversationScreen() {
   const { conversationId } = useParams()
@@ -30,7 +31,7 @@ export default function ConversationScreen() {
      ============================================================ */
 
   return (
-    <div className="module-modern-page flex min-h-0 flex-1 flex-col text-white">
+    <div className="module-modern-page chat-modern-page flex min-h-0 flex-1 flex-col text-white">
       <ConversationView conversationId={conversationId} />
     </div>
   )

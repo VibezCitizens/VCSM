@@ -1,6 +1,6 @@
 // src/features/settings/profile/adapter/ProfileTab.jsx
 
-import { useProfileController } from "../controller/Profile.controller";
+import { useProfileController } from "@/features/settings/profile/hooks/useProfileController";
 import UserProfileTab from "./UserProfileTab";
 import VportProfileTab from "./VportProfileTab";
 

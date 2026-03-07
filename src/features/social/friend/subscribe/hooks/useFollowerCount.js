@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { dalCountSubscribers } from '../dal/subscriberCount.dal'
+import { ctrlGetFollowerCount } from '@/features/social/friend/subscribe/controllers/getFollowerCount.controller'
 
 export function useFollowerCount(targetActorId) {
   const [count, setCount] = useState(0)
@@ -23,7 +23,7 @@ export function useFollowerCount(targetActorId) {
       setLoading(true)
 
       try {
-        const value = await dalCountSubscribers({
+        const value = await ctrlGetFollowerCount({
           actorId: targetActorId,
         })
 

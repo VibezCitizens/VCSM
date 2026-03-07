@@ -5,11 +5,12 @@
 // @Note: Do NOT remove, rename, or modify this block.
 
 import React, { useEffect, useMemo, useState } from 'react'
+import { Search, X } from 'lucide-react'
 
 /**
  * StartConversationModal
- * VISUAL UPDATE –  + PURPLE THEME
- * NO LOGIC CHANGED
+ * UI-only: styled to match Vox inbox theme.
+ * No behavior changes.
  */
 export default function StartConversationModal({ open, onClose, onPick, onSearch }) {
   const [q, setQ] = useState('')
@@ -23,8 +24,14 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
     let cancelled = false
     async function run() {
       if (!open) return
-      if (!query) { setRows([]); return }
-      if (typeof onSearch !== 'function') { setRows([]); return }
+      if (!query) {
+        setRows([])
+        return
+      }
+      if (typeof onSearch !== 'function') {
+        setRows([])
+        return
+      }
 
       setLoading(true)
       try {
@@ -37,7 +44,9 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
       }
     }
     run()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [open, query, onSearch])
 
   const pickDirect = () => {
@@ -65,39 +74,38 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
-      {/* ✅ make modal background closer to Explore (darker, less “grey card” effect) */}
+    <div className="chat-modern-page fixed inset-0 z-[70] flex items-center justify-center bg-black/75 p-3 backdrop-blur-md sm:p-4">
       <div
-        className="w-full sm:sm:max-w-lg rounded-3xl
-                   bg-black border border-white/10
-                   shadow-[0_0_40px_-16px_rgba(128,0,255,0.45)] p-6"
+        className="module-modern-shell chat-modern-shell w-full max-w-lg rounded-3xl p-4 sm:p-5"
+        role="dialog"
+        aria-modal="true"
+        aria-label="New Vox"
       >
-        {/* HEADER */}
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">New Vox</h2>
+          <h2 className="text-lg font-semibold text-slate-100">New Vox</h2>
 
           <button
             type="button"
-            className="rounded-lg px-3 py-1 text-sm text-purple-300 hover:bg-purple-900/40"
+            className="module-modern-btn module-modern-btn--ghost rounded-full px-3 py-1.5 text-sm"
             onClick={onClose}
           >
             Close
           </button>
         </div>
 
-        {/* ================= SEARCH INPUT (MATCH Explore SearchScreen) ================= */}
-        <div className="mb-4 relative">
+        <div className="relative mb-4">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+            aria-hidden="true"
+          />
+
           <input
             type="text"
-            placeholder="Search Citizens, Vports…"
+            placeholder="Search Citizens, Vports..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="
-              w-full px-4 py-2 pr-10
-              rounded-2xl bg-neutral-900 text-white
-              border border-purple-700
-              focus:ring-2 focus:ring-purple-500
-            "
+            className="module-modern-input w-full rounded-2xl py-2.5 pl-10 pr-10 text-sm"
             onKeyDown={(e) => {
               if (e.key === 'Enter') pickDirect()
             }}
@@ -107,64 +115,55 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
             <button
               type="button"
               onClick={() => setQ('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-slate-400 transition hover:bg-slate-700/35 hover:text-slate-200"
               aria-label="Clear"
             >
-              ×
+              <X size={14} />
             </button>
           )}
         </div>
 
-        {loading && (
-          <div className="py-2 text-sm text-gray-400">Searching…</div>
-        )}
+        {loading && <div className="py-2 text-sm text-slate-400">Searching...</div>}
 
         {!loading && query && rows.length === 0 && (
-          <div className="py-2 text-sm text-gray-500">
-            {typeof onSearch === 'function'
-              ? <>No results for “{query}”.</>
-              : <>Connect <code>onSearch</code> to enable results.</>}
+          <div className="module-modern-card rounded-2xl p-3 text-sm text-slate-400">
+            {typeof onSearch === 'function' ? (
+              <>No results for "{query}".</>
+            ) : (
+              <>
+                Connect <code>onSearch</code> to enable results.
+              </>
+            )}
           </div>
         )}
 
-        {/* RESULTS */}
         {rows.length > 0 && (
-          <ul className="max-h-80 space-y-2 overflow-auto">
+          <ul className="max-h-80 space-y-2 overflow-auto pr-0.5">
             {rows.map((u) => (
               <li
                 key={u.id}
-                className="w-full flex cursor-pointer items-center gap-3
-                           rounded-2xl border border-purple-900/40
-                           p-3
-                           bg-[#1d1d1d] hover:bg-[#242424]
-                           shadow-[0_0_12px_-4px_rgba(128,0,255,0.4)]"
+                className="module-modern-card flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 transition hover:bg-slate-800/55"
                 onClick={() => handlePickRow(u)}
               >
                 <img
                   src={u.photo_url || '/avatar.jpg'}
                   alt=""
-                  className="h-12 w-12 rounded-xl object-cover shadow-lg border border-purple-800/30"
+                  className="h-12 w-12 shrink-0 rounded-xl border border-slate-300/15 object-cover"
                 />
 
-                <div className="min-w-0 text-white">
-                  <div className="truncate font-medium text-purple-300">
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium text-slate-100">
                     {u.display_name || u.username}
                   </div>
-                  {u.username && (
-                    <div className="text-xs text-gray-400">@{u.username}</div>
-                  )}
+                  {u.username && <div className="text-xs text-slate-400">@{u.username}</div>}
                 </div>
 
-                <span
-                  className="ml-auto rounded-full border border-purple-700/40
-                             px-2 py-1 text-xs text-purple-300 bg-purple-900/40
-                             capitalize"
-                >
+                <span className="ml-auto rounded-full border border-indigo-300/25 bg-indigo-400/12 px-2.5 py-1 text-xs text-indigo-200 capitalize">
                   {(u.kind ?? u._kind) === 'user'
                     ? 'Citizen'
                     : (u.kind ?? u._kind) === 'vport'
-                    ? 'Vport'
-                    : (u.kind ?? u._kind)}
+                      ? 'Vport'
+                      : (u.kind ?? u._kind)}
                 </span>
               </li>
             ))}
@@ -174,3 +173,4 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
     </div>
   )
 }
+

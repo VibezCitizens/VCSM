@@ -1,9 +1,11 @@
-import { useMemo, useState, useCallback } from "react";
+﻿import { useMemo, useState, useCallback, useEffect } from "react";
+import { Images, MessageCircle, Play, ThumbsUp } from "lucide-react";
 
 import ImageViewerModal from "./ImageViewerModal";
 import CommentModal from "./CommentModal";
 import { usePhotoReactions } from "../hooks/usePhotoReactions";
 import { shareNative } from "@/shared/lib/shareNative";
+import "@/features/profiles/styles/profiles-photos-modern.css";
 
 /**
  * PhotoGrid
@@ -26,7 +28,7 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
     return list
       .filter((p) => !p?.deleted_at)
       .map((p) => {
-        // ✅ Prefer normalized multi-media: post.media = [{ type, url }, ...]
+        // Prefer normalized multi-media: post.media = [{ type, url }, ...]
         const mediaArr = Array.isArray(p?.media) ? p.media.filter(Boolean) : [];
 
         const imagesFromMedia = mediaArr
@@ -36,15 +38,21 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
             type: "image",
           }));
 
-        // ✅ Legacy fallback: posts.media_url + posts.media_type
+        // Legacy fallback: posts.media_url + posts.media_type
         const legacyIsImage = p?.media_type === "image" && !!p?.media_url;
         const legacy = legacyIsImage ? [{ url: p.media_url, type: "image" }] : [];
 
         const images = imagesFromMedia.length ? imagesFromMedia : legacy;
+        const mediaCount = mediaArr.length || images.length;
+        const hasVideo =
+          mediaArr.some((m) => (m?.type || m?.media_type) === "video") ||
+          p?.media_type === "video";
 
         return {
           ...p,
-          images, // ✅ SSOT for PhotoGrid
+          images,
+          mediaCount,
+          hasVideo,
         };
       })
       .filter((p) => Array.isArray(p.images) && p.images.length > 0);
@@ -52,20 +60,23 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
 
   // ----------------------------------------------------------
   // DOMAIN HOOK (actor-based)
-  // NOTE: keep your existing hook input shape (posts list)
   // ----------------------------------------------------------
   const { enriched, toggleReaction, sendRose } = usePhotoReactions(imagePosts, actorId);
 
   // ----------------------------------------------------------
   // UI STATE
   // ----------------------------------------------------------
-  const [activePostIndex, setActivePostIndex] = useState(null); // which post in enriched[]
-  const [activeImageIndex, setActiveImageIndex] = useState(0);  // which image within post.images[]
+  const [activePostIndex, setActivePostIndex] = useState(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activePostId, setActivePostId] = useState(null);
 
   const [showViewer, setShowViewer] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [viewerOrigin, setViewerOrigin] = useState("grid");
+
+  const featuredPost = enriched[0] ?? null;
+  const gridPosts = enriched.slice(1);
 
   // ----------------------------------------------------------
   // SHARE FALLBACK (if parent didn't inject handleShare)
@@ -84,11 +95,22 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
 
   const shareFn = handleShare ?? shareFallback;
 
+  const openViewerForPost = (postIndex, origin = "grid") => {
+    const target = enriched[postIndex];
+    if (!target) return;
+
+    setViewerOrigin(origin);
+    setActivePostIndex(postIndex);
+    setActiveImageIndex(0);
+    setActivePostId(target.id);
+    setShowViewer(true);
+  };
+
   // ----------------------------------------------------------
   // GUARDS (pure UI)
   // ----------------------------------------------------------
   if (!actorId) {
-    return <div className="py-10 text-center text-neutral-500">Loading…</div>;
+    return <div className="py-10 text-center text-neutral-500">Loading...</div>;
   }
 
   if (!enriched.length) {
@@ -100,95 +122,123 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
   // ----------------------------------------------------------
   return (
     <>
-      {/* IMAGE GRID */}
-      <div className="grid grid-cols-3 gap-1 p-2">
-        {enriched.map((post, postIdx) => {
-          const imgs = Array.isArray(post.images) ? post.images : [];
-          const first = imgs[0]?.url;
+      {featuredPost && (
+        <button
+          type="button"
+          className="profiles-photo-featured-card"
+          onClick={() => openViewerForPost(0, "featured")}
+        >
+          <MediaThumb
+            src={featuredPost.images?.[0]?.url}
+            alt=""
+            className="profiles-photo-featured-media"
+          />
 
-          // up to 4 thumbnails
-          const thumbs = imgs.slice(0, 4);
+          <div className="profiles-photo-featured-overlay">
+            <div className="profiles-photo-featured-label">Latest Post</div>
+            <div className="profiles-photo-featured-meta">
+              <StatPill icon={ThumbsUp} value={featuredPost.likeCount || 0} />
+              <StatPill icon={MessageCircle} value={featuredPost.commentCount || 0} />
+            </div>
+          </div>
+        </button>
+      )}
+
+      <div className="profiles-photo-grid">
+        {gridPosts.map((post, gridIndex) => {
+          const source = post.images?.[0]?.url;
+          const postIdx = gridIndex + 1;
+          const mediaCount = post.mediaCount || post.images?.length || 1;
 
           return (
             <button
               key={post.id}
               type="button"
-              className="relative aspect-square w-full overflow-hidden"
-              onClick={() => {
-                setActivePostIndex(postIdx);
-                setActiveImageIndex(0);
-                setActivePostId(post.id);
-                setShowViewer(true);
-              }}
+              className="profiles-photo-tile"
+              onClick={() => openViewerForPost(postIdx, "grid")}
             >
-              {/* 1 image -> simple */}
-              {thumbs.length <= 1 ? (
-                <img
-                  src={first}
-                  alt=""
-                  loading="lazy"
-                  className="h-full w-full object-cover"
-                  draggable={false}
-                />
-              ) : (
-                // 2-4 images -> 2x2 collage
-                <div className="grid grid-cols-2 grid-rows-2 h-full w-full">
-                  {thumbs.map((t, i) => (
-                    <img
-                      key={`${post.id}-t-${i}`}
-                      src={t.url}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover"
-                      draggable={false}
-                    />
-                  ))}
-                  {/* fill empty cells if only 2 or 3 */}
-                  {thumbs.length === 2 && (
-                    <>
-                      <div className="bg-neutral-900" />
-                      <div className="bg-neutral-900" />
-                    </>
-                  )}
-                  {thumbs.length === 3 && <div className="bg-neutral-900" />}
-                </div>
-              )}
+              <MediaThumb src={source} alt="" className="profiles-photo-tile-media" />
 
-              {/* badge: total count */}
-              {imgs.length > 1 && (
-                <div className="absolute top-1 right-1 rounded-full bg-black/70 text-white text-[11px] px-2 py-0.5">
-                  {imgs.length}
-                </div>
-              )}
+              <div className="profiles-photo-tile-overlay" />
+
+              <div className="profiles-photo-tile-badges">
+                {post.hasVideo && (
+                  <span className="profiles-photo-tile-badge" title="Contains video">
+                    <Play size={12} />
+                  </span>
+                )}
+                {mediaCount > 1 && (
+                  <span className="profiles-photo-tile-badge" title="Album">
+                    <Images size={12} />
+                    <span>{mediaCount}</span>
+                  </span>
+                )}
+              </div>
             </button>
           );
         })}
       </div>
 
-      {/* IMAGE VIEWER */}
-     {showViewer && activePostIndex != null && (
-  <ImageViewerModal
-    imagePosts={enriched[activePostIndex]?.images || []}
-    activePost={enriched[activePostIndex] || null}
-    activeIndex={activeImageIndex}
-    activePostId={activePostId}
-    setActiveIndex={setActiveImageIndex}
-    onClose={() => setShowViewer(false)}
-    toggleReaction={toggleReaction}
-    sendRose={sendRose}
-    handleShare={shareFn}
-    openComments={(postId) => {
-      setSelectedPostId(postId);
-      setShowComments(true);
-    }}
-  />
-)}
+      {showViewer && activePostIndex != null && (
+        <ImageViewerModal
+          imagePosts={enriched[activePostIndex]?.images || []}
+          activePost={enriched[activePostIndex] || null}
+          activeIndex={activeImageIndex}
+          activePostId={activePostId}
+          viewerOrigin={viewerOrigin}
+          setActiveIndex={setActiveImageIndex}
+          onClose={() => setShowViewer(false)}
+          toggleReaction={toggleReaction}
+          sendRose={sendRose}
+          handleShare={shareFn}
+          openComments={(postId) => {
+            setSelectedPostId(postId);
+            setShowComments(true);
+          }}
+        />
+      )}
 
-
-      {/* COMMENTS */}
       {showComments && (
         <CommentModal postId={selectedPostId} onClose={() => setShowComments(false)} />
       )}
     </>
   );
 }
+
+function StatPill({ icon: Icon, value }) {
+  return (
+    <div className="profiles-photo-stat-pill">
+      <Icon size={12} />
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function MediaThumb({ src, alt, className = "" }) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+  }, [src]);
+
+  return (
+    <div className={`profiles-photo-media ${className}`}>
+      <div className={`profiles-photo-media-skeleton ${loaded ? "is-hidden" : ""}`} />
+
+      {src ? (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          draggable={false}
+          onLoad={() => setLoaded(true)}
+          onError={() => setLoaded(true)}
+          className={`profiles-photo-media-img ${loaded ? "is-loaded" : ""}`}
+        />
+      ) : (
+        <div className="profiles-photo-media-fallback">Media unavailable</div>
+      )}
+    </div>
+  );
+}
+

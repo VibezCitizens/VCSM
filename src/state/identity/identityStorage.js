@@ -5,7 +5,9 @@ const KEY = 'vc.identity.actorId';
 export function saveIdentity(actorId) {
   try {
     localStorage.setItem(KEY, actorId);
-  } catch {}
+  } catch (_ERR) {
+    void _ERR;
+  }
 }
 
 export function loadIdentity() {
@@ -19,5 +21,7 @@ export function loadIdentity() {
 export function clearIdentity() {
   try {
     localStorage.removeItem(KEY);
-  } catch {}
+  } catch (_ERR) {
+    void _ERR;
+  }
 }

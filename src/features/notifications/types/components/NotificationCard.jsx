@@ -17,10 +17,10 @@ export default function NotificationCard({
   return (
     <div
       className={`
-        module-modern-card
+        notifications-card
         flex items-center justify-between gap-3
         rounded-xl px-4 py-3
-        ${unread ? 'ring-1 ring-indigo-300/35' : ''}
+        ${unread ? 'notifications-card--unread' : ''}
         ${className}
       `}
     >
@@ -50,13 +50,13 @@ export default function NotificationCard({
         {actions}
 
         {secondaryAction && (
-          <button onClick={secondaryAction.onClick} className="module-modern-btn module-modern-btn--ghost px-3 py-1 text-xs">
+          <button onClick={secondaryAction.onClick} className="notifications-action-btn notifications-action-btn--ghost px-3 py-1 text-xs">
             {secondaryAction.label}
           </button>
         )}
 
         {!actions && actionLabel && onAction && (
-          <button onClick={onAction} className="module-modern-btn module-modern-btn--ghost px-3 py-1 text-xs">
+          <button onClick={onAction} className="notifications-action-btn notifications-action-btn--ghost px-3 py-1 text-xs">
             {actionLabel}
           </button>
         )}

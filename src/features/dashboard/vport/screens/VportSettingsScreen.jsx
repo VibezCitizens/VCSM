@@ -8,7 +8,8 @@ import Card from "@/features/settings/ui/Card";
 import VportAboutDetailsView from "@/features/settings/profile/ui/VportAboutDetails.view";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { fetchVportPublicDetailsByActorId } from "@/features/profiles/dal/vportPublicDetails.read.dal";
+import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
+import { useSaveVportPublicDetailsByActorId } from "@/features/dashboard/vport/hooks/useSaveVportPublicDetailsByActorId";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { useVportAds } from "@/features/ads/hooks/useVportAds";
 import VportSettingsAdsPreview from "@/features/dashboard/vport/screens/components/VportSettingsAdsPreview";
@@ -20,21 +21,19 @@ import {
   getDashboardViewByVportType,
   normalizeVportType,
 } from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
-import {
-  mapPublicDetailsToDraft,
-  saveVportPublicDetailsByActorId,
-} from "@/features/dashboard/vport/screens/model/vportSettingsScreen.model";
+import { mapPublicDetailsToDraft } from "@/features/dashboard/vport/model/vportSettingsDraft.model";
 
 export default function VportSettingsScreen() {
   const navigate = useNavigate();
   const { actorId } = useParams();
   const { identity, identityLoading } = useIdentity();
+  const { loading: loadingData, details: publicDetails } = useVportPublicDetails(actorId);
 
   const [draft, setDraft] = useState(null);
-  const [loadingData, setLoadingData] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const { saveByActorId } = useSaveVportPublicDetailsByActorId();
   const { ads } = useVportAds(actorId);
 
   const isDesktop = useDesktopBreakpoint();
@@ -65,28 +64,8 @@ export default function VportSettingsScreen() {
   }, []);
 
   useEffect(() => {
-    if (!actorId) return;
-
-    let alive = true;
-
-    (async () => {
-      setLoadingData(true);
-      try {
-        const d = await fetchVportPublicDetailsByActorId(actorId);
-        if (!alive) return;
-        setDraft(mapPublicDetailsToDraft(d || null));
-      } catch {
-        if (!alive) return;
-        setDraft(mapPublicDetailsToDraft(null));
-      } finally {
-        if (alive) setLoadingData(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [actorId]);
+    setDraft(mapPublicDetailsToDraft(publicDetails || null));
+  }, [publicDetails]);
 
   const onChange = useCallback((patch) => {
     setSaved(false);
@@ -102,14 +81,14 @@ export default function VportSettingsScreen() {
     setError("");
 
     try {
-      await saveVportPublicDetailsByActorId(actorId, draft);
+      await saveByActorId(actorId, draft);
       setSaved(true);
     } catch (e) {
       setError(e?.message || "Failed to save.");
     } finally {
       setSaving(false);
     }
-  }, [actorId, draft, isOwner, loadingData]);
+  }, [actorId, draft, isOwner, loadingData, saveByActorId]);
 
   if (!actorId) return null;
 

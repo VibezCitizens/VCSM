@@ -7,6 +7,7 @@ import SelectedThumbStrip from "../ui/SelectedThumbStrip";
 import CaptionCard from "../ui/CaptionCard";
 import PrimaryActionButton from "../ui/PrimaryActionButton";
 import "@/features/ui/modern/module-modern.css";
+import "@/features/upload/styles/upload-modern.css";
 
 import { useMediaSelection, MAX_VIBES_PHOTOS } from "../hooks/useMediaSelection";
 import { extractMentions } from "../lib/extractMentions";
@@ -91,7 +92,7 @@ export default function UploadScreenModern({ onSubmit }) {
   }
 
   return (
-    <div className="module-modern-page h-full min-h-0 w-full">
+    <div className="module-modern-page upload-modern h-full min-h-0 w-full">
       <div className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
         <div
           className="flex-1 min-h-0 overflow-y-auto touch-pan-y px-3 pt-5 sm:px-4 sm:pt-6"
@@ -100,7 +101,7 @@ export default function UploadScreenModern({ onSubmit }) {
             paddingBottom: "calc(var(--vc-bottom-nav-total-height) + 20px)",
           }}
         >
-          <div className="mx-auto w-full max-w-xl">
+          <div className="upload-shell mx-auto w-full max-w-xl">
             <UploadHeader mode={mode} onChangeMode={handleChangeMode} />
 
             <UploadCard
@@ -120,7 +121,11 @@ export default function UploadScreenModern({ onSubmit }) {
               onRemoveAt={media.removeAt}
             />
 
-            {media.error && <div className="mt-3 text-red-400 text-sm">{media.error}</div>}
+            {media.error && (
+              <div className="upload-subcard mt-3 px-3 py-2 text-rose-300 text-sm">
+                {media.error}
+              </div>
+            )}
 
             <CaptionCard
               caption={caption}
@@ -141,7 +146,7 @@ export default function UploadScreenModern({ onSubmit }) {
             />
 
             {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
-              <div className="mt-4 text-center text-xs text-slate-500">
+              <div className="mt-4 text-center text-xs text-slate-400">
                 You can upload up to {MAX_VIBES_PHOTOS} photos at a time.
               </div>
             )}

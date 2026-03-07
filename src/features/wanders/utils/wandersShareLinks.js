@@ -22,7 +22,9 @@ function getDefaultBaseUrl() {
     if (typeof window !== 'undefined' && window.location?.origin) {
       return window.location.origin
     }
-  } catch (e) {}
+  } catch (_ERR) {
+    void _ERR
+  }
   return ''
 }
 

@@ -24,7 +24,7 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
 
   return (
     <header
-      className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+      className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       <div className="flex h-14 items-center justify-between gap-2 px-3 text-slate-100">

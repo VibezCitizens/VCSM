@@ -112,3 +112,23 @@ Even if the project ultimately fails, the effort of learning, building, and atte
 However, if Vibez Citizens succeeds, it could become a system where communities, citizens, and businesses interact through a digital network that reflects real-world life.
 
 A place where discovery comes from people—not algorithms.
+
+Early Conversations
+
+As the concept for Vibez Citizens continued to develop, the idea of building technology was no longer something to pursue alone. There was also a desire to share the process with friends and invite them to learn how to build software together.
+
+On March 1, 2025, three friends were approached with a simple proposal: learn how to build applications and experiment with creating digital tools together.
+
+The reaction was mixed.
+
+Two of them laughed and treated the suggestion as a joke. The idea of building software from scratch seemed unrealistic coming from someone whose background was in nursing rather than technology.
+
+One friend, however, showed genuine interest.
+
+A few days later, on March 6, 2025, another conversation took place with a different friend who had been experimenting with automation and macros in his own work environment. During that conversation, the idea of building applications was brought up again. The response was curiosity rather than skepticism.
+
+These conversations reinforced an important realization: new ideas are rarely understood immediately.
+
+Some people will dismiss them, some will laugh, and a few will become interested enough to explore them further.
+
+The goal was never to convince everyone. The goal was simply to find the few people willing to learn and build something new.

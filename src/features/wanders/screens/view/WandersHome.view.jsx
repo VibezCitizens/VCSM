@@ -18,7 +18,9 @@ export default function WandersHomeView() {
   const baseUrl = useMemo(() => {
     try {
       if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-    } catch {}
+    } catch (_ERR) {
+      void _ERR;
+    }
     return "";
   }, []);
 

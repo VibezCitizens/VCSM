@@ -9,8 +9,7 @@ import { useFeed } from "@/features/feed/hooks/useFeed";
 import useReportFlow from "@/features/moderation/hooks/useReportFlow";
 import ReportModal from "@/features/moderation/components/ReportModal";
 import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
-
-import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
+import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
 import PostCardView from "@/features/post/postcard/ui/PostCard.view";
 
 import { shareNative } from "@/shared/lib/shareNative";
@@ -27,6 +26,7 @@ export default function PostFeedScreen() {
 
   const actorId = identity?.actorId ?? null;
   const realmId = identity?.realmId ?? null;
+  const deletePost = useDeletePostAction({ actorId });
 
   // ✅ FIX: useFeed requires (viewerActorId, realmId)
   const { posts, loading, hasMore, fetchPosts, setPosts, fetchViewer } = useFeed(
@@ -92,8 +92,7 @@ export default function PostFeedScreen() {
     const okConfirm = window.confirm("Delete this Vibe?");
     if (!okConfirm) return;
 
-    const res = await softDeletePostController({
-      actorId,
+    const res = await deletePost({
       postId: postMenu.postId,
     });
 
@@ -104,7 +103,7 @@ export default function PostFeedScreen() {
 
     setPosts((prev) => prev.filter((p) => p.id !== postMenu.postId));
     closePostMenu();
-  }, [actorId, postMenu, setPosts, closePostMenu]);
+  }, [actorId, postMenu, setPosts, closePostMenu, deletePost]);
 
   const [shareState, setShareState] = useState({
     open: false,

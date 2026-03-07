@@ -10,3 +10,19 @@ export async function dalGetProfileDiscoverable(profileId) {
   if (error) throw error
   return data // raw DB row or null
 }
+
+export async function dalUpdateProfileDiscoverable({
+  profileId,
+  discoverable,
+  updatedAt,
+}) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      discoverable,
+      updated_at: updatedAt,
+    })
+    .eq('id', profileId)
+
+  if (error) throw error
+}

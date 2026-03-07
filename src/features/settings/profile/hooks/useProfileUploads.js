@@ -9,8 +9,8 @@
 
 import imageCompression from 'browser-image-compression'
 import { uploadToCloudflare } from '@/services/cloudflare/uploadToCloudflare'
-import { supabase } from '@/services/supabase/supabaseClient'
 import { buildR2Key } from '@/services/cloudflare/buildR2Key'
+import { ctrlGetCurrentAuthUserId } from '@/features/settings/profile/controller/authSession.controller'
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
@@ -40,8 +40,7 @@ export function useProfileUploads({ mode, subjectId }) {
 
     // ---- USER AVATAR PHOTO (NEW) ----
     if (mode === 'user') {
-      const { data } = await supabase.auth.getUser()
-      const userId = data?.user?.id
+      const userId = await ctrlGetCurrentAuthUserId()
       if (!userId) throw new Error('Not authenticated')
 
       const compressed = await imageCompression(f, {

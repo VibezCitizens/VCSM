@@ -21,38 +21,24 @@ export default function FeatureSearchResultRow({ feature }) {
       onClick={() => {
         if (feature.route) navigate(feature.route)
       }}
-      className="
-        w-full text-left
-        flex items-center gap-3
-        px-4 py-3
-        bg-neutral-900/60 hover:bg-neutral-900/80
-        rounded-xl
-      "
+      className="explore-result-row"
     >
-      <div className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center shrink-0">
-        <Icon className="w-5 h-5 text-purple-300" />
+      <div className="w-10 h-10 rounded-xl bg-slate-900/80 flex items-center justify-center shrink-0 border border-indigo-400/20">
+        <Icon className="w-5 h-5 text-sky-200" />
       </div>
 
-      <div className="min-w-0">
-        <div className="text-sm text-white font-medium truncate">
+      <div className="min-w-0 flex-1">
+        <div className="text-sm text-slate-100 font-medium truncate">
           {feature.title || 'Feature'}
         </div>
         {!!feature.subtitle && (
-          <div className="text-xs text-neutral-400 truncate">
+          <div className="text-xs text-slate-300/80 truncate">
             {feature.subtitle}
           </div>
         )}
       </div>
 
-      <span
-        className="
-          ml-auto
-          text-xs text-purple-300
-          px-2 py-1 rounded-full
-          border border-purple-700/40
-          bg-purple-900/30
-        "
-      >
+      <span className="explore-result-pill">
         Feature
       </span>
     </button>

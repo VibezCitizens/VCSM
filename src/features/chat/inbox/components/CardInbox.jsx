@@ -19,7 +19,7 @@ export default function CardInbox({ entry, onClick, onDelete, showThreadPreview 
     <div
       onClick={onClick}
       data-conversation-id={conversationId}
-      className="module-modern-card cursor-pointer rounded-2xl transition hover:bg-slate-800/55"
+      className="module-modern-card chat-modern-card chat-modern-list-row cursor-pointer rounded-2xl transition hover:bg-slate-800/55"
     >
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">

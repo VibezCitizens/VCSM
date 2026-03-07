@@ -8,15 +8,16 @@ import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
 
 import InboxList from '@/features/chat/inbox/components/InboxList'
+import InboxListSkeleton from '@/features/chat/inbox/components/InboxListSkeleton'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
 import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
-import Spinner from '@/shared/components/Spinner'
 
 import StartConversationModal from '@/features/chat/start/screens/StartConversationModal'
 import { inboxOnSearch } from '@/features/chat/inbox/constants/inboxSearchAdapter'
 import { useStartConversation } from '@/features/chat/start/hooks/useStartConversation'
 import '@/features/ui/modern/module-modern.css'
+import '@/features/chat/styles/chat-modern.css'
 
 export default function InboxScreen() {
   const navigate = useNavigate()
@@ -55,10 +56,10 @@ export default function InboxScreen() {
   }
 
   return (
-    <div className="module-modern-page flex h-full min-h-0 flex-col">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
+    <div className="module-modern-page chat-modern-page flex h-full min-h-0 flex-col">
+      <div className="chat-modern-shell mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col rounded-2xl">
         <div
-          className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 backdrop-blur-sm"
+          className="chat-modern-sticky-header sticky top-0 z-10 flex items-center justify-between px-4 py-3 backdrop-blur-sm"
           style={{
             background:
               'linear-gradient(180deg, rgba(4,6,14,0.6) 0%, rgba(4,6,14,0.22) 68%, rgba(4,6,14,0) 100%)',
@@ -86,7 +87,7 @@ export default function InboxScreen() {
                   className="fixed inset-0 z-40 cursor-default"
                 />
 
-                <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/96 shadow-2xl">
+                <div className="chat-modern-quick-actions absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/96 shadow-2xl">
                   <button
                     type="button"
                     onClick={() => {
@@ -121,9 +122,7 @@ export default function InboxScreen() {
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {inboxLoading ? (
-            <div className="px-4 py-8">
-              <Spinner label="Loading Vox..." />
-            </div>
+            <InboxListSkeleton count={7} />
           ) : previews.length === 0 ? (
             <InboxEmptyState />
           ) : (

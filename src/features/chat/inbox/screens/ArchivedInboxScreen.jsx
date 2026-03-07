@@ -12,6 +12,7 @@ import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
 import Spinner from '@/shared/components/Spinner'
 import '@/features/ui/modern/module-modern.css'
+import '@/features/chat/styles/chat-modern.css'
 
 export default function ArchivedInboxScreen() {
   const navigate = useNavigate()
@@ -45,10 +46,10 @@ export default function ArchivedInboxScreen() {
   if (error) return <div className="p-4 text-red-400">Failed to load archived Vox</div>
 
   return (
-    <div className="module-modern-page flex h-full flex-col">
-      <div className="module-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
+    <div className="module-modern-page chat-modern-page flex h-full flex-col">
+      <div className="module-modern-shell chat-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
         <header
-          className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <div className="relative flex h-14 items-center px-3">

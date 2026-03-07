@@ -93,7 +93,7 @@ export default function MessageBubble({
   return (
     <div
       className={clsx(
-        'flex items-end gap-2',
+        'chat-modern-message-row flex items-end gap-2',
         isMine ? 'justify-end' : 'justify-start'
       )}
     >
@@ -115,7 +115,7 @@ export default function MessageBubble({
       )}
 
       {/* Message bubble */}
-      <div className="max-w-[78%]">
+      <div className="chat-modern-message-col max-w-[78%]">
         {/* Name (group chats) */}
         {!isMine && showName && actor && (
           <div className="mb-0.5 text-xs text-neutral-400 truncate">
@@ -126,18 +126,18 @@ export default function MessageBubble({
         {/* Bubble */}
         <div
           className={clsx(
-            'text-sm break-words no-ios-callout', // ✅ stop iOS callout/selection
+            'text-sm break-words no-ios-callout chat-modern-bubble', // ✅ stop iOS callout/selection
             // ❌ removed select-text (this is what triggers iOS Copy/LookUp)
             // !message.isDeleted && 'select-text',
 
             // ✅ media-only messages should NOT render a purple bubble container
             isMediaOnly
-              ? 'p-0 bg-transparent'
+              ? 'chat-modern-bubble--media p-0 bg-transparent'
               : [
                   'rounded-2xl px-3 py-2',
                   isMine
-                    ? 'bg-purple-600 text-white rounded-br-md'
-                    : 'bg-purple-500 text-white rounded-bl-md',
+                    ? 'chat-modern-bubble--mine bg-purple-600 text-white rounded-br-md'
+                    : 'chat-modern-bubble--other bg-purple-500 text-white rounded-bl-md',
                 ]
           )}
           // ✅ never allow native context menu (desktop right-click + iOS long-press callout)

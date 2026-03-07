@@ -1,8 +1,9 @@
 .module-modern-page {
   background:
-    radial-gradient(900px 360px at 50% -220px, rgba(99, 102, 241, 0.2), transparent 70%),
-    radial-gradient(680px 260px at 0% 0%, rgba(236, 72, 153, 0.12), transparent 72%),
-    #04060e;
+    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
+    radial-gradient(circle at 50% 120%, rgba(124, 58, 237, 0.12), transparent 52%),
+    #050814;
   color: #e2e8f0;
 }
 

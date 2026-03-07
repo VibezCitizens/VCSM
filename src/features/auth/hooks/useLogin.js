@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { signInWithPassword } from '@/features/auth/adapter/auth.adapter'
 import { ensureProfileDiscoverable } from '@/features/auth/controllers/profile.controller'
-import { supabase } from '@/services/supabase/supabaseClient'
+import { hydrateAuthSession } from '@/features/auth/controllers/authSession.controller'
 
 export function useLogin(navigate, location) {
   const [email, setEmail] = useState('')
@@ -18,7 +18,7 @@ export function useLogin(navigate, location) {
       const { data, error: signInError } = await signInWithPassword({ email, password })
       if (signInError) throw signInError
 
-      await supabase.auth.getSession()
+      await hydrateAuthSession()
 
       if (data?.user?.id) {
         await ensureProfileDiscoverable(data.user.id)

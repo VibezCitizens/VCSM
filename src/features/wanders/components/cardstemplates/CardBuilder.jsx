@@ -169,7 +169,7 @@ export default function CardBuilder({
   useEffect(() => {
     if (!activeTemplate) return;
     setFormData(normalizeFormData(activeTemplate.defaultData || {}));
-  }, [activeTemplate?.id]);
+  }, [activeTemplate]);
 
   const showTemplatePicker =
     !!activeTemplate &&

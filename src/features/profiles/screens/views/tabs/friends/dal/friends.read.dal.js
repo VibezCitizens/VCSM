@@ -1,59 +1,71 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
-// 🔒 BLOCK READ GATE (SSOT)
-import { filterBlockedActors } from "@/features/block/dal/block.read.dal";
+function clampTopFriendLimit(limit = 10) {
+  return Math.max(1, Math.min(10, Number(limit || 10)));
+}
 
-/* ============================================================
-   TOP FRIENDS (BLOCK-SAFE)
-   ============================================================ */
 /**
- * Fetch top-ranked friends for an actor
- * - Order preserved
- * - Blocked actors removed (bi-directional)
- *
- * @param {string} ownerActorId
- * @param {number} limit
- * @returns {string[]} friendActorIds
+ * Raw ranked rows for one owner.
+ * Returns DB rows only; no eligibility or block filtering.
  */
-export async function fetchTopFriendActorIds(ownerActorId, limit = 9) {
+export async function readFriendRankRows(ownerActorId, limit = 10) {
   if (!ownerActorId) return [];
 
+  const safeLimit = clampTopFriendLimit(limit);
   const { data, error } = await supabase
     .schema("vc")
     .from("friend_ranks")
-    .select("friend_actor_id")
+    .select("owner_actor_id,friend_actor_id,rank")
     .eq("owner_actor_id", ownerActorId)
     .order("rank", { ascending: true })
-    .limit(limit);
+    .limit(safeLimit);
 
   if (error) throw error;
+  return data ?? [];
+}
 
-  const ids = data?.map((r) => r.friend_actor_id) ?? [];
+/**
+ * Raw active follow edges for an owner against provided ids.
+ */
+export async function readActiveFollowRows(ownerActorId, friendActorIds = []) {
+  const ids = Array.isArray(friendActorIds) ? friendActorIds.filter(Boolean) : [];
+  if (!ownerActorId || !ids.length) return [];
+
+  const { data, error } = await supabase
+    .schema("vc")
+    .from("actor_follows")
+    .select("follower_actor_id,followed_actor_id,is_active")
+    .eq("follower_actor_id", ownerActorId)
+    .eq("is_active", true)
+    .in("followed_actor_id", ids);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/**
+ * Raw actor rows for ids.
+ */
+export async function readActorRows(actorIds = []) {
+  const ids = Array.isArray(actorIds) ? actorIds.filter(Boolean) : [];
   if (!ids.length) return [];
 
-  // ------------------------------------------------------------
-  // 🔒 BLOCK FILTER (NO LEAKS)
-  // ------------------------------------------------------------
-  const blockedSet = await filterBlockedActors(ownerActorId, ids);
+  const { data, error } = await supabase
+    .schema("vc")
+    .from("actors")
+    .select("id,is_void")
+    .in("id", ids);
 
-  return ids.filter((id) => !blockedSet.has(id));
+  if (error) throw error;
+  return data ?? [];
 }
 
 /* ============================================================
-   FOLLOW GRAPH (RAW — BLOCK FILTERED BY CALLER)
+   FOLLOW GRAPH
    ============================================================ */
 /**
- * Fetch follow graph for an actor
- *
- * NOTE:
- * - This returns RAW graph data
- * - Blocking is applied by higher-level hooks
- *
- * @param {string} actorId
- * @returns {{
- *   following: Set<string>,
- *   followers: Set<string>
- * }}
+ * Fetch follow graph for an actor.
+ * This helper shape is kept for existing friends tab consumers.
  */
 export async function fetchFollowGraph(actorId) {
   if (!actorId) {
@@ -80,7 +92,7 @@ export async function fetchFollowGraph(actorId) {
   ]);
 
   return {
-    following: new Set(following?.map((r) => r.followed_actor_id)),
-    followers: new Set(followers?.map((r) => r.follower_actor_id)),
+    following: new Set((following ?? []).map((row) => row.followed_actor_id)),
+    followers: new Set((followers ?? []).map((row) => row.follower_actor_id)),
   };
 }

@@ -51,7 +51,7 @@ export default function BottomNavBar() {
       }}
     >
       <nav
-        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-full border border-white/45 bg-white/45 px-3 text-slate-900 shadow-[0_8px_22px_rgba(0,0,0,0.2)] ring-1 ring-black/8 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/35"
+        className="pointer-events-auto mx-auto flex items-center justify-between gap-1 rounded-full border border-indigo-200/20 bg-slate-950/58 px-3 text-slate-100 shadow-[0_14px_34px_rgba(2,6,22,0.58)] ring-1 ring-indigo-300/15 backdrop-blur-2xl supports-[backdrop-filter]:bg-slate-900/52"
         style={{
           width: 'min(560px, calc(100% - 36px))',
           height: 'var(--vc-bottom-nav-rail-height)',
@@ -72,9 +72,9 @@ export default function BottomNavBar() {
         <button
           aria-label="New Upload"
           onClick={() => navigate('/upload')}
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-[0_8px_20px_rgba(0,0,0,0.35)] transition-transform hover:scale-95 focus:outline-none focus:ring-2 focus:ring-white/60"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-indigo-200/40 bg-gradient-to-br from-violet-500 via-indigo-400 to-sky-400 text-white shadow-[0_12px_30px_rgba(83,104,255,0.62),0_0_16px_rgba(87,150,255,0.5)] transition-all duration-200 hover:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-indigo-200/60"
         >
-          <Plus size={20} />
+          <Plus size={22} />
         </button>
 
         <Tab
@@ -110,8 +110,8 @@ const Tab = React.memo(function Tab({
       className={({ isActive }) =>
         `relative flex h-10 min-w-[40px] items-center justify-center rounded-full px-1 transition-all duration-150 ${
           isActive
-            ? 'border border-black/12 bg-white/72 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]'
-            : 'text-slate-800/85 hover:bg-white/38 hover:text-slate-950'
+            ? 'border border-indigo-200/30 bg-indigo-400/18 text-indigo-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_0_16px_rgba(87,138,255,0.32)]'
+            : 'text-slate-300/90 hover:bg-white/10 hover:text-indigo-100'
         }`
       }
     >

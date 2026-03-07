@@ -16,8 +16,6 @@
 //   • Uses blocking hooks only
 // ============================================================
 
-import { useMemo } from "react";
-
 import { useIdentity } from "@/state/identity/identityContext";
 import { useBlockStatus } from "@/features/block/hooks/useBlockStatus";
 import { useBlockActions } from "@/features/block/hooks/useBlockActions";

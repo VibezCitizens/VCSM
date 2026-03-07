@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
-import {
-  ctrlAcceptFollowRequest,
-  ctrlDeclineFollowRequest,
-} from '@/features/social/friend/request/controllers/followRequests.controller'
+import { useFollowRequestActions } from '@/features/social/friend/request/hooks/useFollowRequestActions'
 
 export default function FollowRequestItem({ notification }) {
   const navigate = useNavigate()
+  const { acceptRequest, declineRequest } = useFollowRequestActions()
   const [busy, setBusy] = useState(false)
   const [hidden, setHidden] = useState(false)
 
@@ -33,7 +31,7 @@ export default function FollowRequestItem({ notification }) {
     setHidden(true)
 
     try {
-      await ctrlAcceptFollowRequest({
+      await acceptRequest({
         requesterActorId,
         targetActorId,
       })
@@ -81,7 +79,7 @@ export default function FollowRequestItem({ notification }) {
     setHidden(true)
 
     try {
-      await ctrlDeclineFollowRequest({
+      await declineRequest({
         requesterActorId,
         targetActorId,
       })
@@ -104,9 +102,8 @@ export default function FollowRequestItem({ notification }) {
             disabled={busy}
             onClick={accept}
             className="
-              rounded-lg bg-emerald-700/70
-              px-3 py-1 text-xs text-white
-              hover:bg-emerald-700 disabled:opacity-50
+              notifications-action-btn notifications-action-btn--accept
+              disabled:opacity-50
             "
           >
             Accept
@@ -116,9 +113,8 @@ export default function FollowRequestItem({ notification }) {
             disabled={busy}
             onClick={decline}
             className="
-              rounded-lg bg-neutral-700
-              px-3 py-1 text-xs text-neutral-200
-              hover:bg-neutral-600 disabled:opacity-50
+              notifications-action-btn notifications-action-btn--decline
+              disabled:opacity-50
             "
           >
             Decline

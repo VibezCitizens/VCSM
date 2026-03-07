@@ -7,23 +7,14 @@ export default function MentionAutocompleteList({ open, items, onPick }) {
 
   return (
     <div
-      className="
-        absolute z-50 mt-2 w-full
-        rounded-xl border border-white/10
-        bg-black/95 backdrop-blur
-        shadow-lg overflow-hidden
-      "
+      className="upload-typeahead absolute z-50 mt-2 w-full rounded-xl"
       onClick={(e) => e.stopPropagation()}
     >
       {items.map((it) => (
         <button
           key={it.actor_id}
           type="button"
-          className="
-            w-full flex items-center gap-3
-            px-3 py-2 text-left
-            hover:bg-white/5
-          "
+          className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-white/5 transition-colors"
           onClick={() => onPick(it)}
         >
           <img

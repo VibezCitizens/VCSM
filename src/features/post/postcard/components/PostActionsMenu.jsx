@@ -102,21 +102,19 @@ export default function PostActionsMenu({
         className="
           absolute
           min-w-[200px]
-          rounded-xl
-          bg-neutral-800/95
+          rounded-2xl
+          post-modern-popover
           text-white
-          shadow-2xl
-          border border-white/10
           overflow-hidden
         "
         style={{ top, left, transformOrigin: openUpward ? 'bottom' : 'top' }}
       >
         <ul className="m-0 list-none py-1 pl-0 pr-0">
-          {items.map((it) => (
+          {items.map((it, idx) => (
             <li key={it.key}>
               <button
                 className={`
-                  w-full text-left px-4 py-2
+                  w-full text-left px-4 py-3
                   hover:bg-white/10
                   ${it.tone}
                 `}
@@ -127,6 +125,7 @@ export default function PostActionsMenu({
               >
                 {it.label}
               </button>
+              {idx !== items.length - 1 ? <div className="h-px bg-white/10" /> : null}
             </li>
           ))}
         </ul>

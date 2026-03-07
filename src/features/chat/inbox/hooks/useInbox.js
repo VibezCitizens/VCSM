@@ -10,7 +10,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { getInboxEntries } from '@/features/chat/inbox/dal/inbox.read.dal'
+import { ctrlGetInboxEntries } from '@/features/chat/inbox/controllers/getInboxEntries.controller'
 import { InboxEntryModel } from '@/features/chat/inbox/model/InboxEntry.model'
 import { subscribeToInbox } from '@/features/chat/inbox/realtime/subscribeToInbox'
 
@@ -40,7 +40,7 @@ export default function useInbox({
     setError(null)
 
     try {
-      const raw = await getInboxEntries({
+      const raw = await ctrlGetInboxEntries({
         actorId,
         includeArchived,
         folder, // ✅ NEW

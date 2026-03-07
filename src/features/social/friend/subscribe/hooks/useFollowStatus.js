@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '@/services/supabase/supabaseClient'
+import { ctrlGetFollowStatus } from '@/features/social/friend/subscribe/controllers/getFollowStatus.controller'
 
 /**
  * ============================================================
@@ -33,23 +33,18 @@ export function useFollowStatus({
     }
 
     async function load() {
-      const { data, error } = await supabase
-        .schema('vc')
-        .from('actor_follows')
-        .select('is_active')
-        .eq('follower_actor_id', followerActorId)
-        .eq('followed_actor_id', followedActorId)
-        .maybeSingle()
-
-      if (!alive) return
-
-      if (error) {
+      try {
+        const following = await ctrlGetFollowStatus({
+          followerActorId,
+          followedActorId,
+        })
+        if (!alive) return
+        setIsFollowing(Boolean(following))
+      } catch (error) {
+        if (!alive) return
         console.error('[useFollowStatus] error', error)
         setIsFollowing(false)
-        return
       }
-
-      setIsFollowing(Boolean(data?.is_active))
     }
 
     load()

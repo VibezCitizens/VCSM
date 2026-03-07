@@ -9,10 +9,10 @@
 import { useCallback } from 'react'
 
 import {
-  updateInboxFlags,
-  archiveConversationForActor,
-  moveConversationToFolder, // ✅ NEW
-} from '@/features/chat/inbox/dal/inbox.write.dal'
+  ctrlArchiveConversationForActor,
+  ctrlMoveConversationToFolder,
+  ctrlUpdateInboxFlags,
+} from '@/features/chat/inbox/controllers/inboxActions.controller'
 
 import { leaveConversation } from '@/features/chat/conversation/controllers/leaveConversation.controller'
 
@@ -22,120 +22,117 @@ import { deleteThreadForMeController } from '@/features/chat/inbox/controllers/d
 export default function useInboxActions({ actorId }) {
   const isReady = Boolean(actorId)
 
-  /* ============================================================
-     Safe no-op wrapper
-     ============================================================ */
-  const guard = useCallback(
-    (fn) =>
-      async (...args) => {
-        if (!isReady) return
-        return fn(...args)
-      },
-    [isReady]
-  )
-
   const pin = useCallback(
-    guard(async (conversationId) => {
-      await updateInboxFlags({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlUpdateInboxFlags({
         actorId,
         conversationId,
         flags: { pinned: true },
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   const unpin = useCallback(
-    guard(async (conversationId) => {
-      await updateInboxFlags({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlUpdateInboxFlags({
         actorId,
         conversationId,
         flags: { pinned: false },
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   const mute = useCallback(
-    guard(async (conversationId) => {
-      await updateInboxFlags({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlUpdateInboxFlags({
         actorId,
         conversationId,
         flags: { muted: true },
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   const unmute = useCallback(
-    guard(async (conversationId) => {
-      await updateInboxFlags({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlUpdateInboxFlags({
         actorId,
         conversationId,
         flags: { muted: false },
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   const archive = useCallback(
-    guard(async (conversationId) => {
-      await archiveConversationForActor({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlArchiveConversationForActor({
         actorId,
         conversationId,
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   // ✅ Unarchive (move back to inbox folder)
   const unarchive = useCallback(
-    guard(async (conversationId) => {
-      await moveConversationToFolder({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlMoveConversationToFolder({
         actorId,
         conversationId,
         folder: 'inbox',
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   const leave = useCallback(
-    guard(async (conversationId) => {
+    async (conversationId) => {
+      if (!isReady) return
       await leaveConversation({
         actorId,
         conversationId,
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   /* ============================================================
      Requests: Ignore (NO deleting) -> move to spam
      ============================================================ */
   const ignoreRequest = useCallback(
-    guard(async (conversationId) => {
-      await moveConversationToFolder({
+    async (conversationId) => {
+      if (!isReady) return
+      await ctrlMoveConversationToFolder({
         actorId,
         conversationId,
         folder: 'spam',
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   /* ============================================================
      Delete thread (for me only)
      ============================================================ */
   const deleteThreadForMe = useCallback(
-    guard(async (conversationId) => {
+    async (conversationId) => {
+      if (!isReady) return
       await deleteThreadForMeController({
         actorId,
         conversationId,
         archiveUntilNew: true,
       })
-    }),
-    [actorId, guard]
+    },
+    [actorId, isReady]
   )
 
   return {

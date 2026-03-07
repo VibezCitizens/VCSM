@@ -338,6 +338,7 @@ export function IdentityProvider({ children }) {
 
 /* ---------------- HOOK ---------------- */
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useIdentity() {
   return useContext(IdentityContext);
 }

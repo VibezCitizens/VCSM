@@ -52,6 +52,11 @@ const CentralFeed = lazyWithLog("CentralFeed", () =>
 const ExploreScreen = lazyWithLog("Explore", () =>
   import("@/features/explore/screens/ExploreScreen")
 );
+const CitizenVibesScreen = lazyWithLog("CitizenVibesScreen", () =>
+  import("@/features/onboarding/adapters/onboarding.adapter").then((m) => ({
+    default: m.CitizenVibesScreen,
+  }))
+);
 
 /* ================= NOTIFICATIONS ================= */
 const NotificationsScreen = lazyWithLog("Notifications", () =>
@@ -129,6 +134,10 @@ const VportDashboardServicesScreen = lazyWithLog(
 const VportDashboardExchangeScreen = lazyWithLog(
   "VportDashboardExchangeScreen",
   () => import("@/features/dashboard/vport/screens/VportDashboardExchangeScreen")
+);
+const VportDashboardCalendarScreen = lazyWithLog(
+  "VportDashboardCalendarScreen",
+  () => import("@/features/dashboard/vport/screens/VportDashboardCalendarScreen")
 );
 
 const VportSettingsScreen = lazyWithLog("VportSettingsScreen", () =>
@@ -272,6 +281,7 @@ export default function AppRoutes() {
           children: protectedAppRoutes({
             CentralFeed,
             ExploreScreen,
+            CitizenVibesScreen,
 
             PostFeedScreen,
             PostDetailScreen,
@@ -310,6 +320,7 @@ export default function AppRoutes() {
             VportDashboardReviewScreen,
             VportDashboardServicesScreen,
             VportDashboardExchangeScreen, // ✅ ADDED
+            VportDashboardCalendarScreen,
             VportSettingsScreen,
           }),
         },

@@ -37,7 +37,7 @@ export default function RankedFriendsPublic({
      ============================================================ */
   if (isPrivate) {
     return (
-      <div className="p-4 text-center text-neutral-400">
+      <div className="profiles-subcard p-4 text-center text-slate-300/80">
         This user's Top Friends list is private.
       </div>
     );
@@ -48,26 +48,24 @@ export default function RankedFriendsPublic({
      ============================================================ */
   if (!actorIds.length) {
     return (
-      <div className="space-y-4 mt-6">
+      <div className="profiles-friends-section space-y-4 mt-6">
         {/* ================= HEADER ================= */}
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-neutral-300">
+          <h3 className="text-sm font-semibold text-slate-100">
             Top Friends
           </h3>
 
           {isMe && typeof onEdit === "function" && (
             <button
               onClick={onEdit}
-              className="text-xs px-3 py-1 rounded-lg
-                         bg-neutral-800 border border-neutral-700
-                         hover:bg-neutral-700"
+              className="profiles-pill-btn text-xs px-3 py-1"
             >
               Edit
             </button>
           )}
         </div>
 
-        <div className="py-8 text-center text-neutral-500 text-sm">
+        <div className="profiles-subcard py-8 px-4 text-center text-slate-300/70 text-sm">
           This user hasn’t selected their Top Friends yet.
         </div>
       </div>
@@ -80,19 +78,17 @@ export default function RankedFriendsPublic({
   const visibleActorIds = actorIds.slice(0, 10);
 
   return (
-    <div className="space-y-4 mt-6">
+    <div className="profiles-friends-section space-y-4 mt-6">
       {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-neutral-300">
+        <h3 className="text-sm font-semibold text-slate-100">
           Top Friends
         </h3>
 
         {isMe && typeof onEdit === "function" && (
           <button
             onClick={onEdit}
-            className="text-xs px-3 py-1 rounded-lg
-                       bg-neutral-800 border border-neutral-700
-                       hover:bg-neutral-700"
+            className="profiles-pill-btn text-xs px-3 py-1"
           >
             Edit
           </button>
@@ -123,12 +119,10 @@ function RankRow({ index, actorId }) {
 
   return (
     <div
-      className="flex items-center gap-3
-                 p-2 rounded-lg
-                 bg-neutral-900 border border-neutral-800"
+      className="profiles-friend-rank-row flex items-center gap-3 p-2.5 rounded-lg"
     >
       {/* Rank number */}
-      <div className="w-6 text-xs text-neutral-500 text-center">
+      <div className="profiles-friend-rank-number w-7 text-xs text-center">
         {index}
       </div>
 

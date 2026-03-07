@@ -8,7 +8,7 @@ export default function InboxEmptyState({
 }) {
   return (
     <div className="flex h-full flex-col items-center justify-center px-6 text-center text-slate-400">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800/80 ring-1 ring-slate-300/15">
+      <div className="chat-modern-empty-icon mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800/80 ring-1 ring-slate-300/15">
         <MessageCircle size={22} />
       </div>
 

@@ -1,4 +1,5 @@
 // src/app/routes/protected/app.routes.jsx
+/* eslint-disable react-refresh/only-export-components */
 
 import React from "react";
 import { Navigate, useParams } from "react-router-dom";
@@ -77,9 +78,19 @@ function VportToActorDashboardExchangeRedirect() {
   );
 }
 
+function VportToActorDashboardCalendarRedirect() {
+  const { actorId } = useParams();
+  return actorId ? (
+    <Navigate to={`/actor/${actorId}/dashboard/calendar`} replace />
+  ) : (
+    <Navigate to="/feed" replace />
+  );
+}
+
 export function protectedAppRoutes({
   CentralFeed,
   ExploreScreen,
+  CitizenVibesScreen,
   PostFeedScreen,
   PostDetailScreen,
   EditPostScreen,
@@ -119,12 +130,14 @@ export function protectedAppRoutes({
   VportDashboardReviewScreen,
   VportDashboardServicesScreen,
   VportDashboardExchangeScreen, // ✅ ADDED
+  VportDashboardCalendarScreen,
   VportSettingsScreen,
 
 }) {
   return [
     { path: "/feed", element: <CentralFeed /> },
     { path: "/explore", element: <ExploreScreen /> },
+    { path: "/citizen/vibes", element: <CitizenVibesScreen /> },
 
     { path: "/posts", element: <PostFeedScreen /> },
     { path: "/posts/:postId", element: <PostDetailScreen /> },
@@ -216,6 +229,11 @@ export function protectedAppRoutes({
       element: <VportDashboardExchangeScreen />,
     },
 
+    {
+      path: "/actor/:actorId/dashboard/calendar",
+      element: <VportDashboardCalendarScreen />,
+    },
+
     { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
 
     // ✅ keep /vport/* entrypoints BUT ACTOR-ID ONLY and redirect to /actor/*
@@ -246,6 +264,11 @@ export function protectedAppRoutes({
     {
       path: "/vport/:actorId/dashboard/exchange",
       element: <VportToActorDashboardExchangeRedirect />,
+    },
+
+    {
+      path: "/vport/:actorId/dashboard/calendar",
+      element: <VportToActorDashboardCalendarRedirect />,
     },
 
     {

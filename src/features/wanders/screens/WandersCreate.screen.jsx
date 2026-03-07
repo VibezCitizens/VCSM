@@ -23,7 +23,9 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
     if (location?.state?.baseUrl) return location.state.baseUrl;
     try {
       if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-    } catch {}
+    } catch (_ERR) {
+      void _ERR;
+    }
     return "";
   }, [baseUrlProp, location?.state?.baseUrl]);
 

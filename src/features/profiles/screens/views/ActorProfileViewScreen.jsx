@@ -11,6 +11,7 @@ import ActorProfileTabs from "./ActorProfileTabs";
 import ActorProfilePostsView from "./ActorProfilePostsView";
 import ActorProfileFriendsView from "./ActorProfileFriendsView";
 import ActorProfilePhotosView from "./ActorProfilePhotosView";
+import ActorProfileTagsView from "./ActorProfileTagsView";
 import { shareNative } from "@/shared/lib/shareNative";
 
 import PrivateProfileNotice from "@/features/social/components/PrivateProfileNotice";
@@ -23,8 +24,7 @@ import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu
 import useReportFlow from "@/features/moderation/hooks/useReportFlow";
 import ReportModal from "@/features/moderation/components/ReportModal";
 
-// ✅ delete controller (same as feed)
-import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
+import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
 import "@/features/profiles/styles/profiles-modern.css";
 
 export default function ActorProfileViewScreen({ viewerActorId, profileActorId }) {
@@ -35,6 +35,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
   const [postsVersion, setPostsVersion] = useState(0);
 
   const navigate = useNavigate();
+  const deletePost = useDeletePostAction({ actorId: viewerActorId });
 
   const gate = useProfileGate({
     viewerActorId,
@@ -161,8 +162,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     const okConfirm = window.confirm("Delete this Vibe?");
     if (!okConfirm) return;
 
-    const res = await softDeletePostController({
-      actorId: viewerActorId,
+    const res = await deletePost({
       postId: postMenu.postId,
     });
 
@@ -179,14 +179,16 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     setGateVersion((v) => v + 1);
 
     closePostMenu();
-  }, [viewerActorId, postMenu, closePostMenu]);
+  }, [viewerActorId, postMenu, closePostMenu, deletePost]);
 
   // ============================================================
   // STATES
   // ============================================================
   if (loading || blockLoading || gate.loading) {
     return (
-      <div className="profiles-modern flex justify-center py-20 profiles-muted">Loading...</div>
+      <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
+        <ActorProfileHeader loading />
+      </div>
     );
   }
 
@@ -197,6 +199,12 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
       </div>
     );
   }
+
+  const isCitizenProfile = profile?.kind === "user";
+  const isProfileOwner =
+    Boolean(viewerActorId) &&
+    Boolean(profile?.actorId) &&
+    viewerActorId === profile.actorId;
 
   return (
     <div
@@ -215,7 +223,11 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
         onSubscriptionChanged={() => setGateVersion((v) => v + 1)}
       />
 
-      <ActorProfileTabs tab={tab} setTab={setTab} />
+      <ActorProfileTabs
+        tab={tab}
+        setTab={setTab}
+        includeTags={isCitizenProfile}
+      />
 
       {!gate.canView && (
         <PrivateProfileNotice
@@ -263,10 +275,18 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
             </div>
           )}
 
+          {isCitizenProfile && tab === "tags" && (
+            <ActorProfileTagsView
+              actorId={profile.actorId}
+              canAddTag={isProfileOwner}
+            />
+          )}
+
           {tab === "friends" && (
             <ActorProfileFriendsView
               profileActorId={profile.actorId}
               canViewContent={gate.canView}
+              version={gateVersion}
             />
           )}
         </div>

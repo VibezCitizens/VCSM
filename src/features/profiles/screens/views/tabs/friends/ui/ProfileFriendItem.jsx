@@ -23,12 +23,14 @@ export default function ProfileFriendItem({ actorId }) {
   if (!actor?.actorId) return null;
 
   return (
-    <ActorLink
-      actor={actor}
-      avatarSize="w-10 h-10"
-      avatarShape="rounded-md"
-      showUsername
-      className="min-w-0"
-    />
+    <div className="profiles-friend-item profiles-friend-rank-row">
+      <ActorLink
+        actor={actor}
+        avatarSize="w-10 h-10"
+        avatarShape="rounded-lg"
+        showUsername
+        className="min-w-0"
+      />
+    </div>
   );
 }

@@ -16,12 +16,13 @@ import { MyBlocksProvider, useMyBlocks } from '@/features/settings/privacy/hooks
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import BlockConfirmModal from '@/features/block/ui/BlockConfirmModal'
 import '@/features/ui/modern/module-modern.css'
+import '@/features/chat/styles/chat-modern.css'
 
 function BlockedRow({ blockedActorId, onUnblock }) {
   const actor = useActorSummary(blockedActorId)
 
   return (
-    <div className="flex w-full items-center gap-3 px-4 py-3">
+    <div className="chat-modern-settings-row flex w-full items-center gap-3 px-4 py-3">
       <img
         src={actor?.avatar || '/avatar.jpg'}
         alt=""
@@ -41,7 +42,7 @@ function BlockedRow({ blockedActorId, onUnblock }) {
       <button
         type="button"
         onClick={() => onUnblock(blockedActorId)}
-        className="rounded-xl border border-slate-300/15 px-3 py-1.5 text-sm text-slate-200 hover:bg-white/5"
+        className="module-modern-btn module-modern-btn--ghost rounded-xl px-3 py-1.5 text-sm text-slate-200"
       >
         Unblock
       </button>
@@ -82,10 +83,10 @@ function BlockedUsersBody() {
   }, [confirm, unblock, closeConfirm])
 
   return (
-    <div className="module-modern-page flex h-full flex-col">
-      <div className="module-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
+    <div className="module-modern-page chat-modern-page flex h-full flex-col">
+      <div className="module-modern-shell chat-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
         <header
-          className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <div className="relative flex h-14 items-center px-3">

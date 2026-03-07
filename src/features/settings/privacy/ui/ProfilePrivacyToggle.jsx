@@ -56,17 +56,11 @@ export default function ProfilePrivacyToggle({ actorId }) {
         onClick={toggle}
         disabled={loading}
         aria-pressed={isPrivate}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-          isPrivate
-            ? 'bg-rose-500/90 shadow-[0_0_10px_rgba(244,63,94,0.45)]'
-            : 'bg-indigo-500/70 shadow-[0_0_10px_rgba(99,102,241,0.35)]'
-        } ${loading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+        className={`settings-toggle ${isPrivate ? 'is-private' : 'is-public'} ${
+          loading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+        }`}
       >
-        <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${
-            isPrivate ? 'translate-x-5' : 'translate-x-1'
-          }`}
-        />
+        <span className="settings-toggle-knob" />
       </button>
 
       <div className="text-[11px] text-slate-400">

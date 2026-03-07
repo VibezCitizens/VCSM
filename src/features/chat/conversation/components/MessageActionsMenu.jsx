@@ -79,10 +79,8 @@ export default function MessageActionsMenu({
           absolute
           min-w-[180px]
           rounded-2xl
-          bg-neutral-900/96
+          chat-modern-popover
           text-white
-          shadow-2xl
-          border border-white/10
           overflow-hidden
         "
         style={{

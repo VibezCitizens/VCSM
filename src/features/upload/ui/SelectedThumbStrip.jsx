@@ -16,16 +16,16 @@ export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
   if (!fileUrls.length) return null;
 
   return (
-    <div className="mt-4">
+    <div className="upload-subcard mt-4 p-3">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-neutral-300">
+        <div className="text-sm text-slate-300">
           Selected ({fileUrls.length})
         </div>
 
         <button
           type="button"
           onClick={() => runGuarded(onClear)}
-          className="text-xs text-neutral-400 hover:text-white"
+          className="text-xs text-slate-400 hover:text-slate-100"
         >
           Clear
         </button>
@@ -33,16 +33,7 @@ export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
 
       <div className="flex gap-2 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
         {fileUrls.map((u, idx) => (
-          <div
-            key={u}
-            className="
-              relative flex-none
-              w-24 h-24
-              rounded-2xl overflow-hidden
-              border border-white/10
-              bg-neutral-950
-            "
-          >
+          <div key={u} className="upload-thumb relative flex-none w-24 h-24 overflow-hidden">
             <img
               src={u}
               alt={`preview-${idx}`}
@@ -57,13 +48,7 @@ export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
                 e.stopPropagation();
                 runGuarded(() => onRemoveAt(idx));
               }}
-              className="
-                absolute top-1.5 right-1.5
-                w-7 h-7 rounded-full
-                bg-black/65 hover:bg-black/85
-                flex items-center justify-center
-                border border-white/10
-              "
+              className="upload-thumb-remove absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center"
               aria-label="Remove image"
             >
               <X size={16} className="text-white" />

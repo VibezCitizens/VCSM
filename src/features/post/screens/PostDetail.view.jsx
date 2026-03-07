@@ -26,13 +26,14 @@ import usePostDetailEditing from "@/features/post/postcard/hooks/usePostDetailEd
 import usePostDetailReplying from "@/features/post/postcard/hooks/usePostDetailReplying";
 import usePostDetailReporting from "@/features/post/postcard/hooks/usePostDetailReporting";
 
-import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
+import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
 import ReportedObjectCover from "@/features/moderation/components/ReportedObjectCover";
 
 import CommentReplyModal from "@/features/post/commentcard/components/CommentReplyModal";
 import CommentComposeModal from "@/features/post/commentcard/components/CommentComposeModal";
 import Spinner from "@/shared/components/Spinner";
 import "@/features/post/styles/post-modern.css";
+import "@/features/profiles/styles/profiles-modern.css";
 
 function detectIOS() {
   if (typeof navigator === "undefined") return false;
@@ -78,6 +79,7 @@ export default function PostDetailView() {
   const { identity } = useIdentity();
 
   const actorId = identity?.actorId ?? null;
+  const deletePost = useDeletePostAction({ actorId });
 
   const commentCount = usePostCommentCount(postId);
   const thread = useCommentThread(postId);
@@ -91,6 +93,7 @@ export default function PostDetailView() {
   });
 
   const editing = usePostDetailEditing({
+    actorId,
     threadComments: thread.comments,
     onReload: thread.reload,
   });
@@ -129,8 +132,7 @@ export default function PostDetailView() {
       const okConfirm = window.confirm("Delete this Vibe?");
       if (!okConfirm) return;
 
-      const res = await softDeletePostController({
-        actorId,
+      const res = await deletePost({
         postId: pid,
       });
 
@@ -141,7 +143,7 @@ export default function PostDetailView() {
 
       navigate(-1);
     },
-    [actorId, navigate]
+    [actorId, navigate, deletePost]
   );
 
   const menus = usePostDetailMenus({
@@ -251,9 +253,9 @@ export default function PostDetailView() {
   const postActorRef = post.actor ?? postActorId;
 
   return (
-    <div className="post-modern h-full w-full overflow-y-auto touch-auto relative">
+    <div className="post-modern profiles-modern h-full w-full overflow-y-auto touch-auto relative">
       <div className="w-full max-w-2xl mx-auto pb-24">
-        <div className="post-card rounded-2xl overflow-hidden mb-4">
+        <div className="post-card profiles-card rounded-2xl overflow-hidden mb-4">
           <PostHeader
             actor={postActorRef}
             createdAt={post.created_at}
@@ -277,8 +279,8 @@ export default function PostDetailView() {
           </div>
         </div>
 
-        <div className="post-subcard rounded-2xl border">
-          <div className="px-4 py-3 border-b border-violet-300/10 text-sm text-slate-400">
+        <div className="post-subcard profiles-card sparks-shell rounded-2xl border">
+          <div className="sparks-header px-4 py-3 border-b border-violet-300/10 text-sm text-slate-300">
             Sparks
           </div>
 

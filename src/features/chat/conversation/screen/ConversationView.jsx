@@ -133,7 +133,7 @@ export default function ConversationView({ conversationId }) {
   })
 
   // ✅ Now it’s safe to early-return
-  if (error) return <div className="p-4 text-red-400">Failed to load</div>
+  if (error) return <div className="p-4 text-rose-300">Failed to load</div>
   if (loading || !conversation || !members?.length) {
     return (
       <div className="p-6">
@@ -141,14 +141,14 @@ export default function ConversationView({ conversationId }) {
       </div>
     )
   }
-  if (!canReadConversation({ actorId, members })) return <div className="p-4 text-neutral-400">Access denied</div>
+  if (!canReadConversation({ actorId, members })) return <div className="p-4 text-slate-400">Access denied</div>
 
   // ✅ EDITING IS DRIVEN BY `editing` (not `menu`)
   const isEditing = !!editing
   const editingInitialText = editing?.initialBody ?? ''
 
   return (
-    <div className="chat-screen">
+    <div className="chat-screen chat-modern-conversation">
       <ChatScreenLayout
         messagesRef={messagesRef}
         header={
@@ -229,7 +229,7 @@ export default function ConversationView({ conversationId }) {
 
       {viewer && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center"
+          className="chat-modern-page fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
           onClick={closeViewer}
         >
           <button className="absolute top-4 right-4 text-white text-2xl">✕</button>

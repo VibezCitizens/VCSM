@@ -84,13 +84,13 @@ export default function InboxItem({
       onClick={onClick}
       onContextMenu={onContextMenu}
       className={clsx(
-        'w-full text-left',
+        'chat-modern-card w-full text-left',
         'px-3 py-2',
-        'flex items-center gap-3',
+        'flex items-center gap-3 rounded-2xl',
         'transition',
         active
-          ? 'bg-neutral-800'
-          : 'hover:bg-neutral-900',
+          ? 'bg-slate-800/70'
+          : 'hover:bg-slate-800/55',
         archived && 'opacity-60'
       )}
     >

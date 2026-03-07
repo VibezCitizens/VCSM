@@ -32,7 +32,7 @@ export default function Row({
   return (
     <section
       className={cx(
-        'settings-card-surface rounded-2xl p-3',
+        'settings-card-surface rounded-2xl p-3 backdrop-blur',
         isInteractive && 'hover:bg-slate-900/70 transition-colors',
         className
       )}

@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/screens/VportProfileViewScreen.jsx
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
 
@@ -31,7 +31,7 @@ import ShareModal from "@/features/post/postcard/components/ShareModal";
 import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
 import useReportFlow from "@/features/moderation/hooks/useReportFlow";
 import ReportModal from "@/features/moderation/components/ReportModal";
-import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
+import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
 
 import { VportGasPricesView } from "@/features/profiles/kinds/vport/screens/gas/view/VportGasPricesView";
 import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportOwnerView";
@@ -57,6 +57,9 @@ export default function VportProfileViewScreen({
   const didInitTabRef = useRef(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const deletePost = useDeletePostAction({ actorId: viewerActorId });
+  const appliedSearchTabRef = useRef(null);
 
   const gate = useProfileGate({
     viewerActorId,
@@ -150,6 +153,28 @@ export default function VportProfileViewScreen({
     });
   }, [effectiveTabs]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search || "");
+    const requestedTabRaw = params.get("tab");
+    const requestedTab = String(requestedTabRaw || "").trim().toLowerCase();
+
+    if (!requestedTab) {
+      appliedSearchTabRef.current = null;
+      return;
+    }
+
+    if (appliedSearchTabRef.current === requestedTab) return;
+
+    const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
+    const hasRequestedTab = list.some(
+      (t) => String(t?.key || "").toLowerCase() === requestedTab
+    );
+    if (!hasRequestedTab) return;
+
+    setTab(requestedTab);
+    appliedSearchTabRef.current = requestedTab;
+  }, [location.search, effectiveTabs]);
+
   // ============================================================
   // SHARE
   // ============================================================
@@ -228,8 +253,7 @@ export default function VportProfileViewScreen({
     const okConfirm = window.confirm("Delete this Vibe?");
     if (!okConfirm) return;
 
-    const res = await softDeletePostController({
-      actorId: viewerActorId,
+    const res = await deletePost({
       postId: postMenu.postId,
     });
 
@@ -241,11 +265,13 @@ export default function VportProfileViewScreen({
     setPostsVersion((v) => v + 1);
     setGateVersion((v) => v + 1);
     closePostMenu();
-  }, [viewerActorId, postMenu, closePostMenu]);
+  }, [viewerActorId, postMenu, closePostMenu, deletePost]);
 
   if (loading || blockLoading || gate.loading) {
     return (
-      <div className="profiles-modern flex justify-center py-20 profiles-muted">Loading...</div>
+      <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
+        <VportProfileHeader loading />
+      </div>
     );
   }
 
@@ -330,7 +356,7 @@ export default function VportProfileViewScreen({
             <VportServicesView profile={profile} viewerActorId={viewerActorId} />
           )}
 
-          {tab === "book" && <VportBookingView profile={profile} />}
+          {tab === "book" && <VportBookingView profile={profile} isOwner={isOwner} />}
 
           {tab === "about" && (
             <VportAboutView profile={profile} details={publicDetails} />

@@ -4,8 +4,6 @@
 // Contract: raw rpc output only, explicit args, no derived meaning.
 // ============================================================================
 
-import { getWandersSupabase } from "@/features/wanders/services/wandersSupabaseClient";
-
 // NOTE: Only add functions here when you actually create SQL rpc() in Postgres.
 // Keeping file ready so your DAL categories stay consistent.
 

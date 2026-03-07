@@ -7,7 +7,7 @@ import WandersEmptyState from "@/features/wanders/components/WandersEmptyState";
 
 import useWandersGuest from "@/features/wanders/core/hooks/useWandersGuest";
 import CardBuilder from "@/features/wanders/components/cardstemplates/CardBuilder";
-import { publishWandersFromBuilder } from "@/features/wanders/core/controllers/publishWandersFromBuilder.controller";
+import { usePublishWandersFromBuilder } from "@/features/wanders/core/hooks/usePublishWandersFromBuilder";
 
 import { WANDERS_CHROME as C } from "@/features/wanders/utils/wandersChrome";
 
@@ -22,11 +22,14 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
     if (location?.state?.baseUrl) return location.state.baseUrl;
     try {
       if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-    } catch {}
+    } catch (_ERR) {
+      void _ERR;
+    }
     return "";
   }, [baseUrlProp, location?.state?.baseUrl]);
 
   const { ensureUser } = useWandersGuest({ auto: true });
+  const publishWanders = usePublishWandersFromBuilder();
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -41,7 +44,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
       try {
         await Promise.resolve(ensureUser?.());
 
-        const res = await publishWandersFromBuilder({
+        const res = await publishWanders({
           realmId,
           baseUrl,
           payload,
@@ -61,7 +64,7 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
         setSubmitting(false);
       }
     },
-    [realmId, ensureUser, baseUrl, navigate]
+    [realmId, ensureUser, baseUrl, navigate, publishWanders]
   );
 
   if (!realmId) {

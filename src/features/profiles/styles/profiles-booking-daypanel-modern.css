@@ -1,0 +1,269 @@
+.profiles-modern .profiles-booking-panel-shell {
+  border-radius: 1rem;
+  border: 1px solid rgba(141, 167, 243, 0.26);
+  background: rgba(10, 16, 37, 0.72);
+  padding: 0.82rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profiles-modern .profiles-booking-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.profiles-modern .profiles-booking-panel-kicker {
+  margin: 0;
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(173, 192, 235, 0.8);
+}
+
+.profiles-modern .profiles-booking-panel-title {
+  margin: 0.24rem 0 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #f2f7ff;
+}
+
+.profiles-modern .profiles-booking-panel-count {
+  font-size: 0.72rem;
+  color: rgba(194, 209, 240, 0.88);
+}
+
+.profiles-modern .profiles-booking-slot-section {
+  display: grid;
+  gap: 0.62rem;
+}
+
+.profiles-modern .profiles-booking-slot-group-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.36rem;
+  font-size: 0.74rem;
+  color: rgba(202, 216, 245, 0.9);
+}
+
+.profiles-modern .profiles-booking-slot-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+}
+
+.profiles-modern .profiles-booking-slot-btn {
+  border: 1px solid rgba(145, 173, 246, 0.28);
+  border-radius: 9999px;
+  background: rgba(9, 17, 38, 0.74);
+  color: #dce8ff;
+  padding: 0.27rem 0.58rem;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  transition: transform 140ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.profiles-modern .profiles-booking-slot-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(176, 203, 255, 0.5);
+}
+
+.profiles-modern .profiles-booking-slot-btn.is-active {
+  border-color: rgba(190, 161, 255, 0.84);
+  background: linear-gradient(135deg, rgba(135, 92, 255, 0.42), rgba(40, 128, 235, 0.4));
+  box-shadow: 0 0 14px rgba(104, 145, 255, 0.3);
+}
+
+.profiles-modern .profiles-booking-empty-slots,
+.profiles-modern .profiles-booking-empty-appointments {
+  font-size: 0.74rem;
+  color: rgba(168, 188, 227, 0.84);
+}
+
+.profiles-modern .profiles-booking-actions {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.profiles-modern .profiles-booking-action-btn {
+  border-radius: 0.8rem;
+  border: 1px solid rgba(144, 170, 242, 0.28);
+  background: rgba(10, 17, 38, 0.74);
+  color: #eff5ff;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.profiles-modern .profiles-booking-action-btn.is-primary {
+  background: linear-gradient(140deg, rgba(142, 93, 255, 0.44), rgba(42, 124, 238, 0.46));
+  border-color: rgba(175, 192, 255, 0.5);
+}
+
+.profiles-modern .profiles-booking-action-btn.is-secondary {
+  background: rgba(16, 28, 62, 0.9);
+}
+
+.profiles-modern .profiles-booking-action-btn.is-ghost {
+  background: rgba(9, 14, 30, 0.65);
+  color: rgba(189, 207, 243, 0.9);
+}
+
+.profiles-modern .profiles-booking-action-btn:disabled {
+  opacity: 0.5;
+}
+
+.profiles-modern .profiles-booking-appointments {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.profiles-modern .profiles-booking-appointment-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(136, 168, 243, 0.24);
+  background: rgba(8, 13, 29, 0.72);
+  padding: 0.52rem 0.62rem;
+}
+
+.profiles-modern .profiles-booking-appointment-time {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ecf4ff;
+}
+
+.profiles-modern .profiles-booking-appointment-client {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #eff6ff;
+}
+
+.profiles-modern .profiles-booking-appointment-service {
+  margin: 0.14rem 0 0;
+  font-size: 0.66rem;
+  color: rgba(177, 197, 236, 0.86);
+}
+
+.profiles-modern .profiles-booking-status-badge {
+  border-radius: 9999px;
+  border: 1px solid rgba(146, 170, 231, 0.36);
+  background: rgba(9, 17, 37, 0.8);
+  padding: 0.2rem 0.45rem;
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: #dfecff;
+}
+
+.profiles-modern .profiles-booking-status-badge.is-confirmed,
+.profiles-modern .profiles-booking-status-badge.is-completed {
+  border-color: rgba(111, 223, 196, 0.55);
+  color: #9cf2dc;
+}
+
+.profiles-modern .profiles-booking-status-badge.is-pending {
+  border-color: rgba(255, 205, 126, 0.58);
+  color: #ffdca5;
+}
+
+.profiles-modern .profiles-booking-status-badge.is-cancelled {
+  border-color: rgba(251, 143, 178, 0.58);
+  color: #ffb8d0;
+}
+
+.profiles-modern .profiles-booking-agenda-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.profiles-modern .profiles-booking-agenda-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 0.82rem;
+  border: 1px solid rgba(134, 165, 237, 0.24);
+  background: rgba(8, 14, 30, 0.7);
+  padding: 0.56rem 0.62rem;
+}
+
+.profiles-modern .profiles-booking-agenda-item--availability {
+  grid-template-columns: minmax(7.4rem, auto) 1fr;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.profiles-modern .profiles-booking-agenda-time {
+  min-width: 4rem;
+  color: #eff4ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.profiles-modern .profiles-booking-agenda-time small {
+  display: block;
+  margin-top: 0.18rem;
+  color: rgba(170, 190, 228, 0.82);
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+
+.profiles-modern .profiles-booking-agenda-day-slots {
+  display: grid;
+  grid-template-columns: minmax(4.9rem, auto) 1fr;
+  align-items: start;
+  column-gap: 0.48rem;
+  row-gap: 0.24rem;
+}
+
+.profiles-modern .profiles-booking-agenda-day-segment {
+  margin: 0;
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: rgba(188, 208, 248, 0.92);
+}
+
+.profiles-modern .profiles-booking-agenda-day-segment-label {
+  margin: 0.14rem 0 0;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: rgba(188, 208, 248, 0.94);
+}
+
+.profiles-modern .profiles-booking-slot-wrap--agenda {
+  gap: 0.28rem;
+}
+
+.profiles-modern .profiles-booking-slot-pill {
+  border: 1px solid rgba(145, 173, 246, 0.28);
+  border-radius: 9999px;
+  background: rgba(9, 17, 38, 0.74);
+  color: #dce8ff;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.64rem;
+  line-height: 1.2;
+}
+
+.profiles-modern .profiles-booking-slot-pill.is-muted {
+  color: rgba(177, 196, 233, 0.85);
+}
+
+@media (max-width: 640px) {
+  .profiles-modern .profiles-booking-agenda-item--availability {
+    grid-template-columns: 1fr;
+  }
+
+  .profiles-modern .profiles-booking-agenda-day-slots {
+    grid-template-columns: 1fr;
+    row-gap: 0.2rem;
+  }
+
+  .profiles-modern .profiles-booking-agenda-day-segment-label {
+    margin-top: 0;
+  }
+}

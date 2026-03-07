@@ -8,6 +8,7 @@ export default function PostCard({
   onReact,
   onOpenMenu,
   onShare,
+  prioritizeMedia = false,
 
   covered = false,
   cover = null,
@@ -49,6 +50,7 @@ export default function PostCard({
       onReact={onReact}
       onOpenMenu={onOpenMenu}
       onShare={onShare}
+      prioritizeMedia={prioritizeMedia}
       covered={covered}
       cover={cover}
     />

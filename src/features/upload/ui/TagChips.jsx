@@ -6,14 +6,15 @@ export default function TagChips({ tags, onRemove }) {
       {tags.map((t) => (
         <span
           key={t}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800 text-neutral-200 border border-neutral-700 text-sm"
+          className="upload-chip inline-flex items-center gap-2 px-3 py-1 text-sm"
         >
           #{t}
           <button
             className="opacity-70 hover:opacity-100"
             onClick={() => onRemove(t)}
+            type="button"
           >
-            ×
+            x
           </button>
         </span>
       ))}

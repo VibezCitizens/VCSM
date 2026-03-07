@@ -1,14 +1,15 @@
 // src/features/feed/hooks/useFeed.js
 import { useCallback, useRef, useState, useEffect } from "react";
-import { supabase } from "@/services/supabase/supabaseClient";
 import { useActorStore } from "@/state/actors/actorStore";
 import { fetchFeedPagePipeline } from "@/features/feed/pipeline/fetchFeedPage.pipeline";
+import { getFeedViewerIsAdult } from "@/features/feed/controllers/getFeedViewerContext.controller";
 
 const PAGE_SIZE = 10;
 // Protect UX from long multi-page drains when many rows are filtered.
 const MAX_EMPTY_PAGES_PER_FETCH = 3;
 const INITIAL_VISIBLE_TARGET = 3;
 const FEED_FETCH_TIMEOUT_MS = 15_000;
+const FIRST_BATCH_MEDIA_PRELOAD_TIMEOUT_MS = 2_500;
 
 function withTimeout(promise, ms = FEED_FETCH_TIMEOUT_MS) {
   let timeoutId;
@@ -21,11 +22,66 @@ function withTimeout(promise, ms = FEED_FETCH_TIMEOUT_MS) {
   });
 }
 
+function collectInitialImageUrls(posts, postLimit = INITIAL_VISIBLE_TARGET) {
+  return (Array.isArray(posts) ? posts : [])
+    .slice(0, postLimit)
+    .map((post) => {
+      const media = Array.isArray(post?.media) ? post.media : [];
+      const firstImage = media.find((m) => m?.type === "image" && typeof m?.url === "string");
+      return firstImage?.url ?? null;
+    })
+    .filter(Boolean);
+}
+
+function preloadImage(src, timeoutMs = FIRST_BATCH_MEDIA_PRELOAD_TIMEOUT_MS) {
+  return new Promise((resolve) => {
+    if (!src) {
+      resolve(false);
+      return;
+    }
+
+    const img = new Image();
+    let settled = false;
+
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      img.onload = null;
+      img.onerror = null;
+      resolve(ok);
+    };
+
+    const timeoutId = setTimeout(() => finish(false), timeoutMs);
+
+    img.onload = () => finish(true);
+    img.onerror = () => finish(false);
+    img.decoding = "async";
+    img.src = src;
+
+    if (img.complete) {
+      finish(true);
+      return;
+    }
+
+    if (typeof img.decode === "function") {
+      img.decode().then(() => finish(true)).catch(() => {});
+    }
+  });
+}
+
+async function preloadInitialMedia(posts) {
+  const urls = collectInitialImageUrls(posts);
+  if (urls.length === 0) return;
+  await Promise.allSettled(urls.map((src) => preloadImage(src)));
+}
+
 export function useFeed(viewerActorId, realmId) {
   const [posts, setPosts] = useState([]);
   const [viewerIsAdult, setViewerIsAdult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [firstBatchReady, setFirstBatchReady] = useState(false);
 
   // ✅ server-driven hidden posts for this viewer (persisted)
   const [hiddenPostIds, setHiddenPostIds] = useState(() => new Set());
@@ -47,6 +103,7 @@ export function useFeed(viewerActorId, realmId) {
     setHasMore(true);
     setLoading(false);
     setViewerIsAdult(null);
+    setFirstBatchReady(false);
 
     setHiddenPostIds(new Set());
   }, [viewerActorId, realmId]);
@@ -55,39 +112,8 @@ export function useFeed(viewerActorId, realmId) {
      VIEWER CONTEXT
      ============================================================ */
   const fetchViewer = useCallback(async () => {
-    try {
-      if (!viewerActorId) {
-        setViewerIsAdult(null);
-        return;
-      }
-
-      const { data: actor } = await supabase
-        .schema("vc")
-        .from("actors")
-        .select("profile_id, vport_id")
-        .eq("id", viewerActorId)
-        .maybeSingle();
-
-      if (actor?.vport_id) {
-        setViewerIsAdult(true);
-        return;
-      }
-
-      if (!actor?.profile_id) {
-        setViewerIsAdult(null);
-        return;
-      }
-
-      const { data: prof } = await supabase
-        .from("profiles")
-        .select("is_adult")
-        .eq("id", actor.profile_id)
-        .maybeSingle();
-
-      setViewerIsAdult(prof?.is_adult ?? null);
-    } catch {
-      setViewerIsAdult(null);
-    }
+    const value = await getFeedViewerIsAdult({ viewerActorId });
+    setViewerIsAdult(value);
   }, [viewerActorId]);
 
   /* ============================================================
@@ -107,6 +133,7 @@ export function useFeed(viewerActorId, realmId) {
         if (fresh) {
           cursorRef.current = null;
           setHiddenPostIds(new Set());
+          setFirstBatchReady(false);
         }
 
         // Keep first paint fast: do not over-fetch 10 fully hydrated visible posts
@@ -178,6 +205,11 @@ export function useFeed(viewerActorId, realmId) {
 
         cursorRef.current = cursorCreatedAt ? { created_at: cursorCreatedAt } : null;
 
+        if (fresh) {
+          await preloadInitialMedia(normalizedChunk);
+          if (requestVersionRef.current !== requestVersion) return;
+        }
+
         setPosts((prev) => {
           if (fresh) return normalizedChunk;
           const map = new Map(prev.map((p) => [p.id, p]));
@@ -186,9 +218,15 @@ export function useFeed(viewerActorId, realmId) {
         });
 
         setHasMore(hasMoreNow);
+        if (fresh) {
+          setFirstBatchReady(true);
+        }
       } catch (e) {
         console.warn("[useFeed] error", e);
         setHasMore(false);
+        if (fresh) {
+          setFirstBatchReady(true);
+        }
       } finally {
         loadingRef.current = false;
         if (requestVersionRef.current === requestVersion) {
@@ -216,5 +254,6 @@ export function useFeed(viewerActorId, realmId) {
     setPosts,
     fetchViewer,
     hiddenPostIds,
+    firstBatchReady,
   };
 }
