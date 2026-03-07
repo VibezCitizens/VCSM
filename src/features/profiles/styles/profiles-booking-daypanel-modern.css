@@ -50,7 +50,7 @@
 .profiles-modern .profiles-booking-slot-wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.34rem;
+  gap: 0.42rem;
 }
 
 .profiles-modern .profiles-booking-slot-btn {
@@ -81,9 +81,28 @@
   color: rgba(168, 188, 227, 0.84);
 }
 
+.profiles-modern .profiles-booking-owner-hint {
+  font-size: 0.72rem;
+  color: rgba(178, 198, 237, 0.9);
+}
+
 .profiles-modern .profiles-booking-actions {
   display: grid;
   gap: 0.42rem;
+}
+
+.profiles-modern .profiles-booking-owner-input {
+  width: 100%;
+  border-radius: 0.72rem;
+  border: 1px solid rgba(145, 173, 246, 0.28);
+  background: rgba(9, 17, 38, 0.74);
+  color: #ecf4ff;
+  padding: 0.52rem 0.62rem;
+  font-size: 0.74rem;
+}
+
+.profiles-modern .profiles-booking-owner-input::placeholder {
+  color: rgba(170, 190, 228, 0.8);
 }
 
 .profiles-modern .profiles-booking-action-btn {
@@ -121,7 +140,7 @@
 
 .profiles-modern .profiles-booking-appointment-card {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) minmax(8.25rem, auto);
   align-items: center;
   gap: 0.5rem;
   border-radius: 0.8rem;
@@ -143,17 +162,117 @@
   color: #eff6ff;
 }
 
+.profiles-modern .profiles-booking-appointment-client-fallback {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-width: 0;
+}
+
+.profiles-modern .profiles-booking-appointment-client-fallback-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  object-fit: cover;
+  border: 1px solid rgba(140, 167, 238, 0.32);
+  flex-shrink: 0;
+}
+
+.profiles-modern .profiles-booking-appointment-client-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-width: 0;
+  color: #eff6ff;
+}
+
+.profiles-modern .profiles-booking-appointment-client-link img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profiles-modern .profiles-booking-appointment-client-link > div {
+  min-width: 0;
+}
+
+.profiles-modern .profiles-booking-appointment-content {
+  min-width: 0;
+}
+
+.profiles-modern .profiles-booking-appointment-client-link:hover span {
+  text-decoration: underline;
+  text-underline-offset: 0.1rem;
+}
+
 .profiles-modern .profiles-booking-appointment-service {
   margin: 0.14rem 0 0;
   font-size: 0.66rem;
   color: rgba(177, 197, 236, 0.86);
 }
 
+.profiles-modern .profiles-booking-appointment-tail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.32rem;
+  min-width: 8.25rem;
+}
+
+.profiles-modern .profiles-booking-appointment-actions-inline {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(3.7rem, max-content);
+  justify-content: end;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.profiles-modern .profiles-booking-inline-action-btn {
+  border: 1px solid rgba(245, 164, 164, 0.38);
+  border-radius: 9999px;
+  background: rgba(95, 26, 26, 0.45);
+  color: #ffd9d9;
+  min-width: 3.7rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  padding: 0.24rem 0.48rem;
+  transition: border-color 160ms ease, transform 140ms ease;
+}
+
+.profiles-modern .profiles-booking-inline-action-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 186, 186, 0.62);
+}
+
+.profiles-modern .profiles-booking-inline-action-btn.is-confirm {
+  border-color: rgba(118, 218, 185, 0.46);
+  background: rgba(15, 82, 64, 0.42);
+  color: #b6f6df;
+}
+
+.profiles-modern .profiles-booking-inline-action-btn.is-confirm:hover {
+  border-color: rgba(158, 238, 212, 0.62);
+}
+
+.profiles-modern .profiles-booking-inline-action-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+
 .profiles-modern .profiles-booking-status-badge {
+  min-width: 4.2rem;
   border-radius: 9999px;
   border: 1px solid rgba(146, 170, 231, 0.36);
   background: rgba(9, 17, 37, 0.8);
-  padding: 0.2rem 0.45rem;
+  text-align: center;
+  padding: 0.22rem 0.45rem;
   font-size: 0.64rem;
   font-weight: 600;
   color: #dfecff;
@@ -236,7 +355,7 @@
 }
 
 .profiles-modern .profiles-booking-slot-wrap--agenda {
-  gap: 0.28rem;
+  gap: 0.36rem;
 }
 
 .profiles-modern .profiles-booking-slot-pill {
@@ -254,6 +373,23 @@
 }
 
 @media (max-width: 640px) {
+  .profiles-modern .profiles-booking-appointment-card {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+
+  .profiles-modern .profiles-booking-appointment-tail {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .profiles-modern .profiles-booking-appointment-actions-inline {
+    grid-auto-columns: minmax(3.45rem, max-content);
+  }
+
   .profiles-modern .profiles-booking-agenda-item--availability {
     grid-template-columns: 1fr;
   }

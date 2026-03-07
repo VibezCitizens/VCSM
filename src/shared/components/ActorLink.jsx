@@ -22,8 +22,7 @@ export default function ActorLink({
   showTimestamp = false,
   timestamp = "",
   className = "",
-
-  // ✅ NEW: allow avatar-only rendering
+  showAvatar = true,
   showText = true,
 }) {
   if (!actor) return null;
@@ -31,19 +30,21 @@ export default function ActorLink({
   return (
     <Link
       to={actor.route}
-      className={`flex items-center gap-2 no-underline hover:no-underline ${className}`}
+      className={`flex items-center ${showAvatar && showText ? "gap-2" : "gap-0"} no-underline hover:no-underline ${className}`}
       aria-label={`${actor.displayName} profile`}
     >
-      <img
-        src={actor.avatar}
-        alt={actor.displayName}
-        loading="lazy"
-        onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = "/avatar.jpg";
-        }}
-        className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
-      />
+      {showAvatar ? (
+        <img
+          src={actor.avatar}
+          alt={actor.displayName}
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/avatar.jpg";
+          }}
+          className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
+        />
+      ) : null}
 
       {showText ? (
         <div className="flex flex-col leading-tight">

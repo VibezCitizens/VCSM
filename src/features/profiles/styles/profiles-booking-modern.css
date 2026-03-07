@@ -62,6 +62,43 @@
   gap: 0.5rem;
 }
 
+.profiles-modern .profiles-booking-duration-switch {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.32rem;
+}
+
+.profiles-modern .profiles-booking-duration-label {
+  font-size: 0.68rem;
+  color: rgba(186, 204, 240, 0.9);
+  margin-right: 0.18rem;
+}
+
+.profiles-modern .profiles-booking-duration-btn {
+  border: 1px solid rgba(137, 168, 240, 0.28);
+  border-radius: 9999px;
+  background: rgba(8, 14, 31, 0.62);
+  color: rgba(187, 203, 238, 0.9);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.38rem 0.62rem;
+  transition: color 180ms ease, background 200ms ease, border-color 200ms ease, transform 150ms ease;
+}
+
+.profiles-modern .profiles-booking-duration-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(175, 200, 255, 0.48);
+}
+
+.profiles-modern .profiles-booking-duration-btn.is-active {
+  color: #f7f9ff;
+  border-color: rgba(171, 196, 255, 0.45);
+  background: linear-gradient(135deg, rgba(129, 87, 255, 0.38), rgba(37, 136, 255, 0.4));
+  box-shadow: 0 0 14px rgba(92, 143, 255, 0.28);
+}
+
 .profiles-modern .profiles-booking-stat-card {
   border-radius: 0.95rem;
   border: 1px solid rgba(137, 170, 255, 0.2);
@@ -283,4 +320,15 @@
 
 .profiles-modern .profiles-booking-dot.is-pending {
   background: #ffc879;
+}
+
+@media (max-width: 640px) {
+  .profiles-modern .profiles-booking-duration-switch {
+    width: 100%;
+  }
+
+  .profiles-modern .profiles-booking-duration-label {
+    width: 100%;
+    margin-right: 0;
+  }
 }

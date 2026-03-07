@@ -24,18 +24,33 @@ export default function useIOSKeyboard(enabled) {
       // iOS can shift visualViewport vertically when keyboard/chrome moves.
       const vvTop = Math.max(0, rawTop)
 
-      document.documentElement.style.setProperty('--vv-height', `${vvHeight}px`)
-      document.documentElement.style.setProperty('--vv-top', `${vvTop}px`)
+      // If no text input is focused but vv is still shrunk, iOS can lag
+      // viewport restoration after keyboard close. Snap back to full height.
+      const active = document.activeElement
+      const tag = String(active?.tagName ?? '').toLowerCase()
+      const isTextInputFocused =
+        !!active &&
+        (tag === 'input' || tag === 'textarea' || active.isContentEditable)
+
+      const shouldSnapToFullHeight =
+        !isTextInputFocused &&
+        ih - vvHeight > 120
+
+      const resolvedHeight = shouldSnapToFullHeight ? ih : vvHeight
+      const resolvedTop = shouldSnapToFullHeight ? 0 : vvTop
+
+      document.documentElement.style.setProperty('--vv-height', `${resolvedHeight}px`)
+      document.documentElement.style.setProperty('--vv-top', `${resolvedTop}px`)
 
       // If viewport shrank, keyboard is already accounted for by vvHeight.
-      const viewportShrank = (ih - vvHeight) > 20
+      const viewportShrank = (ih - resolvedHeight) > 20
       if (viewportShrank) {
         document.documentElement.style.setProperty('--kb-inset', '0px')
         return
       }
 
       // Overlay mode fallback: compute overlap amount
-      const bottom = vvTop + vvHeight
+      const bottom = resolvedTop + resolvedHeight
       let overlap = ih - bottom
       overlap = Math.max(0, Math.min(overlap, ih))
 
