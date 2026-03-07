@@ -10,7 +10,6 @@ import { ctrlSubscribe } from '@/features/social/friend/subscribe/controllers/fo
 
 import { useProfileGateStore } from '@/state/actors/profileGateStore'
 import { useFollowRequestsStore } from '@/state/social/followRequestsStore'
-import { useIdentity } from '@/state/identity/identityContext'
 
 export function useSubscribeAction({
   viewerActorId,
@@ -18,27 +17,7 @@ export function useSubscribeAction({
   profileIsPrivate,
   onAfterChange,
 }) {
-  const { identity } = useIdentity()
-
-  const actionActorId = useMemo(() => {
-    if (!viewerActorId) return null
-
-    const isCurrentIdentity =
-      identity?.actorId && String(identity.actorId) === String(viewerActorId)
-
-    // Follow actions are owned by the user actor in current DB policy.
-    if (isCurrentIdentity && identity?.kind === 'vport') {
-      return identity?.ownerActorId ?? null
-    }
-
-    return viewerActorId
-  }, [viewerActorId, identity?.actorId, identity?.kind, identity?.ownerActorId])
-
-  const needsOwnerActor =
-    Boolean(viewerActorId) &&
-    identity?.actorId === viewerActorId &&
-    identity?.kind === 'vport' &&
-    !actionActorId
+  const actionActorId = useMemo(() => viewerActorId ?? null, [viewerActorId])
 
   const isFollowing = useFollowStatus({
     followerActorId: actionActorId,
@@ -60,11 +39,10 @@ export function useSubscribeAction({
   const unsubscribe = useUnsubscribeAction()
 
   const label = useMemo(() => {
-    if (needsOwnerActor) return 'Switch Actor'
     if (effectiveIsFollowing) return 'Unsubscribe'
     if (effectiveRequestStatus === 'pending') return 'Pending'
     return 'Subscribe'
-  }, [needsOwnerActor, effectiveIsFollowing, effectiveRequestStatus])
+  }, [effectiveIsFollowing, effectiveRequestStatus])
 
   const disabled =
     !actionActorId ||
@@ -150,8 +128,6 @@ export function useSubscribeAction({
         actionActorId,
         viewerActorId,
         targetActorId,
-        identityKind: identity?.kind ?? null,
-        ownerActorId: identity?.ownerActorId ?? null,
         message: error?.message ?? null,
         code: error?.code ?? null,
         details: error?.details ?? null,
@@ -161,7 +137,7 @@ export function useSubscribeAction({
 
       toast.error(
         permissionDenied
-          ? 'Follow permission denied for the current actor. Switch to your citizen actor and try again.'
+          ? 'Follow permission denied for the current actor.'
           : (error?.message ?? 'Failed to update subscription')
       )
     }
@@ -175,8 +151,6 @@ export function useSubscribeAction({
     sendRequest,
     unsubscribe,
     onAfterChange,
-    identity?.kind,
-    identity?.ownerActorId,
   ])
 
   return {

@@ -118,6 +118,21 @@ textarea {
   backdrop-filter: none;
 }
 
+/* Keep iOS conversation behavior canonical:
+   - top composer below header
+   - no extra bottom scroll gap */
+html.ios .chat-screen.chat-modern-conversation .chat-topbar {
+  top: calc(var(--chat-header-height) + 8px);
+  bottom: auto;
+  left: 10px;
+  right: 10px;
+}
+
+html.ios .chat-screen.chat-modern-conversation .chat-messages {
+  padding-bottom: calc(1px + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(1px + env(safe-area-inset-bottom));
+}
+
 .chat-topbar-input {
   flex: 1;
   height: 40px;

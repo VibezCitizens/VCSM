@@ -49,6 +49,26 @@ export default function ChatInput({
     setTimeout(trigger, 150)
   }, [])
 
+  const dismissKeyboard = useCallback(() => {
+    const blurActive = () => {
+      const active = document.activeElement
+      if (active && typeof active.blur === 'function') {
+        active.blur()
+      }
+    }
+
+    topInputRef.current?.blur()
+    blurActive()
+    requestAnimationFrame(() => {
+      topInputRef.current?.blur()
+      blurActive()
+    })
+    setTimeout(() => {
+      topInputRef.current?.blur()
+      blurActive()
+    }, 50)
+  }, [])
+
   useEffect(() => {
     if (inEdit) {
       setValue(initialValue || '')
@@ -74,6 +94,12 @@ export default function ChatInput({
     if (actionDisabled) return
     const text = value.trim()
     if (!text && !mediaPreview) return
+
+    // Close composer + keyboard immediately for faster send UX.
+    if (!inEdit) {
+      setTopBarOpen(false)
+      dismissKeyboard()
+    }
 
     setSubmitBusy(true)
 
@@ -118,16 +144,11 @@ export default function ChatInput({
       const sentOk = (!mediaPreview || mediaSent) && (!text || textSent)
       if (sentOk) {
         setValue('')
-
-        if (!inEdit) {
-          setTopBarOpen(false)
-          topInputRef.current?.blur()
-        }
       }
     } finally {
       setSubmitBusy(false)
     }
-  }, [actionDisabled, value, mediaPreview, onAttach, inEdit, onSaveEdit, onSend, onAttachError])
+  }, [actionDisabled, value, mediaPreview, onAttach, inEdit, onSaveEdit, onSend, onAttachError, dismissKeyboard])
 
   const handleChange = (e) => {
     setValue(clamp(e.target.value))
@@ -190,7 +211,7 @@ export default function ChatInput({
           e.preventDefault()
           doPrimary()
         }}
-        className={`chat-topbar chat-modern-topbar transition-all duration-200 ${
+        className={`chat-topbar chat-modern-topbar transition-all duration-100 ${
           topBarOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
         }`}
       >
@@ -257,7 +278,11 @@ export default function ChatInput({
 
       <button
         type="button"
-        className="chat-bottom-t"
+        className={`chat-bottom-t transition-opacity duration-75 ${
+          !topBarOpen
+            ? 'pointer-events-auto opacity-100'
+            : 'pointer-events-none opacity-0'
+        }`}
         onPointerDown={openKeyboard}
         onClick={openKeyboard}
         aria-label="Open keyboard"

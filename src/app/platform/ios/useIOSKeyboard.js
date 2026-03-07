@@ -20,10 +20,9 @@ export default function useIOSKeyboard(enabled) {
 
       const vvHeight = Math.max(0, Math.min(rawH, ih))
 
-      // ✅ Fix: iOS can report offsetTop > 0 (browser chrome / viewport shifts).
-      // For fullscreen fixed layouts, only honor offsetTop when pinch-zoomed.
-      const scale = vv.scale ?? 1
-      const vvTop = scale > 1 ? Math.max(0, rawTop) : 0
+      // Keep fixed chat shell aligned with the visual viewport.
+      // iOS can shift visualViewport vertically when keyboard/chrome moves.
+      const vvTop = Math.max(0, rawTop)
 
       document.documentElement.style.setProperty('--vv-height', `${vvHeight}px`)
       document.documentElement.style.setProperty('--vv-top', `${vvTop}px`)
