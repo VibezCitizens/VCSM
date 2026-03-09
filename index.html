@@ -144,6 +144,17 @@
         const splash = document.getElementById('splash')
         if (!splash) return
 
+        const path = window.location.pathname || ''
+        const isPublicMenuRoute =
+          /^\/m\/[^/]+\/?$/.test(path) ||
+          /^\/actor\/[^/]+\/menu(?:\/(?:qr|flyer))?\/?$/.test(path)
+
+        // QR menu links should open directly to the menu UI with no launch splash.
+        if (isPublicMenuRoute) {
+          splash.remove()
+          return
+        }
+
         let done = false
 
         const hideSplash = () => {

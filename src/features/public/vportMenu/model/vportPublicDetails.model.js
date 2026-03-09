@@ -30,13 +30,100 @@ function toSafePhone(value) {
   return toText(value).replace(/[^0-9+#*(),;.\-\s]/g, "");
 }
 
+function toFiniteNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function maybeParseObject(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) return value;
+  const raw = toText(value);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeKey(value) {
+  return toText(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function getSocialLink(socialLinks, candidateKeys) {
+  const source = maybeParseObject(socialLinks);
+  if (!source) return "";
+
+  const normalized = new Map();
+  for (const [key, value] of Object.entries(source)) {
+    normalized.set(normalizeKey(key), value);
+  }
+
+  for (const key of candidateKeys) {
+    const raw = normalized.get(normalizeKey(key));
+    const safe = toSafeUrl(raw);
+    if (safe) return safe;
+  }
+
+  return "";
+}
+
+function buildDirectionsUrl(row, socialLinks) {
+  const direct = toSafeUrl(
+    firstNonEmpty(
+      row.directions_url,
+      row.directionsUrl,
+      row.maps_url,
+      row.mapsUrl,
+      row.map_url,
+      row.mapUrl
+    )
+  );
+  if (direct) return direct;
+
+  const social = getSocialLink(socialLinks, ["directions", "maps", "google_maps", "google_maps_url"]);
+  if (social) return social;
+
+  const lat = toFiniteNumber(row.lat);
+  const lng = toFiniteNumber(row.lng);
+  if (lat != null && lng != null) {
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+  }
+
+  const locationQuery = firstNonEmpty(row.address, row.location_text, row.locationText);
+  if (locationQuery) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`;
+  }
+
+  return "";
+}
+
+function buildReviewUrl(row, socialLinks) {
+  const direct = toSafeUrl(
+    firstNonEmpty(row.review_url, row.reviewUrl, row.rating_url, row.ratingUrl)
+  );
+  if (direct) return direct;
+
+  return getSocialLink(socialLinks, [
+    "reviews",
+    "review",
+    "google_reviews",
+    "google_review",
+    "google_business",
+    "yelp",
+    "tripadvisor",
+  ]);
+}
+
 function isLikelyFlyerAsset(url) {
   const v = toText(url).toLowerCase();
   return v.includes("/flyers/") || v.includes("/design-assets/");
 }
 
 /**
- * Model: raw RPC payload -> domain-safe public details.
+ * Model: raw payload -> domain-safe public details.
+ * Supports both legacy RPC envelopes and vc_public view envelopes.
  */
 export function mapVportPublicDetailsRpcResult(raw) {
   const source = raw && typeof raw === "object" ? raw : {};
@@ -53,23 +140,14 @@ export function mapVportPublicDetailsRpcResult(raw) {
   }
 
   const row = source.details && typeof source.details === "object" ? source.details : {};
-
-  const reviewUrl = row.review_url ?? row.reviewUrl ?? row.rating_url ?? row.ratingUrl ?? "";
-  const directionsUrl =
-    row.directions_url ??
-    row.directionsUrl ??
-    row.maps_url ??
-    row.mapsUrl ??
-    row.map_url ??
-    row.mapUrl ??
-    "";
+  const socialLinks = row.social_links ?? row.socialLinks ?? null;
 
   const displayName = firstNonEmpty(
     row.display_name,
     row.displayName,
-    row.name,
     row.vport_name,
     row.vportName,
+    row.name,
     row.title
   );
 
@@ -105,6 +183,8 @@ export function mapVportPublicDetailsRpcResult(raw) {
   const bannerUrl = toSafeUrl(
     firstNonEmpty(row.banner_url, row.bannerUrl, row.cover_url, row.coverUrl)
   );
+  const reviewUrl = buildReviewUrl(row, socialLinks);
+  const directionsUrl = buildDirectionsUrl(row, socialLinks);
 
   return {
     ok: true,
@@ -113,12 +193,12 @@ export function mapVportPublicDetailsRpcResult(raw) {
     details: {
       displayName,
       username,
-      tagline: toText(row.tagline),
+      tagline: firstNonEmpty(row.tagline, row.bio),
       bannerUrl,
       avatarUrl,
       phone: toSafePhone(row.phone_public ?? row.phone ?? row.phone_number ?? row.phoneNumber),
-      reviewUrl: toSafeUrl(reviewUrl),
-      directionsUrl: toSafeUrl(directionsUrl),
+      reviewUrl,
+      directionsUrl,
       websiteUrl: toSafeUrl(row.website_url ?? row.websiteUrl),
       raw: row,
     },

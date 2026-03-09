@@ -1,8 +1,8 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
 /**
- * DAL: raw RPC adapter for public vport details payload.
- * Returns raw JSONB envelope from DB.
+ * DAL: public details adapter backed by vc_public views.
+ * Returns an envelope compatible with existing controller/model boundaries.
  */
 export async function readVportPublicDetailsRpcDAL({ actorId } = {}) {
   if (!actorId) {
@@ -10,11 +10,46 @@ export async function readVportPublicDetailsRpcDAL({ actorId } = {}) {
   }
 
   const { data, error } = await supabase
-    .schema("vc")
-    .rpc("get_vport_public_details", { p_actor_id: actorId });
+    .schema("vc_public")
+    .from("vports_public")
+    .select(
+      [
+        "actor_id",
+        "slug",
+        "name",
+        "bio",
+        "avatar_url",
+        "banner_url",
+        "logo_url",
+        "website_url",
+        "phone_public",
+        "location_text",
+        "address",
+        "lat",
+        "lng",
+        "social_links",
+      ].join(",")
+    )
+    .eq("actor_id", actorId)
+    .maybeSingle();
 
   if (error) throw error;
-  return data ?? null;
+
+  if (!data) {
+    return {
+      ok: false,
+      actor_id: actorId,
+      error: "not_found",
+      details: null,
+    };
+  }
+
+  return {
+    ok: true,
+    actor_id: actorId,
+    error: null,
+    details: data,
+  };
 }
 
 export default readVportPublicDetailsRpcDAL;
