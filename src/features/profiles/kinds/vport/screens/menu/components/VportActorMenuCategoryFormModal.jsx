@@ -107,26 +107,30 @@ export function VportActorMenuCategoryFormModal({
   const overlayStyle = {
     position: "fixed",
     inset: 0,
-    zIndex: 9999, // ✅ FIX: was 60, could be behind bottom nav / other fixed layers
+    zIndex: 100000,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-    background: "rgba(0,0,0,0.65)",
-    backdropFilter: "blur(8px)",
-    WebkitBackdropFilter: "blur(8px)",
-    pointerEvents: "auto", // ✅ ensure overlay receives clicks
+    background: "rgba(3, 8, 20, 0.84)",
+    backdropFilter: "blur(4px)",
+    WebkitBackdropFilter: "blur(4px)",
+    pointerEvents: "auto",
   };
 
   const cardStyle = {
     width: "100%",
     maxWidth: 560,
+    maxHeight: "calc(100vh - 32px)",
     borderRadius: 18,
-    background: "rgba(12,12,12,0.92)",
-    border: "1px solid rgba(255,255,255,0.10)",
+    background:
+      "linear-gradient(180deg, rgba(10, 16, 34, 0.98) 0%, rgba(7, 11, 25, 0.99) 100%)",
+    border: "1px solid rgba(147, 197, 253, 0.28)",
     boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
     overflow: "hidden",
     color: "#fff",
+    display: "flex",
+    flexDirection: "column",
   };
 
   const headerStyle = {
@@ -154,8 +158,8 @@ export function VportActorMenuCategoryFormModal({
   const fieldBase = {
     padding: "10px 12px",
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(148,163,184,0.28)",
+    background: "rgba(8,13,30,0.96)",
     color: "#fff",
     outline: "none",
   };
@@ -203,7 +207,14 @@ export function VportActorMenuCategoryFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ padding: 16 }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            padding: 16,
+            overflowY: "auto",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {/* Key */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -278,8 +289,8 @@ export function VportActorMenuCategoryFormModal({
                     gap: 10,
                     padding: "10px 12px",
                     borderRadius: 12,
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(148,163,184,0.28)",
+                    background: "rgba(8,13,30,0.96)",
                     userSelect: "none",
                   }}
                 >

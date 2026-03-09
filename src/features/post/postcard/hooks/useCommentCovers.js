@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   expandHiddenRootsToDescendants,
   getHiddenCommentIdsForActor,
-} from "@/features/moderation/controllers/commentVisibility.controller";
+} from "@/features/moderation/adapters/controllers/commentVisibility.controller.adapter";
 
 /* ============================================================
    HOOK: useCommentCovers

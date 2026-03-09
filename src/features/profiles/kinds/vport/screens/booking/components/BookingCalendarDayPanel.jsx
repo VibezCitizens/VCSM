@@ -45,12 +45,104 @@ function AppointmentClientIdentity({ item, isOwner }) {
     <ActorLink
       actor={actorSummary}
       showAvatar
-      avatarSize="w-8 h-8"
-      avatarShape="rounded-lg"
+      avatarSize="w-10 h-10"
+      avatarShape="rounded-md"
       textSize="text-[0.76rem]"
       showUsername
       className="profiles-booking-appointment-client-link"
     />
+  );
+}
+
+function OwnerCustomerPicker({
+  ownerCustomerName = "",
+  ownerFollowerMatches = [],
+  ownerFollowersLoading = false,
+  ownerFollowersError = "",
+  selectedOwnerFollower = null,
+  onOwnerCustomerNameChange,
+  onSelectOwnerFollower,
+  onClearOwnerFollower,
+}) {
+  const canSearchFollowers = typeof onSelectOwnerFollower === "function";
+  const searchQuery = String(ownerCustomerName || "").trim();
+  const hasQuery = Boolean(searchQuery);
+  const hasMatches = Array.isArray(ownerFollowerMatches) && ownerFollowerMatches.length > 0;
+  const showMatches = canSearchFollowers && !selectedOwnerFollower && hasQuery && hasMatches;
+
+  return (
+    <div className="profiles-booking-owner-client-picker">
+      <input
+        type="text"
+        className="profiles-booking-owner-input"
+        value={ownerCustomerName}
+        onChange={(e) => onOwnerCustomerNameChange(e.target.value)}
+        placeholder="Search follower or type client name (optional)"
+      />
+
+      {selectedOwnerFollower ? (
+        <div className="profiles-booking-owner-selected-follower">
+          <span className="profiles-booking-owner-selected-follower-label">
+            Linked follower: {selectedOwnerFollower.displayName}
+            {selectedOwnerFollower.username ? ` (@${selectedOwnerFollower.username})` : ""}
+          </span>
+
+          {typeof onClearOwnerFollower === "function" ? (
+            <button
+              type="button"
+              className="profiles-booking-owner-selected-follower-clear"
+              onClick={onClearOwnerFollower}
+            >
+              Clear
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {showMatches ? (
+        <div className="profiles-booking-owner-follower-results" role="listbox" aria-label="Follower matches">
+          {ownerFollowerMatches.map((follower) => (
+            <button
+              key={follower.actorId}
+              type="button"
+              className="profiles-booking-owner-follower-option"
+              onClick={() => onSelectOwnerFollower(follower)}
+            >
+              <img
+                src={follower.avatar || "/avatar.jpg"}
+                alt={follower.displayName || "Follower"}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/avatar.jpg";
+                }}
+                className="profiles-booking-owner-follower-option-avatar"
+              />
+              <span className="profiles-booking-owner-follower-option-text">
+                <strong>{follower.displayName}</strong>
+                {follower.username ? <span>@{follower.username}</span> : null}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {ownerFollowersLoading && hasQuery ? (
+        <p className="profiles-booking-owner-picker-meta">Searching followers...</p>
+      ) : null}
+
+      {!ownerFollowersLoading && hasQuery && !hasMatches ? (
+        <p className="profiles-booking-owner-picker-meta">
+          No follower match found. You can still save with this custom name.
+        </p>
+      ) : null}
+
+      {ownerFollowersError ? (
+        <p className="profiles-booking-owner-picker-meta is-error">
+          Could not load followers right now. You can still type a custom name.
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -67,7 +159,13 @@ export function BookingCalendarDayPanel({
   isSelectedSlotAvailable,
   primaryActionLabel = "",
   ownerCustomerName = "",
+  ownerFollowerMatches = [],
+  ownerFollowersLoading = false,
+  ownerFollowersError = "",
+  selectedOwnerFollower = null,
   onOwnerCustomerNameChange,
+  onSelectOwnerFollower,
+  onClearOwnerFollower,
   onSelectSlot,
   onCreateAppointmentFromSelectedSlot,
   onToggleAvailabilityForSelectedSlot,
@@ -128,12 +226,15 @@ export function BookingCalendarDayPanel({
 
       <div className="profiles-booking-actions">
         {isOwner && typeof onOwnerCustomerNameChange === "function" ? (
-          <input
-            type="text"
-            className="profiles-booking-owner-input"
-            value={ownerCustomerName}
-            onChange={(e) => onOwnerCustomerNameChange(e.target.value)}
-            placeholder="Client name (optional)"
+          <OwnerCustomerPicker
+            ownerCustomerName={ownerCustomerName}
+            ownerFollowerMatches={ownerFollowerMatches}
+            ownerFollowersLoading={ownerFollowersLoading}
+            ownerFollowersError={ownerFollowersError}
+            selectedOwnerFollower={selectedOwnerFollower}
+            onOwnerCustomerNameChange={onOwnerCustomerNameChange}
+            onSelectOwnerFollower={onSelectOwnerFollower}
+            onClearOwnerFollower={onClearOwnerFollower}
           />
         ) : null}
 
@@ -175,7 +276,13 @@ export function BookingCalendarDayPanel({
               <div className="profiles-booking-appointment-time">{item.time}</div>
               <div className="profiles-booking-appointment-content">
                 <AppointmentClientIdentity item={item} isOwner={isOwner} />
-                <p className="profiles-booking-appointment-service">{item.service}</p>
+                <p
+                  className={`profiles-booking-appointment-service${
+                    isOwner ? " is-with-avatar" : ""
+                  }`}
+                >
+                  {item.service}
+                </p>
               </div>
               <div className="profiles-booking-appointment-tail">
                 <AppointmentStatusBadge status={item.status} statusLabels={statusLabels} />

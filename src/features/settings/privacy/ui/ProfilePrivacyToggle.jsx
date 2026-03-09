@@ -1,59 +1,13 @@
-import { useEffect, useState } from 'react'
-import { dalGetActorPrivacy, dalSetActorPrivacy } from '../dal/visibility.dal'
+import { useActorPrivacy } from '@/features/settings/privacy/hooks/useActorPrivacy'
 
 export default function ProfilePrivacyToggle({ actorId }) {
-  const [loading, setLoading] = useState(true)
-  const [isPrivate, setIsPrivate] = useState(false)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    let alive = true
-
-    async function load() {
-      if (!actorId) return
-      setLoading(true)
-      setError(null)
-
-      try {
-        const value = await dalGetActorPrivacy(actorId)
-        if (!alive) return
-        setIsPrivate(value)
-      } catch (e) {
-        if (!alive) return
-        setError(e.message || String(e))
-      } finally {
-        if (alive) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      alive = false
-    }
-  }, [actorId])
-
-  async function toggle() {
-    if (loading || !actorId) return
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const next = !isPrivate
-      await dalSetActorPrivacy(actorId, next)
-      setIsPrivate(next)
-    } catch (e) {
-      setError(e.message || String(e))
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { loading, isPrivate, error, togglePrivacy } = useActorPrivacy(actorId)
 
   return (
     <div className="flex flex-col items-end gap-1">
       <button
         type="button"
-        onClick={toggle}
+        onClick={togglePrivacy}
         disabled={loading}
         aria-pressed={isPrivate}
         className={`settings-toggle ${isPrivate ? 'is-private' : 'is-public'} ${

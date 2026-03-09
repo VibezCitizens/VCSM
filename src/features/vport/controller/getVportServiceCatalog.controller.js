@@ -1,5 +1,5 @@
-import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
-import { mapVportServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportService.model.js";
+import readVportServiceCatalogByType from "@/features/profiles/adapters/kinds/vport/dal/services/readVportServiceCatalogByType.js.adapter";
+import { mapVportServiceCatalogRows } from "@/features/profiles/adapters/kinds/vport/model/services/vportService.model.js.adapter";
 
 export default async function getVportServiceCatalogController({ vportType } = {}) {
   const safeVportType = (vportType ?? "").toString().trim().toLowerCase();

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
-import { useFollowRequestActions } from '@/features/social/friend/request/hooks/useFollowRequestActions'
+import { useFollowRequestActions } from '@/features/social/adapters/friend/request/hooks/useFollowRequestActions.adapter'
 
 export default function FollowRequestItem({ notification }) {
   const navigate = useNavigate()

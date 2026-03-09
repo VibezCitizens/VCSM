@@ -5,7 +5,7 @@
 // - Reuse PostDetailView so header/body/media/actions render
 // ============================================================
 
-import PostDetailView from '@/features/post/screens/PostDetail.view'
+import PostDetailView from '@/features/post/adapters/screens/PostDetail.view.adapter'
 
 export default function NotiViewPostScreen() {
   return <PostDetailView />

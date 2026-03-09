@@ -1,6 +1,6 @@
 // src/features/post/dal/post.write.dal.js
 import { supabase } from "@/services/supabase/supabaseClient";
-import { insertPostMentions } from "@/features/upload/dal/insertPostMentions";
+import { insertPostMentions } from "@/features/upload/adapters/dal/insertPostMentions.adapter";
 
 // ------------------------------------------------------------
 // Mentions helpers

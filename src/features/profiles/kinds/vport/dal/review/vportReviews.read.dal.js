@@ -36,6 +36,7 @@ export async function dalListVportReviews(targetActorId, limit = 25) {
         "id",
         "target_actor_id",
         "author_actor_id",
+        "vport_type",
         "is_verified",
         "rating_scale",
         "overall_rating",
@@ -61,7 +62,7 @@ export async function dalListVportReviewRatingsByReviewIds(reviewIds) {
   const { data, error } = await vc
     .schema("vc")
     .from("vport_review_ratings")
-    .select(["review_id", "dimension_key", "rating", "created_at", "updated_at"].join(","))
+    .select(["review_id", "vport_type", "dimension_key", "rating", "created_at", "updated_at"].join(","))
     .in("review_id", reviewIds);
 
   if (error) throw error;
@@ -77,6 +78,7 @@ export async function dalGetActiveReviewByAuthor(targetActorId, authorActorId) {
         "id",
         "target_actor_id",
         "author_actor_id",
+        "vport_type",
         "is_verified",
         "rating_scale",
         "overall_rating",
@@ -105,6 +107,7 @@ export async function dalReadVportReviewById(reviewId) {
         "id",
         "target_actor_id",
         "author_actor_id",
+        "vport_type",
         "is_verified",
         "rating_scale",
         "overall_rating",

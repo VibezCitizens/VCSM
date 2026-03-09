@@ -15,6 +15,9 @@ import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
 import { protectedAppRoutes } from "@/app/routes/protected/app.routes";
 
+const devDiagnosticsEnabled =
+  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
+
 // ----------------------------------------------------------------------------
 // Lazy helper with debugging
 // ----------------------------------------------------------------------------
@@ -47,7 +50,7 @@ const OnboardingScreen = lazyWithLog("OnboardingScreen", () =>
 
 /* ================= MAIN APP ================= */
 const CentralFeed = lazyWithLog("CentralFeed", () =>
-  import("@/features/feed/screens/CentralFeed")
+  import("@/features/feed/screens/CentralFeedScreen")
 );
 const ExploreScreen = lazyWithLog("Explore", () =>
   import("@/features/explore/screens/ExploreScreen")
@@ -87,6 +90,9 @@ const VportAdsSettingsScreen = lazyWithLog("VportAdsSettingsScreen", () =>
 const VoidScreen = lazyWithLog("VoidScreen", () =>
   import("@/features/void/VoidScreen")
 );
+const DevDiagnosticsScreen = devDiagnosticsEnabled
+  ? lazyWithLog("DevDiagnosticsScreen", () => import("@/screens/DevDiagnosticsScreen"))
+  : () => null;
 
 /* ================= PROFILES ================= */
 const UsernameProfileRedirect = lazyWithLog("UsernameProfileRedirect", () =>
@@ -307,6 +313,7 @@ export default function AppRoutes() {
             SettingsScreen,
             VportAdsSettingsScreen,
             VoidScreen,
+            DevDiagnosticsScreen,
 
             UsernameProfileRedirect,
             ActorProfileScreen,

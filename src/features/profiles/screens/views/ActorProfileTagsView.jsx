@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useActorVibeTags } from '@/features/profiles/screens/views/tabs/tags/hooks/useActorVibeTags'
 
 export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
+  const navigate = useNavigate()
   const { tags, loading, error } = useActorVibeTags(actorId)
   const [activeTagKey, setActiveTagKey] = useState(null)
   const activeKey = useMemo(
@@ -71,6 +73,7 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
             {canAddTag && (
               <button
                 type="button"
+                onClick={() => navigate('/citizen/vibes')}
                 className="profiles-tag-chip profiles-tag-chip-add"
                 aria-label="Add Tag"
               >

@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import CommentInputView from "@/features/post/commentcard/ui/CommentInput.view";
 import CommentCardContainer from "@/features/post/commentcard/components/CommentCard.container";
-import ReportedPostCover from "@/features/moderation/components/ReportThanksOverlay";
+import ReportedPostCover from "@/features/moderation/adapters/components/ReportThanksOverlay.adapter";
 
 function CommentNode({
   comment,

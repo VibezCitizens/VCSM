@@ -1,6 +1,6 @@
 import { dalDeleteConversationHideAction } from '../dal/moderationActions.dal'
-import { moveConversationToFolder, updateInboxLastMessage } from '@/features/chat/inbox/dal/inbox.write.dal'
-import { fetchLatestMessageForConversationDAL } from '@/features/chat/conversation/dal/read/messages.read.dal'
+import { moveConversationToFolder, updateInboxLastMessage } from '@/features/chat/adapters/inbox/dal/inbox.write.dal.adapter'
+import { fetchLatestMessageForConversationDAL } from '@/features/chat/adapters/conversation/dal/read/messages.read.dal.adapter'
 
 export async function undoConversationCover({ actorId, conversationId }) {
   if (!actorId || !conversationId) return { ok: false }

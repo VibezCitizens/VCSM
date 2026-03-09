@@ -37,12 +37,14 @@ export default function VportMenuView({ profile, onOpenFoodReview } = {}) {
   // âœ… VIEWER â†’ read-only public menu + CTA
   return (
     <div className="profiles-card rounded-2xl p-4" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <VportActorMenuSection actorId={actorId} mode="public" />
-
       {/* âœ… Review Food CTA */}
       {typeof onOpenFoodReview === "function" ? (
-        <MenuReviewCTA onClick={onOpenFoodReview} label="Review Food" />
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <MenuReviewCTA onClick={onOpenFoodReview} label="Review Food" />
+        </div>
       ) : null}
+
+      <VportActorMenuSection actorId={actorId} mode="public" />
     </div>
   );
 }

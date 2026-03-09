@@ -3,8 +3,11 @@ import { readFeedPostsPage } from "@/features/feed/dal/feed.read.posts.dal";
 import { readPostMediaMap } from "@/features/feed/dal/feed.read.media.dal";
 import { readHiddenPostsForViewer } from "@/features/feed/dal/feed.read.hiddenPosts.dal";
 import { readActorsBundle } from "@/features/feed/dal/feed.read.actorsBundle.dal";
+import { readFeedBlockRowsDAL } from "@/features/feed/dal/feed.read.blockRows.dal";
+import { readFeedFollowRowsDAL } from "@/features/feed/dal/feed.read.followRows.dal";
 import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows";
-import { filterBlockedActors } from "@/features/block/dal/block.read.dal";
+import { buildBlockedActorSetModel } from "@/features/feed/model/feedBlockVisibility.model";
+import { buildFollowedActorSetModel } from "@/features/feed/model/feedFollowVisibility.model";
 
 // ✅ use existing mentions DAL
 import { fetchPostMentionRows } from "@/features/feed/dal/feed.mentions.dal";
@@ -35,7 +38,8 @@ export async function fetchFeedPagePipeline({
     mentionRows,
     hiddenByMeSet,
     { actors, actorMap, profileMap, vportMap },
-    blockedActorSet,
+    blockRows,
+    followRows,
   ] = await Promise.all([
     readPostMediaMap(pagePostIds),
     hasPotentialMentions ? fetchPostMentionRows(pagePostIds) : Promise.resolve([]),
@@ -44,8 +48,23 @@ export async function fetchFeedPagePipeline({
       postIds: pagePostIds,
     }),
     readActorsBundle(actorIds),
-    filterBlockedActors(viewerActorId, actorIds),
+    readFeedBlockRowsDAL({
+      viewerActorId,
+      actorIds,
+    }),
+    readFeedFollowRowsDAL({
+      viewerActorId,
+      actorIds,
+    }),
   ]);
+
+  const blockedActorSet = buildBlockedActorSetModel({
+    viewerActorId,
+    blockRows,
+  });
+  const followedActorSet = buildFollowedActorSetModel({
+    followRows,
+  });
 
   // ✅ mentions
   if (debugPostId && pagePostIds.includes(debugPostId)) {
@@ -57,20 +76,23 @@ export async function fetchFeedPagePipeline({
 
   const mentionMapsByPostId = buildMentionMaps(mentionRows);
 
-  const normalized = normalizeFeedRows({
+  const { normalized, debugRows } = normalizeFeedRows({
     pageRows,
     actorMap,
     profileMap,
     vportMap,
     blockedActorSet,
+    followedActorSet,
     viewerActorId,
     hiddenByMeSet,
     mediaMap,
     mentionMapsByPostId,
+    includeDebug: true,
   });
 
   return {
     normalized,
+    debugRows,
     hasMoreNow,
     nextCursorCreatedAt,
     hiddenByMeSet,

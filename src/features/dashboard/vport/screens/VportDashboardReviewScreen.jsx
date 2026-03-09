@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
-import VportReviewsView from "@/features/profiles/kinds/vport/screens/review/VportReviewsView";
+import VportReviewsView from "@/features/profiles/adapters/kinds/vport/screens/review/VportReviewsView.adapter";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";

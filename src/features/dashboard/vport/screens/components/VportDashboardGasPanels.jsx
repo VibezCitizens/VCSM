@@ -1,7 +1,7 @@
 import React from "react";
-import { GasPricesPanel } from "@/features/profiles/kinds/vport/screens/gas/components/GasPricesPanel";
-import { GasStates } from "@/features/profiles/kinds/vport/screens/gas/components/GasStates";
-import { OwnerPendingSuggestionsList } from "@/features/profiles/kinds/vport/screens/gas/components/OwnerPendingSuggestionsList";
+import { GasPricesPanel } from "@/features/profiles/adapters/kinds/vport/screens/gas/components/GasPricesPanel.adapter";
+import { GasStates } from "@/features/profiles/adapters/kinds/vport/screens/gas/components/GasStates.adapter";
+import { OwnerPendingSuggestionsList } from "@/features/profiles/adapters/kinds/vport/screens/gas/components/OwnerPendingSuggestionsList.adapter";
 
 const CARD_STYLE = {
   borderRadius: 18,

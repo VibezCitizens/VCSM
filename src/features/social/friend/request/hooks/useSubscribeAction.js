@@ -1,20 +1,21 @@
 import { useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { useSendFollowRequest } from '@/features/social/friend/request/hooks/useSendFollowRequest'
 import { useFollowRequestStatus } from '@/features/social/friend/request/hooks/useFollowRequestStatus'
 import { useFollowStatus } from '@/features/social/friend/subscribe/hooks/useFollowStatus'
 import { useUnsubscribeAction } from '@/features/social/friend/subscribe/hooks/useUnsubscribeAction'
 
 import { ctrlSubscribe } from '@/features/social/friend/subscribe/controllers/follow.controller'
+import { ctrlGetFollowRelationshipState } from '@/features/social/friend/subscribe/controllers/getFollowRelationshipState.controller'
 
 import { useProfileGateStore } from '@/state/actors/profileGateStore'
 import { useFollowRequestsStore } from '@/state/social/followRequestsStore'
 
+const IS_DEV = import.meta.env.DEV
+
 export function useSubscribeAction({
   viewerActorId,
   targetActorId,
-  profileIsPrivate,
   onAfterChange,
 }) {
   const actionActorId = useMemo(() => viewerActorId ?? null, [viewerActorId])
@@ -31,16 +32,16 @@ export function useSubscribeAction({
 
   const [localRequestStatus, setLocalRequestStatus] = useState(null)
   const [localIsFollowing, setLocalIsFollowing] = useState(false)
+  const [debugInfo, setDebugInfo] = useState(null)
 
   const effectiveRequestStatus = localRequestStatus ?? requestStatus
   const effectiveIsFollowing = localIsFollowing || isFollowing
 
-  const sendRequest = useSendFollowRequest()
   const unsubscribe = useUnsubscribeAction()
 
   const label = useMemo(() => {
     if (effectiveIsFollowing) return 'Unsubscribe'
-    if (effectiveRequestStatus === 'pending') return 'Pending'
+    if (effectiveRequestStatus === 'pending') return 'Requested'
     return 'Subscribe'
   }, [effectiveIsFollowing, effectiveRequestStatus])
 
@@ -51,7 +52,35 @@ export function useSubscribeAction({
     effectiveRequestStatus === 'pending'
 
   const onClick = useCallback(async () => {
-    if (disabled) return
+    if (disabled) {
+      if (IS_DEV) {
+        setDebugInfo({
+          at: new Date().toISOString(),
+          action: 'skip_disabled',
+          actionActorId,
+          targetActorId,
+          effectiveIsFollowing,
+          effectiveRequestStatus,
+        })
+      }
+      return
+    }
+
+    let preflight = null
+
+    if (IS_DEV) {
+      try {
+        preflight = await ctrlGetFollowRelationshipState({
+          requesterActorId: actionActorId,
+          targetActorId,
+        })
+      } catch (preflightError) {
+        preflight = {
+          error: preflightError?.message ?? 'preflight_failed',
+          code: preflightError?.code ?? null,
+        }
+      }
+    }
 
     try {
       if (effectiveIsFollowing) {
@@ -65,63 +94,75 @@ export function useSubscribeAction({
 
         useProfileGateStore.getState().invalidateGate()
 
+        if (IS_DEV) {
+          setDebugInfo({
+            at: new Date().toISOString(),
+            action: 'unsubscribe',
+            actionActorId,
+            targetActorId,
+            preflight,
+            result: {
+              status: 'not_following',
+            },
+          })
+        }
+
         onAfterChange?.()
         return
       }
 
-      if (profileIsPrivate) {
-        await sendRequest({
-          requesterActorId: actionActorId,
-          targetActorId,
-        })
-
-        setLocalRequestStatus('pending')
-        useFollowRequestsStore.getState().invalidate()
-
-        onAfterChange?.()
-        return
-      }
-
-      await ctrlSubscribe({
+      const result = await ctrlSubscribe({
         followerActorId: actionActorId,
         followedActorId: targetActorId,
       })
 
-      setLocalIsFollowing(true)
-      setLocalRequestStatus(null)
+      if (result?.status === 'pending') {
+        setLocalIsFollowing(false)
+        setLocalRequestStatus('pending')
+        useFollowRequestsStore.getState().invalidate()
+        toast.success('Follow request sent for approval.')
+      } else {
+        setLocalIsFollowing(true)
+        setLocalRequestStatus(null)
+      }
+
+      if (IS_DEV) {
+        setDebugInfo({
+          at: new Date().toISOString(),
+          action: 'subscribe',
+          actionActorId,
+          targetActorId,
+          preflight,
+          result: {
+            mode: result?.mode ?? null,
+            status: result?.status ?? null,
+            isFollowing: Boolean(result?.isFollowing),
+            decision: result?.decision ?? null,
+          },
+        })
+      }
 
       onAfterChange?.()
     } catch (error) {
-      const message = String(error?.message ?? '')
       const permissionDenied = error?.code === '42501'
-      const followInsertDenied =
-        permissionDenied &&
-        /not allowed for actor/i.test(message) &&
-        !profileIsPrivate
 
-      if (followInsertDenied) {
-        try {
-          await sendRequest({
-            requesterActorId: actionActorId,
-            targetActorId,
-          })
-
-          setLocalRequestStatus('pending')
-          useFollowRequestsStore.getState().invalidate()
-          toast.success('Follow request sent for approval.')
-          onAfterChange?.()
-          return
-        } catch (fallbackError) {
-          console.error('[useSubscribeAction] follow fallback->request failed', {
-            actionActorId,
-            targetActorId,
-            message: fallbackError?.message ?? null,
-            code: fallbackError?.code ?? null,
-            details: fallbackError?.details ?? null,
-            hint: fallbackError?.hint ?? null,
-            error: fallbackError,
-          })
-        }
+      if (IS_DEV) {
+        setDebugInfo({
+          at: new Date().toISOString(),
+          action: effectiveIsFollowing ? 'unsubscribe' : 'subscribe',
+          actionActorId,
+          targetActorId,
+          preflight,
+          error: {
+            code: error?.code ?? null,
+            message: error?.message ?? null,
+            details: error?.details ?? null,
+            hint: error?.hint ?? null,
+            expectedFollowPermissionDenied:
+              error?.expectedFollowPermissionDenied === true,
+            followDecision: error?.followDecision ?? null,
+          },
+        })
       }
 
       console.error('[useSubscribeAction] follow action failed', {
@@ -145,10 +186,9 @@ export function useSubscribeAction({
     actionActorId,
     viewerActorId,
     targetActorId,
-    profileIsPrivate,
     effectiveIsFollowing,
+    effectiveRequestStatus,
     disabled,
-    sendRequest,
     unsubscribe,
     onAfterChange,
   ])
@@ -158,5 +198,6 @@ export function useSubscribeAction({
     disabled,
     onClick,
     isSubscribed: effectiveIsFollowing,
+    debugInfo: IS_DEV ? debugInfo : null,
   }
 }

@@ -28,25 +28,18 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
     return list
       .filter((p) => !p?.deleted_at)
       .map((p) => {
-        // Prefer normalized multi-media: post.media = [{ type, url }, ...]
+        // post.media is canonical post media shape ({ type, url, sortOrder }).
         const mediaArr = Array.isArray(p?.media) ? p.media.filter(Boolean) : [];
 
-        const imagesFromMedia = mediaArr
-          .filter((m) => (m?.type || m?.media_type) === "image" && !!(m?.url || m?.media_url))
+        const images = mediaArr
+          .filter((m) => m?.type === "image" && !!m?.url)
           .map((m) => ({
-            url: m.url || m.media_url,
+            url: m.url,
             type: "image",
           }));
 
-        // Legacy fallback: posts.media_url + posts.media_type
-        const legacyIsImage = p?.media_type === "image" && !!p?.media_url;
-        const legacy = legacyIsImage ? [{ url: p.media_url, type: "image" }] : [];
-
-        const images = imagesFromMedia.length ? imagesFromMedia : legacy;
-        const mediaCount = mediaArr.length || images.length;
-        const hasVideo =
-          mediaArr.some((m) => (m?.type || m?.media_type) === "video") ||
-          p?.media_type === "video";
+        const mediaCount = mediaArr.length;
+        const hasVideo = mediaArr.some((m) => m?.type === "video");
 
         return {
           ...p,

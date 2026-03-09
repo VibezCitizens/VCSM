@@ -10,6 +10,154 @@
 // ============================================================
 
 import { supabase } from '@/services/supabase/supabaseClient'
+import { getActorSummariesByIdsDAL } from '@/features/actors/dal/getActorSummariesByIds.dal'
+
+function mapActorSummaryRow(summary) {
+  const actorId = summary?.actor_id ?? summary?.actorId ?? summary?.id ?? null
+  if (!actorId) return null
+
+  const kind = String(summary?.kind ?? '').toLowerCase() || null
+  const displayName = summary?.display_name ?? summary?.displayName ?? null
+  const username = summary?.username ?? null
+  const photoUrl = summary?.photo_url ?? summary?.photoUrl ?? null
+  const vportName = summary?.vport_name ?? summary?.vportName ?? displayName ?? null
+  const vportSlug = summary?.vport_slug ?? summary?.vportSlug ?? summary?.slug ?? null
+  const vportAvatarUrl =
+    summary?.vport_avatar_url ?? summary?.vportAvatarUrl ?? photoUrl ?? null
+
+  if (kind === 'vport') {
+    return {
+      actor_id: actorId,
+      kind: 'vport',
+      display_name: displayName ?? vportName,
+      username: username ?? vportSlug,
+      photo_url: photoUrl ?? vportAvatarUrl,
+      vport_name: vportName ?? displayName,
+      vport_slug: vportSlug ?? username,
+      vport_avatar_url: vportAvatarUrl ?? photoUrl,
+    }
+  }
+
+  return {
+    actor_id: actorId,
+    kind: kind ?? 'user',
+    display_name: displayName,
+    username,
+    photo_url: photoUrl,
+    vport_name: vportName,
+    vport_slug: vportSlug,
+    vport_avatar_url: vportAvatarUrl,
+  }
+}
+
+function actorNeedsFallback(actor) {
+  if (!actor) return true
+
+  const kind = String(actor?.kind ?? '').toLowerCase()
+  if (kind === 'vport') {
+    return !(
+      actor?.vport_name ||
+      actor?.display_name ||
+      actor?.vport_slug ||
+      actor?.username ||
+      actor?.vport_avatar_url ||
+      actor?.photo_url
+    )
+  }
+
+  return !(actor?.display_name || actor?.username || actor?.photo_url)
+}
+
+function mergeActorPresentation(actor, fallback) {
+  const current = actor ?? {}
+  return {
+    actor_id: current?.actor_id ?? fallback?.actor_id ?? null,
+    kind: current?.kind ?? fallback?.kind ?? null,
+    display_name: current?.display_name ?? fallback?.display_name ?? null,
+    username: current?.username ?? fallback?.username ?? null,
+    photo_url: current?.photo_url ?? fallback?.photo_url ?? null,
+    vport_name: current?.vport_name ?? fallback?.vport_name ?? null,
+    vport_slug: current?.vport_slug ?? fallback?.vport_slug ?? null,
+    vport_avatar_url: current?.vport_avatar_url ?? fallback?.vport_avatar_url ?? null,
+  }
+}
+
+async function hydrateMissingMemberActorPresentation(memberRows) {
+  const list = Array.isArray(memberRows) ? memberRows : []
+  if (!list.length) return list
+
+  const actorIds = [
+    ...new Set(
+      list
+        .filter((member) => actorNeedsFallback(member?.actor))
+        .map((member) => member?.actor_id)
+        .filter(Boolean)
+    ),
+  ]
+
+  if (!actorIds.length) return list
+
+  const { rows: summaryRows, error } = await getActorSummariesByIdsDAL({ actorIds })
+  if (error || !summaryRows?.length) return list
+
+  const fallbackByActorId = new Map(
+    summaryRows
+      .map(mapActorSummaryRow)
+      .filter(Boolean)
+      .map((row) => [row.actor_id, row])
+  )
+
+  return list.map((member) => {
+    const actorId = member?.actor_id
+    if (!actorId) return member
+
+    const fallback = fallbackByActorId.get(actorId)
+    if (!fallback) return member
+
+    return {
+      ...member,
+      actor: mergeActorPresentation(member?.actor, fallback),
+    }
+  })
+}
+
+async function hydrateInboxRowsMemberActors(rows) {
+  const list = Array.isArray(rows) ? rows : []
+  if (!list.length) return list
+
+  const allMembers = list.flatMap((row) =>
+    Array.isArray(row?.members) ? row.members : []
+  )
+  if (!allMembers.length) return list
+
+  const hydratedMembers = await hydrateMissingMemberActorPresentation(allMembers)
+  const byActorAndRole = new Map(
+    hydratedMembers.map((member) => [
+      `${member?.actor_id ?? ''}:${member?.role ?? ''}:${member?.is_active ? '1' : '0'}`,
+      member,
+    ])
+  )
+
+  return list.map((row) => {
+    const members = Array.isArray(row?.members)
+      ? row.members.map((member) => {
+          const key = `${member?.actor_id ?? ''}:${member?.role ?? ''}:${member?.is_active ? '1' : '0'}`
+          return byActorAndRole.get(key) ?? member
+        })
+      : []
+
+    return {
+      ...row,
+      members,
+      conversation: row?.conversation
+        ? {
+            ...row.conversation,
+            members,
+          }
+        : row?.conversation,
+    }
+  })
+}
 
 function isDeletedMessage(m) {
   if (!m) return false
@@ -96,7 +244,7 @@ async function loadInboxFallbackFromMembership({ actorId }) {
     membersByConversation.get(key).push(row)
   }
 
-  return (conversations || [])
+  const rows = (conversations || [])
     .map((c) => ({
       conversation_id: c.id,
       actor_id: actorId,
@@ -116,6 +264,8 @@ async function loadInboxFallbackFromMembership({ actorId }) {
       members: membersByConversation.get(c.id) ?? [],
     }))
     .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+
+  return hydrateInboxRowsMemberActors(rows)
 }
 
 async function hasAnyInboxMetadataForActor({ actorId }) {
@@ -269,7 +419,7 @@ export async function getInboxEntries({
     }
   }
 
-  return rows
+  return hydrateInboxRowsMemberActors(rows)
 }
 
 /* ============================================================

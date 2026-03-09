@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ShieldCheck, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 function pickAuthor(r) {
   const authorActorId =
@@ -162,9 +162,16 @@ export default function ReviewsList({ loading, reviews }) {
 
               <div className="flex items-center gap-2">
                 {isVerified ? (
-                  <div className="inline-flex items-center gap-1 rounded-full border border-sky-300/30 bg-sky-300/10 px-2 py-1 text-[11px] font-medium text-sky-100">
-                    <ShieldCheck size={12} />
-                    Verified
+                  <div
+                    className="inline-flex items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-2 py-1 text-[11px] font-medium text-sky-100"
+                    aria-label="Review badge"
+                  >
+                    <img
+                      src="/verified.svg"
+                      alt=""
+                      aria-hidden="true"
+                      className="h-3 w-3 shrink-0"
+                    />
                   </div>
                 ) : null}
 

@@ -2,15 +2,21 @@ import { useCallback, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ctrlRegisterAccount } from '@/features/auth/controllers/register.controller'
+import {
+  evaluateConfirmPasswordState,
+  evaluateRegisterPasswordRules,
+} from '@/features/auth/model/registerPasswordRules.model'
 
 export function useRegister() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' })
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const navState = useMemo(() => {
     const state = location?.state || {}
@@ -23,7 +29,25 @@ export function useRegister() {
 
   const isWandersFlow = Boolean(navState.wandersFlow)
 
-  const canSubmit = form.email.trim() !== '' && form.password.trim() !== '' && !loading
+  const passwordValidation = useMemo(
+    () => evaluateRegisterPasswordRules(form.password),
+    [form.password]
+  )
+
+  const confirmPasswordValidation = useMemo(
+    () =>
+      evaluateConfirmPasswordState({
+        password: form.password,
+        confirmPassword: form.confirmPassword,
+      }),
+    [form.password, form.confirmPassword]
+  )
+
+  const canSubmit =
+    form.email.trim() !== '' &&
+    passwordValidation.allValid &&
+    confirmPasswordValidation.matches &&
+    !loading
 
   const handleChange = useCallback((event) => {
     const { name, value } = event.target
@@ -32,6 +56,14 @@ export function useRegister() {
     if (errorMessage) setErrorMessage('')
     if (successMessage) setSuccessMessage('')
   }, [errorMessage, successMessage])
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev)
+  }, [])
+
+  const toggleConfirmPasswordVisibility = useCallback(() => {
+    setShowConfirmPassword((prev) => !prev)
+  }, [])
 
   const goOnboarding = useCallback(() => {
     navigate('/onboarding', {
@@ -76,14 +108,27 @@ export function useRegister() {
     }
   }, [canSubmit, form.email, form.password, goOnboarding, isWandersFlow])
 
+  const handleSubmit = useCallback(async (event) => {
+    if (event?.preventDefault) event.preventDefault()
+    return handleRegister()
+  }, [handleRegister])
+
   return {
     form,
     loading,
     errorMessage,
     successMessage,
     navState,
+    showPassword,
+    showConfirmPassword,
+    passwordValidation,
+    confirmPasswordValidation,
+    showPasswordRules: form.password.length > 0,
     canSubmit,
     handleChange,
+    handleSubmit,
     handleRegister,
+    togglePasswordVisibility,
+    toggleConfirmPasswordVisibility,
   }
 }

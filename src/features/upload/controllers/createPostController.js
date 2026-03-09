@@ -1,5 +1,4 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\upload\controllers\createPostController.js
-import { supabase } from "@/services/supabase/supabaseClient";
 import { resolveRealm } from "../model/resolveRealm";
 import { insertPost } from "../dal/insertPost";
 import { insertPostMedia } from "../dal/insertPostMedia";
@@ -9,6 +8,10 @@ import { extractHashtags } from "../lib/extractHashtags";
 import { extractMentions } from "../lib/extractMentions";
 import { findActorsByHandles } from "../dal/findActorsByHandles";
 import { insertPostMentions } from "../dal/insertPostMentions";
+import {
+  deletePostByIdDAL,
+  getCurrentAuthUserDAL,
+} from "@/features/upload/dal/postAuthRollback.dal";
 
 const MAX_VIBES_PHOTOS = 10;
 
@@ -22,8 +25,8 @@ export async function createPostController({ identity, input }) {
   }
 
   // 🔐 Auth check (controller authority)
-  const { data: auth, error: authErr } = await supabase.auth.getUser();
-  if (authErr || !auth?.user) {
+  const user = await getCurrentAuthUserDAL();
+  if (!user) {
     throw new Error("Not authenticated");
   }
 
@@ -67,7 +70,7 @@ export async function createPostController({ identity, input }) {
 
   // 🏗️ Authoritative DB row
   const row = {
-    user_id: auth.user.id,
+    user_id: user.id,
     actor_id: identity.actorId,
     realm_id: resolveRealm(identity.isVoid),
     text: caption,
@@ -102,7 +105,7 @@ export async function createPostController({ identity, input }) {
       await insertPostMedia(postId, items);
     } catch (e) {
       // rollback (controller allowed to call supabase)
-      await supabase.schema("vc").from("posts").delete().eq("id", postId);
+      await deletePostByIdDAL(postId);
       throw e;
     }
   }

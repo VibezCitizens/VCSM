@@ -191,8 +191,6 @@ export async function ctrlSubmitReview(input) {
     authorActorId,
     body,
     ratings,
-    // If you later want to control verified status, keep it controller-owned:
-    // for now, default to true (signed-in lane only).
   } = input ?? {};
 
   assertActorId(targetActorId, "targetActorId");
@@ -203,17 +201,17 @@ export async function ctrlSubmitReview(input) {
     throw new Error("[VportReviews] cannot review self");
   }
 
+  const targetVportType = (await resolveTargetVportType(targetActorId)) ?? "other";
+
   let configDims = await resolveDbConfigDims(targetActorId);
   if (!configDims.length) {
-    const targetVportType = await resolveTargetVportType(targetActorId);
     const fallbackDims = resolveFallbackDims(targetVportType);
     configDims = fallbackDims;
   }
 
   if (!configDims.length) {
-    const safeVportType = (await resolveTargetVportType(targetActorId)) ?? "unknown";
     throw new Error(
-      `[VportReviews] review dimensions unavailable for vport type: ${safeVportType}`
+      `[VportReviews] review dimensions unavailable for vport type: ${targetVportType}`
     );
   }
 
@@ -234,19 +232,15 @@ export async function ctrlSubmitReview(input) {
     reviewRow = await dalInsertVportReviewRow({
       targetActorId,
       authorActorId,
-      isVerified: true,
+      vportType: targetVportType,
       body: normalizedBody,
     });
   } else {
-    // Update body if provided (not required)
-    if (typeof body !== "undefined") {
-      reviewRow = await dalUpdateVportReviewBody(existing.id, normalizedBody);
-    } else {
-      reviewRow = existing;
-    }
+    const nextBody = typeof body !== "undefined" ? normalizedBody : existing.body ?? null;
+    reviewRow = await dalUpdateVportReviewBody(existing.id, nextBody, targetVportType);
   }
 
-  await dalUpsertVportReviewRatings(reviewRow.id, normalizedRatings);
+  await dalUpsertVportReviewRatings(reviewRow.id, normalizedRatings, targetVportType);
 
   // Read back fresh (overall_rating is trigger-computed)
   const fresh = await dalReadVportReviewById(reviewRow.id);

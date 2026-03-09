@@ -8,11 +8,11 @@ import useConversation from '@/features/chat/conversation/hooks/conversation/use
 import useConversationMembers from '@/features/chat/conversation/hooks/conversation/useConversationMembers'
 import useConversationMessages from '@/features/chat/conversation/hooks/conversation/useConversationMessages'
 import useTypingChannel from '@/features/chat/conversation/hooks/realtime/useTypingChannel'
-import useReportFlow from '@/features/moderation/hooks/useReportFlow'
+import useReportFlow from '@/features/moderation/adapters/hooks/useReportFlow.adapter'
 import useMediaViewer from '@/features/chat/conversation/hooks/conversation/useMediaViewer'
 import useMessageActionsMenu from '@/features/chat/conversation/hooks/conversation/useMessageActionsMenu'
 import useConversationActionsMenu from '@/features/chat/conversation/hooks/conversation/useConversationActionsMenu'
-import useConversationCover from '@/features/moderation/hooks/useConversationCover'
+import useConversationCover from '@/features/moderation/adapters/hooks/useConversationCover.adapter'
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useInboxEntryForConversation from '@/features/chat/inbox/hooks/useInboxEntryForConversation'
 
@@ -23,9 +23,9 @@ import ChatHeader from '@/features/chat/conversation/components/ChatHeader'
 import MessageList from '@/features/chat/conversation/components/MessageList'
 import MessageActionsMenu from '@/features/chat/conversation/components/MessageActionsMenu'
 import ConversationActionsMenu from '@/features/chat/conversation/components/ConversationActionsMenu'
-import ReportModal from '@/features/moderation/components/ReportModal'
+import ReportModal from '@/features/moderation/adapters/components/ReportModal.adapter'
 import ChatScreenLayout from '@/features/chat/conversation/layout/ChatScreenLayout'
-import ChatSpamCover from '@/features/moderation/components/ChatSpamCover'
+import ChatSpamCover from '@/features/moderation/adapters/components/ChatSpamCover.adapter'
 import ChatInput from '@/features/chat/conversation/components/ChatInput'
 import Spinner from '@/shared/components/Spinner'
 
@@ -232,7 +232,21 @@ export default function ConversationView({ conversationId }) {
           className="chat-modern-page fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
           onClick={closeViewer}
         >
-          <button className="absolute top-4 right-4 text-white text-2xl">✕</button>
+          <button
+            type="button"
+            aria-label="Close media viewer"
+            onClick={(e) => {
+              e.stopPropagation()
+              closeViewer()
+            }}
+            className="absolute inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white text-xl leading-none backdrop-blur hover:bg-black/65"
+            style={{
+              top: "calc(env(safe-area-inset-top, 0px) + 12px)",
+              right: "calc(env(safe-area-inset-right, 0px) + 12px)",
+            }}
+          >
+            X
+          </button>
           {viewer.type === 'image' ? (
             <img src={viewer.url} className="max-w-full max-h-full object-contain" />
           ) : (
@@ -245,3 +259,4 @@ export default function ConversationView({ conversationId }) {
     </div>
   )
 }
+

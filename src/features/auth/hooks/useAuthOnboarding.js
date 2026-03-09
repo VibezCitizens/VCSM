@@ -103,8 +103,9 @@ export function useAuthOnboarding() {
   const isValid = useMemo(() => (
     form.display_name.trim() !== '' &&
     form.username_base.trim() !== '' &&
-    form.birthdate.trim() !== ''
-  ), [form.birthdate, form.display_name, form.username_base])
+    form.birthdate.trim() !== '' &&
+    form.sex.trim() !== ''
+  ), [form.birthdate, form.display_name, form.sex, form.username_base])
 
   const handleChange = useCallback((event) => {
     const { name, value } = event.target

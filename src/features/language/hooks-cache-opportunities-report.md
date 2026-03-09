@@ -1,0 +1,906 @@
+# Hooks-Only Cache Opportunities Report
+
+Generated from a static review of `src/features/**` files.
+
+## Contract Guardrails Applied
+- Cache placement is recommended only in hooks.
+- No cache logic in DAL, Models, Controllers, Components, or Screens.
+- DAL remains deterministic/raw data reads; hooks own timing/cache/orchestration.
+- Mutation hooks should primarily invalidate/refresh read caches.
+
+## Scan Coverage
+- Features scanned: 26
+- Feature files scanned: 1084
+- Hook files detected: 153
+- Features with hooks: 22
+
+## Recommended Hook Cache Pattern
+- Keep cache namespace per feature: `<feature>:<hook>:<params>` keys.
+- Store in hook-layer state (module map/useRef/Zustand slice dedicated to hook outputs).
+- Apply stale-while-revalidate for read hooks; immediate invalidate on mutation success.
+- For realtime hooks, patch cache from events and revalidate on reconnect/focus.
+
+## Feature: actors
+- Hook files: 0
+- Cache opportunity: none directly in this feature until read hooks are added.
+
+## Feature: ads
+- Hook files: 1
+- Hook cache candidates:
+- [src/features\ads\hooks\useVportAds.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/ads/hooks/useVportAds.js)
+  - Category: actor_profile
+  - Suggested key: ads:useVportAds:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: auth
+- Hook files: 5
+- Hook cache candidates:
+- [src/features\auth\hooks\useAuthOnboarding.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/auth/hooks/useAuthOnboarding.js)
+  - Category: onboarding
+  - Suggested key: auth:useAuthOnboarding:{actorId}:{stepKey?}
+  - TTL/Staleness: Session-long + revalidate on mount
+  - Invalidation: Invalidate on step completion/tag updates.
+- [src/features\auth\hooks\useCompleteProfileGate.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/auth/hooks/useCompleteProfileGate.js)
+  - Category: actor_profile
+  - Suggested key: auth:useCompleteProfileGate:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\auth\hooks\useLogin.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/auth/hooks/useLogin.js)
+  - Category: auth
+  - Suggested key: auth:useLogin:{sessionUserId}
+  - TTL/Staleness: Session-long for identity bootstrap
+  - Invalidation: Clear on sign-out/session change.
+- [src/features\auth\hooks\useRegister.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/auth/hooks/useRegister.js)
+  - Category: auth
+  - Suggested key: auth:useRegister:{sessionUserId}
+  - TTL/Staleness: Session-long for identity bootstrap
+  - Invalidation: Clear on sign-out/session change.
+- [src/features\auth\hooks\useResetPassword.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/auth/hooks/useResetPassword.js)
+  - Category: auth
+  - Suggested key: auth:useResetPassword:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+
+## Feature: block
+- Hook files: 3
+- Hook cache candidates:
+- [src/features\block\hooks\useBlockActions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/block/hooks/useBlockActions.js)
+  - Category: actor_profile
+  - Suggested key: block:useBlockActions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\block\hooks\useBlockActorAction.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/block/hooks/useBlockActorAction.js)
+  - Category: actor_profile
+  - Suggested key: block:useBlockActorAction:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\block\hooks\useBlockStatus.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/block/hooks/useBlockStatus.js)
+  - Category: actor_profile
+  - Suggested key: block:useBlockStatus:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: booking
+- Hook files: 5
+- Hook cache candidates:
+- [src/features\booking\hooks\useBookingAvailability.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/booking/hooks/useBookingAvailability.js)
+  - Category: booking
+  - Suggested key: booking:useBookingAvailability:{ownerActorId|resourceId}:{dateRange}
+  - TTL/Staleness: 15-60s
+  - Invalidation: Invalidate on booking create/update/cancel and availability mutation.
+- [src/features\booking\hooks\useCreateBooking.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/booking/hooks/useCreateBooking.js)
+  - Category: booking
+  - Suggested key: booking:useCreateBooking:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\booking\hooks\useEnsureOwnerBookingResource.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/booking/hooks/useEnsureOwnerBookingResource.js)
+  - Category: booking
+  - Suggested key: booking:useEnsureOwnerBookingResource:{ownerActorId|resourceId}:{dateRange}
+  - TTL/Staleness: 15-60s
+  - Invalidation: Invalidate on booking create/update/cancel and availability mutation.
+- [src/features\booking\hooks\useManageAvailability.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/booking/hooks/useManageAvailability.js)
+  - Category: booking
+  - Suggested key: booking:useManageAvailability:{ownerActorId|resourceId}:{dateRange}
+  - TTL/Staleness: 15-60s
+  - Invalidation: Invalidate on booking create/update/cancel and availability mutation.
+- [src/features\booking\hooks\useOwnerBookingResources.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/booking/hooks/useOwnerBookingResources.js)
+  - Category: booking
+  - Suggested key: booking:useOwnerBookingResources:{ownerActorId|resourceId}:{dateRange}
+  - TTL/Staleness: 15-60s
+  - Invalidation: Invalidate on booking create/update/cancel and availability mutation.
+
+## Feature: chat
+- Hook files: 17
+- Hook cache candidates:
+- [src/features\chat\conversation\hooks\conversation\useConversation.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useConversation.js)
+  - Category: messaging
+  - Suggested key: chat:useConversation:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\conversation\hooks\conversation\useConversationActionsMenu.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useConversationActionsMenu.js)
+  - Category: messaging
+  - Suggested key: chat:useConversationActionsMenu:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\conversation\hooks\conversation\useConversationGuards.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useConversationGuards.js)
+  - Category: messaging
+  - Suggested key: chat:useConversationGuards:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\conversation\hooks\conversation\useConversationMembers.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useConversationMembers.js)
+  - Category: messaging
+  - Suggested key: chat:useConversationMembers:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\conversation\hooks\conversation\useConversationMessages.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useConversationMessages.js)
+  - Category: messaging
+  - Suggested key: chat:useConversationMessages:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\conversation\hooks\conversation\useMediaViewer.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useMediaViewer.js)
+  - Category: messaging
+  - Suggested key: chat:useMediaViewer:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\conversation\hooks\conversation\useMessageActionsMenu.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useMessageActionsMenu.js)
+  - Category: messaging
+  - Suggested key: chat:useMessageActionsMenu:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\conversation\hooks\conversation\useSendMessageActions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/conversation/useSendMessageActions.js)
+  - Category: messaging
+  - Suggested key: chat:useSendMessageActions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\conversation\hooks\realtime\useTypingChannel.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/conversation/hooks/realtime/useTypingChannel.js)
+  - Category: realtime_stream
+  - Suggested key: chat:useTypingChannel:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\inbox\hooks\useInbox.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useInbox.js)
+  - Category: messaging
+  - Suggested key: chat:useInbox:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\inbox\hooks\useInboxActions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useInboxActions.js)
+  - Category: messaging
+  - Suggested key: chat:useInboxActions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\inbox\hooks\useInboxEntryForConversation.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useInboxEntryForConversation.js)
+  - Category: messaging
+  - Suggested key: chat:useInboxEntryForConversation:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\inbox\hooks\useInboxFolder.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useInboxFolder.js)
+  - Category: messaging
+  - Suggested key: chat:useInboxFolder:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\inbox\hooks\useMessagePrivacySettings.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useMessagePrivacySettings.js)
+  - Category: messaging
+  - Suggested key: chat:useMessagePrivacySettings:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\inbox\hooks\useSpamConversationIds.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useSpamConversationIds.js)
+  - Category: messaging
+  - Suggested key: chat:useSpamConversationIds:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\chat\inbox\hooks\useVexSettings.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/inbox/hooks/useVexSettings.js)
+  - Category: messaging
+  - Suggested key: chat:useVexSettings:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\chat\start\hooks\useStartConversation.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/chat/start/hooks/useStartConversation.js)
+  - Category: messaging
+  - Suggested key: chat:useStartConversation:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+
+## Feature: dashboard
+- Hook files: 4
+- Hook cache candidates:
+- [src/features\dashboard\flyerBuilder\designStudio\hooks\useDesignStudio.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/dashboard/flyerBuilder/designStudio/hooks/useDesignStudio.js)
+  - Category: general
+  - Suggested key: dashboard:useDesignStudio:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+- [src/features\dashboard\flyerBuilder\designStudio\hooks\useDesignStudioSceneActions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/dashboard/flyerBuilder/designStudio/hooks/useDesignStudioSceneActions.js)
+  - Category: general
+  - Suggested key: dashboard:useDesignStudioSceneActions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\dashboard\vport\hooks\useSaveVportPublicDetailsByActorId.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/dashboard/vport/hooks/useSaveVportPublicDetailsByActorId.js)
+  - Category: actor_profile
+  - Suggested key: dashboard:useSaveVportPublicDetailsByActorId:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\dashboard\vport\screens\useDesktopBreakpoint.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/dashboard/vport/screens/useDesktopBreakpoint.js)
+  - Category: actor_profile
+  - Suggested key: dashboard:useDesktopBreakpoint:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: explore
+- Hook files: 3
+- Hook cache candidates:
+- [src/features\explore\hooks\useSearchActor.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/explore/hooks/useSearchActor.js)
+  - Category: search_query
+  - Suggested key: explore:useSearchActor:{query}:{actorId?}:{filtersHash}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate when query/filter changes or actor context changes.
+- [src/features\explore\hooks\useSearchScreenController.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/explore/hooks/useSearchScreenController.js)
+  - Category: search_query
+  - Suggested key: explore:useSearchScreenController:{query}:{actorId?}:{filtersHash}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate when query/filter changes or actor context changes.
+- [src/features\explore\hooks\useSearchTabsActor.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/explore/hooks/useSearchTabsActor.js)
+  - Category: search_query
+  - Suggested key: explore:useSearchTabsActor:{query}:{actorId?}:{filtersHash}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate when query/filter changes or actor context changes.
+
+## Feature: feed
+- Hook files: 2
+- Hook cache candidates:
+- [src/features\feed\hooks\index.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/feed/hooks/index.js)
+  - Category: content_graph
+  - Suggested key: feed:index:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\feed\hooks\useFeed.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/feed/hooks/useFeed.js)
+  - Category: content_graph
+  - Suggested key: feed:useFeed:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+
+## Feature: language
+- Hook files: 0
+- Cache opportunity: none directly in this feature until read hooks are added.
+
+## Feature: moderation
+- Hook files: 3
+- Hook cache candidates:
+- [src/features\moderation\hooks\useConversationCover.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/moderation/hooks/useConversationCover.js)
+  - Category: messaging
+  - Suggested key: moderation:useConversationCover:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\moderation\hooks\useHidePostForActor.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/moderation/hooks/useHidePostForActor.js)
+  - Category: content_graph
+  - Suggested key: moderation:useHidePostForActor:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\moderation\hooks\useReportFlow.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/moderation/hooks/useReportFlow.js)
+  - Category: general
+  - Suggested key: moderation:useReportFlow:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+
+## Feature: notifications
+- Hook files: 6
+- Hook cache candidates:
+- [src/features\notifications\inbox\hooks\useNotiCount.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/notifications/inbox/hooks/useNotiCount.js)
+  - Category: messaging
+  - Suggested key: notifications:useNotiCount:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\notifications\inbox\hooks\useNotifications.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/notifications/inbox/hooks/useNotifications.js)
+  - Category: messaging
+  - Suggested key: notifications:useNotifications:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\notifications\inbox\hooks\useNotificationsHeader.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/notifications/inbox/hooks/useNotificationsHeader.js)
+  - Category: messaging
+  - Suggested key: notifications:useNotificationsHeader:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\notifications\inbox\hooks\useNotificationsInternal.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/notifications/inbox/hooks/useNotificationsInternal.js)
+  - Category: messaging
+  - Suggested key: notifications:useNotificationsInternal:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\notifications\inbox\hooks\useUnreadBadge.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/notifications/inbox/hooks/useUnreadBadge.js)
+  - Category: messaging
+  - Suggested key: notifications:useUnreadBadge:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\notifications\realtime\useNotificationsRealtime.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/notifications/realtime/useNotificationsRealtime.js)
+  - Category: realtime_stream
+  - Suggested key: notifications:useNotificationsRealtime:{actorId|conversationId}
+  - TTL/Staleness: Event-driven (no TTL) + 10-20s fallback revalidate
+  - Invalidation: Patch cache from realtime events; hard revalidate on reconnect/focus.
+
+## Feature: onboarding
+- Hook files: 2
+- Hook cache candidates:
+- [src/features\onboarding\hooks\useOnboardingCards.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/onboarding/hooks/useOnboardingCards.js)
+  - Category: onboarding
+  - Suggested key: onboarding:useOnboardingCards:{actorId}:{stepKey?}
+  - TTL/Staleness: Session-long + revalidate on mount
+  - Invalidation: Invalidate on step completion/tag updates.
+- [src/features\onboarding\hooks\useOnboardingVibeTags.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/onboarding/hooks/useOnboardingVibeTags.js)
+  - Category: actor_profile
+  - Suggested key: onboarding:useOnboardingVibeTags:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: post
+- Hook files: 14
+- Hook cache candidates:
+- [src/features\post\commentcard\hooks\useCommentCard.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/commentcard/hooks/useCommentCard.js)
+  - Category: content_graph
+  - Suggested key: post:useCommentCard:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\commentcard\hooks\useCommentThread.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/commentcard/hooks/useCommentThread.js)
+  - Category: content_graph
+  - Suggested key: post:useCommentThread:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\commentcard\hooks\useEditCommentAction.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/commentcard/hooks/useEditCommentAction.js)
+  - Category: content_graph
+  - Suggested key: post:useEditCommentAction:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\post\commentcard\hooks\usePostCommentCount.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/commentcard/hooks/usePostCommentCount.js)
+  - Category: content_graph
+  - Suggested key: post:usePostCommentCount:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\useActorMode.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/useActorMode.js)
+  - Category: content_graph
+  - Suggested key: post:useActorMode:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\useCommentCovers.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/useCommentCovers.js)
+  - Category: content_graph
+  - Suggested key: post:useCommentCovers:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\useDeletePostAction.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/useDeletePostAction.js)
+  - Category: content_graph
+  - Suggested key: post:useDeletePostAction:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\post\postcard\hooks\usePostCovers.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostCovers.js)
+  - Category: content_graph
+  - Suggested key: post:usePostCovers:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\usePostDetailEditing.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostDetailEditing.js)
+  - Category: content_graph
+  - Suggested key: post:usePostDetailEditing:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\usePostDetailMenus.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostDetailMenus.js)
+  - Category: content_graph
+  - Suggested key: post:usePostDetailMenus:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\usePostDetailPost.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostDetailPost.js)
+  - Category: content_graph
+  - Suggested key: post:usePostDetailPost:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\usePostDetailReplying.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostDetailReplying.js)
+  - Category: content_graph
+  - Suggested key: post:usePostDetailReplying:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\usePostDetailReporting.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostDetailReporting.js)
+  - Category: content_graph
+  - Suggested key: post:usePostDetailReporting:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\post\postcard\hooks\usePostReactions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/post/postcard/hooks/usePostReactions.js)
+  - Category: content_graph
+  - Suggested key: post:usePostReactions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+
+## Feature: professional
+- Hook files: 2
+- Hook cache candidates:
+- [src/features\professional\briefings\hooks\useProfessionalBriefings.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/professional/briefings/hooks/useProfessionalBriefings.js)
+  - Category: general
+  - Suggested key: professional:useProfessionalBriefings:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+- [src/features\professional\enterprise\hooks\useEnterpriseWorkspace.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/professional/enterprise/hooks/useEnterpriseWorkspace.js)
+  - Category: general
+  - Suggested key: professional:useEnterpriseWorkspace:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+
+## Feature: profiles
+- Hook files: 36
+- Hook cache candidates:
+- [src/features\profiles\hooks\header\useProfileHeaderMessaging.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/hooks/header/useProfileHeaderMessaging.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useProfileHeaderMessaging:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\hooks\useActorKind.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/hooks/useActorKind.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useActorKind:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\hooks\useProfileGate.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/hooks/useProfileGate.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useProfileGate:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\hooks\useProfileView.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/hooks/useProfileView.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useProfileView:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\hooks\useUsernameProfileRedirect.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/hooks/useUsernameProfileRedirect.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useUsernameProfileRedirect:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\hooks\useVportType.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/hooks/useVportType.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportType:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\gas\useGasPricesPanel.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/gas/useGasPricesPanel.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useGasPricesPanel:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\gas\useOwnerPendingSuggestions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/gas/useOwnerPendingSuggestions.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useOwnerPendingSuggestions:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\gas\useReviewFuelPriceSuggestion.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/gas/useReviewFuelPriceSuggestion.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useReviewFuelPriceSuggestion:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\gas\useSubmitFuelPriceSuggestion.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useSubmitFuelPriceSuggestion:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\gas\useVportGasPrices.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/gas/useVportGasPrices.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportGasPrices:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\menu\useIsActorOwner.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/menu/useIsActorOwner.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useIsActorOwner:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\menu\useVportActorMenu.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/menu/useVportActorMenu.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportActorMenu:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\menu\useVportActorMenuCategoriesMutations.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/menu/useVportActorMenuCategoriesMutations.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportActorMenuCategoriesMutations:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\menu\useVportActorMenuItemsMutations.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/menu/useVportActorMenuItemsMutations.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportActorMenuItemsMutations:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\rates\useUpsertVportRate.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/rates/useUpsertVportRate.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useUpsertVportRate:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\rates\useVportRates.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/rates/useVportRates.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportRates:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\review\useVportReviews.helpers.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/review/useVportReviews.helpers.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportReviews.helpers:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\review\useVportReviews.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/review/useVportReviews.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportReviews:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\services\useCreateOrUpdateVportServiceAddon.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/services/useCreateOrUpdateVportServiceAddon.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useCreateOrUpdateVportServiceAddon:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\services\useDeleteVportServiceAddon.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/services/useDeleteVportServiceAddon.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useDeleteVportServiceAddon:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\services\useReorderVportServiceAddon.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/services/useReorderVportServiceAddon.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useReorderVportServiceAddon:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\services\useUpsertVportServices.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/services/useUpsertVportServices.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useUpsertVportServices:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\hooks\services\useVportServices.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/services/useVportServices.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportServices:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\services\useVportServicesQuery.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/services/useVportServicesQuery.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportServicesQuery:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\hooks\subscribers\useSubscribers.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/subscribers/useSubscribers.js)
+  - Category: realtime_stream
+  - Suggested key: profiles:useSubscribers:{actorId|conversationId}
+  - TTL/Staleness: Event-driven (no TTL) + 10-20s fallback revalidate
+  - Invalidation: Patch cache from realtime events; hard revalidate on reconnect/focus.
+- [src/features\profiles\kinds\vport\hooks\useVportPublicDetails.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/hooks/useVportPublicDetails.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useVportPublicDetails:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\kinds\vport\screens\booking\hooks\useVportBookingMutations.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations.js)
+  - Category: booking
+  - Suggested key: profiles:useVportBookingMutations:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\kinds\vport\screens\booking\hooks\useVportBookingView.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js)
+  - Category: booking
+  - Suggested key: profiles:useVportBookingView:{ownerActorId|resourceId}:{dateRange}
+  - TTL/Staleness: 15-60s
+  - Invalidation: Invalidate on booking create/update/cancel and availability mutation.
+- [src/features\profiles\screens\views\tabs\friends\hooks\useFriendLists.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/friends/hooks/useFriendLists.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useFriendLists:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\profiles\screens\views\tabs\friends\hooks\useSaveTopFriendRanks.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/friends/hooks/useSaveTopFriendRanks.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useSaveTopFriendRanks:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\screens\views\tabs\friends\hooks\useTopFriendActorIds.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/friends/hooks/useTopFriendActorIds.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useTopFriendActorIds:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\screens\views\tabs\friends\hooks\useTopFriendCandidates.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/friends/hooks/useTopFriendCandidates.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useTopFriendCandidates:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\screens\views\tabs\photos\hooks\usePhotoReactions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/photos/hooks/usePhotoReactions.js)
+  - Category: content_graph
+  - Suggested key: profiles:usePhotoReactions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\profiles\screens\views\tabs\post\hooks\useActorPosts.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/post/hooks/useActorPosts.js)
+  - Category: content_graph
+  - Suggested key: profiles:useActorPosts:{actorId|postId}:{cursor|page}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate after create/edit/delete/reaction/comment mutations.
+- [src/features\profiles\screens\views\tabs\tags\hooks\useActorVibeTags.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/profiles/screens/views/tabs/tags/hooks/useActorVibeTags.js)
+  - Category: actor_profile
+  - Suggested key: profiles:useActorVibeTags:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: public
+- Hook files: 3
+- Hook cache candidates:
+- [src/features\public\vportMenu\hooks\useDesktopBreakpoint.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/public/vportMenu/hooks/useDesktopBreakpoint.js)
+  - Category: actor_profile
+  - Suggested key: public:useDesktopBreakpoint:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\public\vportMenu\hooks\useVportPublicDetails.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/public/vportMenu/hooks/useVportPublicDetails.js)
+  - Category: actor_profile
+  - Suggested key: public:useVportPublicDetails:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\public\vportMenu\hooks\useVportPublicMenu.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/public/vportMenu/hooks/useVportPublicMenu.js)
+  - Category: actor_profile
+  - Suggested key: public:useVportPublicMenu:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: settings
+- Hook files: 11
+- Hook cache candidates:
+- [src/features\settings\account\hooks\useAccountController.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/account/hooks/useAccountController.js)
+  - Category: general
+  - Suggested key: settings:useAccountController:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\privacy\hooks\useActorLookup.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/privacy/hooks/useActorLookup.js)
+  - Category: search_query
+  - Suggested key: settings:useActorLookup:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\privacy\hooks\useActorPrivacy.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/privacy/hooks/useActorPrivacy.js)
+  - Category: actor_profile
+  - Suggested key: settings:useActorPrivacy:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\privacy\hooks\useMyBlocks.jsx](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/privacy/hooks/useMyBlocks.jsx)
+  - Category: actor_profile
+  - Suggested key: settings:useMyBlocks:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\privacy\hooks\usePendingFollowRequestActions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/privacy/hooks/usePendingFollowRequestActions.js)
+  - Category: actor_profile
+  - Suggested key: settings:usePendingFollowRequestActions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\profile\hooks\useProfileController.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/profile/hooks/useProfileController.js)
+  - Category: actor_profile
+  - Suggested key: settings:useProfileController:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\profile\hooks\useProfileUploads.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/profile/hooks/useProfileUploads.js)
+  - Category: actor_profile
+  - Suggested key: settings:useProfileUploads:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\vports\hooks\useProfileActor.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/vports/hooks/useProfileActor.js)
+  - Category: actor_profile
+  - Suggested key: settings:useProfileActor:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\vports\hooks\useVportsController.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/vports/hooks/useVportsController.js)
+  - Category: actor_profile
+  - Suggested key: settings:useVportsController:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\vports\hooks\useVportsList.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/vports/hooks/useVportsList.js)
+  - Category: actor_profile
+  - Suggested key: settings:useVportsList:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\settings\vports\hooks\useVportSwitcher.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/settings/vports/hooks/useVportSwitcher.js)
+  - Category: actor_profile
+  - Suggested key: settings:useVportSwitcher:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+
+## Feature: social
+- Hook files: 10
+- Hook cache candidates:
+- [src/features\social\friend\request\hooks\useFollowRequestActions.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/request/hooks/useFollowRequestActions.js)
+  - Category: actor_profile
+  - Suggested key: social:useFollowRequestActions:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\social\friend\request\hooks\useFollowRequestStatus.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/request/hooks/useFollowRequestStatus.js)
+  - Category: actor_profile
+  - Suggested key: social:useFollowRequestStatus:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\social\friend\request\hooks\useIncomingFollowRequests.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/request/hooks/useIncomingFollowRequests.js)
+  - Category: actor_profile
+  - Suggested key: social:useIncomingFollowRequests:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\social\friend\request\hooks\useSendFollowRequest.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/request/hooks/useSendFollowRequest.js)
+  - Category: actor_profile
+  - Suggested key: social:useSendFollowRequest:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\social\friend\request\hooks\useSubscribeAction.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/request/hooks/useSubscribeAction.js)
+  - Category: realtime_stream
+  - Suggested key: social:useSubscribeAction:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\social\friend\subscribe\hooks\useFollowActorToggle.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/subscribe/hooks/useFollowActorToggle.js)
+  - Category: realtime_stream
+  - Suggested key: social:useFollowActorToggle:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\social\friend\subscribe\hooks\useFollowerCount.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/subscribe/hooks/useFollowerCount.js)
+  - Category: realtime_stream
+  - Suggested key: social:useFollowerCount:{actorId|conversationId}
+  - TTL/Staleness: Event-driven (no TTL) + 10-20s fallback revalidate
+  - Invalidation: Patch cache from realtime events; hard revalidate on reconnect/focus.
+- [src/features\social\friend\subscribe\hooks\useFollowRelationshipState.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/subscribe/hooks/useFollowRelationshipState.js)
+  - Category: realtime_stream
+  - Suggested key: social:useFollowRelationshipState:{actorId|conversationId}
+  - TTL/Staleness: Event-driven (no TTL) + 10-20s fallback revalidate
+  - Invalidation: Patch cache from realtime events; hard revalidate on reconnect/focus.
+- [src/features\social\friend\subscribe\hooks\useFollowStatus.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/subscribe/hooks/useFollowStatus.js)
+  - Category: realtime_stream
+  - Suggested key: social:useFollowStatus:{actorId|conversationId}
+  - TTL/Staleness: Event-driven (no TTL) + 10-20s fallback revalidate
+  - Invalidation: Patch cache from realtime events; hard revalidate on reconnect/focus.
+- [src/features\social\friend\subscribe\hooks\useUnsubscribeAction.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/social/friend/subscribe/hooks/useUnsubscribeAction.js)
+  - Category: realtime_stream
+  - Suggested key: social:useUnsubscribeAction:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+
+## Feature: ui
+- Hook files: 0
+- Cache opportunity: none directly in this feature until read hooks are added.
+
+## Feature: upload
+- Hook files: 4
+- Hook cache candidates:
+- [src/features\upload\hooks\useMediaSelection.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/upload/hooks/useMediaSelection.js)
+  - Category: general
+  - Suggested key: upload:useMediaSelection:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+- [src/features\upload\hooks\useMentionAutocomplete.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/upload/hooks/useMentionAutocomplete.js)
+  - Category: search_query
+  - Suggested key: upload:useMentionAutocomplete:{query}:{actorId?}:{filtersHash}
+  - TTL/Staleness: 30-90s
+  - Invalidation: Invalidate when query/filter changes or actor context changes.
+- [src/features\upload\hooks\useResolvedActor.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/upload/hooks/useResolvedActor.js)
+  - Category: actor_profile
+  - Suggested key: upload:useResolvedActor:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\upload\hooks\useUploadSubmit.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/upload/hooks/useUploadSubmit.js)
+  - Category: general
+  - Suggested key: upload:useUploadSubmit:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+
+## Feature: vgrid
+- Hook files: 1
+- Hook cache candidates:
+- [src/features\vgrid\hooks\index.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/vgrid/hooks/index.js)
+  - Category: general
+  - Suggested key: vgrid:index:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+
+## Feature: void
+- Hook files: 1
+- Hook cache candidates:
+- [src/features\void\hooks\index.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/void/hooks/index.js)
+  - Category: general
+  - Suggested key: void:index:{paramsHash}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on any write that changes this hook output.
+
+## Feature: vport
+- Hook files: 1
+- Hook cache candidates:
+- [src/features\vport\hooks\useVportServiceCatalog.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/vport/hooks/useVportServiceCatalog.js)
+  - Category: actor_profile
+  - Suggested key: vport:useVportServiceCatalog:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+
+## Feature: vspace
+- Hook files: 0
+- Cache opportunity: none directly in this feature until read hooks are added.
+
+## Feature: wanders
+- Hook files: 19
+- Hook cache candidates:
+- [src/features\wanders\core\hooks\mailboxExperience\mailboxExperience.constants.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/mailboxExperience/mailboxExperience.constants.js)
+  - Category: wanders
+  - Suggested key: wanders:mailboxExperience.constants:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\mailboxExperience\mailboxExperience.helpers.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/mailboxExperience/mailboxExperience.helpers.js)
+  - Category: wanders
+  - Suggested key: wanders:mailboxExperience.helpers:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\mailboxExperience\mailboxExperience.selection.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/mailboxExperience/mailboxExperience.selection.js)
+  - Category: wanders
+  - Suggested key: wanders:mailboxExperience.selection:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\mailboxExperience\mailboxExperience.storage.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/mailboxExperience/mailboxExperience.storage.js)
+  - Category: wanders
+  - Suggested key: wanders:mailboxExperience.storage:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useIsWide.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useIsWide.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useIsWide.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\usePublishWandersFromBuilder.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/usePublishWandersFromBuilder.js)
+  - Category: wanders
+  - Suggested key: wanders:usePublishWandersFromBuilder:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersCards.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersCards.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersCards.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersCreateCardExperience.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersCreateCardExperience.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersCreateCardExperience.hook:mutation
+  - TTL/Staleness: No long-lived cache (invalidation hook only)
+  - Invalidation: On success, invalidate all related read keys in same feature namespace (and connected counters/lists).
+- [src/features\wanders\core\hooks\useWandersGuest.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersGuest.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersGuest:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersHomeExperience.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersHomeExperience.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersHomeExperience.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersInboxes.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersInboxes.js)
+  - Category: messaging
+  - Suggested key: wanders:useWandersInboxes:{actorId}:{conversationId?}:{folder?}
+  - TTL/Staleness: 10-30s
+  - Invalidation: Invalidate on send/read/archive/mute/block and realtime events.
+- [src/features\wanders\core\hooks\useWandersMailbox.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersMailbox.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersMailbox.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersMailboxExperience.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersMailboxExperience.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersMailboxExperience.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersPublicCardExperience.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersPublicCardExperience.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersPublicCardExperience.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersReplies.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersReplies.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersReplies.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersReplies.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersReplies.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersReplies:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\core\hooks\useWandersSentExperience.hook.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/core/hooks/useWandersSentExperience.hook.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersSentExperience.hook:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+- [src/features\wanders\hooks\useWandersActorIntegration.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/hooks/useWandersActorIntegration.js)
+  - Category: actor_profile
+  - Suggested key: wanders:useWandersActorIntegration:{actorId|profileId|vportId}
+  - TTL/Staleness: 2-10m
+  - Invalidation: Invalidate on profile/privacy/follow/block/service/menu/rates mutations.
+- [src/features\wanders\hooks\useWandersCardKey.js](C:/Users/trest/OneDrive/Desktop/VCSM/src/features/wanders/hooks/useWandersCardKey.js)
+  - Category: wanders
+  - Suggested key: wanders:useWandersCardKey:{actorId|mailboxId|cardId}:{cursor?}
+  - TTL/Staleness: 30-120s
+  - Invalidation: Invalidate on publish/reply/claim/mailbox-write operations.
+
+## Priority Targets (Highest Impact)
+- src/features/chat/conversation/hooks/conversation/useConversationMessages.js
+- src/features/chat/inbox/hooks/useInbox.js
+- src/features/notifications/inbox/hooks/useNotifications.js
+- src/features/feed/hooks/useFeed.js
+- src/features/profiles/hooks/useProfileView.js
+- src/features/profiles/screens/views/tabs/post/hooks/useActorPosts.js
+- src/features/profiles/kinds/vport/hooks/services/useVportServicesQuery.js
+- src/features/booking/hooks/useBookingAvailability.js
+- src/features/booking/hooks/useOwnerBookingResources.js
+- src/features/social/friend/subscribe/hooks/useFollowStatus.js
+
+## Notes
+- This report does not change code; it is a placement plan only.
+- Implement cache in hooks by adding keying + stale timestamp + invalidate functions, then wire mutation hooks to invalidate related read keys.

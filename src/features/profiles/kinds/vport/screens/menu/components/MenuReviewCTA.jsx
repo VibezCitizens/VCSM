@@ -7,9 +7,8 @@ export default function MenuReviewCTA({ onClick, label = "Review Food" }) {
       type="button"
       onClick={onClick}
       className="
-        fixed bottom-24 right-4 z-40
-        flex items-center gap-2
-        px-4 py-2
+        inline-flex items-center gap-2
+        px-4 py-2.5
         rounded-full
         bg-sky-300/12 backdrop-blur-md
         border border-sky-300/35

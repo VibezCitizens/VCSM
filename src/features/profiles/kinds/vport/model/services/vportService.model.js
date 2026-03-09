@@ -116,6 +116,10 @@ export function resolveVportServicesFromCatalog({
     if (!includeInactiveCatalog && c.isActive === false) continue;
 
     const a = actorByKey.get(c.key);
+    const catalogDefaultEnabled =
+      typeof c?.meta?.defaultEnabled === "boolean"
+        ? c.meta.defaultEnabled
+        : defaultEnabled;
 
     // Base from catalog
     const base = {
@@ -126,7 +130,7 @@ export function resolveVportServicesFromCatalog({
       label: (a?.label ?? c.label ?? c.key).toString().trim() || c.key,
       category: (a?.category ?? c.category ?? "Other").toString().trim() || "Other",
 
-      enabled: a ? a.enabled !== false : !!defaultEnabled,
+      enabled: a ? a.enabled !== false : !!catalogDefaultEnabled,
 
       // Merge meta (catalog meta as defaults, actor meta overrides)
       meta: {

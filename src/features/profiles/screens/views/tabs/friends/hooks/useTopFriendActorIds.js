@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { getTopFriendActorIdsController } from '@/features/profiles/screens/views/tabs/friends/controller/getTopFriendActorIds.controller'
-import { hydrateActorsIntoStore } from '@/features/profiles/screens/views/tabs/friends/helpers/hydrateActorsIntoStore'
+import { getTopFriendActorIdsController } from '@/features/profiles/adapters/friends/topFriends.adapter'
+import { hydrateActorsIntoStore } from '@/features/profiles/adapters/friends/topFriends.adapter'
 
 export function useTopFriendActorIds({
   ownerActorId,

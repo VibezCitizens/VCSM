@@ -13,8 +13,8 @@
 
 import { useEffect, useState } from "react";
 
-import { getFriendListsController } from "../controller/getFriendLists.controller";
-import { hydrateActorsIntoStore } from "../helpers/hydrateActorsIntoStore";
+import { getFriendListsController } from "@/features/profiles/adapters/friends/topFriends.adapter";
+import { hydrateActorsIntoStore } from "@/features/profiles/adapters/friends/topFriends.adapter";
 
 /**
  * useFriendLists

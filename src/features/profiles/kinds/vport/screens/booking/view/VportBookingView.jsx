@@ -36,6 +36,10 @@ export default function VportBookingView({ profile, isOwner = false }) {
     selectedSlotsBySegment,
     selectedAppointments,
     ownerCustomerName,
+    ownerFollowerMatches,
+    ownerFollowersLoading,
+    ownerFollowersError,
+    selectedOwnerFollower,
     slotDurationMinutes,
     canRequestSelectedSlot,
     isSelectedSlotAvailable,
@@ -52,6 +56,8 @@ export default function VportBookingView({ profile, isOwner = false }) {
     onChangeViewMode,
     onChangeDuration,
     onOwnerCustomerNameChange,
+    onSelectOwnerFollower,
+    onClearOwnerFollower,
     onCreateAppointmentFromSelectedSlot,
     onConfirmSelectedAppointment,
     onCancelSelectedAppointment,
@@ -169,7 +175,13 @@ export default function VportBookingView({ profile, isOwner = false }) {
           isSelectedSlotAvailable={isSelectedSlotAvailable}
           primaryActionLabel={isOwner ? "Add appointment from selected slot" : "Request selected slot"}
           ownerCustomerName={ownerCustomerName}
+          ownerFollowerMatches={ownerFollowerMatches}
+          ownerFollowersLoading={ownerFollowersLoading}
+          ownerFollowersError={ownerFollowersError}
+          selectedOwnerFollower={selectedOwnerFollower}
           onOwnerCustomerNameChange={onOwnerCustomerNameChange}
+          onSelectOwnerFollower={onSelectOwnerFollower}
+          onClearOwnerFollower={onClearOwnerFollower}
           onSelectSlot={onSelectSlot}
           onCreateAppointmentFromSelectedSlot={onCreateAppointmentFromSelectedSlot}
           onToggleAvailabilityForSelectedSlot={() => {}}

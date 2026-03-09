@@ -1,5 +1,15 @@
 import { ADS_STORAGE_KEY } from "@/features/ads/constants";
-import { normalizeAd } from "@/features/ads/model/ad.model";
+
+function normalizeStoredAd(raw) {
+  if (!raw || typeof raw !== "object") return null;
+
+  return {
+    ...raw,
+    id: raw.id ? String(raw.id) : "",
+    actorId: raw.actorId ? String(raw.actorId) : null,
+    updatedAt: raw.updatedAt || raw.createdAt || null,
+  };
+}
 
 function safeParse(value) {
   try {
@@ -22,7 +32,7 @@ function writeAll(items) {
 
 export async function listAdsByActor({ actorId }) {
   const all = readAll()
-    .map(normalizeAd)
+    .map(normalizeStoredAd)
     .filter(Boolean);
 
   return all
@@ -31,12 +41,12 @@ export async function listAdsByActor({ actorId }) {
 }
 
 export async function upsertAd(ad) {
-  const normalized = normalizeAd(ad);
+  const normalized = normalizeStoredAd(ad);
   if (!normalized?.id) {
     throw new Error("[ads] invalid ad payload");
   }
 
-  const all = readAll().map(normalizeAd).filter(Boolean);
+  const all = readAll().map(normalizeStoredAd).filter(Boolean);
   const idx = all.findIndex((item) => item.id === normalized.id);
   if (idx >= 0) {
     all[idx] = normalized;
@@ -49,7 +59,7 @@ export async function upsertAd(ad) {
 }
 
 export async function removeAd({ id }) {
-  const all = readAll().map(normalizeAd).filter(Boolean);
+  const all = readAll().map(normalizeStoredAd).filter(Boolean);
   const next = all.filter((item) => item.id !== id);
   writeAll(next);
 }

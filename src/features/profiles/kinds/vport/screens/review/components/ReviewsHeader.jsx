@@ -13,8 +13,16 @@ export default function ReviewsHeader({
     <div className="w-full rounded-2xl bg-neutral-950 border border-neutral-800 p-4 flex items-center justify-between">
       <div className="space-y-1">
         <div className="text-white text-lg font-semibold">Reviews</div>
-        <div className="text-neutral-400 text-sm">
-          Verified reviews: <span className="text-white font-semibold">{verifiedCount}</span>
+        <div className="inline-flex items-center gap-1.5 text-neutral-400 text-sm">
+          <img
+            src="/verified.svg"
+            alt=""
+            aria-hidden="true"
+            className="h-3.5 w-3.5 shrink-0"
+          />
+          <span>
+            Reviews: <span className="text-white font-semibold">{verifiedCount}</span>
+          </span>
         </div>
         {error && (
           <div className="text-red-400 text-sm">

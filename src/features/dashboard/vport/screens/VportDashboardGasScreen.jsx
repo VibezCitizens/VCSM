@@ -7,9 +7,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 
-import { useVportGasPrices } from "@/features/profiles/kinds/vport/hooks/gas/useVportGasPrices";
-import { useSubmitFuelPriceSuggestion } from "@/features/profiles/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion";
-import { useOwnerPendingSuggestions } from "@/features/profiles/kinds/vport/hooks/gas/useOwnerPendingSuggestions";
+import { useVportGasPrices } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useVportGasPrices.adapter";
+import { useSubmitFuelPriceSuggestion } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion.adapter";
+import { useOwnerPendingSuggestions } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useOwnerPendingSuggestions.adapter";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import {
@@ -66,6 +66,19 @@ export function VportDashboardGasScreen() {
     identity,
   });
 
+  const reviewSuggestionAndRefresh = useCallback(
+    async (payload) => {
+      const res = await reviewSuggestion?.(payload);
+
+      if (res?.ok) {
+        await Promise.allSettled([refresh?.(), refreshPending?.()]);
+      }
+
+      return res;
+    },
+    [reviewSuggestion, refresh, refreshPending]
+  );
+
   const pendingSubmissions = useMemo(() => {
     const byKey = pendingByFuelKey || {};
     return Object.values(byKey)
@@ -77,20 +90,16 @@ export function VportDashboardGasScreen() {
     async ({ submissionId }) => {
       if (!submissionId) return { ok: false, reason: "no_submission_id" };
 
-      const res = await reviewSuggestion?.({
+      const res = await reviewSuggestionAndRefresh?.({
         submissionId,
         decision: "approved",
         reason: "Owner updated official prices",
         applyToOfficialOnApprove: true,
       });
 
-      if (res?.ok) {
-        await Promise.allSettled([refresh?.(), refreshPending?.()]);
-      }
-
       return res;
     },
-    [reviewSuggestion, refresh, refreshPending]
+    [reviewSuggestionAndRefresh]
   );
 
   if (!actorId) return null;
@@ -151,7 +160,7 @@ export function VportDashboardGasScreen() {
               pendingSubmissions={pendingSubmissions}
               reviewing={reviewing}
               officialByFuelKey={officialByFuelKey}
-              reviewSuggestion={reviewSuggestion}
+              reviewSuggestion={reviewSuggestionAndRefresh}
             />
           </div>
         </div>

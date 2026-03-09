@@ -7,7 +7,7 @@
 import React, { useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
-import { resolveRealm } from "@/features/upload/model/resolveRealm";
+import { resolveRealm } from "@/features/upload/adapters/model/resolveRealm.adapter";
 import WandersSentView from "@/features/wanders/screens/view/WandersSent.view";
 
 // ---------------------------------------------

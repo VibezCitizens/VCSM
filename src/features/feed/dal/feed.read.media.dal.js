@@ -1,8 +1,7 @@
 import { supabase } from "@/services/supabase/supabaseClient";
-import { inferMediaType } from "@/features/feed/model/inferMediaType";
 
 export async function readPostMediaMap(postIds) {
-  const mediaMap = new Map(); // post_id -> [{type,url}, ...]
+  const mediaMap = new Map(); // post_id -> [{url,media_type,sort_order}, ...]
 
   if (!Array.isArray(postIds) || postIds.length === 0) return mediaMap;
 
@@ -30,11 +29,12 @@ export async function readPostMediaMap(postIds) {
     const url = it?.url;
     if (!pid || !url) continue;
 
-    const type =
-      (it.media_type || inferMediaType(url)) === "video" ? "video" : "image";
-
     const arr = mediaMap.get(pid) || [];
-    arr.push({ type, url });
+    arr.push({
+      url,
+      media_type: it?.media_type ?? null,
+      sort_order: it?.sort_order ?? 0,
+    });
     mediaMap.set(pid, arr);
   }
 

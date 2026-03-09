@@ -8,10 +8,14 @@ import getVportRatesController from "@/features/profiles/kinds/vport/controller/
  * - holds loading/error/data
  * - no DB, no mapping, no business rules
  */
-export default function useVportRates({ targetActorId, rateType = "fx" } = {}) {
+export default function useVportRates({
+  targetActorId,
+  rateType = "fx",
+  refreshSeed = 0,
+} = {}) {
   const key = useMemo(() => {
-    return `${targetActorId ?? "none"}:${rateType ?? "fx"}`;
-  }, [targetActorId, rateType]);
+    return `${targetActorId ?? "none"}:${rateType ?? "fx"}:${refreshSeed ?? 0}`;
+  }, [targetActorId, rateType, refreshSeed]);
 
   const [state, setState] = useState({
     isLoading: true,

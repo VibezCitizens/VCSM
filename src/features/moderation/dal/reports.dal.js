@@ -53,9 +53,6 @@ export async function upsertInboxEntryFolder({
     folder,
   }
 
-  console.groupCollapsed('%c[DAL][inbox_entries.upsertFolder]', 'color:#22c55e;font-weight:bold')
-  console.log('payload:', insert)
-
   const { data, error } = await supabase
     .schema('vc')
     .from('inbox_entries')
@@ -64,15 +61,8 @@ export async function upsertInboxEntryFolder({
     .maybeSingle()
 
   if (error) {
-    console.error('❌ supabase error:', error)
-  } else {
-    console.log('✅ upserted:', {
-      conversation_id: data?.conversation_id,
-      actor_id: data?.actor_id,
-      folder: data?.folder,
-    })
+    console.error('[DAL][inbox_entries.upsertFolder] error', { insert, error })
   }
-  console.groupEnd()
 
   return { row: data ?? null, error }
 }
@@ -114,9 +104,6 @@ export async function insertReportRow({
     updated_at: updatedAt,
   }
 
-  console.groupCollapsed('%c[DAL][reports.insert]', 'color:#f97316;font-weight:bold')
-  console.log('payload:', insert)
-
   const { data, error } = await supabase
     .schema('vc')
     .from('reports')
@@ -125,14 +112,11 @@ export async function insertReportRow({
     .maybeSingle()
 
   if (error) {
-    console.error('❌ supabase error:', error)
-    console.groupEnd()
+    console.error('[DAL][reports.insert] error', { insert, error })
     return { row: null, error }
-  } else {
-    console.log('✅ inserted id:', data?.id)
   }
 
-  // ✅ BRIDGE: spam report on conversation → move to spam folder for reporter
+  // BRIDGE: spam report on conversation -> move to spam folder for reporter
   if (reasonCode === 'spam' && objectType === 'conversation') {
     const convoId = conversationId ?? data?.conversation_id ?? objectId
 
@@ -142,19 +126,8 @@ export async function insertReportRow({
         conversationId: convoId,
         folder: 'spam',
       })
-    } else {
-      console.warn('[DAL][reports.insert] spam report missing conversation id', {
-        reporterActorId,
-        objectType,
-        objectId,
-        reasonCode,
-        conversationId,
-        dataConversationId: data?.conversation_id,
-      })
     }
   }
-
-  console.groupEnd()
 
   return { row: data ?? null, error: null }
 }

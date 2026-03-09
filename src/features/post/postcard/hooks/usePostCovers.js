@@ -1,7 +1,7 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\postcard\hooks\usePostCovers.js
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getHiddenPostIdsForActor } from "@/features/moderation/controllers/postVisibility.controller";
+import { getHiddenPostIdsForActor } from "@/features/moderation/adapters/controllers/postVisibility.controller.adapter";
 
 /**
  * postIds: string[]

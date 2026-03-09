@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 
@@ -28,6 +28,8 @@ export default function InboxScreen() {
 
   const [startOpen, setStartOpen] = useState(false)
   const [actionsOpen, setActionsOpen] = useState(false)
+  const actionsMenuRef = useRef(null)
+  const actionsToggleRef = useRef(null)
 
   const { start: startConversation } = useStartConversation()
   const { settings } = useVexSettings()
@@ -36,6 +38,33 @@ export default function InboxScreen() {
 
   const { entries = [], loading: inboxLoading, error, hideConversation } = useInbox({ actorId })
   const inboxActions = useInboxActions({ actorId })
+
+  useEffect(() => {
+    if (!actionsOpen) return undefined
+
+    const handlePointerDownOutside = (event) => {
+      const target = event.target
+      if (!target) return
+
+      if (actionsMenuRef.current?.contains(target)) return
+      if (actionsToggleRef.current?.contains(target)) return
+      setActionsOpen(false)
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setActionsOpen(false)
+    }
+
+    document.addEventListener('pointerdown', handlePointerDownOutside, true)
+    document.addEventListener('touchstart', handlePointerDownOutside, true)
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDownOutside, true)
+      document.removeEventListener('touchstart', handlePointerDownOutside, true)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [actionsOpen])
 
   const visibleEntries = useMemo(() => {
     return entries.filter((entry) =>
@@ -71,6 +100,8 @@ export default function InboxScreen() {
 
           <div className="relative">
             <button
+              type="button"
+              ref={actionsToggleRef}
               onClick={() => setActionsOpen((v) => !v)}
               className="flex items-center justify-center p-1 text-slate-100 transition hover:text-white"
               aria-label="Vox actions"
@@ -87,7 +118,10 @@ export default function InboxScreen() {
                   className="fixed inset-0 z-40 cursor-default"
                 />
 
-                <div className="chat-modern-quick-actions absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/96 shadow-2xl">
+                <div
+                  ref={actionsMenuRef}
+                  className="chat-modern-quick-actions absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/96 shadow-2xl"
+                >
                   <button
                     type="button"
                     onClick={() => {

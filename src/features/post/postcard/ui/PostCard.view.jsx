@@ -7,7 +7,7 @@ import ReactionBar from "../components/ReactionBar";
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
 import { useIdentity } from "@/state/identity/identityContext";
 
-import LinkifiedMentions from "@/features/upload/ui/LinkifiedMentions";
+import LinkifiedMentions from "@/features/upload/adapters/ui/LinkifiedMentions.adapter";
 import PostHeader from "../components/PostHeader";
 import "@/features/post/styles/post-modern.css";
 

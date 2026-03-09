@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { saveTopFriendRanksController } from '@/features/profiles/screens/views/tabs/friends/controller/saveTopFriendRanks.controller'
+import { saveTopFriendRanksController } from '@/features/profiles/adapters/friends/topFriends.adapter'
 
 export function useSaveTopFriendRanks() {
   const [saving, setSaving] = useState(false)

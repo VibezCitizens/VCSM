@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import WandersCardPreview from "@/features/wanders/components/WandersCardPreview";
 import WandersShowLoveCTA from "@/features/wanders/components/WandersShowLoveCTA";
-import { resolveRealm } from "@/features/upload/model/resolveRealm";
+import { resolveRealm } from "@/features/upload/adapters/model/resolveRealm.adapter";
 import { buildWandersShareLinks } from "@/features/wanders/utils/wandersShareLinks";
 import { buildWandersDraftPayload } from "@/features/wanders/model/wandersSharePreview.model";
 import Toast from "@/shared/components/components/Toast";

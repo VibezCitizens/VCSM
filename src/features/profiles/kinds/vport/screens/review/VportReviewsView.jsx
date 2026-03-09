@@ -6,7 +6,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 
 import ReviewsList from "./components/ReviewsList";
 import { TabButton } from "@/features/profiles/kinds/vport/screens/review/components/VportReviewsControls";
-import { ctrlSubmitReview } from "@/features/profiles/kinds/vport/controller/review/VportReviews.controller";
+import { ctrlSubmitReview } from "@/features/profiles/kinds/vport/adapters/review.adapter";
 
 function formatAvg(value) {
   const n = Number(value);
@@ -195,7 +195,7 @@ export default function VportReviewsView({
           <div className="mt-1 text-xs text-white/55">
             {isOwnerMode
               ? "Track quality signals across all review dimensions."
-              : "Verified feedback designed for trust and clarity."}
+              : "Feedback designed for trust and clarity."}
           </div>
         </div>
 

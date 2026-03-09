@@ -12,9 +12,11 @@ export function useMentionAutocomplete({ value, inputRef }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [range, setRange] = useState(null); // { start, end }
 
   const debounceRef = useRef(null);
+  const requestIdRef = useRef(0);
 
   const computeActiveMention = useCallback(() => {
     const el = inputRef?.current;
@@ -68,18 +70,29 @@ export function useMentionAutocomplete({ value, inputRef }) {
   useEffect(() => {
     if (!open || !query) {
       setItems([]);
+      setLoading(false);
       return;
     }
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(async () => {
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
+      setLoading(true);
+
       try {
         const res = await ctrlSearchMentionSuggestions({ query, limit: 8 });
+        if (requestIdRef.current !== requestId) return;
         setItems(res || []);
       } catch (e) {
+        if (requestIdRef.current !== requestId) return;
         console.warn("[useMentionAutocomplete] search failed:", e);
         setItems([]);
+      } finally {
+        if (requestIdRef.current === requestId) {
+          setLoading(false);
+        }
       }
     }, 120);
 
@@ -127,8 +140,9 @@ export function useMentionAutocomplete({ value, inputRef }) {
       open,
       query,
       items,
+      loading,
     }),
-    [open, query, items]
+    [open, query, items, loading]
   );
 
   return {

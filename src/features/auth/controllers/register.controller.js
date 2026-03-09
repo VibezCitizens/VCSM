@@ -1,6 +1,7 @@
 import {
   dalMirrorWandersSessionToPrimary,
   dalReadRegisterSession,
+  dalSignOutRegisterSession,
   dalSignUpRegisterUser,
   dalUpdateRegisterUser,
   dalUpsertRegisterProfile,
@@ -21,6 +22,29 @@ async function maybeMirrorWandersSession(isWandersFlow) {
   })
 }
 
+function isAnonymousUser(user) {
+  return Boolean(user?.is_anonymous) || Boolean(user?.app_metadata?.is_anonymous)
+}
+
+function isStaleJwtSubjectError(error) {
+  const message = String(error?.message || '').toLowerCase()
+  return message.includes('user from sub claim in jwt does not exist')
+}
+
+async function signUpRegisterUserWithRecovery({
+  isWandersFlow,
+  email,
+  password,
+}) {
+  try {
+    return await dalSignUpRegisterUser({ isWandersFlow, email, password })
+  } catch (error) {
+    if (!isStaleJwtSubjectError(error)) throw error
+    await dalSignOutRegisterSession({ isWandersFlow })
+    return dalSignUpRegisterUser({ isWandersFlow, email, password })
+  }
+}
+
 export async function ctrlRegisterAccount({
   email,
   password,
@@ -30,31 +54,38 @@ export async function ctrlRegisterAccount({
   const existingSession = await dalReadRegisterSession({ isWandersFlow })
   const existingUserId = existingSession?.user?.id ?? null
 
-  if (existingUserId) {
-    await dalUpdateRegisterUser({
-      isWandersFlow,
-      email,
-      password,
-    })
+  const canUpgradeExistingSession = existingUserId && isAnonymousUser(existingSession?.user)
 
-    await dalUpsertRegisterProfile({
-      isWandersFlow,
-      userId: existingUserId,
-      email,
-      updatedAt: nowIso,
-    })
+  if (canUpgradeExistingSession) {
+    try {
+      await dalUpdateRegisterUser({
+        isWandersFlow,
+        email,
+        password,
+      })
 
-    await maybeMirrorWandersSession(isWandersFlow)
+      await dalUpsertRegisterProfile({
+        isWandersFlow,
+        userId: existingUserId,
+        email,
+        updatedAt: nowIso,
+      })
 
-    return {
-      ok: true,
-      requiresEmailConfirm: false,
-      userId: existingUserId,
-      message: null,
+      await maybeMirrorWandersSession(isWandersFlow)
+
+      return {
+        ok: true,
+        requiresEmailConfirm: false,
+        userId: existingUserId,
+        message: null,
+      }
+    } catch (error) {
+      if (!isStaleJwtSubjectError(error)) throw error
+      await dalSignOutRegisterSession({ isWandersFlow })
     }
   }
 
-  const authData = await dalSignUpRegisterUser({
+  const authData = await signUpRegisterUserWithRecovery({
     isWandersFlow,
     email,
     password,

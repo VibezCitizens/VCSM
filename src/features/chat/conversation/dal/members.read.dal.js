@@ -1,22 +1,31 @@
-// src/features/chat/conversation/dal/members.read.dal.js
-// ============================================================
-// Conversation Members — READ DAL
-// ------------------------------------------------------------
-// - Actor-based (NO user_id logic)
-// - Uses actor_presentation VIEW
-// - Returns ConversationMember MODELS
-// ============================================================
-
 import { supabase } from '@/services/supabase/supabaseClient'
 
-import {
-  ConversationMemberList,
-  ConversationMemberModel,
-} from '@/features/chat/conversation/model/ConversationMember.model'
+function normalizeConversationMember(raw) {
+  if (!raw) return null
 
-/* ============================================================
-   Get members of a conversation
-   ============================================================ */
+  const actor = raw.actor || {}
+
+  return {
+    actorId: raw.actor_id,
+    kind: actor.kind ?? null,
+    displayName: actor.display_name ?? null,
+    username: actor.username ?? null,
+    photoUrl: actor.photo_url ?? null,
+    vportName: actor.vport_name ?? null,
+    vportSlug: actor.vport_slug ?? null,
+    vportAvatarUrl: actor.vport_avatar_url ?? null,
+    role: raw.role ?? 'member',
+    isActive: Boolean(raw.is_active),
+    _raw: raw,
+  }
+}
+
+function normalizeConversationMemberList(rows) {
+  return (Array.isArray(rows) ? rows : [])
+    .map(normalizeConversationMember)
+    .filter(Boolean)
+}
+
 export async function getConversationMembers({ conversationId }) {
   if (!conversationId) {
     throw new Error('[getConversationMembers] conversationId required')
@@ -52,17 +61,10 @@ export async function getConversationMembers({ conversationId }) {
     throw new Error('[getConversationMembers] query failed')
   }
 
-  // ✅ Normalize → ConversationMember[]
-  return ConversationMemberList(data)
+  return normalizeConversationMemberList(data)
 }
 
-/* ============================================================
-   Get membership record for ONE actor
-   ============================================================ */
-export async function getConversationMember({
-  conversationId,
-  actorId,
-}) {
+export async function getConversationMember({ conversationId, actorId }) {
   if (!conversationId || !actorId) {
     throw new Error('[getConversationMember] missing params')
   }
@@ -97,6 +99,5 @@ export async function getConversationMember({
     throw new Error('[getConversationMember] query failed')
   }
 
-  // ✅ Normalize → ConversationMember | null
-  return data ? ConversationMemberModel(data) : null
+  return data ? normalizeConversationMember(data) : null
 }

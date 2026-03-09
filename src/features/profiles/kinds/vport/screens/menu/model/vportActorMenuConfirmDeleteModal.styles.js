@@ -1,12 +1,12 @@
 export const OVERLAY_STYLE = {
   position: "fixed",
   inset: 0,
-  zIndex: 60,
+  zIndex: 100000,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   padding: 16,
-  background: "rgba(0,0,0,0.35)",
+  background: "rgba(3, 8, 20, 0.84)",
 };
 
 export const MODAL_STYLE = {
@@ -69,4 +69,3 @@ export function createConfirmBtnStyle(danger) {
     background: danger ? "#fef2f2" : "#fff",
   };
 }
-

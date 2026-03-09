@@ -1,4 +1,4 @@
-import Card from '@/features/settings/ui/Card'
+import Card from '@/features/settings/adapters/ui/Card.adapter'
 import useEnterpriseWorkspace from '@/features/professional/enterprise/hooks/useEnterpriseWorkspace'
 
 const PANELS = Object.freeze([

@@ -1,11 +1,15 @@
 const BIRTHDATE_REGEX = /^(\d{4})-(\d{2})-(\d{2})$/
+const SEX_VALUES = Object.freeze({
+  male: 'Male',
+  female: 'Female',
+})
 
 export function mapProfileOnboardingRowToFormModel(row) {
   return {
     display_name: '',
     username_base: row?.username ?? '',
     birthdate: row?.birthdate ?? '',
-    sex: '',
+    sex: normalizeSexValueModel(row?.sex) ?? '',
   }
 }
 
@@ -20,8 +24,14 @@ export function normalizeOnboardingFormModel(form) {
     displayName: String(form?.display_name ?? '').trim(),
     usernameBase: String(form?.username_base ?? '').trim(),
     birthdate: String(form?.birthdate ?? '').trim(),
-    sex: String(form?.sex ?? '').trim() || null,
+    sex: normalizeSexValueModel(form?.sex),
   }
+}
+
+export function normalizeSexValueModel(value) {
+  const raw = String(value ?? '').trim().toLowerCase()
+  if (!raw) return null
+  return SEX_VALUES[raw] ?? null
 }
 
 export function computeAgeFromBirthdateModel(isoDate, referenceDate = new Date()) {

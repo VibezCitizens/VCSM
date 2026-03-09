@@ -5,11 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import "@/features/settings/styles/settings-modern.css";
 import { useVportAds } from "@/features/ads/hooks/useVportAds";
+import useDesktopBreakpoint from "@/features/ads/hooks/useDesktopBreakpoint";
 import { AdEditor, AdsEmptyState, AdsList } from "@/features/ads/ui/adsPipeline.ui";
+import { createVportAdsSettingsShellStyles } from "@/features/ads/model/vportAdsSettingsShell.model";
+import VportAdsBackButton from "@/features/ads/ui/VportAdsBackButton";
 import { useIdentity } from "@/state/identity/identityContext";
-import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
-import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 
 export default function VportAdsSettingsScreen() {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function VportAdsSettingsScreen() {
   const actorId = actorIdParam || identity?.actorId || null;
   const isDesktop = useDesktopBreakpoint();
   const shell = useMemo(
-    () => createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 1100 }),
+    () => createVportAdsSettingsShellStyles({ isDesktop, maxWidthDesktop: 1100 }),
     [isDesktop]
   );
   const { ads, loading, saving, error, createDraft, saveDraft, publish, pause, archive, remove } = useVportAds(actorId);
@@ -58,7 +58,7 @@ export default function VportAdsSettingsScreen() {
       <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/72 backdrop-blur">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <VportBackButton
+            <VportAdsBackButton
               isDesktop={isDesktop}
               onClick={() => navigate(-1)}
               style={shell.btn("soft")}

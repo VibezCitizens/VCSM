@@ -3,8 +3,8 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import VportActorMenuPublicPanel from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuPublicPanel";
 import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
-import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import useDesktopBreakpoint from "@/features/dashboard/adapters/vport/screens/useDesktopBreakpoint.adapter";
+import { createVportDashboardShellStyles } from "@/features/dashboard/adapters/vport/screens/model/vportDashboardShellStyles.adapter";
 
 function toSafeExternalUrl(raw) {
   const value = String(raw ?? "").trim();

@@ -8,15 +8,13 @@
 // - NO hydration here
 // ============================================================
 
-import vc from '@/services/supabase/vcClient'
-
 import {
   dalDeleteBlockByTarget,
   dalInsertBlock,
   dalListMyBlocks,
+  dalReadActorKindAndVportId,
+  dalSearchActors,
 } from '@/features/settings/privacy/dal/blocks.dal'
-
-import { searchActors } from '@/features/actors/controllers/searchActors.controller'
 import {
   modelActorRows,
   modelBlockRows,
@@ -25,18 +23,13 @@ import {
 async function resolveVportIdFromActor(actorId) {
   if (!actorId) return null
 
-  const { data, error } = await vc
-    .from('actors')
-    .select('vport_id, kind')
-    .eq('id', actorId)
-    .maybeSingle()
-
-  if (error) {
+  try {
+    const row = await dalReadActorKindAndVportId(actorId)
+    return row?.vport_id ?? null
+  } catch (error) {
     console.error('[Blocks.controller] resolveVportIdFromActor failed', error)
     return null
   }
-
-  return data?.vport_id ?? null
 }
 
 // ============================================================
@@ -60,7 +53,7 @@ export async function ctrlListMyBlocks({ actorId, scope }) {
 // SEARCH ACTORS (SSOT — REUSED FROM EXPLORE)
 // ============================================================
 export async function ctrlSearchActors({ query }) {
-  const rows = await searchActors({
+  const rows = await dalSearchActors({
     query,
     limit: 12,
   })

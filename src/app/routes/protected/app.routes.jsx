@@ -5,6 +5,9 @@ import React from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { releaseFlags } from "@/shared/config/releaseFlags";
 
+const devDiagnosticsEnabled =
+  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
+
 function VportToActorDashboardRedirect() {
   const { actorId } = useParams();
   return actorId ? (
@@ -115,6 +118,7 @@ export function protectedAppRoutes({
   SettingsScreen,
   VportAdsSettingsScreen,
   VoidScreen,
+  DevDiagnosticsScreen,
 
   UsernameProfileRedirect,
   ActorProfileScreen,
@@ -185,6 +189,10 @@ export function protectedAppRoutes({
       element: releaseFlags.vportAdsPipeline ? <VportAdsSettingsScreen /> : <Navigate to="/feed" replace />,
     },
     { path: "/void", element: <VoidScreen /> },
+    {
+      path: "/dev/diagnostics",
+      element: devDiagnosticsEnabled ? <DevDiagnosticsScreen /> : <Navigate to="/feed" replace />,
+    },
 
     { path: "/me", element: <Navigate to="/profile/self" replace /> },
     { path: "/u/:username", element: <UsernameProfileRedirect /> },

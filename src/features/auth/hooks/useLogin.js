@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { signInWithPassword } from '@/features/auth/adapter/auth.adapter'
+import { signInWithPassword } from '@/features/auth/controllers/login.controller'
 import { ensureProfileDiscoverable } from '@/features/auth/controllers/profile.controller'
 import { hydrateAuthSession } from '@/features/auth/controllers/authSession.controller'
 

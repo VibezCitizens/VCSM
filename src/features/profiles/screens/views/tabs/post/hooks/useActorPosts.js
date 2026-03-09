@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { getActorPostsController } from "../controllers/getActorPosts.controller";
+import { getActorPostsController } from "@/features/profiles/adapters/post/actorPosts.adapter";
 
 const PAGE_SIZE = 20;
 

@@ -1,6 +1,6 @@
 // src/features/social/components/PrivateProfileNotice.jsx
 
-import PrivateProfileGate from "@/features/profiles/ui/PrivateProfileGate";
+import PrivateProfileGate from "@/features/profiles/adapters/ui/PrivateProfileGate.adapter";
 
 /**
  * ============================================================

@@ -4,6 +4,25 @@ import { useMemo, useState, useEffect } from "react";
 
 import { GasStates } from "@/features/profiles/kinds/vport/screens/gas/components/GasStates";
 
+function toEpochMs(ts) {
+  if (!ts) return null;
+  const ms = new Date(ts).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function formatLastUpdatedAt(ts) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "";
+
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export function GasPricesPanel({
   loading,
   error,
@@ -92,11 +111,32 @@ export function GasPricesPanel({
       const officialCurrencyCode =
         officialRow?.currencyCode ?? officialRow?.currency_code ?? "USD";
       const officialUnit = officialRow?.unit ?? "liter";
+      const officialUpdatedAt =
+        officialRow?.updatedAt ?? officialRow?.updated_at ?? null;
 
       const suggestedPrice = suggestion?.proposedPrice ?? suggestion?.proposed_price ?? null;
       const suggestedCurrencyCode =
         suggestion?.currencyCode ?? suggestion?.currency_code ?? officialCurrencyCode;
       const suggestedUnit = suggestion?.unit ?? officialUnit;
+      const suggestionSubmittedAt =
+        suggestion?.submittedAt ?? suggestion?.submitted_at ?? null;
+
+      const officialUpdatedMs = toEpochMs(officialUpdatedAt);
+      const suggestionSubmittedMs = toEpochMs(suggestionSubmittedAt);
+
+      let lastUpdateAt = null;
+      let lastUpdateSource = "none";
+
+      if (
+        suggestionSubmittedMs !== null &&
+        (officialUpdatedMs === null || suggestionSubmittedMs >= officialUpdatedMs)
+      ) {
+        lastUpdateAt = suggestionSubmittedAt;
+        lastUpdateSource = "community";
+      } else if (officialUpdatedMs !== null) {
+        lastUpdateAt = officialUpdatedAt;
+        lastUpdateSource = "official";
+      }
 
       return {
         fuelKey,
@@ -110,6 +150,11 @@ export function GasPricesPanel({
           price: suggestedPrice,
           currencyCode: suggestedCurrencyCode,
           unit: suggestedUnit,
+        },
+        lastUpdate: {
+          at: lastUpdateAt,
+          source: lastUpdateSource,
+          label: formatLastUpdatedAt(lastUpdateAt),
         },
         suggestion,
       };
@@ -159,8 +204,9 @@ export function GasPricesPanel({
 
           <div className="space-y-3">
             {rows.map((row) => {
-              const hasCommunity =
-                row.community.price !== null && row.community.price !== undefined;
+              const hasCommunityUpdate = row.lastUpdate?.source === "community";
+              const hasOfficialUpdate = row.lastUpdate?.source === "official";
+              const hasAnyUpdate = Boolean(row.lastUpdate?.label);
 
               return (
                 <div
@@ -195,10 +241,14 @@ export function GasPricesPanel({
                               Last update
                             </div>
 
-                            {hasCommunity ? (
-                                <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[11px] text-sky-200">
-                                  Community
-                                </span>
+                            {hasCommunityUpdate ? (
+                              <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[11px] text-sky-200">
+                                Community
+                              </span>
+                            ) : hasOfficialUpdate ? (
+                              <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] text-emerald-200">
+                                Official
+                              </span>
                             ) : (
                               <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-neutral-400">
                                 None yet
@@ -207,12 +257,12 @@ export function GasPricesPanel({
                           </div>
 
                           <div className="mt-1 text-xl font-semibold text-white">
-                            {row.community.price ?? "—"}
+                            {hasAnyUpdate ? row.lastUpdate.label : "—"}
                           </div>
                         </div>
                       </div>
 
-                      {!hasCommunity ? (
+                      {!hasCommunityUpdate ? (
                         <div className="mt-2 text-xs text-neutral-500">
                           Be the first to update this station.
                         </div>
@@ -326,7 +376,7 @@ function BulkUpdateFuelPricesModal({
                   </div>
                   <div>
                     Last update:{" "}
-                    <span className="text-neutral-300">{row.community.price ?? "-"}</span>
+                    <span className="text-neutral-300">{row.lastUpdate?.label || "-"}</span>
                   </div>
                 </div>
               </div>

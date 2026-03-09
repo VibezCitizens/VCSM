@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Lock } from 'lucide-react'
 import Card from '@/features/settings/ui/Card'
 import ProfessionalAccessButton from './ProfessionalAccessButton'
 
@@ -104,8 +105,23 @@ export default function ProfileTabView({
         </section>
 
         <section className="mt-4 space-y-1">
-          <label className="text-xs text-slate-400">Username</label>
-          <input value={username ? `@${username}` : '-'} disabled readOnly className="settings-input w-full rounded-xl px-3 py-2 text-slate-400" />
+          <label className="inline-flex items-center gap-1.5 text-xs text-slate-400">
+            Username
+            <Lock size={12} className="text-slate-400" aria-hidden="true" />
+          </label>
+          <div className="relative">
+            <input
+              value={username ? `@${username}` : '-'}
+              disabled
+              readOnly
+              className="settings-input w-full rounded-xl px-3 py-2 pr-9 text-slate-400"
+            />
+            <Lock
+              size={14}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              aria-hidden="true"
+            />
+          </div>
         </section>
 
         <section className="mt-3 space-y-1">
@@ -120,8 +136,23 @@ export default function ProfileTabView({
 
         {email && (
           <section className="mt-3 space-y-1">
-            <label className="text-xs text-slate-400">Email</label>
-            <input value={email} disabled readOnly className="settings-input w-full rounded-xl px-3 py-2 text-slate-400" />
+            <label className="inline-flex items-center gap-1.5 text-xs text-slate-400">
+              Email
+              <Lock size={12} className="text-slate-400" aria-hidden="true" />
+            </label>
+            <div className="relative">
+              <input
+                value={email}
+                disabled
+                readOnly
+                className="settings-input w-full rounded-xl px-3 py-2 pr-9 text-slate-400"
+              />
+              <Lock
+                size={14}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                aria-hidden="true"
+              />
+            </div>
           </section>
         )}
 

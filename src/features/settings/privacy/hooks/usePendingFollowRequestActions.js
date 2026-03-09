@@ -2,7 +2,8 @@ import { useCallback, useState } from 'react'
 import {
   ctrlAcceptFollowRequest,
   ctrlDeclineFollowRequest,
-} from '@/features/social/friend/request/controllers/followRequests.controller'
+} from '@/features/social/adapters/friend/request/controllers/followRequests.controller.adapter'
+import { useFollowRequestsStore } from '@/state/social/followRequestsStore'
 
 export function usePendingFollowRequestActions({
   requesterActorId,
@@ -11,6 +12,7 @@ export function usePendingFollowRequestActions({
   onRollbackHide,
 }) {
   const [busy, setBusy] = useState(false)
+  const invalidate = useFollowRequestsStore((s) => s.invalidate)
 
   const accept = useCallback(async () => {
     if (busy) return
@@ -19,12 +21,18 @@ export function usePendingFollowRequestActions({
 
     try {
       await ctrlAcceptFollowRequest({ requesterActorId, targetActorId })
+      invalidate()
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('noti:reload'))
+        window.dispatchEvent(new Event('noti:refresh'))
+      }
     } catch (error) {
       console.error('Accept failed', error)
       onRollbackHide?.()
+    } finally {
       setBusy(false)
     }
-  }, [busy, onOptimisticHide, onRollbackHide, requesterActorId, targetActorId])
+  }, [busy, invalidate, onOptimisticHide, onRollbackHide, requesterActorId, targetActorId])
 
   const decline = useCallback(async () => {
     if (busy) return
@@ -33,12 +41,18 @@ export function usePendingFollowRequestActions({
 
     try {
       await ctrlDeclineFollowRequest({ requesterActorId, targetActorId })
+      invalidate()
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('noti:reload'))
+        window.dispatchEvent(new Event('noti:refresh'))
+      }
     } catch (error) {
       console.error('Decline failed', error)
       onRollbackHide?.()
+    } finally {
       setBusy(false)
     }
-  }, [busy, onOptimisticHide, onRollbackHide, requesterActorId, targetActorId])
+  }, [busy, invalidate, onOptimisticHide, onRollbackHide, requesterActorId, targetActorId])
 
   return { busy, accept, decline }
 }

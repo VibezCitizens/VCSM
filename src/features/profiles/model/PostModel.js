@@ -1,16 +1,5 @@
-export function PostModel(postRow, reactions, roseCount) {
-  return {
-    id: postRow.id,
-    actorId: postRow.actor_id,
-    text: postRow.text,
-    mediaUrl: postRow.media_url,
-    mediaType: postRow.media_type,
-    createdAt: postRow.created_at,
+import { buildCanonicalProfilePostModel } from "@/features/profiles/model/postCanonical.model";
 
-    reactions: {
-      like: reactions.like ?? 0,
-      dislike: reactions.dislike ?? 0,
-      rose: roseCount ?? 0,
-    },
-  }
+export function PostModel(postRow, reactions = {}, roseCount = 0) {
+  return buildCanonicalProfilePostModel(postRow, { reactions, roseCount });
 }

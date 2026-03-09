@@ -5,6 +5,7 @@ import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services
 import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
 import readVportServicesByActor from "@/features/profiles/kinds/vport/dal/services/readVportServicesByActor.js";
 import readVportServiceAddonsByActor from "@/features/profiles/kinds/vport/dal/services/readVportServiceAddonsByActor.js";
+import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportServiceCatalogFallback.model";
 
 import {
   resolveVportServicesFromCatalog,
@@ -52,7 +53,7 @@ export default async function getVportServicesController({
   const owner = !!asOwner;
   const mode = owner ? "owner" : "viewer";
 
-  const [catalogRows, actorServiceRows, addonRows] = await Promise.all([
+  const [catalogRowsRaw, actorServiceRows, addonRows] = await Promise.all([
     readVportServiceCatalogByType({
       vportType: safeVportType,
       includeInactive: owner,
@@ -66,6 +67,11 @@ export default async function getVportServicesController({
       includeDisabled: owner,
     }),
   ]);
+
+  const catalogRows =
+    Array.isArray(catalogRowsRaw) && catalogRowsRaw.length
+      ? catalogRowsRaw
+      : getFallbackServiceCatalogRows(safeVportType);
 
   const services = resolveVportServicesFromCatalog({
     catalogRows,

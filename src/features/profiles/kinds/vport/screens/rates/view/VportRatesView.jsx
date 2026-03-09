@@ -16,32 +16,78 @@ function fmtTs(ts) {
   });
 }
 
+function toPairKey(rate, fallbackRateType = "fx") {
+  if (!rate || typeof rate !== "object") return null;
+  const rateType = String(rate.rateType ?? fallbackRateType ?? "fx").trim().toLowerCase();
+  const base = String(rate.baseCurrency ?? "").trim().toUpperCase();
+  const quote = String(rate.quoteCurrency ?? "").trim().toUpperCase();
+  if (!base || !quote) return null;
+  return `${rateType}:${base}/${quote}`;
+}
+
+function pickLastUpdated(rates = [], fallback = null) {
+  const list = Array.isArray(rates) ? rates : [];
+  let bestIso = fallback ?? null;
+  let bestMs = bestIso ? new Date(bestIso).getTime() : null;
+
+  for (const rate of list) {
+    const ts = rate?.updatedAt ?? null;
+    const ms = ts ? new Date(ts).getTime() : NaN;
+    if (!Number.isFinite(ms)) continue;
+    if (!Number.isFinite(bestMs) || bestMs === null || ms > bestMs) {
+      bestMs = ms;
+      bestIso = ts;
+    }
+  }
+
+  return bestIso;
+}
+
 export default function VportRatesView({
   profile = null,
   actorId: actorIdProp = null,
   rateType = "fx",
   title = "Exchange Rates",
   subtitle = "Official rates | last update shown per pair",
+  refreshSeed = 0,
+  optimisticRates = [],
 } = {}) {
   const targetActorId = useMemo(() => {
     return actorIdProp ?? profile?.actorId ?? profile?.actor_id ?? null;
   }, [actorIdProp, profile]);
 
-  const q = useVportRates({ targetActorId, rateType });
+  const q = useVportRates({ targetActorId, rateType, refreshSeed });
 
   const lastUpdated = q.data?.lastUpdated ?? null;
   const error = q.error ?? null;
 
   const rankedRates = useMemo(() => {
-    const rates = q.data?.rates ?? [];
-    return [...rates].sort((a, b) => {
+    const persistedRates = Array.isArray(q.data?.rates) ? q.data.rates : [];
+    const optimistic = Array.isArray(optimisticRates) ? optimisticRates : [];
+    const mergedByPair = {};
+
+    for (const rate of persistedRates) {
+      const key = toPairKey(rate, rateType);
+      if (key) mergedByPair[key] = rate;
+    }
+
+    for (const rate of optimistic) {
+      const key = toPairKey(rate, rateType);
+      if (key) mergedByPair[key] = rate;
+    }
+
+    return Object.values(mergedByPair).sort((a, b) => {
       const aMs = new Date(a?.updatedAt ?? 0).getTime();
       const bMs = new Date(b?.updatedAt ?? 0).getTime();
       return (Number.isFinite(bMs) ? bMs : 0) - (Number.isFinite(aMs) ? aMs : 0);
     });
-  }, [q.data?.rates]);
+  }, [q.data?.rates, optimisticRates, rateType]);
 
   const pairCount = rankedRates.length;
+  const effectiveLastUpdated = useMemo(
+    () => pickLastUpdated(rankedRates, lastUpdated),
+    [rankedRates, lastUpdated]
+  );
 
   if (!targetActorId) {
     return <div className="p-6 text-sm profiles-muted">Invalid vport.</div>;
@@ -81,7 +127,7 @@ export default function VportRatesView({
 
           <div className="rounded-xl border border-white/10 bg-black/25 p-3">
             <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Global update</div>
-            <div className="mt-1 text-sm font-semibold text-white">{fmtTs(lastUpdated)}</div>
+            <div className="mt-1 text-sm font-semibold text-white">{fmtTs(effectiveLastUpdated)}</div>
           </div>
         </div>
       </div>

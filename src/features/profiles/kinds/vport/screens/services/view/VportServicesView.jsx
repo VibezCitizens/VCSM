@@ -40,28 +40,6 @@ export default function VportServicesView({
     return Boolean(allowOwnerEditing) && isOwner;
   }, [allowOwnerEditing, isOwner]);
 
-  useEffect(() => {
-    const snap = {
-      viewerActorId: viewerActorId ?? null,
-      targetActorId: targetActorId ?? null,
-      isOwner,
-      allowOwnerEditing,
-      ownerUiEnabled,
-      vportTypeProp: vportType ?? null,
-    };
-
-    console.groupCollapsed("[VportServicesView][DEBUG props]");
-    console.debug(snap);
-    console.groupEnd();
-  }, [
-    viewerActorId,
-    targetActorId,
-    isOwner,
-    allowOwnerEditing,
-    ownerUiEnabled,
-    vportType,
-  ]);
-
   // ✅ hook: only request owner mode if owner UI enabled
   const s = useVportServices({
     identityActorId: viewerActorId,
@@ -80,20 +58,6 @@ export default function VportServicesView({
   const resolvedVportType = useMemo(() => {
     return s.data?.vportType ?? vportType ?? null;
   }, [s.data?.vportType, vportType]);
-
-  useEffect(() => {
-    const snap = {
-      isLoading: Boolean(s?.isLoading),
-      error: s?.error ? String(s.error?.message ?? s.error) : null,
-      dataVportType: s?.data?.vportType ?? null,
-      mode: s?.data?.mode ?? null,
-      servicesCount: (s?.data?.services ?? []).length,
-    };
-
-    console.groupCollapsed("[VportServicesView][DEBUG hook]");
-    console.debug(snap);
-    console.groupEnd();
-  }, [s?.isLoading, s?.error, s?.data]);
 
   // ===== owner draft logic (still computed, but only used in owner render) =====
   const baseEnabledMap = useMemo(
@@ -168,18 +132,6 @@ export default function VportServicesView({
 
   const isSaving = Boolean(upsert.isPending);
   const error = upsert.error ?? readError;
-
-  console.log("[ServicesView]", {
-    mode,
-    isOwner,
-    allowOwnerEditing,
-    ownerUiEnabled,
-    viewerActorId,
-    targetActorId,
-    servicesCount: servicesFromApi.length,
-    vportType: resolvedVportType,
-    dirty,
-  });
 
   if (!targetActorId) {
     return <div className="p-6 text-sm text-neutral-400">Invalid vport.</div>;

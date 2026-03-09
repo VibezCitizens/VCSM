@@ -1,14 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { getSubscribersController } from "@/features/profiles/kinds/vport/controller/subscribers/getSubscribers.controller";
 
-export function useSubscribers(actorId) {
+export function useSubscribers(actorId, options = {}) {
+  const { limit = 50, offset = 0, enabled = true } = options || {};
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
   const [rows, setRows] = useState([]);
   const [error, setError] = useState("");
 
   const reload = useCallback(async () => {
-    if (!actorId) {
+    if (!enabled || !actorId) {
       setLoading(false);
       setCount(0);
       setRows([]);
@@ -21,8 +22,8 @@ export function useSubscribers(actorId) {
     try {
       const result = await getSubscribersController({
         actorId,
-        limit: 50,
-        offset: 0,
+        limit,
+        offset,
       });
 
       setCount(result.count ?? 0);
@@ -34,7 +35,7 @@ export function useSubscribers(actorId) {
     } finally {
       setLoading(false);
     }
-  }, [actorId]);
+  }, [enabled, actorId, limit, offset]);
 
   useEffect(() => {
     reload();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import { getTopFriendCandidatesController } from '@/features/profiles/screens/views/tabs/friends/controller/getTopFriendCandidates.controller'
-import { hydrateActorsIntoStore } from '@/features/profiles/screens/views/tabs/friends/helpers/hydrateActorsIntoStore'
+import { getTopFriendCandidatesController } from '@/features/profiles/adapters/friends/topFriends.adapter'
+import { hydrateActorsIntoStore } from '@/features/profiles/adapters/friends/topFriends.adapter'
 
 export function useTopFriendCandidates({ ownerActorId, existingIds = [], maxRanks = 10, open = false } = {}) {
   const [loading, setLoading] = useState(true)

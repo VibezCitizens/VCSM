@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ctrlListIncomingRequests } from '@/features/social/friend/request/controllers/followRequests.controller'
 import { modelFollowRequest } from '../models/followRequest.model'
-import { hydrateActorsFromRows } from '@/features/actors/controllers/hydrateActors.controller'
+import { hydrateActorsFromRows } from '@/features/actors/adapters/controllers/hydrateActors.controller.adapter'
 import { useFollowRequestsStore } from '@/state/social/followRequestsStore'
 
 export function useIncomingFollowRequests(targetActorId) {

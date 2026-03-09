@@ -105,6 +105,106 @@
   color: rgba(170, 190, 228, 0.8);
 }
 
+.profiles-modern .profiles-booking-owner-client-picker {
+  position: relative;
+  display: grid;
+  gap: 0.34rem;
+}
+
+.profiles-modern .profiles-booking-owner-follower-results {
+  display: grid;
+  gap: 0.24rem;
+  border: 1px solid rgba(139, 170, 246, 0.24);
+  border-radius: 0.72rem;
+  background: rgba(7, 14, 34, 0.92);
+  padding: 0.3rem;
+}
+
+.profiles-modern .profiles-booking-owner-follower-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.44rem;
+  width: 100%;
+  border-radius: 0.56rem;
+  border: 1px solid transparent;
+  background: rgba(15, 25, 57, 0.42);
+  color: #eaf2ff;
+  padding: 0.34rem 0.42rem;
+  text-align: left;
+}
+
+.profiles-modern .profiles-booking-owner-follower-option:hover {
+  border-color: rgba(158, 192, 255, 0.46);
+  background: rgba(29, 45, 90, 0.62);
+}
+
+.profiles-modern .profiles-booking-owner-follower-option-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.46rem;
+  object-fit: cover;
+  border: 1px solid rgba(132, 163, 238, 0.34);
+  flex-shrink: 0;
+}
+
+.profiles-modern .profiles-booking-owner-follower-option-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.profiles-modern .profiles-booking-owner-follower-option-text strong {
+  font-size: 0.71rem;
+  color: #f0f6ff;
+}
+
+.profiles-modern .profiles-booking-owner-follower-option-text span {
+  font-size: 0.62rem;
+  color: rgba(184, 205, 243, 0.86);
+}
+
+.profiles-modern .profiles-booking-owner-selected-follower {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  border: 1px solid rgba(133, 172, 245, 0.3);
+  border-radius: 9999px;
+  background: rgba(17, 30, 65, 0.74);
+  padding: 0.22rem 0.36rem 0.22rem 0.52rem;
+}
+
+.profiles-modern .profiles-booking-owner-selected-follower-label {
+  min-width: 0;
+  font-size: 0.63rem;
+  color: rgba(202, 220, 248, 0.94);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profiles-modern .profiles-booking-owner-selected-follower-clear {
+  border-radius: 9999px;
+  border: 1px solid rgba(241, 167, 167, 0.38);
+  background: rgba(91, 28, 28, 0.44);
+  color: #ffd9d9;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.2rem 0.42rem;
+}
+
+.profiles-modern .profiles-booking-owner-picker-meta {
+  margin: 0;
+  font-size: 0.62rem;
+  color: rgba(179, 199, 236, 0.86);
+}
+
+.profiles-modern .profiles-booking-owner-picker-meta.is-error {
+  color: #ffc9c9;
+}
+
 .profiles-modern .profiles-booking-action-btn {
   border-radius: 0.8rem;
   border: 1px solid rgba(144, 170, 242, 0.28);
@@ -164,15 +264,15 @@
 
 .profiles-modern .profiles-booking-appointment-client-fallback {
   display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
+  align-items: flex-start;
+  gap: var(--profiles-booking-client-avatar-gap);
   min-width: 0;
 }
 
 .profiles-modern .profiles-booking-appointment-client-fallback-avatar {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.6rem;
+  width: var(--profiles-booking-client-avatar-size);
+  height: var(--profiles-booking-client-avatar-size);
+  border-radius: 0.42rem;
   object-fit: cover;
   border: 1px solid rgba(140, 167, 238, 0.32);
   flex-shrink: 0;
@@ -180,16 +280,16 @@
 
 .profiles-modern .profiles-booking-appointment-client-link {
   display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
+  align-items: flex-start;
+  gap: var(--profiles-booking-client-avatar-gap);
   min-width: 0;
   color: #eff6ff;
 }
 
 .profiles-modern .profiles-booking-appointment-client-link img {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.6rem;
+  width: var(--profiles-booking-client-avatar-size);
+  height: var(--profiles-booking-client-avatar-size);
+  border-radius: 0.42rem;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -200,6 +300,8 @@
 
 .profiles-modern .profiles-booking-appointment-content {
   min-width: 0;
+  --profiles-booking-client-avatar-size: 2.7rem;
+  --profiles-booking-client-avatar-gap: 0.58rem;
 }
 
 .profiles-modern .profiles-booking-appointment-client-link:hover span {
@@ -211,6 +313,10 @@
   margin: 0.14rem 0 0;
   font-size: 0.66rem;
   color: rgba(177, 197, 236, 0.86);
+}
+
+.profiles-modern .profiles-booking-appointment-service.is-with-avatar {
+  margin-left: calc(var(--profiles-booking-client-avatar-size) + var(--profiles-booking-client-avatar-gap));
 }
 
 .profiles-modern .profiles-booking-appointment-tail {

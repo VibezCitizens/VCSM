@@ -8,14 +8,18 @@ export async function readActorPostsDAL(actorId) {
     .select(`
       id,
       actor_id,
+      user_id,
       text,
       title,
       media_url,
       media_type,
+      post_type,
+      tags,
       created_at,
       edited_at,
       deleted_at,
-      deleted_by_actor_id
+      deleted_by_actor_id,
+      location_text
     `)
     .eq("actor_id", actorId)
     .is("deleted_at", null)

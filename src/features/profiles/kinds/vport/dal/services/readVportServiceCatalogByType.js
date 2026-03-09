@@ -2,6 +2,21 @@
 
 import { supabase } from "@/services/supabase/supabaseClient";
 
+function normalizeVportType(vportType) {
+  return String(vportType ?? "").trim().toLowerCase();
+}
+
+function buildTypeCandidates(vportType) {
+  const normalized = normalizeVportType(vportType);
+  if (!normalized) return [];
+
+  if (normalized === "exchange" || normalized === "money exchange") {
+    return ["exchange", "money exchange"];
+  }
+
+  return [normalized];
+}
+
 /**
  * DAL: Read the service catalog for a given vport_type.
  *
@@ -16,7 +31,9 @@ export async function readVportServiceCatalogByType({
   vportType,
   includeInactive = false,
 } = {}) {
-  if (!vportType) {
+  const typeCandidates = buildTypeCandidates(vportType);
+
+  if (!typeCandidates.length) {
     throw new Error("readVportServiceCatalogByType: vportType is required");
   }
 
@@ -24,9 +41,14 @@ export async function readVportServiceCatalogByType({
     .schema("vc")
     .from("vport_service_catalog")
     .select("vport_type,key,label,category,sort_order,is_active,meta,created_at,updated_at")
-    .eq("vport_type", vportType)
     .order("sort_order", { ascending: true })
     .order("label", { ascending: true });
+
+  if (typeCandidates.length === 1) {
+    q = q.eq("vport_type", typeCandidates[0]);
+  } else {
+    q = q.in("vport_type", typeCandidates);
+  }
 
   if (!includeInactive) q = q.eq("is_active", true);
 

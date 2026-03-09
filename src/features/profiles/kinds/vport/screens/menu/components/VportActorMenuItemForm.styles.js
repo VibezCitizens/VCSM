@@ -3,7 +3,7 @@
 export const overlayStyle = {
   position: "fixed",
   inset: 0,
-  zIndex: 9999,
+  zIndex: 100000,
 
   // ✅ iOS: make overlay the scroll container
   overflowY: "auto",
@@ -15,9 +15,9 @@ export const overlayStyle = {
   alignItems: "flex-start",
 
   padding: 16,
-  background: "rgba(0,0,0,0.65)",
-  backdropFilter: "blur(10px)",
-  WebkitBackdropFilter: "blur(10px)",
+  background: "rgba(3, 8, 20, 0.84)",
+  backdropFilter: "blur(4px)",
+  WebkitBackdropFilter: "blur(4px)",
 };
 
 export const cardStyle = {
@@ -26,8 +26,9 @@ export const cardStyle = {
   maxHeight: "calc(100vh - 32px)", // ✅ prevents modal from exceeding viewport (overlay padding=16)
   borderRadius: 18,
   overflow: "hidden",
-  background: "rgba(17, 17, 17, 0.92)",
-  border: "1px solid rgba(255,255,255,0.10)",
+  background:
+    "linear-gradient(180deg, rgba(10, 16, 34, 0.98) 0%, rgba(7, 11, 25, 0.99) 100%)",
+  border: "1px solid rgba(147, 197, 253, 0.28)",
   boxShadow: "0 30px 90px rgba(0,0,0,0.55)",
   display: "flex", // ✅ allows header + scroll body + sticky footer layout
   flexDirection: "column",
@@ -77,8 +78,8 @@ export const fieldBase = {
   width: "100%",
   padding: "11px 12px",
   borderRadius: 14,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(255,255,255,0.06)",
+  border: "1px solid rgba(148,163,184,0.28)",
+  background: "rgba(8,13,30,0.96)",
   color: "#fff",
   outline: "none",
 };

@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { softDeleteCommentController } from "@/features/post/commentcard/controller/deleteComment.controller";
 
-export default function usePostDetailEditing({ actorId, threadComments, onReload }) {
+export default function usePostDetailEditing({ actorId, threadComments, onReload, confirmAction }) {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingInitialText, setEditingInitialText] = useState("");
 
@@ -30,12 +30,28 @@ export default function usePostDetailEditing({ actorId, threadComments, onReload
     cancelInlineEdit();
   }, [onReload, cancelInlineEdit]);
 
+  const confirm = useCallback(
+    async (options) => {
+      if (typeof confirmAction !== "function") {
+        console.warn("[usePostDetailEditing] missing confirmAction; skipping confirm prompt", options);
+        return false;
+      }
+      return Boolean(await confirmAction(options));
+    },
+    [confirmAction]
+  );
+
   const deleteCommentById = useCallback(
     async (commentId) => {
       if (!actorId) return;
       if (!commentId) return;
 
-      const okConfirm = window.confirm("Delete this comment?");
+      const okConfirm = await confirm({
+        title: "Delete comment",
+        message: "Delete this comment?",
+        confirmLabel: "Delete",
+        tone: "danger",
+      });
       if (!okConfirm) return;
 
       try {
@@ -49,7 +65,7 @@ export default function usePostDetailEditing({ actorId, threadComments, onReload
         window.alert("Failed to delete comment");
       }
     },
-    [actorId, onReload]
+    [actorId, onReload, confirm]
   );
 
   return {

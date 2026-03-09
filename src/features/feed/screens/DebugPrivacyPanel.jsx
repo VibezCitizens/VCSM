@@ -5,154 +5,29 @@
 // @Note: Do NOT remove, rename, or modify this block.
 
 // src/features/feed/screens/DebugPrivacyPanel.jsx
-import { useEffect, useState, useMemo } from "react";
-import { supabase } from '@/services/supabase/supabaseClient'; //transfer
+import { useEffect, useMemo } from "react";
+import { useDebugPrivacyRows } from "@/features/feed/hooks/useDebugPrivacyRows";
 
 export default function DebugPrivacyPanel({ actorId, posts }) {
   const isDev = import.meta.env.DEV;
 
-  const [rows, setRows] = useState([]);
-
   // Extract post ids for efficient querying
   const postIds = useMemo(() => posts.map((p) => p.id), [posts]);
+  const rows = useDebugPrivacyRows({
+    actorId,
+    postIds,
+    enabled: isDev,
+  });
 
   useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      if (!isDev) {
-        setRows([]);
-        return;
-      }
-
-      if (!actorId || postIds.length === 0) {
-        setRows([]);
-        return;
-      }
-
-      try {
-        // 1) posts -> actor_id
-        const { data: postActors, error: pErr } = await supabase
-          .schema("vc")
-          .from("posts")
-          .select("id, actor_id")
-          .in("id", postIds);
-
-        if (pErr) throw pErr;
-
-        const actorIds = [
-          ...new Set(postActors.map((x) => x.actor_id).filter(Boolean)),
-        ];
-
-        // 2) actor metadata
-        const { data: actors, error: aErr } = await supabase
-          .schema("vc")
-          .from("actors")
-          .select("id, profile_id, vport_id")
-          .in("id", actorIds);
-
-        if (aErr) throw aErr;
-
-        const actorMap = actors.reduce((m, a) => {
-          m[a.id] = a;
-          return m;
-        }, {});
-
-        // 3) profile privacy lookup
-        const profileIds = actors
-          .map((a) => a.profile_id)
-          .filter(Boolean);
-
-        const { data: userProfiles } = await supabase
-          .schema("vc")
-          .from("user_profiles")
-          .select("id, private")
-          .in("id", profileIds);
-
-        const upMap = (userProfiles || []).reduce((m, r) => {
-          m[r.id] = r;
-          return m;
-        }, {});
-
-        // 4) All my actor ids (user or vport)
-        const { data: mine } = await supabase
-          .schema("vc")
-          .from("actor_owners")
-          .select("actor_id")
-          .eq("user_id", actorId);
-
-        const myActorIds = new Set((mine || []).map((r) => r.actor_id));
-
-        // 5) Follow edges
-        const { data: follows } = await supabase
-          .schema("vc")
-          .from("actor_follows")
-          .select("follower_actor_id, followed_actor_id, is_active")
-          .in("follower_actor_id", Array.from(myActorIds))
-          .in("followed_actor_id", actorIds);
-
-        const followSet = new Set(
-          (follows || [])
-            .filter((f) => f.is_active)
-            .map((f) => `${f.follower_actor_id}->${f.followed_actor_id}`)
-        );
-
-        // Build results
-        const enriched = postActors.map((pa) => {
-          const a = actorMap[pa.actor_id];
-          const isVport = !!a?.vport_id;
-          const isOwner = isVport ? false : a?.profile_id === actorId;
-          const isPublic = a?.profile_id
-            ? upMap[a.profile_id]?.private === false
-            : false;
-
-          // following?
-          let isFollower = false;
-          if (a && !isVport) {
-            for (const my of myActorIds) {
-              if (followSet.has(`${my}->${a.id}`)) {
-                isFollower = true;
-                break;
-              }
-            }
-          }
-
-          const visibleByPolicy =
-            isVport || isOwner || isPublic || isFollower;
-
-          return {
-            post_id: pa.id,
-            actor_id: pa.actor_id,
-            profile_id: a?.profile_id || null,
-            vport_id: a?.vport_id || null,
-            isVport,
-            isOwner,
-            isPublic,
-            isFollower,
-            visibleByPolicy,
-          };
-        });
-
-        if (!cancelled) {
-          setRows(enriched);
-          console.groupCollapsed(
-            "%c[Privacy Debug] Feed visibility breakdown",
-            "color:#a78bfa"
-          );
-          enriched.forEach((r) => console.log(r));
-          console.groupEnd();
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setRows([{ error: e?.message || String(e) }]);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [actorId, postIds, isDev]);
+    if (!isDev || !rows.length) return;
+    console.groupCollapsed(
+      "%c[Privacy Debug] Feed visibility breakdown",
+      "color:#a78bfa"
+    );
+    rows.forEach((row) => console.log(row));
+    console.groupEnd();
+  }, [actorId, postIds, isDev, rows]);
 
   if (!isDev || !rows.length) return null;
 

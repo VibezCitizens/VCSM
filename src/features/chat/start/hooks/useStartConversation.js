@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useIdentity } from '@/state/identity/identityContext'
 import { startDirectConversation } from
   '@/features/chat/start/controllers/startDirectConversation.controller'
-import { resolveRealm } from '@/features/upload/model/resolveRealm'
+import { resolveRealm } from '@/features/upload/adapters/model/resolveRealm.adapter'
 
 /**
  * @Contract: HOOK

@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/app/providers/AuthProvider';
-import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from '@/features/profiles/kinds/vport/config/vportTypes.config';
-import useUpsertVportServices from '@/features/profiles/kinds/vport/hooks/services/useUpsertVportServices';
+import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from '@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter';
+import useUpsertVportServices from '@/features/profiles/adapters/kinds/vport/hooks/services/useUpsertVportServices.adapter';
 import useVportServiceCatalog from '@/features/vport/hooks/useVportServiceCatalog';
 import { listMyVports } from '@/features/vport/model/vport.read.vportRecords';
 import { createVport } from '@/features/vport/model/vport.model';

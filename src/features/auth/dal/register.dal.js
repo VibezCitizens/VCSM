@@ -1,5 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
-import { getWandersSupabase } from '@/features/wanders/services/wandersSupabaseClient'
+import { getWandersSupabase } from '@/features/wanders/adapters/services/wandersSupabaseClient.adapter'
 
 function resolveAuthClient(isWandersFlow) {
   return isWandersFlow ? getWandersSupabase() : supabase
@@ -30,6 +30,12 @@ export async function dalSignUpRegisterUser({ isWandersFlow, email, password }) 
   })
   if (error) throw error
   return data
+}
+
+export async function dalSignOutRegisterSession({ isWandersFlow }) {
+  const client = resolveAuthClient(isWandersFlow)
+  const { error } = await client.auth.signOut({ scope: 'local' })
+  if (error) throw error
 }
 
 export async function dalUpsertRegisterProfile({

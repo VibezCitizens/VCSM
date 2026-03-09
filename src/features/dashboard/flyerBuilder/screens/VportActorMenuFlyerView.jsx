@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import ClassicFlyer from "@/features/dashboard/qrcode/components/flyer/ClassicFlyer";
 import PosterFlyer from "@/features/dashboard/qrcode/components/flyer/PosterFlyer";
-import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
+import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import {
   asTextValue,
   buildFlyerActions,

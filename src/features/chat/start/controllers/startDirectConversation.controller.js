@@ -102,11 +102,11 @@ import { resolvePickedActor } from
 
 import { getOrCreateDirectConversation } from '@/features/chat/start/controllers/getOrCreateDirectConversation.controller'
 import { openConversation } from '@/features/chat/start/dal/rpc/openConversation.rpc'
-import { resolveRealm } from '@/features/upload/model/resolveRealm'
+import { resolveRealm } from '@/features/upload/adapters/model/resolveRealm.adapter'
 import { supabase } from '@/services/supabase/supabaseClient'
 
 // ✅ BLOCK CHECK (global)
-import { checkBlockStatus } from '@/features/block/dal/block.check.dal'
+import { checkBlockStatus } from '@/features/block/adapters/dal/block.check.dal.adapter'
 
 function isUuid(value) {
   return (

@@ -9,8 +9,9 @@ import SubscribeButton from '@/features/profiles/ui/header/Subscribebutton'
 import { useProfileHeaderMessaging } from '@/features/profiles/hooks/header/useProfileHeaderMessaging'
 import ActorActionsMenu from '@/shared/components/components/ActorActionsMenu'
 
-import { useSubscribeAction } from '@/features/social/friend/request/hooks/useSubscribeAction'
-import { useFollowerCount } from '@/features/social/friend/subscribe/hooks/useFollowerCount'
+import { useSubscribeAction } from '@/features/social/adapters/friend/request/hooks/useSubscribeAction.adapter'
+import { useFollowerCount } from '@/features/social/adapters/friend/subscribe/hooks/useFollowerCount.adapter'
+import SubscribeDebugPanel from '@/features/social/adapters/friend/subscribe/components/SubscribeDebugPanel.adapter'
 
 // ============================================================
 // ActorProfileHeader
@@ -43,6 +44,7 @@ export default function ActorProfileHeader({
     disabled: subscribeDisabled,
     onClick: onSubscribe,
     isSubscribed,
+    debugInfo: subscribeDebugInfo,
   } = useSubscribeAction({
     viewerActorId,
     targetActorId: actorId,
@@ -173,6 +175,8 @@ export default function ActorProfileHeader({
           </div>
         </div>
       </div>
+
+      <SubscribeDebugPanel debugInfo={subscribeDebugInfo} />
 
       {/* ================= QR MODAL ================= */}
       <ProfileHeaderQRCodeModal

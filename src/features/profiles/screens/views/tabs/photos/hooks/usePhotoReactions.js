@@ -6,7 +6,7 @@ import {
   enrichPhotoPostsController,
   togglePhotoReactionController,
   sendPhotoRoseController,
-} from "../controllers/photoReactions.controller";
+} from "@/features/profiles/adapters/photos/photoReactions.adapter";
 
 export function usePhotoReactions(posts = [], actorId) {
   const safePosts = useMemo(() => (Array.isArray(posts) ? posts : []), [posts]);

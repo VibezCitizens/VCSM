@@ -105,6 +105,32 @@ export async function ctrlDeclineFollowRequest({
   return true
 }
 
+export async function ctrlCancelFollowRequest({
+  requesterActorId,
+  targetActorId,
+}) {
+  if (!requesterActorId || !targetActorId) {
+    throw new Error('ctrlCancelFollowRequest: missing actor ids')
+  }
+
+  const status = await dalGetRequestStatus({
+    requesterActorId,
+    targetActorId,
+  })
+
+  if (status !== 'pending') {
+    return false
+  }
+
+  await dalUpdateRequestStatus({
+    requesterActorId,
+    targetActorId,
+    status: 'cancelled',
+  })
+
+  return true
+}
+
 /**
  * ============================================================
  * Incoming requests (TARGET actor)

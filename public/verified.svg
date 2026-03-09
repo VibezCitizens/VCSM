@@ -1,0 +1,15 @@
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vibeVerified" x1="4" y1="4" x2="20" y2="20">
+      <stop offset="0%" stop-color="#6C4DF6"></stop>
+      <stop offset="60%" stop-color="#8d64ff"></stop>
+      <stop offset="100%" stop-color="#ec4899"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- shield -->
+  <path d="M12 2.75L5.5 5.2V10.8C5.5 15.15 8.25 18.9 12 20.6C15.75 18.9 18.5 15.15 18.5 10.8V5.2L12 2.75Z" stroke="url(#vibeVerified)" stroke-width="1.9" stroke-linejoin="round"></path>
+
+  <!-- check -->
+  <path d="M9.2 11.9L11.3 14L15.3 10" stroke="url(#vibeVerified)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

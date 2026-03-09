@@ -3,12 +3,21 @@ import { supabase } from '@/services/supabase/supabaseClient'
 export async function readActorProfileDAL(actorId) {
   if (!actorId) return null
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .rpc('read_actor_profile', {
-      p_actor_id: actorId,
-    })
-    .maybeSingle()
+  const [{ data, error }, { data: privacyData, error: privacyError }] =
+    await Promise.all([
+      supabase
+        .schema('vc')
+        .rpc('read_actor_profile', {
+          p_actor_id: actorId,
+        })
+        .maybeSingle(),
+      supabase
+        .schema('vc')
+        .from('actor_privacy_settings')
+        .select('is_private')
+        .eq('actor_id', actorId)
+        .maybeSingle(),
+    ])
 
   if (error) {
     console.error('[readActorProfileDAL] rpc error', error)
@@ -18,6 +27,14 @@ export async function readActorProfileDAL(actorId) {
   if (!data) {
     throw new Error('Profile row missing')
   }
+
+  if (privacyError) {
+    console.error('[readActorProfileDAL] actor privacy error', privacyError)
+  }
+
+  const isPrivate = privacyError
+    ? true
+    : (privacyData?.is_private ?? true)
 
   return {
     actor: {
@@ -34,7 +51,7 @@ export async function readActorProfileDAL(actorId) {
           bio: data.bio,
           photo_url: data.photo_url,
           banner_url: data.banner_url,
-          private: data.private,
+          private: isPrivate,
           discoverable: data.discoverable,
           publish: data.publish,
           created_at: data.created_at,

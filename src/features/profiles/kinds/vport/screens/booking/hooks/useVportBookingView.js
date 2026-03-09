@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { hydrateActorsFromRows } from "@/features/actors/controllers/hydrateActors.controller";
+import { hydrateActorsFromRows } from "@/features/actors/adapters/hydrateActors.adapter";
 import {
   useBookingAvailability,
   useCreateBooking,
@@ -8,6 +8,7 @@ import {
   useOwnerBookingResources,
 } from "@/features/booking/adapters/booking.adapter";
 import { useVportBookingMutations } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations";
+import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/subscribers/useSubscribers";
 import {
   buildBookingsByDate,
   buildCustomerActorRows,
@@ -63,8 +64,14 @@ export function useVportBookingView({ profile, isOwner = false }) {
   const [selectedDateKey, setSelectedDateKey] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [ownerCustomerName, setOwnerCustomerName] = useState("");
+  const [ownerCustomerActorId, setOwnerCustomerActorId] = useState(null);
   const [selectedDurationMinutes, setSelectedDurationMinutes] = useState(null);
   const [viewMode, setViewMode] = useState("calendar");
+  const ownerFollowerSearch = useSubscribers(ownerActorId, {
+    limit: 200,
+    offset: 0,
+    enabled: Boolean(isOwner && ownerActorId),
+  });
 
   const resources = useOwnerBookingResources({
     ownerActorId,
@@ -142,12 +149,68 @@ export function useVportBookingView({ profile, isOwner = false }) {
     [bookingsByDate, selectedDateKey]
   );
   const selectedSlots = useMemo(() => slotsByDate[selectedDateKey] ?? [], [slotsByDate, selectedDateKey]);
+  const ownerFollowerOptions = useMemo(() => {
+    const rows = Array.isArray(ownerFollowerSearch.rows) ? ownerFollowerSearch.rows : [];
+    const seenActorIds = new Set();
+
+    return rows
+      .map((row) => {
+        const actorId = row?.actor_id ?? row?.id ?? null;
+        if (!actorId || seenActorIds.has(actorId)) return null;
+        seenActorIds.add(actorId);
+
+        const displayName = String(row?.display_name || row?.username || "Citizen").trim();
+        const username = String(row?.username || row?.slug || row?.vport_slug || "").trim() || null;
+
+        return {
+          actorId,
+          displayName: displayName || "Citizen",
+          username,
+          avatar: row?.photo_url || "/avatar.jpg",
+        };
+      })
+      .filter(Boolean);
+  }, [ownerFollowerSearch.rows]);
+
+  const selectedOwnerFollower = useMemo(
+    () => ownerFollowerOptions.find((follower) => follower.actorId === ownerCustomerActorId) ?? null,
+    [ownerFollowerOptions, ownerCustomerActorId]
+  );
+
+  const ownerFollowerMatches = useMemo(() => {
+    if (!isOwner) return [];
+
+    const query = String(ownerCustomerName || "").trim().toLowerCase();
+    if (!query) return [];
+
+    return ownerFollowerOptions
+      .filter((follower) => {
+        if (!follower) return false;
+        if (ownerCustomerActorId && follower.actorId === ownerCustomerActorId) return false;
+
+        const displayName = String(follower.displayName || "").toLowerCase();
+        const username = String(follower.username || "").toLowerCase();
+        const handle = username ? `@${username}` : "";
+        return (
+          displayName.includes(query) ||
+          username.includes(query) ||
+          handle.includes(query)
+        );
+      })
+      .slice(0, 7);
+  }, [isOwner, ownerCustomerName, ownerFollowerOptions, ownerCustomerActorId]);
 
   useEffect(() => {
     if (!selectedSlot) return;
     if (selectedSlots.includes(selectedSlot)) return;
     setSelectedSlot(null);
   }, [selectedSlot, selectedSlots]);
+
+  useEffect(() => {
+    if (!ownerCustomerActorId) return;
+    if (ownerFollowerOptions.some((follower) => follower.actorId === ownerCustomerActorId)) return;
+    setOwnerCustomerActorId(null);
+  }, [ownerCustomerActorId, ownerFollowerOptions]);
 
   useEffect(() => {
     const customerActorRows = buildCustomerActorRows(bookings);
@@ -205,6 +268,7 @@ export function useVportBookingView({ profile, isOwner = false }) {
       setSelectedDateKey(dateKey);
       setSelectedSlot(null);
       setOwnerCustomerName("");
+      setOwnerCustomerActorId(null);
     },
     [slotsByDate]
   );
@@ -213,6 +277,51 @@ export function useVportBookingView({ profile, isOwner = false }) {
     setSelectedSlot(null);
     setSelectedDateKey(null);
     setOwnerCustomerName("");
+    setOwnerCustomerActorId(null);
+  }, []);
+
+  const onOwnerCustomerNameChange = useCallback(
+    (nextValue) => {
+      const nextName = String(nextValue ?? "");
+      setOwnerCustomerName(nextName);
+
+      if (!ownerCustomerActorId) return;
+
+      const normalized = nextName.trim().toLowerCase();
+      if (!normalized) {
+        setOwnerCustomerActorId(null);
+        return;
+      }
+
+      const selectedFollower = ownerFollowerOptions.find(
+        (follower) => follower.actorId === ownerCustomerActorId
+      );
+      if (!selectedFollower) {
+        setOwnerCustomerActorId(null);
+        return;
+      }
+
+      const normalizedName = String(selectedFollower.displayName || "").trim().toLowerCase();
+      const normalizedUsername = String(selectedFollower.username || "").trim().toLowerCase();
+      if (
+        normalized !== normalizedName &&
+        normalized !== normalizedUsername &&
+        normalized !== (normalizedUsername ? `@${normalizedUsername}` : "")
+      ) {
+        setOwnerCustomerActorId(null);
+      }
+    },
+    [ownerCustomerActorId, ownerFollowerOptions]
+  );
+
+  const onSelectOwnerFollower = useCallback((follower) => {
+    if (!follower?.actorId) return;
+    setOwnerCustomerActorId(follower.actorId);
+    setOwnerCustomerName(String(follower.displayName || follower.username || ""));
+  }, []);
+
+  const onClearOwnerFollower = useCallback(() => {
+    setOwnerCustomerActorId(null);
   }, []);
 
   const mutations = useVportBookingMutations({
@@ -224,7 +333,9 @@ export function useVportBookingView({ profile, isOwner = false }) {
     selectedSlots,
     slotDurationMinutes,
     ownerCustomerName,
+    ownerCustomerActorId,
     setOwnerCustomerName,
+    setOwnerCustomerActorId,
     createBooking,
     manageAvailability,
     availability,
@@ -245,6 +356,10 @@ export function useVportBookingView({ profile, isOwner = false }) {
     selectedSlotsBySegment: groupSlotsBySegment(selectedSlots),
     selectedAppointments,
     ownerCustomerName,
+    ownerFollowerMatches,
+    ownerFollowersLoading: ownerFollowerSearch.loading,
+    ownerFollowersError: ownerFollowerSearch.error,
+    selectedOwnerFollower,
     slotDurationMinutes,
     canRequestSelectedSlot: !isOwner || Boolean(viewerActorId),
     isSelectedSlotAvailable: Boolean(selectedSlot) && selectedSlots.includes(selectedSlot),
@@ -261,7 +376,9 @@ export function useVportBookingView({ profile, isOwner = false }) {
     onSelectSlot: (slotValue) => setSelectedSlot((prev) => (prev === slotValue ? null : slotValue)),
     onChangeViewMode: setViewMode,
     onChangeDuration: setSelectedDurationMinutes,
-    onOwnerCustomerNameChange: setOwnerCustomerName,
+    onOwnerCustomerNameChange,
+    onSelectOwnerFollower,
+    onClearOwnerFollower,
     onResetDay,
     ...mutations,
   };

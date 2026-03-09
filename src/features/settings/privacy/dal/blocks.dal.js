@@ -75,6 +75,22 @@ export async function dalDeleteBlockByTarget({ actorId, blockedActorId }) {
   return true
 }
 
+export async function dalReadActorKindAndVportId(actorId) {
+  if (!actorId) {
+    throw new Error('dalReadActorKindAndVportId: actorId required')
+  }
+
+  const { data, error } = await supabase
+    .schema('vc')
+    .from('actors')
+    .select('kind, vport_id')
+    .eq('id', actorId)
+    .maybeSingle()
+
+  if (error) throw error
+  return data || null
+}
+
 // --------------------------------------------------
 // ACTOR LOOKUP (READ-ONLY)
 // --------------------------------------------------
@@ -84,7 +100,8 @@ export async function dalSearchActors({ query, limit = 12 }) {
   if (!pattern) return []
 
   const { data, error } = await supabase
-    .from(ACTOR_VIEW) // 👈 view is already exposed correctly
+    .schema('vc')
+    .from(ACTOR_VIEW)
     .select(
       'actor_id, kind, display_name, username, photo_url, vport_name, vport_slug, vport_avatar_url'
     )
@@ -94,3 +111,4 @@ export async function dalSearchActors({ query, limit = 12 }) {
   if (error) throw error
   return data || []
 }
+

@@ -1,6 +1,6 @@
 // src/features/settings/vports/hooks/useVportsList.js
 import { useEffect, useState } from "react";
-import { listMyVports } from "@/features/vport/model/vport.read.vportRecords";
+import { listMyVports } from "@/features/vport/adapters/model/vport.read.vportRecords.adapter";
 
 export function useVportsList() {
   const [items, setItems] = useState([]);

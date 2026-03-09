@@ -1,17 +1,18 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\screens\PostDetail.view.jsx
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 
 import { useIdentity } from "@/state/identity/identityContext";
 
-import ReportModal from "@/features/moderation/components/ReportModal";
+import ReportModal from "@/features/moderation/adapters/components/ReportModal.adapter";
 import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
 
 import PostHeader from "@/features/post/postcard/components/PostHeader";
 import PostBody from "@/features/post/postcard/components/PostBody";
 import MediaCarousel from "@/features/post/postcard/components/MediaCarousel";
 import ReactionBar from "@/features/post/postcard/components/ReactionBar";
+import PostConfirmModal from "@/features/post/postcard/components/PostConfirmModal";
 
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
 import CommentList from "@/features/post/commentcard/components/CommentList";
@@ -27,7 +28,7 @@ import usePostDetailReplying from "@/features/post/postcard/hooks/usePostDetailR
 import usePostDetailReporting from "@/features/post/postcard/hooks/usePostDetailReporting";
 
 import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
-import ReportedObjectCover from "@/features/moderation/components/ReportedObjectCover";
+import ReportedObjectCover from "@/features/moderation/adapters/components/ReportedObjectCover.adapter";
 
 import CommentReplyModal from "@/features/post/commentcard/components/CommentReplyModal";
 import CommentComposeModal from "@/features/post/commentcard/components/CommentComposeModal";
@@ -80,6 +81,36 @@ export default function PostDetailView() {
 
   const actorId = identity?.actorId ?? null;
   const deletePost = useDeletePostAction({ actorId });
+  const confirmResolverRef = useRef(null);
+  const [confirmState, setConfirmState] = useState({
+    open: false,
+    title: "",
+    message: "",
+    confirmLabel: "Confirm",
+    cancelLabel: "Cancel",
+    tone: "danger",
+  });
+
+  const closeConfirm = useCallback((accepted) => {
+    const resolve = confirmResolverRef.current;
+    confirmResolverRef.current = null;
+    setConfirmState((prev) => ({ ...prev, open: false }));
+    if (typeof resolve === "function") resolve(Boolean(accepted));
+  }, []);
+
+  const requestConfirm = useCallback((options = {}) => {
+    return new Promise((resolve) => {
+      confirmResolverRef.current = resolve;
+      setConfirmState({
+        open: true,
+        title: options.title ?? "Confirm",
+        message: options.message ?? "Are you sure?",
+        confirmLabel: options.confirmLabel ?? "Confirm",
+        cancelLabel: options.cancelLabel ?? "Cancel",
+        tone: options.tone ?? "danger",
+      });
+    });
+  }, []);
 
   const commentCount = usePostCommentCount(postId);
   const thread = useCommentThread(postId);
@@ -96,6 +127,7 @@ export default function PostDetailView() {
     actorId,
     threadComments: thread.comments,
     onReload: thread.reload,
+    confirmAction: requestConfirm,
   });
 
   const replying = usePostDetailReplying({
@@ -129,7 +161,12 @@ export default function PostDetailView() {
       if (!actorId) return;
       if (!pid) return;
 
-      const okConfirm = window.confirm("Delete this Vibe?");
+      const okConfirm = await requestConfirm({
+        title: "Delete Vibe",
+        message: "Delete this Vibe?",
+        confirmLabel: "Delete",
+        tone: "danger",
+      });
       if (!okConfirm) return;
 
       const res = await deletePost({
@@ -143,7 +180,7 @@ export default function PostDetailView() {
 
       navigate(-1);
     },
-    [actorId, navigate, deletePost]
+    [actorId, navigate, deletePost, requestConfirm]
   );
 
   const menus = usePostDetailMenus({
@@ -164,6 +201,14 @@ export default function PostDetailView() {
   const isIOS = useMemo(() => detectIOS(), []);
   const [replyModalOpen, setReplyModalOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      const resolve = confirmResolverRef.current;
+      confirmResolverRef.current = null;
+      if (typeof resolve === "function") resolve(false);
+    };
+  }, []);
 
   // ✅ refs for focus DURING tap gesture
   const replyRef = useRef(null);
@@ -400,6 +445,17 @@ export default function PostDetailView() {
     }
   }}
 />
+
+      <PostConfirmModal
+        open={confirmState.open}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmLabel={confirmState.confirmLabel}
+        cancelLabel={confirmState.cancelLabel}
+        tone={confirmState.tone}
+        onCancel={() => closeConfirm(false)}
+        onConfirm={() => closeConfirm(true)}
+      />
 
 
       <ReportedObjectCover

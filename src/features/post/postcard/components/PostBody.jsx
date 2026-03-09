@@ -1,5 +1,5 @@
 import React from "react";
-import LinkifiedMentions from "@/features/upload/ui/LinkifiedMentions";
+import LinkifiedMentions from "@/features/upload/adapters/ui/LinkifiedMentions.adapter";
 
 export default function PostBody({ text, mentionMap }) {
   if (!text) return null;

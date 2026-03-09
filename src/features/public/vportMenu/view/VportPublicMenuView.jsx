@@ -66,7 +66,6 @@ export function VportPublicMenuView({ actorId }) {
 
   if (!actorId) return null;
 
-  const bannerImage = profile.bannerUrl ? `url(${profile.bannerUrl})` : null;
   const avatarImage = profile.avatarUrl ? `url(${profile.avatarUrl})` : null;
 
   return (
@@ -122,29 +121,7 @@ export function VportPublicMenuView({ actorId }) {
             <div style={{ width: 48 }} />
           </div>
 
-          <div
-            style={{
-              height: 190,
-              position: "relative",
-              backgroundColor: "#070812",
-              backgroundImage: bannerImage
-                ? bannerImage
-                : "radial-gradient(900px 340px at 18% 20%, rgba(0,255,240,0.35), transparent 60%), radial-gradient(900px 340px at 82% 30%, rgba(124,58,237,0.30), transparent 62%), radial-gradient(700px 340px at 55% 90%, rgba(0,153,255,0.22), transparent 60%), linear-gradient(180deg, rgba(10,12,22,0.95), rgba(5,6,11,0.92))",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%)",
-              }}
-            />
-          </div>
-
-          <div style={{ padding: 16, marginTop: -34, position: "relative", zIndex: 2 }}>
+          <div style={{ padding: 16, position: "relative", zIndex: 2 }}>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
               <div
                 style={{

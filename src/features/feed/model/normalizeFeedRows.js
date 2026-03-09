@@ -1,5 +1,6 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\feed\model\normalizeFeedRows.js
 import { inferMediaType } from "@/features/feed/model/inferMediaType";
+import { resolveFeedRowVisibilityModel } from "@/features/feed/model/feedRowVisibility.model";
 
 export function normalizeFeedRows({
   pageRows,
@@ -7,32 +8,52 @@ export function normalizeFeedRows({
   profileMap,
   vportMap,
   blockedActorSet,
+  followedActorSet,
   viewerActorId,
   hiddenByMeSet,
   mediaMap,
   mentionMapsByPostId,
+  includeDebug = false,
 }) {
-  return (pageRows || [])
+  const debugRows = [];
+
+  const normalized = (pageRows || [])
     .filter((r) => {
-      if (blockedActorSet.has(r.actor_id)) return false;
+      const visibility = resolveFeedRowVisibilityModel({
+        row: r,
+        actorMap,
+        profileMap,
+        vportMap,
+        blockedActorSet,
+        followedActorSet,
+        viewerActorId,
+      });
 
-      const a = actorMap[r.actor_id];
-      if (!a) return false;
+      if (includeDebug) {
+        debugRows.push(visibility);
+      }
 
-      if (a.vport_id) return vportMap[a.vport_id]?.is_active !== false;
-
-      const prof = profileMap[a.profile_id];
-      if (!prof) return false;
-
-      if (!prof.private) return true;
-      return a.id === viewerActorId;
+      return visibility.visible;
     })
     .map((r) => {
       const a = actorMap[r.actor_id];
       const prof = a?.profile_id ? profileMap[a.profile_id] : null;
       const vp = a?.vport_id ? vportMap[a.vport_id] : null;
 
-      const multi = mediaMap.get(r.id) || [];
+      const multi = (mediaMap.get(r.id) || [])
+        .map((mediaRow) => {
+          const url = mediaRow?.url ?? null;
+          if (!url) return null;
+
+          const rawType = mediaRow?.media_type ?? null;
+          const inferredType = rawType || inferMediaType(url);
+
+          return {
+            type: inferredType === "video" ? "video" : "image",
+            url,
+          };
+        })
+        .filter(Boolean);
       const legacy = r.media_url
         ? [{ type: r.media_type || inferMediaType(r.media_url), url: r.media_url }]
         : [];
@@ -68,4 +89,9 @@ export function normalizeFeedRows({
         mentionMap: mentionMapsByPostId?.[r.id] || {},
       };
     });
+
+  return {
+    normalized,
+    debugRows,
+  };
 }

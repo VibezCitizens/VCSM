@@ -1,0 +1,22 @@
+.auth-register-input:-webkit-autofill,
+.auth-register-input:-webkit-autofill:hover,
+.auth-register-input:-webkit-autofill:focus,
+.auth-register-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.03) inset;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.03) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.auth-register-input:autofill {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.03) inset;
+}
+
+.auth-register-select option {
+  color: #111827;
+  background: #ffffff;
+}

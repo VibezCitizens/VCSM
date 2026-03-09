@@ -1,5 +1,5 @@
-import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
-import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
+import { VPORT_TYPE_GROUPS } from "@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter";
+import { getVportTabsByType } from "@/features/profiles/adapters/kinds/vport/model/gas/getVportTabsByType.model.adapter";
 import { isDashboardCardEnabled } from "@/shared/config/releaseFlags";
 
 const DASHBOARD_VIEW_PRESETS = Object.freeze({

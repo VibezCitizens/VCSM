@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ctrlGetActorPrivacy } from '@/features/social/privacy/controllers/getActorPrivacy.controller'
-import { ctrlGetFollowStatus } from '@/features/social/friend/subscribe/controllers/getFollowStatus.controller'
-import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
+import { ctrlGetActorPrivacy } from '@/features/social/adapters/privacy/controllers/getActorPrivacy.controller.adapter'
+import { ctrlGetFollowStatus } from '@/features/social/adapters/friend/subscribe/controllers/getFollowStatus.controller.adapter'
+import { ctrlSendFollowRequest } from '@/features/social/adapters/friend/request/controllers/followRequests.controller.adapter'
 export function useProfileGate({
   viewerActorId,
   targetActorId,

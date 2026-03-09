@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useIncomingFollowRequests } from '@/features/social/friend/request/hooks/useIncomingFollowRequests'
+import { useIncomingFollowRequests } from '@/features/social/adapters/friend/request/hooks/useIncomingFollowRequests.adapter'
 import { usePendingFollowRequestActions } from '@/features/settings/privacy/hooks/usePendingFollowRequestActions'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import ActorLink from '@/shared/components/ActorLink'

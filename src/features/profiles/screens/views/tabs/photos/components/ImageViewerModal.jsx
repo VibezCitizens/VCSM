@@ -1,10 +1,10 @@
 ﻿import { X } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 
-import BinaryReactionButton from "@/features/post/postcard/components/BinaryReactionButton";
-import RoseReactionButton from "@/features/post/postcard/components/RoseReactionButton";
-import CommentButton from "@/features/post/postcard/components/CommentButton";
-import ShareReactionButton from "@/features/post/postcard/components/ShareReactionButton";
+import BinaryReactionButton from "@/features/post/adapters/postcard/components/BinaryReactionButton.adapter";
+import RoseReactionButton from "@/features/post/adapters/postcard/components/RoseReactionButton.adapter";
+import CommentButton from "@/features/post/adapters/postcard/components/CommentButton.adapter";
+import ShareReactionButton from "@/features/post/adapters/postcard/components/ShareReactionButton.adapter";
 
 export default function ImageViewerModal({
   imagePosts = [],

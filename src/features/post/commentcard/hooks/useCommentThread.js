@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useIdentity } from "@/state/identity/identityContext";
-import { hydrateActorsFromRows } from "@/features/actors/controllers/hydrateActors.controller";
+import { hydrateActorsFromRows } from "@/features/actors/adapters/controllers/hydrateActors.controller.adapter";
 import {
   loadCommentThread,
   createRootComment,

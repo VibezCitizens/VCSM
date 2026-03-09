@@ -1,8 +1,8 @@
 import { Plus, X } from 'lucide-react'
 
 import Card from '@/features/settings/ui/Card'
-import CreateVportForm from '@/features/vport/CreateVportForm.jsx'
-import OnemoredaysAd from '@/features/ads/widgets/OnemoredaysAd'
+import CreateVportForm from '@/features/vport/adapters/CreateVportForm.jsx.adapter'
+import OnemoredaysAd from '@/features/ads/adapters/widgets/OnemoredaysAd.adapter'
 
 import { useVportsController } from '@/features/settings/vports/hooks/useVportsController'
 
@@ -95,23 +95,26 @@ export default function VportsTabView() {
       <OnemoredaysAd />
 
       {showCreator && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[120]">
           <div className="absolute inset-0 bg-black/70" onClick={() => setShowCreator(false)} />
-          <div className="settings-shell relative w-full max-w-[560px] rounded-2xl">
-            <div className="flex items-center justify-between border-b border-slate-300/10 px-4 py-3">
-              <div className="text-sm font-semibold text-slate-100">Create a VPORT</div>
-              <button onClick={() => setShowCreator(false)} className="settings-btn settings-btn--ghost p-1.5 text-slate-300">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
-            <div className="p-4">
-              <CreateVportForm
-                onCreated={({ list }) => {
-                  if (Array.isArray(list)) setItems(list)
-                  setShowCreator(false)
-                }}
-              />
+          <div className="relative z-10 flex h-full w-full items-start justify-center overflow-y-auto p-3 sm:items-center sm:p-4">
+            <div className="settings-shell relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[560px] flex-col overflow-hidden rounded-2xl sm:max-h-[calc(100dvh-2rem)]">
+              <div className="flex shrink-0 items-center justify-between border-b border-slate-300/10 px-4 py-3">
+                <div className="text-sm font-semibold text-slate-100">Create a VPORT</div>
+                <button onClick={() => setShowCreator(false)} className="settings-btn settings-btn--ghost p-1.5 text-slate-300">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="min-h-0 overflow-y-auto overscroll-contain p-4 touch-pan-y">
+                <CreateVportForm
+                  onCreated={({ list }) => {
+                    if (Array.isArray(list)) setItems(list)
+                    setShowCreator(false)
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>

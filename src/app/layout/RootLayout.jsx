@@ -8,9 +8,6 @@ import PageContainer from '@/shared/components/PageContainer'
 import { IOSDebugHUD } from '@/app/platform/ios'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 
-// DEV ONLY
-import IdentityDebugger from '@/state/identity/IdentityDebugger'
-
 export default function RootLayout() {
   const { pathname } = useLocation()
 
@@ -57,7 +54,6 @@ export default function RootLayout() {
 
       {!hideBottomNav && <BottomNavBar />}
 
-      {import.meta.env.DEV && <IdentityDebugger />}
       {import.meta.env.DEV && <IOSDebugHUD />}
     </div>
   )

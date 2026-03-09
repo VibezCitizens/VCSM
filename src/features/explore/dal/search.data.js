@@ -38,6 +38,31 @@ function mergeActorRows(primaryRows = [], supplementalRows = []) {
   return Array.from(merged.values())
 }
 
+async function readActorPrivacyMap(actorIds = []) {
+  const ids = Array.from(new Set((actorIds || []).filter(Boolean)))
+  if (!ids.length) return new Map()
+
+  const { data, error } = await vc
+    .from('actor_privacy_settings')
+    .select('actor_id,is_private')
+    .in('actor_id', ids)
+
+  if (error || !Array.isArray(data)) {
+    // Fail closed on privacy lookup issues.
+    return new Map(ids.map((actorId) => [actorId, true]))
+  }
+
+  const map = new Map(data.map((row) => [row.actor_id, row.is_private === true]))
+  for (const actorId of ids) {
+    if (!map.has(actorId)) {
+      // Missing row should not be treated as definitely public.
+      map.set(actorId, true)
+    }
+  }
+
+  return map
+}
+
 export const search = {
   // ==========================================================
   // ACTORS (USERS)
@@ -80,14 +105,19 @@ export const search = {
         })
 
       if (error) throw error
-      rows = Array.isArray(data) ? data : []
+      rows = (Array.isArray(data) ? data : []).map((row) => ({
+        ...row,
+        // RPC variants may return either `user_id` or legacy `id` for profiles.
+        user_id: row?.user_id ?? row?.id ?? null,
+        is_private: row?.is_private === true || row?.private === true,
+      }))
     } catch {
       // ------------------------------------------------------
       // FALLBACK - profiles table (LEGACY, non-actor)
       // ------------------------------------------------------
       let fb = supabase
         .from('profiles')
-        .select('id, display_name, username, photo_url, private, discoverable')
+        .select('id, display_name, username, photo_url, discoverable')
         .limit(limit)
 
       if (currentUserId && isUuid(currentUserId)) {
@@ -111,14 +141,44 @@ export const search = {
       }
 
       const { data } = await fb
-      rows = (data || []).map((u) => ({
-        actor_id: null, // non-navigable legacy fallback
-        user_id: u.id,
-        display_name: u.display_name,
-        username: u.username,
-        photo_url: u.photo_url,
-        is_private: !!u.private,
-      }))
+      const profileRows = data || []
+      const profileIds = profileRows.map((u) => u.id).filter(Boolean)
+
+      let actorByProfileId = new Map()
+      let privacyByActorId = new Map()
+
+      if (profileIds.length) {
+        const { data: actorRows, error: actorErr } = await vc
+          .from('actors')
+          .select('id,profile_id,kind,is_void')
+          .eq('kind', 'user')
+          .eq('is_void', false)
+          .in('profile_id', profileIds)
+
+        if (!actorErr && Array.isArray(actorRows)) {
+          actorByProfileId = new Map(
+            actorRows
+              .filter((a) => a?.id && a?.profile_id)
+              .map((a) => [a.profile_id, a])
+          )
+          privacyByActorId = await readActorPrivacyMap(
+            actorRows.map((a) => a?.id).filter(Boolean)
+          )
+        }
+      }
+
+      rows = profileRows.map((u) => {
+        const actor = actorByProfileId.get(u.id)
+        const actorId = actor?.id ?? null
+        return {
+          actor_id: actorId, // actor-first fallback
+          user_id: u.id,
+          display_name: u.display_name,
+          username: u.username,
+          photo_url: u.photo_url,
+          is_private: actorId ? privacyByActorId.get(actorId) === true : true,
+        }
+      })
     }
 
     // --------------------------------------------------------
@@ -130,7 +190,7 @@ export const search = {
     try {
       let pq = supabase
         .from('profiles')
-        .select('id,display_name,username,photo_url,private')
+        .select('id,display_name,username,photo_url')
         .limit(limit)
 
       if (byId && needle) {
@@ -169,6 +229,9 @@ export const search = {
             .in('profile_id', profileIds)
 
           if (!actorErr) {
+            const privacyByActorId = await readActorPrivacyMap(
+              (actorRows || []).map((a) => a?.id).filter(Boolean)
+            )
             const actorByProfileId = new Map(
               (actorRows || [])
                 .filter((a) => a?.profile_id && a?.id)
@@ -186,7 +249,7 @@ export const search = {
                   display_name: p.display_name ?? '',
                   username: p.username ?? '',
                   photo_url: p.photo_url ?? '/avatar.jpg',
-                  is_private: !!p.private,
+                  is_private: privacyByActorId.get(actor.id) === true,
                 }
               })
               .filter(Boolean)

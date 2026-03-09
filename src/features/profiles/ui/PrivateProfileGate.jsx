@@ -9,64 +9,40 @@
  * ============================================================
  */
 export default function PrivateProfileGate({
-  actor,
-  onRequestFollow,
+  actor: _actor,
+  onRequestFollow: _onRequestFollow,
   canMessage = false,
 }) {
-  if (!actor) return null;
-
-  const canRequest = typeof onRequestFollow === "function";
-
   return (
     <div className="flex justify-center px-4 py-8">
-      <div className="profiles-card w-full max-w-md rounded-2xl p-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-300/25 bg-amber-300/10">
-            <span className="text-sm text-amber-200">LOCK</span>
+      <div className="profiles-card relative w-full max-w-md overflow-hidden rounded-2xl p-5">
+        <div className="pointer-events-none absolute -right-16 -top-14 h-40 w-40 rounded-full bg-sky-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-14 -left-12 h-36 w-36 rounded-full bg-indigo-400/10 blur-3xl" />
+
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-sky-300/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-100">
+            <span className="h-1.5 w-1.5 rounded-full bg-sky-200" />
+            Access Controlled
           </div>
 
-          <div className="min-w-0">
-            <div className="text-sm font-semibold text-white">Private Profile</div>
-            <div className="text-xs text-slate-400">
-              Only approved subscribers can view full content.
+          <div className="mt-3 text-sm font-semibold text-white">Private Profile</div>
+          <div className="mt-1 text-xs text-slate-400">
+            Subscriber approval is required to access protected profile content.
+          </div>
+
+          <div className="mt-4 rounded-xl border border-white/10 bg-black/25 p-3">
+            <p className="text-xs leading-5 text-slate-300">
+              Tap <span className="font-semibold text-white">Subscribe</span> in the header to submit an access request.
+              Access is granted automatically after approval.
+            </p>
+          </div>
+
+          {canMessage && (
+            <div className="mt-3 text-center text-[11px] text-slate-500">
+              Messaging remains available while access is pending.
             </div>
-          </div>
+          )}
         </div>
-
-        <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5">
-          <img
-            src={actor?.avatar || "/avatar.jpg"}
-            alt={actor?.displayName || "Profile"}
-            className="h-10 w-10 rounded-lg border border-white/15 object-cover"
-          />
-
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-white">
-              {actor?.displayName || "Citizen"}
-            </div>
-            {actor?.username ? (
-              <div className="truncate text-xs text-slate-400">@{actor.username}</div>
-            ) : null}
-          </div>
-        </div>
-
-        <p className="mt-4 text-xs leading-5 text-slate-400">
-          Send a subscription request to unlock vibes, photos, videos, and friends.
-        </p>
-
-        <button
-          onClick={onRequestFollow}
-          disabled={!canRequest}
-          className="mt-4 w-full rounded-xl bg-white py-2.5 text-sm font-semibold text-black transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          Request Access
-        </button>
-
-        {canMessage && (
-          <div className="mt-2 text-center text-[11px] text-slate-500">
-            You can still send a message from the header.
-          </div>
-        )}
       </div>
     </div>
   );

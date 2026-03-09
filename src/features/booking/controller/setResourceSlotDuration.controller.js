@@ -4,7 +4,7 @@ import listBookingResourceServicesByResourceIdDAL from "@/features/booking/dal/l
 import saveBookingServiceProfileDurationsByServiceIdsDAL from "@/features/booking/dal/saveBookingServiceProfileDurationsByServiceIds.dal";
 import upsertBookingResourceServicesDAL from "@/features/booking/dal/upsertBookingResourceServices.dal";
 import { mapBookingServiceProfileRows } from "@/features/booking/model/bookingServiceProfile.model";
-import readVportServicesByActor from "@/features/profiles/kinds/vport/dal/services/readVportServicesByActor";
+import readVportServicesByActor from "@/features/profiles/adapters/kinds/vport/dal/services/readVportServicesByActor.adapter";
 
 function normalizeDurationMinutes(value, fallback = 30) {
   const minutes = Math.floor(Number(value));

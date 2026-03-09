@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getActorVibeTagsController } from '@/features/profiles/screens/views/tabs/tags/controller/getActorVibeTags.controller'
+import { getActorVibeTagsController } from '@/features/profiles/adapters/tags/actorVibeTags.adapter'
 
 export function useActorVibeTags(actorId) {
   const [tags, setTags] = useState([])

@@ -19,21 +19,6 @@ export default function useVportServices({
     [vportTypeProp]
   );
 
-  // DEBUG: prove hook input + computed value
-  useEffect(() => {
-    console.groupCollapsed("[useVportServices][DEBUG input]");
-    console.debug({
-      targetActorId: targetActorId ?? null,
-      asOwner: Boolean(asOwner),
-      identityActorId: identityActorId ?? null,
-      vportTypeProp: vportTypeProp ?? null,
-      vportTypeComputed: vportType ?? null,
-      note:
-        "If vportTypeComputed is 'vport', then some caller passed vportTypeProp='vport' into VportServicesView/useVportServices.",
-    });
-    console.groupEnd();
-  }, [targetActorId, asOwner, identityActorId, vportTypeProp, vportType]);
-
   const [isLoading, setIsLoading] = useState(Boolean(targetActorId));
   const [error, setError] = useState(null);
   const [data, setData] = useState(() => ({
@@ -50,15 +35,6 @@ export default function useVportServices({
     setIsLoading(true);
 
     try {
-      // DEBUG: prove what we send into controller
-      console.groupCollapsed("[useVportServices][DEBUG controller call]");
-      console.debug({
-        targetActorId,
-        vportType,
-        asOwner: Boolean(asOwner),
-      });
-      console.groupEnd();
-
       const res = await getVportServicesController({
         targetActorId,
         vportType,

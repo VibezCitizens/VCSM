@@ -12,7 +12,13 @@ export async function readPostMediaByPostIdsDAL(postIds = []) {
     .order("post_id", { ascending: true })
     .order("sort_order", { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    console.warn("[readPostMediaByPostIdsDAL] post_media read failed; falling back to legacy media_url", {
+      postCount: ids.length,
+      error: error?.message || error,
+    });
+    return new Map();
+  }
 
   const map = new Map(); // post_id -> [{ type, url, sort_order }]
   for (const r of data || []) {

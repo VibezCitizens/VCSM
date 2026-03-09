@@ -20,16 +20,6 @@ function fmtTs(ts) {
   });
 }
 
-function toFinite(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-function fmtSpread(v) {
-  if (!Number.isFinite(v)) return "--";
-  return v.toLocaleString(undefined, { maximumFractionDigits: 6 });
-}
-
 export default function VportRateCard({
   baseCurrency,
   quoteCurrency,
@@ -39,14 +29,6 @@ export default function VportRateCard({
 } = {}) {
   const safeBase = (baseCurrency ?? "--").toString().toUpperCase();
   const safeQuote = (quoteCurrency ?? "--").toString().toUpperCase();
-
-  const buy = toFinite(buyRate);
-  const sell = toFinite(sellRate);
-
-  const mid =
-    buy !== null && sell !== null ? (buy + sell) / 2 : buy ?? sell ?? null;
-  const spread =
-    buy !== null && sell !== null ? Math.abs(sell - buy) : null;
 
   return (
     <div className="mb-3 overflow-hidden rounded-2xl border border-sky-300/15 bg-[radial-gradient(120%_120%_at_0%_0%,rgba(56,189,248,0.12),rgba(15,23,42,0.88)_42%,rgba(2,6,23,0.98)_100%)] shadow-[0_16px_34px_-24px_rgba(56,189,248,0.7)]">
@@ -77,17 +59,6 @@ export default function VportRateCard({
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <div className="rounded-lg border border-white/10 bg-black/25 p-2">
-            <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Mid</div>
-            <div className="mt-0.5 text-sm font-semibold text-slate-100">{fmtNum(mid)}</div>
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-black/25 p-2">
-            <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Spread</div>
-            <div className="mt-0.5 text-sm font-semibold text-slate-100">{fmtSpread(spread)}</div>
-          </div>
-        </div>
       </div>
     </div>
   );

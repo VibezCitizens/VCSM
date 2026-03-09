@@ -16,7 +16,7 @@ import {
 } from '@/features/settings/privacy/controller/Blocks.controller'
 
 // 🔥 REQUIRED: hydrate blocked actors into actor store
-import { hydrateActorsFromRows } from '@/features/actors/controllers/hydrateActors.controller'
+import { hydrateActorsFromRows } from '@/features/actors/adapters/controllers/hydrateActors.controller.adapter'
 
 const Ctx = createContext(null)
 

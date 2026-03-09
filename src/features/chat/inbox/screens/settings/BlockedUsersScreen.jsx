@@ -12,9 +12,9 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 
 import { useIdentity } from '@/state/identity/identityContext'
-import { MyBlocksProvider, useMyBlocks } from '@/features/settings/privacy/hooks/useMyBlocks'
+import { MyBlocksProvider, useMyBlocks } from '@/features/settings/adapters/privacy/hooks/useMyBlocks.adapter'
 import { useActorSummary } from '@/state/actors/useActorSummary'
-import BlockConfirmModal from '@/features/block/ui/BlockConfirmModal'
+import BlockConfirmModal from '@/features/block/adapters/ui/BlockConfirmModal.adapter'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 

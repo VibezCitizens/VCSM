@@ -55,10 +55,11 @@ if (partner.kind === 'vport') {
     displayName:
       partner.displayName ||
       partner.username ||
+      conversation.title ||
       'Unknown',
 
     username: partner.username ?? null,
-    photoUrl: partner.photoUrl ?? '/avatar.jpg',
+    photoUrl: partner.photoUrl ?? conversation.avatarUrl ?? '/avatar.jpg',
 
     _member: partner,
   }

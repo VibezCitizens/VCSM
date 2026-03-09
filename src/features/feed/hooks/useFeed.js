@@ -78,6 +78,7 @@ async function preloadInitialMedia(posts) {
 
 export function useFeed(viewerActorId, realmId) {
   const [posts, setPosts] = useState([]);
+  const [filterDebugRows, setFilterDebugRows] = useState([]);
   const [viewerIsAdult, setViewerIsAdult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -104,6 +105,7 @@ export function useFeed(viewerActorId, realmId) {
     setLoading(false);
     setViewerIsAdult(null);
     setFirstBatchReady(false);
+    setFilterDebugRows([]);
 
     setHiddenPostIds(new Set());
   }, [viewerActorId, realmId]);
@@ -160,6 +162,7 @@ export function useFeed(viewerActorId, realmId) {
 
           const {
             normalized,
+            debugRows,
             hasMoreNow: nextHasMore,
             nextCursorCreatedAt,
             hiddenByMeSet,
@@ -189,6 +192,20 @@ export function useFeed(viewerActorId, realmId) {
           });
 
           normalizedChunk.push(...(normalized || []));
+          setFilterDebugRows((prev) => {
+            const incoming = Array.isArray(debugRows) ? debugRows : [];
+            if (fresh) return incoming;
+
+            const byPostId = new Map(
+              (Array.isArray(prev) ? prev : []).map((row) => [row.post_id, row])
+            );
+            for (const row of incoming) {
+              if (!row?.post_id) continue;
+              byPostId.set(row.post_id, row);
+            }
+            return Array.from(byPostId.values());
+          });
+
           hasMoreNow = !!nextHasMore;
           cursorCreatedAt = nextCursorCreatedAt ?? null;
 
@@ -254,6 +271,7 @@ export function useFeed(viewerActorId, realmId) {
     setPosts,
     fetchViewer,
     hiddenPostIds,
+    filterDebugRows,
     firstBatchReady,
   };
 }

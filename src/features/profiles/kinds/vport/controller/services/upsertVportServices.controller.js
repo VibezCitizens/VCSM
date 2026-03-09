@@ -2,6 +2,7 @@
 
 import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
 import upsertVportServicesByActorDal from "@/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js";
+import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportServiceCatalogFallback.model";
 
 /**
  * Controller:
@@ -27,10 +28,15 @@ export default async function upsertVportServicesController({
     throw new Error("upsertVportServicesController: vportType is required");
   }
 
-  const catalogRows = await readVportServiceCatalogByType({
+  const catalogRowsRaw = await readVportServiceCatalogByType({
     vportType,
     includeInactive: false,
   });
+
+  const catalogRows =
+    Array.isArray(catalogRowsRaw) && catalogRowsRaw.length
+      ? catalogRowsRaw
+      : getFallbackServiceCatalogRows(vportType);
 
   const catalogByKey = new Map();
   for (const r of catalogRows ?? []) {

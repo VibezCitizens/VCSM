@@ -287,7 +287,7 @@ export default function VportAboutView({ profile, details }) {
 
         {/* HOURS (INDIVIDUAL DAYS) */}
         {hasHours && (
-          <SectionCard title="Hours" subtitle={hours.timezone || ""}>
+          <SectionCard title="Hours">
             <div className="space-y-2">
               {hours.days.map((d) => (
                 <div

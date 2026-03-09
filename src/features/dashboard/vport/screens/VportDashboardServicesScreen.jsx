@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import VportServicesView from "@/features/profiles/kinds/vport/screens/services/view/VportServicesView";
+import VportServicesView from "@/features/profiles/adapters/kinds/vport/screens/services/view/VportServicesView.adapter";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";

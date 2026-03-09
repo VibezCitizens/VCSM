@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import WandersLoading from "@/features/wanders/components/WandersLoading";
 import WandersEmptyState from "@/features/wanders/components/WandersEmptyState";
 
-import { resolveRealm } from "@/features/upload/model/resolveRealm";
+import { resolveRealm } from "@/features/upload/adapters/model/resolveRealm.adapter";
 import { useWandersHomeExperience } from "@/features/wanders/core/hooks/useWandersHomeExperience.hook";
 
 import { WANDERS_CHROME as C } from "@/features/wanders/utils/wandersChrome";

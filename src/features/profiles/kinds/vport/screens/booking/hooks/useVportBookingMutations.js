@@ -11,7 +11,9 @@ export function useVportBookingMutations({
   selectedSlots,
   slotDurationMinutes,
   ownerCustomerName,
+  ownerCustomerActorId,
   setOwnerCustomerName,
+  setOwnerCustomerActorId,
   createBooking,
   manageAvailability,
   availability,
@@ -34,6 +36,7 @@ export function useVportBookingMutations({
       ? {
         requestActorId: viewerActorId,
         resourceId,
+        customerActorId: ownerCustomerActorId ?? null,
         source: "owner",
         status: "confirmed",
         startsAt: startsAtDate.toISOString(),
@@ -61,7 +64,10 @@ export function useVportBookingMutations({
 
     const result = await createBooking.createBooking(payload);
     if (!result?.ok) return;
-    if (isOwner) setOwnerCustomerName("");
+    if (isOwner) {
+      setOwnerCustomerName("");
+      setOwnerCustomerActorId(null);
+    }
     await availability.refresh();
   }, [
     resourceId,
@@ -72,7 +78,9 @@ export function useVportBookingMutations({
     viewerActorId,
     slotDurationMinutes,
     ownerCustomerName,
+    ownerCustomerActorId,
     setOwnerCustomerName,
+    setOwnerCustomerActorId,
     createBooking,
     availability,
   ]);

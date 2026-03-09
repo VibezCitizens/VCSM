@@ -1,9 +1,9 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\postcard\hooks\usePostDetailReporting.js
 
 import { useCallback, useState } from "react";
-import useReportFlow from "@/features/moderation/hooks/useReportFlow";
-import { hideCommentForActor } from "@/features/moderation/controllers/commentVisibility.controller";
-import { hidePostForActor } from "@/features/moderation/controllers/postVisibility.controller";
+import useReportFlow from "@/features/moderation/adapters/hooks/useReportFlow.adapter";
+import { hideCommentForActor } from "@/features/moderation/adapters/controllers/commentVisibility.controller.adapter";
+import { hidePostForActor } from "@/features/moderation/adapters/controllers/postVisibility.controller.adapter";
 
 export default function usePostDetailReporting({ actorId, postId, commentCovers }) {
   const reportFlow = useReportFlow({ reporterActorId: actorId });

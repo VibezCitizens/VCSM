@@ -74,16 +74,31 @@ export async function debugCheckAuthorVisibilityClient({
 
   // 3) fetch profiles
   let profilesById = {};
+  let privacyByActorId = {};
   if (profileIds.length) {
     const { data: profs, error: profErr } = await supabase
       .schema("public")
       .from("profiles")
-      .select("id, display_name, username, photo_url, private")
+      .select("id, display_name, username, photo_url")
       .in("id", uniq(profileIds))
       .limit(500);
 
     if (!profErr && Array.isArray(profs)) {
       profilesById = Object.fromEntries(profs.map((p) => [p.id, p]));
+    }
+  }
+
+  if (rawVisibleRows.length) {
+    const { data: privacyRows, error: privacyErr } = await supabase
+      .schema("vc")
+      .from("actor_privacy_settings")
+      .select("actor_id, is_private")
+      .in("actor_id", rawVisibleRows.map((a) => a.id));
+
+    if (!privacyErr && Array.isArray(privacyRows)) {
+      privacyByActorId = Object.fromEntries(
+        privacyRows.map((row) => [row.actor_id, row.is_private === true])
+      );
     }
   }
 
@@ -112,7 +127,7 @@ export async function debugCheckAuthorVisibilityClient({
         display_name: p?.display_name ?? null,
         username: p?.username ?? null,
         photo_url: p?.photo_url ?? null,
-        private: p?.private ?? null,
+        private: privacyByActorId[a.id] ?? true,
       };
     }
 

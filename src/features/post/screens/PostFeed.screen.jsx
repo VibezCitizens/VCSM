@@ -4,10 +4,10 @@ import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { useFeed } from "@/features/feed/hooks/useFeed";
+import { useFeed } from "@/features/feed/adapters/hooks/useFeed.adapter";
 
-import useReportFlow from "@/features/moderation/hooks/useReportFlow";
-import ReportModal from "@/features/moderation/components/ReportModal";
+import useReportFlow from "@/features/moderation/adapters/hooks/useReportFlow.adapter";
+import ReportModal from "@/features/moderation/adapters/components/ReportModal.adapter";
 import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
 import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
 import PostCardView from "@/features/post/postcard/ui/PostCard.view";
@@ -18,7 +18,7 @@ import "@/features/post/styles/post-modern.css";
 
 // ✅ NEW
 import usePostCovers from "@/features/post/postcard/hooks/usePostCovers";
-import ReportThanksOverlay from "@/features/moderation/components/ReportThanksOverlay";
+import ReportThanksOverlay from "@/features/moderation/adapters/components/ReportThanksOverlay.adapter";
 
 export default function PostFeedScreen() {
   const navigate = useNavigate();

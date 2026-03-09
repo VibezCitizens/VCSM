@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
-import Card from '@/features/settings/ui/Card'
+import Card from '@/features/settings/adapters/ui/Card.adapter'
 import useProfessionalBriefings from '@/features/professional/briefings/hooks/useProfessionalBriefings'
 import BriefingsFilters from '@/features/professional/briefings/components/BriefingsFilters'
 import BriefingsSummaryCards from '@/features/professional/briefings/components/BriefingsSummaryCards'

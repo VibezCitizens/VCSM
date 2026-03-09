@@ -47,8 +47,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import { useIdentity } from '@/state/identity/identityContext';
-import { startDirectConversation } from '@/features/chat/start/controllers/startDirectConversation.controller';
-import { resolveRealm } from '@/features/upload/model/resolveRealm';
+import { startDirectConversation } from '@/features/chat/adapters/start/controllers/startDirectConversation.controller.adapter';
+import { resolveRealm } from '@/features/upload/adapters/model/resolveRealm.adapter';
 
 export function useProfileHeaderMessaging({ profileId }) {
   const navigate = useNavigate();

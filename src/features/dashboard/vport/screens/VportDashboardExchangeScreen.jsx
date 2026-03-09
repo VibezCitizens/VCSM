@@ -8,10 +8,48 @@ import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import Toast from "@/shared/components/components/Toast";
 
-import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView.jsx";
-import VportRateEditorCard from "@/features/profiles/kinds/vport/screens/rates/components/VportRateEditorCard.jsx";
-import useUpsertVportRate from "@/features/profiles/kinds/vport/hooks/rates/useUpsertVportRate.js";
+import VportRatesView from "@/features/profiles/adapters/kinds/vport/screens/rates/view/VportRatesView.jsx.adapter";
+import VportRateEditorCard from "@/features/profiles/adapters/kinds/vport/screens/rates/components/VportRateEditorCard.jsx.adapter";
+import useUpsertVportRate from "@/features/profiles/adapters/kinds/vport/hooks/rates/useUpsertVportRate.js.adapter";
+
+function normalizeCurrencyCode(v) {
+  return String(v ?? "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "");
+}
+
+function toNumOrNull(v) {
+  if (v === null || v === undefined || String(v).trim() === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function toRatePairKey({ rateType = "fx", baseCurrency, quoteCurrency }) {
+  const safeRateType = String(rateType ?? "fx").trim().toLowerCase();
+  const safeBase = normalizeCurrencyCode(baseCurrency);
+  const safeQuote = normalizeCurrencyCode(quoteCurrency);
+  if (!safeBase || !safeQuote) return null;
+  return `${safeRateType}:${safeBase}/${safeQuote}`;
+}
+
+function mapRawRateRowToDomain(row) {
+  if (!row || typeof row !== "object") return null;
+  return {
+    id: row.id ?? null,
+    actorId: row.actor_id ?? null,
+    rateType: row.rate_type ?? "fx",
+    baseCurrency: row.base_currency ?? null,
+    quoteCurrency: row.quote_currency ?? null,
+    buyRate: toNumOrNull(row.buy_rate),
+    sellRate: toNumOrNull(row.sell_rate),
+    meta: row.meta ?? {},
+    updatedAt: row.updated_at ?? null,
+    createdAt: row.created_at ?? null,
+  };
+}
 
 export function VportDashboardExchangeScreen() {
   const navigate = useNavigate();
@@ -36,25 +74,91 @@ export function VportDashboardExchangeScreen() {
   const [buyRate, setBuyRate] = useState("");
   const [sellRate, setSellRate] = useState("");
   const [refreshSeed, setRefreshSeed] = useState(0);
+  const [optimisticRatesByPair, setOptimisticRatesByPair] = useState({});
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const m = useUpsertVportRate({ actorId, rateType: "fx" });
+  const optimisticRates = useMemo(
+    () => Object.values(optimisticRatesByPair || {}),
+    [optimisticRatesByPair]
+  );
+
+  const showToast = useCallback((message) => {
+    setToastMessage(String(message || ""));
+    setToastOpen(false);
+    setTimeout(() => setToastOpen(true), 0);
+  }, []);
 
   const onSave = useCallback(async () => {
     if (!actorId) return;
+    const safeBase = normalizeCurrencyCode(baseCurrency);
+    const safeQuote = normalizeCurrencyCode(quoteCurrency);
+    const pairKey = toRatePairKey({
+      rateType: "fx",
+      baseCurrency: safeBase,
+      quoteCurrency: safeQuote,
+    });
+    if (!pairKey) return;
 
-    await m.upsert({
+    const nowIso = new Date().toISOString();
+    const previousOptimistic = optimisticRatesByPair?.[pairKey] ?? null;
+    const optimisticRate = {
+      id: `optimistic:${pairKey}:${nowIso}`,
       actorId,
       rateType: "fx",
-      baseCurrency,
-      quoteCurrency,
-      buyRate,
-      sellRate,
-    });
+      baseCurrency: safeBase,
+      quoteCurrency: safeQuote,
+      buyRate: toNumOrNull(buyRate),
+      sellRate: toNumOrNull(sellRate),
+      meta: {},
+      updatedAt: nowIso,
+      createdAt: nowIso,
+    };
 
-    setBuyRate("");
-    setSellRate("");
-    setRefreshSeed((n) => n + 1);
-  }, [m, actorId, baseCurrency, quoteCurrency, buyRate, sellRate]);
+    setOptimisticRatesByPair((prev) => ({
+      ...prev,
+      [pairKey]: optimisticRate,
+    }));
+
+    try {
+      const saved = await m.upsert({
+        actorId,
+        rateType: "fx",
+        baseCurrency: safeBase,
+        quoteCurrency: safeQuote,
+        buyRate,
+        sellRate,
+      });
+
+      const mapped = mapRawRateRowToDomain(saved) ?? optimisticRate;
+      setOptimisticRatesByPair((prev) => ({
+        ...prev,
+        [pairKey]: mapped,
+      }));
+
+      setBuyRate("");
+      setSellRate("");
+      setRefreshSeed((n) => n + 1);
+      showToast(`New exchange rate published: ${safeBase}/${safeQuote}`);
+    } catch {
+      setOptimisticRatesByPair((prev) => {
+        const next = { ...prev };
+        if (previousOptimistic) next[pairKey] = previousOptimistic;
+        else delete next[pairKey];
+        return next;
+      });
+    }
+  }, [
+    m,
+    actorId,
+    baseCurrency,
+    quoteCurrency,
+    buyRate,
+    sellRate,
+    optimisticRatesByPair,
+    showToast,
+  ]);
 
   if (!actorId) return null;
   if (identityLoading) {
@@ -119,10 +223,16 @@ export function VportDashboardExchangeScreen() {
               title="Exchange Rates"
               subtitle="Official rates - last updated shown per pair"
               refreshSeed={refreshSeed}
+              optimisticRates={optimisticRates}
             />
           </div>
         </div>
       </div>
+      <Toast
+        open={toastOpen}
+        message={toastMessage}
+        onClose={() => setToastOpen(false)}
+      />
     </div>
   );
 

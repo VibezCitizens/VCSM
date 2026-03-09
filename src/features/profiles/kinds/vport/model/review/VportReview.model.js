@@ -24,6 +24,7 @@ export function modelReviewRatingRow(row) {
 
   return {
     reviewId: row.review_id ?? null,
+    vportType: row.vport_type ?? null,
     dimensionKey: row.dimension_key ?? null,
     rating: row.rating ?? null,
   };
@@ -36,6 +37,7 @@ export function modelVportReviewRow(row) {
     id: row.id,
     targetActorId: row.target_actor_id,
     authorActorId: row.author_actor_id,
+    vportType: row.vport_type ?? null,
     isVerified: row.is_verified ?? false,
     ratingScale: row.rating_scale ?? 5,
     overallRating: row.overall_rating ?? null,

@@ -7,7 +7,7 @@ import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
 
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
-import { useBlockStatus } from "@/features/block/hooks/useBlockStatus";
+import { useBlockStatus } from "@/features/block/adapters/hooks/useBlockStatus.adapter";
 
 import VportProfileHeader from "@/features/profiles/kinds/vport/ui/vportprofileheader/VportProfileHeader";
 import VportProfileTabs from "@/features/profiles/kinds/vport/ui/tabs/VportProfileTabs";
@@ -25,13 +25,13 @@ import VportServicesView from "@/features/profiles/kinds/vport/screens/services/
 import VportBookingView from "@/features/profiles/kinds/vport/screens/views/tabs/VportBookingView";
 
 import { shareNative } from "@/shared/lib/shareNative";
-import PrivateProfileNotice from "@/features/social/components/PrivateProfileNotice";
+import PrivateProfileNotice from "@/features/social/adapters/components/PrivateProfileNotice.adapter";
 
-import ShareModal from "@/features/post/postcard/components/ShareModal";
-import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
-import useReportFlow from "@/features/moderation/hooks/useReportFlow";
-import ReportModal from "@/features/moderation/components/ReportModal";
-import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
+import ShareModal from "@/features/post/adapters/postcard/components/ShareModal.adapter";
+import PostActionsMenu from "@/features/post/adapters/postcard/components/PostActionsMenu.adapter";
+import useReportFlow from "@/features/moderation/adapters/hooks/useReportFlow.adapter";
+import ReportModal from "@/features/moderation/adapters/components/ReportModal.adapter";
+import { useDeletePostAction } from "@/features/post/adapters/postcard/hooks/useDeletePostAction.adapter";
 
 import { VportGasPricesView } from "@/features/profiles/kinds/vport/screens/gas/view/VportGasPricesView";
 import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportOwnerView";

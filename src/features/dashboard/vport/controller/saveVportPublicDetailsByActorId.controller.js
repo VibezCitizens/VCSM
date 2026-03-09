@@ -1,5 +1,5 @@
-import { fetchVportPublicDetailsByActorId } from '@/features/profiles/dal/vportPublicDetails.read.dal'
-import { upsertVportPublicDetails } from '@/features/settings/profile/dal/vportPublicDetails.write.dal'
+import { fetchVportPublicDetailsByActorId } from '@/features/profiles/adapters/dal/vportPublicDetails.read.dal.adapter'
+import { upsertVportPublicDetails } from '@/features/settings/adapters/profile/dal/vportPublicDetails.write.dal.adapter'
 
 export async function saveVportPublicDetailsByActorIdController(actorId, payload) {
   if (!actorId) throw new Error('saveVportPublicDetailsByActorId: actorId required')
