@@ -5,6 +5,7 @@ import useDesktopBreakpoint from "@/features/public/vportMenu/hooks/useDesktopBr
 import { useVportPublicMenu } from "@/features/public/vportMenu/hooks/useVportPublicMenu";
 import { useVportPublicDetails } from "@/features/public/vportMenu/hooks/useVportPublicDetails";
 import VportPublicMenuPanel from "@/features/public/vportMenu/components/VportPublicMenuPanel";
+import { hasDirectionsAddress, openDirections } from "@/features/vport/utils/openDirections";
 
 function actionButtonStyle(enabled) {
   return {
@@ -50,11 +51,12 @@ export function VportPublicMenuView({ actorId }) {
       bannerUrl: details?.bannerUrl || "",
       avatarUrl: details?.avatarUrl || "",
       reviewUrl: details?.reviewUrl || "",
-      directionsUrl: details?.directionsUrl || "",
+      address: details?.address ?? details?.raw?.address ?? null,
       phone: details?.phone || "",
     }),
     [details]
   );
+  const canOpenDirections = hasDirectionsAddress(profile);
 
   const onBack = () => {
     if (window.history.length > 1) {
@@ -174,11 +176,10 @@ export function VportPublicMenuView({ actorId }) {
 
                 <button
                   type="button"
-                  style={actionButtonStyle(!!profile.directionsUrl)}
-                  disabled={!profile.directionsUrl}
+                  style={actionButtonStyle(canOpenDirections)}
+                  disabled={!canOpenDirections}
                   onClick={() => {
-                    if (!profile.directionsUrl) return;
-                    window.open(profile.directionsUrl, "_blank", "noopener,noreferrer");
+                    openDirections(profile);
                   }}
                 >
                   Directions

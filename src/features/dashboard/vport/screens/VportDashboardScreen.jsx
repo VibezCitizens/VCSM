@@ -36,7 +36,12 @@ export function VportDashboardScreen() {
 
   const goBack = useCallback(() => actorId && navigate(`/profile/${actorId}`), [navigate, actorId]);
   const openQr = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/qr`), [navigate, actorId]);
-  const openFlyer = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/flyer`), [navigate, actorId]);
+  const openFlyer = useCallback(() => {
+    if (!actorId) return;
+    const activeType = normalizeVportType(identity?.vportType ?? publicDetails?.vportType ?? null);
+    const query = activeType === "restaurant" ? "?variant=table" : "";
+    navigate(`/actor/${actorId}/menu/flyer${query}`);
+  }, [navigate, actorId, identity?.vportType, publicDetails?.vportType]);
   const openFlyerEditor = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/flyer/edit`), [navigate, actorId]);
   const openOnlineMenuPreview = useCallback(() => actorId && navigate(`/actor/${actorId}/menu`), [navigate, actorId]);
   const openExchangeRates = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/exchange`), [navigate, actorId]);

@@ -5,6 +5,7 @@ import VportActorMenuPublicPanel from "@/features/profiles/kinds/vport/screens/m
 import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
 import useDesktopBreakpoint from "@/features/dashboard/adapters/vport/screens/useDesktopBreakpoint.adapter";
 import { createVportDashboardShellStyles } from "@/features/dashboard/adapters/vport/screens/model/vportDashboardShellStyles.adapter";
+import { hasDirectionsAddress, openDirections } from "@/features/vport/utils/openDirections";
 
 function toSafeExternalUrl(raw) {
   const value = String(raw ?? "").trim();
@@ -43,15 +44,14 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
 
   const actions = useMemo(() => {
     const reviewUrl = publicDetails?.review_url ?? publicDetails?.reviewUrl ?? "";
-    const directionsUrl = publicDetails?.directionsUrl ?? "";
     const phone = publicDetails?.phonePublic ?? "";
 
     return {
       reviewUrl: toSafeExternalUrl(reviewUrl),
-      directionsUrl: toSafeExternalUrl(directionsUrl),
       phone: toSafePhone(phone),
     };
   }, [publicDetails]);
+  const canOpenDirections = hasDirectionsAddress(publicDetails);
 
   const shell = useMemo(
     () => createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 900 }),
@@ -269,11 +269,10 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
 
                 <button
                   type="button"
-                  style={btnBase(!!actions.directionsUrl)}
-                  disabled={!actions.directionsUrl}
+                  style={btnBase(canOpenDirections)}
+                  disabled={!canOpenDirections}
                   onClick={() => {
-                    if (!actions.directionsUrl) return;
-                    window.open(actions.directionsUrl, "_blank", "noopener,noreferrer");
+                    openDirections(publicDetails);
                   }}
                 >
                   Directions

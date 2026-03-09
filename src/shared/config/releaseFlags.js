@@ -5,6 +5,7 @@ function parseOptionalBoolean(value, fallback) {
 }
 
 const defaultDisabled = false;
+const defaultEnabled = true;
 
 export const releaseFlags = Object.freeze({
   professionalWorkspace: parseOptionalBoolean(
@@ -13,7 +14,7 @@ export const releaseFlags = Object.freeze({
   ),
   vportPrintableFlyer: parseOptionalBoolean(
     import.meta.env.VITE_ENABLE_VPORT_PRINTABLE_FLYER,
-    defaultDisabled
+    defaultEnabled
   ),
   vportFlyerEditor: parseOptionalBoolean(
     import.meta.env.VITE_ENABLE_VPORT_FLYER_EDITOR,

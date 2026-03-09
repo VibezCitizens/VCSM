@@ -197,6 +197,7 @@ export function mapVportPublicDetailsRpcResult(raw) {
       bannerUrl,
       avatarUrl,
       phone: toSafePhone(row.phone_public ?? row.phone ?? row.phone_number ?? row.phoneNumber),
+      address: row.address ?? null,
       reviewUrl,
       directionsUrl,
       websiteUrl: toSafeUrl(row.website_url ?? row.websiteUrl),

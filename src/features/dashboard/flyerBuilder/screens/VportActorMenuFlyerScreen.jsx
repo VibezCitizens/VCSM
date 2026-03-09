@@ -14,7 +14,12 @@ export function VportActorMenuFlyerScreen() {
 
   const variant = useMemo(() => {
     const v = (searchParams.get("variant") || "classic").toLowerCase();
-    return v === "poster" ? "poster" : "classic";
+    if (v === "poster") return "poster";
+    if (v === "sticker") return "sticker";
+    if (v === "table") return "table";
+    if (v === "half") return "half";
+    if (v === "full") return "full";
+    return "classic";
   }, [searchParams]);
 
   if (!actorId) return null;
