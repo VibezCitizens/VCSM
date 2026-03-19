@@ -23,6 +23,7 @@ import {
   getDashboardViewByVportType,
   normalizeVportType,
 } from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
+import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
 import { mapPublicDetailsToDraft } from "@/features/dashboard/vport/model/vportSettingsDraft.model";
 
 const REQUIRED_ADDRESS_KEYS = ["line1", "city", "state", "zip", "country"];
@@ -122,6 +123,10 @@ export default function VportSettingsScreen() {
   const [toastMessage, setToastMessage] = useState("");
   const { saveByActorId } = useSaveVportPublicDetailsByActorId();
   const { ads } = useVportAds(actorId);
+  const dashboardDetails = useMemo(
+    () => normalizeDashboardVportDetails(publicDetails),
+    [publicDetails]
+  );
 
   const isDesktop = useDesktopBreakpoint();
   const viewerActorId = identity?.actorId ?? null;
@@ -130,8 +135,8 @@ export default function VportSettingsScreen() {
     Boolean(viewerActorId) &&
     String(viewerActorId) === String(actorId);
   const vportType = useMemo(
-    () => normalizeVportType(identity?.vportType ?? null),
-    [identity?.vportType]
+    () => normalizeVportType(identity?.vportType ?? dashboardDetails.vportType ?? null),
+    [dashboardDetails.vportType, identity?.vportType]
   );
   const dashboardView = useMemo(
     () => getDashboardViewByVportType(vportType),
@@ -151,8 +156,8 @@ export default function VportSettingsScreen() {
   }, []);
 
   useEffect(() => {
-    setDraft(mapPublicDetailsToDraft(publicDetails || null));
-  }, [publicDetails]);
+    setDraft(mapPublicDetailsToDraft(dashboardDetails));
+  }, [dashboardDetails]);
 
   useEffect(() => {
     if (!saved || saving) return;

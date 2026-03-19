@@ -6,33 +6,32 @@ export function asTextValue(value) {
 
 export function buildFlyerProfile(publicDetails) {
   const src = publicDetails || {};
-  const displayNameRaw = src.display_name ?? src.name ?? "Menu";
+  const displayNameRaw = src.name ?? "Menu";
 
   return {
     displayName: asTextValue(displayNameRaw) || "Menu",
-    username: asTextValue(src.username),
+    username: asTextValue(src.slug),
     tagline: asTextValue(src.tagline),
-    bannerUrl: asTextValue(src.banner_url ?? src.bannerUrl),
-    avatarUrl: asTextValue(src.avatar_url ?? src.avatarUrl),
-    logoUrl: asTextValue(src.logo_url ?? src.logoUrl),
-    address: asTextValue(src.address ?? src.street_address ?? src.streetAddress),
-    hours: asTextValue(src.hours ?? src.open_hours ?? src.openHours),
-    website: asTextValue(src.website ?? src.website_url ?? src.websiteUrl),
-    accent: asTextValue(src.accent ?? src.accent_color ?? src.accentColor),
-    flyerHeadline: asTextValue(src.flyer_headline ?? src.flyerHeadline),
-    flyerSubheadline: asTextValue(src.flyer_subheadline ?? src.flyerSubheadline),
+    bannerUrl: asTextValue(src.bannerUrl),
+    avatarUrl: asTextValue(src.avatarUrl),
+    logoUrl: asTextValue(src.logoUrl),
+    address: asTextValue(src.addressText),
+    hours: asTextValue(src.hoursText),
+    website: asTextValue(src.websiteUrl),
+    accent: asTextValue(src.accentColor),
+    flyerHeadline: asTextValue(src.flyerHeadline),
+    flyerSubheadline: asTextValue(src.flyerSubheadline),
+    flyerNote: asTextValue(src.flyerNote),
   };
 }
 
 export function buildFlyerActions(publicDetails) {
   const src = publicDetails || {};
   return {
-    directionsUrl: asTextValue(
-      src.directions_url ?? src.directionsUrl ?? src.maps_url ?? src.mapsUrl
-    ).trim(),
-    phone: asTextValue(src.phone ?? src.phone_number ?? src.phoneNumber).trim(),
-    foodImage1: asTextValue(src.flyer_food_image_1 ?? src.flyerFoodImage1).trim(),
-    foodImage2: asTextValue(src.flyer_food_image_2 ?? src.flyerFoodImage2).trim(),
+    directionsUrl: asTextValue(src.directionsUrl).trim(),
+    phone: asTextValue(src.phonePublic).trim(),
+    foodImage1: asTextValue(src.flyerFoodImage1).trim(),
+    foodImage2: asTextValue(src.flyerFoodImage2).trim(),
   };
 }
 
@@ -87,4 +86,3 @@ export function createFlyerViewStyles() {
     }),
   };
 }
-

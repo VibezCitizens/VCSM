@@ -3,7 +3,6 @@ import QRCode from "react-qr-code";
 
 export function PosterFlyer({
   loading,
-  publicDetails,
   profile,
   actions,
   menuUrl,
@@ -18,8 +17,7 @@ export function PosterFlyer({
     profile.flyerSubheadline?.trim() || "SCAN HERE TO VIEW OUR MENU ONLINE";
 
   const noteText =
-    asText(publicDetails?.flyer_note) ||
-    asText(publicDetails?.flyerNote) ||
+    asText(profile.flyerNote) ||
     profile.tagline ||
     "Fresh meals, fast service, good vibes.";
 

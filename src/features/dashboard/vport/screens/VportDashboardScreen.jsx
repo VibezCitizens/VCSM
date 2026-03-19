@@ -13,35 +13,40 @@ import {
   getDashboardViewByVportType,
   normalizeVportType,
 } from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
+import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
 
 export function VportDashboardScreen() {
   const navigate = useNavigate();
   const { actorId = null } = useParams();
   const { identity, identityLoading } = useIdentity();
   const { loading: headerLoading, details: publicDetails } = useVportPublicDetails(actorId);
+  const dashboardDetails = useMemo(
+    () => normalizeDashboardVportDetails(publicDetails),
+    [publicDetails]
+  );
 
   const isDesktop = useDesktopBreakpoint();
   const isOwner = Boolean(actorId) && Boolean(identity?.actorId) && String(identity.actorId) === String(actorId);
 
   const profile = useMemo(
     () => ({
-      displayName: publicDetails?.name ?? "Dashboard",
-      username: publicDetails?.slug ?? "",
-      tagline: publicDetails?.tagline ?? "",
-      bannerUrl: publicDetails?.bannerUrl ?? "",
-      avatarUrl: publicDetails?.avatarUrl ?? "",
+      displayName: dashboardDetails.name || "Dashboard",
+      username: dashboardDetails.slug,
+      tagline: dashboardDetails.tagline,
+      bannerUrl: dashboardDetails.bannerUrl,
+      avatarUrl: dashboardDetails.avatarUrl,
     }),
-    [publicDetails]
+    [dashboardDetails]
   );
 
   const goBack = useCallback(() => actorId && navigate(`/profile/${actorId}`), [navigate, actorId]);
   const openQr = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/qr`), [navigate, actorId]);
   const openFlyer = useCallback(() => {
     if (!actorId) return;
-    const activeType = normalizeVportType(identity?.vportType ?? publicDetails?.vportType ?? null);
+    const activeType = normalizeVportType(identity?.vportType ?? dashboardDetails.vportType ?? null);
     const query = activeType === "restaurant" ? "?variant=table" : "";
     navigate(`/actor/${actorId}/menu/flyer${query}`);
-  }, [navigate, actorId, identity?.vportType, publicDetails?.vportType]);
+  }, [navigate, actorId, identity?.vportType, dashboardDetails.vportType]);
   const openFlyerEditor = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/flyer/edit`), [navigate, actorId]);
   const openOnlineMenuPreview = useCallback(() => actorId && navigate(`/actor/${actorId}/menu`), [navigate, actorId]);
   const openExchangeRates = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/exchange`), [navigate, actorId]);
@@ -53,8 +58,8 @@ export function VportDashboardScreen() {
   const openSettings = useCallback(() => actorId && navigate(`/actor/${actorId}/settings`), [navigate, actorId]);
 
   const vportType = useMemo(
-    () => normalizeVportType(identity?.vportType ?? publicDetails?.vportType ?? null),
-    [identity?.vportType, publicDetails?.vportType]
+    () => normalizeVportType(identity?.vportType ?? dashboardDetails.vportType ?? null),
+    [identity?.vportType, dashboardDetails.vportType]
   );
 
   const dashboardView = useMemo(() => getDashboardViewByVportType(vportType), [vportType]);

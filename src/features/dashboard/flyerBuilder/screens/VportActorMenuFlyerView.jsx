@@ -1,29 +1,22 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import ClassicFlyer from "@/features/dashboard/qrcode/components/flyer/ClassicFlyer";
-import PosterFlyer from "@/features/dashboard/qrcode/components/flyer/PosterFlyer";
-import { PrintableQrSheet } from "@/features/dashboard/flyerBuilder/PrintableQrFlyer";
+import { PrintableQrSheet } from "@/features/dashboard/flyerBuilder/components/printableQr/PrintableQrSheet";
+import { ClassicFlyer, PosterFlyer } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
+import { VportBackButton, useDesktopBreakpoint } from "@/features/dashboard/vport/adapters/vport.adapter";
 import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
+import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
 import {
   asTextValue,
   buildFlyerActions,
   buildFlyerProfile,
   createFlyerViewStyles,
 } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerView.model";
-import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
-import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 const PRINTABLE_VARIANTS = Object.freeze(["table", "half", "full", "sticker"]);
 
 function isPrintableVariant(value) {
   return PRINTABLE_VARIANTS.includes(String(value || "").toLowerCase());
-}
-
-function buildQrImageUrl(menuUrl) {
-  const target = String(menuUrl || "").trim();
-  if (!target) return "";
-  return `https://api.qrserver.com/v1/create-qr-code/?size=1200x1200&format=png&margin=0&data=${encodeURIComponent(target)}`;
 }
 
 function buildShortUrl(menuUrl, slug) {
@@ -40,18 +33,24 @@ export function VportActorMenuFlyerView({
   const { loading, details: publicDetails } = useVportPublicDetails(actorId);
   const [variant, setVariant] = useState(initialVariant);
   const isDesktop = useDesktopBreakpoint();
+  const dashboardDetails = useMemo(
+    () => normalizeDashboardVportDetails(publicDetails),
+    [publicDetails]
+  );
 
   const menuUrl = useMemo(() => {
     if (!actorId) return "";
     return `${window.location.origin}/m/${actorId}`;
   }, [actorId]);
 
-  const profile = useMemo(() => buildFlyerProfile(publicDetails), [publicDetails]);
-  const actions = useMemo(() => buildFlyerActions(publicDetails), [publicDetails]);
+  const profile = useMemo(() => buildFlyerProfile(dashboardDetails), [dashboardDetails]);
+  const actions = useMemo(() => buildFlyerActions(dashboardDetails), [dashboardDetails]);
   const styles = useMemo(() => createFlyerViewStyles(), []);
   const printableVariant = isPrintableVariant(variant);
-  const qrCodeUrl = useMemo(() => buildQrImageUrl(menuUrl), [menuUrl]);
-  const shortUrl = useMemo(() => buildShortUrl(menuUrl, publicDetails?.slug), [menuUrl, publicDetails?.slug]);
+  const shortUrl = useMemo(
+    () => buildShortUrl(menuUrl, dashboardDetails.slug),
+    [menuUrl, dashboardDetails.slug]
+  );
 
   const onPrint = useCallback(() => {
     try {
@@ -76,10 +75,25 @@ export function VportActorMenuFlyerView({
   if (!actorId) return null;
 
   return (
-    <div style={styles.page}>
+    <div className="flyer-print-page" style={styles.page}>
       <style>
         {`
           @media print {
+            html,
+            body,
+            #root {
+              height: auto !important;
+              min-height: 0 !important;
+              overflow: visible !important;
+            }
+
+            .flyer-print-page {
+              height: auto !important;
+              min-height: 0 !important;
+              overflow: visible !important;
+              background: #fff !important;
+            }
+
             .flyer-toolbar-print-hide {
               display: none !important;
             }
@@ -164,15 +178,13 @@ export function VportActorMenuFlyerView({
         <PrintableQrSheet
           layout={variant}
           businessName={profile.displayName || "Restaurant"}
-          qrUrl={qrCodeUrl}
+          menuUrl={menuUrl}
           link={shortUrl}
-          logoUrl={profile.logoUrl || ""}
           showPrintButton={false}
         />
       ) : variant !== "poster" ? (
         <ClassicFlyer
           loading={loading}
-          publicDetails={publicDetails}
           profile={profile}
           actions={actions}
           menuUrl={menuUrl}
@@ -182,7 +194,6 @@ export function VportActorMenuFlyerView({
       ) : (
         <PosterFlyer
           loading={loading}
-          publicDetails={publicDetails}
           profile={profile}
           actions={actions}
           menuUrl={menuUrl}

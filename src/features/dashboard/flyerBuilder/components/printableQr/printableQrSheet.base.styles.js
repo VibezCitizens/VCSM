@@ -1,7 +1,19 @@
 export const PRINTABLE_QR_SHEET_BASE_CSS = `
 @page {
   size: letter portrait;
+  margin: 0.25in;
+}
+
+html,
+body {
   margin: 0;
+  padding: 0;
+}
+
+.pqs-root {
+  --pqs-paper-width: 8.5in;
+  --pqs-paper-height: 11in;
+  --pqs-print-safe-margin: 0.25in;
 }
 
 .pqs-root,
@@ -37,17 +49,18 @@ export const PRINTABLE_QR_SHEET_BASE_CSS = `
   line-height: 1;
   padding: 10px 14px;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 .pqs-sheet-wrapper {
-  width: 8.5in;
-  height: 11in;
+  width: var(--pqs-paper-width);
+  height: var(--pqs-paper-height);
 }
 
 .pqs-sheet {
   position: relative;
-  width: 8.5in;
-  height: 11in;
+  width: var(--pqs-paper-width);
+  height: var(--pqs-paper-height);
   padding: 0.25in;
   background: #ffffff;
   margin: 0 auto;
@@ -150,6 +163,8 @@ export const PRINTABLE_QR_SHEET_BASE_CSS = `
 
 .pqs-qr-image {
   display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -174,39 +189,49 @@ export const PRINTABLE_QR_SHEET_BASE_CSS = `
 }
 
 .pqs-cut-note--tl {
-  top: 0.12in;
-  left: 0.12in;
+  top: 0.2in;
+  left: 0.2in;
 }
 
 .pqs-cut-note--tr {
-  top: 0.12in;
-  right: 0.12in;
+  top: 0.2in;
+  right: 0.2in;
 }
 
 .pqs-cut-note--bl {
-  bottom: 0.12in;
-  left: 0.12in;
+  bottom: 0.2in;
+  left: 0.2in;
 }
 
 .pqs-cut-note--br {
-  bottom: 0.12in;
-  right: 0.12in;
+  bottom: 0.2in;
+  right: 0.2in;
 }
 
 @media print {
   html,
   body {
-    width: 8.5in;
-    height: 11in;
+    width: auto !important;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #fff !important;
+    overflow: visible !important;
+  }
+
+  #root {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
 
   .pqs-page-shell {
-    min-height: 0 !important;
+    min-height: auto !important;
     padding: 0 !important;
     background: #fff !important;
+    overflow: visible !important;
   }
 
   .pqs-print-hide {
@@ -214,18 +239,29 @@ export const PRINTABLE_QR_SHEET_BASE_CSS = `
   }
 
   .pqs-sheet-wrapper {
-    width: 8.5in !important;
-    height: 11in !important;
-    margin: 0 auto !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
   }
 
   .pqs-sheet {
-    width: 8.5in !important;
-    height: 11in !important;
-    margin: 0 auto !important;
+    width: 100% !important;
+    height: calc(var(--pqs-paper-height) - (var(--pqs-print-safe-margin) * 2)) !important;
+    margin: 0 !important;
+    padding: 0.18in !important;
     box-shadow: none !important;
     border: none !important;
+    overflow: visible !important;
+    page-break-after: auto !important;
+  }
+
+  .pqs-card {
+    overflow: visible !important;
+  }
+
+  .pqs-cut-note {
+    display: none !important;
   }
 }
 `;
-

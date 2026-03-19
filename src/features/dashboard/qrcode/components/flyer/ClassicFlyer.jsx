@@ -8,7 +8,6 @@ import {
 
 export function ClassicFlyer({
   loading,
-  publicDetails,
   profile,
   actions,
   menuUrl,
@@ -130,8 +129,7 @@ export function ClassicFlyer({
                   NOTES
                 </div>
                 <div className="print-muted" style={{ marginTop: 8, fontSize: 12, lineHeight: 1.45 }}>
-                  {asText(publicDetails?.flyer_note) ||
-                    asText(publicDetails?.flyerNote) ||
+                  {asText(profile.flyerNote) ||
                     "Ask staff for specials, availability, and hours."}
                 </div>
               </div>

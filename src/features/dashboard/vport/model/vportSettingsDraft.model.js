@@ -1,20 +1,18 @@
+import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
+
 export function mapPublicDetailsToDraft(details) {
-  const src = details || {}
+  const src = normalizeDashboardVportDetails(details);
 
   return {
-    locationText: src.location_text ?? src.locationText ?? '',
-    websiteUrl: src.website_url ?? src.websiteUrl ?? '',
-    bookingUrl: src.booking_url ?? src.bookingUrl ?? '',
-    emailPublic: src.email_public ?? src.emailPublic ?? '',
-    phonePublic: src.phone_public ?? src.phonePublic ?? '',
-    address: src.address ?? {},
-    hours: src.hours ?? {},
-    highlights: Array.isArray(src.highlights) ? src.highlights : [],
-    languages: Array.isArray(src.languages) ? src.languages : [],
-    paymentMethods: Array.isArray(src.payment_methods)
-      ? src.payment_methods
-      : Array.isArray(src.paymentMethods)
-      ? src.paymentMethods
-      : [],
-  }
+    locationText: src.locationText,
+    websiteUrl: src.websiteUrl,
+    bookingUrl: src.bookingUrl,
+    emailPublic: src.emailPublic,
+    phonePublic: src.phonePublic,
+    address: src.address,
+    hours: src.hours,
+    highlights: src.highlights,
+    languages: src.languages,
+    paymentMethods: src.paymentMethods,
+  };
 }
