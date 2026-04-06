@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
   envDir: '../../',
 
   resolve: {
-    dedupe: ['react', 'react-dom', 'framer-motion'],
+    dedupe: ['react', 'react-dom', 'framer-motion', 'zustand'],
     alias: [
       {
         find: '@identity',
@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => ({
       {
         find: '@debuggers',
         replacement: fileURLToPath(new URL('../../debuggers', import.meta.url)),
+      },
+      {
+        find: 'zustand',
+        replacement: fileURLToPath(new URL('./node_modules/zustand', import.meta.url)),
       },
       {
         find: '@',
