@@ -1,0 +1,227 @@
+/* =========================
+   Global reset & layout
+   ========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   ROOT / BODY
+   Chat screen locks scroll via RootLayout (overflow-hidden on
+   chat sub-screens only). All other pages scroll natively.
+   ============================================================ */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: 'Inter', sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
+    #050814;
+  color: #e5e7eb;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Hide scrollbars visually while keeping controlled scrolling */
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* ============================================================
+   APP ROOT
+   ============================================================ */
+#root {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.vc-dynamic-gradient {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
+    #050814;
+}
+
+:root {
+  --vc-safe-area-top: env(safe-area-inset-top, 0px);
+  --vc-safe-area-right: env(safe-area-inset-right, 0px);
+  --vc-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --vc-safe-area-left: env(safe-area-inset-left, 0px);
+  --vc-bottom-nav-rail-height: 58px;
+  --vc-bottom-nav-safe-pad: var(--vc-safe-area-bottom);
+  --vc-bottom-nav-safe-pad-ui: var(--vc-bottom-nav-safe-pad);
+  --vc-bottom-nav-float-gap: -1px;
+  --vc-bottom-nav-total-height: calc(
+    var(--vc-bottom-nav-rail-height) + var(--vc-bottom-nav-safe-pad) + var(--vc-bottom-nav-float-gap)
+  );
+  --vc-bottom-nav-height: 0px;
+}
+/* ============================================================
+   Inputs / buttons reset
+   ============================================================ */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  appearance: none;
+  outline: none;
+  box-shadow: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ============================================================
+   Scrollbar hide utilities
+   ============================================================ */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+/* ============================================================
+   iOS-specific keyboard stability
+   ============================================================ */
+textarea {
+  overscroll-behavior: contain;
+}
+
+/* Prevent iOS Safari auto-zoom on small inputs */
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 14px;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    font-size: 18px;
+  }
+}
+
+/* ============================================================
+   Safe area helpers
+   ============================================================ */
+.safe-top {
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+}
+
+.touch-pan-y {
+  touch-action: pan-y;
+}
+
+/* ============================================================
+   Typography
+   ============================================================ */
+h1,
+h2,
+h3,
+.title {
+  font-family: 'GFS Didot', serif !important;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes fogSlow {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-50px, 30px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fogFast {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(60px, -40px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fogSlow {
+  animation: fogSlow 18s ease-in-out infinite;
+}
+
+.animate-fogFast {
+  animation: fogFast 12s ease-in-out infinite;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}

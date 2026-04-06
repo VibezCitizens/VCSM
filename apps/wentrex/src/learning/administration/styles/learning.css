@@ -1,0 +1,490 @@
+:root {
+  --learning-bg: #eef5fb;
+  --learning-text: #08111b;
+
+  --learning-primary: #0f4a72;
+  --learning-primary-foreground: #ffffff;
+
+  --learning-border: #d3dfeb;
+  --learning-muted: #f7fbff;
+  --learning-muted-text: #5f6f82;
+  --learning-surface: #ffffff;
+
+  --learning-danger: #dc2626;
+  --learning-success: #1f8f68;
+
+  --learning-radius: 16px;
+  --learning-shadow: 0 18px 42px rgba(15, 48, 84, 0.08);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--learning-bg);
+  color: var(--learning-text);
+}
+
+.learning-theme {
+  background: var(--learning-bg);
+  color: var(--learning-text);
+}
+
+.learning-card {
+  background: var(--learning-surface);
+  border: 1px solid var(--learning-border);
+  border-radius: var(--learning-radius);
+  box-shadow: var(--learning-shadow);
+}
+
+.learning-button {
+  appearance: none;
+  border: 1px solid var(--learning-border);
+  background: var(--learning-bg);
+  color: var(--learning-text);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.learning-button:hover {
+  opacity: 0.92;
+}
+
+.learning-button-primary {
+  background: var(--learning-primary);
+  color: var(--learning-primary-foreground);
+  border-color: var(--learning-primary);
+}
+
+.learning-button-secondary {
+  background: var(--learning-bg);
+  color: var(--learning-text);
+  border-color: var(--learning-border);
+}
+
+.learning-muted {
+  background: var(--learning-muted);
+}
+
+.learning-muted-text {
+  color: var(--learning-muted-text);
+}
+
+.learning-input,
+.learning-textarea {
+  width: 100%;
+  border: 1px solid var(--learning-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--learning-bg);
+  color: var(--learning-text);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.learning-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.learning-progress {
+  width: 100%;
+  height: 8px;
+  background: var(--learning-muted);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.learning-progress-bar {
+  height: 100%;
+  background: var(--learning-primary);
+}
+
+.learning-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid var(--learning-border);
+  background: var(--learning-muted);
+  color: var(--learning-text);
+}
+
+.learning-layout-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.learning-layout-row {
+  display: flex;
+  gap: 12px;
+}
+
+.learning-center-state {
+  width: 100%;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.learning-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.learning-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--learning-muted-text);
+}
+
+.learning-section-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.learning-shell {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(119, 180, 255, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(15, 74, 114, 0.14), transparent 32%),
+    var(--learning-bg);
+}
+
+.learning-shell-header,
+.learning-shell-content {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+.learning-shell-header {
+  padding-top: 28px;
+  padding-bottom: 18px;
+}
+
+.learning-shell-content {
+  padding-top: 4px;
+  padding-bottom: 32px;
+}
+
+.learning-shell-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.learning-shell-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.learning-shell-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(15, 74, 114, 0.1);
+  color: var(--learning-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.learning-shell-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.learning-shell-action {
+  appearance: none;
+  border: 1px solid var(--learning-border);
+  background: rgba(247, 251, 255, 0.96);
+  color: var(--learning-text);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
+}
+
+.learning-shell-action:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+.learning-shell-action:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
+
+.learning-shell-navRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.learning-shell-nav,
+.learning-shell-utility {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.learning-shell-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--learning-border);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--learning-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.learning-shell-link:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+.learning-shell-link-active {
+  background: var(--learning-primary);
+  border-color: var(--learning-primary);
+  color: var(--learning-primary-foreground);
+}
+
+.learning-shell-link-utility {
+  background: rgba(247, 251, 255, 0.96);
+}
+
+.learning-loading-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.learning-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(211, 223, 235, 0.78) 0%,
+    rgba(255, 255, 255, 0.94) 50%,
+    rgba(211, 223, 235, 0.78) 100%
+  );
+  background-size: 200% 100%;
+  animation: learning-skeleton-shimmer 1.25s ease-in-out infinite;
+}
+
+.learning-skeleton-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.learning-skeleton-grid-two {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.learning-skeleton-grid-cards {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.learning-skeleton-grid-split {
+  grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr);
+}
+
+.learning-skeleton-stats {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+@keyframes learning-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ─── Role-specific entry point layouts ─────────────────────────────────── */
+
+.role-layout {
+  display: flex;
+  min-height: calc(100vh - 120px);
+}
+
+.role-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--learning-surface);
+  border-right: 1px solid var(--learning-border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 32px;
+}
+
+.role-sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--learning-border);
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.role-back-link {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--learning-muted-text);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
+}
+
+.role-back-link:hover {
+  color: var(--learning-primary);
+}
+
+.role-sidebar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--learning-text);
+}
+
+.role-sidebar-subtitle {
+  font-size: 12px;
+  color: var(--learning-muted-text);
+}
+
+.role-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.role-nav-link {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--learning-text);
+  transition: background 120ms ease;
+}
+
+.role-nav-link:hover {
+  background: var(--learning-muted);
+}
+
+.role-nav-link-active {
+  background: rgba(15, 74, 114, 0.1);
+  color: var(--learning-primary);
+  font-weight: 600;
+}
+
+.role-main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+@media (max-width: 720px) {
+  .learning-shell-header,
+  .learning-shell-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .learning-shell-hero {
+    flex-direction: column;
+  }
+
+  .learning-shell-meta {
+    justify-content: flex-start;
+  }
+
+  .learning-loading-page {
+    padding: 18px 16px;
+  }
+
+  .learning-skeleton-grid-split {
+    grid-template-columns: 1fr;
+  }
+
+  .role-layout {
+    flex-direction: column;
+  }
+
+  .role-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--learning-border);
+    padding: 16px 0;
+  }
+
+  .role-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 12px;
+  }
+
+  .role-main {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@identity": [
+        "../../engines/identity/index.js"
+      ],
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src",
+    "vite.config.js",
+    "server",
+    "functions"
+  ]
+}

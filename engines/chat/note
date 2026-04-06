@@ -1,0 +1,24 @@
+The real missing piece in your architecture
+You need a single canonical function that resolves current actor safely.
+For example, conceptually:
+current user = auth.uid()
+current app context = app/account/session
+current actor = resolved actor for that user in that app
+RLS uses that actor
+Without this, your RLS will always feel fragile because chat is neutral but your actors live in multiple app schemas.
+Production recommendation
+For your platform, I would lock this rule:
+Rule 1
+Every authenticated app session must carry one active actor_id in JWT/session claims.
+Rule 2
+That actor_id must come from the app’s actor model:
+learning.actors.id
+or vc.actors.id
+Rule 3
+All chat RLS uses only that resolved actor_id.
+Rule 4
+Chat controllers still enforce business meaning on top of RLS.
+That is the cleanest way to make one neutral chat schema work across both apps.
+In one sentence
+Now that I’ve seen the full picture, the right way to build “real RLS” is:
+resolve identity through auth.users and core.user_app_accounts, establish one active actor per session, and make all chat.* policies actor-membership based, while keeping multi-table chat writes inside the engine.

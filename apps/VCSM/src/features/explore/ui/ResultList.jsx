@@ -1,0 +1,41 @@
+import { useSearchTabsActor } from '@/features/explore/hooks/useSearchTabsActor'
+import { useIdentity } from '@/state/identity/identityContext'
+import ActorSearchResultRow from './ActorSearchResultRow'
+import WanderCardSearch from '@/features/explore/ui/features/WanderCardSearch'
+import EmptyState from '@/features/explore/ui/EmptyState'
+import FeaturedResultCard from './FeaturedResultCard'
+
+export default function ResultList({ query, filter }) {
+  const { identity } = useIdentity()
+  const viewerActorId = identity?.actorId ?? null
+  const { items, loading } = useSearchTabsActor({ query, filter, viewerActorId })
+
+  if (!query) return null
+  if (loading) return <div className="text-center text-slate-400">Loading...</div>
+  if (!items?.length) return <EmptyState />
+
+  const [featured, ...rest] = items
+
+  return (
+    <div className="explore-results-stack">
+      {featured ? <FeaturedResultCard item={featured} /> : null}
+
+      {rest.map((it) => {
+        if (!it) return null
+
+        if (it.result_type === 'feature') {
+          if (it.id === 'wanders') {
+            return <WanderCardSearch key="feature:wanders" query={query} />
+          }
+          return null
+        }
+
+        if (it.result_type === 'actor') {
+          return <ActorSearchResultRow key={`actor:${it.actor_id}`} actor={it} />
+        }
+
+        return null
+      })}
+    </div>
+  )
+}

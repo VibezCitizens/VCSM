@@ -1,0 +1,11 @@
+﻿@unocss all;
+
+:global(input[type="email"]),
+:global(input[type="password"]),
+:global(input[type="text"]),
+:global(input[type="search"]),
+:global(input[type="number"]),
+:global(input[type="url"]),
+:global(textarea) {
+  @apply w-full block box-border px-4 py-3 text-base rounded-lg border border-neutral-700 bg-neutral-800 text-white placeholder:text-neutral-400 focus:outline-none focus:border-purple-500 transition-all duration-150;
+}

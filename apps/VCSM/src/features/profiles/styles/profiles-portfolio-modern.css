@@ -1,0 +1,243 @@
+.profiles-modern .profiles-portfolio-hero,
+.profiles-modern .profiles-portfolio-empty-state {
+  border: 1px solid rgba(140, 171, 245, 0.18);
+  background: linear-gradient(180deg, rgba(11, 20, 42, 0.94), rgba(8, 14, 30, 0.94));
+  box-shadow: 0 18px 36px rgba(0, 6, 18, 0.34);
+}
+
+.profiles-modern .profiles-portfolio-kicker,
+.profiles-modern .profiles-portfolio-section-eyebrow {
+  color: rgba(213, 229, 255, 0.72);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.profiles-modern .profiles-portfolio-stat-card {
+  border-radius: 1.2rem;
+  border: 1px solid rgba(160, 188, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+}
+
+.profiles-modern .profiles-portfolio-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.profiles-modern .profiles-portfolio-card,
+.profiles-modern .profiles-portfolio-related-service {
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(150, 182, 255, 0.14);
+  background: rgba(8, 14, 30, 0.88);
+  box-shadow: 0 12px 28px rgba(0, 4, 16, 0.28);
+}
+
+.profiles-modern .profiles-portfolio-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.profiles-modern .profiles-portfolio-media-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: rgba(4, 8, 19, 0.9);
+}
+
+.profiles-modern .profiles-portfolio-media-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(3, 7, 18, 0.06) 0%, rgba(3, 8, 19, 0.62) 100%);
+  pointer-events: none;
+}
+
+.profiles-modern .profiles-portfolio-media-img,
+.profiles-modern .profiles-portfolio-compare-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 240ms ease;
+}
+
+.profiles-modern .profiles-portfolio-card:hover .profiles-portfolio-media-img,
+.profiles-modern .profiles-portfolio-transformation-card:hover .profiles-portfolio-compare-image {
+  transform: scale(1.03);
+}
+
+.profiles-modern .profiles-portfolio-media-top {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.profiles-modern .profiles-portfolio-media-badge,
+.profiles-modern .profiles-portfolio-date-pill,
+.profiles-modern .profiles-portfolio-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(184, 206, 255, 0.16);
+  background: rgba(7, 13, 31, 0.84);
+  color: #eef5ff;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.profiles-modern .profiles-portfolio-date-pill {
+  color: rgba(231, 241, 255, 0.82);
+}
+
+.profiles-modern .profiles-portfolio-body-copy {
+  color: rgba(221, 232, 255, 0.76);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.profiles-modern .profiles-portfolio-tag {
+  border-radius: 9999px;
+  border: 1px solid rgba(161, 188, 255, 0.18);
+  background: rgba(82, 110, 198, 0.12);
+  color: #dbe8ff;
+  padding: 0.32rem 0.72rem;
+  font-size: 0.73rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.profiles-modern .profiles-portfolio-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(162, 190, 255, 0.16);
+  border-radius: 9999px;
+  background: rgba(18, 28, 58, 0.54);
+  color: #edf4ff;
+  padding: 0.68rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: transform 140ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.profiles-modern .profiles-portfolio-link-btn:hover,
+.profiles-modern .profiles-portfolio-link-btn:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(180, 205, 255, 0.26);
+  background: rgba(23, 36, 74, 0.68);
+}
+
+.profiles-modern .profiles-portfolio-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.profiles-modern .profiles-portfolio-compare-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(156, 187, 255, 0.18);
+  background: rgba(5, 10, 23, 0.9);
+}
+
+.profiles-modern .profiles-portfolio-compare-frame::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(3, 8, 19, 0) 0%, rgba(4, 9, 20, 0.78) 100%);
+  pointer-events: none;
+}
+
+.profiles-modern .profiles-portfolio-compare-label {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  border-radius: 9999px;
+  border: 1px solid rgba(185, 208, 255, 0.22);
+  background: rgba(4, 9, 23, 0.82);
+  color: #f1f6ff;
+  padding: 0.34rem 0.68rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profiles-modern .profiles-portfolio-related-service {
+  padding: 1rem;
+}
+
+.profiles-modern .profiles-portfolio-chip-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0 0.28rem;
+  font-size: 0.68rem;
+}
+
+.profiles-modern .profiles-portfolio-empty-state {
+  padding: 1.4rem;
+}
+
+.profiles-modern .profiles-portfolio-empty-copy {
+  max-width: 38rem;
+  color: rgba(221, 232, 255, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.profiles-modern .profiles-portfolio-empty-aside {
+  border: 1px solid rgba(160, 188, 255, 0.12);
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+}
+
+.profiles-modern .profiles-portfolio-empty-meta {
+  color: rgba(214, 227, 255, 0.68);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.profiles-modern .profiles-portfolio-service-chip {
+  border-radius: 9999px;
+  border: 1px solid rgba(161, 188, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #eef4ff;
+  padding: 0.42rem 0.78rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+@media (max-width: 639px) {
+  .profiles-modern .profiles-portfolio-compare-grid {
+    gap: 0.55rem;
+  }
+
+  .profiles-modern .profiles-portfolio-stat-card {
+    padding: 0.9rem;
+  }
+
+  .profiles-modern .profiles-portfolio-empty-state {
+    padding: 1rem;
+  }
+}
