@@ -30,10 +30,6 @@ export default defineConfig(({ mode }) => ({
         replacement: fileURLToPath(new URL('../../debuggers', import.meta.url)),
       },
       {
-        find: 'zustand',
-        replacement: fileURLToPath(new URL('./node_modules/zustand', import.meta.url)),
-      },
-      {
         find: '@',
         replacement: fileURLToPath(new URL('./src', import.meta.url)),
       },
@@ -42,7 +38,7 @@ export default defineConfig(({ mode }) => ({
 
   optimizeDeps: {
     entries: [],
-    include: ['react', 'react-dom', 'framer-motion'],
+    include: ['react', 'react-dom', 'framer-motion', 'zustand'],
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
   },
 
