@@ -5,6 +5,7 @@
 
 import {
   addFeedDebugEvent,
+  getFeedDebugState,
   setFeedViewerSnapshot,
   setFeedSnapshot,
   setPostDecisions,
@@ -17,17 +18,38 @@ export function debugFeedEvent(step, opts = {}) {
 
 export function debugFeedViewer({ user, identity }) {
   if (!import.meta.env.DEV) return
+
+  const nextActorId = identity?.actorId ?? null
+  const prevViewer = getFeedDebugState()?.viewer
+  const prevActorId = prevViewer?.actorId ?? null
+
+  // Stale-check: log when viewer is being updated to a different actor
+  if (prevActorId && nextActorId && prevActorId !== nextActorId) {
+    addFeedDebugEvent({
+      step: 'FEED_VIEWER_SYNC',
+      status: 'info',
+      message: `Viewer actor changed: ${prevActorId.slice(0, 8)} → ${nextActorId.slice(0, 8)}`,
+      payload: {
+        prevActorId,
+        nextActorId,
+        prevKind: prevViewer?.actorKind ?? null,
+        nextKind: identity?.kind ?? null,
+        matched: false,
+      },
+    })
+  }
+
   setFeedViewerSnapshot({
     sessionUserId: user?.id ?? null,
     sessionEmail: user?.email ?? null,
-    actorId: identity?.actorId ?? null,
+    actorId: nextActorId,
     actorKind: identity?.kind ?? null,
     identityUserId: identity?._engineMeta?.userId ?? null,
     realmId: identity?.realmId ?? null,
     userAppAccountId: identity?._engineMeta?.userAppAccountId ?? null,
     displayName: identity?.displayName ?? null,
     username: identity?.username ?? null,
-    isComplete: Boolean(user?.id && identity?.actorId),
+    isComplete: Boolean(user?.id && nextActorId),
   })
 }
 

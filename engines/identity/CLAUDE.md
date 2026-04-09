@@ -13,12 +13,14 @@ Your ONLY allowed working directory is:
 ## Strict Scope Rules
 
 1. **NEVER modify anything outside** `/Users/vcsm/Desktop/VCSM/engines/identity`
-2. **NEVER import from** `/apps`, `/engines/chat`, `/shared`, or any frontend code
+2. **NEVER import from** `/apps`, `/engines/chat`, `/engines/hydration`, `/shared`, or any frontend code
 3. **This engine is platform-level and app-agnostic** — it must not contain:
-   - VCSM-specific UI, routes, or screens
-   - Wentrex-specific UI, routes, or screens
+   - VCSM-specific UI, routes, screens, or resolver implementations
+   - Wentrex-specific UI, routes, screens, or resolver implementations
    - Any React components, providers, or context
    - HTTP handlers or WebSocket logic
+   - App-named exports (no VCSM, Wentrex, or app-specific names in public API)
+   - App-specific resolver implementations (apps inject resolvers via config)
 
 ---
 
@@ -27,7 +29,7 @@ Your ONLY allowed working directory is:
 The identity engine resolves the full authenticated context:
 
 ```
-session → app → access → account → actors → roles → capabilities → destination
+session -> app -> access -> account -> actors -> roles -> capabilities -> destination
 ```
 
 **Responsibilities:**
@@ -41,6 +43,7 @@ session → app → access → account → actors → roles → capabilities →
 - Onboarding state resolution
 - Default destination resolution after login
 - Logout cleanup
+- Domain event emission
 
 ---
 
@@ -81,9 +84,15 @@ Apps must call `configureIdentityEngine()` before using the engine:
 ```js
 configureIdentityEngine({
   supabaseClient,            // required
+  debugReporter,             // optional — app-owned debug sink
   enrichActorLinks,          // optional — app provides live actor data
+  resolveAppContext,         // optional — app provides all-in-one actor/role/capability resolver
 })
 ```
+
+App-specific resolvers live ONLY in the consuming app:
+- Wentrex resolver: `apps/wentrex/src/features/identity/resolvers/`
+- VCSM resolver: `apps/VCSM/src/features/identity/resolvers/`
 
 ---
 
@@ -93,6 +102,7 @@ configureIdentityEngine({
 src/
   config.js                  — DI: configureIdentityEngine, getSupabaseClient
   events.js                  — domain events + emit/on
+  resolveTrace.js            — debug tracing utility
   types/
     index.js                 — JSDoc typedefs for all domain types
   dal/
@@ -128,15 +138,12 @@ src/
     logoutCleanup.controller.js
   adapters/
     index.js                 — public API (never export DAL/model/controller directly)
-  resolvers/
-    wentrexIdentity.resolver.js  — wentrex actor enrichment pattern
-    vcsmIdentity.resolver.js     — vcsm actor enrichment pattern
 ```
 
 ## Layer Rules
 
 - **DAL**: database queries only — no business logic
-- **Model**: row → domain object — pure functions only
+- **Model**: row -> domain object — pure functions only
 - **Services**: reusable domain logic shared by controllers
 - **Controllers**: orchestration — enforce rules, coordinate services, return domain objects
 - **Adapters**: public surface only — never re-export internals
@@ -148,3 +155,5 @@ src/
 - Push notifications or email
 - Chat logic (belongs in engines/chat)
 - App-specific business rules
+- App-specific resolver implementations (these belong in apps/<app>/features/identity/resolvers/)
+- Anything that references VCSM, Wentrex, or app-specific names
