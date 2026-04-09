@@ -27,7 +27,6 @@ export default function ProfileFriendItem({ actorId }) {
       <ActorLink
         actor={actor}
         avatarSize="w-10 h-10"
-        avatarShape="rounded-lg"
         showUsername
         className="min-w-0"
       />

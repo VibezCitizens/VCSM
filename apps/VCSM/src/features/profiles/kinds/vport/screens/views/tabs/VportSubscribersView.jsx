@@ -73,7 +73,6 @@ export default function VportSubscribersView({ profile }) {
                 <ActorLink
                   actor={actor}
                   avatarSize="w-12 h-12"
-                  avatarShape="rounded-xl"
                   textSize="text-sm"
                   showUsername
                   className="w-full"

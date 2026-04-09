@@ -36,6 +36,7 @@ const GROUP_TABS = Object.freeze({
 
 const TYPE_TABS = Object.freeze({
   barber: VPORT_BARBER_TABS,
+  locksmith: VPORT_BARBER_TABS,
   "gas station": VPORT_GAS_TABS,
   exchange: VPORT_RATES_TABS,
 });

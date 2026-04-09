@@ -104,7 +104,6 @@ export default function MessageBubble({
             <ActorLink
               actor={actor}
               avatarSize="w-7 h-7"
-              avatarShape="rounded-full"
               textSize="text-xs"
               className="pointer-events-none"
             />

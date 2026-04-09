@@ -13,7 +13,8 @@ import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 
 import DebugPrivacyPanel from '@/features/feed/screens/DebugPrivacyPanel'
 import DebugFeedFilterPanel from '@/features/feed/screens/DebugFeedFilterPanel'
-import { FeedDebugPanel, debugFeedViewer, debugFeedEvent } from '@debuggers/feed'
+import { FeedDebugPanel, debugFeedEvent } from '@debuggers/feed'
+import { useActorConsistencyCheck } from '@debuggers/identity/useActorConsistencyCheck'
 
 import ReportModal from '@/features/moderation/adapters/components/ReportModal.adapter'
 import PostActionsMenu from '@/features/post/adapters/postcard/components/PostActionsMenu.adapter'
@@ -60,11 +61,11 @@ export default function CentralFeed() {
 
   const actorId = identity?.actorId ?? null
   const realmId = identity?.realmId ?? null
+  useActorConsistencyCheck('feed', actorId, identity?.kind)
 
-  // Feed debugger: log viewer context on identity change
+  // Feed debugger: log feed screen mount event (viewer snapshot is now synced globally in IdentityProvider)
   useEffect(() => {
     if (import.meta.env.DEV) {
-      debugFeedViewer({ user, identity })
       debugFeedEvent('FEED_SCREEN_MOUNT', {
         status: 'info',
         message: actorId ? `Viewer: ${actorId.slice(0, 8)}` : 'No viewer actor',

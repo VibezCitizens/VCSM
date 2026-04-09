@@ -59,7 +59,7 @@ function RequestRow({
     <div className="settings-card-surface flex items-center justify-between gap-3 rounded-lg px-3 py-2">
       <div className="min-w-0 flex items-center gap-2">
         {actor?.actorId ? (
-          <ActorLink actor={actor} avatarSize="w-8 h-8" avatarShape="rounded-lg" />
+          <ActorLink actor={actor} avatarSize="w-8 h-8" />
         ) : (
           <div className="truncate text-sm text-slate-200">{requesterActorId}</div>
         )}

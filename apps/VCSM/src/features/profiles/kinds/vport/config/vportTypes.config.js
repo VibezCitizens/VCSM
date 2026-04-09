@@ -71,6 +71,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
     "gardener",
     "handyman",
     "landscaper",
+    "locksmith",
     "mechanic",
     "painter",
     "plumber",

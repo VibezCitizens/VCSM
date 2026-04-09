@@ -130,7 +130,6 @@ function RankRow({ index, actorId }) {
       <ActorLink
         actor={actor}
         avatarSize="w-9 h-9"
-        avatarShape="rounded-md"
         showUsername
         className="flex-1"
       />

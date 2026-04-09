@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 export default function ActorLink({
   actor,
   avatarSize = "w-11 h-11",
-  avatarShape = "rounded-xl",
+  avatarShape = "rounded-2xl",
   textSize = "text-sm",
   showUsername = false,
   showTimestamp = false,

@@ -27,8 +27,8 @@ export async function dalGetVportOfficialStats(targetActorId) {
   return (data && data[0]) ? data[0] : null;
 }
 
-export async function dalListVportReviews(targetActorId, limit = 25) {
-  const { data, error } = await vc
+export async function dalListVportReviews(targetActorId, { limit = 25, cursor = null } = {}) {
+  let query = vc
     .schema("vc")
     .from("vport_reviews")
     .select(
@@ -50,10 +50,18 @@ export async function dalListVportReviews(targetActorId, limit = 25) {
     .eq("target_actor_id", targetActorId)
     .eq("is_deleted", false)
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .limit(limit + 1);
 
+  if (cursor) {
+    query = query.lt("created_at", cursor);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
-  return data ?? [];
+
+  const rows = data ?? [];
+  const hasMore = rows.length > limit;
+  return { rows: hasMore ? rows.slice(0, limit) : rows, hasMore };
 }
 
 export async function dalListVportReviewRatingsByReviewIds(reviewIds) {

@@ -5,6 +5,7 @@ import { fromDateKey } from "@/features/profiles/kinds/vport/screens/booking/mod
 export function useVportBookingMutations({
   isOwner,
   viewerActorId,
+  viewerIdentityKind,
   resourceId,
   selectedSlot,
   selectedDateKey,
@@ -25,10 +26,12 @@ export function useVportBookingMutations({
     if (!resourceId || !selectedSlot || !selectedDateKey) return;
     if (!selectedSlots.includes(selectedSlot)) return;
     if (isOwner && !viewerActorId) return;
+    if (!isOwner && viewerIdentityKind !== "user") return;
 
     const startsAtDate = fromDateKey(selectedDateKey);
     const [hours = "0", minutes = "0"] = String(selectedSlot).split(":");
     startsAtDate.setHours(Number(hours), Number(minutes), 0, 0);
+    if (startsAtDate.getTime() <= Date.now()) return;
     const endsAtDate = new Date(startsAtDate.getTime() + slotDurationMinutes * 60 * 1000);
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
@@ -76,6 +79,7 @@ export function useVportBookingMutations({
     selectedSlots,
     isOwner,
     viewerActorId,
+    viewerIdentityKind,
     slotDurationMinutes,
     ownerCustomerName,
     ownerCustomerActorId,

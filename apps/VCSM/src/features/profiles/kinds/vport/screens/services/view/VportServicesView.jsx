@@ -7,6 +7,7 @@ import VportServicesSkeleton from "@/features/profiles/kinds/vport/screens/servi
 import VportServicesOwnerPanel from "@/features/profiles/kinds/vport/screens/services/components/owner/VportServicesOwnerPanel";
 
 import useVportServices from "@/features/profiles/kinds/vport/hooks/services/useVportServices";
+import { useLocksmithProfile } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithProfile";
 import useUpsertVportServices from "@/features/profiles/kinds/vport/hooks/services/useUpsertVportServices";
 import {
   applyEnabledMapToServices,
@@ -58,6 +59,8 @@ export default function VportServicesView({
   const resolvedVportType = useMemo(() => {
     return s.data?.vportType ?? vportType ?? null;
   }, [s.data?.vportType, vportType]);
+
+  const { isLocksmith, serviceDetails: locksmithDetails } = useLocksmithProfile(targetActorId, resolvedVportType);
 
   // ===== owner draft logic (still computed, but only used in owner render) =====
   const baseEnabledMap = useMemo(
@@ -133,6 +136,38 @@ export default function VportServicesView({
   const isSaving = Boolean(upsert.isPending);
   const error = upsert.error ?? readError;
 
+  // Enrich services with locksmith-specific detail metadata
+  // (must be called unconditionally — before any early returns — to preserve hooks order)
+  const enrichedServices = useMemo(() => {
+    if (!isLocksmith || !locksmithDetails?.length) return servicesFromApi;
+
+    const detailMap = new Map();
+    for (const d of locksmithDetails) {
+      if (d.serviceId) detailMap.set(d.serviceId, d);
+    }
+
+    return servicesFromApi.map((svc) => {
+      const detail = detailMap.get(svc.id ?? svc.serviceId);
+      if (!detail) return svc;
+
+      const parts = [];
+      if (detail.serviceFamily) parts.push(detail.serviceFamily);
+      if (detail.isEmergency) parts.push('Emergency available');
+      if (detail.isMobileService) parts.push('Mobile service');
+      if (detail.isAfterHoursAvailable) parts.push('After-hours');
+      if (detail.pricingModel === 'starting_at' && detail.startingPriceCents != null) {
+        parts.push(`Starting at $${(detail.startingPriceCents / 100).toFixed(0)}`);
+      }
+      if (detail.pricingModel === 'quote') parts.push('Quote required');
+      if (detail.etaMinMinutes != null && detail.etaMaxMinutes != null) {
+        parts.push(`ETA ${detail.etaMinMinutes}–${detail.etaMaxMinutes} min`);
+      }
+      if (detail.warrantyDays) parts.push(`${detail.warrantyDays}-day warranty`);
+
+      return { ...svc, meta: parts.join(' · ') || svc.meta };
+    });
+  }, [servicesFromApi, isLocksmith, locksmithDetails]);
+
   if (!targetActorId) {
     return <div className="p-6 text-sm text-neutral-400">Invalid vport.</div>;
   }
@@ -165,9 +200,9 @@ export default function VportServicesView({
     <VportServicesPanel
       loading={Boolean(s.isLoading)}
       error={readError}
-      services={servicesFromApi}
+      services={enrichedServices}
       title="Services"
-      subtitle="Capabilities and amenities offered by this vport."
+      subtitle={isLocksmith ? "Locksmith services and emergency capabilities." : "Capabilities and amenities offered by this vport."}
     />
   );
 }

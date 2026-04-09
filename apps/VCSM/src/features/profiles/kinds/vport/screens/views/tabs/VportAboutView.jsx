@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
+import { useLocksmithProfile } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithProfile";
 
 function resolveTypeGroup(type) {
   if (!type) return null;
@@ -205,6 +206,8 @@ export default function VportAboutView({ profile, details }) {
   const type =
     profile?.vportType || profile?.type || profile?.vport_type || null;
   const group = resolveTypeGroup(type);
+  const actorId = profile?.actor_id ?? profile?.actorId ?? null;
+  const { isLocksmith, serviceAreas } = useLocksmithProfile(actorId, type);
 
   // PUBLIC DETAILS (vc.vport_public_details)
   const d = details || {};
@@ -337,6 +340,41 @@ export default function VportAboutView({ profile, details }) {
             )}
           </SectionCard>
         )}
+
+        {/* LOCKSMITH SERVICE AREAS */}
+        {isLocksmith && serviceAreas.length > 0 ? (
+          <SectionCard title="Service Areas">
+            <div className="space-y-2">
+              {serviceAreas.map((area) => (
+                <div key={area.id} className="flex items-start justify-between gap-3 rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2.5">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium text-white">
+                      {area.label || area.city || area.zipCode || 'Coverage area'}
+                    </div>
+                    <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-white/45">
+                      {area.city && area.stateCode ? <span>{area.city}, {area.stateCode}</span> : null}
+                      {area.zipCode ? <span>ZIP {area.zipCode}</span> : null}
+                      {area.radiusMiles ? <span>{area.radiusMiles} mi radius</span> : null}
+                    </div>
+                  </div>
+                  <div className="shrink-0 flex flex-col items-end gap-1">
+                    {area.minEtaMinutes != null || area.maxEtaMinutes != null ? (
+                      <span className="text-xs text-white/50">
+                        ETA {area.minEtaMinutes ?? '?'}–{area.maxEtaMinutes ?? '?'} min
+                      </span>
+                    ) : null}
+                    {area.isEmergencyCovered ? (
+                      <span className="rounded-md bg-red-400/10 border border-red-400/20 px-1.5 py-0.5 text-[10px] font-medium text-red-200/70">Emergency</span>
+                    ) : null}
+                    {area.travelFeeCents > 0 ? (
+                      <span className="text-[10px] text-white/35">+${(area.travelFeeCents / 100).toFixed(2)} travel</span>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        ) : null}
 
         {/* CONTACT */}
         {(websiteUrl || bookingUrl || emailPublic || phonePublic) && (

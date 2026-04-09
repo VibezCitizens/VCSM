@@ -27,6 +27,7 @@ import {
   fromDateKey,
   getNearestDurationOption,
   groupSlotsBySegment,
+  isSlotExpired,
   normalizeDurationMinutes,
   shiftMonth,
   startOfMonth,
@@ -34,6 +35,8 @@ import {
   VISITOR_SLOT_DURATION_MINUTES,
 } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
 import { useIdentity } from "@/state/identity/identityContext";
+import { canCitizenBook } from "@/state/identity/identitySelectors";
+import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
 
 function useAvailabilityData(availability) {
   const bookings = useMemo(
@@ -59,6 +62,8 @@ function useAvailabilityData(availability) {
 export function useVportBookingView({ profile, isOwner = false }) {
   const { identity } = useIdentity();
   const viewerActorId = identity?.actorId ?? null;
+  useActorConsistencyCheck('booking', viewerActorId, identity?.kind);
+  const viewerCanBook = isOwner || canCitizenBook(identity);
   const ownerActorId = profile?.actorId ?? profile?.actor_id ?? null;
   const [monthCursor, setMonthCursor] = useState(() => startOfMonth(new Date()));
   const [selectedDateKey, setSelectedDateKey] = useState(null);
@@ -206,6 +211,18 @@ export function useVportBookingView({ profile, isOwner = false }) {
     setSelectedSlot(null);
   }, [selectedSlot, selectedSlots]);
 
+  // Auto-clear expired selected slot every 30 seconds
+  useEffect(() => {
+    if (!selectedSlot || !selectedDateKey) return;
+    const checkExpiry = () => {
+      if (isSlotExpired({ slotDate: selectedDateKey, slotStartTime: selectedSlot })) {
+        setSelectedSlot(null);
+      }
+    };
+    const interval = setInterval(checkExpiry, 30_000);
+    return () => clearInterval(interval);
+  }, [selectedSlot, selectedDateKey]);
+
   useEffect(() => {
     if (!ownerCustomerActorId) return;
     if (ownerFollowerOptions.some((follower) => follower.actorId === ownerCustomerActorId)) return;
@@ -327,6 +344,7 @@ export function useVportBookingView({ profile, isOwner = false }) {
   const mutations = useVportBookingMutations({
     isOwner,
     viewerActorId,
+    viewerIdentityKind: identity?.kind ?? null,
     resourceId,
     selectedSlot,
     selectedDateKey,
@@ -342,6 +360,7 @@ export function useVportBookingView({ profile, isOwner = false }) {
   });
 
   return {
+    viewerActorId,
     resources,
     availability,
     createBooking,
@@ -361,7 +380,8 @@ export function useVportBookingView({ profile, isOwner = false }) {
     ownerFollowersError: ownerFollowerSearch.error,
     selectedOwnerFollower,
     slotDurationMinutes,
-    canRequestSelectedSlot: !isOwner || Boolean(viewerActorId),
+    viewerCanBook,
+    canRequestSelectedSlot: viewerCanBook && (!isOwner || Boolean(viewerActorId)),
     isSelectedSlotAvailable: Boolean(selectedSlot) && selectedSlots.includes(selectedSlot),
     hasSelectedAvailableDay:
       Boolean(selectedDateKey) &&
@@ -373,7 +393,10 @@ export function useVportBookingView({ profile, isOwner = false }) {
     onPrevMonth: () => setMonthCursor((prev) => shiftMonth(prev, -1)),
     onNextMonth: () => setMonthCursor((prev) => shiftMonth(prev, 1)),
     onSelectDate,
-    onSelectSlot: (slotValue) => setSelectedSlot((prev) => (prev === slotValue ? null : slotValue)),
+    onSelectSlot: (slotValue) => {
+      if (!viewerCanBook) return;
+      setSelectedSlot((prev) => (prev === slotValue ? null : slotValue));
+    },
     onChangeViewMode: setViewMode,
     onChangeDuration: setSelectedDurationMinutes,
     onOwnerCustomerNameChange,

@@ -53,6 +53,9 @@ export function VportDashboardScreen() {
   const openServices = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/services`), [navigate, actorId]);
   const openReviews = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/reviews`), [navigate, actorId]);
   const openCalendar = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/calendar`), [navigate, actorId]);
+  const openPortfolio = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/portfolio`), [navigate, actorId]);
+  const openBookingHistory = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/booking-history`), [navigate, actorId]);
+  const openLocksmith = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/locksmith`), [navigate, actorId]);
   const openGasPrices = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/gas`), [navigate, actorId]);
   const openAdsPipeline = useCallback(() => actorId && navigate(`/ads/vport/${actorId}`), [navigate, actorId]);
   const openSettings = useCallback(() => actorId && navigate(`/actor/${actorId}/settings`), [navigate, actorId]);
@@ -74,6 +77,9 @@ export function VportDashboardScreen() {
           openFlyer,
           openFlyerEditor,
           openOnlineMenuPreview,
+          openPortfolio,
+          openBookingHistory,
+          openLocksmith,
           openExchangeRates,
           openServices,
           openReviews,
@@ -90,6 +96,9 @@ export function VportDashboardScreen() {
       openFlyer,
       openFlyerEditor,
       openOnlineMenuPreview,
+      openPortfolio,
+      openBookingHistory,
+      openLocksmith,
       openExchangeRates,
       openServices,
       openReviews,

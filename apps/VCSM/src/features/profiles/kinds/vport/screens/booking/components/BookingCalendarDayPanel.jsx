@@ -15,42 +15,37 @@ function AppointmentClientIdentity({ item, isOwner }) {
     actorId: item?.customerActorId,
     displayName: item?.clientName,
   });
-  const canLink = Boolean(isOwner && item?.customerActorId && actorSummary?.actorId);
+  const canLink = Boolean(item?.customerActorId && actorSummary?.actorId);
 
-  if (!isOwner) {
-    return <p className="profiles-booking-appointment-client">{item.clientName}</p>;
-  }
-
-  if (!canLink) {
+  if (canLink) {
     return (
-      <div className="profiles-booking-appointment-client-fallback">
-        <img
-          src={actorSummary?.avatar || "/avatar.jpg"}
-          alt={item?.clientName || "Citizen"}
-          loading="lazy"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "/avatar.jpg";
-          }}
-          className="profiles-booking-appointment-client-fallback-avatar"
-        />
-        <p className="profiles-booking-appointment-client">
-          {item?.clientName || actorSummary?.displayName || "Citizen"}
-        </p>
-      </div>
+      <ActorLink
+        actor={actorSummary}
+        showAvatar
+        avatarSize="w-10 h-10"
+        textSize="text-[0.76rem]"
+        showUsername={isOwner}
+        className="profiles-booking-appointment-client-link"
+      />
     );
   }
 
   return (
-    <ActorLink
-      actor={actorSummary}
-      showAvatar
-      avatarSize="w-10 h-10"
-      avatarShape="rounded-md"
-      textSize="text-[0.76rem]"
-      showUsername
-      className="profiles-booking-appointment-client-link"
-    />
+    <div className="profiles-booking-appointment-client-fallback">
+      <img
+        src={actorSummary?.avatar || "/avatar.jpg"}
+        alt={item?.clientName || "Citizen"}
+        loading="lazy"
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = "/avatar.jpg";
+        }}
+        className="profiles-booking-appointment-client-fallback-avatar"
+      />
+      <p className="profiles-booking-appointment-client">
+        {actorSummary?.displayName || item?.clientName || "Citizen"}
+      </p>
+    </div>
   );
 }
 
@@ -148,6 +143,8 @@ function OwnerCustomerPicker({
 
 export function BookingCalendarDayPanel({
   isOwner,
+  viewerActorId = null,
+  viewerCanBook = true,
   canRequestSelectedSlot = !isOwner,
   showOwnerSlotActions = isOwner,
   selectedDateLabel,
@@ -225,6 +222,12 @@ export function BookingCalendarDayPanel({
       ) : null}
 
       <div className="profiles-booking-actions">
+        {!isOwner && !viewerCanBook ? (
+          <div className="profiles-booking-citizen-notice">
+            <p>Switch to your citizen profile to reserve an appointment.</p>
+          </div>
+        ) : null}
+
         {isOwner && typeof onOwnerCustomerNameChange === "function" ? (
           <OwnerCustomerPicker
             ownerCustomerName={ownerCustomerName}
@@ -286,32 +289,49 @@ export function BookingCalendarDayPanel({
               </div>
               <div className="profiles-booking-appointment-tail">
                 <AppointmentStatusBadge status={item.status} statusLabels={statusLabels} />
+                {/* Owner: Accept + Cancel for pending; Cancel for confirmed */}
                 {isOwner &&
+                ["pending", "confirmed"].includes(String(item.status || "").toLowerCase()) &&
                 (typeof onConfirmAppointment === "function" ||
                   typeof onCancelAppointment === "function") ? (
                   <div className="profiles-booking-appointment-actions-inline">
-                    {typeof onConfirmAppointment === "function" &&
-                    String(item.status || "").toLowerCase() === "pending" ? (
+                    {String(item.status || "").toLowerCase() === "pending" && typeof onConfirmAppointment === "function" ? (
                       <button
                         type="button"
                         className="profiles-booking-inline-action-btn is-confirm"
                         onClick={() => onConfirmAppointment(item.id)}
                         disabled={confirmingAppointmentId === item.id}
                       >
-                        {confirmingAppointmentId === item.id ? "Accepting..." : "Accept"}
+                        {confirmingAppointmentId === item.id ? "..." : "Accept"}
                       </button>
                     ) : null}
-                    {typeof onCancelAppointment === "function" &&
-                    !["cancelled", "completed"].includes(String(item.status || "").toLowerCase()) ? (
+                    {typeof onCancelAppointment === "function" ? (
                       <button
                         type="button"
                         className="profiles-booking-inline-action-btn"
                         onClick={() => onCancelAppointment(item.id)}
                         disabled={cancellingAppointmentId === item.id}
                       >
-                        {cancellingAppointmentId === item.id ? "Cancelling..." : "Cancel"}
+                        {cancellingAppointmentId === item.id ? "..." : "Cancel"}
                       </button>
                     ) : null}
+                  </div>
+                ) : null}
+                {/* Customer: Cancel for pending or confirmed */}
+                {!isOwner &&
+                viewerActorId &&
+                String(item.customerActorId) === String(viewerActorId) &&
+                ["pending", "confirmed"].includes(String(item.status || "").toLowerCase()) &&
+                typeof onCancelAppointment === "function" ? (
+                  <div className="profiles-booking-appointment-actions-inline">
+                    <button
+                      type="button"
+                      className="profiles-booking-inline-action-btn"
+                      onClick={() => onCancelAppointment(item.id)}
+                      disabled={cancellingAppointmentId === item.id}
+                    >
+                      {cancellingAppointmentId === item.id ? "..." : "Cancel"}
+                    </button>
                   </div>
                 ) : null}
               </div>

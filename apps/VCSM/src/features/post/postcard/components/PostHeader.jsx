@@ -41,7 +41,6 @@ export default function PostHeader({
           }}
           showText={false}
           avatarSize="w-11 h-11"
-          avatarShape="rounded-lg"
         />
 
         <div className="flex flex-col min-w-0 gap-[2px]">

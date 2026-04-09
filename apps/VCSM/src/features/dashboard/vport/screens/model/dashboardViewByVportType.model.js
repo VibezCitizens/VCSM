@@ -19,12 +19,17 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
   service: {
     id: "service",
     label: "Service",
-    cardKeys: Object.freeze(["qr", "services", "reviews", "ads", "settings"]),
+    cardKeys: Object.freeze(["portfolio", "qr", "services", "reviews", "ads", "settings"]),
   },
   barber: {
     id: "barber",
     label: "Barber",
-    cardKeys: Object.freeze(["calendar", "services", "reviews", "ads", "settings"]),
+    cardKeys: Object.freeze(["portfolio", "calendar", "booking_history", "services", "reviews", "ads", "settings"]),
+  },
+  locksmith: {
+    id: "locksmith",
+    label: "Locksmith",
+    cardKeys: Object.freeze(["locksmith", "portfolio", "calendar", "booking_history", "services", "reviews", "ads", "settings"]),
   },
   food: {
     id: "food",
@@ -76,6 +81,7 @@ const GROUP_TO_VIEW = Object.freeze({
 
 const TYPE_TO_VIEW = Object.freeze({
   barber: "barber",
+  locksmith: "locksmith",
   "gas station": "gas",
   exchange: "exchange",
 });

@@ -20,7 +20,7 @@ export default function MentionAutocompleteList({ open, items, onPick }) {
           <img
             src={it.photo_url || "/avatar.jpg"}
             alt=""
-            className="h-9 w-9 rounded-full object-cover bg-white/5"
+            className="h-9 w-9 rounded-2xl object-cover bg-white/5"
           />
           <div className="min-w-0">
             <div className="text-sm text-white/90 truncate">

@@ -3,6 +3,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 
 import {
   ctrlAssertReviewTargetActor,
+  ctrlDeleteMyReview,
   ctrlGetMyActiveReview,
   ctrlGetOfficialStats,
   ctrlGetReviewFormConfig,
@@ -33,8 +34,14 @@ export function useVportReviews(input) {
   const [officialStats, setOfficialStats] = useState(null);
   const [activeList, setActiveList] = useState([]);
   const [loadingActiveList, setLoadingActiveList] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [myLoading, setMyLoading] = useState(false);
+  const [myReview, setMyReview] = useState(null);
   const [myExists, setMyExists] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
@@ -175,8 +182,8 @@ export function useVportReviews(input) {
     setError(null);
 
     try {
-      let list = await ctrlListReviews(targetActorId, 50);
-      list = Array.isArray(list) ? list : [];
+      const result = await ctrlListReviews(targetActorId, { limit: 25 });
+      let list = Array.isArray(result?.reviews) ? result.reviews : (Array.isArray(result) ? result : []);
 
       if (tab === "services") {
         const fn = ServiceCtrl?.ctrlListServiceReviews || ServiceCtrl?.ctrlListReviewsForService || null;
@@ -199,18 +206,50 @@ export function useVportReviews(input) {
 
       if (!mountedRef.current) return;
       setActiveList(list);
+      setHasMore(result?.hasMore ?? false);
+      setNextCursor(result?.nextCursor ?? null);
     } catch (nextError) {
       if (!mountedRef.current) return;
       setError(nextError);
       setActiveList([]);
+      setHasMore(false);
+      setNextCursor(null);
     } finally {
       if (mountedRef.current) setLoadingActiveList(false);
       inFlightListRef.current = false;
     }
   }, [targetActorId, tab, serviceId]);
 
+  const loadMore = useCallback(async () => {
+    if (!targetActorId || !hasMore || !nextCursor || loadingMore) return;
+    setLoadingMore(true);
+
+    try {
+      const result = await ctrlListReviews(targetActorId, { limit: 25, cursor: nextCursor });
+      let moreList = Array.isArray(result?.reviews) ? result.reviews : [];
+
+      if (tab !== "overall" && tab !== "services") {
+        moreList = moreList.filter((review) =>
+          Array.isArray(review?.ratings)
+            ? review.ratings.some((ratingRow) => String(ratingRow?.dimensionKey) === String(tab))
+            : false
+        );
+      }
+
+      if (!mountedRef.current) return;
+      setActiveList((prev) => [...prev, ...moreList]);
+      setHasMore(result?.hasMore ?? false);
+      setNextCursor(result?.nextCursor ?? null);
+    } catch {
+      // silently fail load-more — list stays with current items
+    } finally {
+      if (mountedRef.current) setLoadingMore(false);
+    }
+  }, [targetActorId, hasMore, nextCursor, loadingMore, tab]);
+
   const loadMyReview = useCallback(async () => {
     if (!authorActorId || !targetActorId || !canReview) {
+      setMyReview(null);
       setMyExists(false);
       setRating(5);
       setBody("");
@@ -225,13 +264,17 @@ export function useVportReviews(input) {
       const mine = await ctrlGetMyActiveReview(targetActorId, authorActorId);
       if (!mountedRef.current) return;
 
+      setMyReview(mine ?? null);
       setMyExists(Boolean(mine));
-      setBody(mine?.body ?? "");
 
-      const firstRating = Array.isArray(mine?.ratings) ? safeNum(mine.ratings[0]?.rating, 5) : 5;
-      setRating(firstRating);
+      if (!isEditing) {
+        setBody(mine?.body ?? "");
+        const firstRating = Array.isArray(mine?.ratings) ? safeNum(mine.ratings[0]?.rating, 5) : 5;
+        setRating(firstRating);
+      }
     } catch {
       if (!mountedRef.current) return;
+      setMyReview(null);
       setMyExists(false);
       setBody("");
       setRating(5);
@@ -239,7 +282,7 @@ export function useVportReviews(input) {
       if (mountedRef.current) setMyLoading(false);
       inFlightMyRef.current = false;
     }
-  }, [authorActorId, targetActorId, canReview]);
+  }, [authorActorId, targetActorId, canReview, isEditing]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -271,18 +314,51 @@ export function useVportReviews(input) {
     setMsg(null);
     setError(null);
 
+    const ratings = [];
+
+    if (tab === "overall") {
+      const key = dimensions?.[0]?.dimensionKey ?? "overall";
+      ratings.push({ dimensionKey: key, rating });
+    } else if (tab === "services" && serviceId) {
+      ratings.push({ dimensionKey: "service", rating, serviceId });
+    } else {
+      ratings.push({ dimensionKey: tab, rating });
+    }
+
+    // --- Optimistic UI: build temporary review card ---
+    const now = new Date().toISOString();
+    const optimisticId = "optimistic-" + crypto.randomUUID();
+
+    const optimisticReview = {
+      id: optimisticId,
+      targetActorId,
+      authorActorId,
+      body: body ?? "",
+      overallRating: rating,
+      ratings: ratings.map((r) => ({
+        dimensionKey: r.dimensionKey,
+        rating: r.rating,
+      })),
+      reviewMode: "neutral",
+      verificationStatus: "unverified",
+      ratingScale: 5,
+      createdAt: now,
+      updatedAt: now,
+      reviewActivityAt: now,
+      isDeleted: false,
+      deletedAt: null,
+      authorDisplayName: identity?.displayName ?? "You",
+      authorUsername: identity?.username ?? "",
+      authorAvatarUrl: identity?.avatarUrl ?? identity?.avatar ?? "",
+      isOptimistic: true,
+    };
+
+    // Prepend optimistic review to list and mark as existing
+    setActiveList((prev) => [optimisticReview, ...prev]);
+    setMyReview(optimisticReview);
+    setMyExists(true);
+
     try {
-      const ratings = [];
-
-      if (tab === "overall") {
-        const key = dimensions?.[0]?.dimensionKey ?? "overall";
-        ratings.push({ dimensionKey: key, rating });
-      } else if (tab === "services" && serviceId) {
-        ratings.push({ dimensionKey: "service", rating, serviceId });
-      } else {
-        ratings.push({ dimensionKey: tab, rating });
-      }
-
       const saved = await ctrlSubmitReview({
         targetActorId,
         authorActorId,
@@ -292,12 +368,27 @@ export function useVportReviews(input) {
 
       if (!mountedRef.current) return saved;
 
-      setMyExists(true);
+      // --- Reconciliation: replace optimistic with real review ---
+      setActiveList((prev) =>
+        prev.map((r) =>
+          r.id === optimisticId ? { ...saved, isOptimistic: false } : r
+        )
+      );
+      setMyReview(saved);
       setMsg("Saved");
-      await Promise.all([loadActiveList(), loadMyReview(), loadCore()]);
+
+      // Reload stats (non-blocking)
+      loadCore().catch(() => {});
+
       return saved;
     } catch (nextError) {
-      if (mountedRef.current) setError(nextError);
+      if (!mountedRef.current) throw nextError;
+
+      // --- Rollback: remove optimistic review ---
+      setActiveList((prev) => prev.filter((r) => r.id !== optimisticId));
+      setMyReview(null);
+      setMyExists(false);
+      setError(nextError);
       throw nextError;
     } finally {
       if (mountedRef.current) setSaving(false);
@@ -307,9 +398,8 @@ export function useVportReviews(input) {
     body,
     canReview,
     dimensions,
-    loadActiveList,
+    identity,
     loadCore,
-    loadMyReview,
     rating,
     serviceId,
     tab,
@@ -320,6 +410,36 @@ export function useVportReviews(input) {
   const totalReviews = useMemo(() => safeNum(officialStats?.totalReviews ?? officialStats?.total_reviews, 0), [officialStats]);
   const recentComments = useMemo(() => pickRecentComments(activeList, 3), [activeList]);
   const dimStats = useMemo(() => computeDimStatsFromReviews(activeList, dimensions), [activeList, dimensions]);
+
+  const startEdit = useCallback(() => {
+    if (!myReview) return;
+    setIsEditing(true);
+    setBody(myReview.body ?? "");
+  }, [myReview]);
+
+  const cancelEdit = useCallback(() => {
+    setIsEditing(false);
+    setBody("");
+    setRating(5);
+  }, []);
+
+  const deleteMyReview = useCallback(async () => {
+    if (!myReview?.id || !authorActorId) return;
+    setIsDeleting(true);
+    try {
+      await ctrlDeleteMyReview(myReview.id, authorActorId);
+      setMyReview(null);
+      setMyExists(false);
+      setIsEditing(false);
+      setBody("");
+      setRating(5);
+      await Promise.all([loadActiveList(), loadCore()]);
+    } catch (nextError) {
+      if (mountedRef.current) setError(nextError);
+    } finally {
+      if (mountedRef.current) setIsDeleting(false);
+    }
+  }, [myReview, authorActorId, loadActiveList, loadCore]);
 
   return {
     tab,
@@ -334,11 +454,21 @@ export function useVportReviews(input) {
     overallAverage,
     totalReviews,
     activeList,
+    setActiveList,
     loadingActiveList,
+    hasMore,
+    loadingMore,
+    loadMore,
     recentComments,
     dimStats,
     myLoading,
+    myReview,
     myExists,
+    isEditing,
+    isDeleting,
+    startEdit,
+    cancelEdit,
+    deleteMyReview,
     rating,
     setRating,
     body,
@@ -351,6 +481,7 @@ export function useVportReviews(input) {
     isServiceTab,
     tabLabel,
     viewerActorId,
+    authorActorId,
     submit,
     reload: loadActiveList,
   };

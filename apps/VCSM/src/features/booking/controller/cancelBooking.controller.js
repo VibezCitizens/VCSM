@@ -3,6 +3,7 @@ import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResource
 import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
+import { dalInsertNotification } from "@/features/notifications/inbox/dal/notifications.create.dal";
 
 export async function cancelBookingController({
   bookingId,
@@ -25,11 +26,11 @@ export async function cancelBookingController({
     booking.customer_actor_id &&
     String(booking.customer_actor_id) === String(requestActorId);
 
-  if (!isCustomer) {
-    const resource = await getBookingResourceByIdDAL({
-      resourceId: booking.resource_id,
-    });
+  const resource = await getBookingResourceByIdDAL({
+    resourceId: booking.resource_id,
+  });
 
+  if (!isCustomer) {
     if (!resource) {
       throw new Error("Booking resource not found.");
     }
@@ -52,7 +53,33 @@ export async function cancelBookingController({
     throw new Error("Failed to cancel booking.");
   }
 
-  return mapBookingRow(updated);
+  const mapped = mapBookingRow(updated);
+
+  // Notify the other party about cancellation
+  const recipientActorId = isCustomer
+    ? resource?.owner_actor_id
+    : booking.customer_actor_id;
+
+  if (recipientActorId && String(requestActorId) !== String(recipientActorId)) {
+    dalInsertNotification({
+      recipientActorId,
+      actorId: requestActorId,
+      kind: "booking_cancelled",
+      objectType: "booking",
+      objectId: bookingId,
+      linkPath: isCustomer
+        ? `/profile/${resource.owner_actor_id}?tab=book`
+        : `/profile/${resource?.owner_actor_id ?? ""}?tab=book`,
+      context: {
+        serviceLabelSnapshot: booking.service_label_snapshot ?? null,
+        startsAt: booking.starts_at ?? null,
+        status: "cancelled",
+        cancelledBy: isCustomer ? "customer" : "owner",
+      },
+    }).catch(() => {});
+  }
+
+  return mapped;
 }
 
 export default cancelBookingController;

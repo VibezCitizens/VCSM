@@ -60,7 +60,6 @@ export default function BlockedState({
           <ActorLink
             actor={actor}
             avatarSize="w-8 h-8"
-            avatarShape="rounded-md"
             showUsername
             className="justify-center"
           />

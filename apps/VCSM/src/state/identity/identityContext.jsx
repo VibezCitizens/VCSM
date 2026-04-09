@@ -13,11 +13,14 @@ import {
 } from "@identity";
 import { debugLoginEvent, debugLoginError, debugLoginIdentitySnapshot } from "@debuggers/identity";
 import { createSwitchDebugSession, checkRefreshRestore, clearLastSwitchTarget } from "@debuggers/actor-switch";
+import { debugFeedViewer } from "@debuggers/feed";
 
 const IdentityContext = createContext(null);
 
 // Monotonic version counter — only the newest resolve attempt may commit.
 let _resolveVersion = 0;
+// Monotonic switch counter — only the newest switchActor attempt may commit.
+let _switchVersion = 0;
 
 export function IdentityProvider({ children }) {
   const { user, loading: authLoading } = useAuth();
@@ -26,6 +29,7 @@ export function IdentityProvider({ children }) {
 
   async function switchActor(actorId, _dbgEntryPoint) {
     if (!actorId) return;
+    const mySwitchVersion = ++_switchVersion;
 
     const dbg = import.meta.env.DEV
       ? createSwitchDebugSession({
@@ -153,6 +157,17 @@ export function IdentityProvider({ children }) {
       const nextIdentity = await loadIdentityForActorId(actorId);
 
       if (nextIdentity) {
+        // Version guard: reject if a newer switch was started while we were resolving
+        if (mySwitchVersion !== _switchVersion) {
+          dbg.event('SWITCH_ABORT_STALE', {
+            status: 'warn',
+            message: `Switch v${mySwitchVersion} rejected (current v${_switchVersion})`,
+            payload: { mySwitchVersion, currentVersion: _switchVersion, actorId },
+          });
+          dbg.event('SWITCH_DONE', { status: 'warn', message: 'Aborted: stale switch' });
+          return;
+        }
+
         hydrationSucceeded = true;
         actorKind = nextIdentity.kind ?? actorKind;
         dbg.event('SWITCH_HYDRATION_SUCCESS', {
@@ -470,6 +485,12 @@ export function IdentityProvider({ children }) {
       cancelled = true;
     };
   }, [authLoading, user?.id]);
+
+  // Global feed viewer sync — fires on every identity commit (login, switch, clear)
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    debugFeedViewer({ user, identity });
+  }, [identity, user]);
 
   return (
     <IdentityContext.Provider

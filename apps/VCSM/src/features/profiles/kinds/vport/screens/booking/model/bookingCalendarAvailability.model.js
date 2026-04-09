@@ -2,6 +2,7 @@ import {
   addDays,
   formatDateLabel,
   fromDateKey,
+  isSlotExpired,
   minutesToTime,
   normalizeDurationMinutes,
   timeToMinutes,
@@ -131,9 +132,9 @@ export function buildBookingsByDate(bookings, { isOwner = false } = {}) {
       id: booking?.id ?? `${dateKey}:${booking?.status ?? "pending"}`,
       time: toLocalTimeHHMM(startsAt),
       dateLabel: toLocalDateLabel(startsAt),
-      clientName: isOwner ? booking?.customerName || fallbackName : "Reserved",
+      clientName: booking?.customerName || fallbackName,
       customerActorId,
-      service: isOwner ? booking?.serviceLabelSnapshot || "Booking" : "Appointment",
+      service: booking?.serviceLabelSnapshot || "Appointment",
       status,
       startsAtTs: startsAtDate.getTime(),
     });
@@ -163,11 +164,15 @@ export function buildSlotsByDate({
     const dateKey = toDateKey(dateObj);
     const rawSlots = buildRuleSlotsForDate(rules, dateObj, slotDurationMinutes);
     const afterExceptions = applyExceptionsToSlots(rawSlots, exceptions, dateObj);
-    slotsByDate[dateKey] = removeBookedSlots(
+    const afterOccupied = removeBookedSlots(
       afterExceptions,
       occupiedIntervalsByDate[dateKey] ?? [],
       dateObj,
       slotDurationMinutes
+    );
+    // Step 4: remove expired/past slots
+    slotsByDate[dateKey] = afterOccupied.filter(
+      (slot) => !isSlotExpired({ slotDate: dateObj, slotStartTime: slot })
     );
   }
 
@@ -248,11 +253,14 @@ export function buildWeeklyAvailabilityDays({
     const dateKey = toDateKey(dateObj);
     const rawSlots = buildRuleSlotsForDate(rules, dateObj, slotDurationMinutes);
     const afterExceptions = applyExceptionsToSlots(rawSlots, exceptions, dateObj);
-    const openSlots = removeBookedSlots(
+    const afterOccupied = removeBookedSlots(
       afterExceptions,
       occupiedIntervalsByDate[dateKey] ?? [],
       dateObj,
       slotDurationMinutes
+    );
+    const openSlots = afterOccupied.filter(
+      (slot) => !isSlotExpired({ slotDate: dateObj, slotStartTime: slot })
     );
 
     return {

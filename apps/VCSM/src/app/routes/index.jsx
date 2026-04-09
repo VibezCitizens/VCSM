@@ -149,6 +149,21 @@ const VportDashboardCalendarScreen = lazyWithLog(
   () => import("@/features/dashboard/vport/screens/VportDashboardCalendarScreen"),
 );
 
+const VportDashboardPortfolioScreen = lazyWithLog(
+  "VportDashboardPortfolioScreen",
+  () => import("@/features/dashboard/vport/screens/VportDashboardPortfolioScreen"),
+);
+
+const VportDashboardLocksmithScreen = lazyWithLog(
+  "VportDashboardLocksmithScreen",
+  () => import("@/features/dashboard/vport/screens/VportDashboardLocksmithScreen"),
+);
+
+const VportDashboardBookingHistoryScreen = lazyWithLog(
+  "VportDashboardBookingHistoryScreen",
+  () => import("@/features/dashboard/vport/screens/VportDashboardBookingHistoryScreen"),
+);
+
 const VportSettingsScreen = lazyWithLog("VportSettingsScreen", () =>
   import("@/features/dashboard/vport/screens/VportSettingsScreen"),
 );
@@ -431,6 +446,9 @@ export default function AppRoutes() {
             VportDashboardServicesScreen,
             VportDashboardExchangeScreen,
             VportDashboardCalendarScreen,
+            VportDashboardPortfolioScreen,
+            VportDashboardLocksmithScreen,
+            VportDashboardBookingHistoryScreen,
             VportSettingsScreen,
 
             LearningHomeScreen,

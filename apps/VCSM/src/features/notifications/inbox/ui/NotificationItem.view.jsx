@@ -13,7 +13,10 @@ import PostDislikeNotificationItem from '@/features/notifications/types/reaction
 import PostRoseNotificationItem from '@/features/notifications/types/reaction/PostRoseNotificationItem.view'
 import PostMentionNotificationItem from '@/features/notifications/types/mention/PostMentionNotificationItem.view'
 
-
+import BookingCreatedNotificationItem from '@/features/notifications/types/booking/BookingCreatedNotificationItem.view'
+import BookingConfirmedNotificationItem from '@/features/notifications/types/booking/BookingConfirmedNotificationItem.view'
+import BookingCancelledNotificationItem from '@/features/notifications/types/booking/BookingCancelledNotificationItem.view'
+import ReviewCreatedNotificationItem from '@/features/notifications/types/review/ReviewCreatedNotificationItem.view'
 
 function DefaultNotification({ notification }) {
   return (
@@ -56,6 +59,20 @@ export default function NotificationItem({ notification }) {
     // 🔔 MENTIONS
     case 'post_mention':
       return <PostMentionNotificationItem notification={notification} />
+
+    // 📅 BOOKINGS
+    case 'booking_created':
+      return <BookingCreatedNotificationItem notification={notification} />
+
+    case 'booking_confirmed':
+      return <BookingConfirmedNotificationItem notification={notification} />
+
+    case 'booking_cancelled':
+      return <BookingCancelledNotificationItem notification={notification} />
+
+    // ⭐ REVIEWS
+    case 'review_created':
+      return <ReviewCreatedNotificationItem notification={notification} />
 
     default:
       return <DefaultNotification notification={notification} />

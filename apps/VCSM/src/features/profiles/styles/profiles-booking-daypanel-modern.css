@@ -240,13 +240,13 @@
 
 .profiles-modern .profiles-booking-appointment-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(8.25rem, auto);
+  grid-template-columns: 2.8rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.5rem;
   border-radius: 0.8rem;
   border: 1px solid rgba(136, 168, 243, 0.24);
   background: rgba(8, 13, 29, 0.72);
-  padding: 0.52rem 0.62rem;
+  padding: 0.58rem 0.7rem;
 }
 
 .profiles-modern .profiles-booking-appointment-time {
@@ -321,18 +321,14 @@
 
 .profiles-modern .profiles-booking-appointment-tail {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 0.32rem;
-  min-width: 8.25rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.38rem;
+  flex-shrink: 0;
 }
 
 .profiles-modern .profiles-booking-appointment-actions-inline {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(3.7rem, max-content);
-  justify-content: end;
+  display: flex;
   align-items: center;
   gap: 0.28rem;
 }
@@ -342,13 +338,14 @@
   border-radius: 9999px;
   background: rgba(95, 26, 26, 0.45);
   color: #ffd9d9;
-  min-width: 3.7rem;
-  font-size: 0.64rem;
+  min-width: 3.8rem;
+  font-size: 0.62rem;
   font-weight: 700;
   line-height: 1;
   text-align: center;
-  padding: 0.24rem 0.48rem;
+  padding: 0.28rem 0.52rem;
   transition: border-color 160ms ease, transform 140ms ease;
+  white-space: nowrap;
 }
 
 .profiles-modern .profiles-booking-inline-action-btn:hover {
@@ -373,15 +370,15 @@
 }
 
 .profiles-modern .profiles-booking-status-badge {
-  min-width: 4.2rem;
   border-radius: 9999px;
   border: 1px solid rgba(146, 170, 231, 0.36);
   background: rgba(9, 17, 37, 0.8);
   text-align: center;
-  padding: 0.22rem 0.45rem;
-  font-size: 0.64rem;
+  padding: 0.28rem 0.56rem;
+  font-size: 0.62rem;
   font-weight: 600;
   color: #dfecff;
+  white-space: nowrap;
 }
 
 .profiles-modern .profiles-booking-status-badge.is-confirmed,
@@ -480,20 +477,13 @@
 
 @media (max-width: 640px) {
   .profiles-modern .profiles-booking-appointment-card {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 2.4rem minmax(0, 1fr);
     align-items: start;
   }
 
   .profiles-modern .profiles-booking-appointment-tail {
     grid-column: 1 / -1;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    min-width: 0;
-  }
-
-  .profiles-modern .profiles-booking-appointment-actions-inline {
-    grid-auto-columns: minmax(3.45rem, max-content);
+    justify-content: flex-start;
   }
 
   .profiles-modern .profiles-booking-agenda-item--availability {

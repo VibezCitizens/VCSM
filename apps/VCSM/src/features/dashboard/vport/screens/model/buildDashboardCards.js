@@ -33,6 +33,18 @@ const CARD_CATALOG = Object.freeze({
     body: "View official exchange rates and last updated time.",
     handlerKey: "openExchangeRates",
   },
+  portfolio: {
+    key: "portfolio",
+    title: "Portfolio",
+    body: "Add, edit, and organize your work showcase with photos and details.",
+    handlerKey: "openPortfolio",
+  },
+  locksmith: {
+    key: "locksmith",
+    title: "Locksmith Manager",
+    body: "Manage service areas, coverage, and locksmith-specific details.",
+    handlerKey: "openLocksmith",
+  },
   services: {
     key: "services",
     title: "Services",
@@ -44,6 +56,12 @@ const CARD_CATALOG = Object.freeze({
     title: "Reviews",
     body: "View and manage your reviews and overall rating.",
     handlerKey: "openReviews",
+  },
+  booking_history: {
+    key: "booking_history",
+    title: "Booking History",
+    body: "View all past and current appointments with status and details.",
+    handlerKey: "openBookingHistory",
   },
   calendar: {
     key: "calendar",

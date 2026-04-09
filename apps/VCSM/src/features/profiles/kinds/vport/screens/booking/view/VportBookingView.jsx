@@ -23,6 +23,7 @@ function BookingError({ error }) {
 
 export default function VportBookingView({ profile, isOwner = false }) {
   const {
+    viewerActorId,
     resources,
     availability,
     createBooking,
@@ -41,6 +42,7 @@ export default function VportBookingView({ profile, isOwner = false }) {
     ownerFollowersError,
     selectedOwnerFollower,
     slotDurationMinutes,
+    viewerCanBook,
     canRequestSelectedSlot,
     isSelectedSlotAvailable,
     hasSelectedAvailableDay,
@@ -164,6 +166,8 @@ export default function VportBookingView({ profile, isOwner = false }) {
       {viewMode === "calendar" && hasSelectedAvailableDay ? (
         <BookingCalendarDayPanel
           isOwner={isOwner}
+          viewerActorId={viewerActorId}
+          viewerCanBook={viewerCanBook}
           canRequestSelectedSlot={canRequestSelectedSlot}
           showOwnerSlotActions={false}
           selectedDateLabel={selectedDateLabel}

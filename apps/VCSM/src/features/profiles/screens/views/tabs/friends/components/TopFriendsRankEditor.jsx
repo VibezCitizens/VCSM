@@ -174,7 +174,6 @@ function RankRow({ actorId, index, total, onMoveUp, onMoveDown, onRemove }) {
       <ActorLink
         actor={actor}
         avatarSize="w-9 h-9"
-        avatarShape="rounded-lg"
         showUsername
       />
 

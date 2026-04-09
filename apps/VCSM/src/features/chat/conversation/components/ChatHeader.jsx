@@ -48,7 +48,6 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
             <ActorLink
               actor={actorLink}
               avatarSize="w-10 h-10"
-              avatarShape="rounded-xl"
               textSize="text-sm"
               showUsername
               className="min-w-0"

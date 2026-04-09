@@ -26,6 +26,14 @@ export default defineConfig(({ mode }) => ({
         replacement: fileURLToPath(new URL('../../engines/chat/index.js', import.meta.url)),
       },
       {
+        find: '@reviews',
+        replacement: fileURLToPath(new URL('../../engines/reviews/index.js', import.meta.url)),
+      },
+      {
+        find: '@portfolio',
+        replacement: fileURLToPath(new URL('../../engines/portfolio/index.js', import.meta.url)),
+      },
+      {
         find: '@debuggers',
         replacement: fileURLToPath(new URL('../../debuggers', import.meta.url)),
       },

@@ -3,6 +3,41 @@
 import vc from "@/services/supabase/vcClient";
 import { supabase } from "@/services/supabase/supabaseClient";
 
+/**
+ * Fetch author cards for a batch of review IDs using the SECURITY DEFINER RPC.
+ * Bypasses RLS so private actor profiles are always visible on their review cards.
+ *
+ * @param {string[]} reviewIds
+ * @returns {Promise<Map<string, { actorId, displayName, username, avatarUrl }>>}
+ */
+export async function dalGetReviewAuthorCards(reviewIds) {
+  const ids = Array.from(new Set((reviewIds ?? []).filter(Boolean).map(String)));
+  if (!ids.length) return new Map();
+
+  const results = await Promise.all(
+    ids.map(async (reviewId) => {
+      const { data, error } = await vc
+        .rpc("get_review_author_card", { p_review_id: reviewId });
+
+      if (error || !data?.length) return null;
+      const row = data[0];
+      return {
+        reviewId,
+        actorId: row.actor_id ? String(row.actor_id) : null,
+        displayName: row.display_name || "Anonymous",
+        username: row.username ?? "",
+        avatarUrl: row.avatar_url || null,
+      };
+    })
+  );
+
+  const byReviewId = new Map();
+  for (const r of results) {
+    if (r?.reviewId && r?.actorId) byReviewId.set(r.reviewId, r);
+  }
+  return byReviewId;
+}
+
 function uniq(arr) {
   return Array.from(new Set((arr ?? []).filter(Boolean).map((x) => String(x))));
 }
@@ -23,6 +58,8 @@ export async function dalListActorCardsByActorIds(actorIds) {
   if (!ids.length) return [];
 
   // 1) actors (vc schema via vcClient)
+  //    NOTE: RLS on vc.actors can block private user actors from non-owners/non-followers.
+  //    For review author enrichment, we fall back to identity.actor_directory if vc.actors returns empty.
   const { data: actors, error: actorsErr } = await vc
     .from("actors")
     .select("id, kind, profile_id, vport_id")
@@ -30,7 +67,36 @@ export async function dalListActorCardsByActorIds(actorIds) {
 
   if (actorsErr) throw actorsErr;
 
-  const actorRows = Array.isArray(actors) ? actors : [];
+  let actorRows = Array.isArray(actors) ? actors : [];
+
+  // Fallback: if some actor IDs were blocked by RLS, try identity.actor_directory
+  const foundIds = new Set(actorRows.map((a) => String(a.id)));
+  const missingIds = ids.filter((id) => !foundIds.has(id));
+  if (missingIds.length) {
+    const { data: dirRows } = await supabase
+      .schema("identity")
+      .from("actor_directory")
+      .select("actor_id, actor_kind, display_name, username, avatar_url")
+      .in("actor_id", missingIds);
+
+    if (dirRows?.length) {
+      for (const d of dirRows) {
+        // Synthesize an actor-like row so the rest of the function works
+        // For directory hits, we skip profile/vport lookup and build the card directly
+        actorRows.push({
+          id: d.actor_id,
+          kind: d.actor_kind ?? "user",
+          profile_id: null,
+          vport_id: null,
+          _directoryCard: {
+            displayName: d.display_name || d.username || "Citizen",
+            username: d.username ?? "",
+            avatarUrl: d.avatar_url || null,
+          },
+        });
+      }
+    }
+  }
 
   const profileIds = uniq(actorRows.map((a) => a?.profile_id).filter(Boolean));
   const vportIds = uniq(actorRows.map((a) => a?.vport_id).filter(Boolean));
@@ -50,9 +116,9 @@ export async function dalListActorCardsByActorIds(actorIds) {
       profRows.map((p) => [
         String(p.id),
         {
-          displayName: p.display_name ?? "Anonymous",
+          displayName: p.display_name || p.username || "Anonymous",
           username: p.username ?? "",
-          avatarUrl: p.photo_url ?? "",
+          avatarUrl: p.photo_url || null,
         },
       ])
     );
@@ -73,9 +139,9 @@ export async function dalListActorCardsByActorIds(actorIds) {
       vportRows.map((v) => [
         String(v.id),
         {
-          displayName: v.name ?? "Anonymous",
+          displayName: v.name || v.slug || "Anonymous",
           username: v.slug ?? "",
-          avatarUrl: v.avatar_url ?? "",
+          avatarUrl: v.avatar_url || null,
         },
       ])
     );
@@ -88,6 +154,12 @@ export async function dalListActorCardsByActorIds(actorIds) {
     const kind = String(a.kind ?? "");
     const profileId = a?.profile_id ? String(a.profile_id) : null;
     const vportId = a?.vport_id ? String(a.vport_id) : null;
+
+    // Use directory card if available (fallback for RLS-blocked actors)
+    if (a._directoryCard) {
+      out.push({ actorId, ...a._directoryCard });
+      continue;
+    }
 
     if (kind === "user" && profileId) {
       const prof = profileById.get(profileId);

@@ -99,6 +99,28 @@ export function toLocalDateLabel(iso) {
   return normalized.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+/**
+ * Single source of truth for slot expiry.
+ * Returns true when the slot start time is in the past or already started.
+ *
+ * @param {Object} params
+ * @param {Date|string} params.slotDate   - the date of the slot (Date or dateKey string)
+ * @param {string}      params.slotStartTime - "HH:MM" time string
+ * @param {Date}        [params.now]       - override for current time (defaults to new Date())
+ * @returns {boolean}
+ */
+export function isSlotExpired({ slotDate, slotStartTime, now } = {}) {
+  const currentTime = now instanceof Date ? now : new Date();
+  const date = slotDate instanceof Date ? slotDate : fromDateKey(slotDate);
+  if (Number.isNaN(date.getTime())) return true;
+
+  const [hours = "0", minutes = "0"] = String(slotStartTime || "").split(":");
+  const slotStart = new Date(date);
+  slotStart.setHours(Number(hours), Number(minutes), 0, 0);
+
+  return slotStart.getTime() <= currentTime.getTime();
+}
+
 export function groupSlotsBySegment(slots) {
   const grouped = { morning: [], afternoon: [], evening: [] };
   for (const slot of Array.isArray(slots) ? slots : []) {

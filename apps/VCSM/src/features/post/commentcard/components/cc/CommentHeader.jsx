@@ -31,7 +31,6 @@ export default function CommentHeader({
         showTimestamp={Boolean(timestamp)}
         timestamp={timestamp}
         avatarSize="w-9 h-9"
-        avatarShape="rounded-lg"
       />
 
       {showMenu && (

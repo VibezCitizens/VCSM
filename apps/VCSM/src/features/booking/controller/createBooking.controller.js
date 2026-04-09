@@ -1,9 +1,12 @@
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
+import getActorByIdDAL from "@/features/booking/dal/getActorById.dal";
 import insertBookingDAL from "@/features/booking/dal/insertBooking.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
+import { dalInsertNotification } from "@/features/notifications/inbox/dal/notifications.create.dal";
 
 const MANAGEMENT_SOURCES = new Set(["owner", "admin", "import", "sync"]);
+const CITIZEN_ONLY_SOURCES = new Set(["public"]);
 
 export async function createBookingController({
   requestActorId = null,
@@ -59,6 +62,25 @@ export async function createBookingController({
     });
   }
 
+  if (CITIZEN_ONLY_SOURCES.has(String(source))) {
+    if (!requestActorId) {
+      throw new Error("Only citizens can book appointments.");
+    }
+
+    const requestActor = await getActorByIdDAL({ actorId: requestActorId });
+    if (!requestActor || requestActor.is_void === true) {
+      throw new Error("Only citizens can book appointments.");
+    }
+    if (requestActor.kind !== "user") {
+      throw new Error("Only citizens can book appointments. Switch to your citizen profile to reserve.");
+    }
+  }
+
+  const slotStartTime = new Date(startsAt).getTime();
+  if (!Number.isFinite(slotStartTime) || slotStartTime <= Date.now()) {
+    throw new Error("This time slot is no longer available.");
+  }
+
   const inserted = await insertBookingDAL({
     row: {
       resource_id: resourceId,
@@ -81,7 +103,29 @@ export async function createBookingController({
     },
   });
 
-  return mapBookingRow(inserted);
+  const mapped = mapBookingRow(inserted);
+
+  // Notify vport owner when a public booking is created
+  if (source === "public" && resource.owner_actor_id && requestActorId) {
+    if (String(requestActorId) !== String(resource.owner_actor_id)) {
+      dalInsertNotification({
+        recipientActorId: resource.owner_actor_id,
+        actorId: requestActorId,
+        kind: "booking_created",
+        objectType: "booking",
+        objectId: mapped.id,
+        linkPath: `/profile/${resource.owner_actor_id}?tab=book`,
+        context: {
+          serviceLabelSnapshot: serviceLabelSnapshot ?? null,
+          startsAt: startsAt ?? null,
+          customerName: customerName ?? null,
+          status: mapped.status ?? "pending",
+        },
+      }).catch(() => {});
+    }
+  }
+
+  return mapped;
 }
 
 export default createBookingController;

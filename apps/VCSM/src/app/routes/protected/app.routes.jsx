@@ -136,6 +136,9 @@ export function protectedAppRoutes({
   VportDashboardServicesScreen,
   VportDashboardExchangeScreen,
   VportDashboardCalendarScreen,
+  VportDashboardPortfolioScreen,
+  VportDashboardLocksmithScreen,
+  VportDashboardBookingHistoryScreen,
   VportSettingsScreen,
 
   LearningHomeScreen,
@@ -266,6 +269,18 @@ export function protectedAppRoutes({
     {
       path: "/actor/:actorId/dashboard/calendar",
       element: <VportDashboardCalendarScreen />,
+    },
+    {
+      path: "/actor/:actorId/dashboard/portfolio",
+      element: <VportDashboardPortfolioScreen />,
+    },
+    {
+      path: "/actor/:actorId/dashboard/locksmith",
+      element: <VportDashboardLocksmithScreen />,
+    },
+    {
+      path: "/actor/:actorId/dashboard/booking-history",
+      element: <VportDashboardBookingHistoryScreen />,
     },
 
     { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },

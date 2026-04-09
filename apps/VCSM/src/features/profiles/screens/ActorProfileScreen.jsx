@@ -2,6 +2,7 @@
 
 import { useParams, Navigate } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
+import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
 
 import { useActorKind } from "@/features/profiles/hooks/useActorKind";
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
@@ -12,6 +13,7 @@ const UUID_REGEX = /^[0-9a-f-]{36}$/i;
 export default function ActorProfileScreen() {
   const { actorId: routeActorId } = useParams();
   const { identity, identityLoading } = useIdentity();
+  useActorConsistencyCheck('profile', identity?.actorId, identity?.kind);
 
   // ✅ ALWAYS call hook (stable hook order)
   // Only fetch kind for valid UUID route actor IDs (not "self" and not usernames)

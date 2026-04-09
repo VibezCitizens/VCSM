@@ -1,277 +1,286 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\controller\review\VportReviews.controller.js
-import {
-  dalGetActiveReviewByAuthor,
-  dalGetVportOfficialStats,
-  dalGetVportReviewFormConfig,
-  dalListVportReviewRatingsByReviewIds,
-  dalListVportReviews,
-  dalReadVportReviewById,
-} from "@/features/profiles/kinds/vport/dal/review/vportReviews.read.dal";
+// ============================================================
+// VCSM — Vport Reviews Controller (Engine-Backed)
+// ============================================================
+// Delegates to engines/reviews for all DB operations.
+// Maps engine shapes to the hook contract.
+// ctrlAssertReviewTargetActor stays app-local (queries vc.actors).
+// ============================================================
 
 import {
-  dalInsertVportReviewRow,
-  dalSoftDeleteVportReview,
-  dalUpsertVportReviewRatings,
-  dalUpdateVportReviewBody,
-} from "@/features/profiles/kinds/vport/dal/review/vportReviews.write.dal";
-import { dalReadReviewTargetActor } from "@/features/profiles/kinds/vport/dal/review/reviewTarget.read.dal";
+  getReviewFormConfig,
+  getTargetStats,
+  listReviews as engineListReviews,
+  submitReview as engineSubmitReview,
+  deleteReview as engineDeleteReview,
+  getMyActiveReview as engineGetMyActiveReview,
+} from '@reviews'
 
-import {
-  modelOfficialStatsRow,
-  modelReviewDimensionRow,
-  modelReviewsWithRatings,
-  modelVportReviewRow,
-} from "@/features/profiles/kinds/vport/model/review/VportReview.model";
-import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId";
-import { getReviewDimensionsForVportType } from "@/features/profiles/kinds/vport/config/reviewDimensions.config";
-
-// ✅ NEW: author cards (profiles + void fallbacks)
-import { dalListActorCardsByActorIds } from "@/features/profiles/kinds/vport/dal/review/vportReviewAuthors.read.dal";
+import { dalReadReviewTargetActor } from '@/features/profiles/kinds/vport/dal/review/reviewTarget.read.dal'
+import { dalInsertNotification } from '@/features/notifications/inbox/dal/notifications.create.dal'
 
 /* ============================================================
-   CONTROLLER (business meaning + orchestration)
+   Helpers
    ============================================================ */
 
 function assertActorId(id, label) {
-  if (!id || typeof id !== "string") {
-    throw new Error(`[VportReviews] missing ${label}`);
+  if (!id || typeof id !== 'string') {
+    throw new Error(`[VportReviews] missing ${label}`)
   }
 }
 
-function normalizeRatingsInput(ratings) {
-  const out = [];
-  for (const r of ratings ?? []) {
-    if (!r) continue;
-    const dimensionKey = String(r.dimensionKey ?? "").trim();
-    const rating = Number(r.rating);
-    out.push({ dimensionKey, rating });
-  }
-  return out;
-}
-
-function validateRatingsAgainstConfig(ratings, configDims) {
-  const activeKeys = new Set((configDims ?? []).map((d) => d.dimensionKey));
-  const errors = [];
-
-  for (const r of ratings) {
-    if (!r.dimensionKey) errors.push("missing_dimension_key");
-    if (!activeKeys.has(r.dimensionKey)) errors.push(`unknown_dimension:${r.dimensionKey}`);
-    if (!Number.isFinite(r.rating) || r.rating < 1 || r.rating > 5) {
-      errors.push(`invalid_rating:${r.dimensionKey}`);
-    }
-  }
-
-  if (errors.length) {
-    throw new Error(`[VportReviews] ratings invalid: ${errors.join(",")}`);
+/**
+ * Map engine DomainReviewDimension → legacy hook shape.
+ * Hook expects: { vportType, dimensionKey, label, weight, sortOrder }
+ */
+function mapDimension(d) {
+  if (!d) return null
+  return {
+    vportType: d.targetSubtype ?? null,
+    dimensionKey: d.key,
+    label: d.label,
+    weight: d.weight ?? 1,
+    sortOrder: d.sortOrder ?? 0,
   }
 }
 
-function toFallbackDimensionModel(row, idx = 0, vportType = null) {
-  const dimensionKey = String(row?.key ?? row?.dimensionKey ?? "").trim();
-  if (!dimensionKey) return null;
+/**
+ * Map engine DomainTargetStats → legacy hook shape.
+ * Hook uses: officialStats?.overallAverage, officialStats?.totalReviews
+ */
+function mapStats(s) {
+  if (!s) return null
+  return {
+    targetActorId: s.targetActorId,
+    totalReviews: s.reviewCount ?? 0,
+    verifiedReviewCount: s.reviewCount ?? 0,
+    neutralReviewCount: s.neutralReviewCount ?? 0,
+    transactionalReviewCount: s.transactionalReviewCount ?? 0,
+    overallAverage: s.overallAvg ?? null,
+    officialOverallAvg: s.overallAvg ?? null,
+    officialOverallP50: s.overallP50 ?? null,
+    officialOverallP90: s.overallP90 ?? null,
+  }
+}
 
-  const weight = Number(row?.weight);
-  const sortOrder = Number(row?.sortOrder ?? row?.sort_order);
+/**
+ * Map engine DomainDimensionRating → legacy hook shape.
+ * Hook expects: { reviewId, dimensionKey, rating }
+ */
+function mapRating(r) {
+  if (!r) return null
+  return {
+    reviewId: r.reviewId,
+    dimensionKey: r.dimensionKey ?? null,
+    dimensionId: r.dimensionId,
+    rating: r.rating,
+    labelSnapshot: r.labelSnapshot ?? null,
+    weightSnapshot: r.weightSnapshot ?? 1,
+  }
+}
+
+/**
+ * Map engine review + authorCard → legacy hook shape.
+ * Hook expects flat author fields: authorDisplayName, authorUsername, authorAvatarUrl
+ */
+function mapReview(review) {
+  if (!review) return null
+
+  const authorCard = review.authorCard ?? null
 
   return {
-    vportType: vportType ?? null,
-    dimensionKey,
-    label: String(row?.label ?? dimensionKey),
-    weight: Number.isFinite(weight) ? weight : 1,
-    sortOrder: Number.isFinite(sortOrder) ? sortOrder : idx,
-  };
-}
-
-function normalizeVportType(v) {
-  const value = String(v ?? "").trim().toLowerCase();
-  return value || null;
-}
-
-async function resolveTargetVportType(targetActorId) {
-  try {
-    const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId });
-    return normalizeVportType(actorTypeRow?.vport_type);
-  } catch {
-    return null;
+    id: review.id,
+    targetActorId: review.targetActorId,
+    authorActorId: review.authorActorId,
+    vportType: review.targetSubtype ?? null,
+    isVerified: review.verificationStatus === 'verified',
+    ratingScale: review.ratingScale ?? 5,
+    overallRating: review.overallRating ?? null,
+    body: review.body ?? null,
+    createdAt: review.createdAt ?? null,
+    updatedAt: review.updatedAt ?? null,
+    reviewActivityAt: review.reviewActivityAt ?? null,
+    isDeleted: review.isDeleted ?? false,
+    deletedAt: review.deletedAt ?? null,
+    ratings: (review.ratings ?? []).map(mapRating).filter(Boolean),
+    authorDisplayName: authorCard?.displayName ?? review.authorDisplayNameSnapshot ?? 'Anonymous',
+    authorUsername: authorCard?.username ?? review.authorUsernameSnapshot ?? '',
+    authorAvatarUrl: authorCard?.avatarUrl ?? review.authorAvatarUrlSnapshot ?? '',
   }
-}
-
-function resolveFallbackDims(vportType) {
-  const fallbackDims = getReviewDimensionsForVportType(vportType, null);
-  return (fallbackDims ?? [])
-    .map((row, idx) => toFallbackDimensionModel(row, idx, vportType))
-    .filter(Boolean);
-}
-
-async function resolveConfigDimsWithFallback(targetActorId) {
-  const configDims = await resolveDbConfigDims(targetActorId);
-  if (configDims.length) return configDims;
-
-  const vportType = await resolveTargetVportType(targetActorId);
-  return resolveFallbackDims(vportType);
-}
-
-async function resolveDbConfigDims(targetActorId) {
-  const configRows = await dalGetVportReviewFormConfig(targetActorId);
-  return (configRows ?? [])
-    .map(modelReviewDimensionRow)
-    .filter((d) => d?.dimensionKey);
-}
-
-/* ============================================================
-   Author enrichment helper
-   ============================================================ */
-
-function pickAuthorActorId(r) {
-  return (
-    r?.authorActorId ??
-    r?.author_actor_id ??
-    r?.author_id ??
-    null
-  );
-}
-
-async function enrichReviewsWithAuthors(reviews) {
-  const rows = Array.isArray(reviews) ? reviews : [];
-  if (!rows.length) return rows;
-
-  const authorIds = rows.map(pickAuthorActorId).filter(Boolean);
-  if (!authorIds.length) return rows;
-
-  const cards = await dalListActorCardsByActorIds(authorIds);
-  const byId = new Map((cards ?? []).map((c) => [String(c.actorId), c]));
-
-  return rows.map((r) => {
-    const authorActorId = pickAuthorActorId(r);
-    const card = authorActorId ? byId.get(String(authorActorId)) : null;
-
-    return {
-      ...r,
-
-      // ✅ normalized author id
-      authorActorId: authorActorId ? String(authorActorId) : null,
-
-      // ✅ keys your UI already tries to read
-      authorDisplayName: card?.displayName ?? r?.authorDisplayName ?? "Anonymous",
-      authorUsername: card?.username ?? r?.authorUsername ?? "",
-      authorAvatarUrl: card?.avatarUrl ?? r?.authorAvatarUrl ?? "",
-    };
-  });
 }
 
 /* ============================================================
    Controllers
    ============================================================ */
 
+/**
+ * Get review dimensions for a target actor.
+ * Returns legacy shape: [{ vportType, dimensionKey, label, weight, sortOrder }]
+ */
 export async function ctrlGetReviewFormConfig(targetActorId) {
-  assertActorId(targetActorId, "targetActorId");
-  return await resolveConfigDimsWithFallback(targetActorId);
+  assertActorId(targetActorId, 'targetActorId')
+
+  // Resolve target subtype from vc.actors
+  const actor = await dalReadReviewTargetActor(targetActorId)
+  if (!actor || actor.is_void || actor.kind !== 'vport') {
+    return []
+  }
+
+  // Get vport_type for subtype resolution
+  const { default: readVportTypeByActorId } = await import(
+    '@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId'
+  )
+  const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId })
+  const targetSubtype = String(actorTypeRow?.vport_type ?? '').trim().toLowerCase() || null
+
+  if (!targetSubtype) return []
+
+  const dims = await getReviewFormConfig({ targetKind: 'vport', targetSubtype })
+  return dims.map(mapDimension).filter(Boolean)
 }
 
+/**
+ * Validate target actor is an active vport. App-local (queries vc.actors).
+ */
 export async function ctrlAssertReviewTargetActor(targetActorId) {
-  assertActorId(targetActorId, "targetActorId");
+  assertActorId(targetActorId, 'targetActorId')
 
-  const actor = await dalReadReviewTargetActor(targetActorId);
+  const actor = await dalReadReviewTargetActor(targetActorId)
   if (!actor) {
-    throw new Error(`[VportReviews] targetActorId not found: ${targetActorId}`);
+    throw new Error(`[VportReviews] targetActorId not found: ${targetActorId}`)
   }
 
   if (actor.is_void) {
-    throw new Error(`[VportReviews] target actor is void: ${targetActorId}`);
+    throw new Error(`[VportReviews] target actor is void: ${targetActorId}`)
   }
 
-  if (String(actor.kind) !== "vport" || !actor.vport_id) {
+  if (String(actor.kind) !== 'vport' || !actor.vport_id) {
     throw new Error(
       `[VportReviews] targetActorId must be a vport actor (kind=vport). got kind=${actor.kind}`
-    );
+    )
   }
 
-  return actor;
+  return actor
 }
 
+/**
+ * Get official stats for a target actor.
+ * Returns legacy shape: { totalReviews, overallAverage, ... }
+ */
 export async function ctrlGetOfficialStats(targetActorId) {
-  assertActorId(targetActorId, "targetActorId");
+  assertActorId(targetActorId, 'targetActorId')
 
-  const row = await dalGetVportOfficialStats(targetActorId);
-  return modelOfficialStatsRow(row);
+  const stats = await getTargetStats({ targetActorId })
+  return mapStats(stats)
 }
 
-export async function ctrlListReviews(targetActorId, limit = 25) {
-  assertActorId(targetActorId, "targetActorId");
+/**
+ * List reviews for a target actor with pagination.
+ * Returns legacy shape: { reviews, hasMore, nextCursor }
+ */
+export async function ctrlListReviews(targetActorId, { limit = 25, cursor = null } = {}) {
+  assertActorId(targetActorId, 'targetActorId')
 
-  const reviews = await dalListVportReviews(targetActorId, limit);
-  const ids = (reviews ?? []).map((r) => r.id);
-  const ratings = await dalListVportReviewRatingsByReviewIds(ids);
+  const result = await engineListReviews({ targetActorId, cursor, limit })
 
-  const modeled = modelReviewsWithRatings(reviews, ratings);
-  return await enrichReviewsWithAuthors(modeled);
+  const reviews = (result.reviews ?? []).map(mapReview).filter(Boolean)
+  const hasMore = reviews.length >= limit
+  const nextCursor = result.nextCursor ?? null
+
+  return { reviews, hasMore, nextCursor }
 }
 
+/**
+ * Submit or update a neutral review.
+ * Maps incoming dimensionKey-based ratings to dimensionId-based for the engine.
+ */
 export async function ctrlSubmitReview(input) {
-  const {
-    targetActorId,
-    authorActorId,
-    body,
-    ratings,
-  } = input ?? {};
+  const { targetActorId, authorActorId, body, ratings } = input ?? {}
 
-  assertActorId(targetActorId, "targetActorId");
-  assertActorId(authorActorId, "authorActorId");
+  assertActorId(targetActorId, 'targetActorId')
+  assertActorId(authorActorId, 'authorActorId')
 
-  // basic actor-rule: prevent reviewing self (actor-first)
   if (targetActorId === authorActorId) {
-    throw new Error("[VportReviews] cannot review self");
+    throw new Error('[VportReviews] cannot review self')
   }
 
-  const targetVportType = (await resolveTargetVportType(targetActorId)) ?? "other";
+  // Citizen-only guard: only user actors can submit reviews
+  const authorActor = await dalReadReviewTargetActor(authorActorId)
+  if (!authorActor || authorActor.is_void) {
+    throw new Error('[VportReviews] author actor not found or void')
+  }
+  if (authorActor.kind !== 'user') {
+    throw new Error('Only citizens can submit reviews.')
+  }
 
-  let configDims = await resolveDbConfigDims(targetActorId);
+  // Load dimensions to build dimensionKey → dimensionId map
+  const configDims = await ctrlGetReviewFormConfig(targetActorId)
   if (!configDims.length) {
-    const fallbackDims = resolveFallbackDims(targetVportType);
-    configDims = fallbackDims;
+    throw new Error('[VportReviews] review dimensions unavailable for this target')
   }
 
-  if (!configDims.length) {
-    throw new Error(
-      `[VportReviews] review dimensions unavailable for vport type: ${targetVportType}`
-    );
+  // Map dimensionKey → dimensionId
+  // configDims come from engine getReviewFormConfig which returns objects with id
+  // We need the raw engine dims to get the id
+  const { default: readVportTypeByActorId } = await import(
+    '@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId'
+  )
+  const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId })
+  const targetSubtype = String(actorTypeRow?.vport_type ?? '').trim().toLowerCase() || null
+
+  const engineDims = await getReviewFormConfig({ targetKind: 'vport', targetSubtype })
+  const keyToId = new Map()
+  for (const d of engineDims) {
+    if (d.key && d.id) keyToId.set(d.key, d.id)
   }
 
-  const normalizedRatings = normalizeRatingsInput(ratings);
+  // Normalize and map ratings from dimensionKey to dimensionId
+  const normalizedRatings = (ratings ?? [])
+    .filter((r) => r?.dimensionKey && r?.rating != null)
+    .map((r) => {
+      const dimensionKey = String(r.dimensionKey).trim()
+      const dimensionId = keyToId.get(dimensionKey)
+      if (!dimensionId) {
+        throw new Error(`[VportReviews] unknown dimension key: ${dimensionKey}`)
+      }
+      const rating = Number(r.rating)
+      if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+        throw new Error(`[VportReviews] invalid rating for ${dimensionKey}: ${r.rating}`)
+      }
+      return { dimensionId, rating }
+    })
 
   if (!normalizedRatings.length) {
-    throw new Error("[VportReviews] at least one rating is required");
+    throw new Error('[VportReviews] at least one rating is required')
   }
 
-  validateRatingsAgainstConfig(normalizedRatings, configDims);
+  const normalizedBody = typeof body === 'string' ? body.trim() : ''
 
-  const normalizedBody = typeof body === "string" ? body.trim() : null;
-  // Idempotency: one active review per (target, author)
-  let existing = await dalGetActiveReviewByAuthor(targetActorId, authorActorId);
+  const result = await engineSubmitReview({
+    targetActorId,
+    authorActorId,
+    body: normalizedBody,
+    ratings: normalizedRatings,
+  })
 
-  let reviewRow;
-  if (!existing) {
-    reviewRow = await dalInsertVportReviewRow({
-      targetActorId,
-      authorActorId,
-      vportType: targetVportType,
-      body: normalizedBody,
-    });
-  } else {
-    const nextBody = typeof body !== "undefined" ? normalizedBody : existing.body ?? null;
-    reviewRow = await dalUpdateVportReviewBody(existing.id, nextBody, targetVportType);
+  const mapped = mapReview(result.review)
+
+  // Notify vport owner that they received a review
+  if (mapped?.id && String(authorActorId) !== String(targetActorId)) {
+    dalInsertNotification({
+      recipientActorId: targetActorId,
+      actorId: authorActorId,
+      kind: 'review_created',
+      objectType: 'review',
+      objectId: mapped.id,
+      linkPath: `/profile/${targetActorId}?tab=reviews`,
+      context: {
+        overallRating: mapped.overallRating ?? null,
+        body: (normalizedBody ?? '').slice(0, 120) || null,
+      },
+    }).catch(() => {})
   }
 
-  await dalUpsertVportReviewRatings(reviewRow.id, normalizedRatings, targetVportType);
-
-  // Read back fresh (overall_rating is trigger-computed)
-  const fresh = await dalReadVportReviewById(reviewRow.id);
-  const freshRatings = await dalListVportReviewRatingsByReviewIds([reviewRow.id]);
-
-  const modeled = modelReviewsWithRatings([fresh], freshRatings);
-  const enriched = await enrichReviewsWithAuthors(modeled);
-
-  return enriched[0] ?? null;
+  return mapped
 }
 
 /**
@@ -282,41 +291,33 @@ export async function ctrlSubmitReview(input) {
  */
 export async function ctrlGetMyActiveReview(arg1, arg2) {
   const targetActorId =
-    typeof arg1 === "object" && arg1 !== null ? arg1.targetActorId : arg1;
+    typeof arg1 === 'object' && arg1 !== null ? arg1.targetActorId : arg1
   const authorActorId =
-    typeof arg1 === "object" && arg1 !== "null" && arg1 !== null ? arg1.authorActorId : arg2;
+    typeof arg1 === 'object' && arg1 !== null ? arg1.authorActorId : arg2
 
-  assertActorId(targetActorId, "targetActorId");
-  assertActorId(authorActorId, "authorActorId");
+  assertActorId(targetActorId, 'targetActorId')
+  assertActorId(authorActorId, 'authorActorId')
 
-  const existing = await dalGetActiveReviewByAuthor(targetActorId, authorActorId);
-  if (!existing || existing.is_deleted) return null;
+  const result = await engineGetMyActiveReview({ targetActorId, authorActorId })
+  if (!result) return null
 
-  // Ensure we return the same modeled shape as list/submit (with ratings)
-  const fresh = await dalReadVportReviewById(existing.id);
-  const freshRatings = await dalListVportReviewRatingsByReviewIds([existing.id]);
-
-  const modeled = modelReviewsWithRatings([fresh], freshRatings);
-  const enriched = await enrichReviewsWithAuthors(modeled);
-
-  return enriched[0] ?? null;
+  return mapReview(result.review)
 }
 
-export async function ctrlDeleteMyReview(input) {
-  const { reviewId, requesterActorId } = input ?? {};
-  assertActorId(reviewId, "reviewId");
-  assertActorId(requesterActorId, "requesterActorId");
+/**
+ * Soft-delete a review. Supports both call styles:
+ *   - ctrlDeleteMyReview({ reviewId, requesterActorId })
+ *   - ctrlDeleteMyReview(reviewId, authorActorId)
+ */
+export async function ctrlDeleteMyReview(arg1, arg2) {
+  const reviewId =
+    typeof arg1 === 'object' && arg1 !== null ? arg1.reviewId : arg1
+  const authorActorId =
+    typeof arg1 === 'object' && arg1 !== null ? (arg1.requesterActorId ?? arg1.authorActorId) : arg2
 
-  const row = await dalReadVportReviewById(reviewId);
-  if (!row || row.is_deleted) {
-    return null;
-  }
+  assertActorId(reviewId, 'reviewId')
+  assertActorId(authorActorId, 'authorActorId')
 
-  // Ownership rule: only author can delete own review
-  if (row.author_actor_id !== requesterActorId) {
-    throw new Error("[VportReviews] not allowed");
-  }
-
-  const deleted = await dalSoftDeleteVportReview(reviewId);
-  return modelVportReviewRow(deleted);
+  const result = await engineDeleteReview({ reviewId, authorActorId })
+  return mapReview(result)
 }

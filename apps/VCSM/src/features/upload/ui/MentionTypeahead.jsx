@@ -23,7 +23,7 @@ export default function MentionTypeahead({ open, items, onPick }) {
             <img
               src={avatarUrl || "/avatar.jpg"}
               alt=""
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-8 h-8 rounded-2xl object-cover"
             />
             <div className="min-w-0">
               <div className="text-white/90 text-sm truncate">
