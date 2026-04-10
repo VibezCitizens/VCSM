@@ -82,7 +82,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
         aria-label="New Vox"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-100">New Vox</h2>
+          <h2 className="text-lg font-semibold text-white">New Vox</h2>
 
           <button
             type="button"
@@ -96,7 +96,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
         <div className="relative mb-4">
           <Search
             size={16}
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/50"
             aria-hidden="true"
           />
 
@@ -115,7 +115,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
             <button
               type="button"
               onClick={() => setQ('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-slate-400 transition hover:bg-slate-700/35 hover:text-slate-200"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-white/50 transition hover:bg-white/5 hover:text-white/90"
               aria-label="Clear"
             >
               <X size={14} />
@@ -123,10 +123,10 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
           )}
         </div>
 
-        {loading && <div className="py-2 text-sm text-slate-400">Searching...</div>}
+        {loading && <div className="py-2 text-sm text-white/50">Searching...</div>}
 
         {!loading && query && rows.length === 0 && (
-          <div className="module-modern-card rounded-2xl p-3 text-sm text-slate-400">
+          <div className="module-modern-card rounded-2xl p-3 text-sm text-white/50">
             {typeof onSearch === 'function' ? (
               <>No results for "{query}".</>
             ) : (
@@ -142,23 +142,23 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
             {rows.map((u) => (
               <li
                 key={u.id}
-                className="module-modern-card flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 transition hover:bg-slate-800/55"
+                className="module-modern-card flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 transition hover:bg-white/6/55"
                 onClick={() => handlePickRow(u)}
               >
                 <img
                   src={u.photo_url || '/avatar.jpg'}
                   alt=""
-                  className="h-12 w-12 shrink-0 rounded-xl border border-slate-300/15 object-cover"
+                  className="h-12 w-12 shrink-0 rounded-xl border border-white/8 object-cover"
                 />
 
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-slate-100">
+                  <div className="truncate text-sm font-medium text-white">
                     {u.display_name || u.username}
                   </div>
-                  {u.username && <div className="text-xs text-slate-400">@{u.username}</div>}
+                  {u.username && <div className="text-xs text-white/50">@{u.username}</div>}
                 </div>
 
-                <span className="ml-auto rounded-full border border-indigo-300/25 bg-indigo-400/12 px-2.5 py-1 text-xs text-indigo-200 capitalize">
+                <span className="ml-auto rounded-full border border-purple-300/18 bg-purple-400/10 px-2.5 py-1 text-xs text-purple-300 capitalize">
                   {(u.kind ?? u._kind) === 'user'
                     ? 'Citizen'
                     : (u.kind ?? u._kind) === 'vport'

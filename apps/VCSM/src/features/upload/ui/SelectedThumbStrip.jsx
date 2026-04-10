@@ -18,14 +18,14 @@ export default function SelectedThumbStrip({ fileUrls, onClear, onRemoveAt }) {
   return (
     <div className="upload-subcard mt-4 p-3">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-slate-300">
+        <div className="text-sm text-white/70">
           Selected ({fileUrls.length})
         </div>
 
         <button
           type="button"
           onClick={() => runGuarded(onClear)}
-          className="text-xs text-slate-400 hover:text-slate-100"
+          className="text-xs text-white/50 hover:text-white"
         >
           Clear
         </button>

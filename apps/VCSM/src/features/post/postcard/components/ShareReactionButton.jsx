@@ -28,7 +28,7 @@ export default function ShareReactionButton({ count = null, onClick, disabled })
           {`\u2190`}
         </span>
       </span>
-      {count !== null && <span className="text-sm text-slate-300 font-medium">{count}</span>}
+      {count !== null && <span className="text-sm text-white/70 font-medium">{count}</span>}
     </button>
   );
 }

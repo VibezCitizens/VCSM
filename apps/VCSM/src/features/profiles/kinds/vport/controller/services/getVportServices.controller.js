@@ -1,5 +1,6 @@
 // src/features/profiles/kinds/vport/controller/services/getVportServices.controller.js
 
+import { createTTLCache } from '@/shared/lib/ttlCache'
 import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.js";
 
 import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
@@ -19,6 +20,8 @@ import {
  * - "asOwner" is a caller-provided lane (UI already knows actor-first ownership)
  * - No Supabase import
  */
+const cache = createTTLCache(60_000) // 60 seconds
+
 export default async function getVportServicesController({
   targetActorId,
   vportType,
@@ -26,6 +29,13 @@ export default async function getVportServicesController({
 } = {}) {
   if (!targetActorId) {
     throw new Error("getVportServicesController: targetActorId is required");
+  }
+
+  // Only cache viewer mode (owner needs fresh data for editing)
+  const cacheKey = asOwner ? null : `${targetActorId}:${vportType ?? '_'}`
+  if (cacheKey) {
+    const cached = cache.get(cacheKey)
+    if (cached) return cached
   }
 
   let safeVportType =
@@ -83,10 +93,11 @@ export default async function getVportServicesController({
 
   const addons = groupVportServiceAddonsByParent(addonRows);
 
-  return {
-    vportType: safeVportType,
-    mode,
-    services,
-    addons,
-  };
+  const result = { vportType: safeVportType, mode, services, addons }
+  if (cacheKey) cache.set(cacheKey, result)
+  return result
+}
+
+export function invalidateVportServices(actorId) {
+  cache.invalidateAll() // services are keyed by actorId:type, simpler to clear all
 }

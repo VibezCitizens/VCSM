@@ -9,6 +9,8 @@ export default function RegisterScreen() {
   const navigate = useNavigate()
   const {
     form,
+    termsAccepted,
+    consentError,
     loading,
     errorMessage,
     successMessage,
@@ -21,6 +23,7 @@ export default function RegisterScreen() {
     canSubmit,
     handleChange,
     handleSubmit,
+    toggleTermsAccepted,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
   } = useRegister()
@@ -28,6 +31,8 @@ export default function RegisterScreen() {
   return (
     <RegisterFormCard
       form={form}
+      termsAccepted={termsAccepted}
+      consentError={consentError}
       loading={loading}
       errorMessage={errorMessage}
       successMessage={successMessage}
@@ -41,6 +46,7 @@ export default function RegisterScreen() {
       onInputChange={handleChange}
       onSubmit={handleSubmit}
       onBackClick={() => navigate(-1)}
+      onToggleTermsAccepted={toggleTermsAccepted}
       onTogglePassword={togglePasswordVisibility}
       onToggleConfirmPassword={toggleConfirmPasswordVisibility}
     />

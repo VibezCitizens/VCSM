@@ -7,7 +7,7 @@ export default function Modal({ open, onClose, children }) {
       <div className="relative w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-neutral-500"
+          className="absolute top-2 right-2 text-white/40"
           aria-label="Close"
         >
           ✕

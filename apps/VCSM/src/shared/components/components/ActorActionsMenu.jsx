@@ -46,9 +46,9 @@ export default function ActorActionsMenu({
       {/* Trigger */}
       <button
         onClick={() => setOpen(v => !v)}
-        className="p-2 rounded-full hover:bg-neutral-800 transition-colors"
+        className="p-2 rounded-full hover:bg-white/6 transition-colors"
       >
-        <DotsThreeVertical size={18} className="text-neutral-400" />
+        <DotsThreeVertical size={18} className="text-white/50" />
       </button>
 
       {/* Menu */}
@@ -56,7 +56,7 @@ export default function ActorActionsMenu({
         <div
           className={`
             absolute top-10 z-40 w-44 rounded-xl
-            bg-neutral-900 border border-neutral-800 shadow-xl
+            bg-white/4 border border-neutral-800 shadow-xl
             ${align === 'right' ? 'right-0' : 'left-0'}
           `}
         >
@@ -69,8 +69,8 @@ export default function ActorActionsMenu({
             className={`
               w-full px-4 py-2 text-left text-sm rounded-xl
               ${blockedMe
-                ? 'text-neutral-600 cursor-not-allowed'
-                : 'text-red-400 hover:bg-neutral-800'}
+                ? 'text-white/30 cursor-not-allowed'
+                : 'text-red-400 hover:bg-white/6'}
             `}
           >
             {isBlocked ? 'Unblock Citizen' : 'Block Citizen'}

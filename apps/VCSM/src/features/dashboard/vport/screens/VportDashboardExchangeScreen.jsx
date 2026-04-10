@@ -1,6 +1,7 @@
 // src/features/dashboard/vport/screens/VportDashboardExchangeScreen.jsx
 
 import React, { useCallback, useMemo, useState } from "react";
+import { SkeletonCardList } from "@/shared/components/Skeleton";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -162,16 +163,16 @@ export function VportDashboardExchangeScreen() {
 
   if (!actorId) return null;
   if (identityLoading) {
-    return <div className="p-10 text-center text-neutral-400">Loading...</div>;
+    return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
   if (!identity) {
     return (
-      <div className="p-10 text-center text-neutral-400">Sign in required.</div>
+      <div className="p-10 text-center text-white/50">Sign in required.</div>
     );
   }
   if (!isOwner) {
     return (
-      <div className="p-10 text-center text-neutral-400">
+      <div className="p-10 text-center text-white/50">
         You can only manage exchange rates for your own vport.
       </div>
     );

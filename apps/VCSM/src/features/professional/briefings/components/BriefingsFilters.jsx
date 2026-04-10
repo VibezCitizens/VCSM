@@ -31,8 +31,8 @@ export default function BriefingsFilters({
           onClick={() => setFilters((prev) => ({ ...prev, unreadOnly: !prev.unreadOnly }))}
           className={`rounded-xl border px-3 py-2 text-sm font-semibold transition ${
             filters.unreadOnly
-              ? 'border-indigo-300/60 bg-indigo-300/15 text-white'
-              : 'border-white/20 bg-white/[0.03] text-slate-300 hover:bg-white/10'
+              ? 'border-purple-300/40 bg-purple-300/12 text-white'
+              : 'border-white/20 bg-white/[0.03] text-white/70 hover:bg-white/10'
           }`}
         >
           {filters.unreadOnly ? 'Unread only: ON' : 'Unread only: OFF'}

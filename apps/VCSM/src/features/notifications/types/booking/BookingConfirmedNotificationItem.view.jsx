@@ -22,10 +22,7 @@ export default function BookingConfirmedNotificationItem({ notification }) {
       message={`confirmed ${service}${timeLabel}`}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
-      secondaryAction={{
-        label: 'View',
-        onClick: () => notification.linkPath && navigate(notification.linkPath),
-      }}
+      onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}
     />
   )
 }

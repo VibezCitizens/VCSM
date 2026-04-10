@@ -1,10 +1,10 @@
 import { AD_FORMATS, AD_STATUSES } from "@/features/ads/constants";
 
 const STATUS_STYLES = {
-  [AD_STATUSES.DRAFT]: "border-slate-300/25 bg-slate-800/50 text-slate-200",
+  [AD_STATUSES.DRAFT]: "border-white/12 bg-white/6/50 text-white/90",
   [AD_STATUSES.ACTIVE]: "border-emerald-300/35 bg-emerald-500/20 text-emerald-200",
   [AD_STATUSES.PAUSED]: "border-amber-300/35 bg-amber-500/20 text-amber-200",
-  [AD_STATUSES.ARCHIVED]: "border-slate-400/20 bg-slate-900/50 text-slate-400",
+  [AD_STATUSES.ARCHIVED]: "border-white/12 bg-white/4/50 text-white/50",
 };
 
 export function AdStatusPill({ status }) {
@@ -19,8 +19,8 @@ export function AdStatusPill({ status }) {
 export function AdsEmptyState({ onCreate }) {
   return (
     <div className="settings-card-surface rounded-2xl px-4 py-5">
-      <div className="text-sm font-semibold text-slate-100">No ads yet</div>
-      <div className="mt-1 text-xs text-slate-400">
+      <div className="text-sm font-semibold text-white">No ads yet</div>
+      <div className="mt-1 text-xs text-white/50">
         Create your first VPORT ad campaign. Monetization controls are coming soon.
       </div>
       <button onClick={onCreate} className="settings-btn settings-btn--primary mt-3 px-3 py-2 text-sm">
@@ -42,13 +42,13 @@ export function AdsList({ ads, selectedId, onSelect }) {
             onClick={() => onSelect(ad)}
             className={[
               "settings-card-surface w-full rounded-2xl px-3 py-3 text-left transition",
-              active ? "ring-1 ring-indigo-400/60" : "hover:bg-slate-900/55",
+              active ? "ring-1 ring-indigo-400/60" : "hover:bg-white/4/55",
             ].join(" ")}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <div className="truncate text-sm font-semibold text-slate-100">{ad.title || "Untitled ad"}</div>
-                <div className="mt-0.5 text-xs text-slate-400">{ad.format}</div>
+                <div className="truncate text-sm font-semibold text-white">{ad.title || "Untitled ad"}</div>
+                <div className="mt-0.5 text-xs text-white/50">{ad.format}</div>
               </div>
               <AdStatusPill status={ad.status} />
             </div>
@@ -75,13 +75,13 @@ export function AdEditor({
   return (
     <div className="settings-card-surface rounded-2xl p-3">
       <div className="mb-3 flex items-center justify-between">
-        <div className="text-sm font-semibold text-slate-100">Ad editor</div>
+        <div className="text-sm font-semibold text-white">Ad editor</div>
         <AdStatusPill status={draft.status} />
       </div>
 
       <div className="grid gap-3">
         <label className="grid gap-1">
-          <span className="text-xs text-slate-400">Title</span>
+          <span className="text-xs text-white/50">Title</span>
           <input
             value={draft.title}
             onChange={(e) => onChange({ ...draft, title: e.target.value })}
@@ -92,7 +92,7 @@ export function AdEditor({
         </label>
 
         <label className="grid gap-1">
-          <span className="text-xs text-slate-400">Description</span>
+          <span className="text-xs text-white/50">Description</span>
           <textarea
             value={draft.description}
             onChange={(e) => onChange({ ...draft, description: e.target.value })}
@@ -103,7 +103,7 @@ export function AdEditor({
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="grid gap-1">
-            <span className="text-xs text-slate-400">Media URL</span>
+            <span className="text-xs text-white/50">Media URL</span>
             <input
               value={draft.mediaUrl}
               onChange={(e) => onChange({ ...draft, mediaUrl: e.target.value })}
@@ -114,7 +114,7 @@ export function AdEditor({
           </label>
 
           <label className="grid gap-1">
-            <span className="text-xs text-slate-400">Destination URL</span>
+            <span className="text-xs text-white/50">Destination URL</span>
             <input
               value={draft.destinationUrl}
               onChange={(e) => onChange({ ...draft, destinationUrl: e.target.value })}
@@ -127,7 +127,7 @@ export function AdEditor({
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="grid gap-1">
-            <span className="text-xs text-slate-400">Format</span>
+            <span className="text-xs text-white/50">Format</span>
             <select
               value={draft.format}
               onChange={(e) => onChange({ ...draft, format: e.target.value })}
@@ -142,7 +142,7 @@ export function AdEditor({
           </label>
 
           <label className="grid gap-1">
-            <span className="text-xs text-slate-400">Budget (future)</span>
+            <span className="text-xs text-white/50">Budget (future)</span>
             <input
               type="number"
               min={0}

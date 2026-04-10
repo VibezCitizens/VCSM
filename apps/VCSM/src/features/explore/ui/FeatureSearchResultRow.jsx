@@ -23,16 +23,16 @@ export default function FeatureSearchResultRow({ feature }) {
       }}
       className="explore-result-row"
     >
-      <div className="w-10 h-10 rounded-xl bg-slate-900/80 flex items-center justify-center shrink-0 border border-indigo-400/20">
+      <div className="w-10 h-10 rounded-xl bg-white/4/80 flex items-center justify-center shrink-0 border border-purple-400/15">
         <Icon className="w-5 h-5 text-sky-200" />
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="text-sm text-slate-100 font-medium truncate">
+        <div className="text-sm text-white font-medium truncate">
           {feature.title || 'Feature'}
         </div>
         {!!feature.subtitle && (
-          <div className="text-xs text-slate-300/80 truncate">
+          <div className="text-xs text-white/70/80 truncate">
             {feature.subtitle}
           </div>
         )}

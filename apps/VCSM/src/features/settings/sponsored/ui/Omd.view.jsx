@@ -17,7 +17,7 @@ export default function OmdView() {
       {/* ================= HEADER ================= */}
       <div>
         <h2 className="text-lg font-semibold text-white">One More Day</h2>
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-white/50">
           Powered by Vibez Citizens
         </p>
       </div>
@@ -30,8 +30,8 @@ export default function OmdView() {
         aria-label="Open onemoredays.com"
         className="
           block rounded-2xl overflow-hidden
-          border border-neutral-800
-          bg-neutral-950
+          border border-white/10
+          bg-black
           shadow-xl
           transition
           hover:ring-1 hover:ring-white/10

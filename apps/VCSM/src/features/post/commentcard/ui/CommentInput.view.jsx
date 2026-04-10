@@ -47,7 +47,7 @@ export default function CommentInputView({
   return (
     <div className="spark-composer flex gap-3 px-3 py-3 border-t border-violet-300/10 bg-[#0f0c1a]/70">
       {/* AVATAR */}
-      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#151125] border border-indigo-300/25 shadow-[0_0_14px_rgba(88,132,255,0.22)] flex-shrink-0">
+      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#151125] border border-purple-300/18 shadow-[0_0_14px_rgba(88,132,255,0.22)] flex-shrink-0">
         <img
           src={actorSummary?.avatar || "/avatar.jpg"}
           alt=""
@@ -69,13 +69,13 @@ export default function CommentInputView({
           className="
             w-full resize-none overflow-hidden
             rounded-xl bg-[#130f20]/92
-            px-3 py-2 text-sm text-slate-100
-            placeholder:text-slate-500
-            border border-indigo-300/28
+            px-3 py-2 text-sm text-white
+            placeholder:text-white/40
+            border border-purple-300/20
             shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_20px_rgba(8,16,40,0.4)]
             focus:outline-none
             focus:ring-2 focus:ring-indigo-400/45
-            focus:border-indigo-300/55
+            focus:border-purple-300/35
           "
         />
 
@@ -85,7 +85,7 @@ export default function CommentInputView({
             disabled={disabled || !text.trim()}
             className={
               !text.trim() || disabled
-                ? "bg-slate-800/80 text-slate-500 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
+                ? "bg-white/5 text-white/40 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
                 : "bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-400 hover:from-violet-400 hover:via-indigo-400 hover:to-sky-300 text-white px-4 py-1.5 rounded-full text-sm shadow-[0_0_14px_rgba(96,138,255,0.42)]"
             }
           >

@@ -37,7 +37,7 @@ export default function RankedFriendsPublic({
      ============================================================ */
   if (isPrivate) {
     return (
-      <div className="profiles-subcard p-4 text-center text-slate-300/80">
+      <div className="profiles-subcard p-4 text-center text-white/70/80">
         This user's Top Friends list is private.
       </div>
     );
@@ -51,7 +51,7 @@ export default function RankedFriendsPublic({
       <div className="profiles-friends-section space-y-4 mt-6">
         {/* ================= HEADER ================= */}
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-100">
+          <h3 className="text-sm font-semibold text-white">
             Top Friends
           </h3>
 
@@ -65,7 +65,7 @@ export default function RankedFriendsPublic({
           )}
         </div>
 
-        <div className="profiles-subcard py-8 px-4 text-center text-slate-300/70 text-sm">
+        <div className="profiles-subcard py-8 px-4 text-center text-white/70/70 text-sm">
           This user hasn’t selected their Top Friends yet.
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function RankedFriendsPublic({
     <div className="profiles-friends-section space-y-4 mt-6">
       {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-100">
+        <h3 className="text-sm font-semibold text-white">
           Top Friends
         </h3>
 

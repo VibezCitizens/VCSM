@@ -10,8 +10,7 @@ export default function PostLikeNotificationItem({ notification }) {
       actor={notification.sender}
       message="liked your Vibe 👍"
       timestamp={notification.createdAt}
-      actionLabel={notification.linkPath ? 'View' : null}
-      onAction={notification.linkPath ? () => navigate(notification.linkPath) : null}
+      onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}
     />
   )
 }

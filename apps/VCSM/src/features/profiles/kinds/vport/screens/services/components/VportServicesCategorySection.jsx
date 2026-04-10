@@ -18,10 +18,10 @@ export default function VportServicesCategorySection({
   return (
     <section className="profiles-subcard rounded-3xl border border-white/12 bg-white/[0.02] p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
-        <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-300/85">
+        <div className="text-xs font-black uppercase tracking-[0.14em] text-white/70/85">
           {title || "Other"}
         </div>
-        <div className="rounded-full border border-white/12 bg-white/[0.03] px-2.5 py-1 text-[11px] font-semibold text-slate-200/85">
+        <div className="rounded-full border border-white/12 bg-white/[0.03] px-2.5 py-1 text-[11px] font-semibold text-white/85">
           {items.length} {items.length === 1 ? "service" : "services"}
         </div>
       </div>

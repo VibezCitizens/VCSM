@@ -1,3 +1,4 @@
+import { createTTLCache } from "@/shared/lib/ttlCache";
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import listAvailabilityRulesByResourceIdDAL from "@/features/booking/dal/listAvailabilityRulesByResourceId.dal";
 import listAvailabilityExceptionsInRangeDAL from "@/features/booking/dal/listAvailabilityExceptionsInRange.dal";
@@ -5,6 +6,8 @@ import listBookingsInRangeDAL from "@/features/booking/dal/listBookingsInRange.d
 import listBookingResourceServicesByResourceIdDAL from "@/features/booking/dal/listBookingResourceServicesByResourceId.dal";
 import listBookingServiceProfilesByServiceIdsDAL from "@/features/booking/dal/listBookingServiceProfilesByServiceIds.dal";
 import { mapResourceAvailabilityModel } from "@/features/booking/model/bookingAvailability.model";
+
+const availabilityCache = createTTLCache(300_000) // 5 minutes
 
 export async function getResourceAvailabilityController({
   resourceId,
@@ -22,6 +25,10 @@ export async function getResourceAvailabilityController({
   if (!rangeEnd) {
     throw new Error("getResourceAvailabilityController: rangeEnd is required");
   }
+
+  const cacheKey = `${resourceId}:${rangeStart}:${rangeEnd}`
+  const cached = availabilityCache.get(cacheKey)
+  if (cached) return cached
 
   const resource = await getBookingResourceByIdDAL({ resourceId });
   if (!resource) {
@@ -67,13 +74,20 @@ export async function getResourceAvailabilityController({
     serviceProfiles = [];
   }
 
-  return mapResourceAvailabilityModel({
+  const result = mapResourceAvailabilityModel({
     resource,
     rules,
     exceptions,
     bookings,
     serviceProfiles,
   });
+
+  availabilityCache.set(cacheKey, result)
+  return result;
+}
+
+export function invalidateBookingAvailability() {
+  availabilityCache.invalidateAll()
 }
 
 export default getResourceAvailabilityController;

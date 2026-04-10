@@ -10,15 +10,15 @@ export default function InboxListSkeleton({ count = 7 }) {
         >
           <div className="flex items-center justify-between">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-slate-700/45" />
+              <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-white/8" />
 
               <div className="min-w-0 flex-1 space-y-2">
-                <div className="h-3 w-32 animate-pulse rounded bg-slate-700/45" />
-                <div className="h-3 w-44 max-w-[70vw] animate-pulse rounded bg-slate-700/35" />
+                <div className="h-3 w-32 animate-pulse rounded bg-white/8" />
+                <div className="h-3 w-44 max-w-[70vw] animate-pulse rounded bg-white/5" />
               </div>
             </div>
 
-            <div className="h-[18px] w-7 animate-pulse rounded-full bg-slate-700/35" />
+            <div className="h-[18px] w-7 animate-pulse rounded-full bg-white/5" />
           </div>
         </div>
       ))}

@@ -8,7 +8,7 @@ export default function VoidScreen() {
           <span className="leading-6">
             The Architect is currently weaving thresholds...
             <br />
-            <span className="text-neutral-400 italic block mt-2">
+            <span className="text-white/50 italic block mt-2">
               Access will be granted when the veil thins.
             </span>
           </span>

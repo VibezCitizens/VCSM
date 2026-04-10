@@ -16,7 +16,7 @@ export default function CitySelector({
           value={city}
           onChange={(e) => onChange({ state, city: e.target.value, zip })}
           placeholder="City (example: Austin)"
-          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/45 outline-none focus:border-indigo-300/60 focus:bg-white/10"
+          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/45 outline-none focus:border-purple-300/40 focus:bg-white/10"
         />
 
         <input
@@ -31,7 +31,7 @@ export default function CitySelector({
             })
           }
           placeholder="State"
-          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm uppercase text-white placeholder:text-white/45 outline-none focus:border-indigo-300/60 focus:bg-white/10"
+          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm uppercase text-white placeholder:text-white/45 outline-none focus:border-purple-300/40 focus:bg-white/10"
         />
 
         <input
@@ -46,7 +46,7 @@ export default function CitySelector({
             })
           }
           placeholder="ZIP"
-          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/45 outline-none focus:border-indigo-300/60 focus:bg-white/10"
+          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/45 outline-none focus:border-purple-300/40 focus:bg-white/10"
         />
       </div>
 

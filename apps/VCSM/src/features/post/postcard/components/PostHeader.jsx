@@ -44,15 +44,15 @@ export default function PostHeader({
         />
 
         <div className="flex flex-col min-w-0 gap-[2px]">
-          <div className="text-sm font-semibold text-slate-100 truncate leading-snug">
+          <div className="text-sm font-semibold text-white truncate leading-snug">
             {displayName}
           </div>
 
           {(handle || timestamp) ? (
-            <div className="flex items-center gap-2 min-w-0 text-xs text-slate-400 leading-snug">
+            <div className="flex items-center gap-2 min-w-0 text-xs text-white/50 leading-snug">
               {handle ? <span className="truncate">{handle}</span> : null}
               {timestamp ? (
-                <span className="shrink-0 text-slate-500">
+                <span className="shrink-0 text-white/40">
                   {handle ? "- " : ""}
                   {timestamp}
                 </span>
@@ -61,7 +61,7 @@ export default function PostHeader({
           ) : null}
 
           {loc ? (
-            <div className="text-xs text-slate-400 leading-snug mt-[2px] truncate">
+            <div className="text-xs text-white/50 leading-snug mt-[2px] truncate">
               {loc}
             </div>
           ) : null}
@@ -69,7 +69,7 @@ export default function PostHeader({
       </div>
 
       <button
-        className="text-slate-400 hover:text-slate-100 text-xl px-2"
+        className="text-white/50 hover:text-white text-xl px-2"
         type="button"
         onClick={(e) => {
           e.stopPropagation();

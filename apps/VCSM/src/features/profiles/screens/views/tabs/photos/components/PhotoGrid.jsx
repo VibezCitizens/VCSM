@@ -103,11 +103,11 @@ export default function PhotoGrid({ posts = [], actorId, handleShare }) {
   // GUARDS (pure UI)
   // ----------------------------------------------------------
   if (!actorId) {
-    return <div className="py-10 text-center text-neutral-500">Loading...</div>;
+    return <div className="py-10 text-center text-white/40">Loading...</div>;
   }
 
   if (!enriched.length) {
-    return <div className="py-10 text-center text-neutral-500">No photos yet.</div>;
+    return <div className="py-10 text-center text-white/40">No photos yet.</div>;
   }
 
   // ----------------------------------------------------------

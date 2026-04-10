@@ -22,7 +22,7 @@ export default function PortfolioSection({
           </h3>
 
           {subtitle ? (
-            <p className="mt-2 text-sm leading-6 text-slate-300/78">
+            <p className="mt-2 text-sm leading-6 text-white/70/78">
               {subtitle}
             </p>
           ) : null}

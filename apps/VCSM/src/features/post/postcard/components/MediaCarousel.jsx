@@ -50,7 +50,7 @@ export default function MediaCarousel({ media = [], prioritizeMedia = false }) {
     const url = current?.url;
 
     if (!url) {
-      return <div className="absolute inset-0 bg-neutral-950" />;
+      return <div className="absolute inset-0 bg-black" />;
     }
 
     if (type === "video") {
@@ -153,7 +153,7 @@ export default function MediaCarousel({ media = [], prioritizeMedia = false }) {
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-xl bg-neutral-900 touch-pan-y"
+      className="relative w-full overflow-hidden rounded-xl bg-white/4 touch-pan-y"
       onTouchStart={count > 1 ? onTouchStart : undefined}
       onTouchMove={count > 1 ? onTouchMove : undefined}
       onTouchEnd={count > 1 ? onTouchEnd : undefined}
@@ -163,10 +163,10 @@ export default function MediaCarousel({ media = [], prioritizeMedia = false }) {
       onPointerUp={count > 1 ? onPointerUp : undefined}
       onPointerCancel={count > 1 ? onPointerUp : undefined}
     >
-      <div className="relative w-full max-h-[450px] aspect-[4/3] bg-neutral-950">
+      <div className="relative w-full max-h-[450px] aspect-[4/3] bg-black">
         {renderNode}
         {!currentLoaded && (
-          <div className="absolute inset-0 animate-pulse bg-neutral-950/85" />
+          <div className="absolute inset-0 animate-pulse bg-black/85" />
         )}
       </div>
 

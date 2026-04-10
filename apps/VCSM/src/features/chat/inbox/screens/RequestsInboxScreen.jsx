@@ -95,19 +95,19 @@ export default function RequestsInboxScreen() {
     <div className="module-modern-page chat-modern-page flex h-full flex-col">
       <div className="module-modern-shell chat-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
         <header
-          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-white/8 bg-[#070b16]/75 backdrop-blur"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <div className="relative flex h-14 items-center px-3">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="-ml-1 p-2 text-indigo-300 transition hover:text-indigo-200"
+              className="-ml-1 p-2 text-purple-300 transition hover:text-purple-300"
               aria-label="Back"
             >
               <ChevronLeft size={22} />
             </button>
-            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-slate-100">
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
               {actorKind === 'vport' ? 'Vox Requests (Vport)' : 'Vox Requests'}
             </h1>
             <div className="ml-auto w-10" />

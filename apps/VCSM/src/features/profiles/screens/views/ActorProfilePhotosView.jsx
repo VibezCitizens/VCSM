@@ -33,7 +33,7 @@ export default function ActorProfilePhotosView({
 }) {
   if (loadingPosts) {
     return (
-      <div className="flex items-center justify-center py-10 text-neutral-400">
+      <div className="flex items-center justify-center py-10 text-white/50">
         Loading photos...
       </div>
     );
@@ -41,7 +41,7 @@ export default function ActorProfilePhotosView({
 
   if (!canViewContent) {
     return (
-      <div className="flex items-center justify-center py-10 text-neutral-500">
+      <div className="flex items-center justify-center py-10 text-white/40">
         This content is private.
       </div>
     );
@@ -49,7 +49,7 @@ export default function ActorProfilePhotosView({
 
   if (!actorId) {
     return (
-      <div className="flex items-center justify-center py-10 text-neutral-500">
+      <div className="flex items-center justify-center py-10 text-white/40">
         Profile unavailable.
       </div>
     );
@@ -57,7 +57,7 @@ export default function ActorProfilePhotosView({
 
   if (!viewerActorId) {
     return (
-      <div className="flex items-center justify-center py-10 text-neutral-500">
+      <div className="flex items-center justify-center py-10 text-white/40">
         Viewer unavailable.
       </div>
     );

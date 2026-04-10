@@ -33,7 +33,7 @@ function hasTab(tabs, key) {
 function SummaryStat({ icon: Icon, label, value }) {
   return (
     <article className="profiles-portfolio-stat-card">
-      <div className="flex items-center gap-2 text-slate-200/78">
+      <div className="flex items-center gap-2 text-white/75">
         <Icon size={14} />
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em]">
           {label}
@@ -83,13 +83,13 @@ function RelatedServiceCard({ service, canOpenServices, onOpenServices }) {
         <div>
           <div className="text-base font-semibold text-white">{service.label}</div>
           {service.category ? (
-            <div className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-300/68">
+            <div className="mt-1 text-xs uppercase tracking-[0.12em] text-white/70/68">
               {service.category}
             </div>
           ) : null}
         </div>
 
-        <div className="rounded-full border border-white/12 bg-white/[0.04] px-3 py-1 text-xs font-semibold text-slate-200/80">
+        <div className="rounded-full border border-white/12 bg-white/[0.04] px-3 py-1 text-xs font-semibold text-white/80">
           {service.workCount} {service.workCount === 1 ? "example" : "examples"}
         </div>
       </div>
@@ -243,7 +243,7 @@ export default function PortfolioTab({
             <h2 className="mt-3 text-2xl font-semibold text-white sm:text-[2rem]">
               What this business actually does
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300/78 sm:text-[0.95rem]">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70/78 sm:text-[0.95rem]">
               Portfolio examples, visual transformations, and service-linked work make the offering concrete for clients before they book, call, or visit.
             </p>
 
@@ -326,7 +326,7 @@ export default function PortfolioTab({
         />
 
         {!filteredItems.length ? (
-          <div className="profiles-subcard mt-4 rounded-2xl border border-white/12 bg-white/[0.03] p-4 text-sm text-slate-300/75">
+          <div className="profiles-subcard mt-4 rounded-2xl border border-white/12 bg-white/[0.03] p-4 text-sm text-white/70/75">
             No work matches this filter yet. Try another tag to explore the full showcase.
           </div>
         ) : null}
@@ -352,7 +352,7 @@ export default function PortfolioTab({
       ) : null}
 
       {servicesState.error ? (
-        <div className="profiles-subcard rounded-2xl border border-white/12 bg-white/[0.03] p-4 text-sm text-slate-300/72">
+        <div className="profiles-subcard rounded-2xl border border-white/12 bg-white/[0.03] p-4 text-sm text-white/70/72">
           Service links could not be loaded right now, but the portfolio showcase is still available.
         </div>
       ) : null}

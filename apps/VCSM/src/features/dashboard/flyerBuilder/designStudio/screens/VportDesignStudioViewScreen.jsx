@@ -98,7 +98,7 @@ export default function VportDesignStudioViewScreen({ actorId, starter, onOpenPr
   }, [layoutMode]);
 
   if (studio.loading && !studio.document) {
-    return <div className="flex justify-center py-16 text-neutral-400">Loading design studio...</div>;
+    return <div className="flex justify-center py-16 text-white/50">Loading design studio...</div>;
   }
 
   return (

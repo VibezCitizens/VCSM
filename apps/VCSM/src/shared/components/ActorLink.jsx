@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 export default function ActorLink({
   actor,
   avatarSize = "w-11 h-11",
-  avatarShape = "rounded-2xl",
+  avatarShape = "rounded-lg",
   textSize = "text-sm",
   showUsername = false,
   showTimestamp = false,
@@ -42,22 +42,22 @@ export default function ActorLink({
             e.currentTarget.onerror = null;
             e.currentTarget.src = "/avatar.jpg";
           }}
-          className={`${avatarSize} ${avatarShape} object-cover border border-neutral-700`}
+          className={`${avatarSize} ${avatarShape} object-cover border border-white/12`}
         />
       ) : null}
 
       {showText ? (
         <div className="flex flex-col leading-tight">
-          <span className={`${textSize} text-slate-100 font-semibold`}>
+          <span className={`${textSize} text-white font-semibold`}>
             {actor.displayName}
           </span>
 
           {showUsername && actor.username && (
-            <span className="text-xs text-slate-400">@{actor.username}</span>
+            <span className="text-xs text-white/50">@{actor.username}</span>
           )}
 
           {showTimestamp && timestamp && (
-            <span className="text-[11px] text-neutral-400">{timestamp}</span>
+            <span className="text-[11px] text-white/50">{timestamp}</span>
           )}
         </div>
       ) : null}

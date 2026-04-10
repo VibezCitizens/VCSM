@@ -19,23 +19,23 @@ export default function CardInbox({ entry, onClick, onDelete, showThreadPreview 
     <div
       onClick={onClick}
       data-conversation-id={conversationId}
-      className="module-modern-card chat-modern-card chat-modern-list-row cursor-pointer rounded-2xl transition hover:bg-slate-800/55"
+      className="module-modern-card chat-modern-card chat-modern-list-row cursor-pointer rounded-2xl transition hover:bg-white/6/55"
     >
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <img
             src={partnerPhotoUrl || '/avatar.jpg'}
             alt="profile"
-            className="h-12 w-12 shrink-0 rounded-xl border border-slate-300/15 object-cover"
+            className="h-12 w-12 shrink-0 rounded-xl border border-white/8 object-cover"
           />
 
           <div className="flex min-w-0 flex-col">
-            <span className={`truncate text-sm ${hasUnread ? 'font-semibold text-slate-100' : 'text-slate-200'}`}>
+            <span className={`truncate text-sm ${hasUnread ? 'font-semibold text-white' : 'text-white/90'}`}>
               {partnerDisplayName || partnerUsername || 'Vox'}
             </span>
 
             {showThreadPreview && (
-              <span className={`mt-0.5 truncate text-xs ${hasUnread ? 'text-slate-300' : 'text-slate-500'}`} title={preview || ''}>
+              <span className={`mt-0.5 truncate text-xs ${hasUnread ? 'text-white/70' : 'text-white/40'}`} title={preview || ''}>
                 {preview || 'No Vox yet'}
               </span>
             )}
@@ -44,7 +44,7 @@ export default function CardInbox({ entry, onClick, onDelete, showThreadPreview 
 
         <div className="flex shrink-0 items-center gap-3">
           {hasUnread && (
-            <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-indigo-500 px-1 text-[10px] font-semibold text-white">
+            <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-purple-500 px-1 text-[10px] font-semibold text-white">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
@@ -55,7 +55,7 @@ export default function CardInbox({ entry, onClick, onDelete, showThreadPreview 
                 e.stopPropagation()
                 onDelete(conversationId)
               }}
-              className="module-modern-btn module-modern-btn--ghost p-2 text-slate-300"
+              className="module-modern-btn module-modern-btn--ghost p-2 text-white/70"
               aria-label="Delete Vox"
             >
               <Trash2 size={16} />

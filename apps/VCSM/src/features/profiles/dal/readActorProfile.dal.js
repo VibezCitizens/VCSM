@@ -1,7 +1,13 @@
 import { supabase } from '@/services/supabase/supabaseClient'
+import { createTTLCache } from '@/shared/lib/ttlCache'
+
+const profileCache = createTTLCache(30_000) // 30 seconds
 
 export async function readActorProfileDAL(actorId) {
   if (!actorId) return null
+
+  const cached = profileCache.get(actorId)
+  if (cached) return cached
 
   const [{ data, error }, { data: privacyData, error: privacyError }] =
     await Promise.all([
@@ -36,13 +42,12 @@ export async function readActorProfileDAL(actorId) {
     ? true
     : (privacyData?.is_private ?? true)
 
-  return {
+  const result = {
     actor: {
       actorId: data.actor_id,
       kind: data.kind,
     },
 
-    // USER PROFILE (only for users)
     profile: data.kind === 'user'
       ? {
           id: data.profile_id,
@@ -62,7 +67,6 @@ export async function readActorProfileDAL(actorId) {
         }
       : null,
 
-    // 🔴 THIS IS WHAT YOU ARE CURRENTLY MISSING
     vport: data.kind === 'vport'
       ? {
           id: data.vport_id,
@@ -74,5 +78,16 @@ export async function readActorProfileDAL(actorId) {
           is_active: data.vport_is_active,
         }
       : null,
+  }
+
+  profileCache.set(actorId, result)
+  return result
+}
+
+export function invalidateActorProfileCache(actorId) {
+  if (actorId) {
+    profileCache.invalidate(actorId)
+  } else {
+    profileCache.invalidateAll()
   }
 }

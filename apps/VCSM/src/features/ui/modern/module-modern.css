@@ -1,46 +1,45 @@
 .module-modern-page {
   background:
-    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
-    radial-gradient(circle at 50% 120%, rgba(124, 58, 237, 0.12), transparent 52%),
-    #050814;
-  color: #e2e8f0;
+    radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a), transparent 60%),
+    radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b), transparent 60%),
+    var(--vc-bg-0);
+  color: var(--vc-text);
 }
 
 .module-modern-shell {
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.84), rgba(8, 12, 22, 0.78));
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.34);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-card-bg);
+  box-shadow: var(--vc-shadow-elevated);
 }
 
 .module-modern-search-shell {
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--vc-border);
   border-radius: 0.9rem;
-  background: linear-gradient(180deg, rgba(13, 20, 37, 0.86), rgba(7, 12, 24, 0.82));
+  background: var(--vc-card-bg);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .module-modern-card {
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: linear-gradient(180deg, rgba(16, 23, 38, 0.8), rgba(8, 12, 22, 0.74));
+  border: 1px solid var(--vc-border);
+  background: var(--vc-card-bg);
 }
 
 .module-modern-input {
-  border: 1px solid rgba(148, 163, 184, 0.24);
-  background: rgba(2, 6, 23, 0.62);
-  color: #f1f5f9;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+  color: var(--vc-text);
   transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
 
 .module-modern-input::placeholder {
-  color: #94a3b8;
+  color: var(--vc-text-muted);
 }
 
 .module-modern-input:focus {
   outline: none;
-  border-color: rgba(129, 140, 248, 0.7);
-  background: rgba(5, 12, 30, 0.75);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.24);
+  border-color: var(--vc-accent-primary);
+  background: var(--vc-surface-input);
+  box-shadow: var(--vc-ring);
 }
 
 .module-modern-btn {
@@ -49,19 +48,19 @@
 }
 
 .module-modern-btn--ghost {
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #e2e8f0;
-  background: rgba(15, 23, 42, 0.56);
+  border: 1px solid var(--vc-border-strong);
+  color: var(--vc-text);
+  background: var(--vc-surface-input);
 }
 
 .module-modern-btn--ghost:hover {
-  background: rgba(30, 41, 59, 0.78);
+  background: var(--vc-surface-strong);
 }
 
 .module-modern-btn--primary {
-  border: 1px solid rgba(129, 140, 248, 0.7);
-  color: #f8fafc;
-  background: linear-gradient(90deg, rgba(79, 70, 229, 0.95), rgba(168, 85, 247, 0.88));
+  border: 1px solid rgba(139, 92, 246, 0.7);
+  color: #fff;
+  background: linear-gradient(90deg, var(--vc-accent-primary), rgba(167, 139, 250, 0.88));
 }
 
 .module-modern-btn--primary:hover {

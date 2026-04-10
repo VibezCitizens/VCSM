@@ -6,13 +6,12 @@ export default function NotificationCard({
   message,
   timestamp,
   actions,
-  secondaryAction,
-  actionLabel,
-  onAction,
+  onClick,
   unread = false,
   className = '',
 }) {
   const time = formatTimestamp(timestamp)
+  const isClickable = typeof onClick === 'function'
 
   return (
     <div
@@ -21,8 +20,13 @@ export default function NotificationCard({
         flex items-center justify-between gap-3
         rounded-xl px-4 py-3
         ${unread ? 'notifications-card--unread' : ''}
+        ${isClickable ? 'cursor-pointer active:scale-[0.985] transition-transform duration-100' : ''}
         ${className}
       `}
+      onClick={isClickable ? onClick : undefined}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={isClickable ? (e) => { if (e.key === 'Enter') onClick() } : undefined}
     >
       <div className="flex min-w-0 items-center gap-3">
         <ActorLink
@@ -35,31 +39,31 @@ export default function NotificationCard({
         />
 
         <div className="flex min-w-0 flex-col leading-tight">
-          <span className="truncate text-sm font-medium text-slate-100">
+          <span className="truncate text-sm font-medium" style={{ color: 'var(--vc-text)' }}>
             {actor?.displayName || actor?.username || 'Someone'}
           </span>
 
-          <span className="truncate text-sm text-slate-300">{message}</span>
+          <span className="truncate text-sm" style={{ color: 'var(--vc-text-soft)' }}>
+            {message}
+          </span>
 
-          {time && <span className="mt-0.5 text-[11px] text-slate-500">{time}</span>}
+          {time && (
+            <span className="mt-0.5 text-[11px]" style={{ color: 'var(--vc-text-muted)' }}>
+              {time}
+            </span>
+          )}
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
-        {actions}
-
-        {secondaryAction && (
-          <button onClick={secondaryAction.onClick} className="notifications-action-btn notifications-action-btn--ghost px-3 py-1 text-xs">
-            {secondaryAction.label}
-          </button>
-        )}
-
-        {!actions && actionLabel && onAction && (
-          <button onClick={onAction} className="notifications-action-btn notifications-action-btn--ghost px-3 py-1 text-xs">
-            {actionLabel}
-          </button>
-        )}
-      </div>
+      {/* Only render action buttons (Accept/Decline) — no View button */}
+      {actions && (
+        <div
+          className="flex shrink-0 items-center gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {actions}
+        </div>
+      )}
     </div>
   )
 }

@@ -17,7 +17,7 @@ export default function ProfilePrivacyToggle({ actorId }) {
         <span className="settings-toggle-knob" />
       </button>
 
-      <div className="text-[11px] text-slate-400">
+      <div className="text-[11px] text-white/50">
         {loading ? 'Loading...' : isPrivate ? 'Private' : 'Public'}
       </div>
 

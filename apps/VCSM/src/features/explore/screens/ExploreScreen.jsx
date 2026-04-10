@@ -7,7 +7,7 @@ export default function ExploreScreen() {
   return (
     <div className="module-modern-page explore-modern h-full min-h-0 w-full">
       <div className="w-full max-w-none sm:mx-auto sm:max-w-2xl">
-        <Suspense fallback={<div className="p-4 text-center text-slate-300">Loading...</div>}>
+        <Suspense fallback={<div className="p-4 text-center text-white/70">Loading...</div>}>
           <SearchScreen />
         </Suspense>
       </div>

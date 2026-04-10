@@ -10,25 +10,25 @@ export function FuelPriceRow({
   subtext = null,
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-800 bg-neutral-950 p-4">
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black p-4">
       <div>
-        <div className="text-sm text-neutral-400">{fuelKey}</div>
+        <div className="text-sm text-white/50">{fuelKey}</div>
 
         <div className="mt-1 text-lg font-semibold text-white">
           {isAvailable ? (
             <>
               {price ?? "—"}{" "}
-              <span className="text-sm text-neutral-300">
+              <span className="text-sm text-white/70">
                 {currencyCode}/{unit}
               </span>
             </>
           ) : (
-            <span className="text-neutral-500">Not available</span>
+            <span className="text-white/40">Not available</span>
           )}
         </div>
 
         {subtext ? (
-          <div className="mt-1 text-xs text-neutral-400">{subtext}</div>
+          <div className="mt-1 text-xs text-white/50">{subtext}</div>
         ) : null}
       </div>
 

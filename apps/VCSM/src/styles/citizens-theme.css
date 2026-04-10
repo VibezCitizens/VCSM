@@ -1,41 +1,78 @@
+/* ============================================================
+   VIBEZ CITIZENS — DESIGN TOKENS
+   ============================================================
+   Single source of truth for all colors, surfaces, and accents.
+   To switch themes, change only the values below.
+   Feature CSS files reference these via var(--vc-*).
+   ============================================================ */
+
 :root {
-  --cit-bg-0: #06060b;
-  --cit-bg-1: #0a0a12;
-  --cit-bg-2: #101020;
-  --cit-surface: rgba(22, 18, 34, 0.42);
-  --cit-border: rgba(171, 129, 255, 0.2);
-  --cit-text: #f1eef8;
-  --cit-text-muted: #b7acc9;
-  --cit-accent-a: #8d64ff;
-  --cit-accent-b: #ff69c6;
-  --cit-accent-c: #6caeff;
-}
+  /* ── Background tiers ── */
+  --vc-bg-0: #0b0b0f;                           /* deepest background */
+  --vc-bg-1: #0e0d14;                           /* soft background */
+  --vc-bg-2: #13121a;                           /* elevated background */
 
-.citizens-theme {
-  width: 100%;
-  min-height: 100%;
-  color: var(--cit-text);
-  background:
-    radial-gradient(80rem 30rem at -10% -20%, rgba(141, 100, 255, 0.1), transparent 58%),
-    radial-gradient(70rem 28rem at 110% -10%, rgba(255, 105, 198, 0.08), transparent 60%),
-    radial-gradient(60rem 24rem at 50% 120%, rgba(108, 174, 255, 0.06), transparent 62%),
-    linear-gradient(180deg, var(--cit-bg-2) 0%, var(--cit-bg-1) 55%, var(--cit-bg-0) 100%);
-}
+  /* ── Page gradient (applied via .vc-dynamic-gradient) ── */
+  --vc-gradient-a: rgba(108, 77, 246, 0.15);    /* purple glow top-left */
+  --vc-gradient-b: rgba(59, 130, 246, 0.10);    /* blue glow bottom-right */
 
-/* Keep accents subtle: only touch explicit utility styles, no broad text/background overrides. */
-.citizens-theme button[class*="bg-gradient-to-b"][class*="from-purple"],
-.citizens-theme button[class*="bg-purple-"] {
-  background-image: linear-gradient(
-    120deg,
-    color-mix(in oklab, var(--cit-accent-a) 62%, black),
-    color-mix(in oklab, var(--cit-accent-b) 54%, black),
-    color-mix(in oklab, var(--cit-accent-c) 60%, black)
-  ) !important;
-  border-color: rgba(200, 166, 255, 0.34) !important;
-}
+  /* ── Surfaces ── */
+  --vc-surface: rgba(20, 18, 30, 0.66);         /* card / panel background */
+  --vc-surface-strong: rgba(26, 22, 38, 0.84);  /* elevated card / modal */
+  --vc-surface-input: rgba(14, 12, 22, 0.78);   /* input field background */
 
-.citizens-theme input,
-.citizens-theme select,
-.citizens-theme textarea {
-  border-color: var(--cit-border);
+  /* ── Borders ── */
+  --vc-border: rgba(139, 92, 246, 0.18);        /* default border — purple tinted */
+  --vc-border-strong: rgba(139, 92, 246, 0.28); /* focused / hover border */
+  --vc-border-subtle: rgba(139, 92, 246, 0.10); /* divider / separator */
+
+  /* ── Text ── */
+  --vc-text: #f0eef5;                           /* primary text */
+  --vc-text-soft: #d1d0d8;                      /* secondary text */
+  --vc-text-muted: #9892a6;                     /* muted / placeholder */
+
+  /* ── Accents ── */
+  --vc-accent-primary: #8b5cf6;                 /* primary purple */
+  --vc-accent-primary-hover: #a78bfa;           /* purple hover */
+  --vc-accent-secondary: #4ea4ff;               /* blue accent */
+  --vc-accent-tertiary: #42d3ff;                /* cyan accent */
+  --vc-accent-pink: #ff69c6;                    /* pink accent */
+
+  /* ── Semantic ── */
+  --vc-success: #22c55e;
+  --vc-error: #ef4444;
+  --vc-warning: #f59e0b;
+  --vc-danger-a: rgba(190, 24, 93, 0.7);
+  --vc-danger-b: rgba(220, 38, 38, 0.72);
+
+  /* ── Card shadows ── */
+  --vc-shadow-card: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --vc-shadow-elevated: 0 24px 45px rgba(0, 0, 0, 0.36), 0 0 22px rgba(139, 92, 246, 0.1);
+  --vc-shadow-glow: 0 10px 30px rgba(139, 92, 246, 0.35);
+
+  /* ── Card backgrounds (gradient presets) ── */
+  --vc-card-bg: linear-gradient(180deg, rgba(20, 20, 26, 0.98) 0%, rgba(20, 20, 26, 0.90) 100%);
+  --vc-card-bg-blue: linear-gradient(
+    160deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    transparent 45%
+  ), var(--vc-card-bg);
+
+  /* ── Focus ring ── */
+  --vc-ring: 0 0 0 3px rgba(139, 92, 246, 0.24);
+
+  /* ── Backdrop ── */
+  --vc-backdrop-blur: blur(12px);
+
+  /* ── Legacy compat (maps old --cit-* to new --vc-*) ── */
+  --cit-bg-0: var(--vc-bg-0);
+  --cit-bg-1: var(--vc-bg-1);
+  --cit-bg-2: var(--vc-bg-2);
+  --cit-surface: var(--vc-surface);
+  --cit-border: var(--vc-border);
+  --cit-text: var(--vc-text);
+  --cit-text-muted: var(--vc-text-muted);
+  --cit-accent-a: var(--vc-accent-primary);
+  --cit-accent-b: var(--vc-accent-pink);
+  --cit-accent-c: var(--vc-accent-secondary);
 }

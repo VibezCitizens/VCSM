@@ -159,11 +159,11 @@ function SectionCard({ title, subtitle, children }) {
     <section className="profiles-card rounded-2xl p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h4 className="text-xs uppercase tracking-wider text-slate-300/85">
+          <h4 className="text-xs uppercase tracking-wider text-white/70/85">
             {title}
           </h4>
           {subtitle ? (
-            <div className="mt-1 text-xs text-slate-400">{subtitle}</div>
+            <div className="mt-1 text-xs text-white/50">{subtitle}</div>
           ) : null}
         </div>
       </div>
@@ -175,8 +175,8 @@ function SectionCard({ title, subtitle, children }) {
 function Row({ label, children }) {
   return (
     <div className="grid grid-cols-[96px,1fr] gap-4 py-2">
-      <div className="text-sm text-slate-400">{label}</div>
-      <div className="text-sm text-slate-100 break-words">{children}</div>
+      <div className="text-sm text-white/50">{label}</div>
+      <div className="text-sm text-white break-words">{children}</div>
     </div>
   );
 }
@@ -283,7 +283,7 @@ export default function VportAboutView({ profile, details }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* BIO */}
         <SectionCard title="Bio">
-          <div className="text-sm text-neutral-200 whitespace-pre-wrap leading-relaxed">
+          <div className="text-sm text-white/85 whitespace-pre-wrap leading-relaxed">
             {profile?.bio || "No information provided yet."}
           </div>
         </SectionCard>
@@ -297,8 +297,8 @@ export default function VportAboutView({ profile, details }) {
                   key={d.day}
                   className="flex items-baseline justify-between gap-4"
                 >
-                  <div className="text-sm text-neutral-400">{d.label}</div>
-                  <div className="text-sm text-neutral-200 text-right">
+                  <div className="text-sm text-white/50">{d.label}</div>
+                  <div className="text-sm text-white/85 text-right">
                     {d.value}
                   </div>
                 </div>
@@ -398,7 +398,7 @@ export default function VportAboutView({ profile, details }) {
       </div>
 
       {/* FOOTER META */}
-      <div className="pt-4 border-t border-white/10 text-xs text-neutral-500">
+      <div className="pt-4 border-t border-white/10 text-xs text-white/40">
         Vport: @{profile?.username || "unknown"}
       </div>
     </div>

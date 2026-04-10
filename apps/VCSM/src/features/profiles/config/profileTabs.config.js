@@ -46,7 +46,6 @@ function makeTabs(keys) {
 }
 
 export const VPORT_TABS = makeTabs([
-  "PORTFOLIO",
   "ABOUT",
   "REVIEWS",
   "VIBES",
@@ -77,10 +76,9 @@ export const VPORT_BARBER_TABS = makeTabs([
 
 export const VPORT_FOOD_TABS = makeTabs([
   "MENU",
-  "PORTFOLIO",
   "REVIEWS",
   "ABOUT",
-  "SERVICES", // ✅ food can also show capabilities
+  "SERVICES",
   "PHOTOS",
   "VIBES",
   "SUBSCRIBERS",

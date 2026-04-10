@@ -24,17 +24,17 @@ export default function ProfessionalAccessButton({ onClick }) {
         px-4
         py-3
         rounded-xl
-        hover:bg-slate-800/80
-        active:bg-slate-800/95
+        hover:bg-white/5
+        active:bg-white/6/95
         text-left
         transition
       "
     >
       <div className="flex flex-col">
-        <span className="text-[16px] font-semibold text-slate-100">
+        <span className="text-[16px] font-semibold text-white">
           Nurse Notes Workspace
         </span>
-        <span className="mt-0.5 text-[13px] text-slate-400">
+        <span className="mt-0.5 text-[13px] text-white/50">
           Share housing and hospital notes with verified nurses
         </span>
       </div>

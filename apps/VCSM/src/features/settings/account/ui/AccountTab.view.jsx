@@ -22,8 +22,8 @@ export default function AccountTabView() {
       <section className="settings-card-surface rounded-2xl p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-slate-100">Sign out</div>
-            <div className="mt-1 text-sm text-slate-300">Ends your current session</div>
+            <div className="text-sm font-semibold text-white">Sign out</div>
+            <div className="mt-1 text-sm text-white/70">Ends your current session</div>
           </div>
           <button onClick={logout} className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm">
             Log out
@@ -106,14 +106,14 @@ function ConfirmModal({ title, busy, onCancel, onConfirm, children }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm">
       <div className="settings-shell mx-4 w-full max-w-md rounded-2xl">
-        <div className="flex items-center justify-between border-b border-slate-300/10 p-4">
-          <div className="text-sm font-semibold text-slate-100">{title}</div>
+        <div className="flex items-center justify-between border-b border-white/8 p-4">
+          <div className="text-sm font-semibold text-white">{title}</div>
           <button onClick={onCancel} className="settings-btn settings-btn--ghost px-2 py-1 text-sm">
             x
           </button>
         </div>
 
-        <div className="p-4 text-sm text-slate-300">{children}</div>
+        <div className="p-4 text-sm text-white/70">{children}</div>
 
         <div className="flex justify-end gap-2 p-4">
           <button onClick={onCancel} disabled={busy} className="settings-btn settings-btn--ghost px-3 py-1.5">

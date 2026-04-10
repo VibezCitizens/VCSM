@@ -39,7 +39,7 @@ export default function MessageBubble({
      ============================================================ */
   if (message.isSystem) {
     return (
-      <div className="my-2 text-center text-xs text-neutral-500">
+      <div className="my-2 text-center text-xs text-white/40">
         {message.body}
       </div>
     )
@@ -117,7 +117,7 @@ export default function MessageBubble({
       <div className="chat-modern-message-col max-w-[78%]">
         {/* Name (group chats) */}
         {!isMine && showName && actor && (
-          <div className="mb-0.5 text-xs text-neutral-400 truncate">
+          <div className="mb-0.5 text-xs text-white/50 truncate">
             {actor.displayName}
           </div>
         )}
@@ -214,7 +214,7 @@ export default function MessageBubble({
 
         {/* Status (mine only) */}
         {isMine && statusSlot && (
-          <div className="mt-0.5 text-right text-[10px] text-neutral-400">
+          <div className="mt-0.5 text-right text-[10px] text-white/50">
             {statusSlot}
           </div>
         )}

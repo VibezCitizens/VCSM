@@ -37,7 +37,7 @@ export default function VportProfileTab({ controller }) {
   }, [saved]);
 
   if (!ready || loading || !draft) {
-    return <div className="py-6 text-sm text-slate-400">Loading VPORT...</div>;
+    return <div className="py-6 text-sm text-white/50">Loading VPORT...</div>;
   }
 
   // Avatar / Banner handlers (same behavior)

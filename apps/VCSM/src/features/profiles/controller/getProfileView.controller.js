@@ -6,6 +6,7 @@ import { ProfileModel } from '@/features/profiles/model/ProfileModel'
 import { PostModel } from '@/features/profiles/model/PostModel'
 
 import { readActorProfileDAL } from '@/features/profiles/dal/readActorProfile.dal'
+import { useActorStore } from '@hydration'
 import { readFollowStateDAL } from '@/features/profiles/dal/readFollowState.dal'
 import { readActorPostsDAL } from '@/features/profiles/dal/readActorPosts.dal'
 import { readPostReactionsDAL } from '@/features/profiles/dal/readPostReactionsDAL'
@@ -31,6 +32,26 @@ export async function getProfileView({
     profile: userProfile,
     vport,
   } = actorRow
+
+  // Upsert actor summary into shared hydration store so other surfaces
+  // (feed, notifications, inbox) can reuse it without re-fetching.
+  try {
+    const summary = {
+      actor_id: profileActorId,
+      kind: actor.kind,
+      display_name: actor.kind === 'vport' ? (vport?.name ?? null) : (userProfile?.display_name ?? null),
+      username: actor.kind === 'vport' ? (vport?.slug ?? null) : (userProfile?.username ?? null),
+      photo_url: actor.kind === 'vport' ? (vport?.avatar_url ?? null) : (userProfile?.photo_url ?? null),
+      banner_url: actor.kind === 'vport' ? (vport?.banner_url ?? null) : (userProfile?.banner_url ?? null),
+      bio: actor.kind === 'vport' ? (vport?.bio ?? null) : (userProfile?.bio ?? null),
+      vport_name: vport?.name ?? null,
+      vport_slug: vport?.slug ?? null,
+      vport_avatar_url: vport?.avatar_url ?? null,
+    }
+    useActorStore.getState().upsertActors([summary])
+  } catch (_) {
+    // Non-critical — don't block profile load
+  }
 
   let isFollowing = false
 

@@ -21,30 +21,30 @@ export default function ReportCoverScreen({
           <div className="h-14 px-4 flex items-center justify-between border-b border-neutral-900">
             <button
               onClick={onClose}
-              className="text-neutral-300 hover:text-white transition"
+              className="text-white/70 hover:text-white transition"
               type="button"
               disabled={loading}
             >
               Cancel
             </button>
 
-            <div className="text-sm text-neutral-200 font-semibold">{title}</div>
+            <div className="text-sm text-white/85 font-semibold">{title}</div>
 
             <div className="w-[64px]" />
           </div>
 
           <div className="max-w-xl mx-auto px-4 py-5">
             {subtitle ? (
-              <div className="text-sm text-neutral-400 mb-4">{subtitle}</div>
+              <div className="text-sm text-white/50 mb-4">{subtitle}</div>
             ) : null}
 
             {/* content */}
-            <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 overflow-hidden">
+            <div className="rounded-2xl border border-neutral-900 bg-black/60 overflow-hidden">
               <div className="p-4">{children}</div>
             </div>
 
             {loading ? (
-              <div className="mt-4 text-sm text-neutral-400">Submitting…</div>
+              <div className="mt-4 text-sm text-white/50">Submitting…</div>
             ) : null}
           </div>
         </Motion.div>

@@ -21,7 +21,7 @@ export default function VportServicesOwnerCategorySection({
 
   return (
     <section className="profiles-subcard p-5">
-      <div className="text-xs font-black tracking-[0.6px] uppercase text-slate-300/80">
+      <div className="text-xs font-black tracking-[0.6px] uppercase text-white/70/80">
         {title || "Other"}
       </div>
 

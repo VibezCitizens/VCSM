@@ -93,9 +93,22 @@ export default function ReviewsList({ loading, reviews, viewerActorId = null, on
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.02] py-10 px-4">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
-        <div className="text-sm text-white/40">Loading reviews...</div>
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={`rev-skel:${i}`} className="rounded-2xl border border-white/6 p-4" style={{ background: 'var(--vc-card-bg)' }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.08)' }} />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 w-28 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.1)' }} />
+                <div className="h-2 w-16 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.06)' }} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-3 w-full animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.07)' }} />
+              <div className="h-3 w-9/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.05)' }} />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

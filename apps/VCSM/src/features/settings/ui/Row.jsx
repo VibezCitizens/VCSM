@@ -33,7 +33,7 @@ export default function Row({
     <section
       className={cx(
         'settings-card-surface rounded-2xl p-3 backdrop-blur',
-        isInteractive && 'hover:bg-slate-900/70 transition-colors',
+        isInteractive && 'hover:bg-white/4 transition-colors',
         className
       )}
     >
@@ -50,11 +50,11 @@ export default function Row({
                 isInteractive && 'cursor-pointer focus:outline-none'
               )}
             >
-              <div className="text-sm font-semibold text-slate-100 truncate">
+              <div className="text-sm font-semibold text-white truncate">
                 {title}
               </div>
               {subtitle && (
-                <div className="text-xs text-slate-400 truncate">
+                <div className="text-xs text-white/50 truncate">
                   {subtitle}
                 </div>
               )}

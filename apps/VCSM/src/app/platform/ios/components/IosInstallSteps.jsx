@@ -43,7 +43,7 @@ export default function IosInstallSteps({ onDone }) {
 
   return (
     <div className="flex flex-col">
-      <div className="mx-auto w-full max-w-[248px] rounded-[28px] border border-white/15 bg-slate-950/70 p-2 shadow-[0_16px_36px_rgba(2,6,23,0.45)] sm:max-w-[292px]">
+      <div className="mx-auto w-full max-w-[248px] rounded-[28px] border border-white/15 bg-black/70 p-2 shadow-[0_16px_36px_rgba(2,6,23,0.45)] sm:max-w-[292px]">
         <AnimatePresence mode="wait">
           <MotionImg
             key={current.img}
@@ -66,7 +66,7 @@ export default function IosInstallSteps({ onDone }) {
           <h3 className="text-base font-semibold text-white">
             {current.title}
           </h3>
-          <p className="text-sm text-slate-300/80">
+          <p className="text-sm text-white/65">
             {current.text}
           </p>
         </div>
@@ -78,7 +78,7 @@ export default function IosInstallSteps({ onDone }) {
       ) : null}
 
       <div className="mt-4">
-        <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-slate-400/90">
+        <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-white/50">
           <span>Step {step + 1}</span>
           <span>{STEPS.length}</span>
         </div>
@@ -129,7 +129,7 @@ export default function IosInstallSteps({ onDone }) {
             className="
               flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl
               bg-gradient-to-r from-cyan-400 to-indigo-400
-              text-sm font-semibold text-slate-950
+              text-sm font-semibold text-black
               transition hover:brightness-110
             "
           >
@@ -143,7 +143,7 @@ export default function IosInstallSteps({ onDone }) {
             className="
               flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl
               bg-gradient-to-r from-cyan-400 to-indigo-400
-              text-sm font-semibold text-slate-950
+              text-sm font-semibold text-black
               transition hover:brightness-110
             "
           >

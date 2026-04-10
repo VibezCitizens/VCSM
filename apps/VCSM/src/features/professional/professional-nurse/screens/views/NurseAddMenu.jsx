@@ -45,7 +45,7 @@ export default function NurseAddMenu({
     <div className="fixed inset-0 z-[9999]" aria-hidden={!open}>
       <div
         ref={ref}
-        className="absolute min-w-[220px] overflow-hidden rounded-xl border border-white/10 bg-neutral-800/95 text-white shadow-2xl"
+        className="absolute min-w-[220px] overflow-hidden rounded-xl border border-white/10 bg-white/6/95 text-white shadow-2xl"
         style={{
           top,
           left,

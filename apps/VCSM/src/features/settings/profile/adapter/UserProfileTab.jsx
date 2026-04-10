@@ -38,7 +38,7 @@ export default function UserProfileTab({ controller }) {
   }, [saved]);
 
   if (!ready || loading || !draft) {
-    return <div className="py-6 text-sm text-slate-400">Loading profile...</div>;
+    return <div className="py-6 text-sm text-white/50">Loading profile...</div>;
   }
 
   const onPickAvatar = (e) => {

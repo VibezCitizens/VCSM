@@ -36,13 +36,13 @@ export default function EnterpriseWorkspace({ profession }) {
         <div className="rounded-xl border border-white/10 bg-black/35 p-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div className="text-xs uppercase tracking-[0.12em] text-slate-400">Enterprise Console</div>
+              <div className="text-xs uppercase tracking-[0.12em] text-white/50">Enterprise Console</div>
               <h2 className="mt-1 text-lg font-semibold text-white">{profession.label} Command Center</h2>
-              <p className="mt-1 text-sm text-slate-300/85">
+              <p className="mt-1 text-sm text-white/70/85">
                 Multi-domain operations layer for {profession.sector.toLowerCase()} execution and scale.
               </p>
             </div>
-            <div className="rounded-lg border border-indigo-300/30 bg-indigo-300/10 px-3 py-1.5 text-xs text-indigo-100">
+            <div className="rounded-lg border border-purple-300/20 bg-purple-300/10 px-3 py-1.5 text-xs text-purple-200">
               Compliance scope: {profession.complianceScope}
             </div>
           </div>
@@ -93,8 +93,8 @@ export default function EnterpriseWorkspace({ profession }) {
               onClick={() => setPanel(item.key)}
               className={`rounded-xl border px-3 py-2 text-sm font-semibold transition ${
                 active
-                  ? 'border-indigo-300/60 bg-indigo-300/15 text-white'
-                  : 'border-white/15 bg-white/5 text-slate-300 hover:bg-white/10'
+                  ? 'border-purple-300/40 bg-purple-300/12 text-white'
+                  : 'border-white/15 bg-white/5 text-white/70 hover:bg-white/10'
               }`}
             >
               {item.label}
@@ -128,7 +128,7 @@ function OverviewPanel({ view }) {
         {kpis.map((item) => (
           <Card key={item.key}>
             <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3">
-              <div className="text-xs uppercase tracking-[0.1em] text-slate-400">{item.label}</div>
+              <div className="text-xs uppercase tracking-[0.1em] text-white/50">{item.label}</div>
               <div className="mt-1 text-2xl font-semibold text-white">{item.value}</div>
             </div>
           </Card>
@@ -213,7 +213,7 @@ function MarketplacePanel({ view }) {
             view.incidents.slice(0, 3).map((item) => (
               <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
                 <div className="text-sm font-semibold text-white">{item.title}</div>
-                <div className="mt-1 text-xs text-slate-400">
+                <div className="mt-1 text-xs text-white/50">
                   Owner: {item.owner} | Target SLA: {item.sla}
                 </div>
               </div>
@@ -233,7 +233,7 @@ function IntelligencePanel({ view }) {
           {view.knowledge.map((item) => (
             <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
               <div className="text-sm font-semibold text-white">{item.title}</div>
-              <div className="mt-1 text-xs text-slate-400">
+              <div className="mt-1 text-xs text-white/50">
                 {item.category} | {item.status} | {item.updatedAt}
               </div>
             </div>
@@ -246,7 +246,7 @@ function IntelligencePanel({ view }) {
           {view.playbooks.map((item) => (
             <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
               <div className="text-sm font-semibold text-white">{item.name}</div>
-              <div className="mt-1 text-xs text-slate-400">
+              <div className="mt-1 text-xs text-white/50">
                 {item.domain} | Success {item.successRate}% | Runs {item.runsThisWeek}
               </div>
             </div>
@@ -263,7 +263,7 @@ function IncidentRow({ item }) {
       ? 'border-rose-300/35 bg-rose-300/10 text-rose-100'
       : item.priority === 'high'
       ? 'border-amber-300/35 bg-amber-300/10 text-amber-100'
-      : 'border-slate-300/20 bg-white/[0.03] text-slate-200'
+      : 'border-white/12 bg-white/[0.03] text-white/90'
 
   return (
     <div className={`rounded-xl border px-3 py-2 ${tone}`}>
@@ -289,7 +289,7 @@ function ProgramRow({ program, compact = false }) {
           {program.status}
         </span>
       </div>
-      <div className="mt-1 text-xs text-slate-400">
+      <div className="mt-1 text-xs text-white/50">
         Lead: {program.lead} {!compact && `| Coverage ${program.coverage}%`}
       </div>
     </div>
@@ -312,7 +312,7 @@ function AuditRow({ item }) {
           {item.status}
         </span>
       </div>
-      <div className="mt-1 text-xs text-slate-400">Due in {item.dueIn}</div>
+      <div className="mt-1 text-xs text-white/50">Due in {item.dueIn}</div>
     </div>
   )
 }
@@ -322,11 +322,11 @@ function VendorRow({ vendor }) {
     <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm font-semibold text-white">{vendor.name}</div>
-        <span className="rounded-full border border-indigo-300/35 bg-indigo-300/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.08em] text-indigo-100">
+        <span className="rounded-full border border-purple-300/25 bg-purple-300/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.08em] text-purple-200">
           Score {vendor.score}
         </span>
       </div>
-      <div className="mt-1 text-xs text-slate-400">
+      <div className="mt-1 text-xs text-white/50">
         {vendor.type} | {vendor.city}
       </div>
     </div>
@@ -346,7 +346,7 @@ function TimelineRow({ item }) {
       <span className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${severityClass}`} />
       <div className="min-w-0">
         <div className="text-sm text-white">{item.label}</div>
-        <div className="mt-1 text-xs text-slate-400">At {item.when}</div>
+        <div className="mt-1 text-xs text-white/50">At {item.when}</div>
       </div>
     </div>
   )
@@ -354,7 +354,7 @@ function TimelineRow({ item }) {
 
 function EmptyLine({ label }) {
   return (
-    <div className="rounded-xl border border-dashed border-white/20 bg-white/[0.02] px-3 py-3 text-sm text-slate-400">
+    <div className="rounded-xl border border-dashed border-white/20 bg-white/[0.02] px-3 py-3 text-sm text-white/50">
       {label}
     </div>
   )

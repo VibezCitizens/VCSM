@@ -1,32 +1,31 @@
-// ============================================================
-// VCSM — Vport Portfolio Controller (Engine-Backed)
-// ============================================================
-
 import {
   listPortfolio as engineListPortfolio,
   getPortfolioItem as engineGetPortfolioItem,
 } from '@portfolio'
+import { createTTLCache } from '@/shared/lib/ttlCache'
 
-/**
- * List portfolio items for a vport actor.
- * @param {string} actorId
- * @param {{ limit?: number, offset?: number }} [opts]
- * @returns {Promise<{ items: Object[], hasMore: boolean }>}
- */
+const listCache = createTTLCache(60_000) // 60 seconds
+
 export async function ctrlListPortfolio(actorId, { limit = 24, offset = 0 } = {}) {
   if (!actorId) throw new Error('[VportPortfolio] actorId is required')
 
-  return engineListPortfolio({ actorId, limit, offset })
+  // Only cache first page (offset 0)
+  const cacheKey = offset === 0 ? actorId : null
+  if (cacheKey) {
+    const cached = listCache.get(cacheKey)
+    if (cached) return cached
+  }
+
+  const result = await engineListPortfolio({ actorId, limit, offset })
+  if (cacheKey) listCache.set(cacheKey, result)
+  return result
 }
 
-/**
- * Get a single portfolio item with full detail.
- * @param {string} itemId
- * @param {{ includeBarberDetails?: boolean, includeLocksmithDetails?: boolean }} [opts]
- * @returns {Promise<Object|null>}
- */
 export async function ctrlGetPortfolioItem(itemId, { includeBarberDetails = true, includeLocksmithDetails = true } = {}) {
   if (!itemId) throw new Error('[VportPortfolio] itemId is required')
-
   return engineGetPortfolioItem({ itemId, includeBarberDetails, includeLocksmithDetails })
+}
+
+export function invalidatePortfolioCache(actorId) {
+  listCache.invalidate(actorId)
 }

@@ -29,11 +29,11 @@ export default function ActorSearchResultRow({ actor }) {
       />
 
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-slate-100 truncate">
+        <p className="text-sm font-semibold text-white truncate">
           {actor.display_name || actor.username}
         </p>
         {actor.username && (
-          <p className="text-xs text-slate-300/80 truncate">
+          <p className="text-xs text-white/70/80 truncate">
             @{actor.username}
           </p>
         )}

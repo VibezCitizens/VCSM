@@ -30,15 +30,15 @@ export default function ProfileTabView({
     <div className="space-y-4">
       <Card>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-semibold text-slate-100">Profile</div>
-          <Link to={profilePath} className="text-sm text-indigo-300 hover:text-indigo-200">
+          <div className="text-sm font-semibold text-white">Profile</div>
+          <Link to={profilePath} className="text-sm text-purple-300 hover:text-purple-300">
             View my profile
           </Link>
         </div>
 
         <section className="space-y-1">
-          <label className="text-xs text-slate-300">Avatar banner</label>
-          <div className="overflow-hidden rounded-xl border border-slate-300/20 bg-slate-900/50">
+          <label className="text-xs text-white/70">Avatar banner</label>
+          <div className="overflow-hidden rounded-xl border border-white/12 bg-white/4/50">
             <div className="relative h-32 w-full sm:h-40 md:h-48">
               <img
                 src={previewBanner || bannerUrl || '/default-banner.jpg'}
@@ -68,14 +68,14 @@ export default function ProfileTabView({
                 Remove
               </button>
             )}
-            <span className="text-[11px] text-slate-500">PNG/JPG {'<='} 5MB</span>
+            <span className="text-[11px] text-white/40">PNG/JPG {'<='} 5MB</span>
           </div>
         </section>
 
         <section className="mt-4 space-y-1">
-          <label className="text-xs text-slate-300">Avatar photo</label>
+          <label className="text-xs text-white/70">Avatar photo</label>
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 overflow-hidden rounded-xl bg-slate-800">
+            <div className="h-14 w-14 overflow-hidden rounded-xl bg-white/6">
               {(previewAvatar || photoUrl) ? (
                 <img src={previewAvatar || photoUrl} alt="avatar" className="h-full w-full object-cover" />
               ) : null}
@@ -105,27 +105,27 @@ export default function ProfileTabView({
         </section>
 
         <section className="mt-4 space-y-1">
-          <label className="inline-flex items-center gap-1.5 text-xs text-slate-400">
+          <label className="inline-flex items-center gap-1.5 text-xs text-white/50">
             Username
-            <Lock size={12} className="text-slate-400" aria-hidden="true" />
+            <Lock size={12} className="text-white/50" aria-hidden="true" />
           </label>
           <div className="relative">
             <input
               value={username ? `@${username}` : '-'}
               disabled
               readOnly
-              className="settings-input w-full rounded-xl px-3 py-2 pr-9 text-slate-400"
+              className="settings-input w-full rounded-xl px-3 py-2 pr-9 text-white/50"
             />
             <Lock
               size={14}
-              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
               aria-hidden="true"
             />
           </div>
         </section>
 
         <section className="mt-3 space-y-1">
-          <label className="text-xs text-slate-300">Display name</label>
+          <label className="text-xs text-white/70">Display name</label>
           <input
             value={displayName}
             onChange={(e) => onChangeDisplayName(e.target.value)}
@@ -136,20 +136,20 @@ export default function ProfileTabView({
 
         {email && (
           <section className="mt-3 space-y-1">
-            <label className="inline-flex items-center gap-1.5 text-xs text-slate-400">
+            <label className="inline-flex items-center gap-1.5 text-xs text-white/50">
               Email
-              <Lock size={12} className="text-slate-400" aria-hidden="true" />
+              <Lock size={12} className="text-white/50" aria-hidden="true" />
             </label>
             <div className="relative">
               <input
                 value={email}
                 disabled
                 readOnly
-                className="settings-input w-full rounded-xl px-3 py-2 pr-9 text-slate-400"
+                className="settings-input w-full rounded-xl px-3 py-2 pr-9 text-white/50"
               />
               <Lock
                 size={14}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
                 aria-hidden="true"
               />
             </div>
@@ -157,7 +157,7 @@ export default function ProfileTabView({
         )}
 
         <section className="mt-3 space-y-1">
-          <label className="text-xs text-slate-300">Bio</label>
+          <label className="text-xs text-white/70">Bio</label>
           <textarea
             value={bio}
             onChange={(e) => onChangeBio(e.target.value)}

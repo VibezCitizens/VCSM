@@ -165,10 +165,10 @@ export default function PostFeedScreen() {
 
   return (
     <div className="post-modern w-full max-w-2xl mx-auto pb-24">
-      <div className="px-4 py-3 text-lg font-semibold text-slate-100">Feed</div>
+      <div className="px-4 py-3 text-lg font-semibold text-white">Feed</div>
 
       {!loading && posts.length === 0 && (
-        <div className="p-6 text-center text-slate-500">No Vibes yet.</div>
+        <div className="p-6 text-center text-white/40">No Vibes yet.</div>
       )}
 
       {posts.map((post) => {
@@ -224,10 +224,10 @@ export default function PostFeedScreen() {
         onClose={closeShare}
       />
 
-      {loading && <div className="p-6 text-center text-slate-500">Loading...</div>}
+      {loading && <div className="p-6 text-center text-white/40">Loading...</div>}
 
       {!hasMore && posts.length > 0 && !loading && (
-        <div className="p-6 text-center text-slate-600 text-sm">
+        <div className="p-6 text-center text-white/30 text-sm">
           You reached the end.
         </div>
       )}

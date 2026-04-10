@@ -6,7 +6,7 @@ export default function OnboardingCardList({
 }) {
   if (!Array.isArray(cards) || cards.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 text-sm text-slate-400">
+      <div className="rounded-2xl border border-white/10 p-4 text-sm" style={{ background: 'var(--vc-card-bg)', color: 'var(--vc-text-muted)' }}>
         No onboarding cards yet.
       </div>
     )

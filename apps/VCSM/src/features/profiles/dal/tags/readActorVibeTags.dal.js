@@ -1,7 +1,14 @@
 import { supabase } from '@/services/supabase/supabaseClient'
+import { createTTLCache } from '@/shared/lib/ttlCache'
+
+const actorTagsCache = createTTLCache(120_000) // 2 minutes
+const catalogCache = createTTLCache(300_000) // 5 minutes — catalog rarely changes
 
 export async function readActorSelectedVibeTagKeysDAL(actorId) {
   if (!actorId) return []
+
+  const cached = actorTagsCache.get(actorId)
+  if (cached) return cached
 
   const { data, error } = await supabase
     .schema('vc')
@@ -11,12 +18,18 @@ export async function readActorSelectedVibeTagKeysDAL(actorId) {
     .eq('is_void', false)
 
   if (error) throw error
-  return data ?? []
+  const result = data ?? []
+  actorTagsCache.set(actorId, result)
+  return result
 }
 
 export async function readVibeTagCatalogByKeysDAL(tagKeys) {
   const keys = Array.isArray(tagKeys) ? tagKeys.filter(Boolean) : []
   if (!keys.length) return []
+
+  const cacheKey = keys.sort().join(',')
+  const cached = catalogCache.get(cacheKey)
+  if (cached) return cached
 
   const { data, error } = await supabase
     .schema('vc')
@@ -25,5 +38,11 @@ export async function readVibeTagCatalogByKeysDAL(tagKeys) {
     .in('key', keys)
 
   if (error) throw error
-  return data ?? []
+  const result = data ?? []
+  catalogCache.set(cacheKey, result)
+  return result
+}
+
+export function invalidateActorTagsCache(actorId) {
+  actorTagsCache.invalidate(actorId)
 }

@@ -9,16 +9,29 @@ function NotificationsSkeleton({ count = 6 }) {
           className="notifications-card flex items-center justify-between gap-3 rounded-xl px-4 py-3"
         >
           <div className="flex min-w-0 items-center gap-3">
-            <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-slate-700/45" />
-
+            <div
+              className="h-11 w-11 shrink-0 animate-pulse rounded-xl"
+              style={{ background: 'rgba(139, 92, 246, 0.08)' }}
+            />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3 w-32 animate-pulse rounded bg-slate-700/45" />
-              <div className="h-3 w-52 max-w-[70vw] animate-pulse rounded bg-slate-700/35" />
-              <div className="h-2 w-16 animate-pulse rounded bg-slate-700/30" />
+              <div
+                className="h-3 w-32 animate-pulse rounded"
+                style={{ background: 'rgba(139, 92, 246, 0.1)' }}
+              />
+              <div
+                className="h-3 w-52 max-w-[70vw] animate-pulse rounded"
+                style={{ background: 'rgba(139, 92, 246, 0.07)' }}
+              />
+              <div
+                className="h-2 w-16 animate-pulse rounded"
+                style={{ background: 'rgba(139, 92, 246, 0.05)' }}
+              />
             </div>
           </div>
-
-          <div className="h-7 w-14 animate-pulse rounded-md bg-slate-700/35" />
+          <div
+            className="h-7 w-14 animate-pulse rounded-md"
+            style={{ background: 'rgba(139, 92, 246, 0.08)' }}
+          />
         </li>
       ))}
     </ul>
@@ -31,7 +44,11 @@ export default function NotificationsView({ rows, loading }) {
   }
 
   if (!rows.length) {
-    return <div className="notifications-empty">No notifications</div>
+    return (
+      <div className="notifications-empty">
+        No notifications
+      </div>
+    )
   }
 
   return (

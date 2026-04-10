@@ -11,7 +11,7 @@ export function OwnerPendingSuggestionsList({
 }) {
   if (!submissions?.length) {
     return (
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4 text-sm text-neutral-400">
+      <div className="rounded-2xl border border-white/10 bg-black p-4 text-sm text-white/50">
         No pending suggestions.
       </div>
     );

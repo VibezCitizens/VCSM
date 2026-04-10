@@ -17,7 +17,7 @@ export default function Card({ title, children, className = '' }) {
       )}
     >
       {title ? (
-        <div className="px-4 pt-3 pb-2 text-xs tracking-wide text-slate-400">
+        <div className="px-4 pt-3 pb-2 text-xs tracking-wide text-white/50">
           {title}
         </div>
       ) : null}

@@ -1,15 +1,8 @@
-// src/features/profiles/kinds/vport/dal/rates/readVportRatesByActor.dal.js
-
-// IMPORTANT: use your existing Supabase client import path.
-// Replace the line below with whatever your app already uses elsewhere.
 import supabase from "@/services/supabase/supabaseClient";
+import { createTTLCache } from "@/shared/lib/ttlCache";
 
-/**
- * DAL: read rates by actor + rateType
- * - vc schema
- * - explicit projection (no select('*'))
- * - returns raw rows exactly as stored
- */
+const ratesCache = createTTLCache(60_000); // 60 seconds
+
 export default async function readVportRatesByActorDal({
   actorId,
   rateType = "fx",
@@ -17,6 +10,10 @@ export default async function readVportRatesByActorDal({
   if (!actorId) {
     throw new Error("readVportRatesByActorDal: actorId is required");
   }
+
+  const cacheKey = `${actorId}:${rateType}`;
+  const cached = ratesCache.get(cacheKey);
+  if (cached) return cached;
 
   const { data, error } = await supabase
     .schema("vc")
@@ -41,5 +38,11 @@ export default async function readVportRatesByActorDal({
     .order("quote_currency", { ascending: true });
 
   if (error) throw error;
-  return Array.isArray(data) ? data : [];
+  const result = Array.isArray(data) ? data : [];
+  ratesCache.set(cacheKey, result);
+  return result;
+}
+
+export function invalidateRatesCache(actorId) {
+  ratesCache.invalidateAll();
 }

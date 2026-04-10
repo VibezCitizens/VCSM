@@ -6,7 +6,7 @@ export default function PostBody({ text, mentionMap }) {
 
   return (
     <div className="px-1 mt-3">
-      <p className="text-neutral-200 text-sm whitespace-pre-wrap leading-relaxed">
+      <p className="text-white/85 text-sm whitespace-pre-wrap leading-relaxed">
         <LinkifiedMentions text={text} mentionMap={mentionMap || {}} />
       </p>
     </div>

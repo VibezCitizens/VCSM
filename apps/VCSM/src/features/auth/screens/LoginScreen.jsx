@@ -8,6 +8,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState, useMemo } from 'react'
 import { ChevronRight, Smartphone, Sparkles } from 'lucide-react'
 import { getActiveSeasonTheme } from '@/season'
+import { authTheme } from '@/features/auth/styles/authTheme'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 
 // iOS install modal
@@ -74,7 +75,10 @@ function LoginScreen() {
 
   return (
     <>
-      <div className={`${season.wrapper} min-h-screen flex items-center justify-center`}>
+      <div
+        className="min-h-screen flex items-center justify-center px-4 text-white"
+        style={{ background: authTheme.pageBackground }}
+      >
         {season.fog1 && <div className={season.fog1} />}
         {season.fog2 && <div className={season.fog2} />}
 
@@ -90,15 +94,12 @@ function LoginScreen() {
 
             <form
               onSubmit={onSubmit}
-              className="
-                relative w-full space-y-5 overflow-hidden
-                bg-white/5 backdrop-blur-xl
-                border border-white/10
-                p-6 sm:p-8 rounded-2xl
-              "
+              className="relative w-full space-y-5 overflow-hidden border border-white/10 p-6 sm:p-8 rounded-2xl"
+              style={{
+                background: authTheme.cardBackground,
+                boxShadow: authTheme.cardShadow,
+              }}
             >
-              <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-300/12 blur-3xl" />
-              <div className="pointer-events-none absolute -left-12 -bottom-14 h-36 w-36 rounded-full bg-rose-300/10 blur-3xl" />
 
               <div className="relative text-center">
                 <h1 className="font-serif text-[clamp(2.45rem,9.6vw,3.35rem)] font-semibold leading-[0.96] tracking-[0.005em] whitespace-nowrap text-transparent bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 bg-clip-text">
@@ -109,55 +110,61 @@ function LoginScreen() {
                 </p>
               </div>
 
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="w-full px-4 py-2 bg-black/30 text-white rounded-lg"
-              />
+              <div className="space-y-1.5">
+                <label htmlFor="login-email" className="text-xs font-medium tracking-wide text-[#d1d5db]">
+                  Email
+                </label>
+                <input
+                  id="login-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  inputMode="email"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-[#9ca3af] outline-none transition duration-200 focus:border-[#6C4DF6]/80 focus:ring-2 focus:ring-[#6C4DF6]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                />
+              </div>
 
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-                className="w-full px-4 py-2 bg-black/30 text-white rounded-lg"
-              />
+              <div className="space-y-1.5">
+                <label htmlFor="login-password" className="text-xs font-medium tracking-wide text-[#d1d5db]">
+                  Password
+                </label>
+                <input
+                  id="login-password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-[#9ca3af] outline-none transition duration-200 focus:border-[#6C4DF6]/80 focus:ring-2 focus:ring-[#6C4DF6]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                />
+              </div>
 
               {error && (
-                <p className="text-red-400 text-sm text-center">
+                <div
+                  className="rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-3 py-2 text-sm text-[#fecaca]"
+                  role="alert"
+                  aria-live="polite"
+                >
                   {error}
-                </p>
+                </div>
               )}
 
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="
-                  relative w-full
-                  bg-gradient-to-r from-purple-600 to-violet-600
-                  hover:from-purple-500 hover:to-violet-500
-                  transition
-                  text-white font-semibold
-                  py-3 rounded-xl
-                  disabled:opacity-40
-                "
+                className={[
+                  'relative mt-1 w-full rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all duration-200',
+                  canSubmit
+                    ? 'bg-[#6C4DF6] shadow-[0_10px_30px_rgba(108,77,246,0.35)] hover:-translate-y-[1px] hover:bg-[#7657ff] active:translate-y-0'
+                    : 'cursor-not-allowed bg-white/10 text-white/60 shadow-none',
+                ].join(' ')}
               >
                 <span
-                  className="
-                    absolute -top-3 -right-3
-                    rounded-full
-                    bg-gradient-to-r from-pink-500 to-rose-500
-                    px-3 py-1
-                    text-xs font-bold uppercase tracking-wide
-                    text-white
-                    shadow-[0_0_16px_rgba(244,63,94,0.6)]
-                  "
+                  className="absolute -top-3 -right-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-[0_0_16px_rgba(244,63,94,0.6)]"
                 >
                   Beta
                 </span>
@@ -168,13 +175,7 @@ function LoginScreen() {
               <div className="flex items-center justify-between pt-2 text-sm">
                 <Link
                   to="/forgot-password"
-                  className="
-                    text-purple-400
-                    font-medium
-                    hover:text-purple-300
-                    transition
-                    no-underline
-                  "
+                  className="font-medium text-[#c4b5fd] no-underline transition hover:text-[#ddd6fe]"
                 >
                   Forgot password?
                 </Link>
@@ -182,14 +183,7 @@ function LoginScreen() {
                 <Link
                   to="/register"
                   state={navState}
-                  className="
-                    relative
-                    text-purple-400
-                    font-medium
-                    hover:text-purple-300
-                    transition
-                    no-underline
-                  "
+                  className="font-medium text-[#c4b5fd] no-underline transition hover:text-[#ddd6fe]"
                 >
                   Create account
                 </Link>
@@ -207,7 +201,7 @@ function LoginScreen() {
                     "
                   >
                     <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-cyan-300/25 blur-2xl" />
-                    <div className="pointer-events-none absolute -left-12 -bottom-10 h-24 w-24 rounded-full bg-indigo-300/20 blur-2xl" />
+                    <div className="pointer-events-none absolute -left-12 -bottom-10 h-24 w-24 rounded-full bg-purple-300/15 blur-2xl" />
 
                     <div className="relative flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -219,7 +213,7 @@ function LoginScreen() {
                             Install on iPhone
                             <Sparkles size={14} className="text-cyan-200" />
                           </div>
-                          <div className="text-xs text-slate-200/75">
+                          <div className="text-xs text-white/70">
                             Guided setup in 3 quick steps
                           </div>
                         </div>

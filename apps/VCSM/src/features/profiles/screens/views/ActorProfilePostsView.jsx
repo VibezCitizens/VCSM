@@ -17,24 +17,24 @@ function VibesTabSkeleton({ count = 2 }) {
             <div className="px-4 pt-3 pb-2">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-slate-700/50" />
+                  <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-white/8" />
                   <div className="min-w-0 space-y-2">
-                    <div className="h-3.5 w-28 animate-pulse rounded bg-slate-700/55" />
-                    <div className="h-2.5 w-40 animate-pulse rounded bg-slate-700/40" />
-                    <div className="h-2.5 w-24 animate-pulse rounded bg-slate-700/35" />
+                    <div className="h-3.5 w-28 animate-pulse rounded bg-white/8" />
+                    <div className="h-2.5 w-40 animate-pulse rounded bg-white/6" />
+                    <div className="h-2.5 w-24 animate-pulse rounded bg-white/5" />
                   </div>
                 </div>
-                <div className="h-4 w-4 animate-pulse rounded bg-slate-700/40" />
+                <div className="h-4 w-4 animate-pulse rounded bg-white/6" />
               </div>
             </div>
 
             <div className="px-4 pb-3 space-y-2">
-              <div className="h-3.5 w-11/12 animate-pulse rounded bg-slate-700/45" />
-              <div className="h-3.5 w-7/12 animate-pulse rounded bg-slate-700/35" />
+              <div className="h-3.5 w-11/12 animate-pulse rounded bg-white/8" />
+              <div className="h-3.5 w-7/12 animate-pulse rounded bg-white/5" />
             </div>
 
             {withMedia ? (
-              <div className="mb-2 h-48 w-full animate-pulse bg-slate-700/35" />
+              <div className="mb-2 h-48 w-full animate-pulse bg-white/5" />
             ) : null}
 
             <div className="px-4 pb-3">
@@ -42,7 +42,7 @@ function VibesTabSkeleton({ count = 2 }) {
                 {Array.from({ length: 5 }).map((_, reactionIndex) => (
                   <div
                     key={`vibes-skeleton-reaction:${index}:${reactionIndex}`}
-                    className="h-5 w-10 animate-pulse rounded bg-slate-700/35"
+                    className="h-5 w-10 animate-pulse rounded bg-white/5"
                   />
                 ))}
               </div>

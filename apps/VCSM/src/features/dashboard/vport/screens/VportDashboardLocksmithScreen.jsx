@@ -172,7 +172,7 @@ export default function VportDashboardLocksmithScreen() {
   const shell = createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 900 });
 
   if (!targetActorId) return null;
-  if (!isOwner) return <div className="p-10 text-center text-neutral-400">Owner access only.</div>;
+  if (!isOwner) return <div className="p-10 text-center text-white/50">Owner access only.</div>;
 
   const content = (
     <div style={shell.page}>
@@ -196,9 +196,16 @@ export default function VportDashboardLocksmithScreen() {
               </div>
 
               {loading ? (
-                <div className="flex items-center gap-2 py-6 justify-center text-sm text-white/40">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
-                  Loading...
+                <div className="space-y-2 py-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={`lk-skel:${i}`} className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: 'var(--vc-card-bg)' }}>
+                      <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.08)' }} />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3 w-28 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.1)' }} />
+                        <div className="h-2 w-20 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.06)' }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="space-y-2">

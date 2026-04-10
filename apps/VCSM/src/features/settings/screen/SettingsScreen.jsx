@@ -77,16 +77,16 @@ export default function SettingsScreen() {
   )
 
   return (
-    <div className="settings-modern-page relative h-full w-full overflow-y-auto touch-pan-y text-slate-100">
+    <div className="settings-modern-page relative h-full w-full overflow-y-auto touch-pan-y text-white">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_220px_at_50%_-80px,rgba(99,102,241,0.22),transparent)]"
       />
 
-      <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/74 backdrop-blur-xl">
+      <header className="sticky top-0 z-20 border-b border-white/8 bg-[#060914]/74 backdrop-blur-xl">
         <div className="mx-auto w-full max-w-3xl px-4">
           <div className="flex items-center justify-between py-3">
-            <h1 className="text-lg font-bold tracking-wide text-slate-100">Settings</h1>
+            <h1 className="text-lg font-bold tracking-wide text-white">Settings</h1>
             <button
               onClick={() => navigate(-1)}
               className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
@@ -128,7 +128,7 @@ export default function SettingsScreen() {
           return (
             <section key={item.key} hidden={tab !== item.key}>
               {tab === item.key && (
-                <Suspense fallback={<div className="py-10 text-center text-slate-400">Loading...</div>}>
+                <Suspense fallback={<div className="py-10 text-center text-white/50">Loading...</div>}>
                   <ActiveView />
                 </Suspense>
               )}

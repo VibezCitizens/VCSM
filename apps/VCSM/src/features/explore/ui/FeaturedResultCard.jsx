@@ -21,11 +21,11 @@ export default function FeaturedResultCard({ item }) {
 
         <div className="explore-featured-overlay">
           <p className="explore-featured-label">Featured Result</p>
-          <p className="text-base font-semibold text-slate-100 truncate">
+          <p className="text-base font-semibold text-white truncate">
             {item.display_name || item.username}
           </p>
           {item.username ? (
-            <p className="text-xs text-slate-300/80 truncate">@{item.username}</p>
+            <p className="text-xs text-white/70/80 truncate">@{item.username}</p>
           ) : null}
         </div>
       </button>
@@ -51,13 +51,13 @@ export default function FeaturedResultCard({ item }) {
           <div className="flex items-center gap-2">
             <span className="relative inline-flex items-center justify-center">
               <MessageCircle className="h-5 w-5 text-sky-200" />
-              <AtSign className="absolute h-3 w-3 text-indigo-100" />
+              <AtSign className="absolute h-3 w-3 text-purple-200" />
             </span>
-            <p className="text-base font-semibold text-slate-100 truncate">{title}</p>
+            <p className="text-base font-semibold text-white truncate">{title}</p>
           </div>
 
           {subtitle ? (
-            <p className="text-xs text-slate-300/80 truncate">{subtitle}</p>
+            <p className="text-xs text-white/70/80 truncate">{subtitle}</p>
           ) : null}
         </div>
       </button>

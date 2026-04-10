@@ -24,16 +24,16 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
 
   return (
     <header
-      className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+      className="chat-modern-sticky-header sticky top-0 z-20 border-b border-white/8 bg-[#070b16]/75 backdrop-blur"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
-      <div className="flex h-14 items-center justify-between gap-2 px-3 text-slate-100">
+      <div className="flex h-14 items-center justify-between gap-2 px-3 text-white">
         <div className="flex min-w-0 items-center gap-2">
           {onBack && (
             <button
               type="button"
               onClick={onBack}
-              className="-ml-1 p-2 text-indigo-300 transition hover:text-indigo-200"
+              className="-ml-1 p-2 text-purple-300 transition hover:text-purple-300"
               aria-label="Back"
             >
               <ChevronLeft size={22} />
@@ -41,7 +41,7 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
           )}
 
           {isGroup ? (
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-700/70 font-semibold uppercase">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 font-semibold uppercase">
               {title?.charAt(0) || 'G'}
             </div>
           ) : (
@@ -61,7 +61,7 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
             const rect = e.currentTarget.getBoundingClientRect()
             onOpenMenu?.(rect)
           }}
-          className="p-2 text-slate-200 transition hover:text-slate-100"
+          className="p-2 text-white/90 transition hover:text-white"
           aria-label="Conversation options"
         >
           <MoreVertical size={22} />

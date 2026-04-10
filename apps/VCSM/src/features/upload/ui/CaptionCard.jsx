@@ -143,12 +143,12 @@ export default function CaptionCard({
         onKeyUp={onCaretEvent}
         rows={3}
         placeholder="Write a caption... (use @ to tag)"
-        className="upload-caption-area w-full resize-none bg-transparent px-5 py-4 placeholder:text-slate-500 focus:outline-none"
+        className="upload-caption-area w-full resize-none bg-transparent px-5 py-4 placeholder:text-white/40 focus:outline-none"
       />
 
       <div className="px-5">
         <MentionTypeahead open={open} items={items} onPick={handlePick} />
-        {loading && open ? <div className="py-2 text-xs text-slate-400">Searching...</div> : null}
+        {loading && open ? <div className="py-2 text-xs text-white/50">Searching...</div> : null}
       </div>
 
       <div className="px-5 pb-3">
@@ -162,7 +162,7 @@ export default function CaptionCard({
           <button
             type="button"
             onClick={handleUseMyLocation}
-            className="text-slate-400 transition hover:text-slate-200"
+            className="text-white/50 transition hover:text-white/90"
             aria-label="Use my location"
           >
             {locating ? "..." : <MapPin size={17} />}
@@ -175,14 +175,14 @@ export default function CaptionCard({
               setCityQuery(e.target.value);
             }}
             placeholder="Add location"
-            className="min-w-0 flex-1 bg-transparent text-slate-200 placeholder:text-slate-500 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-white/90 placeholder:text-white/40 focus:outline-none"
           />
 
           {locationText ? (
             <button
               type="button"
               onClick={handleRemoveLocation}
-              className="text-slate-400 transition hover:text-slate-200"
+              className="text-white/50 transition hover:text-white/90"
               aria-label="Remove location"
             >
               x
@@ -195,7 +195,7 @@ export default function CaptionCard({
                 <button
                   key={city}
                   onClick={() => handlePickCity(city)}
-                  className="block w-full px-4 py-2 text-left text-sm text-slate-200 hover:bg-white/10 transition-colors"
+                  className="block w-full px-4 py-2 text-left text-sm text-white/90 hover:bg-white/10 transition-colors"
                 >
                   {city}
                 </button>
@@ -206,7 +206,7 @@ export default function CaptionCard({
       </div>
 
       {locationError ? (
-        <div className="px-5 pb-3 text-xs text-rose-300">
+        <div className="px-5 pb-3 text-xs text-[#fecaca]">
           {locationError === "Permission denied"
             ? "Location permission was denied. You can still type a city manually."
             : locationError}
@@ -236,12 +236,12 @@ function LocationPermissionPrompt({ open, onCancel, onConfirm }) {
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-sky-300/20 bg-[linear-gradient(180deg,rgba(16,24,46,0.98),rgba(8,12,24,0.96))] shadow-[0_24px_42px_rgba(0,0,0,0.45),0_0_22px_rgba(99,137,255,0.25)]">
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10" style={{ background: 'var(--vc-card-bg)', boxShadow: 'var(--vc-shadow-elevated)' }}>
         <div className="border-b border-white/10 px-5 py-4">
-          <h2 className="text-base font-semibold text-slate-100">Use current location?</h2>
+          <h2 className="text-base font-semibold text-white">Use current location?</h2>
         </div>
 
-        <div className="px-5 py-4 text-sm text-slate-300">
+        <div className="px-5 py-4 text-sm text-white/70">
           We will ask your browser for location permission to fill your city automatically.
         </div>
 
@@ -249,14 +249,19 @@ function LocationPermissionPrompt({ open, onCancel, onConfirm }) {
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10"
+            className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10"
           >
             Not now
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-xl border border-sky-300/30 bg-sky-500/20 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-500/30"
+            className="rounded-xl border px-4 py-2 text-sm font-semibold transition"
+            style={{
+              borderColor: 'rgba(139,92,246,0.3)',
+              background: 'rgba(139,92,246,0.2)',
+              color: '#c4b5fd',
+            }}
           >
             Continue
           </button>

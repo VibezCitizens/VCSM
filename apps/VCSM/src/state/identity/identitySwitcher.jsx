@@ -44,7 +44,7 @@ export default function IdentitySwitcher() {
         <button
           key={row.actor_id}
           onClick={() => switchActor(row.actor_id, 'IdentitySwitcher')}
-          className="block w-full rounded px-3 py-2 text-left text-white hover:bg-neutral-800"
+          className="block w-full rounded px-3 py-2 text-left text-white hover:bg-white/6"
         >
           {row.actor?.kind ?? "actor"}
         </button>

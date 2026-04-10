@@ -84,7 +84,7 @@ export default function PostCardView({
         <div
           onClick={covered ? undefined : onOpenPost}
           className="
-            px-4 pb-3 text-sm text-slate-100/95
+            px-4 pb-3 text-sm text-white/95
             whitespace-pre-line cursor-pointer
           "
         >

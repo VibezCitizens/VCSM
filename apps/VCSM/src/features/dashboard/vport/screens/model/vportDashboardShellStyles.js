@@ -1,21 +1,14 @@
 export function createVportDashboardShellStyles({ isDesktop, maxWidthDesktop = 1280 }) {
-  const title = {
-    fontWeight: 950,
-    letterSpacing: 1.6,
-    fontSize: isDesktop ? 17 : 15,
-    textTransform: "uppercase",
-  };
-
-  const rightSpacer = { width: 118, height: 1 };
-
   return {
     page: {
       minHeight: "100vh",
       width: "100%",
       background:
-        "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
+        "radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a, rgba(108,77,246,0.15)), transparent 60%), " +
+        "radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b, rgba(59,130,246,0.10)), transparent 60%), " +
+        "var(--vc-bg-0, #0b0b0f)",
       color: "#fff",
-      padding: 18,
+      padding: isDesktop ? 18 : 12,
     },
     container: {
       width: "100%",
@@ -24,44 +17,27 @@ export function createVportDashboardShellStyles({ isDesktop, maxWidthDesktop = 1
       paddingBottom: 56,
     },
     headerWrap: {
-      borderRadius: 24,
+      borderRadius: 20,
       overflow: "hidden",
-      border: "1px solid rgba(255,255,255,0.08)",
-      background: "rgba(12,14,24,0.55)",
-      backdropFilter: "blur(14px)",
-      WebkitBackdropFilter: "blur(14px)",
-      boxShadow: "0 30px 90px rgba(0,0,0,0.65)",
+      border: "1px solid var(--vc-border, rgba(139,92,246,0.18))",
+      background: "var(--vc-card-bg, linear-gradient(180deg, rgba(20,20,26,0.98), rgba(20,20,26,0.90)))",
+      boxShadow: "var(--vc-shadow-elevated, 0 24px 45px rgba(0,0,0,0.36))",
     },
     topBar: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       gap: 12,
-      padding: "14px 16px",
-      minHeight: 72,
+      padding: isDesktop ? "14px 16px" : "10px 14px",
+      minHeight: isDesktop ? 56 : 48,
     },
-    btn: (variant = "soft") => ({
-      padding: "10px 16px",
-      minHeight: 48,
-      borderRadius: 20,
-      border:
-        variant === "soft"
-          ? "1px solid rgba(255,255,255,0.16)"
-          : "1px solid rgba(0,255,240,0.3)",
-      background:
-        variant === "soft"
-          ? "linear-gradient(135deg, rgba(38,46,66,0.82), rgba(23,30,46,0.78))"
-          : "linear-gradient(135deg, rgba(0,173,222,0.28), rgba(80,66,198,0.24), rgba(0,122,255,0.24))",
-      color: "#fff",
-      fontSize: 14,
-      fontWeight: 900,
-      cursor: "pointer",
-      whiteSpace: "nowrap",
-      letterSpacing: 0.2,
-      boxShadow:
-        "inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 40px rgba(0,0,0,0.35)",
-    }),
-    title,
-    rightSpacer,
+    title: {
+      fontWeight: 700,
+      letterSpacing: 1.2,
+      fontSize: isDesktop ? 15 : 13,
+      textTransform: "uppercase",
+      color: "rgba(255,255,255,0.7)",
+    },
+    rightSpacer: { width: isDesktop ? 80 : 36, height: 1 },
   };
 }

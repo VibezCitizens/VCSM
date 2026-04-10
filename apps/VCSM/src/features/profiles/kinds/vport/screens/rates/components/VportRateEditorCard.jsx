@@ -42,19 +42,19 @@ export default function VportRateEditorCard({
     <div className="mb-3 overflow-hidden rounded-2xl border border-sky-300/20 bg-[linear-gradient(145deg,rgba(56,189,248,0.13),rgba(15,23,42,0.45)_42%,rgba(2,6,23,0.88)_100%)] p-4 shadow-[0_14px_30px_-22px_rgba(56,189,248,0.65)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-slate-100">{title}</div>
-          <div className="mt-1 text-xs text-slate-300/80">Publish official buy/sell rates per currency pair.</div>
+          <div className="text-sm font-semibold text-white">{title}</div>
+          <div className="mt-1 text-xs text-white/70/80">Publish official buy/sell rates per currency pair.</div>
         </div>
 
         <div className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5">
-          <span className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Pair</span>
-          <span className="ml-2 font-mono text-sm font-semibold text-slate-100">{pairLabel}</span>
+          <span className="text-[10px] uppercase tracking-[0.08em] text-white/50">Pair</span>
+          <span className="ml-2 font-mono text-sm font-semibold text-white">{pairLabel}</span>
         </div>
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-          <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Base currency</div>
+          <div className="text-[10px] uppercase tracking-[0.08em] text-white/50">Base currency</div>
           <input
             value={baseCurrency ?? ""}
             onChange={(e) => onChangeBaseCurrency?.(e.target.value)}
@@ -66,7 +66,7 @@ export default function VportRateEditorCard({
         </div>
 
         <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-          <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Quote currency</div>
+          <div className="text-[10px] uppercase tracking-[0.08em] text-white/50">Quote currency</div>
           <input
             value={quoteCurrency ?? ""}
             onChange={(e) => onChangeQuoteCurrency?.(e.target.value)}

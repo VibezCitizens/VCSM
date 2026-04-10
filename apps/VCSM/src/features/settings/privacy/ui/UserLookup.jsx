@@ -60,7 +60,7 @@ export default function UserLookup() {
         ))}
 
         {!searching && results.length === 0 && (
-          <div className="text-xs text-slate-500">No results yet.</div>
+          <div className="text-xs text-white/40">No results yet.</div>
         )}
       </div>
     </div>
@@ -79,10 +79,10 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
         {actor?.actorId ? (
           <ActorLink actor={actor} avatarSize="w-8 h-8" />
         ) : (
-          <div className="text-sm text-slate-200 truncate">{name}</div>
+          <div className="text-sm text-white/90 truncate">{name}</div>
         )}
-        {handle && <div className="text-xs text-slate-500 truncate">@{handle}</div>}
-        {!handle && <div className="text-xs text-slate-600 truncate">{actorId}</div>}
+        {handle && <div className="text-xs text-white/40 truncate">@{handle}</div>}
+        {!handle && <div className="text-xs text-white/30 truncate">{actorId}</div>}
       </div>
 
       {isBlocked ? (
@@ -91,7 +91,7 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
           disabled={busy}
           className={`rounded-lg border px-3 py-1.5 text-xs ${
             busy
-              ? 'border-slate-600/30 text-slate-500'
+              ? 'border-white/12 text-white/40'
               : 'settings-btn settings-btn--danger'
           }`}
         >
@@ -103,7 +103,7 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
           disabled={busy}
           className={`rounded-lg border px-3 py-1.5 text-xs ${
             busy
-              ? 'border-slate-600/30 text-slate-500'
+              ? 'border-white/12 text-white/40'
               : 'settings-btn settings-btn--ghost'
           }`}
         >

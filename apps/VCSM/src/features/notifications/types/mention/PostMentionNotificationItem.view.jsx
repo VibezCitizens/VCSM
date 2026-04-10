@@ -16,8 +16,7 @@ export default function PostMentionNotificationItem({ notification }) {
         </span>
       }
       timestamp={notification.createdAt}
-      actionLabel={notification.linkPath ? 'View' : null}
-      onAction={notification.linkPath ? () => navigate(notification.linkPath) : null}
+      onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}
     />
   )
 }

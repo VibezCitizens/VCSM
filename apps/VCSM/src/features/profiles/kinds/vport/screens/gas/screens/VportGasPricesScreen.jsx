@@ -15,7 +15,7 @@ export function VportGasPricesScreen({ actorId: actorIdProp }) {
   }, [actorIdProp, params]);
 
   if (!actorId) {
-    return <div className="p-6 text-sm text-neutral-400">Invalid station.</div>;
+    return <div className="p-6 text-sm text-white/50">Invalid station.</div>;
   }
 
   return (

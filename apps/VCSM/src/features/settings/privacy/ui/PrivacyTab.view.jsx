@@ -22,8 +22,8 @@ export default function PrivacyTabView() {
   if (!actorProps) {
     return (
       <section className="settings-card-surface rounded-xl p-4">
-        <div className="text-sm text-slate-300">Preparing your identity...</div>
-        <div className="text-xs text-slate-500">Privacy controls will load shortly.</div>
+        <div className="text-sm text-white/70">Preparing your identity...</div>
+        <div className="text-xs text-white/40">Privacy controls will load shortly.</div>
       </section>
     )
   }
@@ -40,26 +40,26 @@ export default function PrivacyTabView() {
     <MyBlocksProvider {...actorProps}>
       <div className="space-y-4">
         <section className="settings-card-surface rounded-xl p-4">
-          <div className="mb-3 text-sm text-slate-300">{visibilityHelp}</div>
+          <div className="mb-3 text-sm text-white/70">{visibilityHelp}</div>
 
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-semibold text-slate-100">{visibilityTitle}</h3>
-              <div className="text-xs text-slate-400">Public (default) or Private</div>
+              <h3 className="text-sm font-semibold text-white">{visibilityTitle}</h3>
+              <div className="text-xs text-white/50">Public (default) or Private</div>
             </div>
             <ProfilePrivacyToggle actorId={actorId} />
           </div>
         </section>
 
         <section className="settings-card-surface rounded-xl p-4">
-          <h3 className="mb-1 text-sm font-semibold text-slate-100">{lookupTitle}</h3>
+          <h3 className="mb-1 text-sm font-semibold text-white">{lookupTitle}</h3>
           <UserLookup />
         </section>
 
         <PendingFollowRequests actorId={actorId} />
 
         <section className="settings-card-surface rounded-xl p-4">
-          <h3 className="mb-1 text-sm font-semibold text-slate-100">{blockedTitle}</h3>
+          <h3 className="mb-1 text-sm font-semibold text-white">{blockedTitle}</h3>
           <BlockedUsersSimple />
         </section>
       </div>

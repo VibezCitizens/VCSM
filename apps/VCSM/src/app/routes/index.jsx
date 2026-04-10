@@ -11,6 +11,7 @@ import RootLayout from "@/app/layout/RootLayout";
 import { resolveRealm } from "@/shared/utils/resolveRealm";
 
 import { authPublicRoutes } from "@/app/routes/public/auth.routes";
+import { legalPublicRoutes } from "@/app/routes/public/legal.routes";
 import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
 import { protectedAppRoutes } from "@/app/routes/protected/app.routes";
@@ -33,6 +34,9 @@ function lazyWithLog(label, importer) {
 // ============================================================================
 // LAZY SCREENS (KEEP THESE DEFINED IN THIS FILE SCOPE)
 // ============================================================================
+
+/* ================= LEGAL (static — no lazy flash on navigation) ================= */
+import LegalDocumentScreen from "@/features/legal/screens/LegalDocumentScreen";
 
 /* ================= AUTH ================= */
 const LoginScreen = lazyWithLog("LoginScreen", () =>
@@ -375,6 +379,10 @@ export default function AppRoutes() {
       RegisterScreen,
       ResetPasswordScreen,
       OnboardingScreen,
+    }),
+
+    ...legalPublicRoutes({
+      LegalDocumentScreen,
     }),
 
     ...wandersPublicRoutes({

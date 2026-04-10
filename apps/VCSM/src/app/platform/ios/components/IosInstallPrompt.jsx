@@ -47,7 +47,7 @@ export default function IosInstallPrompt({ open, onClose }) {
             "
           >
             <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-cyan-400/20 blur-3xl" />
-            <div className="pointer-events-none absolute -left-16 -bottom-16 h-40 w-40 rounded-full bg-indigo-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute -left-16 -bottom-16 h-40 w-40 rounded-full bg-purple-400/15 blur-3xl" />
 
             <button
               type="button"
@@ -69,13 +69,13 @@ export default function IosInstallPrompt({ open, onClose }) {
               <h2 className="mt-3 text-xl font-semibold sm:text-2xl">
                 Install Vibez Citizens
               </h2>
-              <p className="mt-2 text-sm text-slate-200/80">
+              <p className="mt-2 text-sm text-white/80">
                 Add it to your Home Screen for a faster launch, full-screen feel, and a cleaner app-like experience.
               </p>
             </div>
 
             <div className="relative mb-4 overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03] p-3">
-              <div className="flex items-center gap-2 text-xs text-slate-200/85">
+              <div className="flex items-center gap-2 text-xs text-white/85">
                 <Sparkles size={14} className="text-cyan-200" />
                 Works best in Safari on iPhone
               </div>

@@ -31,6 +31,7 @@ export default function CommentHeader({
         showTimestamp={Boolean(timestamp)}
         timestamp={timestamp}
         avatarSize="w-9 h-9"
+        avatarShape="rounded-lg"
       />
 
       {showMenu && (
@@ -44,7 +45,7 @@ export default function CommentHeader({
               anchorRect: rect,
             });
           }}
-          className="text-slate-500 hover:text-slate-100 text-lg px-2"
+          className="text-white/40 hover:text-white text-lg px-2"
           type="button"
           aria-label="Comment options"
         >

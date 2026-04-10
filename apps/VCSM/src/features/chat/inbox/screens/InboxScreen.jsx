@@ -94,7 +94,7 @@ export default function InboxScreen() {
               'linear-gradient(180deg, rgba(4,6,14,0.6) 0%, rgba(4,6,14,0.22) 68%, rgba(4,6,14,0) 100%)',
           }}
         >
-          <h1 className="text-lg font-semibold text-slate-100">
+          <h1 className="text-lg font-semibold text-white">
             {actorKind === 'vport' ? 'Vport Vox' : actorKind === 'void' ? 'Void Vox' : 'Vox'}
           </h1>
 
@@ -103,7 +103,7 @@ export default function InboxScreen() {
               type="button"
               ref={actionsToggleRef}
               onClick={() => setActionsOpen((v) => !v)}
-              className="flex items-center justify-center p-1 text-slate-100 transition hover:text-white"
+              className="flex items-center justify-center p-1 text-white transition hover:text-white"
               aria-label="Vox actions"
             >
               <Plus size={22} strokeWidth={2.25} />
@@ -120,7 +120,7 @@ export default function InboxScreen() {
 
                 <div
                   ref={actionsMenuRef}
-                  className="chat-modern-quick-actions absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/96 shadow-2xl"
+                  className="chat-modern-quick-actions absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-white/4/96 shadow-2xl"
                 >
                   <button
                     type="button"
@@ -128,7 +128,7 @@ export default function InboxScreen() {
                       setActionsOpen(false)
                       setStartOpen(true)
                     }}
-                    className="w-full px-4 py-3 text-left text-slate-100 hover:bg-white/10"
+                    className="w-full px-4 py-3 text-left text-white hover:bg-white/10"
                   >
                     New Vox
                   </button>
@@ -141,7 +141,7 @@ export default function InboxScreen() {
                       setActionsOpen(false)
                       navigate('/chat/settings')
                     }}
-                    className="w-full px-4 py-3 text-left text-slate-100 hover:bg-white/10"
+                    className="w-full px-4 py-3 text-left text-white hover:bg-white/10"
                   >
                     More actions
                   </button>

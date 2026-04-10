@@ -75,7 +75,7 @@ export default function HoursEditor({ value, onChange, disabled }) {
     return (
       <div className="settings-card-surface rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold text-slate-100">Business Hours</div>
+          <div className="text-sm font-semibold text-white">Business Hours</div>
 
           <button
             type="button"
@@ -87,7 +87,7 @@ export default function HoursEditor({ value, onChange, disabled }) {
           </button>
         </div>
 
-        <div className="text-sm text-slate-400">
+        <div className="text-sm text-white/50">
           This business is open 24 hours a day.
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function HoursEditor({ value, onChange, disabled }) {
   return (
     <div className="settings-card-surface rounded-xl p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-semibold text-slate-100">Business Hours</div>
+        <div className="text-sm font-semibold text-white">Business Hours</div>
 
         <button
           type="button"
@@ -118,10 +118,10 @@ export default function HoursEditor({ value, onChange, disabled }) {
             key={d.key}
             className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center"
           >
-            <div className="text-sm text-slate-300">{d.label}</div>
+            <div className="text-sm text-white/70">{d.label}</div>
 
             {isClosed ? (
-              <div className="text-xs text-slate-500 col-span-2">Closed</div>
+              <div className="text-xs text-white/40 col-span-2">Closed</div>
             ) : (
               <>
                 <input

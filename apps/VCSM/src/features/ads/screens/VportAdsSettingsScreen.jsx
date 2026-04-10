@@ -54,8 +54,8 @@ export default function VportAdsSettingsScreen() {
   };
 
   const content = (
-    <div className="settings-modern-page relative min-h-[100dvh] w-full overflow-y-auto text-slate-100">
-      <header className="sticky top-0 z-20 border-b border-slate-300/10 bg-[#060914]/72 backdrop-blur">
+    <div className="settings-modern-page relative min-h-[100dvh] w-full overflow-y-auto text-white">
+      <header className="sticky top-0 z-20 border-b border-white/8 bg-[#060914]/72 backdrop-blur">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             <VportAdsBackButton
@@ -63,8 +63,8 @@ export default function VportAdsSettingsScreen() {
               onClick={() => navigate(-1)}
               style={shell.btn("soft")}
             />
-            <div className="inline-flex items-center gap-2 text-sm font-semibold text-slate-100">
-              <Megaphone className="h-4 w-4 text-indigo-300" />
+            <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
+              <Megaphone className="h-4 w-4 text-purple-300" />
               VPORT Ads Pipeline
             </div>
           </div>
@@ -79,15 +79,15 @@ export default function VportAdsSettingsScreen() {
       <main className="mx-auto grid w-full max-w-4xl gap-4 px-4 pb-24 pt-4 lg:grid-cols-[300px_minmax(0,1fr)]">
         <section className="space-y-3">
           <div className="settings-card-surface rounded-2xl px-4 py-3">
-            <div className="text-xs uppercase tracking-wide text-slate-400">Monetization</div>
-            <div className="mt-1 text-sm font-semibold text-slate-100">Coming soon</div>
-            <div className="mt-1 text-xs text-slate-400">
+            <div className="text-xs uppercase tracking-wide text-white/50">Monetization</div>
+            <div className="mt-1 text-sm font-semibold text-white">Coming soon</div>
+            <div className="mt-1 text-xs text-white/50">
               Ads can be created and managed now. Pricing and payout controls will be enabled later.
             </div>
           </div>
 
           {loading ? (
-            <div className="settings-card-surface rounded-2xl px-4 py-4 text-sm text-slate-400">Loading ads...</div>
+            <div className="settings-card-surface rounded-2xl px-4 py-4 text-sm text-white/50">Loading ads...</div>
           ) : ads.length === 0 ? (
             <AdsEmptyState onCreate={onCreate} />
           ) : (
@@ -111,7 +111,7 @@ export default function VportAdsSettingsScreen() {
           ) : null}
 
           {!ads.length && !draft ? (
-            <div className="settings-card-surface rounded-2xl px-4 py-8 text-center text-sm text-slate-400">
+            <div className="settings-card-surface rounded-2xl px-4 py-8 text-center text-sm text-white/50">
               Create an ad to open the editor.
             </div>
           ) : (

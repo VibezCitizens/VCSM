@@ -24,12 +24,12 @@ export default function ShareModal({
       <div className="absolute inset-0 bg-black/70" />
 
       {/* modal */}
-      <div className="relative w-[92%] max-w-md rounded-2xl border border-neutral-800 bg-neutral-900 p-4 shadow-xl">
+      <div className="relative w-[92%] max-w-md rounded-2xl border border-white/10 bg-white/4 p-4 shadow-xl">
         <div className="flex items-center justify-between">
           <div className="text-white font-semibold">{title}</div>
           <button
             type="button"
-            className="text-neutral-400 hover:text-white"
+            className="text-white/50 hover:text-white"
             onClick={onClose}
             aria-label="Close"
           >
@@ -37,7 +37,7 @@ export default function ShareModal({
           </button>
         </div>
 
-        <div className="mt-3 text-sm text-neutral-300">
+        <div className="mt-3 text-sm text-white/70">
           Share this link
         </div>
 
@@ -46,15 +46,15 @@ export default function ShareModal({
             readOnly
             value={url}
             className="
-              w-full rounded-lg bg-neutral-800
+              w-full rounded-lg bg-white/6
               border border-neutral-700
-              px-3 py-2 text-sm text-neutral-100
+              px-3 py-2 text-sm text-white/95
             "
           />
           <button
             type="button"
             className="
-              rounded-lg bg-neutral-200 text-neutral-900
+              rounded-lg bg-white/20 text-black
               px-3 py-2 text-sm font-medium
               hover:bg-white
             "
@@ -75,8 +75,8 @@ export default function ShareModal({
             type="button"
             className="
               rounded-lg border border-neutral-700
-              px-3 py-2 text-sm text-neutral-200
-              hover:bg-neutral-800
+              px-3 py-2 text-sm text-white/85
+              hover:bg-white/6
             "
             onClick={onClose}
           >

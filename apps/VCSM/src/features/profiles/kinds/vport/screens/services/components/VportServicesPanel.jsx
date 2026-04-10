@@ -1,5 +1,6 @@
 // src/features/profiles/kinds/vport/screens/services/components/VportServicesPanel.jsx
 import React, { useMemo } from "react";
+import { SkeletonRow } from "@/shared/components/Skeleton";
 import VportServicesHeader from "./VportServicesHeader";
 import VportServicesEmptyState from "./VportServicesEmptyState";
 import VportServicesCategorySection from "./VportServicesCategorySection";
@@ -53,8 +54,8 @@ export default function VportServicesPanel({
       />
 
       {loading ? (
-        <div className="profiles-subcard rounded-3xl border border-white/12 bg-white/[0.02] p-5 text-sm profiles-muted">
-          Loading services...
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={`svc-skel:${i}`} />)}
         </div>
       ) : null}
 

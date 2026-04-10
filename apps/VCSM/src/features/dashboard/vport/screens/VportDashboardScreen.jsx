@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react";
+import { SkeletonCardList } from "@/shared/components/Skeleton";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -110,9 +111,9 @@ export function VportDashboardScreen() {
   );
 
   if (!actorId) return null;
-  if (identityLoading) return <div className="p-10 text-center text-neutral-400">Loading...</div>;
-  if (!identity) return <div className="p-10 text-center text-neutral-400">Sign in required.</div>;
-  if (!isOwner) return <div className="p-10 text-center text-neutral-400">You can only access the dashboard for your own vport.</div>;
+  if (identityLoading) return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
+  if (!identity) return <div className="p-10 text-center text-white/50">Sign in required.</div>;
+  if (!isOwner) return <div className="p-10 text-center text-white/50">You can only access the dashboard for your own vport.</div>;
 
   const shell = createVportDashboardShellStyles({
     isDesktop,
@@ -124,7 +125,7 @@ export function VportDashboardScreen() {
       <div style={shell.container}>
         <div style={shell.headerWrap}>
           <div style={shell.topBar}>
-            <VportBackButton isDesktop={isDesktop} onClick={goBack} style={shell.btn("soft")} />
+            <VportBackButton isDesktop={isDesktop} onClick={goBack} />
             <div style={shell.title}>VPORT DASHBOARD</div>
             <div style={shell.rightSpacer} />
           </div>

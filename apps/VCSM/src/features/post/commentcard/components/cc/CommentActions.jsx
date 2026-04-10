@@ -7,7 +7,7 @@ export default function CommentActions({
   onReply,
 }) {
   return (
-    <div className="mt-2 flex items-center gap-6 text-xs text-slate-300">
+    <div className="mt-2 flex items-center gap-6 text-xs text-white/70">
       {canLike && (
         <button
           onClick={onLike}
@@ -15,7 +15,7 @@ export default function CommentActions({
             flex items-center gap-1.5 transition
             ${liked
               ? "text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.45)]"
-              : "text-slate-300 hover:text-rose-300"}
+              : "text-white/70 hover:text-rose-300"}
           `}
           type="button"
         >
@@ -29,7 +29,7 @@ export default function CommentActions({
       {canReply && (
         <button
           onClick={onReply}
-          className="text-slate-300 hover:text-slate-100 transition"
+          className="text-white/70 hover:text-white transition"
           type="button"
         >
           Reply

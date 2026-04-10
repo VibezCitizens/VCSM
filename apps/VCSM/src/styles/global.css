@@ -20,10 +20,10 @@ body {
   min-height: 100%;
   font-family: 'Inter', sans-serif;
   background:
-    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
-    #050814;
-  color: #e5e7eb;
+    radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a), transparent 60%),
+    radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b), transparent 60%),
+    var(--vc-bg-0);
+  color: var(--vc-text-soft);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -53,9 +53,9 @@ body {
 
 .vc-dynamic-gradient {
   background:
-    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
-    #050814;
+    radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a), transparent 60%),
+    radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b), transparent 60%),
+    var(--vc-bg-0);
 }
 
 :root {

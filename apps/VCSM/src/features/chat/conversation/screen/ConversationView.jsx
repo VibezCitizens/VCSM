@@ -141,7 +141,7 @@ export default function ConversationView({ conversationId }) {
       </div>
     )
   }
-  if (!canReadConversation({ actorId, members })) return <div className="p-4 text-slate-400">Access denied</div>
+  if (!canReadConversation({ actorId, members })) return <div className="p-4 text-white/50">Access denied</div>
 
   // ✅ EDITING IS DRIVEN BY `editing` (not `menu`)
   const isEditing = !!editing

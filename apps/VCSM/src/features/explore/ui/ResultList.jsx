@@ -4,6 +4,7 @@ import ActorSearchResultRow from './ActorSearchResultRow'
 import WanderCardSearch from '@/features/explore/ui/features/WanderCardSearch'
 import EmptyState from '@/features/explore/ui/EmptyState'
 import FeaturedResultCard from './FeaturedResultCard'
+import { SkeletonRow } from '@/shared/components/Skeleton'
 
 export default function ResultList({ query, filter }) {
   const { identity } = useIdentity()
@@ -11,7 +12,7 @@ export default function ResultList({ query, filter }) {
   const { items, loading } = useSearchTabsActor({ query, filter, viewerActorId })
 
   if (!query) return null
-  if (loading) return <div className="text-center text-slate-400">Loading...</div>
+  if (loading) return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={`sr:${i}`} />)}</div>
   if (!items?.length) return <EmptyState />
 
   const [featured, ...rest] = items

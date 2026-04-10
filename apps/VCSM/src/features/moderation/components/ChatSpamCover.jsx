@@ -38,7 +38,7 @@ export default function ChatSpamCover({
 
       {/* center card */}
       <div className="absolute inset-0 flex items-center justify-center px-4">
-        <div className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-neutral-950/70 shadow-2xl backdrop-blur-[10px] text-center px-5 py-5">
+        <div className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-black/70 shadow-2xl backdrop-blur-[10px] text-center px-5 py-5">
           {/* purple ambient glow */}
           <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-10 h-24 w-[70%] rounded-full blur-2xl opacity-45 [background:radial-gradient(circle,rgba(168,85,247,0.55),transparent_70%)]" />
 

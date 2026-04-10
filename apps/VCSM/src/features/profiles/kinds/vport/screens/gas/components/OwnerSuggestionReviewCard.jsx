@@ -36,16 +36,16 @@ export function OwnerSuggestionReviewCard({
   }, [submission?.proposedPrice, officialPrice?.price]);
 
   return (
-    <div className="rounded-2xl border border-neutral-800 bg-neutral-950 p-4">
+    <div className="rounded-2xl border border-white/10 bg-black p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-sm font-semibold text-white">
-            Fuel: <span className="text-neutral-200">{submission?.fuelKey}</span>
+            Fuel: <span className="text-white/85">{submission?.fuelKey}</span>
           </div>
-          <div className="mt-1 text-xs text-neutral-400">
-            Submitted: <span className="text-neutral-200">{submittedAt}</span>
+          <div className="mt-1 text-xs text-white/50">
+            Submitted: <span className="text-white/85">{submittedAt}</span>
           </div>
-          <div className="mt-2 text-sm text-neutral-200">
+          <div className="mt-2 text-sm text-white/85">
             Proposed:{" "}
             <span className="font-semibold text-white">
               {submission?.proposedPrice} {submission?.currencyCode}/{submission?.unit}
@@ -53,18 +53,18 @@ export function OwnerSuggestionReviewCard({
           </div>
 
           {officialPrice?.price != null ? (
-            <div className="mt-1 text-sm text-neutral-300">
+            <div className="mt-1 text-sm text-white/70">
               Official:{" "}
-              <span className="text-neutral-100">
+              <span className="text-white/95">
                 {officialPrice.price} {officialPrice.currencyCode}/{officialPrice.unit}
               </span>
             </div>
           ) : (
-            <div className="mt-1 text-sm text-neutral-400">Official: —</div>
+            <div className="mt-1 text-sm text-white/50">Official: —</div>
           )}
 
           {delta ? (
-            <div className="mt-1 text-xs text-neutral-400">
+            <div className="mt-1 text-xs text-white/50">
               Δ {delta.abs >= 0 ? "+" : ""}
               {delta.abs.toFixed(3)}
               {delta.pct != null ? (
@@ -99,13 +99,13 @@ export function OwnerSuggestionReviewCard({
       </div>
 
       <div className="mt-4">
-        <label className="block text-xs text-neutral-400">Reason (optional)</label>
+        <label className="block text-xs text-white/50">Reason (optional)</label>
         <input
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           className="
             mt-2 w-full px-4 py-2 pr-10
-            rounded-2xl bg-neutral-900 text-white
+            rounded-2xl bg-white/4 text-white
             border border-purple-700
             focus:ring-2 focus:ring-purple-500
           "

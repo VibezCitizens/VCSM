@@ -1,5 +1,6 @@
 import { CheckCircle2, Eye, EyeOff, XCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import ConsentCheckbox from './ConsentCheckbox'
 
 function inputClass() {
   return [
@@ -31,6 +32,8 @@ function PasswordRuleItem({ label, valid }) {
 
 export default function RegisterFormCard({
   form,
+  termsAccepted,
+  consentError,
   loading,
   errorMessage,
   successMessage,
@@ -44,6 +47,7 @@ export default function RegisterFormCard({
   onInputChange,
   onSubmit,
   onBackClick,
+  onToggleTermsAccepted,
   onTogglePassword,
   onToggleConfirmPassword,
 }) {
@@ -192,6 +196,39 @@ export default function RegisterFormCard({
                     <XCircle size={14} aria-hidden="true" />
                   )}
                   <span>{confirmPasswordState.message}</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5 pt-1">
+              <ConsentCheckbox checked={termsAccepted} onChange={onToggleTermsAccepted}>
+                I agree to the{' '}
+                <Link
+                  to="/legal/terms-of-service"
+                  target="_blank"
+                  className="font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
+                >
+                  Terms of Service
+                </Link>
+                {' '}and{' '}
+                <Link
+                  to="/legal/privacy-policy"
+                  target="_blank"
+                  className="font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
+                >
+                  Privacy Policy
+                </Link>
+                {' '}and confirm that I am at least 18 years old.
+              </ConsentCheckbox>
+
+              {consentError ? (
+                <div
+                  className="flex items-start gap-2 pl-[30px] text-xs text-[#ef4444]"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  <XCircle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+                  <span>{consentError}</span>
                 </div>
               ) : null}
             </div>

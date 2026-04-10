@@ -19,7 +19,7 @@ export default function Backbutton({
     <button
       type="button"
       onClick={handleBack}
-      className={`flex items-center gap-2 text-sm text-neutral-300 hover:text-white transition ${className}`}
+      className={`flex items-center gap-2 text-sm text-white/70 hover:text-white transition ${className}`}
     >
       {/* Back Arrow Icon */}
       <svg

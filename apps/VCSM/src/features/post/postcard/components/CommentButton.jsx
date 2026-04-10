@@ -12,7 +12,7 @@ export default function CommentButton({ count = 0, onClick }) {
       aria-label="Comments"
     >
       <span>{`\uD83D\uDCAC`}</span>
-      <span className="text-sm text-slate-300 font-medium">{count}</span>
+      <span className="text-sm text-white/70 font-medium">{count}</span>
     </button>
   );
 }

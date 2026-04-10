@@ -42,7 +42,7 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
       <div className="profiles-tags-card p-5">
         <div className="flex items-center justify-between gap-3">
           <h3 className="profiles-tags-title">Tags</h3>
-          <span className="text-[11px] uppercase tracking-[0.14em] text-slate-300/70">
+          <span className="text-[11px] uppercase tracking-[0.14em] text-white/70/70">
             {tags.length} selected
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
                 )
               })
             ) : (
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300/75">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70/75">
                 No tags yet
               </span>
             )}

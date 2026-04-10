@@ -55,18 +55,19 @@ function CommentsSkeletonList({ count = 4 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={`comment-skeleton:${i}`}
-          className="rounded-2xl border border-violet-300/10 bg-[#0d0a18]/70 px-3 py-3"
+          className="rounded-2xl border border-white/6 px-3 py-3"
+          style={{ background: 'var(--vc-card-bg)' }}
         >
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 animate-pulse rounded-xl bg-neutral-800" />
+            <div className="h-10 w-10 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.08)' }} />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3 w-28 animate-pulse rounded bg-neutral-800" />
-              <div className="h-2 w-20 animate-pulse rounded bg-neutral-800/80" />
+              <div className="h-3 w-28 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.1)' }} />
+              <div className="h-2 w-20 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.07)' }} />
             </div>
           </div>
           <div className="mt-3 space-y-2 pl-[52px]">
-            <div className="h-3 w-11/12 animate-pulse rounded bg-neutral-800" />
-            <div className="h-3 w-8/12 animate-pulse rounded bg-neutral-800/80" />
+            <div className="h-3 w-11/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.08)' }} />
+            <div className="h-3 w-8/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.06)' }} />
           </div>
         </div>
       ))}
@@ -284,7 +285,7 @@ export default function PostDetailView() {
   }
 
   if (!post) {
-    return <div className="p-6 text-center text-neutral-500">Vibes not found</div>;
+    return <div className="p-6 text-center text-white/40">Vibes not found</div>;
   }
 
   const isCovered =
@@ -325,7 +326,7 @@ export default function PostDetailView() {
         </div>
 
         <div className="post-subcard profiles-card sparks-shell rounded-2xl border">
-          <div className="sparks-header px-4 py-3 border-b border-violet-300/10 text-sm text-slate-300">
+          <div className="sparks-header px-4 py-3 border-b border-white/8 text-sm" style={{ color: 'var(--vc-text-soft)' }}>
             Sparks
           </div>
 
@@ -335,7 +336,7 @@ export default function PostDetailView() {
             )}
 
             {!thread.loading && thread.comments.length === 0 && (
-              <div className="py-6 text-center text-neutral-500 text-sm">
+              <div className="py-6 text-center text-white/40 text-sm">
                 No sparks yet. Be the first.
               </div>
             )}
@@ -373,15 +374,15 @@ export default function PostDetailView() {
               )}
 
               {isIOS && (
-                <div className="px-3 py-3 border-t border-violet-300/10 bg-[#0f0c1a]/70 flex justify-end">
+                <div className="px-3 py-3 border-t border-white/8 flex justify-end" style={{ background: 'var(--vc-surface)' }}>
                   <button
                     type="button"
                     onClick={openCompose}
                     disabled={thread.posting}
                     className={
                       thread.posting
-                        ? "bg-neutral-800 text-neutral-500 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
-                        : "bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400 text-white px-4 py-1.5 rounded-full text-sm shadow-[0_0_14px_rgba(196,124,255,0.45)]"
+                        ? "bg-white/10 text-white/40 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
+                        : "bg-[#8b5cf6] hover:bg-[#a78bfa] text-white px-4 py-1.5 rounded-full text-sm shadow-[0_0_14px_rgba(139,92,246,0.45)]"
                     }
                   >
                     Spark

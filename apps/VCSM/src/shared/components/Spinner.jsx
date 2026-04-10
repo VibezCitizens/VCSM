@@ -12,7 +12,7 @@ export default function Spinner({ size = 30, label = '', className = '' }) {
         <span className="absolute inset-[34%] rounded-full bg-violet-300/80 animate-pulse" />
       </span>
 
-      {label ? <span className="text-sm text-slate-300">{label}</span> : null}
+      {label ? <span className="text-sm text-white/70">{label}</span> : null}
     </div>
   )
 }

@@ -51,13 +51,13 @@ export default function PortfolioEmptyState({
         </div>
 
         <aside className="profiles-portfolio-empty-aside">
-          <div className="flex items-center gap-2 text-slate-100">
+          <div className="flex items-center gap-2 text-white">
             <BriefcaseBusiness size={15} />
             <span className="text-sm font-semibold">Published services</span>
           </div>
 
           {servicesLoading ? (
-            <div className="mt-4 text-sm text-slate-300/70">Loading services...</div>
+            <div className="mt-4 text-sm text-white/70/70">Loading services...</div>
           ) : servicePreview.length ? (
             <>
               <div className="mt-4 flex flex-wrap gap-2">

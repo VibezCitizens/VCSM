@@ -52,8 +52,8 @@ export default function EditPostScreen() {
     <div className="module-modern-page post-modern profiles-modern h-full w-full overflow-y-auto touch-auto">
       <div className="mx-auto w-full max-w-2xl px-4 pb-28 pt-4">
         <div className="post-card module-modern-shell rounded-2xl p-4 sm:p-5">
-          <h1 className="text-lg font-semibold text-slate-100">Edit Vibe</h1>
-          <p className="mt-1 text-xs text-slate-400">Update your caption text.</p>
+          <h1 className="text-lg font-semibold text-white">Edit Vibe</h1>
+          <p className="mt-1 text-xs text-white/50">Update your caption text.</p>
 
           <textarea
             value={text}

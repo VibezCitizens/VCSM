@@ -122,7 +122,7 @@ export default function UploadScreenModern({ onSubmit }) {
             />
 
             {media.error && (
-              <div className="upload-subcard mt-3 px-3 py-2 text-rose-300 text-sm">
+              <div className="upload-subcard mt-3 rounded-xl border border-[#ef4444]/20 bg-[#ef4444]/8 px-3 py-2 text-sm text-[#fecaca]">
                 {media.error}
               </div>
             )}
@@ -146,7 +146,7 @@ export default function UploadScreenModern({ onSubmit }) {
             />
 
             {isVibes && media.files.length >= MAX_VIBES_PHOTOS && (
-              <div className="mt-4 text-center text-xs text-slate-400">
+              <div className="mt-4 text-center text-xs" style={{ color: 'var(--vc-text-muted)' }}>
                 You can upload up to {MAX_VIBES_PHOTOS} photos at a time.
               </div>
             )}

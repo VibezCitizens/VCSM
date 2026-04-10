@@ -7,7 +7,7 @@
 
 export const WANDERS_INPUT_BAR_CLASS = `
 w-full px-4 py-2 pr-10
-rounded-2xl bg-neutral-900 text-white
+rounded-2xl bg-white/4 text-white
 border border-purple-700
 focus:ring-2 focus:ring-purple-500
 `.trim();

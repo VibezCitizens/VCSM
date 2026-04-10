@@ -5,10 +5,10 @@ import useOnboardingVibeTags from '@/features/onboarding/hooks/useOnboardingVibe
 function VibeTagsSkeleton() {
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-4">
-      <div className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-4 space-y-3">
-        <div className="h-5 w-44 animate-pulse rounded bg-slate-700/50" />
-        <div className="h-4 w-10/12 animate-pulse rounded bg-slate-700/40" />
-        <div className="h-20 animate-pulse rounded bg-slate-800/60" />
+      <div className="rounded-2xl border border-white/10 bg-white/4/60 p-4 space-y-3">
+        <div className="h-5 w-44 animate-pulse rounded bg-white/8" />
+        <div className="h-4 w-10/12 animate-pulse rounded bg-white/6" />
+        <div className="h-20 animate-pulse rounded bg-white/6/60" />
       </div>
     </div>
   )
@@ -32,12 +32,12 @@ export default function CitizenVibesScreen() {
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-4">
-      <header className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-4">
-        <h1 className="text-lg font-semibold text-slate-100">Set your vibe tags</h1>
-        <p className="mt-1 text-sm text-slate-300">
+      <header className="rounded-2xl border border-white/10 bg-white/4/60 p-4">
+        <h1 className="text-lg font-semibold text-white">Set your vibe tags</h1>
+        <p className="mt-1 text-sm text-white/70">
           Pick tags that represent you. You can update these later.
         </p>
-        <p className="mt-2 text-xs text-slate-400">{selectedCount} selected</p>
+        <p className="mt-2 text-xs text-white/50">{selectedCount} selected</p>
       </header>
 
       {errorMessage && (
@@ -58,14 +58,14 @@ export default function CitizenVibesScreen() {
         <button
           type="button"
           onClick={reload}
-          className="rounded-xl bg-slate-800 px-3 py-2 text-xs text-slate-200"
+          className="rounded-xl bg-white/6 px-3 py-2 text-xs text-white/90"
         >
           Reload
         </button>
         <button
           type="button"
           onClick={() => navigate('/explore')}
-          className="rounded-xl bg-slate-700 px-3 py-2 text-xs text-slate-200"
+          className="rounded-xl bg-white/8 px-3 py-2 text-xs text-white/90"
         >
           Back
         </button>

@@ -1,7 +1,7 @@
 .profiles-modern .profiles-booking-panel-shell {
   border-radius: 1rem;
-  border: 1px solid rgba(141, 167, 243, 0.26);
-  background: rgba(10, 16, 37, 0.72);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
   padding: 0.82rem;
   display: grid;
   gap: 0.75rem;
@@ -54,9 +54,9 @@
 }
 
 .profiles-modern .profiles-booking-slot-btn {
-  border: 1px solid rgba(145, 173, 246, 0.28);
+  border: 1px solid var(--vc-border);
   border-radius: 9999px;
-  background: rgba(9, 17, 38, 0.74);
+  background: var(--vc-surface-input);
   color: #dce8ff;
   padding: 0.27rem 0.58rem;
   font-size: 0.68rem;
@@ -94,8 +94,8 @@
 .profiles-modern .profiles-booking-owner-input {
   width: 100%;
   border-radius: 0.72rem;
-  border: 1px solid rgba(145, 173, 246, 0.28);
-  background: rgba(9, 17, 38, 0.74);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
   color: #ecf4ff;
   padding: 0.52rem 0.62rem;
   font-size: 0.74rem;
@@ -114,7 +114,7 @@
 .profiles-modern .profiles-booking-owner-follower-results {
   display: grid;
   gap: 0.24rem;
-  border: 1px solid rgba(139, 170, 246, 0.24);
+  border: 1px solid var(--vc-border);
   border-radius: 0.72rem;
   background: rgba(7, 14, 34, 0.92);
   padding: 0.3rem;
@@ -244,8 +244,8 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: 0.8rem;
-  border: 1px solid rgba(136, 168, 243, 0.24);
-  background: rgba(8, 13, 29, 0.72);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
   padding: 0.58rem 0.7rem;
 }
 
@@ -371,7 +371,7 @@
 
 .profiles-modern .profiles-booking-status-badge {
   border-radius: 9999px;
-  border: 1px solid rgba(146, 170, 231, 0.36);
+  border: 1px solid var(--vc-border);
   background: rgba(9, 17, 37, 0.8);
   text-align: center;
   padding: 0.28rem 0.56rem;
@@ -408,8 +408,8 @@
   align-items: center;
   gap: 0.55rem;
   border-radius: 0.82rem;
-  border: 1px solid rgba(134, 165, 237, 0.24);
-  background: rgba(8, 14, 30, 0.7);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
   padding: 0.56rem 0.62rem;
 }
 
@@ -462,9 +462,9 @@
 }
 
 .profiles-modern .profiles-booking-slot-pill {
-  border: 1px solid rgba(145, 173, 246, 0.28);
+  border: 1px solid var(--vc-border);
   border-radius: 9999px;
-  background: rgba(9, 17, 38, 0.74);
+  background: var(--vc-surface-input);
   color: #dce8ff;
   padding: 0.2rem 0.5rem;
   font-size: 0.64rem;

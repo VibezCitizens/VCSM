@@ -42,15 +42,15 @@ export default function BlockedState({
         px-4
         text-center
         rounded-xl
-        border border-neutral-800
-        bg-neutral-900/60
+        border border-white/10
+        bg-white/4/60
       "
     >
       {/* Icon */}
-      <Lock className="w-6 h-6 text-neutral-500" />
+      <Lock className="w-6 h-6 text-white/40" />
 
       {/* Message */}
-      <p className="text-sm text-neutral-400 max-w-sm">
+      <p className="text-sm text-white/50 max-w-sm">
         {label}
       </p>
 

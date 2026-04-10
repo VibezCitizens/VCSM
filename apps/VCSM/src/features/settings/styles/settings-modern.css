@@ -1,39 +1,38 @@
 .settings-modern-page {
-  --settings-bg-a: #050816;
-  --settings-bg-b: #0b1230;
-  --settings-surface: rgba(14, 21, 45, 0.74);
-  --settings-surface-strong: rgba(20, 31, 61, 0.88);
-  --settings-border: rgba(138, 171, 255, 0.24);
-  --settings-text: #edf3ff;
-  --settings-muted: #aab8db;
-  --settings-accent-a: #9d6cff;
-  --settings-accent-b: #4ea3ff;
-  --settings-danger-a: rgba(190, 24, 93, 0.7);
-  --settings-danger-b: rgba(220, 38, 38, 0.72);
+  --settings-bg-a: var(--vc-bg-0);
+  --settings-bg-b: var(--vc-bg-1);
+  --settings-surface: var(--vc-surface);
+  --settings-surface-strong: var(--vc-surface-strong);
+  --settings-border: var(--vc-border);
+  --settings-text: var(--vc-text);
+  --settings-muted: var(--vc-text-muted);
+  --settings-accent-a: var(--vc-accent-primary);
+  --settings-accent-b: var(--vc-accent-secondary);
+  --settings-danger-a: var(--vc-danger-a);
+  --settings-danger-b: var(--vc-danger-b);
 
   background:
-    radial-gradient(860px 380px at 50% -220px, rgba(96, 97, 241, 0.26), transparent 72%),
-    radial-gradient(620px 260px at 6% 0%, rgba(176, 80, 255, 0.16), transparent 74%),
-    radial-gradient(520px 220px at 94% 8%, rgba(64, 151, 255, 0.17), transparent 74%),
-    linear-gradient(180deg, var(--settings-bg-b), var(--settings-bg-a) 55%);
+    radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a), transparent 60%),
+    radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b), transparent 60%),
+    var(--settings-bg-a);
   color: var(--settings-text);
 }
 
 .settings-shell {
   border: 1px solid var(--settings-border);
-  background: linear-gradient(180deg, rgba(19, 27, 52, 0.82), rgba(9, 14, 28, 0.88));
-  box-shadow: 0 24px 45px rgba(0, 0, 0, 0.38), 0 0 22px rgba(87, 134, 255, 0.12);
+  background: var(--vc-card-bg);
+  box-shadow: var(--vc-shadow-elevated);
 }
 
 .settings-tablist {
-  border: 1px solid rgba(145, 177, 255, 0.2);
-  background: rgba(12, 18, 40, 0.72);
-  backdrop-filter: blur(10px);
+  border: 1px solid var(--vc-border-subtle);
+  background: var(--vc-surface);
+  backdrop-filter: var(--vc-backdrop-blur);
 }
 
 .settings-tab {
   position: relative;
-  color: #cddaf7;
+  color: var(--vc-text-muted);
 }
 
 .settings-tab:hover {
@@ -42,9 +41,9 @@
 }
 
 .settings-tab--active {
-  color: #f8fbff;
-  background: linear-gradient(90deg, rgba(103, 94, 243, 0.92), rgba(164, 87, 247, 0.84), rgba(81, 166, 255, 0.8));
-  box-shadow: 0 0 20px rgba(129, 140, 248, 0.34);
+  color: #fff;
+  background: linear-gradient(90deg, var(--vc-accent-primary), rgba(167, 139, 250, 0.88));
+  box-shadow: var(--vc-shadow-glow);
 }
 
 .settings-tab--active::after {
@@ -56,29 +55,29 @@
   height: 2px;
   border-radius: 9999px;
   background: linear-gradient(90deg, var(--settings-accent-a), var(--settings-accent-b));
-  box-shadow: 0 0 14px rgba(109, 159, 255, 0.5);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
 }
 
 .settings-card-surface {
-  border: 1px solid rgba(145, 177, 255, 0.18);
-  background: linear-gradient(180deg, rgba(18, 27, 52, 0.84), rgba(8, 13, 26, 0.82));
-  box-shadow: 0 14px 30px rgba(2, 7, 20, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--vc-border-subtle);
+  background: var(--vc-card-bg);
+  box-shadow: var(--vc-shadow-card);
 }
 
 .settings-input {
-  border: 1px solid rgba(145, 177, 255, 0.28);
-  background: rgba(7, 12, 28, 0.74);
-  color: #f1f5ff;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+  color: var(--vc-text);
 }
 
 .settings-input::placeholder {
-  color: #9dadcf;
+  color: var(--vc-text-muted);
 }
 
 .settings-input:focus {
   outline: none;
-  border-color: rgba(136, 164, 255, 0.72);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: var(--vc-accent-primary);
+  box-shadow: var(--vc-ring);
 }
 
 .settings-btn {
@@ -95,10 +94,10 @@
 }
 
 .settings-btn--primary {
-  border: 1px solid rgba(145, 177, 255, 0.48);
-  color: #f8fafc;
-  background: linear-gradient(90deg, rgba(83, 94, 237, 0.95), rgba(167, 85, 247, 0.86), rgba(86, 156, 255, 0.82));
-  box-shadow: 0 12px 24px rgba(14, 27, 70, 0.4), 0 0 12px rgba(112, 158, 255, 0.38);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: #fff;
+  background: linear-gradient(90deg, var(--vc-accent-primary), rgba(167, 139, 250, 0.88));
+  box-shadow: var(--vc-shadow-glow);
 }
 
 .settings-btn--primary:hover {
@@ -106,13 +105,13 @@
 }
 
 .settings-btn--ghost {
-  border: 1px solid rgba(145, 177, 255, 0.28);
-  color: #e3ecff;
-  background: rgba(13, 21, 44, 0.66);
+  border: 1px solid var(--vc-border);
+  color: var(--vc-text);
+  background: var(--vc-surface-input);
 }
 
 .settings-btn--ghost:hover {
-  background: rgba(29, 41, 72, 0.72);
+  background: var(--vc-surface-strong);
 }
 
 .settings-btn--danger {
@@ -130,7 +129,7 @@
   border: 1px solid rgba(251, 113, 133, 0.35);
   background:
     linear-gradient(120deg, rgba(127, 29, 29, 0.24), rgba(88, 28, 135, 0.16)),
-    rgba(15, 23, 42, 0.66);
+    var(--vc-surface);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -138,7 +137,7 @@
   border-color: rgba(251, 113, 133, 0.28);
   background:
     linear-gradient(120deg, rgba(127, 29, 29, 0.26), rgba(88, 28, 135, 0.12)),
-    rgba(15, 23, 42, 0.55);
+    var(--vc-surface);
 }
 
 .settings-danger-error {
@@ -149,30 +148,30 @@
 }
 
 .settings-vport-row {
-  border: 1px solid rgba(145, 177, 255, 0.24);
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.74), rgba(8, 12, 22, 0.68));
+  border: 1px solid var(--vc-border);
+  background: var(--vc-card-bg);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
 }
 
 .settings-vport-row:hover {
   transform: translateY(-1px);
-  border-color: rgba(174, 197, 255, 0.38);
-  background: linear-gradient(180deg, rgba(24, 33, 56, 0.8), rgba(10, 14, 26, 0.72));
+  border-color: var(--vc-border-strong);
+  background: var(--vc-surface-strong);
 }
 
 .settings-vport-row.is-active {
-  border-color: rgba(129, 140, 248, 0.54);
+  border-color: rgba(139, 92, 246, 0.44);
   background:
-    linear-gradient(100deg, rgba(79, 70, 229, 0.22), rgba(168, 85, 247, 0.16)),
-    linear-gradient(180deg, rgba(17, 24, 39, 0.78), rgba(8, 12, 22, 0.72));
+    linear-gradient(100deg, rgba(139, 92, 246, 0.16), rgba(167, 139, 250, 0.1)),
+    var(--vc-card-bg);
 }
 
 .settings-vport-tag {
   border-radius: 0.5rem;
   color: #dbeafe;
-  border: 1px solid rgba(148, 163, 184, 0.32);
-  background: rgba(15, 23, 42, 0.66);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
 }
 
 .settings-toggle {
@@ -186,8 +185,8 @@
 }
 
 .settings-toggle.is-public {
-  background: rgba(99, 102, 241, 0.7);
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.36);
+  background: rgba(139, 92, 246, 0.7);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.36);
 }
 
 .settings-toggle.is-private {

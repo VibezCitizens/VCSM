@@ -1,16 +1,17 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\gas\vportFuelPrices.read.dal.js
 import { supabase } from "@/services/supabase/supabaseClient";
+import { createTTLCache } from "@/shared/lib/ttlCache";
 
-/**
- * Fetch official fuel prices for a vport (actor-first)
- * DAL — RAW DB ROWS
- */
+const fuelPriceCache = createTTLCache(60_000); // 60 seconds
+
 export async function fetchVportFuelPricesDAL({ targetActorId }) {
   if (!targetActorId) {
     return { data: [], error: null };
   }
 
-  return supabase
+  const cached = fuelPriceCache.get(targetActorId);
+  if (cached) return { data: cached, error: null };
+
+  const result = await supabase
     .schema("vc")
     .from("vport_fuel_prices")
     .select(
@@ -18,4 +19,14 @@ export async function fetchVportFuelPricesDAL({ targetActorId }) {
     )
     .eq("target_actor_id", targetActorId)
     .order("fuel_key", { ascending: true });
+
+  if (!result.error && result.data) {
+    fuelPriceCache.set(targetActorId, result.data);
+  }
+
+  return result;
+}
+
+export function invalidateFuelPriceCache(actorId) {
+  fuelPriceCache.invalidate(actorId);
 }

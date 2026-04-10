@@ -78,143 +78,154 @@ export function VportPublicMenuView({ actorId }) {
         overflowY: "auto",
         WebkitOverflowScrolling: "touch",
         background:
-          "radial-gradient(1100px 700px at 20% 15%, rgba(0,255,240,0.07), transparent 60%), radial-gradient(900px 600px at 85% 20%, rgba(124,58,237,0.09), transparent 55%), linear-gradient(180deg, #05060b 0%, #070812 45%, #04040a 100%)",
+          "radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a, rgba(108,77,246,0.15)), transparent 60%), " +
+          "radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b, rgba(59,130,246,0.10)), transparent 60%), " +
+          "var(--vc-bg-0, #0b0b0f)",
         color: "#fff",
       }}
     >
       <div style={{ width: "100%", maxWidth: 900, margin: "0 auto", padding: 18, paddingBottom: 56 }}>
-        <div
-          style={{
-            borderRadius: 24,
-            overflow: "hidden",
-            border: "1px solid rgba(255,255,255,0.08)",
-            background: "rgba(12,14,24,0.55)",
-            backdropFilter: "blur(14px)",
-            boxShadow: "0 30px 90px rgba(0,0,0,0.65)",
-          }}
-        >
+        {/* Banner + card stacking layout */}
+        <div style={{ position: 'relative' }}>
+          {/* Banner image */}
+          {profile.bannerUrl ? (
+            <div
+              style={{
+                height: isDesktop ? 200 : 150,
+                borderRadius: '20px 20px 0 0',
+                overflow: 'hidden',
+                background: `url(${profile.bannerUrl}) center/cover no-repeat`,
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                height: isDesktop ? 200 : 150,
+                borderRadius: '20px 20px 0 0',
+                background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.15))',
+              }}
+            />
+          )}
+
+          {/* Content card — overlaps banner */}
           <div
             style={{
-              minHeight: 56,
-              padding: "14px 16px 10px 16px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              position: 'relative',
+              marginTop: -40,
+              borderRadius: 20,
+              border: '1px solid var(--vc-border, rgba(139,92,246,0.18))',
+              background: 'var(--vc-card-bg, linear-gradient(180deg, rgba(20,20,26,0.98), rgba(20,20,26,0.90)))',
+              boxShadow: 'var(--vc-shadow-elevated, 0 24px 45px rgba(0,0,0,0.36))',
+              zIndex: 2,
             }}
           >
-            <button
-              type="button"
-              onClick={onBack}
+            {/* Top bar */}
+            <div
               style={{
-                borderRadius: 12,
-                border: "1px solid rgba(255,255,255,0.12)",
-                background: "rgba(255,255,255,0.06)",
-                color: "#fff",
-                minHeight: 40,
-                padding: isDesktop ? "0 16px" : "0 12px",
-                fontWeight: 800,
-                cursor: "pointer",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: isDesktop ? '12px 16px' : '10px 14px',
               }}
             >
-              {isDesktop ? "Back" : <ChevronLeft size={20} />}
-            </button>
-
-            <div style={{ fontWeight: 900, letterSpacing: 1, fontSize: 13 }}>ONLINE MENU</div>
-            <div style={{ width: 48 }} />
-          </div>
-
-          <div style={{ padding: 16, position: "relative", zIndex: 2 }}>
-            <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <div
+              <button
+                type="button"
+                onClick={onBack}
                 style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 20,
-                  backgroundColor: "#0b0b0f",
-                  backgroundImage: avatarImage ? avatarImage : "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  boxShadow: "0 18px 50px rgba(0,0,0,0.65)",
-                  display: "grid",
-                  placeItems: "center",
-                  color: "rgba(255,255,255,0.65)",
-                  fontWeight: 950,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  padding: isDesktop ? '8px 14px' : '6px 8px',
+                  borderRadius: 12,
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: 'rgba(255,255,255,0.8)',
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: 'pointer',
                 }}
               >
-                {!avatarImage ? "VC" : null}
-              </div>
+                <ChevronLeft size={18} strokeWidth={2} />
+                {isDesktop && <span>Back</span>}
+              </button>
 
-              <div style={{ minWidth: 180, flex: 1 }}>
-                <div style={{ fontSize: 20, fontWeight: 950, letterSpacing: 0.6 }}>
-                  {profile.displayName}
-                </div>
-                {profile.username ? (
-                  <div style={{ marginTop: 6, fontSize: 12, color: "rgba(255,255,255,0.58)", letterSpacing: 1.2 }}>
-                    @{profile.username}
-                  </div>
-                ) : null}
-                {profile.tagline ? (
-                  <div style={{ marginTop: 8, fontSize: 13, color: "rgba(255,255,255,0.58)" }}>
-                    {profile.tagline}
-                  </div>
-                ) : null}
+              <div style={{ fontWeight: 700, letterSpacing: 1.2, fontSize: 13, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>
+                Online Menu
               </div>
+              <div style={{ width: isDesktop ? 80 : 36 }} />
+            </div>
 
-              <div style={{ marginLeft: "auto", display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <button
-                  type="button"
-                  style={actionButtonStyle(!!profile.reviewUrl)}
-                  disabled={!profile.reviewUrl}
-                  onClick={() => {
-                    if (!profile.reviewUrl) return;
-                    window.open(profile.reviewUrl, "_blank", "noopener,noreferrer");
+            {/* Profile info */}
+            <div style={{ padding: '0 16px 16px' }}>
+              <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 16,
+                    backgroundColor: '#0b0b0f',
+                    backgroundImage: avatarImage || 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: '0 12px 30px rgba(0,0,0,0.5)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: 'rgba(255,255,255,0.5)',
+                    fontWeight: 700,
+                    fontSize: 14,
                   }}
                 >
+                  {!avatarImage ? 'VC' : null}
+                </div>
+
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: 0.3 }}>
+                    {profile.displayName}
+                  </div>
+                  {profile.username ? (
+                    <div style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                      @{profile.username}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button type="button" style={actionButtonStyle(!!profile.reviewUrl)} disabled={!profile.reviewUrl}
+                  onClick={() => { if (profile.reviewUrl) window.open(profile.reviewUrl, '_blank', 'noopener,noreferrer') }}>
                   Review
                 </button>
-
-                <button
-                  type="button"
-                  style={actionButtonStyle(canOpenDirections)}
-                  disabled={!canOpenDirections}
-                  onClick={() => {
-                    openDirections(profile);
-                  }}
-                >
+                <button type="button" style={actionButtonStyle(canOpenDirections)} disabled={!canOpenDirections}
+                  onClick={() => openDirections(profile)}>
                   Directions
                 </button>
-
-                <button
-                  type="button"
-                  style={actionButtonStyle(!!profile.phone)}
-                  disabled={!profile.phone}
-                  onClick={() => {
-                    if (!profile.phone) return;
-                    window.location.href = `tel:${encodeURIComponent(profile.phone)}`;
-                  }}
-                >
+                <button type="button" style={actionButtonStyle(!!profile.phone)} disabled={!profile.phone}
+                  onClick={() => { if (profile.phone) window.location.href = `tel:${encodeURIComponent(profile.phone)}` }}>
                   Call
                 </button>
               </div>
-            </div>
 
-            <div style={{ marginTop: 14 }}>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search menu items..."
-                style={{
-                  width: "100%",
-                  borderRadius: 14,
-                  padding: "12px 12px",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "rgba(255,255,255,0.04)",
-                  color: "#fff",
-                  outline: "none",
-                  fontWeight: 750,
-                }}
-              />
+              {/* Search */}
+              <div style={{ marginTop: 14 }}>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search menu items..."
+                  style={{
+                    width: '100%',
+                    borderRadius: 14,
+                    padding: '12px',
+                    border: '1px solid var(--vc-border, rgba(139,92,246,0.18))',
+                    background: 'var(--vc-surface-input, rgba(14,12,22,0.78))',
+                    color: '#fff',
+                    outline: 'none',
+                    fontWeight: 500,
+                    fontSize: 14,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>

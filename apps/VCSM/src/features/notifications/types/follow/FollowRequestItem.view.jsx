@@ -121,14 +121,7 @@ export default function FollowRequestItem({ notification }) {
           </button>
         </>
       }
-      secondaryAction={{
-        label: 'View',
-        onClick: () => {
-          if (notification.linkPath) {
-            navigate(notification.linkPath)
-          }
-        },
-      }}
+      onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}
     />
   )
 }

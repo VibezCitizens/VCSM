@@ -1,15 +1,15 @@
 .post-modern {
-  --post-surface: linear-gradient(180deg, rgba(20, 16, 34, 0.9), rgba(12, 10, 22, 0.92));
-  --post-subsurface: rgba(16, 13, 29, 0.76);
-  --post-border: rgba(196, 124, 255, 0.2);
-  --post-text: #f3efff;
-  --post-muted: #b5aacd;
+  --post-surface: var(--vc-card-bg);
+  --post-subsurface: var(--vc-surface);
+  --post-border: var(--vc-border);
+  --post-text: var(--vc-text);
+  --post-muted: var(--vc-text-muted);
 }
 
 .post-modern .post-card {
-  background: var(--post-surface);
+  background: var(--vc-card-bg);
   border: 1px solid var(--post-border);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+  box-shadow: var(--vc-shadow-card);
 }
 
 .post-modern .post-subcard {
@@ -26,34 +26,32 @@
 }
 
 .post-modern.profiles-modern .post-card {
-  border-color: rgba(139, 167, 255, 0.24);
-  box-shadow: 0 18px 36px rgba(2, 7, 20, 0.42);
+  border-color: var(--vc-border);
+  box-shadow: var(--vc-shadow-card);
 }
 
 .post-modern.profiles-modern .post-subcard {
-  border-color: rgba(139, 167, 255, 0.2);
-  background: rgba(18, 28, 54, 0.48);
+  border-color: var(--vc-border-subtle);
+  background: var(--vc-surface);
 }
 
 .post-modern .post-comment-card {
-  background:
-    linear-gradient(150deg, rgba(116, 86, 255, 0.14), rgba(54, 121, 255, 0.08) 36%, rgba(9, 18, 42, 0.68)),
-    rgba(18, 28, 54, 0.46);
-  border: 1px solid rgba(139, 167, 255, 0.26);
-  box-shadow: 0 10px 24px rgba(2, 7, 20, 0.32);
+  background: var(--vc-card-bg);
+  border: 1px solid var(--vc-border);
+  box-shadow: var(--vc-shadow-card);
 }
 
 .post-modern .post-comment-card:hover {
   background:
-    linear-gradient(150deg, rgba(126, 92, 255, 0.2), rgba(62, 132, 255, 0.12) 36%, rgba(11, 22, 52, 0.78)),
-    rgba(22, 34, 66, 0.6);
+    linear-gradient(150deg, rgba(108, 77, 246, 0.12), transparent 50%),
+    var(--vc-card-bg);
 }
 
 .post-modern .sparks-shell {
   background:
-    radial-gradient(60% 70% at 0% 0%, rgba(121, 102, 255, 0.14), transparent 64%),
-    radial-gradient(40% 55% at 100% 0%, rgba(54, 136, 255, 0.14), transparent 68%),
-    rgba(10, 20, 44, 0.48);
+    radial-gradient(60% 70% at 0% 0%, var(--vc-gradient-a), transparent 64%),
+    radial-gradient(40% 55% at 100% 0%, var(--vc-gradient-b), transparent 68%),
+    var(--vc-surface);
 }
 
 .post-modern .sparks-header {
@@ -63,16 +61,12 @@
 }
 
 .post-modern .spark-composer {
-  background:
-    linear-gradient(160deg, rgba(74, 95, 170, 0.18), rgba(12, 20, 44, 0.66));
+  background: var(--vc-card-bg);
 }
 
 .post-modern-popover {
-  border: 1px solid rgba(141, 177, 255, 0.24);
-  background:
-    linear-gradient(180deg, rgba(16, 24, 46, 0.96), rgba(7, 11, 22, 0.96));
-  box-shadow:
-    0 20px 34px rgba(0, 0, 0, 0.42),
-    0 0 16px rgba(99, 137, 255, 0.28);
-  backdrop-filter: blur(12px);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-card-bg);
+  box-shadow: var(--vc-shadow-elevated);
+  backdrop-filter: var(--vc-backdrop-blur);
 }

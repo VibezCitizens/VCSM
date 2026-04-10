@@ -24,7 +24,7 @@ export default function PendingFollowRequests({ actorId }) {
 
   return (
     <section className="settings-card-surface rounded-xl p-4">
-      <h3 className="mb-2 text-sm font-semibold text-slate-100">Pending follow requests</h3>
+      <h3 className="mb-2 text-sm font-semibold text-white">Pending follow requests</h3>
 
       <div className="space-y-2">
         {visibleRequests.map((req) => (
@@ -61,7 +61,7 @@ function RequestRow({
         {actor?.actorId ? (
           <ActorLink actor={actor} avatarSize="w-8 h-8" />
         ) : (
-          <div className="truncate text-sm text-slate-200">{requesterActorId}</div>
+          <div className="truncate text-sm text-white/90">{requesterActorId}</div>
         )}
       </div>
 

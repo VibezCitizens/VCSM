@@ -40,8 +40,8 @@ export default function BlockConfirmModal({
         className="
           w-full max-w-sm
           rounded-xl
-          bg-neutral-950
-          border border-neutral-800
+          bg-black
+          border border-white/10
           p-5
         "
         onClick={(e) => e.stopPropagation()}
@@ -53,7 +53,7 @@ export default function BlockConfirmModal({
           </h3>
 
           {actor && (
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-white/50">
               {isBlock
                 ? `You are about to block ${actor.displayName}.`
                 : `You are about to unblock ${actor.displayName}.`}
@@ -63,7 +63,7 @@ export default function BlockConfirmModal({
 
         {/* ================= BODY ================= */}
         {isBlock && (
-          <div className="mt-4 text-sm text-neutral-400 space-y-2">
+          <div className="mt-4 text-sm text-white/50 space-y-2">
             <p>Blocking will:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Remove them from your followers and friends</li>
@@ -81,8 +81,8 @@ export default function BlockConfirmModal({
             className="
               px-4 py-2 text-sm rounded-lg
               border border-neutral-700
-              text-neutral-300
-              hover:bg-neutral-800
+              text-white/70
+              hover:bg-white/6
               disabled:opacity-50
             "
           >
@@ -102,8 +102,8 @@ export default function BlockConfirmModal({
                 `
                 : `
                   px-4 py-2 text-sm rounded-lg
-                  bg-neutral-800 text-white
-                  hover:bg-neutral-700
+                  bg-white/6 text-white
+                  hover:bg-white/8
                   disabled:opacity-50
                 `
             }

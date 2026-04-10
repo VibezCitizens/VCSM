@@ -6,8 +6,8 @@ export default function VibeTagPicker({
   saving = false,
 }) {
   return (
-    <section className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-4">
-      <h3 className="text-sm font-semibold text-slate-100">Select your vibe tags</h3>
+    <section className="rounded-2xl border border-white/10 bg-white/4/60 p-4">
+      <h3 className="text-sm font-semibold text-white">Select your vibe tags</h3>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {(Array.isArray(tags) ? tags : []).map((tag) => {
@@ -19,8 +19,8 @@ export default function VibeTagPicker({
               onClick={() => onToggleTag?.(tag.id)}
               className={`rounded-full border px-3 py-1 text-xs transition ${
                 selected
-                  ? 'border-indigo-400 bg-indigo-500/20 text-indigo-200'
-                  : 'border-slate-600 bg-slate-800/60 text-slate-300'
+                  ? 'border-purple-400 bg-purple-500/15 text-purple-300'
+                  : 'border-white/15 bg-white/6 text-white/70'
               }`}
             >
               {tag.name}
@@ -34,7 +34,7 @@ export default function VibeTagPicker({
           type="button"
           onClick={onSave}
           disabled={saving}
-          className="rounded-xl bg-indigo-500/80 px-3 py-2 text-xs font-medium text-white disabled:opacity-60"
+          className="rounded-xl bg-purple-500/60 px-3 py-2 text-xs font-medium text-white disabled:opacity-60"
         >
           {saving ? 'Saving...' : 'Save tags'}
         </button>

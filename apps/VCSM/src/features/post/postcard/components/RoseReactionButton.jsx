@@ -13,7 +13,7 @@ export default function RoseReactionButton({ count, onSend, disabled }) {
       aria-label="Rose"
     >
       <span>{`\uD83C\uDF39`}</span>
-      <span className="text-sm text-slate-300 font-medium">{count}</span>
+      <span className="text-sm text-white/70 font-medium">{count}</span>
     </button>
   );
 }

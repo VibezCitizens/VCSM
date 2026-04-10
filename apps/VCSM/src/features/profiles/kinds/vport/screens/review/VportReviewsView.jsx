@@ -496,7 +496,7 @@ export default function VportReviewsView({
 
         {showDeleteConfirm ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div className="mx-4 w-full max-w-sm rounded-2xl border border-white/12 bg-slate-900 p-6">
+            <div className="mx-4 w-full max-w-sm rounded-2xl border border-white/12 bg-white/4 p-6">
               <div className="text-base font-semibold text-white">Delete your review?</div>
               <p className="mt-2 text-sm text-white/50">This will permanently remove your review. This can't be undone.</p>
               <div className="mt-5 flex items-center justify-end gap-2">

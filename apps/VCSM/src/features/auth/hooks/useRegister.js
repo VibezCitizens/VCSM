@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ctrlRegisterAccount } from '@/features/auth/controllers/register.controller'
+import { recordSignupConsent } from '@/features/legal/controllers/legalConsent.controller'
 import {
   evaluateConfirmPasswordState,
   evaluateRegisterPasswordRules,
@@ -12,6 +13,8 @@ export function useRegister() {
   const location = useLocation()
 
   const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' })
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [consentError, setConsentError] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -47,6 +50,7 @@ export function useRegister() {
     form.email.trim() !== '' &&
     passwordValidation.allValid &&
     confirmPasswordValidation.matches &&
+    termsAccepted &&
     !loading
 
   const handleChange = useCallback((event) => {
@@ -55,7 +59,13 @@ export function useRegister() {
 
     if (errorMessage) setErrorMessage('')
     if (successMessage) setSuccessMessage('')
-  }, [errorMessage, successMessage])
+    if (consentError) setConsentError('')
+  }, [errorMessage, successMessage, consentError])
+
+  const toggleTermsAccepted = useCallback(() => {
+    setTermsAccepted((prev) => !prev)
+    if (consentError) setConsentError('')
+  }, [consentError])
 
   const togglePasswordVisibility = useCallback(() => {
     setShowPassword((prev) => !prev)
@@ -77,11 +87,16 @@ export function useRegister() {
   }, [navigate, navState])
 
   const handleRegister = useCallback(async () => {
+    if (!termsAccepted) {
+      setConsentError('You must agree to the Terms of Service and Privacy Policy to create an account.')
+      return false
+    }
     if (!canSubmit) return false
 
     setLoading(true)
     setErrorMessage('')
     setSuccessMessage('')
+    setConsentError('')
 
     try {
       const result = await ctrlRegisterAccount({
@@ -89,6 +104,20 @@ export function useRegister() {
         password: form.password,
         isWandersFlow,
       })
+
+      // Record legal consent after successful auth signup
+      const userId = result?.userId ?? null
+      if (userId) {
+        try {
+          await recordSignupConsent({ userId })
+        } catch (consentErr) {
+          console.error('[Register] Failed to record legal consent:', consentErr)
+          setConsentError(
+            'Your account was created but we could not record your legal consent. Please try logging in — you will be asked to accept again.'
+          )
+          return false
+        }
+      }
 
       if (result?.requiresEmailConfirm) {
         setSuccessMessage(
@@ -106,7 +135,7 @@ export function useRegister() {
     } finally {
       setLoading(false)
     }
-  }, [canSubmit, form.email, form.password, goOnboarding, isWandersFlow])
+  }, [canSubmit, termsAccepted, form.email, form.password, goOnboarding, isWandersFlow])
 
   const handleSubmit = useCallback(async (event) => {
     if (event?.preventDefault) event.preventDefault()
@@ -115,6 +144,8 @@ export function useRegister() {
 
   return {
     form,
+    termsAccepted,
+    consentError,
     loading,
     errorMessage,
     successMessage,
@@ -128,6 +159,7 @@ export function useRegister() {
     handleChange,
     handleSubmit,
     handleRegister,
+    toggleTermsAccepted,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
   }

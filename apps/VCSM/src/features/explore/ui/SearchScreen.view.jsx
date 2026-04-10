@@ -24,7 +24,7 @@ export default function SearchScreen() {
       <div className="explore-search-input-wrap relative">
         <Search
           size={18}
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/50"
           aria-hidden="true"
         />
 
@@ -40,7 +40,7 @@ export default function SearchScreen() {
           <button
             type="button"
             onClick={() => setQuery('')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-slate-400 transition hover:bg-slate-800/60 hover:text-slate-100"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-white/50 transition hover:bg-white/6/60 hover:text-white"
             aria-label="Clear"
           >
             <X size={15} />
@@ -71,7 +71,7 @@ export default function SearchScreen() {
       </div>
 
       {isSearching ? (
-        <Suspense fallback={<div className="text-center text-slate-300">Loading...</div>}>
+        <Suspense fallback={<div className="text-center text-white/70">Loading...</div>}>
           <ResultList query={debounced || query} filter={filter} />
         </Suspense>
       ) : (

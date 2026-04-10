@@ -169,7 +169,7 @@ export default function VportServicesView({
   }, [servicesFromApi, isLocksmith, locksmithDetails]);
 
   if (!targetActorId) {
-    return <div className="p-6 text-sm text-neutral-400">Invalid vport.</div>;
+    return <div className="p-6 text-sm text-white/50">Invalid vport.</div>;
   }
 
   if (s.isLoading) {

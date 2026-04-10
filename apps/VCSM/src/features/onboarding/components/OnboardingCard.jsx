@@ -35,26 +35,33 @@ export default function OnboardingCard({
 
   return (
     <article
-      className={[
-        'group relative overflow-hidden rounded-2xl border p-4 transition-all duration-300',
-        'hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-18px_rgba(15,23,42,0.95)]',
-        isCompleted
-          ? 'border-emerald-400/25 bg-emerald-500/[0.07] shadow-[0_8px_22px_-16px_rgba(16,185,129,0.45)]'
-          : 'border-white/10 bg-white/[0.04] shadow-[0_10px_24px_-18px_rgba(2,6,23,0.95)] backdrop-blur-xl',
-      ].join(' ')}
+      className="group relative overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-0.5"
+      style={{
+        borderColor: isCompleted ? 'rgba(34, 197, 94, 0.2)' : 'var(--vc-border)',
+        background: isCompleted ? 'rgba(34, 197, 94, 0.05)' : 'var(--vc-card-bg)',
+        boxShadow: 'var(--vc-shadow-card)',
+      }}
     >
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white/[0.04] via-transparent to-indigo-400/[0.08]" />
-
       <div className="flex items-start gap-3">
         <div
-          className={[
-            'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
-            isCompleted
-              ? 'border-emerald-300/70 bg-emerald-400/20 text-emerald-200'
+          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-300"
+          style={{
+            borderColor: isCompleted
+              ? 'rgba(34, 197, 94, 0.5)'
               : isInProgress
-              ? 'border-indigo-300/60 bg-indigo-400/20 text-indigo-100'
-              : 'border-slate-500/40 bg-slate-800/70 text-slate-300',
-          ].join(' ')}
+              ? 'rgba(139, 92, 246, 0.45)'
+              : 'rgba(255, 255, 255, 0.12)',
+            background: isCompleted
+              ? 'rgba(34, 197, 94, 0.15)'
+              : isInProgress
+              ? 'rgba(139, 92, 246, 0.15)'
+              : 'var(--vc-surface-input)',
+            color: isCompleted
+              ? '#86efac'
+              : isInProgress
+              ? 'var(--vc-accent-primary-hover)'
+              : 'var(--vc-text-muted)',
+          }}
           aria-hidden="true"
         >
           {isCompleted ? (
@@ -68,29 +75,37 @@ export default function OnboardingCard({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h3
-                className={[
-                  'truncate text-[15px] font-semibold tracking-tight transition-colors',
-                  isCompleted ? 'text-slate-200/90' : 'text-slate-100',
-                ].join(' ')}
+                className="truncate text-[15px] font-semibold tracking-tight transition-colors"
+                style={{ color: isCompleted ? 'var(--vc-text-soft)' : 'var(--vc-text)' }}
               >
                 {card.title}
               </h3>
-              <p className="mt-1 text-sm text-slate-300/90">{card.description}</p>
+              <p className="mt-1 text-sm" style={{ color: 'var(--vc-text-soft)' }}>
+                {card.description}
+              </p>
             </div>
 
             {isCompleted ? (
-              <span className="rounded-full border border-emerald-300/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-200">
+              <span
+                className="rounded-full border px-2.5 py-1 text-[11px] font-medium"
+                style={{
+                  borderColor: 'rgba(34, 197, 94, 0.35)',
+                  background: 'rgba(34, 197, 94, 0.1)',
+                  color: '#86efac',
+                }}
+              >
                 Completed
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => onPressAction?.(card)}
-                className={[
-                  'inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium',
-                  'transition-all duration-200 hover:-translate-y-0.5',
-                  'border-indigo-300/45 bg-indigo-500/25 text-indigo-100 hover:bg-indigo-500/35',
-                ].join(' ')}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  borderColor: 'rgba(139, 92, 246, 0.35)',
+                  background: 'rgba(139, 92, 246, 0.2)',
+                  color: 'var(--vc-accent-primary-hover)',
+                }}
               >
                 {card.ctaLabel || 'Continue'}
                 <ArrowRight size={13} />
@@ -99,10 +114,8 @@ export default function OnboardingCard({
           </div>
 
           <p
-            className={[
-              'mt-2 text-[12px] leading-5',
-              isCompleted ? 'text-emerald-200/85' : 'text-slate-400',
-            ].join(' ')}
+            className="mt-2 text-[12px] leading-5"
+            style={{ color: isCompleted ? '#86efac' : 'var(--vc-text-muted)' }}
           >
             {helperText}
           </p>
@@ -117,17 +130,17 @@ export default function OnboardingCard({
                     className="flex items-center gap-2 text-[11px]"
                   >
                     <span
-                      className={[
-                        'inline-flex h-4 w-4 items-center justify-center rounded-full border',
-                        done
-                          ? 'border-emerald-300/70 bg-emerald-500/20 text-emerald-200'
-                          : 'border-slate-500/50 bg-slate-800/80 text-slate-400',
-                      ].join(' ')}
+                      className="inline-flex h-4 w-4 items-center justify-center rounded-full border"
+                      style={{
+                        borderColor: done ? 'rgba(34, 197, 94, 0.5)' : 'rgba(255, 255, 255, 0.12)',
+                        background: done ? 'rgba(34, 197, 94, 0.15)' : 'var(--vc-surface-input)',
+                        color: done ? '#86efac' : 'var(--vc-text-muted)',
+                      }}
                       aria-hidden="true"
                     >
                       {done ? <CheckCircle2 size={11} /> : <span className="h-1.5 w-1.5 rounded-full bg-current" />}
                     </span>
-                    <span className={done ? 'text-emerald-100/90' : 'text-slate-300/90'}>
+                    <span style={{ color: done ? '#86efac' : 'var(--vc-text-soft)' }}>
                       {item?.label || item?.key}
                     </span>
                   </li>
@@ -138,20 +151,22 @@ export default function OnboardingCard({
 
           {!isActionOnly && (
             <div className="mt-3">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/75">
+              <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: 'rgba(255, 255, 255, 0.06)' }}>
                 <div
-                  className={[
-                    'h-full rounded-full transition-[width,background-color] duration-500 ease-out',
-                    isCompleted
-                      ? 'bg-emerald-400/95'
+                  className="h-full rounded-full transition-[width,background-color] duration-500 ease-out"
+                  style={{
+                    width: `${progressPercent}%`,
+                    background: isCompleted
+                      ? 'var(--vc-success)'
                       : isInProgress
-                      ? 'bg-indigo-300/95'
-                      : 'bg-slate-500/55',
-                  ].join(' ')}
-                  style={{ width: `${progressPercent}%` }}
+                      ? 'var(--vc-accent-primary)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                  }}
                 />
               </div>
-              <p className="mt-1 text-[11px] text-slate-400">{progressLabel}</p>
+              <p className="mt-1 text-[11px]" style={{ color: 'var(--vc-text-muted)' }}>
+                {progressLabel}
+              </p>
             </div>
           )}
         </div>

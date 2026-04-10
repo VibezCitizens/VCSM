@@ -26,15 +26,15 @@ function BlockedRow({ blockedActorId, onUnblock }) {
       <img
         src={actor?.avatar || '/avatar.jpg'}
         alt=""
-        className="h-10 w-10 rounded-xl border border-slate-300/15 bg-black/30 object-cover"
+        className="h-10 w-10 rounded-xl border border-white/8 bg-black/30 object-cover"
       />
 
       <div className="min-w-0 flex-1">
-        <div className="truncate font-medium text-slate-100">
+        <div className="truncate font-medium text-white">
           {actor?.displayName || actor?.username || 'Unknown'}
         </div>
 
-        <div className="truncate text-xs text-slate-400">
+        <div className="truncate text-xs text-white/50">
           {actor?.username ? `@${actor.username}` : ''}
         </div>
       </div>
@@ -42,7 +42,7 @@ function BlockedRow({ blockedActorId, onUnblock }) {
       <button
         type="button"
         onClick={() => onUnblock(blockedActorId)}
-        className="module-modern-btn module-modern-btn--ghost rounded-xl px-3 py-1.5 text-sm text-slate-200"
+        className="module-modern-btn module-modern-btn--ghost rounded-xl px-3 py-1.5 text-sm text-white/90"
       >
         Unblock
       </button>
@@ -86,20 +86,20 @@ function BlockedUsersBody() {
     <div className="module-modern-page chat-modern-page flex h-full flex-col">
       <div className="module-modern-shell chat-modern-shell mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl">
         <header
-          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-slate-300/10 bg-[#070b16]/75 backdrop-blur"
+          className="chat-modern-sticky-header sticky top-0 z-20 border-b border-white/8 bg-[#070b16]/75 backdrop-blur"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <div className="relative flex h-14 items-center px-3">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="-ml-1 p-2 text-indigo-300 transition hover:text-indigo-200"
+              className="-ml-1 p-2 text-purple-300 transition hover:text-purple-300"
               aria-label="Back"
             >
               <ChevronLeft size={22} />
             </button>
 
-            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-slate-100">
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
               Blocked Citizens
             </h1>
 
@@ -108,7 +108,7 @@ function BlockedUsersBody() {
         </header>
 
         <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-          <div className="px-1 text-xs text-slate-500">
+          <div className="px-1 text-xs text-white/40">
             Blocked Citizens can't Vox you, and you won't see their content.
           </div>
 
@@ -120,9 +120,9 @@ function BlockedUsersBody() {
 
           <div className="module-modern-card overflow-hidden rounded-2xl">
             {loading ? (
-              <div className="px-4 py-4 text-sm text-slate-400">Loading...</div>
+              <div className="px-4 py-4 text-sm text-white/50">Loading...</div>
             ) : blockedActorIds.length === 0 ? (
-              <div className="px-4 py-4 text-sm text-slate-400">
+              <div className="px-4 py-4 text-sm text-white/50">
                 You haven't blocked any Citizens.
               </div>
             ) : (
@@ -130,7 +130,7 @@ function BlockedUsersBody() {
                 <div key={id}>
                   <BlockedRow blockedActorId={id} onUnblock={openUnblockConfirm} />
                   {idx !== blockedActorIds.length - 1 ? (
-                    <div className="h-px bg-slate-300/10" />
+                    <div className="h-px bg-white/6" />
                   ) : null}
                 </div>
               ))

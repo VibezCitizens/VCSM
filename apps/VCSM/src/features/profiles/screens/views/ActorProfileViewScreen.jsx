@@ -150,7 +150,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
           )}
 
           {tab === "videos" && (
-            <div className="flex items-center justify-center py-10 text-neutral-500">
+            <div className="flex items-center justify-center py-10 text-white/40">
               Videos - coming soon
             </div>
           )}

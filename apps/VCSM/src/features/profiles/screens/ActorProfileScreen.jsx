@@ -6,6 +6,7 @@ import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistenc
 
 import { useActorKind } from "@/features/profiles/hooks/useActorKind";
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
+import { SkeletonCardList } from "@/shared/components/Skeleton";
 import "@/features/profiles/styles/profiles-modern.css";
 
 const UUID_REGEX = /^[0-9a-f-]{36}$/i;
@@ -27,7 +28,7 @@ export default function ActorProfileScreen() {
   const { loading: kindLoading, kind } = useActorKind(actorIdForKind);
 
   if (identityLoading) {
-    return <div className="profiles-modern p-10 text-center profiles-muted">Loading...</div>;
+    return <div className="profiles-modern px-4 py-6"><SkeletonCardList count={2} bodyHeight="h-48" /></div>;
   }
 
   if (!identity) {
@@ -53,7 +54,7 @@ export default function ActorProfileScreen() {
 
   // kind still resolving
   if (kindLoading) {
-    return <div className="profiles-modern p-10 text-center profiles-muted">Loading...</div>;
+    return <div className="profiles-modern px-4 py-6"><SkeletonCardList count={2} bodyHeight="h-48" /></div>;
   }
 
   const Screen = PROFILE_KIND_REGISTRY[kind] ?? PROFILE_KIND_REGISTRY.user;

@@ -17,12 +17,12 @@ export default function ReportedObjectCover({
           exit={{ opacity: 0 }}
         >
           <div className="h-full w-full flex items-center justify-center px-5">
-            <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-neutral-950 p-6">
+            <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black p-6">
               <div className="text-lg font-semibold text-white">
                 {title}
               </div>
 
-              <div className="text-sm text-neutral-400 mt-2">
+              <div className="text-sm text-white/50 mt-2">
                 {subtitle}
               </div>
 

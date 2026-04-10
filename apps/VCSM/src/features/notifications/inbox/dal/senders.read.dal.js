@@ -1,21 +1,22 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import { hydrateAndReturnSummaries } from "@hydration";
 
 function uniqueIds(ids = []) {
   return [...new Set((Array.isArray(ids) ? ids : []).filter(Boolean))];
 }
 
+/**
+ * Primary sender lookup — uses shared hydration store.
+ * Checks cache first, only fetches stale/missing actors.
+ * Results are upserted into the global actor store.
+ */
 export async function listActorSummaryRowsByIdsDAL({ actorIds }) {
   const ids = uniqueIds(actorIds);
   if (!ids.length) return [];
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .rpc("get_actor_summaries", {
-      p_actor_ids: ids,
-    });
-
+  const { rows, error } = await hydrateAndReturnSummaries({ actorIds: ids });
   if (error) throw error;
-  return Array.isArray(data) ? data : [];
+  return rows;
 }
 
 export async function listActorPresentationRowsByIdsDAL({ actorIds }) {

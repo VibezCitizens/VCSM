@@ -84,7 +84,7 @@ function CommentNode({
               <button
                 type="button"
                 onClick={onReplyCancel}
-                className="text-xs text-neutral-400 hover:text-white transition"
+                className="text-xs text-white/50 hover:text-white transition"
                 disabled={!!postingReply}
               >
                 Cancel Spark

@@ -62,20 +62,20 @@ export default function ActorProfileHeader({
   if (loading) {
     return (
       <div className="relative" aria-hidden="true">
-        <div className="h-48 sm:h-56 w-full animate-pulse bg-slate-800/55" />
+        <div className="h-48 sm:h-56 w-full animate-pulse bg-white/6/55" />
 
         <div className="px-4">
           <div className="profiles-shell w-full">
             <div className="-mt-20 relative z-20 profiles-card p-5">
               <div className="flex items-start gap-4">
-                <div className="h-24 w-24 shrink-0 animate-pulse rounded-2xl bg-slate-700/55" />
+                <div className="h-24 w-24 shrink-0 animate-pulse rounded-2xl bg-white/8" />
 
                 <div className="flex-1 min-w-0 pt-1 space-y-3">
-                  <div className="h-6 w-40 animate-pulse rounded bg-slate-700/60" />
-                  <div className="h-4 w-28 animate-pulse rounded bg-slate-700/45" />
-                  <div className="h-4 w-11/12 animate-pulse rounded bg-slate-700/40" />
-                  <div className="h-4 w-8/12 animate-pulse rounded bg-slate-700/35" />
-                  <div className="h-3 w-24 animate-pulse rounded bg-slate-700/40" />
+                  <div className="h-6 w-40 animate-pulse rounded bg-white/8" />
+                  <div className="h-4 w-28 animate-pulse rounded bg-white/8" />
+                  <div className="h-4 w-11/12 animate-pulse rounded bg-white/6" />
+                  <div className="h-4 w-8/12 animate-pulse rounded bg-white/5" />
+                  <div className="h-3 w-24 animate-pulse rounded bg-white/6" />
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function ActorProfileHeader({
                   </div>
                 </div>
 
-                <div className="mt-3 text-sm text-slate-200">
+                <div className="mt-3 text-sm text-white/90">
                   {profile.bio || 'No bio provided.'}
                 </div>
 

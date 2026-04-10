@@ -12,14 +12,7 @@ export default function FollowNotificationItem({ notification }) {
       message="subscribed to you"
       timestamp={notification.createdAt}
       unread={!notification.isRead}
-      secondaryAction={{
-        label: 'View',
-        onClick: () => {
-          if (notification.linkPath) {
-            navigate(notification.linkPath)
-          }
-        },
-      }}
+      onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}
     />
   )
 }

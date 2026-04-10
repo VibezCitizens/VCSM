@@ -34,7 +34,7 @@ export default function VportServicesEmptyState({
 
       <div className="relative">
         <div className="text-base font-semibold text-white sm:text-lg">{title}</div>
-        <div className="mt-1 text-sm text-slate-300/75">{subtitle}</div>
+        <div className="mt-1 text-sm text-white/70/75">{subtitle}</div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           {PREVIEW_CAPABILITIES.map((item) => {
@@ -48,9 +48,9 @@ export default function VportServicesEmptyState({
                   <div className="grid h-8 w-8 place-items-center rounded-xl border border-sky-300/30 bg-sky-300/10 text-sky-200">
                     <Icon size={16} />
                   </div>
-                  <div className="text-sm font-semibold text-slate-100">{item.title}</div>
+                  <div className="text-sm font-semibold text-white">{item.title}</div>
                 </div>
-                <div className="mt-2 text-xs leading-5 text-slate-300/70">{item.subtitle}</div>
+                <div className="mt-2 text-xs leading-5 text-white/70/70">{item.subtitle}</div>
               </article>
             );
           })}

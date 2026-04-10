@@ -167,7 +167,7 @@ export default function VportDashboardBookingHistoryScreen() {
   const shell = createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 900 });
 
   if (!targetActorId) return null;
-  if (!isOwner) return <div className="p-10 text-center text-neutral-400">Owner access only.</div>;
+  if (!isOwner) return <div className="p-10 text-center text-white/50">Owner access only.</div>;
 
   const content = (
     <div style={shell.page}>

@@ -8,7 +8,7 @@ export default function ServicesPicker({
   title = "Services",
 }) {
   return (
-    <div className="w-full rounded-2xl bg-neutral-950 border border-purple-900 p-4 space-y-3">
+    <div className="w-full rounded-2xl bg-black border border-purple-900 p-4 space-y-3">
       <div className="text-white font-semibold">{title}</div>
 
       <div className="flex flex-wrap gap-2">
@@ -25,7 +25,7 @@ export default function ServicesPicker({
                 "px-3 py-1 rounded-2xl border text-sm",
                 active
                   ? "bg-purple-700 border-purple-500 text-white"
-                  : "bg-neutral-900 border-neutral-700 text-neutral-200",
+                  : "bg-white/4 border-neutral-700 text-white/85",
               ].join(" ")}
             >
               {s.label}

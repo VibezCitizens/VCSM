@@ -35,16 +35,16 @@ export function VportActorMenuFlyerEditorScreen() {
 
   if (!actorId) return null;
   if (identityLoading) {
-    return <div className="p-10 text-center text-neutral-400">Loading...</div>;
+    return <div className="p-10 text-center text-white/50">Loading...</div>;
   }
   if (!identity) {
     return (
-      <div className="p-10 text-center text-neutral-400">Sign in required.</div>
+      <div className="p-10 text-center text-white/50">Sign in required.</div>
     );
   }
   if (!isOwner) {
     return (
-      <div className="p-10 text-center text-neutral-400">
+      <div className="p-10 text-center text-white/50">
         You can only edit flyers for your own vport.
       </div>
     );

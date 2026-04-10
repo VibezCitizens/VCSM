@@ -219,7 +219,7 @@ export default function ChatInput({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-indigo-300 transition hover:bg-slate-900/40 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-purple-300 transition hover:bg-white/3 hover:text-purple-300 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={actionDisabled}
               aria-label="Attach"
             >
@@ -229,9 +229,9 @@ export default function ChatInput({
             {mediaPreview && (
               <div className="relative shrink-0">
                 {String(mediaPreview.type || '').startsWith('video/') ? (
-                  <video src={mediaPreview.url} className="h-12 w-12 rounded-xl border border-indigo-300/35 object-cover" muted playsInline />
+                  <video src={mediaPreview.url} className="h-12 w-12 rounded-xl border border-purple-300/25 object-cover" muted playsInline />
                 ) : (
-                  <img src={mediaPreview.url} alt="" className="h-12 w-12 rounded-xl border border-indigo-300/35 object-cover" />
+                  <img src={mediaPreview.url} alt="" className="h-12 w-12 rounded-xl border border-purple-300/25 object-cover" />
                 )}
 
                 <button
@@ -267,7 +267,7 @@ export default function ChatInput({
               className={
                 value.trim() || mediaPreview
                   ? 'module-modern-btn module-modern-btn--primary chat-modern-send-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white'
-                  : 'module-modern-btn flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-slate-600/30 bg-slate-800/40 text-slate-500'
+                  : 'module-modern-btn flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-white/12 bg-white/6/40 text-white/40'
               }
               aria-label={inEdit ? 'Save' : 'Send'}
             >

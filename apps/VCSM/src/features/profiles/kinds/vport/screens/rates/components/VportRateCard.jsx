@@ -35,13 +35,13 @@ export default function VportRateCard({
       <div className="border-b border-white/10 px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
-            <span className="text-[10px] uppercase tracking-[0.12em] text-slate-300/80">Pair</span>
-            <span className="font-mono text-sm font-semibold text-slate-100">{safeBase}/{safeQuote}</span>
+            <span className="text-[10px] uppercase tracking-[0.12em] text-white/70/80">Pair</span>
+            <span className="font-mono text-sm font-semibold text-white">{safeBase}/{safeQuote}</span>
           </div>
 
           <div className="text-right">
-            <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Updated</div>
-            <div className="text-[11px] text-slate-200">{fmtTs(updatedAt)}</div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-white/50">Updated</div>
+            <div className="text-[11px] text-white/90">{fmtTs(updatedAt)}</div>
           </div>
         </div>
       </div>

@@ -93,7 +93,7 @@ export default function TopFriendsRankEditor() {
 
   if (loading) {
     return (
-      <p className="profiles-subcard py-6 px-4 text-center text-slate-300/80">
+      <p className="profiles-subcard py-6 px-4 text-center text-white/70/80">
         Loading top friends...
       </p>
     )
@@ -101,7 +101,7 @@ export default function TopFriendsRankEditor() {
 
   return (
     <div className="profiles-friends-editor space-y-4">
-      <h2 className="text-lg font-semibold text-slate-100">
+      <h2 className="text-lg font-semibold text-white">
         Edit Top Friends
       </h2>
 
@@ -131,7 +131,7 @@ export default function TopFriendsRankEditor() {
       <div className="flex justify-end gap-2 pt-4">
         <button
           onClick={() => navigate(-1)}
-          className="profiles-pill-btn px-4 py-2 text-sm text-slate-200/90"
+          className="profiles-pill-btn px-4 py-2 text-sm text-white/90"
         >
           Cancel
         </button>

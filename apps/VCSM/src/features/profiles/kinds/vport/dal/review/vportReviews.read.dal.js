@@ -1,5 +1,9 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\review\vportReviews.read.dal.js
 import vc from "@/services/supabase/vcClient";
+import { createTTLCache } from "@/shared/lib/ttlCache";
+
+const statsCache = createTTLCache(60_000);
+const configCache = createTTLCache(60_000);
 
 /* ============================================================
    DAL: READ (raw DB rows only)
@@ -9,22 +13,36 @@ import vc from "@/services/supabase/vcClient";
    ============================================================ */
 
 export async function dalGetVportReviewFormConfig(targetActorId) {
+  const cached = configCache.get(targetActorId);
+  if (cached) return cached;
+
   const { data, error } = await vc.schema("vc").rpc("get_vport_review_form_config", {
     p_target_actor_id: targetActorId,
   });
 
   if (error) throw error;
-  return data ?? [];
+  const result = data ?? [];
+  configCache.set(targetActorId, result);
+  return result;
 }
 
 export async function dalGetVportOfficialStats(targetActorId) {
+  const cached = statsCache.get(targetActorId);
+  if (cached) return cached;
+
   const { data, error } = await vc.schema("vc").rpc("get_vport_official_stats", {
     p_target_actor_id: targetActorId,
   });
 
   if (error) throw error;
-  // supabase rpc returns array
-  return (data && data[0]) ? data[0] : null;
+  const result = (data && data[0]) ? data[0] : null;
+  if (result) statsCache.set(targetActorId, result);
+  return result;
+}
+
+export function invalidateVportReviewCaches(actorId) {
+  statsCache.invalidate(actorId);
+  configCache.invalidate(actorId);
 }
 
 export async function dalListVportReviews(targetActorId, { limit = 25, cursor = null } = {}) {

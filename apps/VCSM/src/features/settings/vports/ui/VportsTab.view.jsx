@@ -23,7 +23,7 @@ export default function VportsTabView() {
   return (
     <div className="space-y-5">
       <Card>
-        <div className="mb-3 text-sm font-semibold text-slate-100">Your Profile</div>
+        <div className="mb-3 text-sm font-semibold text-white">Your Profile</div>
         <button
           onClick={() => switchToProfile(profileActorId, setBusy)}
           disabled={busy || activeActor === 'profile'}
@@ -34,7 +34,7 @@ export default function VportsTabView() {
             busy ? 'cursor-wait opacity-60' : '',
           ].join(' ')}
         >
-          <span className="font-medium text-slate-100">
+          <span className="font-medium text-white">
             {activeActor === 'profile' ? 'Current Profile' : 'Switch to My Profile'}
           </span>
           <span className="settings-vport-tag px-2 py-0.5 text-[10px] uppercase">Profile</span>
@@ -43,7 +43,7 @@ export default function VportsTabView() {
 
       <Card>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-semibold text-slate-100">Your VPORTs</div>
+          <div className="text-sm font-semibold text-white">Your VPORTs</div>
           <button onClick={() => setShowCreator(true)} className="settings-btn settings-btn--ghost inline-flex items-center gap-2 px-3 py-1.5 text-xs">
             <Plus className="h-4 w-4" />
             Create VPORT
@@ -51,7 +51,7 @@ export default function VportsTabView() {
         </div>
 
         {!items.length ? (
-          <div className="settings-card-surface rounded-xl px-4 py-3 text-sm text-slate-400">
+          <div className="settings-card-surface rounded-xl px-4 py-3 text-sm text-white/50">
             You do not own any VPORTs yet.
           </div>
         ) : (
@@ -70,9 +70,9 @@ export default function VportsTabView() {
                     <img
                       src={v.avatar_url || '/avatar.jpg'}
                       alt=""
-                      className="h-10 w-10 rounded-lg border border-slate-300/20 object-cover"
+                      className="h-10 w-10 rounded-lg border border-white/12 object-cover"
                     />
-                    <div className="min-w-0 text-[1rem] font-medium text-slate-100 truncate">{v.name}</div>
+                    <div className="min-w-0 text-[1rem] font-medium text-white truncate">{v.name}</div>
                   </div>
 
                   <button
@@ -100,9 +100,9 @@ export default function VportsTabView() {
 
           <div className="relative z-10 flex h-full w-full items-start justify-center overflow-y-auto p-3 sm:items-center sm:p-4">
             <div className="settings-shell relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[560px] flex-col overflow-hidden rounded-2xl sm:max-h-[calc(100dvh-2rem)]">
-              <div className="flex shrink-0 items-center justify-between border-b border-slate-300/10 px-4 py-3">
-                <div className="text-sm font-semibold text-slate-100">Create a VPORT</div>
-                <button onClick={() => setShowCreator(false)} className="settings-btn settings-btn--ghost p-1.5 text-slate-300">
+              <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-4 py-3">
+                <div className="text-sm font-semibold text-white">Create a VPORT</div>
+                <button onClick={() => setShowCreator(false)} className="settings-btn settings-btn--ghost p-1.5 text-white/70">
                   <X className="h-4 w-4" />
                 </button>
               </div>

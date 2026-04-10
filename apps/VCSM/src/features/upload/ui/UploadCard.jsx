@@ -22,7 +22,7 @@ export default function UploadCard({
       />
 
       <div className="pointer-events-none absolute inset-0 opacity-60">
-        <div className="absolute -inset-24 bg-indigo-500/10 blur-3xl" />
+        <div className="absolute -inset-24 bg-purple-500/8 blur-3xl" />
       </div>
 
       <div className="relative z-10">
@@ -30,14 +30,14 @@ export default function UploadCard({
           <span>+</span>
         </div>
 
-        <div className="text-lg font-semibold text-slate-100">
+        <div className="text-lg font-semibold text-white">
           {isVibes ? "Add photos/videos (up to 10)" : "Add photo/video"}
         </div>
-        <div className="mt-1 text-sm text-slate-400">Tap to upload or drag and drop</div>
+        <div className="mt-1 text-sm text-white/50">Tap to upload or drag and drop</div>
 
         {isVibes && (
-          <div className="mt-3 text-xs text-slate-400">
-            Selected: <span className="text-slate-200">{selectedCount}</span> / {MAX_VIBES_PHOTOS}
+          <div className="mt-3 text-xs text-white/50">
+            Selected: <span className="text-white/90">{selectedCount}</span> / {MAX_VIBES_PHOTOS}
           </div>
         )}
       </div>

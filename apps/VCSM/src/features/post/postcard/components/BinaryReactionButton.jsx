@@ -32,7 +32,7 @@ export default function BinaryReactionButton({
         {emoji}
       </span>
 
-      <span className={`text-sm font-medium ${active ? "text-slate-100" : "text-slate-300"}`}>
+      <span className={`text-sm font-medium ${active ? "text-white" : "text-white/70"}`}>
         {count}
       </span>
     </button>

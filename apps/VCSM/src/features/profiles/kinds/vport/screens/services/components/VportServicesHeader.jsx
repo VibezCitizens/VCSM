@@ -14,14 +14,14 @@ export default function VportServicesHeader({
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-200/75">
             Vport Catalog
           </div>
-          <div className="mt-1 text-lg font-black text-slate-100 sm:text-xl">{title}</div>
+          <div className="mt-1 text-lg font-black text-white sm:text-xl">{title}</div>
         </div>
 
         {right ? <div className="shrink-0">{right}</div> : null}
       </div>
 
       {subtitle ? (
-        <div className="max-w-2xl text-sm text-slate-300/80">{subtitle}</div>
+        <div className="max-w-2xl text-sm text-white/70/80">{subtitle}</div>
       ) : null}
 
       {stats.length ? (
@@ -32,7 +32,7 @@ export default function VportServicesHeader({
               className="rounded-full border border-white/12 bg-white/[0.04] px-3 py-1.5 text-xs"
             >
               <span className="text-white/45">{s?.label}</span>
-              <span className="ml-2 font-semibold text-slate-100">{s?.value}</span>
+              <span className="ml-2 font-semibold text-white">{s?.value}</span>
             </div>
           ))}
         </div>

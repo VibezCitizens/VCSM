@@ -146,18 +146,19 @@ export default function CommentCardView({
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   rows={3}
-                  className="w-full bg-[#130f20] text-slate-100 border border-violet-300/20 rounded p-2"
+                  className="w-full text-white border border-white/10 rounded-xl p-2"
+                  style={{ background: 'var(--vc-surface-input)' }}
                 />
 
                 {editError && (
-                  <p className="text-red-400 mt-2 text-sm">{editError.message}</p>
+                  <p className="text-[#fecaca] mt-2 text-sm">{editError.message}</p>
                 )}
 
                 <div className="flex gap-2 mt-3">
                   <button
                     onClick={saveInlineEdit}
                     disabled={saving || !canSave}
-                    className="bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2 rounded text-white disabled:opacity-60 shadow-[0_0_14px_rgba(196,124,255,0.35)]"
+                    className="bg-[#8b5cf6] hover:bg-[#a78bfa] px-4 py-2 rounded-xl text-white font-medium disabled:opacity-40 shadow-[0_0_14px_rgba(139,92,246,0.35)]"
                   >
                     Save
                   </button>
@@ -165,7 +166,7 @@ export default function CommentCardView({
                   <button
                     onClick={cancelInlineEdit}
                     disabled={saving}
-                    className="border border-violet-300/25 px-4 py-2 rounded text-slate-100 disabled:opacity-60"
+                    className="border border-white/12 bg-white/5 px-4 py-2 rounded-xl text-white/80 disabled:opacity-40"
                   >
                     Cancel
                   </button>
@@ -174,7 +175,7 @@ export default function CommentCardView({
             )}
           </div>
 
-          <div className="mt-2 pt-1 border-t border-violet-300/10">
+          <div className="mt-2 pt-1 border-t border-white/8">
             <CommentActions
               liked={liked}
               likeCount={likeCount}
@@ -188,7 +189,7 @@ export default function CommentCardView({
           {hasReplies && (
             <button
               onClick={onToggleReplies}
-              className="mt-2 text-xs text-slate-300 hover:text-slate-100 transition"
+              className="mt-2 text-xs text-white/70 hover:text-white transition"
             >
               {showReplies ? "Hide replies" : "View replies"}
             </button>

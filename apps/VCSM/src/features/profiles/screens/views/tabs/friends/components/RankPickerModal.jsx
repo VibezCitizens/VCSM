@@ -39,22 +39,22 @@ export default function RankPickerModal({
         onClick={(e) => e.stopPropagation()}
       >
         <header className="mb-3">
-          <h3 className="text-lg font-semibold text-slate-100">
+          <h3 className="text-lg font-semibold text-white">
             Add Top Friend
           </h3>
-          <p className="text-xs text-slate-300/75">
+          <p className="text-xs text-white/70/75">
             Pick someone you already follow
           </p>
         </header>
 
         {loading && (
-          <p className="profiles-subcard py-4 px-3 text-sm text-slate-300/75">
+          <p className="profiles-subcard py-4 px-3 text-sm text-white/70/75">
             Loading...
           </p>
         )}
 
         {!loading && candidateIds.length === 0 && (
-          <p className="profiles-subcard py-4 px-3 text-sm text-slate-300/75">
+          <p className="profiles-subcard py-4 px-3 text-sm text-white/70/75">
             No available friends to add.
           </p>
         )}
@@ -72,7 +72,7 @@ export default function RankPickerModal({
         <footer className="flex justify-end pt-4">
           <button
             onClick={onClose}
-            className="profiles-pill-btn px-4 py-2 text-sm text-slate-200/90"
+            className="profiles-pill-btn px-4 py-2 text-sm text-white/90"
           >
             Cancel
           </button>

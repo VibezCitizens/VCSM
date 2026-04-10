@@ -22,10 +22,9 @@ html.ios-keyboard body {
   height: var(--vv-height, 100dvh);
 
   background:
-    radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(59, 130, 246, 0.18), transparent 40%),
-    radial-gradient(circle at 50% 120%, rgba(124, 58, 237, 0.12), transparent 52%),
-    #050814;
+    radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a), transparent 60%),
+    radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b), transparent 60%),
+    var(--vc-bg-0);
   overflow: hidden;
 }
 
@@ -36,7 +35,7 @@ html.ios-keyboard body {
   right: 0;
   height: var(--chat-header-height);
   z-index: 35;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  border-bottom: 1px solid var(--vc-border-subtle);
 }
 
 /* ✅ footer can stay defined, but it's not used now */

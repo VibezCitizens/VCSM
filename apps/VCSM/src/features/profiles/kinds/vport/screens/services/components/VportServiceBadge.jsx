@@ -47,16 +47,16 @@ export default function VportServiceBadge({ label, enabled = true, meta = null }
             <div
               className={[
                 "h-2 w-2 shrink-0 rounded-full",
-                enabled ? "bg-emerald-300" : "bg-slate-500/80",
+                enabled ? "bg-emerald-300" : "bg-white/15",
               ].join(" ")}
             />
-            <div className="text-sm font-semibold text-slate-100 whitespace-normal break-words">
+            <div className="text-sm font-semibold text-white whitespace-normal break-words">
               {label}
             </div>
           </div>
 
           {metaText ? (
-            <div className="mt-1.5 break-words text-xs leading-5 text-slate-300/75">
+            <div className="mt-1.5 break-words text-xs leading-5 text-white/70/75">
               {metaText}
             </div>
           ) : null}

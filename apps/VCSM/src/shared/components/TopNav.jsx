@@ -10,8 +10,8 @@ export default function TopNav() {
 
   return (
     <div
-      className={`fixed top-0 inset-x-0 z-50 bg-[#050814]/72 backdrop-blur-md pt-[env(safe-area-inset-top)] ${
-        isChatInboxRoot ? 'border-b-0' : 'border-b border-neutral-800'
+      className={`fixed top-0 inset-x-0 z-50 bg-[var(--vc-bg-0)]/72 backdrop-blur-md pt-[env(safe-area-inset-top)] ${
+        isChatInboxRoot ? 'border-b-0' : 'border-b border-white/10'
       }`}
     >
       <div className="h-12 px-4 flex items-center justify-between gap-2">

@@ -1,6 +1,7 @@
 // src/features/dashboard/vport/screens/VportDashboardGasScreen.jsx
 
 import React, { useCallback, useMemo } from "react";
+import { SkeletonCardList } from "@/shared/components/Skeleton";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -104,16 +105,16 @@ export function VportDashboardGasScreen() {
 
   if (!actorId) return null;
   if (identityLoading) {
-    return <div className="p-10 text-center text-neutral-400">Loading...</div>;
+    return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
   if (!identity) {
     return (
-      <div className="p-10 text-center text-neutral-400">Sign in required.</div>
+      <div className="p-10 text-center text-white/50">Sign in required.</div>
     );
   }
   if (!isOwner) {
     return (
-      <div className="p-10 text-center text-neutral-400">
+      <div className="p-10 text-center text-white/50">
         You can only manage gas prices for your own vport.
       </div>
     );

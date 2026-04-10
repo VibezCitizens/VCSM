@@ -46,7 +46,7 @@ export default function EditCommentScreen() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={4}
-        className="w-full bg-neutral-900 text-white border border-neutral-700 rounded p-2"
+        className="w-full bg-white/4 text-white border border-neutral-700 rounded p-2"
       />
 
       {error && <p className="text-red-400 mt-2">{error.message}</p>}

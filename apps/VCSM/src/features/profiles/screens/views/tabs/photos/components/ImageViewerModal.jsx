@@ -1,4 +1,4 @@
-﻿import { X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 
 import BinaryReactionButton from "@/features/post/adapters/postcard/components/BinaryReactionButton.adapter";
@@ -120,98 +120,155 @@ export default function ImageViewerModal({
       className={`profiles-photo-viewer fixed inset-0 z-[70] ${isOpen ? "is-open" : ""} ${
         viewerOrigin === "featured" ? "from-featured" : "from-grid"
       }`}
+      style={{ pointerEvents: 'auto' }}
     >
-      <div className="profiles-photo-viewer-backdrop absolute inset-0" onClick={requestClose} />
+      {/* Backdrop — tapping closes */}
+      <div
+        className="absolute inset-0"
+        style={{ background: 'rgba(0,0,0,0.92)' }}
+        onClick={requestClose}
+      />
 
+      {/* Close button — ABOVE everything, own layer */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 100 }}
+      >
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); requestClose(); }}
+          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); requestClose(); }}
+          className="pointer-events-auto absolute flex items-center justify-center rounded-full text-white"
+          style={{
+            top: "calc(env(safe-area-inset-top, 0px) + 14px)",
+            right: "calc(env(safe-area-inset-right, 0px) + 14px)",
+            width: 44,
+            height: 44,
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+          }}
+          aria-label="Close"
+        >
+          <X size={20} strokeWidth={2.5} />
+        </button>
+      </div>
+
+      {/* Image area */}
       <div
         ref={containerRef}
-        className="profiles-photo-viewer-track relative z-10 h-full w-full overflow-y-scroll snap-y snap-mandatory"
-        onClick={(e) => e.stopPropagation()}
+        className="relative h-full w-full flex items-center justify-center"
+        style={{ zIndex: 10 }}
       >
-        {localImages.map((img, index) => {
-          const src =
-            img?.url || img?.media_url || img?.media?.url || img?.media?.media_url;
+        {localImages.length === 1 ? (
+          // Single image — no scroll, just centered
+          <div
+            className="h-full w-full flex items-center justify-center p-4"
+            onClick={requestClose}
+          >
+            {localImages[0]?.url ? (
+              <img
+                src={localImages[0].url}
+                alt=""
+                className="max-h-full max-w-full object-contain"
+                draggable={false}
+                onClick={(e) => e.stopPropagation()}
+                style={{ borderRadius: 4 }}
+              />
+            ) : (
+              <div className="text-white/50 text-sm">Image unavailable</div>
+            )}
+          </div>
+        ) : (
+          // Multiple images — vertical snap scroll
+          <div className="h-full w-full overflow-y-scroll snap-y snap-mandatory">
+            {localImages.map((img, index) => {
+              const src =
+                img?.url || img?.media_url || img?.media?.url || img?.media?.media_url;
 
-          return (
-            <div
-              key={img?.id ? `${img.id}-${index}` : `${src || "img"}-${index}`}
-              ref={(el) => (itemRefs.current[index] = el)}
-              className="profiles-photo-viewer-frame snap-start h-full w-full flex items-center justify-center relative"
-            >
-              {src ? (
-                <img
-                  src={src}
-                  alt=""
-                  className="profiles-photo-viewer-image max-h-full max-w-full object-contain"
-                  draggable={false}
-                />
-              ) : (
-                <div className="text-white/70 text-sm">Image unavailable</div>
-              )}
-            </div>
-          );
-        })}
+              return (
+                <div
+                  key={img?.id ? `${img.id}-${index}` : `${src || "img"}-${index}`}
+                  ref={(el) => (itemRefs.current[index] = el)}
+                  className="snap-start h-full w-full flex items-center justify-center p-4"
+                  onClick={requestClose}
+                >
+                  {src ? (
+                    <img
+                      src={src}
+                      alt=""
+                      className="max-h-full max-w-full object-contain"
+                      draggable={false}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ borderRadius: 4 }}
+                    />
+                  ) : (
+                    <div className="text-white/50 text-sm">Image unavailable</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      <div
-        className="profiles-photo-viewer-actions absolute top-1/2 -translate-y-1/2 z-20 rounded-2xl px-4 py-5 flex flex-col gap-4 text-white text-xl"
-        style={{ right: "calc(env(safe-area-inset-right, 0px) + 8px)" }}
-      >
-        <BinaryReactionButton
-          type="like"
-          emoji={"\uD83D\uDC4D"}
-          active={activePost?.userHasReacted === "like"}
-          count={activePost?.likeCount || 0}
-          onClick={() => handleReaction(activePostId, "like")}
-          disabled={!canAct}
-        />
-
-        <BinaryReactionButton
-          type="dislike"
-          emoji={"\uD83D\uDC4E"}
-          active={activePost?.userHasReacted === "dislike"}
-          count={activePost?.dislikeCount || 0}
-          onClick={() => handleReaction(activePostId, "dislike")}
-          disabled={!canAct}
-        />
-
-        <RoseReactionButton
-          count={activePost?.roseCount || 0}
-          onSend={() => handleRose(activePostId)}
-          disabled={!canAct}
-        />
-
-        <CommentButton
-          count={activePost?.commentCount || 0}
-          onClick={(e) => {
-            e?.stopPropagation?.();
-            if (!canAct) return;
-            openComments?.(activePostId);
+      {/* Reaction sidebar — only for posts (Photos tab), hidden for portfolio */}
+      {canAct && (
+        <div
+          className="absolute top-1/2 -translate-y-1/2 flex flex-col gap-3 rounded-2xl px-3 py-4 text-white"
+          style={{
+            right: "calc(env(safe-area-inset-right, 0px) + 8px)",
+            zIndex: 50,
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            pointerEvents: 'auto',
           }}
-        />
+        >
+          <BinaryReactionButton
+            type="like"
+            emoji={"\uD83D\uDC4D"}
+            active={activePost?.userHasReacted === "like"}
+            count={activePost?.likeCount || 0}
+            onClick={() => handleReaction(activePostId, "like")}
+            disabled={!canAct}
+          />
 
-        <ShareReactionButton
-          onClick={(e) => {
-            e?.stopPropagation?.();
-            if (!canAct) return;
-            handleShare?.(activePostId);
-          }}
-          disabled={!canAct}
-        />
-      </div>
+          <BinaryReactionButton
+            type="dislike"
+            emoji={"\uD83D\uDC4E"}
+            active={activePost?.userHasReacted === "dislike"}
+            count={activePost?.dislikeCount || 0}
+            onClick={() => handleReaction(activePostId, "dislike")}
+            disabled={!canAct}
+          />
 
-      <button
-        onClick={requestClose}
-        className="profiles-photo-viewer-close absolute z-30 h-11 w-11 rounded-full flex items-center justify-center text-white transition"
-        style={{
-          top: "calc(env(safe-area-inset-top, 0px) + 12px)",
-          right: "calc(env(safe-area-inset-right, 0px) + 12px)",
-        }}
-        aria-label="Close"
-      >
-        <X size={20} />
-      </button>
+          <RoseReactionButton
+            count={activePost?.roseCount || 0}
+            onSend={() => handleRose(activePostId)}
+            disabled={!canAct}
+          />
+
+          <CommentButton
+            count={activePost?.commentCount || 0}
+            onClick={(e) => {
+              e?.stopPropagation?.();
+              if (!canAct) return;
+              openComments?.(activePostId);
+            }}
+          />
+
+          <ShareReactionButton
+            onClick={(e) => {
+              e?.stopPropagation?.();
+              if (!canAct) return;
+              handleShare?.(activePostId);
+            }}
+            disabled={!canAct}
+          />
+        </div>
+      )}
     </div>
   );
 }
-

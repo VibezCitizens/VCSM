@@ -149,8 +149,10 @@
           /^\/m\/[^/]+\/?$/.test(path) ||
           /^\/actor\/[^/]+\/menu(?:\/(?:qr|flyer))?\/?$/.test(path)
 
-        // QR menu links should open directly to the menu UI with no launch splash.
-        if (isPublicMenuRoute) {
+        const isLegalRoute = /^\/legal(\/|$)/.test(path)
+
+        // Routes that should open instantly with no launch splash.
+        if (isPublicMenuRoute || isLegalRoute) {
           splash.remove()
           return
         }

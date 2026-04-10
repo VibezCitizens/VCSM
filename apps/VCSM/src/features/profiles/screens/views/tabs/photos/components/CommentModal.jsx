@@ -130,13 +130,13 @@ export default function CommentModal({ postId, onClose }) {
           "
         >
           {loading && (
-            <div className="text-center text-neutral-400 py-6">
+            <div className="text-center text-white/50 py-6">
               Loading sparks…
             </div>
           )}
 
           {!loading && (!comments || comments.length === 0) && (
-            <div className="text-center text-neutral-500 py-6">
+            <div className="text-center text-white/40 py-6">
               No sparks yet.
             </div>
           )}
@@ -164,7 +164,7 @@ export default function CommentModal({ postId, onClose }) {
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder="Write a spark…"
-                  className="flex-1 rounded-md bg-neutral-800 text-white px-3 py-2 text-sm border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  className="flex-1 rounded-md bg-white/6 text-white px-3 py-2 text-sm border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
                 />
 
                 <button
@@ -195,7 +195,7 @@ export default function CommentModal({ postId, onClose }) {
                   disabled={posting}
                   className={
                     posting
-                      ? "bg-neutral-800 text-neutral-500 px-4 py-2 rounded-md text-sm cursor-not-allowed"
+                      ? "bg-white/6 text-white/40 px-4 py-2 rounded-md text-sm cursor-not-allowed"
                       : "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm"
                   }
                 >

@@ -125,8 +125,8 @@ function getButtonClass(size, variant) {
       hover:bg-red-500/10
     `,
     disabled: `
-      bg-neutral-800
-      text-neutral-500
+      bg-white/6
+      text-white/40
       cursor-not-allowed
     `,
   };

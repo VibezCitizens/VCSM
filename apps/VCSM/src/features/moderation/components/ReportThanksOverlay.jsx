@@ -43,7 +43,7 @@ export default function ReportedPostCover({
       <div className="absolute inset-0 flex items-center justify-center px-4">
         <div
           className={[
-            "relative w-full border border-white/10 bg-neutral-950/70 shadow-2xl backdrop-blur-[10px] text-center",
+            "relative w-full border border-white/10 bg-black/70 shadow-2xl backdrop-blur-[10px] text-center",
             isComment
               ? "max-w-xs rounded-2xl px-4 py-3"
               : "max-w-sm rounded-3xl px-5 py-5",

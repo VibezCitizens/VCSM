@@ -184,7 +184,7 @@ export function GasPricesPanel({
               <div className="text-[18px] font-semibold tracking-tight text-white">
                 Fuel Prices
               </div>
-              <div className="mt-0.5 text-xs text-neutral-400">
+              <div className="mt-0.5 text-xs text-white/50">
                 Official rates + last community update
               </div>
             </div>
@@ -193,12 +193,12 @@ export function GasPricesPanel({
               <button
                 type="button"
                 onClick={() => setShowBulkModal(true)}
-                className="shrink-0 rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-slate-100 shadow-[0_10px_20px_rgba(56,189,248,0.22)] transition hover:from-sky-300/55 hover:to-blue-500/55 active:scale-[0.98]"
+                className="shrink-0 rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(56,189,248,0.22)] transition hover:from-sky-300/55 hover:to-blue-500/55 active:scale-[0.98]"
               >
                 Update prices
               </button>
             ) : !canSubmit ? (
-              <div className="text-xs text-neutral-500">Log in to update</div>
+              <div className="text-xs text-white/40">Log in to update</div>
             ) : null}
           </div>
 
@@ -220,14 +220,14 @@ export function GasPricesPanel({
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <div className="text-sm font-semibold text-white">{row.label}</div>
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-neutral-300">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">
                           {row.official.currencyCode}/{row.official.unit}
                         </span>
                       </div>
 
                       <div className="mt-3 grid grid-cols-2 gap-3">
                         <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
-                          <div className="text-[11px] uppercase tracking-wide text-neutral-400">
+                          <div className="text-[11px] uppercase tracking-wide text-white/50">
                             Official
                           </div>
                           <div className="mt-1 text-xl font-semibold text-white">
@@ -237,7 +237,7 @@ export function GasPricesPanel({
 
                         <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
                           <div className="flex items-center justify-between gap-2">
-                            <div className="text-[11px] uppercase tracking-wide text-neutral-400">
+                            <div className="text-[11px] uppercase tracking-wide text-white/50">
                               Last update
                             </div>
 
@@ -250,7 +250,7 @@ export function GasPricesPanel({
                                 Official
                               </span>
                             ) : (
-                              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-neutral-400">
+                              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-white/50">
                                 None yet
                               </span>
                             )}
@@ -263,7 +263,7 @@ export function GasPricesPanel({
                       </div>
 
                       {!hasCommunityUpdate ? (
-                        <div className="mt-2 text-xs text-neutral-500">
+                        <div className="mt-2 text-xs text-white/40">
                           Be the first to update this station.
                         </div>
                       ) : null}
@@ -321,7 +321,7 @@ function BulkUpdateFuelPricesModal({
         <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-4">
           <div className="min-w-0">
             <div className="text-lg font-semibold text-white">Update prices</div>
-            <div className="mt-1 text-xs text-neutral-400">
+            <div className="mt-1 text-xs text-white/50">
               Fill any fuels you want. Blank = skip.
             </div>
           </div>
@@ -347,7 +347,7 @@ function BulkUpdateFuelPricesModal({
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-white">{row.label}</div>
-                    <div className="mt-0.5 text-[11px] text-neutral-400">
+                    <div className="mt-0.5 text-[11px] text-white/50">
                       {row.official.currencyCode}/{row.official.unit}
                     </div>
                   </div>
@@ -369,14 +369,14 @@ function BulkUpdateFuelPricesModal({
                   </div>
                 </div>
 
-                <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-neutral-500">
+                <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-white/40">
                   <div>
                     Official:{" "}
-                    <span className="text-neutral-300">{row.official.price ?? "-"}</span>
+                    <span className="text-white/70">{row.official.price ?? "-"}</span>
                   </div>
                   <div>
                     Last update:{" "}
-                    <span className="text-neutral-300">{row.lastUpdate?.label || "-"}</span>
+                    <span className="text-white/70">{row.lastUpdate?.label || "-"}</span>
                   </div>
                 </div>
               </div>
@@ -450,7 +450,7 @@ function BulkUpdateFuelPricesModal({
 
               onClose();
             }}
-            className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-slate-100 shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Save updates"}
           </button>

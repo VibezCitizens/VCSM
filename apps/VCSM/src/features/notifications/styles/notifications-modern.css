@@ -1,10 +1,10 @@
 .notifications-modern-page {
   min-height: 100%;
-  color: #e8eeff;
+  color: var(--vc-text);
   background:
-    radial-gradient(76rem 34rem at -10% -16%, rgba(115, 88, 255, 0.2), transparent 58%),
-    radial-gradient(52rem 28rem at 108% 12%, rgba(42, 152, 255, 0.2), transparent 62%),
-    linear-gradient(180deg, rgba(7, 12, 27, 0.96) 0%, rgba(4, 8, 20, 0.98) 58%);
+    radial-gradient(900px 500px at 15% 10%, var(--vc-gradient-a), transparent 60%),
+    radial-gradient(800px 420px at 85% 90%, var(--vc-gradient-b), transparent 60%),
+    var(--vc-bg-0);
 }
 
 .notifications-modern-shell {
@@ -12,58 +12,66 @@
   margin: 0 auto;
 }
 
+/* ── Header ── */
 .notifications-header-shell {
-  border: 1px solid rgba(141, 171, 255, 0.24);
+  border: 1px solid var(--vc-border);
   border-radius: 1rem;
-  background:
-    linear-gradient(145deg, rgba(132, 100, 255, 0.14), rgba(53, 136, 255, 0.09) 48%, rgba(9, 18, 38, 0.74)),
-    rgba(11, 18, 36, 0.68);
+  background: var(--vc-card-bg);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    0 16px 34px rgba(1, 7, 22, 0.42);
-  backdrop-filter: blur(16px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    var(--vc-shadow-card);
+  backdrop-filter: var(--vc-backdrop-blur);
 }
 
+/* ── List ── */
 .notifications-list {
   margin: 0;
   list-style: none;
-  padding: 0.75rem;
+  padding: 0.75rem 0;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 
+/* ── Card ── */
 .notifications-card {
   position: relative;
   border-radius: 1rem;
-  border: 1px solid rgba(138, 167, 255, 0.22);
-  background:
-    linear-gradient(148deg, rgba(114, 86, 255, 0.16), rgba(45, 114, 255, 0.08) 42%, rgba(9, 17, 38, 0.78)),
-    rgba(10, 17, 36, 0.68);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 24px rgba(3, 8, 22, 0.38);
-  backdrop-filter: blur(14px);
+  border: 1px solid var(--vc-border-subtle);
+  background: var(--vc-card-bg);
+  box-shadow: var(--vc-shadow-card);
+  backdrop-filter: var(--vc-backdrop-blur);
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .notifications-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(170, 197, 255, 0.38);
+  border-color: var(--vc-border-strong);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 16px 30px rgba(4, 10, 26, 0.46),
-    0 0 16px rgba(92, 140, 255, 0.22);
+    var(--vc-shadow-card),
+    0 0 14px rgba(139, 92, 246, 0.16);
 }
 
 .notifications-card--unread {
-  border-color: rgba(189, 211, 255, 0.52);
+  border-color: rgba(139, 92, 246, 0.44);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 16px 32px rgba(3, 9, 24, 0.46),
-    0 0 20px rgba(96, 152, 255, 0.34);
+    var(--vc-shadow-card),
+    0 0 18px rgba(139, 92, 246, 0.22);
 }
 
+.notifications-card--unread::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--vc-accent-primary), var(--vc-accent-primary-hover));
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+/* ── Action buttons ── */
 .notifications-action-btn {
   border-radius: 0.72rem;
   font-size: 0.74rem;
@@ -74,44 +82,45 @@
 }
 
 .notifications-action-btn--ghost {
-  border: 1px solid rgba(138, 167, 255, 0.36);
-  color: #e6efff;
-  background: rgba(24, 36, 72, 0.46);
+  border: 1px solid var(--vc-border);
+  color: var(--vc-text);
+  background: var(--vc-surface-input);
 }
 
 .notifications-action-btn--ghost:hover {
-  border-color: rgba(181, 205, 255, 0.58);
-  background: rgba(34, 50, 96, 0.62);
+  border-color: var(--vc-border-strong);
+  background: var(--vc-surface-strong);
 }
 
 .notifications-action-btn--accept {
   color: #ffffff;
-  border: 1px solid rgba(133, 255, 210, 0.32);
-  background: linear-gradient(90deg, rgba(19, 181, 143, 0.92), rgba(26, 211, 163, 0.88));
-  box-shadow: 0 0 12px rgba(41, 226, 173, 0.3);
+  border: 1px solid rgba(34, 197, 94, 0.32);
+  background: linear-gradient(90deg, rgba(22, 163, 74, 0.92), rgba(34, 197, 94, 0.88));
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
 }
 
 .notifications-action-btn--accept:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
 }
 
 .notifications-action-btn--decline {
-  color: #d9e2ff;
-  border: 1px solid rgba(143, 162, 205, 0.36);
-  background: rgba(36, 46, 78, 0.62);
+  color: var(--vc-text-soft);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
 }
 
 .notifications-action-btn--decline:hover {
-  border-color: rgba(166, 188, 232, 0.52);
-  background: rgba(46, 59, 98, 0.72);
+  border-color: var(--vc-border-strong);
+  background: var(--vc-surface-strong);
 }
 
+/* ── Empty state ── */
 .notifications-empty {
-  border: 1px solid rgba(138, 167, 255, 0.2);
+  border: 1px solid var(--vc-border-subtle);
   border-radius: 1rem;
-  margin: 0.75rem;
-  padding: 2.2rem 1rem;
+  margin: 1.5rem 0;
+  padding: 3rem 1.5rem;
   text-align: center;
-  color: rgba(186, 201, 235, 0.78);
-  background: rgba(12, 20, 42, 0.42);
+  color: var(--vc-text-muted);
+  background: var(--vc-card-bg);
 }

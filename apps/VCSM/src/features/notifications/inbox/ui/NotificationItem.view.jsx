@@ -20,7 +20,7 @@ import ReviewCreatedNotificationItem from '@/features/notifications/types/review
 
 function DefaultNotification({ notification }) {
   return (
-    <div className="text-xs text-neutral-500">
+    <div className="text-xs text-white/40">
       Unhandled: {notification.kind}
     </div>
   )

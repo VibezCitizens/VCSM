@@ -1,19 +1,14 @@
-// src/features/profiles/dal/readVportType.dal.js
-
 import { supabase } from "@/services/supabase/supabaseClient";
+import { createTTLCache } from "@/shared/lib/ttlCache";
 
-/**
- * DAL: thin DB adapter only.
- * Returns raw row shape exactly as selected.
- *
- * Raw return shape:
- * {
- *   kind: "user" | "vport",
- *   vport: { vport_type: string | null } | null
- * }
- */
+// Vport type never changes — cache 10 minutes
+const vportTypeCache = createTTLCache(600_000);
+
 export async function readVportTypeDAL(actorId) {
   if (!actorId) return null;
+
+  const cached = vportTypeCache.get(actorId);
+  if (cached) return cached;
 
   const { data, error } = await supabase
     .schema("vc")
@@ -27,5 +22,7 @@ export async function readVportTypeDAL(actorId) {
     throw error;
   }
 
-  return data ?? null;
+  const result = data ?? null;
+  if (result) vportTypeCache.set(actorId, result);
+  return result;
 }

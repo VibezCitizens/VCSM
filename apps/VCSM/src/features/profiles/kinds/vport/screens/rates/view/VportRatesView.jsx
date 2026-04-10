@@ -111,22 +111,22 @@ export default function VportRatesView({
   return (
     <div className="profiles-card p-6">
       <div className="rounded-2xl border border-sky-300/20 bg-[linear-gradient(140deg,rgba(56,189,248,0.12),rgba(15,23,42,0.4)_45%,rgba(2,6,23,0.7)_100%)] p-4">
-        <div className="text-lg font-semibold text-slate-100">{title}</div>
-        <div className="mt-1 text-sm text-slate-300/80">{subtitle}</div>
+        <div className="text-lg font-semibold text-white">{title}</div>
+        <div className="mt-1 text-sm text-white/70/80">{subtitle}</div>
 
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <div className="rounded-xl border border-white/10 bg-black/25 p-3">
-            <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Pairs tracked</div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-white/50">Pairs tracked</div>
             <div className="mt-1 text-xl font-semibold text-white">{pairCount}</div>
           </div>
 
           <div className="rounded-xl border border-white/10 bg-black/25 p-3">
-            <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Rate type</div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-white/50">Rate type</div>
             <div className="mt-1 text-xl font-semibold text-emerald-200">{String(rateType || "fx").toUpperCase()}</div>
           </div>
 
           <div className="rounded-xl border border-white/10 bg-black/25 p-3">
-            <div className="text-[10px] uppercase tracking-[0.08em] text-slate-400">Global update</div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-white/50">Global update</div>
             <div className="mt-1 text-sm font-semibold text-white">{fmtTs(effectiveLastUpdated)}</div>
           </div>
         </div>
@@ -141,8 +141,8 @@ export default function VportRatesView({
       <div className="mt-4">
         {pairCount === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-black/20 p-5 text-center">
-            <div className="text-sm font-semibold text-slate-100">No exchange pairs yet</div>
-            <div className="mt-1 text-xs text-slate-400">Create your first pair above to publish official rates.</div>
+            <div className="text-sm font-semibold text-white">No exchange pairs yet</div>
+            <div className="mt-1 text-xs text-white/50">Create your first pair above to publish official rates.</div>
           </div>
         ) : (
           rankedRates.map((r) => (
