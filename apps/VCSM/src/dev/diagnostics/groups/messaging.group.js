@@ -48,8 +48,8 @@ async function resolveSecondActorId({ actorId, shared }) {
   }
 
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id")
     .neq("actor_id", actorId)
     .limit(1);

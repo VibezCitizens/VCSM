@@ -24,16 +24,9 @@ export async function listActorPresentationRowsByIdsDAL({ actorIds }) {
   const ids = uniqueIds(actorIds);
   if (!ids.length) return [];
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
-    .select(
-      "actor_id,kind,username,display_name,photo_url,vport_name,vport_slug,vport_avatar_url"
-    )
-    .in("actor_id", ids);
-
+  const { rows, error } = await hydrateAndReturnSummaries({ actorIds: ids });
   if (error) throw error;
-  return data ?? [];
+  return rows ?? [];
 }
 
 export async function listActorIdentityRowsByIdsDAL({ actorIds }) {

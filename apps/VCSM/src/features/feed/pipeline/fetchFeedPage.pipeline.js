@@ -44,7 +44,7 @@ const readFeedFollowRowsDAL = import.meta.env.DEV
   : _readFeedFollowRowsDAL;
 
 const fetchPostMentionRows = import.meta.env.DEV
-  ? wrapDAL("fetchPostMentionRows", "vc.post_mentions+actor_presentation", _fetchPostMentionRows)
+  ? wrapDAL("fetchPostMentionRows", "vc.post_mentions+identity.actor_directory", _fetchPostMentionRows)
   : _fetchPostMentionRows;
 
 const readCommentCountsBatch = import.meta.env.DEV

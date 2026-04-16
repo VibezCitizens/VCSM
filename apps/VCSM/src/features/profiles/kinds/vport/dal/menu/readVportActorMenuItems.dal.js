@@ -3,7 +3,7 @@
 import vportSchema from "@/services/supabase/vportClient";
 
 const ITEM_SELECT =
-  "id,profile_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
+  "id,profile_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url,profiles!inner(actor_id)";
 
 export async function readVportActorMenuItemDAL({ itemId } = {}) {
   if (!itemId) throw new Error("readVportActorMenuItemDAL: itemId is required");
@@ -15,7 +15,9 @@ export async function readVportActorMenuItemDAL({ itemId } = {}) {
     .maybeSingle();
 
   if (error) throw error;
-  return data ?? null;
+  if (!data) return null;
+  const { profiles, ...rest } = data;
+  return { ...rest, actor_id: profiles?.actor_id ?? null };
 }
 
 export default readVportActorMenuItemDAL;

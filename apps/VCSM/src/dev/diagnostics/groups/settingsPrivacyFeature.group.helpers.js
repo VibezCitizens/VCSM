@@ -39,8 +39,8 @@ function getState(shared) {
 
 async function resolveSelfPresentation(actorId) {
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id,username,display_name")
     .eq("actor_id", actorId)
     .maybeSingle();
@@ -51,8 +51,8 @@ async function resolveSelfPresentation(actorId) {
 
 async function resolveUnblockedCandidate(actorId, blockedIds) {
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id")
     .neq("actor_id", actorId)
     .limit(40);

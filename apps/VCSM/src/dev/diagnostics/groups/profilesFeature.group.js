@@ -76,8 +76,8 @@ function getState(shared) {
 
 async function resolveSelfPresentation(actorId) {
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id,kind,username,display_name")
     .eq("actor_id", actorId)
     .maybeSingle();

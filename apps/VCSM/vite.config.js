@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
       },
       {
         find: '@notifications',
-        replacement: fileURLToPath(new URL('../../engines/notifications/index.js', import.meta.url)),
+        replacement: fileURLToPath(new URL('./src/features/notifications/runtime/index.js', import.meta.url)),
       },
       {
         find: '@debuggers',

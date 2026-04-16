@@ -56,12 +56,17 @@ export function useVportActorMenu({ actorId, includeInactive = false }) {
     load();
   }, [load]);
 
+  const patchMenu = useCallback((updater) => {
+    setMenu((prev) => updater(prev));
+  }, []);
+
   return {
     menu,
     categories: menu.categories ?? [],
     loading,
     error,
     refresh: load,
+    patchMenu,
   };
 }
 

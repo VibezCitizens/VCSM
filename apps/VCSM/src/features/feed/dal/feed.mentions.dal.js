@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import { hydrateAndReturnSummaries } from "@hydration";
 
 /**
  * Returns rows shaped for buildMentionMaps:
@@ -28,14 +29,10 @@ export async function fetchPostMentionRows(postIds) {
   ];
   if (!mentionedActorIds.length) return [];
 
-  // Resolve mention identity in one read-model query.
-  const { data: presentations, error: presErr } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
-    .select(
-      "actor_id, kind, username, display_name, photo_url, vport_slug, vport_name, vport_avatar_url"
-    )
-    .in("actor_id", mentionedActorIds);
+  // Resolve mention identity via hydration engine.
+  const { rows: presentations, error: presErr } = await hydrateAndReturnSummaries({
+    actorIds: mentionedActorIds,
+  });
 
   if (presErr) throw presErr;
 

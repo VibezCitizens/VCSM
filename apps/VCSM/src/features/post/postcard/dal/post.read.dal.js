@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import { hydrateAndReturnSummaries } from "@hydration";
 
 /**
  * Fetch a single post by ID
@@ -9,7 +10,7 @@ export async function fetchPostByIdDAL(postId) {
     return { data: null, error: null };
   }
 
-  return supabase
+  const { data: row, error } = await supabase
     .schema("vc")
     .from("posts")
     .select(`
@@ -28,21 +29,17 @@ export async function fetchPostByIdDAL(postId) {
         url,
         media_type,
         sort_order
-      ),
-
-      actor:actor_presentation!posts_actor_id_fkey (
-        actor_id,
-        kind,
-        display_name,
-        username,
-        photo_url,
-        vport_name,
-        vport_slug,
-        vport_avatar_url,
-        vport_banner_url
       )
     `)
     .eq("id", postId)
     .order("sort_order", { foreignTable: "post_media", ascending: true })
     .maybeSingle();
+
+  if (error || !row) return { data: row ?? null, error };
+
+  // Hydrate actor via engine — returns canonical summary shape
+  const { rows: actorRows } = await hydrateAndReturnSummaries({ actorIds: [row.actor_id] });
+  const actor = actorRows?.[0] ?? null;
+
+  return { data: { ...row, actor }, error: null };
 }

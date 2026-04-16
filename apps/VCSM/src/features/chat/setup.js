@@ -37,54 +37,32 @@ async function getActorSummariesByIds({ actorIds }) {
 
 /**
  * App-provided actor search for the chat engine directory.
- * Queries vc.actor_presentation — returns rows matching the engine's
+ * Uses identity.search_actor_directory RPC — returns rows matching the engine's
  * DirectorySearchResultModel shape.
  */
 async function searchActors(query, limit = 12) {
-  const q = (query || '').trim()
-  if (!q) return []
-
-  const exact = normalizeHandleTerm(q.startsWith('@') ? q.slice(1) : q)
-
-  if (exact) {
-    const { data, error } = await supabase
-      .schema('vc')
-      .from('actor_presentation')
-      .select('actor_id,kind,display_name,username,photo_url,vport_name,vport_slug')
-      .ilike('username', exact)
-      .limit(1)
-    if (error) throw error
-    if (data?.length) {
-      return data.map((row) => ({
-        actor_id: row.actor_id,
-        display_name: row.display_name || row.vport_name,
-        username: row.username || row.vport_slug,
-        photo_url: row.photo_url || row.vport_avatar_url,
-        kind: row.kind ?? 'user',
-      }))
-    }
-  }
-
-  const pattern = toContainsPattern(q)
-  if (!pattern) return []
+  const needle = (query || '').replace(/^@/, '').trim()
+  if (!needle) return []
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('actor_presentation')
-    .select('actor_id,kind,display_name,username,photo_url,vport_name,vport_slug')
-    .or(
-      `username.ilike.${pattern},display_name.ilike.${pattern},vport_name.ilike.${pattern},vport_slug.ilike.${pattern}`
-    )
-    .order('display_name', { ascending: true })
-    .limit(limit)
+    .schema('identity')
+    .rpc('search_actor_directory', {
+      p_viewer_domain: 'vc',
+      p_viewer_actor_id: null,
+      p_query: needle,
+      p_filter: 'all',
+      p_limit: limit,
+      p_offset: 0,
+    })
 
   if (error) throw error
-  return (data ?? []).map((row) => ({
-    actor_id: row.actor_id,
-    display_name: row.display_name || row.vport_name,
-    username: row.username || row.vport_slug,
-    photo_url: row.photo_url || row.vport_avatar_url,
-    kind: row.kind ?? 'user',
+
+  return (Array.isArray(data) ? data : []).map((row) => ({
+    actor_id:     row.actor_id,
+    display_name: row.display_name ?? null,
+    username:     row.username ?? null,
+    photo_url:    row.avatar_url ?? null,
+    kind:         row.actor_kind ?? 'user',
   }))
 }
 

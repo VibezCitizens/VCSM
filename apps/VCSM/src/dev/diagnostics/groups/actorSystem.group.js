@@ -134,8 +134,8 @@ export async function runActorSystemGroup({ onTestUpdate, shared }) {
         const { actorId } = await ensureActorContext(localShared);
 
         const { data, error } = await supabase
-          .schema("vc")
-          .from("actor_presentation")
+          .schema("identity")
+          .from("actor_directory")
           .select(
             "actor_id,kind,display_name,username,photo_url,vport_name,vport_slug,vport_avatar_url"
           )

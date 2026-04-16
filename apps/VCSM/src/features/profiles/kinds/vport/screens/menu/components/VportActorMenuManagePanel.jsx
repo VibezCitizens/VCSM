@@ -18,7 +18,7 @@ export function VportActorMenuManagePanel({
   showHeader = true,
   className = "",
 } = {}) {
-  const { categories, loading: loadingMenu, error: menuError, refresh } =
+  const { categories, loading: loadingMenu, error: menuError, refresh, patchMenu } =
     useVportActorMenu({ actorId, includeInactive });
 
   const categoriesMut = useVportActorMenuCategoriesMutations({
@@ -156,9 +156,47 @@ export function VportActorMenuManagePanel({
 
   const handleSaveItem = useCallback(
     async (payload) => {
-      await itemsMut.saveItem(payload);
+      const isCreate = !payload.itemId;
+
+      if (isCreate && payload.categoryId) {
+        const tempId = `_opt_${Date.now()}`;
+        const optimisticItem = {
+          id: tempId,
+          actorId,
+          categoryId: payload.categoryId,
+          key: payload.key ?? null,
+          name: payload.name ?? "",
+          description: payload.description ?? null,
+          sortOrder: typeof payload.sortOrder === "number" ? payload.sortOrder : 0,
+          isActive: typeof payload.isActive === "boolean" ? payload.isActive : true,
+          priceCents: typeof payload.priceCents === "number" ? payload.priceCents : null,
+          currencyCode: payload.currencyCode ?? "USD",
+          imageUrl: payload.imageUrl ?? null,
+          createdAt: null,
+          updatedAt: null,
+          _optimistic: true,
+        };
+
+        patchMenu((prev) => ({
+          ...prev,
+          categories: (prev.categories ?? []).map((cat) =>
+            cat.id === payload.categoryId
+              ? { ...cat, items: [...(cat.items ?? []), optimisticItem] }
+              : cat
+          ),
+        }));
+
+        try {
+          await itemsMut.saveItem(payload);
+        } catch (err) {
+          await refresh();
+          throw err;
+        }
+      } else {
+        await itemsMut.saveItem(payload);
+      }
     },
-    [itemsMut]
+    [actorId, itemsMut, patchMenu, refresh]
   );
 
   const requestDeleteCategory = useCallback(

@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import { hydrateAndReturnSummaries } from "@hydration";
 
 export async function readPostMentionedActorIdsDAL({ postId }) {
   if (!postId) return [];
@@ -24,14 +25,7 @@ export async function readMentionActorPresentationDAL({ actorIds }) {
   const ids = Array.isArray(actorIds) ? actorIds.filter(Boolean) : [];
   if (ids.length === 0) return [];
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
-    .select(
-      "actor_id, kind, username, display_name, photo_url, vport_id, vport_slug, vport_name, vport_avatar_url"
-    )
-    .in("actor_id", ids);
-
+  const { rows, error } = await hydrateAndReturnSummaries({ actorIds: ids });
   if (error) throw error;
-  return Array.isArray(data) ? data : [];
+  return rows ?? [];
 }

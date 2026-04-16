@@ -31,28 +31,21 @@ function extractMentionHandles(text) {
   return Array.from(out);
 }
 
-// Resolve handles -> actor_ids using vc.actor_presentation (users + vports).
+// Resolve handles -> actor_ids via identity.actor_directory (users + vports).
+// The directory stores canonical usernames for both kinds.
 async function resolveMentionActorIds(handles) {
   const hs = Array.isArray(handles) ? handles.map(normalizeHandle).filter(Boolean) : [];
   if (hs.length === 0) return [];
 
-  // Build postgrest IN lists safely.
-  // postgrest expects: in.("a","b")
-  const quoted = hs.map((h) => `"${h.replace(/"/g, '\\"')}"`).join(",");
-
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
-    .select("actor_id, kind, username, vport_slug")
-    .or(`username.in.(${quoted}),vport_slug.in.(${quoted})`);
+    .schema("identity")
+    .from("actor_directory")
+    .select("actor_id")
+    .in("username", hs);
 
   if (error) throw error;
 
-  const actorIds = (data || [])
-    .map((r) => r?.actor_id)
-    .filter(Boolean);
-
-  // dedupe
+  const actorIds = (data || []).map((r) => r?.actor_id).filter(Boolean);
   return Array.from(new Set(actorIds));
 }
 

@@ -75,8 +75,8 @@ async function resolveTargetActor({ actorId, userId }) {
 
   if (candidateId) {
     const { data: profile } = await supabase
-      .schema("vc")
-      .from("actor_presentation")
+      .schema("identity")
+      .from("actor_directory")
       .select("actor_id,display_name,username")
       .eq("actor_id", candidateId)
       .maybeSingle();
@@ -88,8 +88,8 @@ async function resolveTargetActor({ actorId, userId }) {
   }
 
   const { data: rows, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id,display_name,username")
     .neq("actor_id", actorId)
     .limit(20);

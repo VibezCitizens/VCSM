@@ -1,7 +1,7 @@
 import vportSchema from "@/services/supabase/vportClient";
 
 const CATEGORY_SELECT =
-  "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at";
+  "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at,profiles!inner(actor_id)";
 
 export async function readVportActorMenuCategoryDAL({ categoryId } = {}) {
   if (!categoryId)
@@ -14,7 +14,9 @@ export async function readVportActorMenuCategoryDAL({ categoryId } = {}) {
     .maybeSingle();
 
   if (error) throw error;
-  return data ?? null;
+  if (!data) return null;
+  const { profiles, ...rest } = data;
+  return { ...rest, actor_id: profiles?.actor_id ?? null };
 }
 
 export const readVportActorMenuCategoriesDAL = readVportActorMenuCategoryDAL;

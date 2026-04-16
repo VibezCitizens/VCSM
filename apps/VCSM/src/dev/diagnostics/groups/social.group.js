@@ -35,8 +35,8 @@ async function resolveTargetActorId(shared) {
     // best effort only
   }
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id")
     .neq("actor_id", actorId)
     .limit(1);
@@ -53,8 +53,8 @@ async function resolveForeignActorId(shared) {
   const ownedIds = new Set((ownedRows || []).map((row) => row.actor_id).filter(Boolean));
   ownedIds.add(actorId);
   const { data, error } = await supabase
-    .schema("vc")
-    .from("actor_presentation")
+    .schema("identity")
+    .from("actor_directory")
     .select("actor_id")
     .limit(50);
   if (error) throw error;

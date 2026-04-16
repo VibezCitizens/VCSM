@@ -14,21 +14,10 @@ export async function listActorPostsByActorDAL({ actorId }) {
       post_type,
       tags,
       created_at,
-      realm_id,
-
-      actor:actor_presentation (
-        actor_id,
-        kind,
-        display_name,
-        username,
-        photo_url,
-        vport_name,
-        vport_slug,
-        vport_avatar_url,
-        vport_banner_url
-      )
+      realm_id
     `)
     .eq("actor_id", actorId)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
