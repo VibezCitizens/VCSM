@@ -177,7 +177,7 @@ export default function VportDashboardBookingHistoryScreen() {
             <VportBackButton
               isDesktop={isDesktop}
               onClick={() => navigate(`/actor/${targetActorId}/dashboard`)}
-              style={shell.btn("soft")}
+             
             />
             <div style={shell.title}>BOOKING HISTORY</div>
             <div style={shell.rightSpacer} />

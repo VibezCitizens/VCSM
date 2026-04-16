@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
+import vportSchema from '@/services/supabase/vportClient'
 
 export async function readActorRowDAL(actorId) {
   if (!actorId) return null
@@ -31,9 +32,8 @@ export async function readProfileCompletionFieldsDAL(profileId) {
 export async function readVportCompletionFieldsDAL(vportId) {
   if (!vportId) return null
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('vports')
+  const { data, error } = await vportSchema
+    .from('profiles')
     .select('id,name,avatar_url,bio')
     .eq('id', vportId)
     .maybeSingle()

@@ -11,6 +11,7 @@ import { setupVcsmHydration } from '@/features/hydration/setup'
 import { setupVcsmChatEngine } from '@/features/chat/setup'
 import { setupVcsmReviewsEngine } from '@/features/reviews/setup'
 import { setupVcsmPortfolioEngine } from '@/features/portfolio/setup'
+import { setupVcsmNotificationsEngine } from '@/features/notifications/setup'
 
 // Configure engines before any component renders or auth checks run.
 setupVcsmIdentityEngine()
@@ -18,6 +19,7 @@ setupVcsmHydration()
 setupVcsmChatEngine()
 setupVcsmReviewsEngine()
 setupVcsmPortfolioEngine()
+setupVcsmNotificationsEngine()
 
 import App from './App'
 import { AuthProvider } from '@/app/providers/AuthProvider'

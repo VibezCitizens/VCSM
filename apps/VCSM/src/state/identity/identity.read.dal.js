@@ -1,5 +1,6 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 import vc from "@/services/supabase/vcClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 const ACTOR_COLUMNS = "id,kind,profile_id,vport_id,is_void";
 const PROFILE_COLUMNS = [
@@ -19,19 +20,6 @@ const PROFILE_COLUMNS = [
   "last_seen",
   "created_at",
   "updated_at",
-].join(",");
-const VPORT_COLUMNS = [
-  "id",
-  "owner_user_id",
-  "name",
-  "slug",
-  "avatar_url",
-  "bio",
-  "is_active",
-  "banner_url",
-  "created_at",
-  "updated_at",
-  "vport_type",
 ].join(",");
 
 export async function readPreferredRealmByVoidStateDAL(isVoid) {
@@ -105,14 +93,27 @@ export async function readActorPrivacyDAL(actorId) {
 export async function readVportIdentityDAL(vportId) {
   if (!vportId) return null;
 
-  const { data, error } = await vc
-    .from("vports")
-    .select(VPORT_COLUMNS)
-    .eq("id", vportId)
-    .single();
+  const [profileResult, catResult] = await Promise.all([
+    vportSchema
+      .from("profiles")
+      .select("id,owner_user_id,name,slug,avatar_url,bio,is_active,banner_url,created_at,updated_at")
+      .eq("id", vportId)
+      .maybeSingle(),
+    vportSchema
+      .from("profile_categories")
+      .select("category_key")
+      .eq("profile_id", vportId)
+      .eq("is_primary", true)
+      .maybeSingle(),
+  ]);
 
-  if (error) throw error;
-  return data ?? null;
+  if (profileResult.error) throw profileResult.error;
+  if (!profileResult.data) return null;
+
+  return {
+    ...profileResult.data,
+    vport_type: catResult.data?.category_key ?? null,
+  };
 }
 
 export async function readActorOwnerUserDAL(actorId) {

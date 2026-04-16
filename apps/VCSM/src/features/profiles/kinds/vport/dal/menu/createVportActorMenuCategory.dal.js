@@ -1,11 +1,17 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 const CATEGORY_SELECT =
-  "id,actor_id,key,name,description,sort_order,is_active,created_at,updated_at";
+  "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at";
 
-/**
- * DAL: insert category row and return raw inserted row.
- */
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function createVportActorMenuCategoryDAL({
   actorId,
   key = null,
@@ -14,12 +20,16 @@ export async function createVportActorMenuCategoryDAL({
   sortOrder = 0,
   isActive = true,
 }) {
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_actor_menu_categories")
+  if (!actorId) throw new Error("createVportActorMenuCategoryDAL: actorId is required");
+
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return null;
+
+  const { data, error } = await vportSchema
+    .from("menu_categories")
     .insert([
       {
-        actor_id: actorId,
+        profile_id: profileId,
         key,
         name,
         description,

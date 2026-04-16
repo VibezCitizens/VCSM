@@ -40,7 +40,7 @@ export default function VportDashboardReviewScreen({
             <VportBackButton
               isDesktop={isDesktop}
               onClick={() => navigate(`/actor/${targetActorId}/dashboard`)}
-              style={shell.btn("soft")}
+             
             />
             <div style={shell.title}>REVIEWS</div>
             <div style={shell.rightSpacer} />

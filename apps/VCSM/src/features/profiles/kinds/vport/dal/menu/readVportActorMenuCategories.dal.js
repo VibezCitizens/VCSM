@@ -1,15 +1,14 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 const CATEGORY_SELECT =
-  "id,actor_id,key,name,description,sort_order,is_active,created_at,updated_at";
+  "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at";
 
 export async function readVportActorMenuCategoryDAL({ categoryId } = {}) {
   if (!categoryId)
     throw new Error("readVportActorMenuCategoryDAL: categoryId is required");
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_actor_menu_categories")
+  const { data, error } = await vportSchema
+    .from("menu_categories")
     .select(CATEGORY_SELECT)
     .eq("id", categoryId)
     .maybeSingle();
@@ -18,7 +17,6 @@ export async function readVportActorMenuCategoryDAL({ categoryId } = {}) {
   return data ?? null;
 }
 
-// ✅ alias with the name your controllers use
 export const readVportActorMenuCategoriesDAL = readVportActorMenuCategoryDAL;
 
 export default readVportActorMenuCategoriesDAL;

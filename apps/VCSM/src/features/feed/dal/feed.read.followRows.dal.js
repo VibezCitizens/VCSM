@@ -1,5 +1,14 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 import { isUuid } from "@/services/supabase/postgrestSafe";
+import { createTTLCache } from "@/shared/lib/ttlCache";
+
+// 60s TTL — follow state rarely changes within a session.
+const followCache = createTTLCache(60_000);
+
+export function invalidateFeedFollowCache(viewerActorId) {
+  if (viewerActorId) followCache.invalidate(viewerActorId);
+  else followCache.invalidateAll();
+}
 
 export async function readFeedFollowRowsDAL({ viewerActorId, actorIds = [] }) {
   if (!viewerActorId || !isUuid(viewerActorId)) return [];
@@ -10,6 +19,13 @@ export async function readFeedFollowRowsDAL({ viewerActorId, actorIds = [] }) {
 
   if (!uniqueActorIds.length) return [];
 
+  // Check cache for this viewer's follows
+  const cached = followCache.get(viewerActorId);
+  if (cached) {
+    const idSet = new Set(uniqueActorIds);
+    return cached.filter((r) => idSet.has(r.followed_actor_id));
+  }
+
   const { data, error } = await supabase
     .schema("vc")
     .from("actor_follows")
@@ -19,6 +35,8 @@ export async function readFeedFollowRowsDAL({ viewerActorId, actorIds = [] }) {
     .in("followed_actor_id", uniqueActorIds);
 
   if (error) throw error;
-  return data ?? [];
-}
 
+  const rows = data ?? [];
+  followCache.set(viewerActorId, rows);
+  return rows;
+}

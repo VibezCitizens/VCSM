@@ -43,3 +43,11 @@ function getOrCreateClient() {
 
 export const supabase = getOrCreateClient();
 export default supabase;
+
+// DEV-ONLY: Install performance instrumentation on the Supabase client.
+// This wraps .from(), .schema().from(), and .rpc() to capture query timing.
+if (import.meta.env.DEV) {
+  import('@debuggers/performance/instrumentation/supabaseProxy.js').then(({ installSupabaseProxy }) => {
+    installSupabaseProxy(supabase);
+  });
+}

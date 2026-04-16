@@ -1,16 +1,19 @@
 // src/features/profiles/kinds/vport/dal/menu/createVportActorMenuItem.dal.js
 
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 const ITEM_SELECT =
-  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
+  "id,profile_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
 
-/**
- * DAL: create a vport actor menu item (raw db row).
- * - Explicit projection (no *)
- * - Deterministic
- * - No business meaning
- */
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function createVportActorMenuItemDAL({
   actorId,
   categoryId,
@@ -19,44 +22,35 @@ export async function createVportActorMenuItemDAL({
   description,
   sortOrder,
   isActive,
-
-  // ✅ NEW
   priceCents,
   currencyCode,
   imageUrl,
 } = {}) {
-  if (!actorId)
-    throw new Error("createVportActorMenuItemDAL: actorId is required");
+  if (!actorId) throw new Error("createVportActorMenuItemDAL: actorId is required");
+  if (!categoryId) throw new Error("createVportActorMenuItemDAL: categoryId is required");
+  if (!name) throw new Error("createVportActorMenuItemDAL: name is required");
 
-  if (!categoryId)
-    throw new Error("createVportActorMenuItemDAL: categoryId is required");
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return null;
 
-  if (!name)
-    throw new Error("createVportActorMenuItemDAL: name is required");
-
-  const insertPayload = {
-    actor_id: actorId,
-    category_id: categoryId,
-    key: key ?? null,
-    name,
-    description: description ?? null,
-    sort_order: typeof sortOrder === "number" ? sortOrder : 0,
-    is_active: typeof isActive === "boolean" ? isActive : true,
-
-    // ✅ NEW
-    price_cents:
-      priceCents == null ? null : Math.max(0, Math.round(Number(priceCents))),
-    currency_code:
-      typeof currencyCode === "string" && currencyCode.trim().length === 3
-        ? currencyCode.trim().toUpperCase()
-        : "USD",
-    image_url: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null,
-  };
-
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_actor_menu_items")
-    .insert(insertPayload)
+  const { data, error } = await vportSchema
+    .from("menu_items")
+    .insert({
+      profile_id: profileId,
+      category_id: categoryId,
+      key: key ?? null,
+      name,
+      description: description ?? null,
+      sort_order: typeof sortOrder === "number" ? sortOrder : 0,
+      is_active: typeof isActive === "boolean" ? isActive : true,
+      price_cents:
+        priceCents == null ? null : Math.max(0, Math.round(Number(priceCents))),
+      currency_code:
+        typeof currencyCode === "string" && currencyCode.trim().length === 3
+          ? currencyCode.trim().toUpperCase()
+          : "USD",
+      image_url: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null,
+    })
     .select(ITEM_SELECT)
     .maybeSingle();
 

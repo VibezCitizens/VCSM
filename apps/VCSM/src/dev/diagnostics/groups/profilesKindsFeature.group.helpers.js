@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
 import {
   isMissingRpc,
@@ -39,10 +40,9 @@ function getState(shared) {
 async function readVportInfo(vportId) {
   if (!vportId) return null;
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vports")
-    .select("id,name,slug,vport_type")
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select("id,name,slug")
     .eq("id", vportId)
     .maybeSingle();
 

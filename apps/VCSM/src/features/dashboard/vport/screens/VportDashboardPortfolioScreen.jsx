@@ -1,8 +1,8 @@
 // src/features/dashboard/vport/screens/VportDashboardPortfolioScreen.jsx
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
-import { Image as ImageIcon, Plus, Trash2, X, Sparkles, Tag } from "lucide-react";
+import { Image as ImageIcon, Plus, Trash2, X, Sparkles, Tag, Bug } from "lucide-react";
 
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
@@ -10,11 +10,333 @@ import { createVportDashboardShellStyles } from "@/features/dashboard/vport/scre
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 import { createItem, addMedia, deleteItem, manageTags } from "@portfolio";
+import { portfolioTraceStore } from "@/features/portfolio/setup";
 import { useVportPortfolio } from "@/features/profiles/kinds/vport/hooks/portfolio/useVportPortfolio";
 import { ctrlSavePortfolioDetail } from "@/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller";
 import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
 import { compressIfNeeded } from "@/features/upload/lib/compressIfNeeded";
 import { buildR2Key } from "@/services/cloudflare/buildR2Key";
+import { supabase } from "@/services/supabase/supabaseClient";
+
+// ── BugsBunny: Portfolio Create Diagnostic Panel (DEV only) ──
+function PortfolioBugsBunnyPanel({ actorId, identity }) {
+  const [open, setOpen] = useState(false);
+  const [probe, setProbe] = useState(null);
+  const [probing, setProbing] = useState(false);
+  const [traceEvents, setTraceEvents] = useState([]);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const unsub = portfolioTraceStore.subscribe(setTraceEvents);
+    setTraceEvents(portfolioTraceStore.events);
+    return unsub;
+  }, []);
+
+  const runProbe = useCallback(async () => {
+    if (!actorId) return;
+    setProbing(true);
+    setProbe(null);
+    const result = {};
+    try {
+      // 1. Identity snapshot
+      result.identity = {
+        actorId: identity?.actorId ?? null,
+        kind: identity?.kind ?? null,
+        vportType: identity?.vportType ?? null,
+        ownerActorId: identity?.ownerActorId ?? null,
+      };
+
+      // 2. Resolve profile_id from vport.profiles
+      const { data: profileRow, error: profileErr } = await supabase
+        .schema("vport")
+        .from("profiles")
+        .select("id, actor_id, name, slug, is_active, is_deleted")
+        .eq("actor_id", actorId)
+        .limit(1);
+
+      result.profileLookup = {
+        actorId,
+        row: profileRow?.[0] ?? null,
+        error: profileErr?.message ?? null,
+      };
+
+      const profileId = profileRow?.[0]?.id ?? null;
+      result.resolvedProfileId = profileId;
+
+      // 3. Check profile_actor_access
+      if (profileId) {
+        const { data: accessRows, error: accessErr } = await supabase
+          .schema("vport")
+          .from("profile_actor_access")
+          .select("actor_id, role, status, is_primary")
+          .eq("profile_id", profileId);
+
+        result.profileActorAccess = {
+          rows: accessRows ?? [],
+          error: accessErr?.message ?? null,
+          activeActorFound: (accessRows ?? []).some(
+            (r) => r.actor_id === actorId
+          ),
+        };
+      } else {
+        result.profileActorAccess = null;
+      }
+
+      // 4. Check actor_owners for the vport actor
+      const { data: ownerRows, error: ownerErr } = await supabase
+        .schema("vc")
+        .from("actor_owners")
+        .select("actor_id, user_id")
+        .eq("actor_id", actorId);
+
+      result.actorOwners = {
+        rows: ownerRows ?? [],
+        error: ownerErr?.message ?? null,
+      };
+
+      // 5. Supabase auth session
+      const { data: { session } } = await supabase.auth.getSession();
+      result.session = {
+        userId: session?.user?.id ?? null,
+        email: session?.user?.email ?? null,
+      };
+
+      // 6. Expected insert payload
+      result.expectedInsertPayload = {
+        profile_id: profileId,
+        created_by_actor_id: null,
+        title: "(test title)",
+        portfolio_kind: "work",
+        visibility: "public",
+      };
+
+      // 7. Assertions
+      const assertions = [];
+      if (!actorId) assertions.push({ label: "actorId present", pass: false });
+      else assertions.push({ label: "actorId present", pass: true, value: actorId });
+
+      if (identity?.kind !== "vport")
+        assertions.push({ label: "identity.kind === vport", pass: false, value: identity?.kind });
+      else assertions.push({ label: "identity.kind === vport", pass: true });
+
+      if (!profileId)
+        assertions.push({ label: "profileId resolved", pass: false, value: "NO PROFILE FOUND for actor" });
+      else assertions.push({ label: "profileId resolved", pass: true, value: profileId });
+
+      if (profileId && profileRow?.[0]?.actor_id !== actorId)
+        assertions.push({ label: "profile.actor_id matches actorId", pass: false, got: profileRow?.[0]?.actor_id });
+      else if (profileId)
+        assertions.push({ label: "profile.actor_id matches actorId", pass: true });
+
+      if (profileRow?.[0]?.is_deleted)
+        assertions.push({ label: "profile not deleted", pass: false });
+      else if (profileId)
+        assertions.push({ label: "profile not deleted", pass: true });
+
+      result.assertions = assertions;
+    } catch (e) {
+      result.probeError = e?.message ?? String(e);
+    }
+    setProbe(result);
+    setProbing(false);
+  }, [actorId, identity]);
+
+  if (!import.meta.env.DEV) return null;
+
+  return (
+    <div style={{ margin: "0 0 12px 0" }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "flex", alignItems: "center", gap: 6,
+          padding: "6px 12px", borderRadius: 10,
+          border: "1px solid rgba(250,200,50,0.3)",
+          background: "rgba(250,200,50,0.08)",
+          color: "rgba(250,200,50,0.9)", fontSize: 11,
+          fontWeight: 600, cursor: "pointer", letterSpacing: "0.05em",
+          fontFamily: "monospace",
+        }}
+      >
+        <Bug size={13} />
+        BUGSBUNNY — Portfolio Diagnostic {open ? "▲" : "▼"}
+      </button>
+
+      {open && (
+        <div style={{
+          marginTop: 6, borderRadius: 12,
+          border: "1px solid rgba(250,200,50,0.2)",
+          background: "rgba(0,0,0,0.6)", padding: 12,
+          fontFamily: "monospace", fontSize: 11, color: "rgba(255,255,255,0.7)",
+        }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+            <button
+              type="button"
+              onClick={runProbe}
+              disabled={probing}
+              style={{
+                padding: "5px 12px", borderRadius: 8, cursor: "pointer",
+                border: "1px solid rgba(100,220,100,0.4)",
+                background: "rgba(100,220,100,0.1)", color: "rgba(150,255,150,0.9)",
+                fontSize: 11, fontWeight: 600,
+              }}
+            >
+              {probing ? "Probing..." : "▶ Run Probe"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { portfolioTraceStore.clear(); setTraceEvents([]); }}
+              style={{
+                padding: "5px 12px", borderRadius: 8, cursor: "pointer",
+                border: "1px solid rgba(255,255,255,0.1)",
+                background: "transparent", color: "rgba(255,255,255,0.4)",
+                fontSize: 11,
+              }}
+            >
+              Clear Trace
+            </button>
+          </div>
+
+          {/* Probe results */}
+          {probe && (
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ color: "rgba(250,200,50,0.8)", marginBottom: 6, fontWeight: 700 }}>
+                — PROBE RESULTS —
+              </div>
+
+              {/* Assertions */}
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>ASSERTIONS</div>
+                {(probe.assertions ?? []).map((a, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 2 }}>
+                    <span style={{ color: a.pass ? "rgba(100,255,100,0.9)" : "rgba(255,80,80,0.9)", minWidth: 16 }}>
+                      {a.pass ? "✓" : "✗"}
+                    </span>
+                    <span style={{ color: a.pass ? "rgba(200,255,200,0.7)" : "rgba(255,180,180,0.9)" }}>
+                      {a.label}
+                    </span>
+                    {a.value !== undefined && (
+                      <span style={{ color: "rgba(255,255,255,0.35)" }}>
+                        {typeof a.value === "string" ? a.value : JSON.stringify(a.value)}
+                      </span>
+                    )}
+                    {a.got !== undefined && (
+                      <span style={{ color: "rgba(255,100,100,0.7)" }}>
+                        got: {JSON.stringify(a.got)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Identity */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>IDENTITY</div>
+                <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {JSON.stringify(probe.identity, null, 2)}
+                </pre>
+              </div>
+
+              {/* Profile lookup */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>PROFILE LOOKUP (vport.profiles)</div>
+                <pre style={{ margin: 0, color: probe.profileLookup?.row ? "rgba(200,220,255,0.75)" : "rgba(255,150,150,0.8)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {JSON.stringify(probe.profileLookup, null, 2)}
+                </pre>
+              </div>
+
+              {/* profile_actor_access */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>PROFILE_ACTOR_ACCESS</div>
+                <pre style={{ margin: 0, color: probe.profileActorAccess?.activeActorFound ? "rgba(200,255,200,0.75)" : "rgba(255,150,150,0.8)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {JSON.stringify(probe.profileActorAccess, null, 2)}
+                </pre>
+              </div>
+
+              {/* actor_owners */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>ACTOR_OWNERS (vc.actor_owners)</div>
+                <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {JSON.stringify(probe.actorOwners, null, 2)}
+                </pre>
+              </div>
+
+              {/* session */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>AUTH SESSION</div>
+                <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap" }}>
+                  {JSON.stringify(probe.session, null, 2)}
+                </pre>
+              </div>
+
+              {/* expected payload */}
+              <div style={{ marginBottom: 6 }}>
+                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>EXPECTED INSERT PAYLOAD</div>
+                <pre style={{ margin: 0, color: "rgba(255,230,150,0.8)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {JSON.stringify(probe.expectedInsertPayload, null, 2)}
+                </pre>
+              </div>
+
+              {probe.probeError && (
+                <div style={{ color: "rgba(255,80,80,0.9)" }}>
+                  PROBE ERROR: {probe.probeError}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Engine trace events */}
+          {traceEvents.length > 0 && (
+            <div>
+              <div style={{ color: "rgba(250,200,50,0.8)", marginBottom: 6, fontWeight: 700 }}>
+                — ENGINE TRACE ({traceEvents.length}) —
+              </div>
+              {traceEvents.map((ev, i) => (
+                <div
+                  key={i}
+                  style={{
+                    marginBottom: 4, padding: "4px 8px", borderRadius: 6,
+                    background: ev.step?.includes("ERROR") || ev.step?.includes("FAIL")
+                      ? "rgba(255,80,80,0.1)"
+                      : "rgba(255,255,255,0.03)",
+                    borderLeft: `2px solid ${
+                      ev.step?.includes("ERROR") || ev.step?.includes("FAIL")
+                        ? "rgba(255,80,80,0.5)"
+                        : ev.step?.includes("SUCCESS")
+                        ? "rgba(100,255,100,0.4)"
+                        : "rgba(255,255,255,0.1)"
+                    }`,
+                  }}
+                >
+                  <span style={{ color: "rgba(255,200,100,0.7)", marginRight: 6 }}>
+                    {new Date(ev.ts).toISOString().slice(11, 23)}
+                  </span>
+                  <span style={{ color: "rgba(255,255,255,0.8)", marginRight: 6 }}>
+                    {ev.step}
+                  </span>
+                  {Object.entries(ev)
+                    .filter(([k]) => k !== "step" && k !== "ts")
+                    .map(([k, v]) => (
+                      <span key={k} style={{ color: "rgba(180,220,255,0.6)", marginRight: 6 }}>
+                        {k}={typeof v === "object" ? JSON.stringify(v) : String(v)}
+                      </span>
+                    ))
+                  }
+                </div>
+              ))}
+            </div>
+          )}
+
+          {traceEvents.length === 0 && !probe && (
+            <div style={{ color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>
+              No trace events yet. Run a probe or attempt a create to see engine trace output.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Upload helper ──
 async function uploadPortfolioFile(file, actorId) {
@@ -401,6 +723,7 @@ export default function VportDashboardPortfolioScreen() {
     loading,
     error,
     reload,
+    optimisticRemove,
   } = useVportPortfolio(targetActorId);
 
   const [showCreate, setShowCreate] = useState(false);
@@ -414,15 +737,15 @@ export default function VportDashboardPortfolioScreen() {
   const handleDelete = useCallback(async (item) => {
     if (!item?.id || !targetActorId) return;
     setDeletingId(item.id);
+    const rollback = optimisticRemove(item.id);
     try {
       await deleteItem({ itemId: item.id, actorId: targetActorId });
-      reload();
     } catch (_) {
-      // keep item visible on failure
+      rollback();
     } finally {
       setDeletingId(null);
     }
-  }, [targetActorId, reload]);
+  }, [targetActorId, optimisticRemove]);
 
   const shell = createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 900 });
 
@@ -437,13 +760,17 @@ export default function VportDashboardPortfolioScreen() {
             <VportBackButton
               isDesktop={isDesktop}
               onClick={() => navigate(`/actor/${targetActorId}/dashboard`)}
-              style={shell.btn("soft")}
             />
             <div style={shell.title}>PORTFOLIO</div>
             <div style={shell.rightSpacer} />
           </div>
 
           <div style={{ padding: 16 }}>
+            {/* BugsBunny diagnostic panel — DEV only */}
+            {import.meta.env.DEV && (
+              <PortfolioBugsBunnyPanel actorId={targetActorId} identity={identity} />
+            )}
+
             {/* Add button */}
             {!showCreate ? (
               <button

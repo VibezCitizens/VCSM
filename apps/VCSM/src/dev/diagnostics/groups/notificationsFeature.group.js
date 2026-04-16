@@ -1,4 +1,3 @@
-import { supabase } from "@/services/supabase/supabaseClient";
 import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { runDiagnosticsTests } from "@/dev/diagnostics/helpers/timedTest";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
@@ -20,8 +19,8 @@ import {
 import { resolveInboxActor } from "@/features/notifications/inbox/lib/resolveInboxActor";
 import { resolveSenders } from "@/features/notifications/inbox/lib/resolveSenders";
 import { mapNotification } from "@/features/notifications/inbox/model/notification.mapper";
-import { markNotificationRead } from "@/features/notifications/inbox/dal/notifications.write.dal";
-import { dalInsertNotification } from "@/features/notifications/inbox/dal/notifications.create.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
+import { markRead } from "@notifications";
 import {
   subscribeInboxBadge,
   subscribeNotificationBadge,
@@ -92,21 +91,6 @@ async function withActorContext(localShared, reason, run) {
     }
     throw error;
   }
-}
-
-async function latestDiagnosticsNotification(actorId) {
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("notifications")
-    .select("id,recipient_actor_id,actor_id,kind,is_read,is_seen,created_at,context")
-    .eq("recipient_actor_id", actorId)
-    .eq("kind", "diagnostics")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) throw error;
-  return data ?? null;
 }
 
 export function getNotificationsFeatureTests() {
@@ -182,36 +166,26 @@ export async function runNotificationsFeatureGroup({ onTestUpdate, shared }) {
       name: "insert notification and mark read",
       run: ({ shared: localShared }) =>
         withActorContext(localShared, "Notification insert/mark-read flow blocked by policy.", async (context) => {
-          const inserted = await dalInsertNotification({
+          // Publish via the notification engine (self-notification skip is
+          // disabled for diagnostics by using a synthetic sender).
+          const published = await publishVcsmNotification({
             recipientActorId: context.actorId,
-            actorId: context.actorId,
+            actorId: null,
             kind: "diagnostics",
             objectType: "actor",
             objectId: context.actorId,
             linkPath: `/profile/${context.actorId}`,
             context: { source: "dev-notifications-feature", ts: new Date().toISOString() },
-            asActorId: context.actorId,
           });
 
-          if (inserted === false) {
-            return makeSkipped("Notification insert intentionally blocked for this notification kind/path.");
+          if (!published) {
+            return makeSkipped("Notification publish returned false — engine may have filtered it.");
           }
 
-          const latest = await latestDiagnosticsNotification(context.actorId);
-          if (!latest?.id) {
-            return makeSkipped("No diagnostics notification row was readable after insert.");
-          }
+          // Mark the recipient's inbox as read via the engine.
+          await markRead({ recipientId: context.actorId });
 
-          await markNotificationRead(latest.id, context.actorId);
-          const { data: reread, error } = await supabase
-            .schema("vc")
-            .from("notifications")
-            .select("id,is_read,is_seen,recipient_actor_id,kind")
-            .eq("id", latest.id)
-            .maybeSingle();
-          if (error) throw error;
-
-          return { inserted, notificationId: latest.id, reread };
+          return { published, actorId: context.actorId };
         }),
     },
     {
@@ -220,8 +194,7 @@ export async function runNotificationsFeatureGroup({ onTestUpdate, shared }) {
       run: ({ shared: localShared }) =>
         withActorContext(localShared, "markAllNotificationsSeen blocked by policy.", async (context) => {
           await markAllNotificationsSeen(context.actorId);
-          const latest = await latestDiagnosticsNotification(context.actorId);
-          return { actorId: context.actorId, latestDiagnosticsNotification: latest };
+          return { actorId: context.actorId, markedAllSeen: true };
         }),
     },
     {
@@ -238,16 +211,9 @@ export async function runNotificationsFeatureGroup({ onTestUpdate, shared }) {
       name: "resolve senders and map notification row",
       run: ({ shared: localShared }) =>
         withActorContext(localShared, "Sender resolve/mapper flow blocked by policy.", async (context) => {
-          const { data: rows, error } = await supabase
-            .schema("vc")
-            .from("notifications")
-            .select("id,recipient_actor_id,actor_id,kind,object_type,object_id,link_path,context,is_read,is_seen,created_at")
-            .eq("recipient_actor_id", context.actorId)
-            .order("created_at", { ascending: false })
-            .limit(10);
-          if (error) throw error;
+          const rows = await getNotifications(buildIdentity(context));
           if (!rows?.length) return makeSkipped("No notifications available for sender resolution/map test.");
-          const actorIds = rows.map((row) => row.actor_id).filter(Boolean);
+          const actorIds = rows.map((row) => row.actorId ?? row.actor_id).filter(Boolean);
           const senderMap = await resolveSenders(actorIds);
           return { inputCount: rows.length, mappedSample: mapNotification(rows[0], senderMap), senderMapSize: Object.keys(senderMap).length };
         }),

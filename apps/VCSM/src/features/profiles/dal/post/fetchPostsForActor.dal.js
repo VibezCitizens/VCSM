@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 function makeActorRoute({ kind, username, actorId, vportId }) {
   if (kind === "user" && username) return `/u/${username}`;
@@ -85,12 +86,11 @@ export async function fetchPostsForActorDAL({
       };
     }
 
-    if (actorRow?.kind === "vport" && actorRow?.vport_id) {
-      const { data: vRow } = await supabase
-        .schema("vc")
-        .from("vports")
-        .select("id, slug, name, avatar_url, banner_url, bio")
-        .eq("id", actorRow.vport_id)
+    if (actorRow?.kind === "vport") {
+      const { data: vRow } = await vportSchema
+        .from("profiles")
+        .select("actor_id, slug, name, avatar_url, banner_url, bio")
+        .eq("actor_id", actorRow.id)
         .maybeSingle();
 
       authorActorEntry = {
@@ -105,7 +105,7 @@ export async function fetchPostsForActorDAL({
           kind: "vport",
           username: vRow?.slug ?? null,
           actorId: actorRow.id,
-          vportId: actorRow.vport_id,
+          vportId: actorRow.id,
         }),
       };
     }
@@ -173,11 +173,10 @@ export async function fetchPostsForActorDAL({
   }
 
   const userProfileIds = [];
-  const vportIds = [];
+  const mentionActorIds = mentionedActors.map((a) => a.id).filter(Boolean);
 
   for (const a of mentionedActors) {
     if (a?.kind === "user" && a?.profile_id) userProfileIds.push(a.profile_id);
-    if (a?.kind === "vport" && a?.vport_id) vportIds.push(a.vport_id);
   }
 
   const profilesById = new Map();
@@ -189,14 +188,13 @@ export async function fetchPostsForActorDAL({
     for (const p of profiles || []) profilesById.set(p.id, p);
   }
 
-  const vportsById = new Map();
-  if (vportIds.length) {
-    const { data: vports } = await supabase
-      .schema("vc")
-      .from("vports")
-      .select("id, slug, name, avatar_url")
-      .in("id", vportIds);
-    for (const v of vports || []) vportsById.set(v.id, v);
+  const vportsByActorId = new Map();
+  if (mentionActorIds.length) {
+    const { data: vports } = await vportSchema
+      .from("profiles")
+      .select("actor_id, slug, name, avatar_url")
+      .in("actor_id", mentionActorIds);
+    for (const v of vports || []) vportsByActorId.set(v.actor_id, v);
   }
 
   const mentionEntryByActorId = new Map();
@@ -215,8 +213,8 @@ export async function fetchPostsForActorDAL({
       displayName = p?.display_name ?? p?.username ?? null;
       avatar = p?.photo_url ?? "/avatar.jpg";
     } else if (a.kind === "vport") {
-      vportId = a.vport_id ?? null;
-      const v = vportsById.get(a.vport_id);
+      const v = vportsByActorId.get(actorUUID);
+      vportId = actorUUID;
       username = v?.slug ?? null;
       displayName = v?.name ?? v?.slug ?? null;
       avatar = v?.avatar_url ?? "/avatar.jpg";

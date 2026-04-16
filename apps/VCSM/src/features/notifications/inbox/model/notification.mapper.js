@@ -1,32 +1,42 @@
 // src/features/notifications/inbox/model/notification.mapper.js
+//
+// Maps engine InboxNotification (notification.* schema) to UI domain object.
+// Engine shape: { recipientId, eventId, eventKey, sourceActorId, objectType,
+//   objectId, payload, title, body, linkPath, isSeen, isRead, ... }
 
 export function mapNotification(row, senderMap) {
-  const ctx =
-    typeof row.context === 'object' && row.context !== null
-      ? row.context
+  const payload =
+    typeof row.payload === 'object' && row.payload !== null
+      ? row.payload
       : {}
 
-  const rawSender = row.actor_id
-    ? senderMap[row.actor_id] ?? null
+  const senderActorId = row.sourceActorId ?? null
+  const rawSender = senderActorId
+    ? senderMap[senderActorId] ?? null
     : null
 
   return {
-    id: row.id,
+    id: row.recipientId ?? row.id,
 
-    // normalized domain kind
-    kind: normalizeKind(row.kind, ctx),
+    // normalized domain kind from engine eventKey
+    kind: normalizeKind(row.eventKey ?? '', payload),
 
-    createdAt: row.created_at,
-    isRead: row.is_read,
-    isSeen: row.is_seen,
+    createdAt: row.eventCreatedAt ?? row.created_at,
+    isRead: row.isRead ?? false,
+    isSeen: row.isSeen ?? false,
 
     // domain-safe sender (includes route for ActorLink)
-    sender: normalizeSender(rawSender, ctx, row.actor_id ?? null),
+    sender: normalizeSender(rawSender, payload, senderActorId),
 
-    objectType: row.object_type,
-    objectId: row.object_id,
-    linkPath: row.link_path,
-    context: ctx,
+    objectType: row.objectType ?? null,
+    objectId: row.objectId ?? null,
+    linkPath: row.linkPath ?? null,
+
+    // engine rendered content
+    title: row.title ?? null,
+    body: row.body ?? null,
+
+    context: payload,
   }
 }
 

@@ -28,10 +28,13 @@ export default function PostFeedScreen() {
   const realmId = identity?.realmId ?? null;
   const deletePost = useDeletePostAction({ actorId });
 
-  // ✅ FIX: useFeed requires (viewerActorId, realmId)
-  const { posts, loading, hasMore, fetchPosts, setPosts, fetchViewer } = useFeed(
+  // Derive viewerIsAdult from identity instead of independent DB queries
+  const viewerIsAdult = identity?.kind === 'vport' ? true : (identity?.isAdult ?? null)
+
+  const { posts, loading, hasMore, fetchPosts, setPosts } = useFeed(
     actorId,
-    realmId
+    realmId,
+    { viewerIsAdult },
   );
 
   const reportFlow = useReportFlow({ reporterActorId: actorId });
@@ -136,7 +139,6 @@ export default function PostFeedScreen() {
     setPosts([]);
 
     (async () => {
-      await fetchViewer();
       if (!cancelled) {
         await fetchPosts(true);
       }
@@ -145,7 +147,7 @@ export default function PostFeedScreen() {
     return () => {
       cancelled = true;
     };
-  }, [actorId, realmId, fetchViewer, fetchPosts, setPosts]);
+  }, [actorId, realmId, fetchPosts, setPosts]);
 
   useEffect(() => {
     if (!hasMore || loading) return;

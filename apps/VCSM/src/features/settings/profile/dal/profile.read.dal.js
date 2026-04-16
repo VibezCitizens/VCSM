@@ -23,22 +23,14 @@ export async function fetchProfile(subjectId, mode) {
     throw new Error('fetchProfile: subjectId required')
   }
 
- // ------------------------------------------------------------
-// VPORT PROFILE (vc.vports)
-// ------------------------------------------------------------
+  // ------------------------------------------------------------
+  // VPORT PROFILE (vport.profiles)
+  // ------------------------------------------------------------
 if (mode === 'vport') {
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vports')
-    .select(`
-      id,
-      owner_user_id,
-      slug,
-      name,
-      bio,
-      avatar_url,
-      banner_url
-    `)
+    .schema('vport')
+    .from('profiles')
+    .select('id,owner_user_id,slug,name,bio,avatar_url,banner_url')
     .eq('id', subjectId)
     .maybeSingle()
 

@@ -1,6 +1,6 @@
 // src/features/settings/vports/hooks/useVportsList.js
 import { useEffect, useState } from "react";
-import { listMyVports } from "@/features/vport/dal/vport.read.vportRecords.dal";
+import { listMyVportsDAL } from "@/features/settings/vports/dal/vports.read.dal";
 
 export function useVportsList() {
   const [items, setItems] = useState([]);
@@ -10,7 +10,7 @@ export function useVportsList() {
 
     (async () => {
       try {
-        const list = await listMyVports();
+        const list = await listMyVportsDAL();
         if (alive) setItems(list ?? []);
       } catch (e) {
         console.error("[useVportsList] failed", e);

@@ -1,5 +1,6 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 import { hydrateAndReturnSummaries } from "@hydration";
+import vportSchema from "@/services/supabase/vportClient";
 
 function uniqueIds(ids = []) {
   return [...new Set((Array.isArray(ids) ? ids : []).filter(Boolean))];
@@ -66,9 +67,8 @@ export async function listVportRowsByIdsDAL({ vportIds }) {
   const ids = uniqueIds(vportIds);
   if (!ids.length) return [];
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vports")
+  const { data, error } = await vportSchema
+    .from("profiles")
     .select("id,name,slug,avatar_url")
     .in("id", ids);
 

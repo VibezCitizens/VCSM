@@ -19,6 +19,9 @@ import {
   deleteReactionDAL,
 } from "../dal/postReactions.write.dal";
 
+import { fetchPostByIdDAL } from "../dal/post.read.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
+
 const VALID_REACTIONS = ["like", "dislike"];
 
 /**
@@ -53,17 +56,36 @@ export async function togglePostReactionController({
   // 2️⃣ DECIDE MUTATION (BUSINESS LOGIC)
   // ============================================================
   let nextReaction = reaction;
+  let created = false;
 
   if (existing?.reaction === reaction) {
-    // Toggle OFF
+    // Toggle OFF — removed
     await deleteReactionDAL({ postId, actorId });
     nextReaction = null;
   } else if (existing?.reaction) {
-    // Switch reaction
+    // Switch reaction — switched, not a new creation
     await updateReactionDAL({ postId, actorId, reaction });
   } else {
-    // New reaction
+    // New reaction — created
     await insertReactionDAL({ postId, actorId, reaction });
+    created = true;
+  }
+
+  // Publish only on new reaction creation (not toggle-off, not switch)
+  if (created) {
+    const eventKey = reaction === 'like' ? 'social.post.like' : 'social.post.dislike';
+    const { data: post } = await fetchPostByIdDAL(postId);
+    if (post?.actor_id) {
+      publishVcsmNotification({
+        recipientActorId: post.actor_id,
+        actorId,
+        kind: eventKey,
+        objectType: 'post',
+        objectId: postId,
+        linkPath: `/post/${postId}`,
+        context: { reaction },
+      });
+    }
   }
 
   // ============================================================

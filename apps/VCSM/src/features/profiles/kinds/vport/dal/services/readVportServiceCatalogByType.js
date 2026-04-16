@@ -1,13 +1,13 @@
 // src/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js
 
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-function normalizeVportType(vportType) {
+function normalizeCategoryKey(vportType) {
   return String(vportType ?? "").trim().toLowerCase();
 }
 
-function buildTypeCandidates(vportType) {
-  const normalized = normalizeVportType(vportType);
+function buildCandidates(vportType) {
+  const normalized = normalizeCategoryKey(vportType);
   if (!normalized) return [];
 
   if (normalized === "exchange" || normalized === "money exchange") {
@@ -18,9 +18,7 @@ function buildTypeCandidates(vportType) {
 }
 
 /**
- * DAL: Read the service catalog for a given vport_type.
- *
- * Returns raw vc.vport_service_catalog rows (explicit projection).
+ * DAL: Read the service catalog for a given vport type / category key.
  *
  * @param {object} params
  * @param {string} params.vportType
@@ -31,23 +29,22 @@ export async function readVportServiceCatalogByType({
   vportType,
   includeInactive = false,
 } = {}) {
-  const typeCandidates = buildTypeCandidates(vportType);
+  const candidates = buildCandidates(vportType);
 
-  if (!typeCandidates.length) {
+  if (!candidates.length) {
     throw new Error("readVportServiceCatalogByType: vportType is required");
   }
 
-  let q = supabase
-    .schema("vc")
-    .from("vport_service_catalog")
-    .select("vport_type,key,label,category,sort_order,is_active,meta,created_at,updated_at")
+  let q = vportSchema
+    .from("service_catalog")
+    .select("category_key,key,label,sort_order,is_active,meta,created_at,updated_at")
     .order("sort_order", { ascending: true })
     .order("label", { ascending: true });
 
-  if (typeCandidates.length === 1) {
-    q = q.eq("vport_type", typeCandidates[0]);
+  if (candidates.length === 1) {
+    q = q.eq("category_key", candidates[0]);
   } else {
-    q = q.in("vport_type", typeCandidates);
+    q = q.in("category_key", candidates);
   }
 
   if (!includeInactive) q = q.eq("is_active", true);

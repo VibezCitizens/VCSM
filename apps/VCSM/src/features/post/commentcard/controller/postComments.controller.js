@@ -5,6 +5,9 @@ import { listPostComments } from "../dal/postComments.read.dal";
 // ✅ use the real DAL writer that supports parentId
 import { createComment } from "../dal/comments.dal";
 
+import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
+
 /**
  * Build a nested comment tree from flat rows
  * Controller-owned (structure is domain meaning)
@@ -55,6 +58,20 @@ export async function createRootComment({ postId, actorId, content }) {
     parentId: null,
   });
 
+  // Notify post owner about new comment
+  const { data: post } = await fetchPostByIdDAL(postId);
+  if (post?.actor_id) {
+    publishVcsmNotification({
+      recipientActorId: post.actor_id,
+      actorId,
+      kind: 'social.post.comment',
+      objectType: 'comment',
+      objectId: row.id,
+      linkPath: `/post/${postId}`,
+      context: { body: (content ?? '').slice(0, 120) || null },
+    });
+  }
+
   return {
     ...row,
     replies: [],
@@ -77,8 +94,32 @@ export async function createReplyComment({
     postId,
     actorId,
     content,
-    parentId: parentCommentId, // ✅ THIS is the link
+    parentId: parentCommentId,
   });
+
+  // Notify parent comment author about the reply
+  // Fetch parent comment to resolve author
+  const { data: parentComment } = await import('@/services/supabase/supabaseClient')
+    .then(({ supabase }) =>
+      supabase
+        .schema('vc')
+        .from('post_comments')
+        .select('actor_id')
+        .eq('id', parentCommentId)
+        .maybeSingle()
+    );
+
+  if (parentComment?.actor_id) {
+    publishVcsmNotification({
+      recipientActorId: parentComment.actor_id,
+      actorId,
+      kind: 'social.post.comment_reply',
+      objectType: 'comment',
+      objectId: row.id,
+      linkPath: `/post/${postId}`,
+      context: { body: (content ?? '').slice(0, 120) || null },
+    });
+  }
 
   return {
     ...row,

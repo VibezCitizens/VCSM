@@ -4,7 +4,7 @@ function normalizeVportType(vportType) {
 
 /**
  * Returns catalog-like rows when DB catalog is missing for a supported type.
- * Shape matches vc.vport_service_catalog read projection.
+ * Shape matches vport.service_catalog read projection.
  */
 export function getFallbackServiceCatalogRows(vportType) {
   const normalized = normalizeVportType(vportType);

@@ -113,17 +113,20 @@ export default function CentralFeed() {
     setTimeout(() => setToastOpen(true), 0)
   }, [])
 
+  // Derive viewerIsAdult from identity instead of independent DB queries.
+  // Vport actors are always treated as adult; user actors carry the profile flag.
+  const viewerIsAdult = identity?.kind === 'vport' ? true : (identity?.isAdult ?? null)
+
   const {
     posts,
     loading,
     hasMore,
     fetchPosts,
     setPosts,
-    fetchViewer,
     hiddenPostIds: serverHiddenPostIds,
     filterDebugRows,
     firstBatchReady,
-  } = useFeed(actorId, realmId)
+  } = useFeed(actorId, realmId, { viewerIsAdult })
 
   const {
     reportFlow,
@@ -162,11 +165,6 @@ export default function CentralFeed() {
   const sentinelRef = useRef(null)
 
   useEffect(() => {
-    if (!actorId) return
-    fetchViewer()
-  }, [actorId, fetchViewer])
-
-  useEffect(() => {
     if (!firstBatchReady) return
     hideLaunchSplash()
   }, [firstBatchReady])
@@ -179,19 +177,37 @@ export default function CentralFeed() {
     }
   }, [])
 
-  const observeMore = useCallback(() => {
+  // Stable refs for IntersectionObserver — avoids recreating the observer
+  // every time posts/loading/hasMore change, which was causing the observer
+  // to immediately fire a pagination request right after the initial fetch.
+  const postsLenRef = useRef(0)
+  postsLenRef.current = posts.length
+  const hasMoreRef = useRef(true)
+  hasMoreRef.current = hasMore
+  const loadingRef = useRef(false)
+  loadingRef.current = loading
+  const fetchPostsRef = useRef(fetchPosts)
+  fetchPostsRef.current = fetchPosts
+
+  useEffect(() => {
     const root = ptrRef.current
     const sentinel = sentinelRef.current
-    if (!root || !sentinel) return () => {}
+    if (!root || !sentinel) return
 
     let locked = false
 
     const io = new IntersectionObserver(
       (entries) => {
         const first = entries[0]
-        if (first?.isIntersecting && posts.length > 0 && hasMore && !loading && !locked) {
+        if (
+          first?.isIntersecting &&
+          postsLenRef.current > 0 &&
+          hasMoreRef.current &&
+          !loadingRef.current &&
+          !locked
+        ) {
           locked = true
-          fetchPosts(false).finally(() => {
+          fetchPostsRef.current(false).finally(() => {
             locked = false
           })
         }
@@ -201,15 +217,14 @@ export default function CentralFeed() {
 
     io.observe(sentinel)
     return () => io.disconnect()
-  }, [posts.length, hasMore, loading, fetchPosts])
-
-  useEffect(() => observeMore(), [observeMore])
+    // Only reconnect when the scroll container or sentinel element changes
+    // (effectively once on mount). State checks use refs to avoid churn.
+  }, [firstBatchReady])
 
   const handleRefresh = useCallback(async () => {
     ptrRef.current?.scrollTo({ top: 0, behavior: 'auto' })
-    await fetchViewer()
     await fetchPosts(true)
-  }, [fetchViewer, fetchPosts])
+  }, [fetchPosts])
 
   if (!user) return <Navigate to="/login" replace />
 

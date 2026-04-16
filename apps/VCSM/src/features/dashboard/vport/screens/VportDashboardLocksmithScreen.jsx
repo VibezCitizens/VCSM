@@ -179,7 +179,7 @@ export default function VportDashboardLocksmithScreen() {
       <div style={shell.container}>
         <div style={shell.headerWrap}>
           <div style={shell.topBar}>
-            <VportBackButton isDesktop={isDesktop} onClick={() => navigate(`/actor/${targetActorId}/dashboard`)} style={shell.btn("soft")} />
+            <VportBackButton isDesktop={isDesktop} onClick={() => navigate(`/actor/${targetActorId}/dashboard`)} />
             <div style={shell.title}>LOCKSMITH</div>
             <div style={shell.rightSpacer} />
           </div>

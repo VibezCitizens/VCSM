@@ -2,10 +2,9 @@ import React, { useEffect, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide-react'
 
-import useNotiCount from '@/features/notifications/inbox/hooks/useNotiCount'
-import useUnreadBadge from '@/features/notifications/inbox/hooks/useUnreadBadge'
-
 import { useIdentity } from '@/state/identity/identityContext'
+import { useBootstrapHydration } from '@/bootstrap/bootstrap.hydrate.controller'
+import { useNotificationUnread, useChatUnread } from '@/bootstrap/bootstrap.selectors'
 
 export default function BottomNavBar() {
   const navigate = useNavigate()
@@ -22,15 +21,12 @@ export default function BottomNavBar() {
 
   const personaActorId = useMemo(() => identity?.actorId ?? null, [identity?.actorId])
 
-  const notiCount = useNotiCount({
-    actorId: personaActorId,
-    pollMs: 45_000,
-  })
+  // Bootstrap owns all session-level polling and realtime subscriptions.
+  // Single hydration point — replaces the two independent polling hooks.
+  useBootstrapHydration(personaActorId)
 
-  const { count: chatUnread } = useUnreadBadge({
-    actorId: personaActorId,
-    refreshMs: 15_000,
-  })
+  const notiCount = useNotificationUnread()
+  const chatUnread = useChatUnread()
 
   const profilePath = personaActorId ? `/profile/${personaActorId}` : '/feed'
 

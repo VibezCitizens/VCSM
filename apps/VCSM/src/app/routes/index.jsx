@@ -104,6 +104,14 @@ const DevDiagnosticsScreen = devDiagnosticsEnabled
     )
   : () => null;
 
+const PerfDashboardScreen = devDiagnosticsEnabled
+  ? lazyWithLog("PerfDashboardScreen", () =>
+      import("@debuggers/performance").then((m) => ({
+        default: m.PerfDashboardScreen,
+      })),
+    )
+  : () => null;
+
 /* ================= PROFILES ================= */
 const UsernameProfileRedirect = lazyWithLog("UsernameProfileRedirect", () =>
   import("@/features/profiles/screens/UsernameProfileRedirect"),
@@ -440,6 +448,7 @@ export default function AppRoutes() {
             VportAdsSettingsScreen,
             VoidScreen,
             DevDiagnosticsScreen,
+            PerfDashboardScreen,
 
             UsernameProfileRedirect,
             ActorProfileScreen,

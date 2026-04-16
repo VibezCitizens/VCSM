@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 /**
  * DAL: Resolve handles -> actor ids
@@ -38,38 +39,18 @@ export async function findActorsByHandles(handles) {
     userActors = actors || [];
   }
 
-  // 2) vport handles => vports.id
-  const { data: vports, error: vErr } = await supabase
-    .schema("vc")
-    .from("vports")
-    .select("id,slug")
+  // 2) vport handles => vport.profiles.slug → actor_id directly
+  const { data: vportProfiles, error: vErr } = await vportSchema
+    .from("profiles")
+    .select("actor_id,slug")
     .in("slug", list);
 
   if (vErr) throw vErr;
-
-  const vportIds = (vports || []).map((v) => v.id).filter(Boolean);
-
-  let vportActors = [];
-  if (vportIds.length > 0) {
-    const { data: actors, error: vaErr } = await supabase
-      .schema("vc")
-      .from("actors")
-      .select("id,vport_id,kind")
-      .in("vport_id", vportIds);
-
-    if (vaErr) throw vaErr;
-    vportActors = actors || [];
-  }
 
   // 3) stitch to raw "resolved" rows
   const profileUsernameById = new Map();
   for (const p of profiles || []) {
     profileUsernameById.set(p.id, String(p.username || "").toLowerCase());
-  }
-
-  const vportSlugById = new Map();
-  for (const v of vports || []) {
-    vportSlugById.set(v.id, String(v.slug || "").toLowerCase());
   }
 
   const out = [];
@@ -79,9 +60,10 @@ export async function findActorsByHandles(handles) {
     if (handle) out.push({ actor_id: a.id, handle, kind: a.kind });
   }
 
-  for (const a of vportActors) {
-    const handle = vportSlugById.get(a.vport_id);
-    if (handle) out.push({ actor_id: a.id, handle, kind: a.kind });
+  for (const vp of vportProfiles || []) {
+    if (vp.actor_id && vp.slug) {
+      out.push({ actor_id: vp.actor_id, handle: String(vp.slug).toLowerCase(), kind: "vport" });
+    }
   }
 
   return out;

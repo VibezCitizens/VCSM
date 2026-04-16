@@ -9,6 +9,11 @@ import { hydrateActor } from "@hydration";
 
 const IS_DEV = import.meta.env.DEV;
 
+// In-flight dedup: if loadDefaultIdentityForUser is called while a previous
+// call with the same userId is still running, return the same promise.
+// Prevents duplicate platform reads from concurrent auth state changes.
+const _identityInflight = new Map();
+
 export function mapProfileActor(actor, profile, realmId) {
   return {
     actorId: actor.id,
@@ -111,6 +116,21 @@ export async function loadDefaultIdentityForUser({
 }) {
   void savedActorId;
 
+  // In-flight dedup: concurrent calls with same userId return same promise
+  const inflightKey = `${userId}:${resolveAttempt}`;
+  const existing = _identityInflight.get(inflightKey);
+  if (existing) {
+    if (IS_DEV) debugLoginEvent('ENGINE_RESOLVE_DEDUPED', { phase: 'engine', status: 'info', message: `Reusing in-flight resolve for ${userId?.slice(0, 8)}` });
+    return existing;
+  }
+
+  const pending = _loadDefaultIdentityForUserInner({ userId, resolveAttempt });
+  _identityInflight.set(inflightKey, pending);
+  pending.finally(() => _identityInflight.delete(inflightKey));
+  return pending;
+}
+
+async function _loadDefaultIdentityForUserInner({ userId, resolveAttempt }) {
   try {
     debugLoginEvent('ENGINE_RESOLVE_START', {
       phase: 'engine',
@@ -170,7 +190,8 @@ export async function loadDefaultIdentityForUser({
     const hydrationT0 = performance.now()
 
     // RLS diagnostic: check if actor has a privacy row (can_view_actor depends on it)
-    if (IS_DEV) {
+    // Gated behind explicit opt-in flag to avoid extra DB read on every identity load.
+    if (IS_DEV && import.meta.env.VITE_DEBUG_RLS_DIAGNOSTIC === '1') {
       try {
         const { supabase: _sb } = await import("@/services/supabase/supabaseClient")
         const { data: privRow, error: privErr } = await _sb
@@ -179,15 +200,13 @@ export async function loadDefaultIdentityForUser({
           .select('actor_id, is_private')
           .eq('actor_id', selectedActorId)
           .maybeSingle()
-        if (import.meta.env.DEV) {
-          console.log('[IdentityHydration] RLS_DIAGNOSTIC', {
-            actorId: selectedActorId,
-            hasPrivacyRow: !!privRow,
-            isPrivate: privRow?.is_private ?? null,
-            privErr: privErr?.message ?? null,
-            warning: !privRow ? 'MISSING actor_privacy_settings row — can_view_actor will return NULL — RLS will block vc.actors read' : null,
-          })
-        }
+        console.log('[IdentityHydration] RLS_DIAGNOSTIC', {
+          actorId: selectedActorId,
+          hasPrivacyRow: !!privRow,
+          isPrivate: privRow?.is_private ?? null,
+          privErr: privErr?.message ?? null,
+          warning: !privRow ? 'MISSING actor_privacy_settings row — can_view_actor will return NULL — RLS will block vc.actors read' : null,
+        })
       } catch (_) {}
     }
 
@@ -240,6 +259,7 @@ export async function loadDefaultIdentityForUser({
         actorLinkId: ctx.activeActor.id ?? null,
         actorSource: ctx.activeActor.actorSource ?? 'vc',
         engineResolved: true,
+        availableActors: ctx.availableActors ?? [],
       }
     }
 
@@ -255,6 +275,7 @@ export async function loadDefaultIdentityForUser({
 
 /**
  * List actor choices through the shared identity engine.
+ * Uses a single batched query instead of N+1 individual actor reads.
  */
 export async function loadOwnedActorChoices(_userId) {
   try {
@@ -265,14 +286,32 @@ export async function loadOwnedActorChoices(_userId) {
 
     if (!ctx?.availableActors?.length) return [];
 
-    const actors = await Promise.all(
-      ctx.availableActors.map(async (link) => {
-        const actor = await readIdentityActorByIdDAL(link.actorId);
-        return { actor_id: link.actorId, actor, _linkId: link.id };
-      })
-    );
+    // Batch read: single query for all actor IDs instead of N+1
+    const actorIds = ctx.availableActors.map((link) => link.actorId).filter(Boolean);
+    if (!actorIds.length) return [];
 
-    return actors.filter((row) => row.actor);
+    const { supabase } = await import("@/services/supabase/supabaseClient");
+    const { default: vc } = await import("@/services/supabase/vcClient");
+    const { data: actorRows, error } = await vc
+      .from("actors")
+      .select("id, kind, profile_id, vport_id, is_void")
+      .in("id", actorIds);
+
+    if (error) {
+      if (IS_DEV) console.warn("[Identity] Batch actor read failed:", error?.message);
+      return [];
+    }
+
+    const actorMap = new Map((actorRows || []).map((a) => [a.id, a]));
+    const linkIdMap = new Map(ctx.availableActors.map((link) => [link.actorId, link.id]));
+
+    return actorIds
+      .map((id) => ({
+        actor_id: id,
+        actor: actorMap.get(id) ?? null,
+        _linkId: linkIdMap.get(id) ?? null,
+      }))
+      .filter((row) => row.actor);
   } catch (error) {
     if (IS_DEV) {
       console.warn("[Identity] Engine actor choices failed:", error?.message);

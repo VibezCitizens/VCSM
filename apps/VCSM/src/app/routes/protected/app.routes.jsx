@@ -121,6 +121,7 @@ export function protectedAppRoutes({
   VportAdsSettingsScreen,
   VoidScreen,
   DevDiagnosticsScreen,
+  PerfDashboardScreen,
 
   UsernameProfileRedirect,
   ActorProfileScreen,
@@ -226,6 +227,14 @@ export function protectedAppRoutes({
       path: "/dev/diagnostics",
       element: devDiagnosticsEnabled ? (
         <DevDiagnosticsScreen />
+      ) : (
+        <Navigate to="/feed" replace />
+      ),
+    },
+    {
+      path: "/dev/performance",
+      element: devDiagnosticsEnabled ? (
+        <PerfDashboardScreen />
       ) : (
         <Navigate to="/feed" replace />
       ),

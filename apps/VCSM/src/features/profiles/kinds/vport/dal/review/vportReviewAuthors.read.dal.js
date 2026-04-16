@@ -2,6 +2,7 @@
 
 import vc from "@/services/supabase/vcClient";
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 /**
  * Fetch author cards for a batch of review IDs using the SECURITY DEFINER RPC.
@@ -99,13 +100,13 @@ export async function dalListActorCardsByActorIds(actorIds) {
   }
 
   const profileIds = uniq(actorRows.map((a) => a?.profile_id).filter(Boolean));
-  const vportIds = uniq(actorRows.map((a) => a?.vport_id).filter(Boolean));
+  const allActorIds = uniq(actorRows.map((a) => a?.id).filter(Boolean));
 
   // 2) profiles (public schema via main supabase client)
   let profileById = new Map();
   if (profileIds.length) {
     const { data: profiles, error: profErr } = await supabase
-      .from("profiles") // public.profiles (default schema for this client)
+      .from("profiles")
       .select("id, display_name, username, photo_url")
       .in("id", profileIds);
 
@@ -124,20 +125,20 @@ export async function dalListActorCardsByActorIds(actorIds) {
     );
   }
 
-  // 3) vports (vc schema via vcClient)
-  let vportById = new Map();
-  if (vportIds.length) {
-    const { data: vports, error: vportErr } = await vc
-      .from("vports")
-      .select("id, name, slug, avatar_url")
-      .in("id", vportIds);
+  // 3) vports (vport schema via vportClient, keyed by actor_id)
+  let vportByActorId = new Map();
+  if (allActorIds.length) {
+    const { data: vports, error: vportErr } = await vportSchema
+      .from("profiles")
+      .select("actor_id, name, slug, avatar_url")
+      .in("actor_id", allActorIds);
 
     if (vportErr) throw vportErr;
 
     const vportRows = Array.isArray(vports) ? vports : [];
-    vportById = new Map(
+    vportByActorId = new Map(
       vportRows.map((v) => [
-        String(v.id),
+        String(v.actor_id),
         {
           displayName: v.name || v.slug || "Anonymous",
           username: v.slug ?? "",
@@ -153,7 +154,6 @@ export async function dalListActorCardsByActorIds(actorIds) {
     const actorId = String(a.id);
     const kind = String(a.kind ?? "");
     const profileId = a?.profile_id ? String(a.profile_id) : null;
-    const vportId = a?.vport_id ? String(a.vport_id) : null;
 
     // Use directory card if available (fallback for RLS-blocked actors)
     if (a._directoryCard) {
@@ -172,8 +172,8 @@ export async function dalListActorCardsByActorIds(actorIds) {
       continue;
     }
 
-    if (kind === "vport" && vportId) {
-      const vp = vportById.get(vportId);
+    if (kind === "vport") {
+      const vp = vportByActorId.get(actorId);
       out.push({
         actorId,
         displayName: vp?.displayName ?? "Anonymous",

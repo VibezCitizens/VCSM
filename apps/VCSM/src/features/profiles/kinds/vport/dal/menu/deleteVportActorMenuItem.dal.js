@@ -1,29 +1,18 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * DAL: delete a vport actor menu item (raw delete result).
- * - Explicit schema
- * - No select(*)
- * - No business meaning
- */
 export async function deleteVportActorMenuItemDAL({
   itemId,
 } = {}) {
   if (!itemId) {
-    throw new Error(
-      "deleteVportActorMenuItemDAL: itemId is required"
-    );
+    throw new Error("deleteVportActorMenuItemDAL: itemId is required");
   }
 
-  const { error } = await supabase
-    .schema("vc")
-    .from("vport_actor_menu_items")
+  const { error } = await vportSchema
+    .from("menu_items")
     .delete()
     .eq("id", itemId);
 
   if (error) throw error;
-
-  // minimal deterministic return
   return { id: itemId };
 }
 

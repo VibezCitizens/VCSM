@@ -7,6 +7,9 @@ import ReactionBar from "../components/ReactionBar";
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
 import { useIdentity } from "@/state/identity/identityContext";
 
+const HAS_PRELOADED = (post) =>
+  post && typeof post.commentCount === "number" && post.reactionCounts != null;
+
 import LinkifiedMentions from "@/features/upload/adapters/ui/LinkifiedMentions.adapter";
 import PostHeader from "../components/PostHeader";
 import "@/features/post/styles/post-modern.css";
@@ -26,7 +29,11 @@ export default function PostCardView({
   const { identity } = useIdentity();
   const viewerActorId = identity?.actorId ?? null;
 
-  const commentCount = usePostCommentCount(safePost.id);
+  // Use pre-loaded count from feed pipeline when available (batched),
+  // fall back to per-post hook for non-feed contexts (e.g. PostDetail).
+  const preloaded = HAS_PRELOADED(safePost);
+  const hookCommentCount = usePostCommentCount(preloaded ? null : safePost.id);
+  const commentCount = preloaded ? safePost.commentCount : hookCommentCount;
 
   const locationText = String(safePost.location_text ?? safePost.locationText ?? "").trim();
 
@@ -127,6 +134,8 @@ export default function PostCardView({
             commentCount={commentCount}
             onOpenComments={covered ? undefined : onOpenPost}
             onShare={covered ? undefined : onShare}
+            preloadedReaction={preloaded ? safePost.viewerReaction : null}
+            preloadedCounts={preloaded ? safePost.reactionCounts : null}
           />
         </div>
       </div>

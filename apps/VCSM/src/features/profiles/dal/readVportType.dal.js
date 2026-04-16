@@ -1,7 +1,8 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 import { createTTLCache } from "@/shared/lib/ttlCache";
 
-// Vport type never changes — cache 10 minutes
+// Vport type rarely changes — cache 10 minutes
 const vportTypeCache = createTTLCache(600_000);
 
 export async function readVportTypeDAL(actorId) {
@@ -10,10 +11,10 @@ export async function readVportTypeDAL(actorId) {
   const cached = vportTypeCache.get(actorId);
   if (cached) return cached;
 
-  const { data, error } = await supabase
+  const { data: actor, error } = await supabase
     .schema("vc")
     .from("actors")
-    .select("kind,vport:vports(vport_type)")
+    .select("kind,vport_id")
     .eq("id", actorId)
     .maybeSingle();
 
@@ -22,7 +23,21 @@ export async function readVportTypeDAL(actorId) {
     throw error;
   }
 
-  const result = data ?? null;
-  if (result) vportTypeCache.set(actorId, result);
+  if (!actor) return null;
+
+  let vportType = null;
+
+  if (actor.kind === "vport" && actor.vport_id) {
+    const { data: cat } = await vportSchema
+      .from("profile_categories")
+      .select("category_key")
+      .eq("profile_id", actor.vport_id)
+      .eq("is_primary", true)
+      .maybeSingle();
+    vportType = cat?.category_key ?? null;
+  }
+
+  const result = { kind: actor.kind, vport_type: vportType };
+  vportTypeCache.set(actorId, result);
   return result;
 }

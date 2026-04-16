@@ -1,7 +1,6 @@
 // src/features/notifications/inbox/controller/Notifications.controller.js
 
-import { fetchNotificationsPage } from '../dal/notifications.read.dal'
-import { dalMarkNotificationsSeen } from '../dal/notifications.dal'
+import { getInboxNotifications } from '@notifications'
 import { loadBlockSets, filterByBlocks } from '../lib/blockFilter'
 import { resolveSenders } from '../lib/resolveSenders'
 import { mapNotification } from '../model/notification.mapper'
@@ -13,15 +12,15 @@ function normalizeNotificationKind(kind) {
 }
 
 function extractRequesterActorId(row) {
-  const ctx =
-    typeof row?.context === 'object' && row.context !== null
-      ? row.context
+  const payload =
+    typeof row?.payload === 'object' && row.payload !== null
+      ? row.payload
       : {}
 
   return (
-    ctx?.requesterActorId ??
-    ctx?.requester_actor_id ??
-    row?.actor_id ??
+    payload?.requesterActorId ??
+    payload?.requester_actor_id ??
+    row?.sourceActorId ??
     null
   )
 }
@@ -31,7 +30,7 @@ async function filterResolvedFollowRequestRows({ rows, targetActorId }) {
   if (!targetActorId || safeRows.length === 0) return safeRows
 
   const followRequestRows = safeRows.filter(
-    (row) => normalizeNotificationKind(row?.kind) === 'follow_request'
+    (row) => normalizeNotificationKind(row?.eventKey) === 'follow_request'
   )
   if (!followRequestRows.length) return safeRows
 
@@ -45,7 +44,7 @@ async function filterResolvedFollowRequestRows({ rows, targetActorId }) {
     )
 
     return safeRows.filter((row) => {
-      if (normalizeNotificationKind(row?.kind) !== 'follow_request') return true
+      if (normalizeNotificationKind(row?.eventKey) !== 'follow_request') return true
 
       const requesterActorId = extractRequesterActorId(row)
       if (!requesterActorId) return false
@@ -53,7 +52,9 @@ async function filterResolvedFollowRequestRows({ rows, targetActorId }) {
       return pendingRequesterIds.has(String(requesterActorId))
     })
   } catch (error) {
-    console.error('[Notifications.controller] follow_request filter failed', error)
+    if (import.meta.env.DEV) {
+      console.error('[Notifications.controller] follow_request filter failed', error)
+    }
     return safeRows
   }
 }
@@ -67,11 +68,13 @@ export async function getNotifications(identity) {
   }
 
   // ------------------------------------------------------------
-  // FETCH RAW NOTIFICATIONS
+  // FETCH FROM NOTIFICATION ENGINE (notification.* schema)
+  // autoMarkSeen is handled by the engine
   // ------------------------------------------------------------
-  const raw = await fetchNotificationsPage({
+  const { notifications: raw } = await getInboxNotifications({
     recipientActorId: targetActorId,
     limit: 20,
+    autoMarkSeen: true,
   })
 
   // ------------------------------------------------------------
@@ -79,21 +82,9 @@ export async function getNotifications(identity) {
   // ------------------------------------------------------------
   const blocks = await loadBlockSets(myActorId)
 
-  const filtered = filterByBlocks(raw, blocks)
-
-  // ------------------------------------------------------------
-  // MARK AS SEEN
-  // ------------------------------------------------------------
-  const unseenIds = filtered
-    .filter(n => !n.is_seen)
-    .map(n => n.id)
-
-  if (unseenIds.length) {
-    await dalMarkNotificationsSeen({
-      actorId: targetActorId,
-      notificationIds: unseenIds,
-    })
-  }
+  const filtered = filterByBlocks(raw, blocks, {
+    getActorId: (row) => row.sourceActorId,
+  })
 
   const visibleRows = await filterResolvedFollowRequestRows({
     rows: filtered,
@@ -103,7 +94,9 @@ export async function getNotifications(identity) {
   // ------------------------------------------------------------
   // SENDER RESOLUTION
   // ------------------------------------------------------------
-  const actorIds = visibleRows.map(r => r.actor_id)
+  const actorIds = visibleRows
+    .map(r => r.sourceActorId)
+    .filter(Boolean)
 
   const senderMap = await resolveSenders(actorIds)
 

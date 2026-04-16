@@ -11,6 +11,7 @@ import {
   mapVportActor,
   resolveRealmId,
 } from "@/state/identity/identity.controller";
+import { supabase as supabaseClient } from "@/services/supabase/supabaseClient";
 
 export async function hydrateVcsmActor({
   actorId,
@@ -56,6 +57,17 @@ export async function hydrateVcsmActor({
     if (ownerRow?.user_id) {
       const ownerActor = await readUserActorByProfileIdDAL(ownerRow.user_id);
       ownerActorId = ownerActor?.id ?? null;
+    }
+
+    if (!ownerActorId && vport?.id) {
+      const { data: accessRow } = await supabaseClient
+        .schema("vport")
+        .from("profile_actor_access")
+        .select("actor_id")
+        .eq("profile_id", vport.id)
+        .eq("is_primary", true)
+        .maybeSingle();
+      ownerActorId = accessRow?.actor_id ?? null;
     }
 
     return {

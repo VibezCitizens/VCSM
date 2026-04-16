@@ -1,52 +1,48 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\gas\vportFuelPriceSubmissions.read.dal.js
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * List pending submissions for a vport (actor-first)
- * DAL — RAW DB ROWS
- */
+const SUBMISSION_SELECT =
+  "id,profile_id,fuel_key,proposed_price,currency_code,unit,submitted_by_actor_id,submitted_at,status,reviewed_at,reviewed_by_actor_id,decision_reason,evidence";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function fetchPendingFuelPriceSubmissionsDAL({
   targetActorId,
   fuelKey = null,
   limit = 50,
 }) {
-  if (!targetActorId) {
-    return { data: [], error: null };
-  }
+  if (!targetActorId) return { data: [], error: null };
 
-  let query = supabase
-    .schema("vc")
-    .from("vport_fuel_price_submissions")
+  const profileId = await resolveProfileId(targetActorId);
+  if (!profileId) return { data: [], error: null };
+
+  let query = vportSchema
+    .from("fuel_price_submissions")
     .select(
-      "id,target_actor_id,fuel_key,proposed_price,currency_code,unit,submitted_by_actor_id,submitted_at,status,evidence"
+      "id,profile_id,fuel_key,proposed_price,currency_code,unit,submitted_by_actor_id,submitted_at,status,evidence"
     )
-    .eq("target_actor_id", targetActorId)
+    .eq("profile_id", profileId)
     .eq("status", "pending")
     .order("submitted_at", { ascending: false })
     .limit(limit);
 
-  if (fuelKey) {
-    query = query.eq("fuel_key", fuelKey);
-  }
+  if (fuelKey) query = query.eq("fuel_key", fuelKey);
 
   return query;
 }
 
-/**
- * Fetch a single submission by id
- * DAL — RAW DB ROW
- */
 export async function fetchFuelPriceSubmissionByIdDAL({ submissionId }) {
-  if (!submissionId) {
-    return { data: null, error: null };
-  }
+  if (!submissionId) return { data: null, error: null };
 
-  return supabase
-    .schema("vc")
-    .from("vport_fuel_price_submissions")
-    .select(
-      "id,target_actor_id,fuel_key,proposed_price,currency_code,unit,submitted_by_actor_id,submitted_at,status,reviewed_at,reviewed_by_actor_id,decision_reason,evidence"
-    )
+  return vportSchema
+    .from("fuel_price_submissions")
+    .select(SUBMISSION_SELECT)
     .eq("id", submissionId)
     .maybeSingle();
 }

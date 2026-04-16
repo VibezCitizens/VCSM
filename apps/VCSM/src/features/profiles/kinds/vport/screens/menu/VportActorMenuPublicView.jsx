@@ -163,7 +163,7 @@ export function VportActorMenuPublicView({ actorId, onLeaveReview }) {
               padding: "14px 16px 10px 16px",
             }}
           >
-            <button type="button" onClick={onBack} style={shell.btn("soft")}>
+            <button type="button" onClick={onBack}>
               {isDesktop ? (
                 "Back"
               ) : (

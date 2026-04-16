@@ -52,16 +52,28 @@ export function AuthProvider({ children }) {
         // 2) Listen for future auth changes (login/logout/token refresh)
         const { data: listener } = supabase.auth.onAuthStateChange((_evt, nextSession) => {
           if (cancelled) return
+          const nextUserId = nextSession?.user?.id ?? null
           debugLoginEvent('AUTH_STATE_CHANGE', {
             phase: 'auth',
             status: 'info',
             message: _evt,
-            payload: { event: _evt, userId: nextSession?.user?.id ?? null },
+            payload: { event: _evt, userId: nextUserId },
           })
-          setSession(nextSession ?? null)
-          setUser(nextSession?.user ?? null)
+
+          // Guard: skip state updates on TOKEN_REFRESHED when the userId is unchanged.
+          // setUser() creates a new object reference, which would trigger re-renders
+          // across all AuthContext consumers and downstream identity resolution —
+          // even though nothing meaningful changed.
+          setUser((prev) => {
+            if (prev?.id === nextUserId && nextUserId != null) return prev
+            return nextSession?.user ?? null
+          })
+          setSession((prev) => {
+            if (prev?.access_token === nextSession?.access_token) return prev
+            return nextSession ?? null
+          })
           setLoading(false)
-          debugUserChanged(nextSession?.user?.id ?? null)
+          debugUserChanged(nextUserId)
           if (!nextSession) {
             debugLoginEvent('SESSION_CLEARED', { phase: 'session', status: 'warn', message: 'Session became null' })
           }

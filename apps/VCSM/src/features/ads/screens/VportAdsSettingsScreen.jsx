@@ -61,7 +61,7 @@ export default function VportAdsSettingsScreen() {
             <VportAdsBackButton
               isDesktop={isDesktop}
               onClick={() => navigate(-1)}
-              style={shell.btn("soft")}
+             
             />
             <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
               <Megaphone className="h-4 w-4 text-purple-300" />

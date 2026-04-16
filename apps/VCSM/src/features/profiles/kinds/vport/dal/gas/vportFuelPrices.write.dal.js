@@ -1,14 +1,17 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\gas\vportFuelPrices.write.dal.js
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * Upsert official price (owner/system)
- * DAL — RAW DB ROW
- *
- * actor-first:
- * - targetActorId = vport actor
- * - updatedByActorId = actor performing update
- */
+const FUEL_PRICES_SELECT =
+  "profile_id,fuel_key,price,currency_code,unit,is_available,updated_at,updated_by_actor_id,source";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function upsertVportFuelPriceDAL({
   targetActorId,
   fuelKey,
@@ -22,13 +25,15 @@ export async function upsertVportFuelPriceDAL({
   if (!targetActorId) throw new Error("targetActorId required");
   if (!fuelKey) throw new Error("fuelKey required");
 
-  return supabase
-    .schema("vc")
-    .from("vport_fuel_prices")
+  const profileId = await resolveProfileId(targetActorId);
+  if (!profileId) return { data: null, error: new Error("profile not found for actor") };
+
+  return vportSchema
+    .from("fuel_prices")
     .upsert(
       [
         {
-          target_actor_id: targetActorId,
+          profile_id: profileId,
           fuel_key: fuelKey,
           price,
           currency_code: currencyCode,
@@ -39,10 +44,8 @@ export async function upsertVportFuelPriceDAL({
           updated_at: new Date().toISOString(),
         },
       ],
-      { onConflict: "target_actor_id,fuel_key" }
+      { onConflict: "profile_id,fuel_key" }
     )
-    .select(
-      "target_actor_id,fuel_key,price,currency_code,unit,is_available,updated_at,updated_by_actor_id,source"
-    )
+    .select(FUEL_PRICES_SELECT)
     .maybeSingle();
 }

@@ -20,9 +20,11 @@ export default function RootLayout() {
     pathname
   );
 
-  // Hide social app nav on chat sub-screens, auth, and learning
-  const hideTopNav = isChatSubScreen || isAuthRoute || isLearningRoute;
-  const hideBottomNav = isChatSubScreen || isAuthRoute || isLearningRoute;
+  const isDevPerfRoute = /^\/dev\/performance/.test(pathname);
+
+  // Hide social app nav on chat sub-screens, auth, learning, and dev/performance
+  const hideTopNav = isChatSubScreen || isAuthRoute || isLearningRoute || isDevPerfRoute;
+  const hideBottomNav = isChatSubScreen || isAuthRoute || isLearningRoute || isDevPerfRoute;
 
   /**
    * SCROLL CONTRACT
@@ -59,7 +61,11 @@ export default function RootLayout() {
         </PageContainer>
       </main>
 
-      {!hideBottomNav && <BottomNavBar />}
+      {/* Always mounted to preserve realtime subscriptions + polling.
+          CSS-hidden when not needed (prevents remount churn). */}
+      <div style={hideBottomNav ? { display: 'none' } : undefined}>
+        <BottomNavBar />
+      </div>
 
       {import.meta.env.DEV && <IOSDebugHUD />}
     </div>

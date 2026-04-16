@@ -16,6 +16,9 @@ import {
   fetchReactionSummaryDAL,
 } from "@/features/post/postcard/dal/postReactions.read.dal";
 
+import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
+
 /**
  * Send roses to a post
  *
@@ -48,6 +51,20 @@ export async function sendRoseController({
   });
 
   if (writeErr) throw writeErr;
+
+  // Publish rose notification — always a creation, never toggled
+  const { data: post } = await fetchPostByIdDAL(postId);
+  if (post?.actor_id) {
+    publishVcsmNotification({
+      recipientActorId: post.actor_id,
+      actorId,
+      kind: 'social.post.rose',
+      objectType: 'post',
+      objectId: postId,
+      linkPath: `/post/${postId}`,
+      context: { qty },
+    });
+  }
 
   // ============================================================
   // 3️⃣ READ (AGGREGATED COUNTS — RPC)

@@ -21,14 +21,19 @@ const IdentityContext = createContext(null);
 let _resolveVersion = 0;
 // Monotonic switch counter — only the newest switchActor attempt may commit.
 let _switchVersion = 0;
+// Set to true when switchActor terminally aborts (link not found).
+// Prevents the background initial-load effect from overwriting the current
+// actor with a platform-preference fallback that belongs to a different vport.
+let _explicitSwitchAborted = false;
 
 export function IdentityProvider({ children }) {
   const { user, loading: authLoading } = useAuth();
   const [identity, setIdentity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [availableActors, setAvailableActors] = useState([]);
 
   async function switchActor(actorId, _dbgEntryPoint) {
-    if (!actorId) return;
+    if (!actorId) return { success: false, code: 'NO_ACTOR_ID', requestedActorId: null, availableActorIds: [] };
     const mySwitchVersion = ++_switchVersion;
 
     const dbg = import.meta.env.DEV
@@ -69,7 +74,7 @@ export function IdentityProvider({ children }) {
           message: 'Engine context resolution failed — switch aborted',
         });
         dbg.event('SWITCH_DONE', { status: 'error', message: 'Aborted: engine resolve failed' });
-        return;
+        return { success: false, code: 'SWITCH_ABORT_ENGINE_RESOLVE_FAILED', requestedActorId: actorId, availableActorIds: [] };
       }
 
       if (!ctx?.userAppAccountId || !ctx?.availableActors?.length) {
@@ -79,11 +84,12 @@ export function IdentityProvider({ children }) {
           payload: { hasAccount: !!ctx?.userAppAccountId, actorCount: ctx?.availableActors?.length ?? 0 },
         });
         dbg.event('SWITCH_DONE', { status: 'error', message: 'Aborted: missing account context' });
-        return;
+        return { success: false, code: 'SWITCH_ABORT_MISSING_ACCOUNT_CONTEXT', requestedActorId: actorId, availableActorIds: [] };
       }
 
       engineContextResolved = true;
       userAppAccountId = ctx.userAppAccountId;
+      setAvailableActors(ctx.availableActors ?? []);
       dbg.event('ENGINE_CONTEXT_RESOLVE_SUCCESS', {
         status: 'success',
         payload: {
@@ -104,13 +110,41 @@ export function IdentityProvider({ children }) {
       const link = ctx.availableActors.find((a) => a.actorId === actorId);
 
       if (!link?.id) {
+        const availableActorIds = ctx.availableActors.map((a) => a.actorId);
+        _explicitSwitchAborted = true;
         dbg.event('SWITCH_ABORT_LINK_NOT_FOUND', {
           status: 'error',
-          message: `No link found for actorId ${actorId.slice(0, 8)} — switch aborted`,
-          payload: { availableIds: ctx.availableActors.map((a) => a.actorId) },
+          message: `No link found for actorId ${actorId.slice(0, 8)} — switch aborted (TERMINAL)`,
+          payload: { availableIds: availableActorIds },
+        });
+        dbg.event('SWITCH_TERMINAL_ABORT', {
+          status: 'error',
+          message: 'Identity state unchanged. Background load blocked from overwriting.',
         });
         dbg.event('SWITCH_DONE', { status: 'error', message: 'Aborted: link not found' });
-        return;
+        dbg.finish({
+          appKey: 'vcsm',
+          requestedActorId: actorId,
+          previousActorId: identity?.actorId ?? null,
+          finalActorId: identity?.actorId ?? null,
+          userAppAccountId,
+          actorLinkId: null,
+          actorSource: 'vc',
+          actorKind: null,
+          entryPoint: _dbgEntryPoint ?? 'unknown',
+          engineContextResolved,
+          linkMatched: false,
+          platformWriteAttempted: false,
+          platformWriteSucceeded: false,
+          hydrationStarted: false,
+          hydrationSucceeded: false,
+          stateUpdated: false,
+          localStorageWritten: false,
+          localStorageRole: 'cache_only',
+          refreshRestoredSameActor: null,
+          switchVerdict: null,
+        });
+        return { success: false, code: 'SWITCH_ABORT_LINK_NOT_FOUND', requestedActorId: actorId, availableActorIds };
       }
 
       linkMatched = true;
@@ -142,7 +176,7 @@ export function IdentityProvider({ children }) {
           message: 'Platform preference write failed — switch aborted',
         });
         dbg.event('SWITCH_DONE', { status: 'error', message: 'Aborted: platform write failed' });
-        return;
+        return { success: false, code: 'SWITCH_ABORT_PLATFORM_WRITE_FAILED', requestedActorId: actorId, availableActorIds: ctx.availableActors.map((a) => a.actorId) };
       }
 
       platformWriteSucceeded = true;
@@ -165,7 +199,7 @@ export function IdentityProvider({ children }) {
             payload: { mySwitchVersion, currentVersion: _switchVersion, actorId },
           });
           dbg.event('SWITCH_DONE', { status: 'warn', message: 'Aborted: stale switch' });
-          return;
+          return { success: false, code: 'SWITCH_ABORT_STALE', requestedActorId: actorId, availableActorIds: [] };
         }
 
         hydrationSucceeded = true;
@@ -193,6 +227,9 @@ export function IdentityProvider({ children }) {
       }
 
       dbg.event('SWITCH_DONE', { status: stateUpdated ? 'success' : 'error' });
+      // Clear abort flag on successful switch
+      if (stateUpdated) _explicitSwitchAborted = false;
+
     } catch (error) {
       dbg.error('SWITCH_DONE', error, { message: 'Switch failed' });
       console.error("[Identity] failed to switch actor", error);
@@ -221,6 +258,13 @@ export function IdentityProvider({ children }) {
       refreshRestoredSameActor: null, // checked after refresh
       switchVerdict: null, // computed by store
     });
+
+    return {
+      success: stateUpdated,
+      code: stateUpdated ? 'SWITCH_SUCCESS' : 'SWITCH_STATE_UNCHANGED',
+      requestedActorId: actorId,
+      availableActorIds: [],
+    };
   }
 
   // Immediately clear stale identity when auth user changes.
@@ -451,6 +495,27 @@ export function IdentityProvider({ children }) {
               selfHealUsed,
             },
           });
+          if (nextIdentity?._engineMeta?.availableActors?.length) {
+            setAvailableActors(nextIdentity._engineMeta.availableActors);
+          }
+
+          // Fallback guard: if switchActor already aborted because the requested
+          // actor was not in the link table, do NOT let this background resolve
+          // overwrite the current actor with the platform-preference fallback.
+          // The user clicked a specific vport and the switch failed — stay put.
+          if (_explicitSwitchAborted && identity !== null && nextIdentity?.actorId !== identity?.actorId) {
+            debugLoginEvent('BLOCKED_FALLBACK_AFTER_EXPLICIT_FAILURE', {
+              phase: 'identity', status: 'warn',
+              message: `Background load blocked: switch aborted, current actor ${identity.actorId?.slice(0, 8)} preserved`,
+              payload: {
+                blockedActorId: nextIdentity?.actorId ?? null,
+                preservedActorId: identity?.actorId ?? null,
+              },
+            });
+            setLoading(false);
+            return;
+          }
+
           setIdentity(nextIdentity);
           setLoading(false);
 
@@ -492,6 +557,15 @@ export function IdentityProvider({ children }) {
     debugFeedViewer({ user, identity });
   }, [identity, user]);
 
+  async function refreshAvailableActors() {
+    try {
+      const ctx = await resolveAuthenticatedContext({ appKey: 'vcsm', skipLoginRecord: true });
+      if (ctx?.availableActors?.length) {
+        setAvailableActors(ctx.availableActors);
+      }
+    } catch (_) {}
+  }
+
   return (
     <IdentityContext.Provider
       value={{
@@ -500,6 +574,8 @@ export function IdentityProvider({ children }) {
         identityLoading: loading,
         setIdentity,
         switchActor,
+        availableActors,
+        refreshAvailableActors,
       }}
     >
       {children}

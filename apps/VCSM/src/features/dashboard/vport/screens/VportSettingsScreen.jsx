@@ -261,7 +261,7 @@ export default function VportSettingsScreen() {
             <VportBackButton
               isDesktop={isDesktop}
               onClick={() => navigate(`/actor/${actorId}/dashboard`)}
-              style={shell.btn("soft")}
+             
             />
 
             <div style={shell.title}>VPORT SETTINGS</div>

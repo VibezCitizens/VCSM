@@ -1,14 +1,17 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\gas\vportFuelPriceSubmissions.write.dal.js
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * Create a fuel price submission (citizen suggestion)
- * DAL — RAW DB ROW (insert result)
- *
- * actor-first:
- * - targetActorId = vport actor
- * - submittedByActorId = actor submitting suggestion
- */
+const SUBMISSION_SELECT =
+  "id,profile_id,fuel_key,proposed_price,currency_code,unit,submitted_by_actor_id,submitted_at,status,reviewed_at,reviewed_by_actor_id,decision_reason,evidence";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function createFuelPriceSubmissionDAL({
   targetActorId,
   fuelKey,
@@ -22,12 +25,14 @@ export async function createFuelPriceSubmissionDAL({
   if (!fuelKey) throw new Error("fuelKey required");
   if (proposedPrice == null) throw new Error("proposedPrice required");
 
-  return supabase
-    .schema("vc")
-    .from("vport_fuel_price_submissions")
+  const profileId = await resolveProfileId(targetActorId);
+  if (!profileId) return { data: null, error: new Error("profile not found for actor") };
+
+  return vportSchema
+    .from("fuel_price_submissions")
     .insert([
       {
-        target_actor_id: targetActorId,
+        profile_id: profileId,
         fuel_key: fuelKey,
         proposed_price: proposedPrice,
         currency_code: currencyCode,
@@ -37,8 +42,6 @@ export async function createFuelPriceSubmissionDAL({
         status: "pending",
       },
     ])
-    .select(
-      "id,target_actor_id,fuel_key,proposed_price,currency_code,unit,submitted_by_actor_id,submitted_at,status,reviewed_at,reviewed_by_actor_id,decision_reason,evidence"
-    )
+    .select(SUBMISSION_SELECT)
     .maybeSingle();
 }

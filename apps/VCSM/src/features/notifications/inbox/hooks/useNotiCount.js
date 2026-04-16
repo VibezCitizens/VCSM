@@ -105,7 +105,12 @@ export default function useNotiCount({
       unsubscribeRealtimeRef.current = null
     }
 
-    const onRealtime = () => fetchCount(true)
+    // Debounce realtime: coalesce rapid INSERT+UPDATE+DELETE bursts into one refresh
+    let realtimeTimer = null
+    const onRealtime = () => {
+      if (realtimeTimer) clearTimeout(realtimeTimer)
+      realtimeTimer = setTimeout(() => fetchCount(true), 2_000)
+    }
     unsubscribeRealtimeRef.current = subscribeNotificationBadge({
       actorId,
       onChange: onRealtime,
@@ -116,6 +121,7 @@ export default function useNotiCount({
 
     return () => {
       window.removeEventListener('noti:refresh', onRefresh)
+      if (realtimeTimer) clearTimeout(realtimeTimer)
       if (pollRef.current) clearInterval(pollRef.current)
       if (unsubscribeRealtimeRef.current) {
         unsubscribeRealtimeRef.current()

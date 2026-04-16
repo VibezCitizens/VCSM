@@ -88,8 +88,13 @@ export default function useUnreadBadge({ actorId, refreshMs = 20000 } = {}) {
       unsubscribeRealtimeRef.current = null
     }
 
+    // Debounce realtime: coalesce rapid INSERT+UPDATE+DELETE bursts into one refresh
+    let realtimeTimer = null
     if (canQuery) {
-      const onRealtime = () => load(true)
+      const onRealtime = () => {
+        if (realtimeTimer) clearTimeout(realtimeTimer)
+        realtimeTimer = setTimeout(() => load(true), 2_000)
+      }
       unsubscribeRealtimeRef.current = subscribeInboxBadge({
         actorId,
         onChange: onRealtime,
@@ -104,6 +109,7 @@ export default function useUnreadBadge({ actorId, refreshMs = 20000 } = {}) {
     return () => {
       aliveRef.current = false
       window.removeEventListener('noti:refresh', onRefresh)
+      if (realtimeTimer) clearTimeout(realtimeTimer)
       if (timer) clearInterval(timer)
       if (unsubscribeRealtimeRef.current) {
         unsubscribeRealtimeRef.current()

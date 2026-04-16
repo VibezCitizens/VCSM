@@ -17,22 +17,25 @@ import { getPostReactionsController } from
 import { sendRoseController } from
   "../controller/sendRose.controller";
 
-export function usePostReactions(postId) {
+export function usePostReactions(postId, { preloadedReaction = null, preloadedCounts = null } = {}) {
   const { identity, loading: identityLoading } = useIdentity();
   const actorId = identity?.actorId ?? null;
 
-  const [myReaction, setMyReaction] = useState(null);
-  const [counts, setCounts] = useState({
-    like: 0,
-    dislike: 0,
-    rose: 0,
-  });
+  const hasPreloaded = preloadedCounts != null;
+
+  const [myReaction, setMyReaction] = useState(preloadedReaction);
+  const [counts, setCounts] = useState(
+    preloadedCounts ?? { like: 0, dislike: 0, rose: 0 }
+  );
   const [loading, setLoading] = useState(false);
 
   /* ============================================================
      INITIAL LOAD (AUTHORITATIVE READ)
+     Skipped when pre-loaded data is provided (feed pipeline batch).
      ============================================================ */
   useEffect(() => {
+    // Skip fetch when feed pipeline already provided batch data
+    if (hasPreloaded) return;
     if (!postId || !actorId || identityLoading) return;
 
     let alive = true;
@@ -58,7 +61,7 @@ export function usePostReactions(postId) {
     return () => {
       alive = false;
     };
-  }, [postId, actorId, identityLoading]);
+  }, [postId, actorId, identityLoading, hasPreloaded]);
 
   /* ============================================================
      TOGGLE LIKE / DISLIKE

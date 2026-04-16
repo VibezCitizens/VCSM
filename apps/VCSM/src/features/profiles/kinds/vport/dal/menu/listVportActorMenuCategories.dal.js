@@ -1,32 +1,36 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 const CATEGORY_SELECT =
-  "id,actor_id,key,name,description,sort_order,is_active,created_at,updated_at";
+  "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at";
 
-/**
- * DAL: list categories for a vport actor (raw db rows).
- * - Explicit projection (no *)
- * - Deterministic
- * - No business meaning
- */
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function listVportActorMenuCategoriesDAL({
   actorId,
   includeInactive = false,
 } = {}) {
   if (!actorId) throw new Error("listVportActorMenuCategoriesDAL: actorId is required");
 
-  let query = supabase
-    .schema("vc")
-    .from("vport_actor_menu_categories")
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return [];
+
+  let query = vportSchema
+    .from("menu_categories")
     .select(CATEGORY_SELECT)
-    .eq("actor_id", actorId)
+    .eq("profile_id", profileId)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
   if (!includeInactive) query = query.eq("is_active", true);
 
   const { data, error } = await query;
-
   if (error) throw error;
   return data ?? [];
 }

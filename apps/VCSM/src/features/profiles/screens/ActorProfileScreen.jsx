@@ -5,6 +5,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
 
 import { useActorKind } from "@/features/profiles/hooks/useActorKind";
+import { useVportType } from "@/features/profiles/hooks/useVportType";
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
 import { SkeletonCardList } from "@/shared/components/Skeleton";
 import "@/features/profiles/styles/profiles-modern.css";
@@ -27,6 +28,13 @@ export default function ActorProfileScreen() {
 
   const { loading: kindLoading, kind } = useActorKind(actorIdForKind);
 
+  // Prefetch vportType in parallel with kind to eliminate the waterfall:
+  // kind resolution -> vportType resolution -> profile view.
+  // Both hooks fire simultaneously; VportProfileKindScreen receives the
+  // already-resolved vportType via props instead of fetching it again.
+  const { loading: vportTypeLoading, vportType: prefetchedVportType } =
+    useVportType(actorIdForKind);
+
   if (identityLoading) {
     return <div className="profiles-modern px-4 py-6"><SkeletonCardList count={2} bodyHeight="h-48" /></div>;
   }
@@ -43,6 +51,7 @@ export default function ActorProfileScreen() {
       <Screen
         viewerActorId={identity.actorId}
         profileActorId={identity.actorId}
+        identity={identity}
       />
     );
   }
@@ -60,6 +69,12 @@ export default function ActorProfileScreen() {
   const Screen = PROFILE_KIND_REGISTRY[kind] ?? PROFILE_KIND_REGISTRY.user;
 
   return (
-    <Screen viewerActorId={identity.actorId} profileActorId={routeActorId} />
+    <Screen
+      viewerActorId={identity.actorId}
+      profileActorId={routeActorId}
+      identity={identity}
+      prefetchedVportType={prefetchedVportType}
+      vportTypeLoading={vportTypeLoading}
+    />
   );
 }

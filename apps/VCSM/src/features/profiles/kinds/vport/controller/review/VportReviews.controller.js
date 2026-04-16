@@ -16,7 +16,7 @@ import {
 } from '@reviews'
 
 import { dalReadReviewTargetActor } from '@/features/profiles/kinds/vport/dal/review/reviewTarget.read.dal'
-import { dalInsertNotification } from '@/features/notifications/inbox/dal/notifications.create.dal'
+import { publishVcsmNotification } from '@/features/notifications/publish'
 
 /* ============================================================
    Helpers
@@ -266,7 +266,7 @@ export async function ctrlSubmitReview(input) {
 
   // Notify vport owner that they received a review
   if (mapped?.id && String(authorActorId) !== String(targetActorId)) {
-    dalInsertNotification({
+    publishVcsmNotification({
       recipientActorId: targetActorId,
       actorId: authorActorId,
       kind: 'review_created',
@@ -277,7 +277,7 @@ export async function ctrlSubmitReview(input) {
         overallRating: mapped.overallRating ?? null,
         body: (normalizedBody ?? '').slice(0, 120) || null,
       },
-    }).catch(() => {})
+    })
   }
 
   return mapped

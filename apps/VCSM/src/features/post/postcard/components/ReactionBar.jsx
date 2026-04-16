@@ -10,8 +10,13 @@ export default function ReactionBar({
   commentCount = 0,
   onOpenComments,
   onShare,
+  preloadedReaction = null,
+  preloadedCounts = null,
 }) {
-  const { toggleReaction, myReaction, counts, sendRose, loading } = usePostReactions(postId);
+  const { toggleReaction, myReaction, counts, sendRose, loading } = usePostReactions(postId, {
+    preloadedReaction,
+    preloadedCounts,
+  });
 
   return (
     <div className="flex items-center gap-4 px-1 py-1.5 mt-2 select-none">

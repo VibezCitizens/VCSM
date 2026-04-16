@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { runDiagnosticsTests } from "@/dev/diagnostics/helpers/timedTest";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
@@ -111,10 +112,9 @@ export async function runVportsGroup({ onTestUpdate, shared }) {
       run: async ({ shared: localShared }) => {
         const vport = await getOrEnsureVport(localShared);
 
-        const { data, error } = await supabase
-          .schema("vc")
-          .from("vports")
-          .select("id,owner_user_id,name,slug,avatar_url,bio,is_active,created_at,updated_at,vport_type")
+        const { data, error } = await vportSchema
+          .from("profiles")
+          .select("id,owner_user_id,name,slug,avatar_url,bio,is_active,created_at,updated_at")
           .eq("id", vport.vportId)
           .maybeSingle();
 

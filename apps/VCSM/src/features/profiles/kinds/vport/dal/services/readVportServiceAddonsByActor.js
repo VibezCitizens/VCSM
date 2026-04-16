@@ -1,44 +1,51 @@
 // src/features/profiles/kinds/vport/dal/services/readVportServiceAddonsByActor.js
 
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
+
+const ADDONS_SELECT =
+  "id,profile_id,service_id,key,label,enabled,meta,sort_order,created_at,updated_at";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
 
 /**
- * DAL: Read add-ons for an actor_id (optionally filtered by parent_service_key).
- *
- * Returns raw vc.vport_service_addons rows (explicit projection).
+ * DAL: Read add-ons for an actor_id (optionally filtered by parent service_id).
  *
  * @param {object} params
  * @param {string} params.actorId
- * @param {string|null|undefined} [params.parentServiceKey]
+ * @param {string|null|undefined} [params.parentServiceId]
  *   - undefined => no filter
- *   - null      => parent_service_key IS NULL
- *   - string    => parent_service_key = string
+ *   - null      => service_id IS NULL
+ *   - string    => service_id = string (uuid)
  * @param {boolean} [params.includeDisabled=true]
  * @returns {Promise<Array>}
  */
 export async function readVportServiceAddonsByActor({
   actorId,
-  parentServiceKey,
+  parentServiceId,
   includeDisabled = true,
 } = {}) {
-  if (!actorId) {
-    throw new Error("readVportServiceAddonsByActor: actorId is required");
-  }
+  if (!actorId) throw new Error("readVportServiceAddonsByActor: actorId is required");
 
-  let q = supabase
-    .schema("vc")
-    .from("vport_service_addons")
-    .select(
-      "id,actor_id,parent_service_key,key,label,category,enabled,meta,sort_order,created_at,updated_at"
-    )
-    .eq("actor_id", actorId)
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return [];
+
+  let q = vportSchema
+    .from("service_addons")
+    .select(ADDONS_SELECT)
+    .eq("profile_id", profileId)
     .order("sort_order", { ascending: true })
     .order("label", { ascending: true });
 
-  // only apply filter if caller provided the param (including null)
-  if (Object.prototype.hasOwnProperty.call(arguments[0] ?? {}, "parentServiceKey")) {
-    if (parentServiceKey === null) q = q.is("parent_service_key", null);
-    else q = q.eq("parent_service_key", parentServiceKey);
+  if (Object.prototype.hasOwnProperty.call(arguments[0] ?? {}, "parentServiceId")) {
+    if (parentServiceId === null) q = q.is("service_id", null);
+    else q = q.eq("service_id", parentServiceId);
   }
 
   if (!includeDisabled) q = q.eq("enabled", true);

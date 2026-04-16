@@ -3,7 +3,7 @@ import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResource
 import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
-import { dalInsertNotification } from "@/features/notifications/inbox/dal/notifications.create.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
 
 export async function cancelBookingController({
   bookingId,
@@ -61,7 +61,7 @@ export async function cancelBookingController({
     : booking.customer_actor_id;
 
   if (recipientActorId && String(requestActorId) !== String(recipientActorId)) {
-    dalInsertNotification({
+    publishVcsmNotification({
       recipientActorId,
       actorId: requestActorId,
       kind: "booking_cancelled",
@@ -76,7 +76,7 @@ export async function cancelBookingController({
         status: "cancelled",
         cancelledBy: isCustomer ? "customer" : "owner",
       },
-    }).catch(() => {});
+    });
   }
 
   return mapped;

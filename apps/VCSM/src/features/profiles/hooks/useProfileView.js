@@ -15,17 +15,18 @@ export function useProfileView({
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
+    // Gate still resolving — don't fetch yet. This prevents the double-fetch
+    // caused by canViewContent transitioning from undefined → true/false.
+    if (canViewContent === undefined) return;
+
     let alive = true;
 
     async function load() {
       try {
         setLoading(true);
-        setLoadingPosts(true); // ✅ FIX (was missing on reruns)
+        setLoadingPosts(true);
         setError(null);
 
-        // ======================================================
-        // PROFILE — ALWAYS LOAD
-        // ======================================================
         const result = await getProfileView({
           viewerActorId,
           profileActorId,
@@ -49,7 +50,7 @@ export function useProfileView({
     return () => {
       alive = false;
     };
-  }, [viewerActorId, profileActorId, canViewContent, version]); // ✅ ADD version
+  }, [viewerActorId, profileActorId, canViewContent, version]);
 
   return {
     loading,

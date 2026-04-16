@@ -1,7 +1,8 @@
-// Minimal data-layer for VPORTs under schema `vc`.
+// Data-layer for VPORTs.
+// All VPORTs are in vport.profiles. Legacy vc.vports is no longer used.
 
 import supabase from "@/services/supabase/supabaseClient";
-import vc from "@/services/supabase/vcClient";
+import vportSchema from "@/services/supabase/vportClient";
 import { refreshVcActorDirectory } from "@/features/identity/dal/refreshActorDirectory.dal";
 
 function ensureString(x) {
@@ -32,9 +33,18 @@ function raise(message, meta) {
   throw e;
 }
 
+// Converts a display label or space-separated value to a vport.categories key.
+// "Gas Station" → "gas_station", "Nail Technician" → "nail_technician"
+function toCategoryKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+}
+
+
 export async function createVport({
   name,
-  slug = null,
   avatarUrl,
   bio,
   bannerUrl,
@@ -45,123 +55,85 @@ export async function createVport({
   const cleanName = ensureString(name).trim();
   if (!cleanName) raise("Vport name is required");
 
-  const cleanSlugBase = normalizeSlug(slug);
-  const cleanType = ensureString(vportType).trim().toLowerCase() || null;
+  const cleanType = toCategoryKey(vportType) || null;
+  if (!cleanType) raise("Vport type is required");
 
-  if (import.meta.env.DEV) {
-    console.log('[VportCreate] START', { name: cleanName, type: cleanType })
-  }
+  // Generate slug client-side — DB requires it, does not auto-generate
+  const slugBase = cleanName
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]+/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40) || 'vport';
+  const suffix = Math.random().toString(36).slice(2, 6);
+  const cleanSlug = `${slugBase}-${suffix}`;
 
-  const { data, error } = await vc.rpc("create_vport", {
+  const { data, error } = await vportSchema.rpc("create_vport", {
+    p_slug: cleanSlug,
     p_name: cleanName,
-    p_slug: cleanSlugBase,
-    p_avatar_url: avatarUrl ?? null,
+    p_primary_category_key: cleanType,
     p_bio: bio ?? null,
+    p_avatar_url: avatarUrl ?? null,
     p_banner_url: bannerUrl ?? null,
-    p_vport_type: cleanType,
   });
 
   if (error) {
     const msg = error.message || String(error);
-    if (msg.includes("not authenticated")) raise("Not authenticated");
-    if (msg.includes("owner profile") || msg.includes("23503")) {
-      raise("Owner profile not found. Ensure profiles row exists for this user.");
-    }
-    // Pass through the RPC's own error message — do not rewrite it
+    if (msg.includes("AUTH_REQUIRED")) raise("Not authenticated");
+    if (msg.includes("ACTOR_NOT_FOUND")) raise("Your account is not fully set up. Please try again.");
+    if (msg.includes("SLUG_ALREADY_EXISTS")) raise("That name is already taken. Please try a different name.");
+    if (msg.includes("INVALID_CATEGORY")) raise("Invalid Vport type.");
+    if (msg.includes("VPORT_ALREADY_EXISTS_FOR_ACTOR")) raise("You already have a Vport of this type.");
     raise(msg, { error });
   }
 
-  if (!data || typeof data !== "object" || !data.ok) {
-    raise("create_vport failed");
-  }
-
-  if (import.meta.env.DEV) {
-    console.log('[VportCreate] SUCCESS', {
-      vport_id: data.vport_id,
-      actor_id: data.actor_id,
-      actor_link_id: data.actor_link_id ?? null,
-      user_app_account_id: data.user_app_account_id ?? null,
-      slug: data.slug,
-    })
-
-    // Post-create: snapshot actor links + prefs for this account
-    try {
-      const uaaId = data.user_app_account_id
-      if (uaaId) {
-        const [linksRes, prefsRes, stateRes] = await Promise.all([
-          supabase.schema('platform').from('user_app_actor_links')
-            .select('id, actor_id, actor_kind, is_primary, is_switchable, status')
-            .eq('user_app_account_id', uaaId),
-          supabase.schema('platform').from('user_app_preferences')
-            .select('active_actor_link_id, last_actor_link_id')
-            .eq('user_app_account_id', uaaId)
-            .maybeSingle(),
-          supabase.schema('platform').from('user_app_state')
-            .select('last_actor_link_id, onboarding_status, requires_onboarding')
-            .eq('user_app_account_id', uaaId)
-            .maybeSingle(),
-        ])
-        console.log('[VportCreate] POST_CREATE_LINKS', {
-          uaaId,
-          linkCount: linksRes.data?.length ?? 0,
-          links: (linksRes.data ?? []).map(l => ({
-            id: l.id?.slice(0, 8),
-            actorId: l.actor_id?.slice(0, 8),
-            kind: l.actor_kind,
-            primary: l.is_primary,
-            status: l.status,
-          })),
-        })
-        console.log('[VportCreate] POST_CREATE_PREFS', prefsRes.data)
-        console.log('[VportCreate] POST_CREATE_STATE', stateRes.data)
-      }
-    } catch (snapErr) {
-      console.warn('[VportCreate] snapshot failed', snapErr?.message)
-    }
-  }
+  // RETURNS TABLE — PostgREST returns array of rows
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row?.profile_id) raise("create_vport returned no result");
 
   // Refresh actor directory projection (non-fatal)
-  if (data.actor_id) refreshVcActorDirectory(data.actor_id)
+  if (row.actor_id) refreshVcActorDirectory(row.actor_id);
 
-  // The RPC is the single source of truth. Return its payload directly
-  // with camelCase aliases for convenience.
   return {
     ok: true,
-    vport_id: data.vport_id,
-    actor_id: data.actor_id,
-    actor_link_id: data.actor_link_id ?? null,
-    user_app_account_id: data.user_app_account_id ?? null,
-    slug: data.slug,
-    handle: data.handle,
-    name: data.name,
-    vport_type: data.vport_type,
+    vport_id: row.profile_id,
+    profile_id: row.profile_id,
+    actor_id: row.actor_id,
+    slug: row.slug,
     // camelCase aliases
-    vportId: data.vport_id,
-    actorId: data.actor_id,
-    actorLinkId: data.actor_link_id ?? null,
-    userAppAccountId: data.user_app_account_id ?? null,
-    vportType: data.vport_type,
+    profileId: row.profile_id,
+    vportId: row.profile_id,
+    actorId: row.actor_id,
   };
 }
 
 export async function listMyVports() {
   const user = await requireUser();
-  const { data, error } = await vc
-    .from("vports")
-    .select("id, name, slug, avatar_url, banner_url, bio, is_active, created_at")
+
+  const SELECT = "id,owner_user_id,name,slug,avatar_url,banner_url,bio,is_active,created_at,actor_id";
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select(SELECT)
     .eq("owner_user_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) raise("Failed to load your Vports", { error });
+
   return data || [];
 }
 
 export async function getVportById(vportId) {
-  const { data, error } = await vc
-    .from("vports")
-    .select("id, owner_user_id, name, slug, avatar_url, banner_url, bio, is_active, created_at, updated_at")
+  if (!vportId) return null;
+
+  const SELECT = "id,owner_user_id,name,slug,avatar_url,banner_url,bio,is_active,created_at,updated_at,actor_id";
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select(SELECT)
     .eq("id", vportId)
-    .single();
+    .maybeSingle();
 
   if (error) raise("Failed to load Vport", { error });
   return data || null;
@@ -171,9 +143,11 @@ export async function getVportBySlug(slug) {
   const clean = normalizeSlug(slug);
   if (!clean) return null;
 
-  const { data, error } = await vc
-    .from("vports")
-    .select("id, owner_user_id, name, slug, avatar_url, banner_url, bio, is_active, created_at, updated_at")
+  const SELECT = "id,owner_user_id,name,slug,avatar_url,banner_url,bio,is_active,created_at,updated_at,actor_id";
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select(SELECT)
     .eq("slug", clean)
     .maybeSingle();
 
@@ -184,12 +158,19 @@ export async function getVportBySlug(slug) {
 export async function getVportsByIds(ids = []) {
   const uniq = [...new Set((ids || []).filter(Boolean))];
   if (!uniq.length) return [];
-  const { data, error } = await vc
-    .from("vports")
-    .select("id, name, slug, avatar_url, banner_url, is_active")
+
+  const SELECT = "id,name,slug,avatar_url,banner_url,is_active,actor_id";
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select(SELECT)
     .in("id", uniq);
+
   if (error) raise("Failed to load Vports", { error });
-  return data || [];
+
+  const rows = data || [];
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  return uniq.map((id) => byId.get(id)).filter(Boolean);
 }
 
 export async function updateVport(
@@ -222,20 +203,21 @@ export async function updateVport(
 
   if (Object.keys(patch).length === 0) return getVportById(vportId);
 
-  const { data, error } = await vc
-    .from("vports")
+  const SELECT = "id,name,slug,avatar_url,banner_url,bio,is_active,created_at,updated_at,actor_id";
+
+  const { data, error } = await vportSchema
+    .from("profiles")
     .update(patch)
     .eq("id", vportId)
-    .select("id, name, slug, avatar_url, banner_url, bio, is_active, created_at, updated_at")
+    .select(SELECT)
     .single();
 
   if (error) raise("Failed to update Vport", { error });
 
-  // Refresh actor directory projection (non-fatal)
-  try {
-    const { data: actor } = await vc.from('actors').select('id').eq('vport_id', vportId).eq('kind', 'vport').maybeSingle()
-    if (actor?.id) refreshVcActorDirectory(actor.id)
-  } catch {}
+  // Refresh actor directory (non-fatal)
+  if (data?.actor_id) {
+    try { refreshVcActorDirectory(data.actor_id); } catch {}
+  }
 
   return data;
 }

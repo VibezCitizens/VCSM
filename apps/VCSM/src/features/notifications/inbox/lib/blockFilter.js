@@ -19,11 +19,13 @@ export async function loadBlockSets(myActorId) {
   };
 }
 
-export function filterByBlocks(rows, blocks) {
+export function filterByBlocks(rows, blocks, { getActorId } = {}) {
+  const resolve = getActorId ?? ((row) => row.actor_id)
   return rows.filter((row) => {
-    if (!row.actor_id) return true;
-    if (blocks.iBlocked.has(row.actor_id)) return false;
-    if (blocks.blockedMe.has(row.actor_id)) return false;
+    const actorId = resolve(row)
+    if (!actorId) return true;
+    if (blocks.iBlocked.has(actorId)) return false;
+    if (blocks.blockedMe.has(actorId)) return false;
     return true;
   });
 }

@@ -1,5 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
-import vc from '@/services/supabase/vcClient'
+import vportSchema from '@/services/supabase/vportClient'
 
 export async function dalDeleteMyAccount() {
   const { error } = await supabase.rpc('delete_my_account')
@@ -20,9 +20,9 @@ export async function dalDeleteOwnedVportById({ vportId, userId }) {
   if (!vportId) throw new Error('dalDeleteOwnedVportById: vportId required')
   if (!userId) throw new Error('dalDeleteOwnedVportById: userId required')
 
-  const { error } = await vc
-    .from('vports')
-    .delete()
+  const { error } = await vportSchema
+    .from('profiles')
+    .update({ is_deleted: true })
     .eq('id', vportId)
     .eq('owner_user_id', userId)
 

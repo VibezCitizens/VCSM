@@ -193,7 +193,7 @@ export function VportDashboardExchangeScreen() {
       <div style={shell.container}>
         <div style={shell.headerWrap}>
           <div style={shell.topBar}>
-            <VportBackButton isDesktop={isDesktop} onClick={goBack} style={shell.btn("soft")} />
+            <VportBackButton isDesktop={isDesktop} onClick={goBack} />
             <div style={shell.title}>EXCHANGE RATES</div>
             <div style={shell.rightSpacer} />
           </div>

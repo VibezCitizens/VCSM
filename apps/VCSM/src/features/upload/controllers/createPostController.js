@@ -12,6 +12,7 @@ import {
   deletePostByIdDAL,
   getCurrentAuthUserDAL,
 } from "@/features/upload/dal/postAuthRollback.dal";
+import { publishVcsmNotificationBatch } from "@/features/notifications/publish";
 
 const MAX_VIBES_PHOTOS = 10;
 
@@ -114,19 +115,36 @@ export async function createPostController({ identity, input }) {
   // Priority:
   // 1) UI resolved actorIds (works with no "@")
   // 2) fallback: resolve from caption handles (old behavior)
+  let resolvedMentionIds = [];
   try {
     if (mentionedActorIdsFromUI.length > 0) {
       await insertPostMentions(postId, mentionedActorIdsFromUI);
+      resolvedMentionIds = mentionedActorIdsFromUI;
     } else if (mentionHandles.length > 0) {
       const resolved = await findActorsByHandles(mentionHandles);
       const mentionedActorIds = [
         ...new Set((resolved || []).map((r) => r.actor_id).filter(Boolean)),
       ];
       await insertPostMentions(postId, mentionedActorIds);
+      resolvedMentionIds = mentionedActorIds;
     }
   } catch (e) {
-    // recommend: don't fail posting if mentions fail
-    console.warn("[createPostController] mention insert failed:", e);
+    if (import.meta.env.DEV) {
+      console.warn("[createPostController] mention insert failed:", e);
+    }
+  }
+
+  // Publish mention notifications (recipients already known — no extra DB read)
+  if (resolvedMentionIds.length > 0) {
+    publishVcsmNotificationBatch({
+      recipientActorIds: resolvedMentionIds,
+      actorId: identity.actorId,
+      kind: 'social.post.mention',
+      objectType: 'post',
+      objectId: postId,
+      linkPath: `/post/${postId}`,
+      context: {},
+    });
   }
 
   return {

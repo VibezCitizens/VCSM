@@ -1,14 +1,17 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\gas\vportFuelPriceHistory.write.dal.js
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * Insert history row (audit trail)
- * DAL — RAW DB ROW
- *
- * actor-first:
- * - targetActorId = vport actor whose prices are being updated
- * - actorId = actor who performed the change (audit)
- */
+const HISTORY_SELECT =
+  "id,profile_id,fuel_key,price,currency_code,unit,is_available,created_at,actor_id,source";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export async function createVportFuelPriceHistoryDAL({
   targetActorId,
   fuelKey,
@@ -22,12 +25,14 @@ export async function createVportFuelPriceHistoryDAL({
   if (!targetActorId) throw new Error("targetActorId required");
   if (!fuelKey) throw new Error("fuelKey required");
 
-  return supabase
-    .schema("vc")
-    .from("vport_fuel_price_history")
+  const profileId = await resolveProfileId(targetActorId);
+  if (!profileId) return { data: null, error: new Error("profile not found for actor") };
+
+  return vportSchema
+    .from("fuel_price_history")
     .insert([
       {
-        target_actor_id: targetActorId,
+        profile_id: profileId,
         fuel_key: fuelKey,
         price,
         currency_code: currencyCode,
@@ -37,8 +42,6 @@ export async function createVportFuelPriceHistoryDAL({
         source,
       },
     ])
-    .select(
-      "id,target_actor_id,fuel_key,price,currency_code,unit,is_available,created_at,actor_id,source"
-    )
+    .select(HISTORY_SELECT)
     .maybeSingle();
 }

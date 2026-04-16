@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ctrlListPortfolio,
   ctrlGetPortfolioItem,
+  invalidatePortfolioCache,
 } from '@/features/profiles/kinds/vport/controller/portfolio/VportPortfolio.controller'
 
 const PAGE_SIZE = 24
@@ -24,11 +25,14 @@ export function useVportPortfolio(actorId) {
   const offsetRef = useRef(0)
   const mountedRef = useRef(false)
   const inFlightRef = useRef(false)
+  const itemsRef = useRef([])
 
   useEffect(() => {
     mountedRef.current = true
     return () => { mountedRef.current = false }
   }, [])
+
+  useEffect(() => { itemsRef.current = items }, [items])
 
   const loadPortfolio = useCallback(async () => {
     if (!actorId) return
@@ -92,6 +96,13 @@ export function useVportPortfolio(actorId) {
     setSelectedItemDetail(null)
   }, [])
 
+  const optimisticRemove = useCallback((itemId) => {
+    const snapshot = itemsRef.current
+    setItems((current) => current.filter((i) => i.id !== itemId))
+    invalidatePortfolioCache(actorId)
+    return () => setItems(snapshot)
+  }, [actorId])
+
   useEffect(() => {
     loadPortfolio()
   }, [loadPortfolio])
@@ -132,5 +143,6 @@ export function useVportPortfolio(actorId) {
     loadingDetail,
     openItem,
     closeItem,
+    optimisticRemove,
   }
 }

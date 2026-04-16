@@ -18,6 +18,8 @@ export default function VportsTabView() {
     profileActorId,
     switchToProfile,
     switchToVport,
+    resolveVportActorId,
+    onVportCreated,
   } = useVportsController()
 
   return (
@@ -57,7 +59,7 @@ export default function VportsTabView() {
         ) : (
           <ul className="m-0 grid list-none grid-cols-1 gap-2.5 p-0">
             {items.map((v) => {
-              const isActive = activeActor === `vport:${v.actor_id}`
+              const isActive = activeActor === `vport:${resolveVportActorId(v)}`
               return (
                 <li
                   key={v.id}
@@ -109,8 +111,8 @@ export default function VportsTabView() {
 
               <div className="min-h-0 overflow-y-auto overscroll-contain p-4 touch-pan-y">
                 <CreateVportForm
-                  onCreated={({ list }) => {
-                    if (Array.isArray(list)) setItems(list)
+                  onCreated={(payload) => {
+                    onVportCreated(payload)
                     setShowCreator(false)
                   }}
                 />

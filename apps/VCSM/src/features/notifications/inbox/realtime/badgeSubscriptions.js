@@ -33,19 +33,23 @@ export function subscribeNotificationBadge({ actorId, onChange }) {
 
   const channel = supabase.channel(`noti-badge-${actorId}`)
 
+  // Listen to notification.inbox_items for real-time badge updates.
+  // recipient_id changes trigger seen/read/dismiss state transitions.
   channel.on(
     'postgres_changes',
-    { event: 'INSERT', schema: 'vc', table: 'notifications', filter: `recipient_actor_id=eq.${actorId}` },
+    { event: 'INSERT', schema: 'notification', table: 'inbox_items' },
     onChange
   )
   channel.on(
     'postgres_changes',
-    { event: 'UPDATE', schema: 'vc', table: 'notifications', filter: `recipient_actor_id=eq.${actorId}` },
+    { event: 'UPDATE', schema: 'notification', table: 'inbox_items' },
     onChange
   )
+
+  // Also listen to notification.recipients for new notification deliveries.
   channel.on(
     'postgres_changes',
-    { event: 'DELETE', schema: 'vc', table: 'notifications', filter: `recipient_actor_id=eq.${actorId}` },
+    { event: 'INSERT', schema: 'notification', table: 'recipients', filter: `recipient_actor_id=eq.${actorId}` },
     onChange
   )
 

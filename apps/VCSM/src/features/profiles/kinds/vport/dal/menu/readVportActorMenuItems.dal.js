@@ -1,23 +1,15 @@
-// src/features/profiles/kinds/vport/dal/menu/readVportActorMenuItem.dal.js
+// src/features/profiles/kinds/vport/dal/menu/readVportActorMenuItems.dal.js
 
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 const ITEM_SELECT =
-  "id,actor_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
+  "id,profile_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
 
-/**
- * DAL: read a single vport actor menu item by id (raw db row).
- * - Explicit projection (no *)
- * - Deterministic
- * - No business meaning
- */
 export async function readVportActorMenuItemDAL({ itemId } = {}) {
-  if (!itemId)
-    throw new Error("readVportActorMenuItemDAL: itemId is required");
+  if (!itemId) throw new Error("readVportActorMenuItemDAL: itemId is required");
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_actor_menu_items")
+  const { data, error } = await vportSchema
+    .from("menu_items")
     .select(ITEM_SELECT)
     .eq("id", itemId)
     .maybeSingle();

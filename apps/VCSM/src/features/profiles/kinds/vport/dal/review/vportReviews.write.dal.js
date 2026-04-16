@@ -1,17 +1,11 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\dal\review\vportReviews.write.dal.js
-import vc from "@/services/supabase/vcClient";
+import reviewsSchema from "@/services/supabase/reviewsClient";
 
-/* ============================================================
-   DAL: WRITE (raw DB writes only)
-   - explicit selects
-   - no business logic
-   ============================================================ */
 const REVIEW_SELECT = [
   "id",
   "target_actor_id",
   "author_actor_id",
-  "vport_type",
-  "is_verified",
+  "target_subtype",
+  "verification_status",
   "rating_scale",
   "overall_rating",
   "body",
@@ -21,20 +15,42 @@ const REVIEW_SELECT = [
   "deleted_at",
 ].join(",");
 
-const RATING_SELECT = ["review_id", "vport_type", "dimension_key", "rating", "created_at", "updated_at"].join(",");
+const RATING_SELECT =
+  "review_id,dimension_id,rating,label_snapshot,weight_snapshot,created_at,updated_at";
+
+/**
+ * Resolve dimension keys → dimension UUIDs for a given vport type.
+ * Returns a Map<dimensionKey, dimensionId>.
+ */
+async function resolveDimensionIds(dimensionKeys, vportType) {
+  if (!dimensionKeys.length) return new Map();
+
+  const safeSubtype = String(vportType ?? "").trim().toLowerCase() || "other";
+
+  const { data, error } = await reviewsSchema
+    .from("review_dimensions")
+    .select("id,key")
+    .in("key", dimensionKeys)
+    .eq("target_kind", "vport")
+    .eq("target_subtype", safeSubtype)
+    .eq("is_active", true);
+
+  if (error) throw error;
+
+  return new Map((data ?? []).map((d) => [d.key, d.id]));
+}
 
 export async function dalInsertVportReviewRow(input) {
   const { targetActorId, authorActorId, vportType, body } = input;
-  const safeVportType = String(vportType ?? "").trim().toLowerCase() || "other";
+  const safeSubtype = String(vportType ?? "").trim().toLowerCase() || "other";
 
-  const { data, error } = await vc
-    .schema("vc")
-    .from("vport_reviews")
+  const { data, error } = await reviewsSchema
+    .from("reviews")
     .insert({
       target_actor_id: targetActorId,
       author_actor_id: authorActorId,
-      vport_type: safeVportType,
-      is_verified: false,
+      target_kind: "vport",
+      target_subtype: safeSubtype,
       body: body ?? null,
     })
     .select(REVIEW_SELECT)
@@ -45,16 +61,16 @@ export async function dalInsertVportReviewRow(input) {
 }
 
 export async function dalUpdateVportReviewBody(reviewId, body, vportType = null) {
-  const safeVportType = String(vportType ?? "").trim().toLowerCase() || null;
   const patch = {
     body: body ?? null,
     updated_at: new Date().toISOString(),
   };
-  if (safeVportType) patch.vport_type = safeVportType;
+  if (vportType) {
+    patch.target_subtype = String(vportType).trim().toLowerCase() || null;
+  }
 
-  const { data, error } = await vc
-    .schema("vc")
-    .from("vport_reviews")
+  const { data, error } = await reviewsSchema
+    .from("reviews")
     .update(patch)
     .eq("id", reviewId)
     .select(REVIEW_SELECT)
@@ -66,20 +82,28 @@ export async function dalUpdateVportReviewBody(reviewId, body, vportType = null)
 
 export async function dalUpsertVportReviewRatings(reviewId, ratings, vportType) {
   if (!ratings?.length) return [];
-  const safeVportType = String(vportType ?? "").trim().toLowerCase() || "other";
 
-  const payload = ratings.map((r) => ({
-    review_id: reviewId,
-    vport_type: safeVportType,
-    dimension_key: r.dimensionKey,
-    rating: r.rating,
-    updated_at: new Date().toISOString(),
-  }));
+  const dimensionKeys = ratings.map((r) => r.dimensionKey).filter(Boolean);
+  const keyToId = await resolveDimensionIds(dimensionKeys, vportType);
 
-  const { data, error } = await vc
-    .schema("vc")
-    .from("vport_review_ratings")
-    .upsert(payload, { onConflict: "review_id,dimension_key" })
+  const payload = ratings
+    .map((r) => {
+      const dimensionId = keyToId.get(r.dimensionKey);
+      if (!dimensionId) return null;
+      return {
+        review_id: reviewId,
+        dimension_id: dimensionId,
+        rating: r.rating,
+        updated_at: new Date().toISOString(),
+      };
+    })
+    .filter(Boolean);
+
+  if (!payload.length) return [];
+
+  const { data, error } = await reviewsSchema
+    .from("review_dimension_ratings")
+    .upsert(payload, { onConflict: "review_id,dimension_id" })
     .select(RATING_SELECT);
 
   if (error) throw error;
@@ -87,9 +111,8 @@ export async function dalUpsertVportReviewRatings(reviewId, ratings, vportType) 
 }
 
 export async function dalSoftDeleteVportReview(reviewId) {
-  const { data, error } = await vc
-    .schema("vc")
-    .from("vport_reviews")
+  const { data, error } = await reviewsSchema
+    .from("reviews")
     .update({
       is_deleted: true,
       deleted_at: new Date().toISOString(),

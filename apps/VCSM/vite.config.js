@@ -34,8 +34,12 @@ export default defineConfig(({ mode }) => ({
         replacement: fileURLToPath(new URL('../../engines/portfolio/index.js', import.meta.url)),
       },
       {
+        find: '@notifications',
+        replacement: fileURLToPath(new URL('../../engines/notifications/index.js', import.meta.url)),
+      },
+      {
         find: '@debuggers',
-        replacement: fileURLToPath(new URL('../../debuggers', import.meta.url)),
+        replacement: fileURLToPath(new URL('../../zNOTFORPRODUCTION/debuggers', import.meta.url)),
       },
       {
         find: '@',

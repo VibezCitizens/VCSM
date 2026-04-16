@@ -7,6 +7,7 @@ import { createTTLCache } from '@/shared/lib/ttlCache'
 
 const VCSM_APP_KEY = 'vcsm'
 const legalDocsCache = createTTLCache(300_000) // 5 minutes
+const consentCache = createTTLCache(90_000) // 90 seconds — consent status is stable within a session
 
 /**
  * Fetch active legal documents for the VCSM app.
@@ -27,6 +28,32 @@ export function invalidateLegalDocsCache() {
 }
 
 /**
+ * Invalidate the consent cache for a user (call after recording new consents).
+ * If no userId is provided, clears the entire consent cache.
+ */
+export function invalidateConsentCache(userId) {
+  if (userId) {
+    consentCache.invalidate(userId)
+  } else {
+    consentCache.invalidateAll()
+  }
+}
+
+/**
+ * Fetch user consents with a 90-second TTL cache.
+ * Prevents redundant DB hits when multiple components/guards check consent status.
+ */
+async function getCachedUserConsents({ userId, appId }) {
+  const cacheKey = userId
+  const cached = consentCache.get(cacheKey)
+  if (cached) return cached
+
+  const consents = await dalGetUserConsents({ userId, appId })
+  consentCache.set(cacheKey, consents)
+  return consents
+}
+
+/**
  * Check whether the user has accepted all currently active legal documents.
  *
  * @param {Object} params
@@ -34,13 +61,13 @@ export function invalidateLegalDocsCache() {
  * @returns {Promise<{ requiresConsent: boolean, pending: Array, accepted: Array }>}
  */
 export async function getUserConsentStatus({ userId }) {
-  const activeDocs = await dalGetActiveLegalDocuments({ appKey: VCSM_APP_KEY })
+  const activeDocs = await getActiveLegalDocuments()
   if (activeDocs.length === 0) {
     return { requiresConsent: false, pending: [], accepted: [] }
   }
 
   const appId = activeDocs[0].app_id
-  const consents = await dalGetUserConsents({ userId, appId })
+  const consents = await getCachedUserConsents({ userId, appId })
 
   // Build a set of (document_type, version) the user has accepted
   const acceptedSet = new Set(
@@ -102,6 +129,9 @@ export async function recordLegalAcceptance({
     results.push(result)
   }
 
+  // Bust the consent cache so subsequent reads reflect new acceptance
+  invalidateConsentCache(userId)
+
   return results
 }
 
@@ -115,7 +145,7 @@ export async function recordLegalAcceptance({
  * @throws If document resolution or consent insert fails
  */
 export async function recordSignupConsent({ userId }) {
-  const activeDocs = await dalGetActiveLegalDocuments({ appKey: VCSM_APP_KEY })
+  const activeDocs = await getActiveLegalDocuments()
   if (activeDocs.length === 0) {
     console.warn('[LegalConsent] No active legal documents found during signup')
     return []
@@ -142,13 +172,13 @@ export async function recordSignupConsent({ userId }) {
  * @returns {Promise<{ decision: 'ALLOW_ACCESS'|'REQUIRE_RECONSENT', requiredActions: Array }>}
  */
 export async function resolveLegalGateForSession({ userId }) {
-  const activeDocs = await dalGetActiveLegalDocuments({ appKey: VCSM_APP_KEY })
+  const activeDocs = await getActiveLegalDocuments()
   if (activeDocs.length === 0) {
     return { decision: 'ALLOW_ACCESS', requiredActions: [] }
   }
 
   const appId = activeDocs[0].app_id
-  const consents = await dalGetUserConsents({ userId, appId })
+  const consents = await getCachedUserConsents({ userId, appId })
 
   const status = buildConsentComplianceStatus({
     activeDocs,

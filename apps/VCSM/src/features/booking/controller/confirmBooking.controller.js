@@ -3,7 +3,7 @@ import getBookingByIdDAL from "@/features/booking/dal/getBookingById.dal";
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.dal";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
-import { dalInsertNotification } from "@/features/notifications/inbox/dal/notifications.create.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
 
 export async function confirmBookingController({
   bookingId,
@@ -50,7 +50,7 @@ export async function confirmBookingController({
 
   // Notify customer that their booking was confirmed
   if (booking.customer_actor_id && String(requestActorId) !== String(booking.customer_actor_id)) {
-    dalInsertNotification({
+    publishVcsmNotification({
       recipientActorId: booking.customer_actor_id,
       actorId: requestActorId,
       kind: "booking_confirmed",
@@ -62,7 +62,7 @@ export async function confirmBookingController({
         startsAt: booking.starts_at ?? null,
         status: "confirmed",
       },
-    }).catch(() => {});
+    });
   }
 
   return mapped;

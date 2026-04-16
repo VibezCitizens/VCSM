@@ -12,7 +12,7 @@ export async function updateProfile(subjectId, mode, data) {
   }
 
   // ------------------------------------------------------------
-  // VPORT UPDATE (vc.vports)
+  // VPORT UPDATE (vport.profiles)
   // ------------------------------------------------------------
   if (mode === 'vport') {
     const payload = {
@@ -23,8 +23,8 @@ export async function updateProfile(subjectId, mode, data) {
     }
 
     const { error } = await supabase
-      .schema('vc')
-      .from('vports')
+      .schema('vport')
+      .from('profiles')
       .update(payload)
       .eq('id', subjectId)
 

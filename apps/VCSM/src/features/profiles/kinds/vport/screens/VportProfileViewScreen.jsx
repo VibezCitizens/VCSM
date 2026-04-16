@@ -38,8 +38,6 @@ import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportO
 
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
-import { useIdentity } from "@/state/identity/identityContext";
-
 // ✅ NEW: Rates tab view
 import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView";
 import "@/features/profiles/styles/profiles-modern.css";
@@ -47,6 +45,7 @@ import "@/features/profiles/styles/profiles-modern.css";
 export default function VportProfileViewScreen({
   viewerActorId,
   profileActorId,
+  identity,
   tabs = VPORT_TABS,
 }) {
   const [tab, setTab] = useState("vibes");
@@ -82,8 +81,6 @@ export default function VportProfileViewScreen({
 
   const { loading: publicDetailsLoading, details: publicDetails } =
     useVportPublicDetails(profileActorId);
-
-  const identity = useIdentity();
 
   const isOwner = useMemo(() => {
     if (!viewerActorId || !profileActorId) return false;

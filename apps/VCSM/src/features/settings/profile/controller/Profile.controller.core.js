@@ -10,7 +10,7 @@ import { fetchProfile } from '../dal/profile.read.dal'
 import { updateProfile } from '../dal/profile.write.dal'
 import { mapProfileToView, mapProfileUpdate } from '../model/profile.mapper'
 import { refreshVcActorDirectory } from '@/features/identity/dal/refreshActorDirectory.dal'
-import { supabase } from '@/services/supabase/supabaseClient'
+import { dalReadActorIdByProfileId, dalReadActorIdByVportId } from '../dal/actorIdBySubject.read.dal'
 
 export async function loadProfileCore({ subjectId, mode }) {
   const raw = await fetchProfile(subjectId, mode)
@@ -53,11 +53,9 @@ export async function saveProfileCore({
   try {
     let actorId = null
     if (mode === 'user') {
-      const { data } = await supabase.schema('vc').from('actors').select('id').eq('profile_id', subjectId).eq('kind', 'user').maybeSingle()
-      actorId = data?.id ?? null
+      actorId = await dalReadActorIdByProfileId(subjectId)
     } else if (mode === 'vport') {
-      const { data } = await supabase.schema('vc').from('actors').select('id').eq('vport_id', subjectId).eq('kind', 'vport').maybeSingle()
-      actorId = data?.id ?? null
+      actorId = await dalReadActorIdByVportId(subjectId)
     }
     if (actorId) refreshVcActorDirectory(actorId)
   } catch {}

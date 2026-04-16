@@ -3,7 +3,7 @@ import getActorByIdDAL from "@/features/booking/dal/getActorById.dal";
 import insertBookingDAL from "@/features/booking/dal/insertBooking.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
-import { dalInsertNotification } from "@/features/notifications/inbox/dal/notifications.create.dal";
+import { publishVcsmNotification } from "@/features/notifications/publish";
 
 const MANAGEMENT_SOURCES = new Set(["owner", "admin", "import", "sync"]);
 const CITIZEN_ONLY_SOURCES = new Set(["public"]);
@@ -108,7 +108,7 @@ export async function createBookingController({
   // Notify vport owner when a public booking is created
   if (source === "public" && resource.owner_actor_id && requestActorId) {
     if (String(requestActorId) !== String(resource.owner_actor_id)) {
-      dalInsertNotification({
+      publishVcsmNotification({
         recipientActorId: resource.owner_actor_id,
         actorId: requestActorId,
         kind: "booking_created",
@@ -121,7 +121,7 @@ export async function createBookingController({
           customerName: customerName ?? null,
           status: mapped.status ?? "pending",
         },
-      }).catch(() => {});
+      });
     }
   }
 

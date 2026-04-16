@@ -1,13 +1,19 @@
 // src/features/profiles/kinds/vport/dal/rates/upsertVportRate.dal.js
 
-import supabase from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * DAL: upsert rate row (raw).
- * - explicit projection
- * - returns raw row exactly as stored
- * - no mapping, no permissions logic
- */
+const RATES_SELECT =
+  "id,profile_id,rate_type,base_currency,quote_currency,buy_rate,sell_rate,meta,updated_at,created_at";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 export default async function upsertVportRateDal({
   actorId,
   rateType = "fx",
@@ -21,38 +27,24 @@ export default async function upsertVportRateDal({
   if (!baseCurrency) throw new Error("upsertVportRateDal: baseCurrency is required");
   if (!quoteCurrency) throw new Error("upsertVportRateDal: quoteCurrency is required");
 
-  // adjust conflict columns to your DB unique constraint
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_rates")
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return null;
+
+  const { data, error } = await vportSchema
+    .from("rates")
     .upsert(
       {
-        actor_id: actorId,
+        profile_id: profileId,
         rate_type: rateType,
         base_currency: baseCurrency,
         quote_currency: quoteCurrency,
         buy_rate: buyRate,
         sell_rate: sellRate,
-        meta: meta,
+        meta,
       },
-      {
-        onConflict: "actor_id,rate_type,base_currency,quote_currency",
-      }
+      { onConflict: "profile_id,rate_type,base_currency,quote_currency" }
     )
-    .select(
-      [
-        "id",
-        "actor_id",
-        "rate_type",
-        "base_currency",
-        "quote_currency",
-        "buy_rate",
-        "sell_rate",
-        "meta",
-        "updated_at",
-        "created_at",
-      ].join(",")
-    )
+    .select(RATES_SELECT)
     .maybeSingle();
 
   if (error) throw error;

@@ -3,8 +3,8 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import { useActorStore } from "@/state/actors/actorStore";
 import { hydrateActorsByIds } from "@hydration";
 import { fetchFeedPagePipeline } from "@/features/feed/pipeline/fetchFeedPage.pipeline";
-import { getFeedViewerIsAdult } from "@/features/feed/controllers/getFeedViewerContext.controller";
 import { debugFeedEvent, debugFeedResult } from "@debuggers/feed";
+import { startFeedSession, endFeedSession, recordStep } from "@debuggers/feed/feedProfiler";
 
 const PAGE_SIZE = 10;
 // Protect UX from long multi-page drains when many rows are filtered.
@@ -78,10 +78,12 @@ async function preloadInitialMedia(posts) {
   await Promise.allSettled(urls.map((src) => preloadImage(src)));
 }
 
-export function useFeed(viewerActorId, realmId) {
+export function useFeed(viewerActorId, realmId, { viewerIsAdult: viewerIsAdultProp = null } = {}) {
   const [posts, setPosts] = useState([]);
   const [filterDebugRows, setFilterDebugRows] = useState([]);
-  const [viewerIsAdult, setViewerIsAdult] = useState(null);
+  // viewerIsAdult is now passed from the identity context (identity.isAdult)
+  // instead of being independently fetched via getFeedViewerIsAdult.
+  const viewerIsAdult = viewerIsAdultProp;
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [firstBatchReady, setFirstBatchReady] = useState(false);
@@ -93,32 +95,38 @@ export function useFeed(viewerActorId, realmId) {
   const didInitialFetchRef = useRef(false);
   const loadingRef = useRef(false);
   const requestVersionRef = useRef(0);
+  // Timestamp of last successful fetch — used by IntersectionObserver to avoid
+  // firing a pagination request immediately after the initial batch completes.
+  const lastFetchAtRef = useRef(0);
 
   const upsertActors = useActorStore((s) => s.upsertActors);
+  const getMissingOrStale = useActorStore((s) => s.getMissingOrStale);
+
+  // Stable refs for Zustand store methods — these never change identity, but
+  // including them in useCallback deps would make fetchPosts unstable whenever
+  // the store re-renders the component. Using refs keeps fetchPosts reference
+  // stable across store updates, preventing the initial fetch effect from
+  // re-triggering.
+  const upsertActorsRef = useRef(upsertActors);
+  upsertActorsRef.current = upsertActors;
+  const getMissingOrStaleRef = useRef(getMissingOrStale);
+  getMissingOrStaleRef.current = getMissingOrStale;
 
   useEffect(() => {
     requestVersionRef.current += 1;
     didInitialFetchRef.current = false;
     cursorRef.current = null;
     loadingRef.current = false;
+    lastFetchAtRef.current = 0;
 
     setPosts([]);
     setHasMore(true);
     setLoading(false);
-    setViewerIsAdult(null);
     setFirstBatchReady(false);
     setFilterDebugRows([]);
 
     setHiddenPostIds(new Set());
   }, [viewerActorId, realmId]);
-
-  /* ============================================================
-     VIEWER CONTEXT
-     ============================================================ */
-  const fetchViewer = useCallback(async () => {
-    const value = await getFeedViewerIsAdult({ viewerActorId });
-    setViewerIsAdult(value);
-  }, [viewerActorId]);
 
   /* ============================================================
      FETCH FEED
@@ -143,6 +151,7 @@ export function useFeed(viewerActorId, realmId) {
             message: fresh ? 'Fresh fetch' : 'Paginate',
             payload: { viewerActorId, realmId, fresh, requestVersion },
           })
+          startFeedSession({ viewerActorId, realmId, fresh, requestVersion })
         }
 
         if (fresh) {
@@ -185,7 +194,7 @@ export function useFeed(viewerActorId, realmId) {
           } = res;
 
           // Immediate upsert from pipeline data (fast, no extra network)
-          upsertActors(
+          upsertActorsRef.current(
             (actors || []).map((a) => ({
               actor_id: a.id,
               kind: a.kind,
@@ -199,10 +208,18 @@ export function useFeed(viewerActorId, realmId) {
             }))
           );
 
-          // Background canonical hydration (fills gaps, sets freshness)
+          if (import.meta.env.DEV) recordStep("actor_upsert_complete", { actorCount: (actors || []).length });
+
+          // Background canonical hydration — only for actors that are stale or missing.
+          // The pipeline's upsertActors() already populated fresh data above,
+          // so this only fires for actors the store didn't have or that expired.
           const feedActorIds = (actors || []).map((a) => a.id).filter(Boolean);
-          if (feedActorIds.length) {
-            hydrateActorsByIds(feedActorIds).catch(() => {});
+          const staleOrMissing = getMissingOrStaleRef.current(feedActorIds);
+          if (staleOrMissing.length) {
+            if (import.meta.env.DEV) recordStep("hydration_start_background", { total: feedActorIds.length, staleOrMissing: staleOrMissing.length });
+            hydrateActorsByIds(staleOrMissing).catch(() => {});
+          } else if (import.meta.env.DEV) {
+            recordStep("hydration_skipped_all_fresh", { actorCount: feedActorIds.length });
           }
 
           setHiddenPostIds((prev) => {
@@ -282,13 +299,15 @@ export function useFeed(viewerActorId, realmId) {
           setFirstBatchReady(true);
         }
       } finally {
+        if (import.meta.env.DEV) endFeedSession();
+        lastFetchAtRef.current = Date.now();
         loadingRef.current = false;
         if (requestVersionRef.current === requestVersion) {
           setLoading(false);
         }
       }
     },
-    [viewerActorId, realmId, upsertActors]
+    [viewerActorId, realmId]
   );
 
   useEffect(() => {
@@ -297,7 +316,7 @@ export function useFeed(viewerActorId, realmId) {
 
     didInitialFetchRef.current = true;
     fetchPosts(true);
-  }, [viewerActorId, realmId, fetchPosts]);
+  }, [viewerActorId, fetchPosts]);
 
   return {
     posts,
@@ -306,7 +325,6 @@ export function useFeed(viewerActorId, realmId) {
     hasMore,
     fetchPosts,
     setPosts,
-    fetchViewer,
     hiddenPostIds,
     filterDebugRows,
     firstBatchReady,

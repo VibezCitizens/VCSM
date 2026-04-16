@@ -45,7 +45,7 @@ export default async function upsertVportServicesController({
 
     catalogByKey.set(key, {
       label: (r?.label ?? "").toString().trim() || key,
-      category: (r?.category ?? "").toString().trim() || null,
+      service_group: (r?.service_group ?? "").toString().trim() || null,
       meta: r?.meta && typeof r.meta === "object" ? r.meta : {},
     });
   }
@@ -61,10 +61,9 @@ export default async function upsertVportServicesController({
       if (!cat) return null;
 
       return {
-        actor_id: targetActorId,
         key,
         label: cat.label,
-        category: cat.category,
+        service_group: cat.service_group ?? null,
         enabled: it?.enabled !== false,
         meta: it?.meta && typeof it.meta === "object" ? it.meta : cat.meta ?? {},
         updated_at: new Date().toISOString(),
@@ -73,7 +72,7 @@ export default async function upsertVportServicesController({
     .filter(Boolean);
 
   // ✅ this is the actual DB save
-  const saved = await upsertVportServicesByActorDal({ rows: payload });
+  const saved = await upsertVportServicesByActorDal({ actorId: targetActorId, rows: payload });
 
   return {
     ok: true,

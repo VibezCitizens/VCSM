@@ -13,6 +13,9 @@ export function normalizeFeedRows({
   hiddenByMeSet,
   mediaMap,
   mentionMapsByPostId,
+  commentCountsMap,
+  viewerReactionsMap,
+  reactionCountsMap,
   includeDebug = false,
 }) {
   const debugRows = [];
@@ -87,6 +90,11 @@ export function normalizeFeedRows({
 
         media,
         mentionMap: mentionMapsByPostId?.[r.id] || {},
+
+        // Batched data — eliminates per-post N+1 queries in PostCard
+        commentCount: commentCountsMap?.get?.(r.id) ?? 0,
+        viewerReaction: viewerReactionsMap?.get?.(r.id) ?? null,
+        reactionCounts: reactionCountsMap?.get?.(r.id) ?? { like: 0, dislike: 0, rose: 0 },
       };
     });
 

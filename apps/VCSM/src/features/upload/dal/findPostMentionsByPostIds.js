@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
 
 /**
  * Returns rows:
@@ -35,7 +36,6 @@ export async function findPostMentionsByPostIds(postIds) {
   if (aErr) throw aErr;
 
   const profileIds = [...new Set((actors || []).map((a) => a.profile_id).filter(Boolean))];
-  const vportIds = [...new Set((actors || []).map((a) => a.vport_id).filter(Boolean))];
 
   // 3) profile usernames
   let profiles = [];
@@ -49,23 +49,22 @@ export async function findPostMentionsByPostIds(postIds) {
     profiles = data || [];
   }
 
-  // 4) vport slugs
-  let vports = [];
-  if (vportIds.length) {
-    const { data, error } = await supabase
-      .schema("vc")
-      .from("vports")
-      .select("id, slug")
-      .in("id", vportIds);
+  // 4) vport slugs — lookup by actor_id in vport.profiles
+  let vportProfiles = [];
+  if (actorIds.length) {
+    const { data, error } = await vportSchema
+      .from("profiles")
+      .select("actor_id, slug")
+      .in("actor_id", actorIds);
     if (error) throw error;
-    vports = data || [];
+    vportProfiles = data || [];
   }
 
   const usernameByProfileId = new Map(
     profiles.map((p) => [p.id, String(p.username || "").toLowerCase()])
   );
-  const slugByVportId = new Map(
-    vports.map((v) => [v.id, String(v.slug || "").toLowerCase()])
+  const slugByActorId = new Map(
+    vportProfiles.map((v) => [v.actor_id, String(v.slug || "").toLowerCase()])
   );
 
   const actorById = new Map();
@@ -75,7 +74,7 @@ export async function findPostMentionsByPostIds(postIds) {
   return (mentions || []).map((m) => {
     const a = actorById.get(m.mentioned_actor_id);
     const username = a?.profile_id ? usernameByProfileId.get(a.profile_id) : null;
-    const slug = a?.vport_id ? slugByVportId.get(a.vport_id) : null;
+    const slug = slugByActorId.get(m.mentioned_actor_id) ?? null;
 
     return {
       post_id: m.post_id,

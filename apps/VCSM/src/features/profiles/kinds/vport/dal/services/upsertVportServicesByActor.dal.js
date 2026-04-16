@@ -1,26 +1,54 @@
 // src/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js
 
-import { supabase } from "@/services/supabase/supabaseClient";
+import vportSchema from "@/services/supabase/vportClient";
+
+const SERVICES_SELECT =
+  "id,profile_id,key,label,description,service_group,sort_order,enabled,meta,created_at,updated_at";
+
+async function resolveProfileId(actorId) {
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
 
 /**
- * DAL: Upsert vport services overrides for an actor_id.
+ * DAL: Upsert vport services for an actor.
  *
- * Requires a unique constraint/index on (actor_id, key) for onConflict to work.
+ * Requires a unique constraint on (profile_id, key).
  *
  * @param {object} params
- * @param {Array<object>} params.rows - rows shaped for vc.vport_services
+ * @param {string} params.actorId
+ * @param {Array<object>} params.rows - service row shapes (without profile_id — injected here)
  * @returns {Promise<Array>}
  */
-export async function upsertVportServicesByActorDal({ rows } = {}) {
-  const list = Array.isArray(rows) ? rows.filter(Boolean) : [];
+export async function upsertVportServicesByActorDal({ actorId, rows } = {}) {
+  if (!actorId) throw new Error("upsertVportServicesByActorDal: actorId is required");
 
+  const list = Array.isArray(rows) ? rows.filter(Boolean) : [];
   if (!list.length) return [];
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_services")
-    .upsert(list, { onConflict: "actor_id,key" })
-    .select("id,actor_id,key,label,category,enabled,meta,created_at,updated_at");
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return [];
+
+  const mapped = list.map((r) => ({
+    profile_id: profileId,
+    key: r.key,
+    label: r.label,
+    description: r.description ?? null,
+    service_group: r.service_group ?? null,
+    enabled: r.enabled !== false,
+    sort_order: r.sort_order ?? 0,
+    meta: r.meta ?? {},
+    updated_at: r.updated_at ?? new Date().toISOString(),
+  }));
+
+  const { data, error } = await vportSchema
+    .from("services")
+    .upsert(mapped, { onConflict: "profile_id,key" })
+    .select(SERVICES_SELECT);
 
   if (error) throw error;
   return data ?? [];
