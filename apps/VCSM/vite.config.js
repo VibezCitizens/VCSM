@@ -39,7 +39,9 @@ export default defineConfig(({ mode }) => ({
       },
       {
         find: '@debuggers',
-        replacement: fileURLToPath(new URL('../../zNOTFORPRODUCTION/debuggers', import.meta.url)),
+        replacement: mode === 'production'
+          ? fileURLToPath(new URL('./src/debuggers-stub', import.meta.url))
+          : fileURLToPath(new URL('../../zNOTFORPRODUCTION/debuggers', import.meta.url)),
       },
       {
         find: '@',
