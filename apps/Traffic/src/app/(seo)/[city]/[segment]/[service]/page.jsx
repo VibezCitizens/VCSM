@@ -59,6 +59,8 @@ import {
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
 import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPageTemplate";
 
+export const revalidate = 900;
+
 const LEGACY_TRANSITION_ROBOTS = {
   index: false,
   follow: true,

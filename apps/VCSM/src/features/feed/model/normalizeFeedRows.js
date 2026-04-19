@@ -41,7 +41,7 @@ export function normalizeFeedRows({
     .map((r) => {
       const a = actorMap[r.actor_id];
       const prof = a?.profile_id ? profileMap[a.profile_id] : null;
-      const vp = a?.vport_id ? vportMap[a.vport_id] : null;
+      const vp = a?.kind === 'vport' ? (vportMap[a.id] ?? null) : null;
 
       const multi = (mediaMap.get(r.id) || [])
         .map((mediaRow) => {

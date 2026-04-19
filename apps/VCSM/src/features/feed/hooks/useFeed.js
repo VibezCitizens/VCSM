@@ -202,9 +202,9 @@ export function useFeed(viewerActorId, realmId, { viewerIsAdult: viewerIsAdultPr
               username: a.profile_id ? profileMap[a.profile_id]?.username ?? null : null,
               photo_url: a.profile_id
                 ? profileMap[a.profile_id]?.photo_url ?? null
-                : vportMap[a.vport_id]?.avatar_url ?? null,
-              vport_name: a.vport_id ? vportMap[a.vport_id]?.name ?? null : null,
-              vport_slug: a.vport_id ? vportMap[a.vport_id]?.slug ?? null : null,
+                : vportMap[a.id]?.avatar_url ?? null,
+              vport_name: a.kind === 'vport' ? vportMap[a.id]?.name ?? null : null,
+              vport_slug: a.kind === 'vport' ? vportMap[a.id]?.slug ?? null : null,
             }))
           );
 

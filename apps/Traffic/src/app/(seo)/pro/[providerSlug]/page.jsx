@@ -26,6 +26,8 @@ import {
 } from "@/lib/paths";
 import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPageTemplate";
 
+export const revalidate = 900;
+
 const LEGACY_TRANSITION_ROBOTS = {
   index: false,
   follow: true,

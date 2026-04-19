@@ -7,9 +7,6 @@ import { getCountryBySlug } from "@/data/repositories/geo.repo";
 import { getProviderBySlug } from "@/data/repositories/provider.repo";
 import { normalizeSlug } from "@/lib/slugs";
 
-const summaryByActorCache = new Map();
-const summaryByProfileCache = new Map();
-
 function toNumber(value) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : null;
@@ -95,64 +92,44 @@ function buildFallbackFromStats(provider, stats) {
   });
 }
 
-function setActorCache(actorId, summary) {
-  if (!actorId) {
-    return;
+function buildProviderCacheTag(providerSlug) {
+  const normalizedProviderSlug = normalizeSlug(providerSlug);
+  if (!normalizedProviderSlug) {
+    return undefined;
   }
 
-  summaryByActorCache.set(actorId, Promise.resolve(summary));
+  return [`provider:${normalizedProviderSlug}`];
 }
 
-function setProfileCache(profileSlug, summary) {
-  if (!profileSlug) {
-    return;
-  }
-
-  summaryByProfileCache.set(profileSlug, Promise.resolve(summary));
-}
-
-export async function getPublicReviewSummaryByActorId(actorId) {
+export async function getPublicReviewSummaryByActorId(actorId, options = {}) {
   const normalizedActorId = String(actorId ?? "").trim();
   if (!normalizedActorId) {
     return null;
   }
 
-  if (!summaryByActorCache.has(normalizedActorId)) {
-    const loadPromise = fetchPublicReviewSummary({ actorId: normalizedActorId })
-      .then((summary) => normalizeReviewSummary(summary))
-      .catch(() => null);
+  const summary = await fetchPublicReviewSummary({
+    actorId: normalizedActorId,
+    profileSlug: options.profileSlug,
+    providerSlug: options.providerSlug,
+    cacheTags: options.cacheTags ?? buildProviderCacheTag(options.providerSlug)
+  }).catch(() => null);
 
-    summaryByActorCache.set(normalizedActorId, loadPromise);
-  }
-
-  const summary = await summaryByActorCache.get(normalizedActorId);
-  if (summary?.profileSlug) {
-    setProfileCache(summary.profileSlug, summary);
-  }
-
-  return summary ?? null;
+  return normalizeReviewSummary(summary);
 }
 
-export async function getPublicReviewSummaryByProfileSlug(profileSlug) {
+export async function getPublicReviewSummaryByProfileSlug(profileSlug, options = {}) {
   const normalizedProfileSlug = normalizeSlug(profileSlug);
   if (!normalizedProfileSlug) {
     return null;
   }
 
-  if (!summaryByProfileCache.has(normalizedProfileSlug)) {
-    const loadPromise = fetchPublicReviewSummary({ profileSlug: normalizedProfileSlug })
-      .then((summary) => normalizeReviewSummary(summary))
-      .catch(() => null);
+  const summary = await fetchPublicReviewSummary({
+    profileSlug: normalizedProfileSlug,
+    providerSlug: options.providerSlug ?? normalizedProfileSlug,
+    cacheTags: options.cacheTags ?? buildProviderCacheTag(options.providerSlug ?? normalizedProfileSlug)
+  }).catch(() => null);
 
-    summaryByProfileCache.set(normalizedProfileSlug, loadPromise);
-  }
-
-  const summary = await summaryByProfileCache.get(normalizedProfileSlug);
-  if (summary?.actorId) {
-    setActorCache(summary.actorId, summary);
-  }
-
-  return summary ?? null;
+  return normalizeReviewSummary(summary);
 }
 
 export async function listPublicReviewSummaries(filters = {}) {
@@ -172,7 +149,10 @@ export async function getPublicReviewSummaryForProvider(provider, stats = null) 
   }
 
   if (provider.vcsmActorId) {
-    const actorSummary = await getPublicReviewSummaryByActorId(provider.vcsmActorId);
+    const actorSummary = await getPublicReviewSummaryByActorId(provider.vcsmActorId, {
+      profileSlug: normalizeSlug(provider.vcsmSlug) ?? undefined,
+      providerSlug: normalizeSlug(provider.slug) ?? undefined
+    });
     if (actorSummary) {
       return actorSummary;
     }
@@ -184,7 +164,9 @@ export async function getPublicReviewSummaryForProvider(provider, stats = null) 
   ].filter(Boolean);
 
   for (const candidate of profileCandidates) {
-    const profileSummary = await getPublicReviewSummaryByProfileSlug(candidate);
+    const profileSummary = await getPublicReviewSummaryByProfileSlug(candidate, {
+      providerSlug: normalizeSlug(provider.slug) ?? candidate
+    });
     if (profileSummary) {
       return profileSummary;
     }
@@ -199,7 +181,10 @@ export async function getPublicReviewSummaryForContentPage(page) {
   }
 
   if (page.actorId) {
-    const actorSummary = await getPublicReviewSummaryByActorId(page.actorId);
+    const actorSummary = await getPublicReviewSummaryByActorId(page.actorId, {
+      profileSlug: normalizeSlug(page.profileSlug) ?? undefined,
+      providerSlug: normalizeSlug(page.providerSlug ?? page.profileSlug) ?? undefined
+    });
     if (actorSummary) {
       return actorSummary;
     }
@@ -211,7 +196,9 @@ export async function getPublicReviewSummaryForContentPage(page) {
   ].filter(Boolean);
 
   for (const candidate of profileCandidates) {
-    const profileSummary = await getPublicReviewSummaryByProfileSlug(candidate);
+    const profileSummary = await getPublicReviewSummaryByProfileSlug(candidate, {
+      providerSlug: normalizeSlug(page.providerSlug ?? page.profileSlug) ?? candidate
+    });
     if (profileSummary) {
       return profileSummary;
     }

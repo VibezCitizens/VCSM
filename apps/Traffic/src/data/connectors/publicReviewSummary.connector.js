@@ -2,6 +2,7 @@ import { getPublicReviewSummaryApiUrl } from "@/lib/env";
 import { normalizeSlug } from "@/lib/slugs";
 
 const REQUEST_TIMEOUT_MS = 4500;
+const MAX_TAGS_PER_REQUEST = 8;
 
 function toNumberOrNull(value) {
   if (value == null || value === "") {
@@ -170,6 +171,39 @@ function buildEndpoint(filters = {}) {
   return url.toString();
 }
 
+function normalizeCacheTag(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+function collectCacheTags(filters = {}) {
+  const tags = new Set();
+
+  const explicitTags = Array.isArray(filters.cacheTags)
+    ? filters.cacheTags
+    : Array.isArray(filters.tags)
+      ? filters.tags
+      : [];
+
+  for (const tag of explicitTags) {
+    const normalized = normalizeCacheTag(tag);
+    if (normalized) {
+      tags.add(normalized);
+    }
+  }
+
+  const providerSlug = normalizeSlug(filters.providerSlug ?? filters.profileSlug);
+  if (providerSlug) {
+    tags.add(`provider:${providerSlug}`);
+  }
+
+  return [...tags].slice(0, MAX_TAGS_PER_REQUEST);
+}
+
 export async function fetchPublicReviewSummaries(filters = {}) {
   const endpoint = buildEndpoint(filters);
   if (!endpoint) {
@@ -180,12 +214,16 @@ export async function fetchPublicReviewSummaries(filters = {}) {
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const cacheTags = collectCacheTags(filters);
     const response = await fetch(endpoint, {
       method: "GET",
       headers: {
         Accept: "application/json"
       },
-      next: { revalidate: 900 },
+      next: {
+        revalidate: 900,
+        ...(cacheTags.length ? { tags: cacheTags } : {})
+      },
       signal: controller.signal
     });
 

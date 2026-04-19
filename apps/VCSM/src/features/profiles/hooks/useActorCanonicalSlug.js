@@ -60,7 +60,9 @@ export function useActorCanonicalSlug(actorId) {
       } catch (e) {
         if (!alive) return
         setError(e)
-        setCanonicalSlug(null)
+        // Fallback to bare actorId so a network failure doesn't redirect to /feed.
+        // The profile renders at /profile/{uuid} rather than bouncing the user.
+        setCanonicalSlug(actorId)
       } finally {
         if (alive) setLoading(false)
       }

@@ -23,6 +23,8 @@ import { DirectoryBreadcrumbs } from "@/features/directories/components/Director
 import { InternalLinkGrid } from "@/features/directories/components/InternalLinkGrid";
 import { ReviewTrustSummary } from "@/features/reviews/components/ReviewTrustSummary";
 
+export const revalidate = 3600;
+
 function getLabelFromSlug(slug) {
   return String(slug)
     .replace(/-/g, " ")

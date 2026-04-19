@@ -6,8 +6,6 @@ import {
 } from "@/data/connectors/publicContent.connector";
 import { normalizeSlug } from "@/lib/slugs";
 
-let publicContentCachePromise = null;
-
 function normalizeTimestamp(value) {
   const timestamp = Date.parse(value ?? "");
   return Number.isNaN(timestamp) ? 0 : timestamp;
@@ -41,12 +39,8 @@ function withLimit(items, limit) {
   return items;
 }
 
-async function readPublicContentPages() {
-  if (!publicContentCachePromise) {
-    publicContentCachePromise = fetchPublicContentPages().catch(() => []);
-  }
-
-  const pages = await publicContentCachePromise;
+async function readPublicContentPages(filters = {}) {
+  const pages = await fetchPublicContentPages(filters).catch(() => []);
   return pages
     .filter((page) => Boolean(page && page.isPublished && page.isIndexable && page.slug))
     .sort(contentSort);
@@ -126,7 +120,7 @@ function filterPages(pages, filters = {}) {
 }
 
 export async function getAllPublicContentPages(filters = {}) {
-  const pages = await readPublicContentPages();
+  const pages = await readPublicContentPages(filters);
   return filterPages(pages, filters);
 }
 
@@ -140,7 +134,11 @@ export async function getPublicContentPageBySlug(slug, options = {}) {
     return getPublicContentPageByProfileAndSlug(options.profileSlug, normalizedSlug);
   }
 
-  const pages = await readPublicContentPages();
+  const pages = await readPublicContentPages({
+    contentSlug: normalizedSlug,
+    limit: 25,
+    cacheTags: [`guide:${normalizedSlug}`]
+  });
   const fromCache = pages.find((page) => page.slug === normalizedSlug) ?? null;
   if (fromCache) {
     return fromCache;
@@ -157,7 +155,12 @@ export async function getPublicContentPageByProfileAndSlug(profileSlug, contentS
     return null;
   }
 
-  const pages = await readPublicContentPages();
+  const pages = await readPublicContentPages({
+    profileSlug: normalizedProfileSlug,
+    contentSlug: normalizedContentSlug,
+    limit: 25,
+    cacheTags: [`provider:${normalizedProfileSlug}`, `guide:${normalizedContentSlug}`]
+  });
   const fromCache =
     pages.find(
       (page) => page.profileSlug === normalizedProfileSlug && page.slug === normalizedContentSlug

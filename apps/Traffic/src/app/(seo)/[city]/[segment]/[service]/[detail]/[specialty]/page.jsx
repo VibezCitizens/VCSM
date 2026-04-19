@@ -28,6 +28,8 @@ import {
 } from "@/lib/paths";
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
 
+export const revalidate = 900;
+
 export function generateStaticParams() {
   return listCountryLocalityServiceSpecialtyStaticParams().map((entry) => ({
     city: entry.country,
