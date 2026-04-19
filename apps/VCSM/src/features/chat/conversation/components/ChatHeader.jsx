@@ -16,7 +16,7 @@ export default function ChatHeader({ conversation, partnerActor, onBack, onOpenM
           displayName: partnerActor.displayName || partnerActor.username || 'User',
           username: partnerActor.username,
           avatar: partnerActor.photoUrl || '/avatar.jpg',
-          route: `/profile/${partnerActor.actorId}`,
+          route: `/profile/${partnerActor.username ?? partnerActor.actorId}`,
         }
       : null
 

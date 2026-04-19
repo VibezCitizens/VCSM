@@ -109,26 +109,28 @@ function normalizeSender(sender, ctx = {}, actorId = null) {
   // USER
   if (sender.type === 'user') {
     const id = sender.id ?? actorId ?? null
+    const username = sender.username || null
     return {
       id,
       kind: 'user',
-      displayName: sender.display_name || sender.username || 'User',
-      username: sender.username || null,
+      displayName: sender.display_name || username || 'User',
+      username,
       avatar: sender.photo_url || '/avatar.jpg',
-      route: id ? `/profile/${id}` : '#',
+      route: id ? `/profile/${username ?? id}` : '#',
     }
   }
 
   // VPORT
   if (sender.type === 'vport') {
     const id = sender.id ?? actorId ?? null
+    const slug = sender.slug || null
     return {
       id,
       kind: 'vport',
       displayName: sender.display_name || 'VPORT',
-      slug: sender.slug || null,
+      slug,
       avatar: sender.photo_url || '/avatar.jpg',
-      route: id ? `/profile/${id}` : '#',
+      route: id ? `/profile/${slug ?? id}` : '#',
     }
   }
 

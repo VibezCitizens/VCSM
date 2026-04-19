@@ -63,7 +63,8 @@ export default function ActorProfileHeader({
     onSubscribeAsync()
   }, [optimisticAdjust, isSubscribed, onSubscribeAsync])
 
-  const qrValue = actorId ? `${window.location.origin}/profile/${actorId}` : ''
+  const canonicalHandle = profile?.username ?? actorId
+  const qrValue = canonicalHandle ? `${window.location.origin}/profile/${canonicalHandle}` : ''
 
   if (loading) {
     return (

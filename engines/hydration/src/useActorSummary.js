@@ -80,7 +80,9 @@ export function useActorSummary(actorRef) {
         actorRef?.avatar
       ) ?? '/avatar.jpg'
 
-    const route = actorId ? `/profile/${encodeURIComponent(actorId)}` : '#'
+    const route = actorId
+      ? `/profile/${encodeURIComponent(username ?? actorId)}`
+      : '#'
 
     return {
       actorId,
