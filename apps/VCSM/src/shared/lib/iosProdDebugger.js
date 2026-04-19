@@ -110,6 +110,14 @@ function emit(name, detail) {
   }
 }
 
+function parseToggleValue(raw) {
+  if (raw == null) return null
+  const v = String(raw).trim().toLowerCase()
+  if (v === '1' || v === 'true' || v === 'on' || v === 'yes') return true
+  if (v === '0' || v === 'false' || v === 'off' || v === 'no') return false
+  return null
+}
+
 export function isIOSProdDebuggerEnabled() {
   if (!hasWindow()) return false
   try {
@@ -129,6 +137,35 @@ export function setIOSProdDebuggerEnabled(enabled) {
   }
 
   emit(IOS_PROD_DEBUG_EVENTS.toggle, { enabled: !!enabled })
+}
+
+export function bootstrapIOSProdDebuggerFromUrl(search = null) {
+  if (!hasWindow()) return false
+
+  let params = null
+  try {
+    params = new URLSearchParams(search ?? window.location.search ?? '')
+  } catch {
+    return false
+  }
+
+  const toggleRaw =
+    params.get('iosdbg') ??
+    params.get('__vcsm_ios_dbg') ??
+    params.get('vcsm_ios_dbg')
+
+  const toggled = parseToggleValue(toggleRaw)
+  if (toggled == null) return false
+
+  setIOSProdDebuggerEnabled(toggled)
+  if (toggled) {
+    appendIOSProdDebugLog('debug_enabled_from_query', {
+      source: 'bootstrapIOSProdDebuggerFromUrl',
+      toggleRaw,
+      search: search ?? window.location.search ?? '',
+    })
+  }
+  return true
 }
 
 export function clearIOSProdDebugLogs() {
@@ -190,4 +227,3 @@ export function appendIOSProdDebugLog(event, payload = null) {
   emit(IOS_PROD_DEBUG_EVENTS.entry, entry)
   return entry
 }
-

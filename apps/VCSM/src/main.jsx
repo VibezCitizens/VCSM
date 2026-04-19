@@ -28,13 +28,18 @@ import { I18nProvider } from '@i18n'
 import { vcsmDictionary } from '@/i18n/setup'
 
 import { registerSW } from 'virtual:pwa-register'
-import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
+import {
+  appendIOSProdDebugLog,
+  bootstrapIOSProdDebuggerFromUrl,
+} from '@/shared/lib/iosProdDebugger'
 
 // In this codebase many effects trigger network reads.
 // Keep strict mode opt-in to avoid dev-only double fetch/mount behavior.
 const RootMode = import.meta.env.VITE_REACT_STRICT_MODE === '1'
   ? React.StrictMode
   : React.Fragment
+
+bootstrapIOSProdDebuggerFromUrl()
 
 if (import.meta.env.PROD) {
   const updateSW = registerSW({
