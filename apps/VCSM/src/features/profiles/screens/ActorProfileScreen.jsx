@@ -29,7 +29,7 @@ import { useResolveActorBySlug } from "@/features/profiles/hooks/useResolveActor
 
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
 import { SkeletonCardList } from "@/shared/components/Skeleton";
-import { extractActorIdFromSlug, isCanonicalSlug } from "@/shared/lib/actorSlug";
+import { extractActorIdFromSlug } from "@/shared/lib/actorSlug";
 import "@/features/profiles/styles/profiles-modern.css";
 
 // ── BUGSBUNNY dev probe ────────────────────────────────────────
@@ -191,9 +191,9 @@ export default function ActorProfileScreen() {
   }
 
   // Block content until we are on the exact canonical URL.
-  // This covers: "self" → redirect pending, UUID → redirect pending,
-  // and any legacy slug format → redirect pending.
-  if (!isCanonicalSlug(routeParam) || routeParam !== canonicalSlug) {
+  // Covers "self", UUID-prefixed legacy slugs, and bare-UUID canonical fallbacks
+  // (vports without a stored vport.profiles.slug use actorId as their canonical).
+  if (routeParam !== canonicalSlug) {
     return <>{probe}{SKELETON}</>
   }
 

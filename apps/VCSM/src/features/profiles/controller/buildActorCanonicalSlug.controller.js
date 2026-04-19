@@ -12,9 +12,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { createTTLCache } from '@/shared/lib/ttlCache'
-import { normalizeSlugPart } from '@/shared/lib/actorSlug'
 import { ActorSeoModel } from '@/features/profiles/model/ActorSeoModel'
-import { useActorStore } from '@hydration'
 
 import {
   readActorDirectoryRowDAL,
@@ -93,15 +91,10 @@ export async function buildActorCanonicalSlugController(actorId) {
   // Returns null if nothing is available — the screen will render an error state
   // rather than deadlocking in skeleton.
   if (!canonicalSlug) {
-    const storeActor = useActorStore.getState().getActor?.(actorId) ?? null
-    const name =
-      storeActor?.vportSlug ??
-      storeActor?.vportName ??
-      storeActor?.username ??
-      storeActor?.displayName ??
-      null
-    canonicalSlug = name ? normalizeSlugPart(name) || null : null
-    if (canonicalSlug) slugParts = { name }
+    // All slug sources failed (vport.profiles.slug is null, no username/display_name).
+    // Fall back to bare actorId so /profile/{uuid} works without a redirect loop.
+    // The render gate in ActorProfileScreen allows bare-UUID canonical slugs.
+    canonicalSlug = actorId
   }
 
   const output = {

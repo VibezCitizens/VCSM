@@ -116,9 +116,10 @@ export function ActorSeoModel({ actorId: explicitActorId, actorRow, vportProfile
     canonicalSlug = normalizeSlugPart(actorRow.username) || null
   } else if (actorRow?.display_name) {
     canonicalSlug = normalizeSlugPart(actorRow.display_name) || null
-  } else if (vportProfile?.name) {
-    canonicalSlug = normalizeSlugPart(vportProfile.name) || null
   }
+  // vportProfile.name is NOT used as a canonical slug — it cannot be reverse-looked-up
+  // by resolveActorBySlugOrUsernameDAL (only vport.profiles.slug is indexed).
+  // Vports without a stored slug fall back to bare actorId in the controller.
 
   return {
     actorId,
