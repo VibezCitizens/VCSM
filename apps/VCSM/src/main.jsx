@@ -28,6 +28,7 @@ import { I18nProvider } from '@i18n'
 import { vcsmDictionary } from '@/i18n/setup'
 
 import { registerSW } from 'virtual:pwa-register'
+import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 // In this codebase many effects trigger network reads.
 // Keep strict mode opt-in to avoid dev-only double fetch/mount behavior.
@@ -40,12 +41,23 @@ if (import.meta.env.PROD) {
     immediate: true,
     onNeedRefresh() {
       // Apply updates eagerly so standalone sessions do not keep stale route logic.
+      appendIOSProdDebugLog('sw_on_need_refresh', { source: 'registerSW' })
       updateSW(true)
     },
     onRegisteredSW(_swUrl, registration) {
       if (!registration) return
 
-      const maybeUpdate = () => registration.update().catch(() => {})
+      appendIOSProdDebugLog('sw_registered', {
+        swUrl: _swUrl ?? null,
+        hasRegistration: !!registration,
+      })
+
+      const maybeUpdate = () => registration.update()
+        .then(() => appendIOSProdDebugLog('sw_update_check_ok', { source: 'maybeUpdate' }))
+        .catch((error) => appendIOSProdDebugLog('sw_update_check_error', {
+          source: 'maybeUpdate',
+          message: error?.message ?? String(error),
+        }))
       const onVisible = () => {
         if (document.visibilityState === 'visible') maybeUpdate()
       }

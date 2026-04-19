@@ -16,6 +16,7 @@
 
 import { useState, useEffect } from 'react'
 import { resolveActorBySlugOrUsernameDAL } from '@/features/profiles/dal/readActorSeoData.dal'
+import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 /**
  * @param {string|null} slug — UUID-free route param (e.g. "tyba-restaurant")
@@ -38,6 +39,7 @@ export function useResolveActorBySlug(slug) {
     let alive = true
 
     if (!slug) {
+      appendIOSProdDebugLog('profile_slug_resolve_skipped', { slug })
       setActorId(null)
       setKind(null)
       setLoading(false)
@@ -47,6 +49,7 @@ export function useResolveActorBySlug(slug) {
     }
 
     async function run() {
+      appendIOSProdDebugLog('profile_slug_resolve_start', { slug })
       setLoading(true)
       setNotFound(false)
       setError(null)
@@ -57,16 +60,27 @@ export function useResolveActorBySlug(slug) {
         if (!alive) return
 
         if (result) {
+          appendIOSProdDebugLog('profile_slug_resolve_hit', {
+            slug,
+            actorId: result.actorId,
+            kind: result.kind,
+          })
           setActorId(result.actorId)
           setKind(result.kind)
           setNotFound(false)
         } else {
+          appendIOSProdDebugLog('profile_slug_resolve_not_found', { slug })
           setActorId(null)
           setKind(null)
           setNotFound(true)
         }
       } catch (e) {
         if (!alive) return
+        appendIOSProdDebugLog('profile_slug_resolve_error', {
+          slug,
+          code: e?.code ?? null,
+          message: e?.message ?? String(e),
+        })
         setActorId(null)
         setKind(null)
         setNotFound(false)

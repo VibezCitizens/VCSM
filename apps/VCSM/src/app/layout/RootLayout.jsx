@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import TopNav from "@/shared/components/TopNav";
 import BottomNavBar from "@/shared/components/BottomNavBar";
 import PageContainer from "@/shared/components/PageContainer";
-import { IOSDebugHUD } from "@/app/platform/ios";
+import { IOSDebugHUD, IOSProdRouteDebugger } from "@/app/platform/ios";
 import { hideLaunchSplash } from "@/shared/lib/hideLaunchSplash";
+import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
 
 export default function RootLayout() {
   const { pathname } = useLocation();
+  const prevPathRef = useRef(null);
 
   const isLearningRoute = /^\/learning(\/.*)?$/.test(pathname);
 
@@ -39,7 +41,21 @@ export default function RootLayout() {
       : "flex-1 pt-[calc(48px+env(safe-area-inset-top))] pb-[var(--vc-bottom-nav-height)]";
 
   useEffect(() => {
+    appendIOSProdDebugLog('root_layout_route_change', {
+      from: prevPathRef.current,
+      to: pathname,
+      isAuthRoute,
+      isLearningRoute,
+      isChatSubScreen,
+      hideTopNav,
+      hideBottomNav,
+    });
+    prevPathRef.current = pathname;
+  }, [pathname, isAuthRoute, isLearningRoute, isChatSubScreen, hideTopNav, hideBottomNav]);
+
+  useEffect(() => {
     if (pathname === "/feed") return;
+    appendIOSProdDebugLog('root_layout_hide_launch_splash', { pathname });
     hideLaunchSplash();
   }, [pathname]);
 
@@ -68,6 +84,7 @@ export default function RootLayout() {
       </div>
 
       {import.meta.env.DEV && <IOSDebugHUD />}
+      <IOSProdRouteDebugger />
     </div>
   );
 }

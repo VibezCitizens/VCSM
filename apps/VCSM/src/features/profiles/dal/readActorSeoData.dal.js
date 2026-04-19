@@ -18,6 +18,7 @@
 
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createTTLCache } from '@/shared/lib/ttlCache'
+import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 // SEO slug data changes rarely — 10-minute cache is safe.
 const SEO_TTL = 10 * 60 * 1000
@@ -238,7 +239,16 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
   const key = slugOrUsername.toLowerCase()
 
   const cached = slugResolutionCache.get(key)
-  if (cached) return cached
+  if (cached) {
+    appendIOSProdDebugLog('profile_slug_dal_cache_hit', {
+      slug: key,
+      actorId: cached.actorId,
+      kind: cached.kind,
+    })
+    return cached
+  }
+
+  appendIOSProdDebugLog('profile_slug_dal_start', { slug: key })
 
   let hadQueryError = false
 
@@ -252,12 +262,20 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
 
   if (vportErr) {
     hadQueryError = true
+    appendIOSProdDebugLog('profile_slug_dal_vport_query_error', {
+      slug: key,
+      message: vportErr.message,
+    })
     console.error('[resolveActorBySlugOrUsernameDAL] vport.profiles query failed:', vportErr.message, { slug: key })
   }
 
   if (!vportErr && vportData?.actor_id) {
     const result = { actorId: vportData.actor_id, kind: 'vport' }
     slugResolutionCache.set(key, result)
+    appendIOSProdDebugLog('profile_slug_dal_vport_hit', {
+      slug: key,
+      actorId: result.actorId,
+    })
     return result
   }
 
@@ -281,6 +299,11 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
 
     if (actorDirectoryErr) {
       hadQueryError = true
+      appendIOSProdDebugLog('profile_slug_dal_identity_query_error', {
+        slug: key,
+        username: candidate,
+        message: actorDirectoryErr.message,
+      })
       console.error('[resolveActorBySlugOrUsernameDAL] identity.actor_directory query failed:', actorDirectoryErr.message, { username: candidate })
       continue
     }
@@ -289,6 +312,12 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
       const kind = actorDirectoryRow.actor_kind === 'vport' ? 'vport' : 'user'
       const result = { actorId: actorDirectoryRow.actor_id, kind }
       slugResolutionCache.set(key, result)
+      appendIOSProdDebugLog('profile_slug_dal_identity_hit', {
+        slug: key,
+        username: candidate,
+        actorId: result.actorId,
+        kind: result.kind,
+      })
       return result
     }
   }
@@ -306,6 +335,11 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
 
     if (profileErr) {
       hadQueryError = true
+      appendIOSProdDebugLog('profile_slug_dal_profile_query_error', {
+        slug: key,
+        username: candidate,
+        message: profileErr.message,
+      })
       console.error('[resolveActorBySlugOrUsernameDAL] public.profiles query failed:', profileErr.message, { username: candidate })
       continue
     }
@@ -328,12 +362,22 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
 
     if (actorErr) {
       hadQueryError = true
+      appendIOSProdDebugLog('profile_slug_dal_actor_query_error', {
+        slug: key,
+        username: matchedUsername,
+        message: actorErr.message,
+      })
       console.error('[resolveActorBySlugOrUsernameDAL] vc.actors query failed:', actorErr.message, { username: matchedUsername })
     }
 
     if (!actorErr && actorData?.id) {
       const result = { actorId: actorData.id, kind: 'user' }
       slugResolutionCache.set(key, result)
+      appendIOSProdDebugLog('profile_slug_dal_legacy_hit', {
+        slug: key,
+        username: matchedUsername,
+        actorId: result.actorId,
+      })
       return result
     }
   }
@@ -342,9 +386,15 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
   if (hadQueryError) {
     const error = new Error(`Slug resolution query failed for ${slugOrUsername}`)
     error.code = 'SLUG_RESOLUTION_QUERY_FAILED'
+    appendIOSProdDebugLog('profile_slug_dal_throw_query_error', {
+      slug: key,
+      code: error.code,
+      message: error.message,
+    })
     throw error
   }
 
+  appendIOSProdDebugLog('profile_slug_dal_not_found', { slug: key })
   console.warn('[resolveActorBySlugOrUsernameDAL] not found:', slugOrUsername)
   return null
 }

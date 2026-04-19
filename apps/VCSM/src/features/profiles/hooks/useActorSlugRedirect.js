@@ -21,6 +21,7 @@
 
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 /**
  * @param {string}      routeParam      — raw :actorId value from useParams()
@@ -37,6 +38,12 @@ export function useActorSlugRedirect(routeParam, canonicalSlug, resolvedActorId)
 
     // Already on canonical URL — nothing to do (this also prevents redirect loops)
     if (routeParam === canonicalSlug) return
+
+    appendIOSProdDebugLog('profile_slug_redirect_navigate', {
+      from: routeParam,
+      to: canonicalSlug,
+      resolvedActorId: resolvedActorId ?? null,
+    })
 
     navigate(`/profile/${canonicalSlug}`, {
       replace: true,

@@ -17,6 +17,7 @@
 
 import { useState, useEffect } from 'react'
 import { buildActorCanonicalSlugController } from '@/features/profiles/controller/buildActorCanonicalSlug.controller'
+import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 /**
  * @param {string|null} actorId — resolved UUID from the route param
@@ -38,6 +39,7 @@ export function useActorCanonicalSlug(actorId) {
 
     async function run() {
       if (!actorId) {
+        appendIOSProdDebugLog('profile_canonical_slug_skipped', { actorId })
         if (alive) {
           setCanonicalSlug(null)
           setSlugParts({})
@@ -48,6 +50,7 @@ export function useActorCanonicalSlug(actorId) {
       }
 
       try {
+        appendIOSProdDebugLog('profile_canonical_slug_start', { actorId })
         setLoading(true)
         setError(null)
 
@@ -55,10 +58,19 @@ export function useActorCanonicalSlug(actorId) {
           await buildActorCanonicalSlugController(actorId)
 
         if (!alive) return
+        appendIOSProdDebugLog('profile_canonical_slug_resolved', {
+          actorId,
+          canonicalSlug: slug,
+          slugParts: parts ?? {},
+        })
         setCanonicalSlug(slug)
         setSlugParts(parts ?? {})
       } catch (e) {
         if (!alive) return
+        appendIOSProdDebugLog('profile_canonical_slug_error', {
+          actorId,
+          message: e?.message ?? String(e),
+        })
         setError(e)
         // Fallback to bare actorId so a network failure doesn't redirect to /feed.
         // The profile renders at /profile/{uuid} rather than bouncing the user.

@@ -18,7 +18,7 @@
 // State handoff from redirects is NOT used to bypass slug resolution.
 // ─────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useParams, Navigate } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
@@ -32,6 +32,7 @@ import { useResolveActorBySlug } from "@/features/profiles/hooks/useResolveActor
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
 import { SkeletonCardList } from "@/shared/components/Skeleton";
 import { extractActorIdFromSlug } from "@/shared/lib/actorSlug";
+import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
 import "@/features/profiles/styles/profiles-modern.css";
 
 // ── BUGSBUNNY dev probe ────────────────────────────────────────
@@ -188,6 +189,8 @@ const SKELETON = (
 export default function ActorProfileScreen() {
   const { actorId: routeParam } = useParams();
   const { identity, identityLoading } = useIdentity();
+  const lastProfileTraceRef = useRef('');
+  const hasLoggedRenderRef = useRef(false);
 
   const debugMode = typeof localStorage !== 'undefined' && !!localStorage.getItem('__vcsm_dbg')
 
@@ -240,6 +243,62 @@ export default function ActorProfileScreen() {
   const { loading: kindLoading, kind } = useActorKind(resolvedActorId);
   const { loading: vportTypeLoading, vportType: prefetchedVportType } =
     useVportType(resolvedActorId);
+  const slugResolveErrorCode = slugResolveError?.code ?? null;
+  const slugResolveErrorMessage = slugResolveError?.message ?? null;
+
+  useEffect(() => {
+    hasLoggedRenderRef.current = false;
+    appendIOSProdDebugLog('profile_route_enter', {
+      routeParam,
+      debugMode,
+    });
+  }, [routeParam, debugMode]);
+
+  useEffect(() => {
+    const snapshot = {
+      routeParam,
+      isSelf,
+      actorIdForSelf,
+      uuidFromParam,
+      hasUuidInUrl,
+      slugToResolve,
+      slugResolveLoading,
+      slugNotFound,
+      slugResolveErrorCode,
+      slugResolveErrorMessage,
+      actorIdFromSlug,
+      resolvedActorId,
+      canonicalSlug,
+      slugLoading,
+      kindLoading,
+      kind,
+      identityLoading,
+      identityActorId: identity?.actorId ?? null,
+    };
+    const serialized = JSON.stringify(snapshot);
+    if (serialized === lastProfileTraceRef.current) return;
+    lastProfileTraceRef.current = serialized;
+    appendIOSProdDebugLog('profile_route_state', snapshot);
+  }, [
+    routeParam,
+    isSelf,
+    actorIdForSelf,
+    uuidFromParam,
+    hasUuidInUrl,
+    slugToResolve,
+    slugResolveLoading,
+    slugNotFound,
+    slugResolveErrorCode,
+    slugResolveErrorMessage,
+    actorIdFromSlug,
+    resolvedActorId,
+    canonicalSlug,
+    slugLoading,
+    kindLoading,
+    kind,
+    identityLoading,
+    identity?.actorId,
+  ]);
 
   // ── Dev probe (DEV only, stripped by Vite in production) ──
   const probe = (
@@ -263,7 +322,13 @@ export default function ActorProfileScreen() {
 
   // ── Identity gate ──────────────────────────────────────────
   if (identityLoading) return <>{probe}{SKELETON}</>
-  if (!identity) return <Navigate to="/login" replace />;
+  if (!identity) {
+    appendIOSProdDebugLog('profile_route_redirect_login', {
+      reason: 'identity_missing',
+      routeParam,
+    });
+    return <Navigate to="/login" replace />;
+  }
 
   // ── Slug resolution loading ────────────────────────────────
   if (slugResolveLoading) return <>{probe}{SKELETON}</>
@@ -272,6 +337,14 @@ export default function ActorProfileScreen() {
   // Keep this distinct from true "not found" so production query failures
   // do not silently bounce users to /feed.
   if (slugResolveError && !hasUuidInUrl && !isSelf) {
+    appendIOSProdDebugLog('profile_route_slug_resolve_error_gate', {
+      routeParam,
+      slugToResolve,
+      code: slugResolveErrorCode,
+      message: slugResolveErrorMessage,
+      hasUuidInUrl,
+      isSelf,
+    });
     if (import.meta.env.DEV) return <>{probe}{SKELETON}</>
     if (debugMode) {
       return <_ProdDebugPanel routeParam={routeParam} isSelf={isSelf}
@@ -294,6 +367,14 @@ export default function ActorProfileScreen() {
   // Show probe before redirecting so the cause is visible in DEV.
   // "self" never triggers slugNotFound (slugToResolve is null for self).
   if (slugNotFound && !hasUuidInUrl) {
+    appendIOSProdDebugLog('profile_route_redirect_feed', {
+      reason: 'slug_not_found',
+      routeParam,
+      slugToResolve,
+      hasUuidInUrl,
+      slugNotFound,
+      resolvedActorId,
+    });
     if (import.meta.env.DEV) return <>{probe}{SKELETON}</>
     if (debugMode) return <_ProdDebugPanel routeParam={routeParam} isSelf={isSelf}
       hasUuidInUrl={hasUuidInUrl} uuidFromParam={uuidFromParam} slugToResolve={slugToResolve}
@@ -307,6 +388,13 @@ export default function ActorProfileScreen() {
   if (slugLoading) return <>{probe}{SKELETON}</>
 
   if (!canonicalSlug) {
+    appendIOSProdDebugLog('profile_route_redirect_feed', {
+      reason: 'missing_canonical_slug',
+      routeParam,
+      resolvedActorId,
+      slugLoading,
+      slugResolveLoading,
+    });
     if (import.meta.env.DEV) return <>{probe}{SKELETON}</>
     if (debugMode) return <_ProdDebugPanel routeParam={routeParam} isSelf={isSelf}
       hasUuidInUrl={hasUuidInUrl} uuidFromParam={uuidFromParam} slugToResolve={slugToResolve}
@@ -320,6 +408,11 @@ export default function ActorProfileScreen() {
   // Covers "self", UUID-prefixed legacy slugs, and bare-UUID canonical fallbacks
   // (vports without a stored vport.profiles.slug use actorId as their canonical).
   if (routeParam !== canonicalSlug) {
+    appendIOSProdDebugLog('profile_route_wait_canonical_redirect', {
+      routeParam,
+      canonicalSlug,
+      resolvedActorId,
+    });
     return <>{probe}{SKELETON}</>
   }
 
@@ -328,6 +421,16 @@ export default function ActorProfileScreen() {
 
   // ── Render ─────────────────────────────────────────────────
   const Screen = PROFILE_KIND_REGISTRY[kind] ?? PROFILE_KIND_REGISTRY.user;
+  if (!hasLoggedRenderRef.current) {
+    hasLoggedRenderRef.current = true;
+    appendIOSProdDebugLog('profile_route_render_screen', {
+      routeParam,
+      canonicalSlug,
+      resolvedActorId,
+      kind,
+      viewerActorId: identity?.actorId ?? null,
+    });
+  }
 
   return (
     <>

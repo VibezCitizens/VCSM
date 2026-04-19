@@ -11,6 +11,7 @@ import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 import { clearAllIdentityStorage } from '@/state/identity/identityStorage'
 import { debugLoginEvent } from '@debuggers/identity'
 import { debugUserChanged } from '@debuggers/cycle'
+import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 
 const AuthContext = createContext({
@@ -41,6 +42,10 @@ export function AuthProvider({ children }) {
           setSession(nextSession)
           setUser(nextSession?.user ?? null)
           setLoading(false)
+          appendIOSProdDebugLog('auth_session_hydrated', {
+            hasSession: !!nextSession,
+            userId: nextSession?.user?.id ?? null,
+          })
           debugUserChanged(nextSession?.user?.id ?? null)
           debugLoginEvent(nextSession ? 'SESSION_HYDRATE_DONE' : 'SESSION_HYDRATE_EMPTY', {
             phase: 'session',
@@ -53,6 +58,11 @@ export function AuthProvider({ children }) {
         const { data: listener } = supabase.auth.onAuthStateChange((_evt, nextSession) => {
           if (cancelled) return
           const nextUserId = nextSession?.user?.id ?? null
+          appendIOSProdDebugLog('auth_state_change', {
+            event: _evt,
+            userId: nextUserId,
+            hasSession: !!nextSession,
+          })
           debugLoginEvent('AUTH_STATE_CHANGE', {
             phase: 'auth',
             status: 'info',
@@ -93,6 +103,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = async () => {
+    appendIOSProdDebugLog('auth_logout_start', { userId: user?.id ?? null })
     debugLoginEvent('AUTH_SIGNOUT_START', { phase: 'auth', status: 'start', payload: { userId: user?.id ?? null } })
 
     // Optimistic local transition: show /login immediately.
