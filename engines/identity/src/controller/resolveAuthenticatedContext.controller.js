@@ -28,6 +28,34 @@ import { getAppContextResolver }  from '../config.js'
 import { emit, EVENTS }           from '../events.js'
 import { createResolveTrace }     from '../resolveTrace.js'
 
+// ── Result cache ──────────────────────────────────────────────────────
+// Short-lived cache (60s) keyed by userId. Prevents the full 8-step
+// platform query chain from re-executing on rapid navigation between
+// routes. The in-flight dedup (_identityInflight in app controllers)
+// only covers concurrent calls — this covers sequential calls.
+const _resultCache = new Map()
+const _RESULT_TTL = 120_000
+
+function _getCachedResult(userId) {
+  const entry = _resultCache.get(userId)
+  if (!entry) return null
+  if (Date.now() - entry.at > _RESULT_TTL) {
+    _resultCache.delete(userId)
+    return null
+  }
+  return entry.data
+}
+
+function _setCachedResult(userId, data) {
+  _resultCache.set(userId, { data, at: Date.now() })
+}
+
+/** Bust the identity result cache (call on actor switch, logout, etc.). */
+export function invalidateIdentityResultCache(userId) {
+  if (userId) _resultCache.delete(userId)
+  else _resultCache.clear()
+}
+
 /**
  * Resolve the full authenticated context for a user in an app.
  *
@@ -70,6 +98,14 @@ export async function resolveAuthenticatedContext({ appKey, skipLoginRecord = fa
   _ctx.userId = userId
   trace = trace.child({ sessionUserId: userId })
   _t('1_SESSION', 'OK', {})
+
+  // ── Result cache check (before heavy platform queries) ──
+  const _cacheKey = `${userId}:${appKey}`
+  const cached = _getCachedResult(_cacheKey)
+  if (cached) {
+    if (_isDev) _t('CACHE_HIT', 'OK', { userId, appKey })
+    return cached
+  }
 
   // 2. App
   let appRow
@@ -292,6 +328,9 @@ export async function resolveAuthenticatedContext({ appKey, skipLoginRecord = fa
   })
 
   emit(EVENTS.CONTEXT_RESOLVED, { userId, appKey, userAppAccountId: uaaId })
+
+  // Cache the resolved context for subsequent calls within the TTL window
+  _setCachedResult(_cacheKey, context)
 
   return context
 }

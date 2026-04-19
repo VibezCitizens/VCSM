@@ -10,6 +10,7 @@ import { dalGetActorLinkById } from '../dal/actorLinks.read.dal.js'
 import { dalSetActiveActorLink } from '../dal/actorLinks.write.dal.js'
 import { ActorLinkModel } from '../model/ActorLink.model.js'
 import { emit, EVENTS } from '../events.js'
+import { invalidateIdentityResultCache } from './resolveAuthenticatedContext.controller.js'
 
 /**
  * Switch the active actor for an app account.
@@ -40,6 +41,9 @@ export async function switchActiveActor({ userAppAccountId, actorLinkId }) {
   }
 
   await dalSetActiveActorLink({ userAppAccountId, actorLinkId })
+
+  // Bust the identity result cache so the next resolve picks up the new active actor
+  invalidateIdentityResultCache()
 
   const activeActor = ActorLinkModel(row)
 

@@ -11,7 +11,7 @@
 export { configureIdentityEngine } from '../config.js'
 
 // Primary use-cases
-export { resolveAuthenticatedContext }  from '../controller/resolveAuthenticatedContext.controller.js'
+export { resolveAuthenticatedContext, invalidateIdentityResultCache }  from '../controller/resolveAuthenticatedContext.controller.js'
 export { switchActiveActor }            from '../controller/switchActiveActor.controller.js'
 export { logoutCleanup }                from '../controller/logoutCleanup.controller.js'
 
