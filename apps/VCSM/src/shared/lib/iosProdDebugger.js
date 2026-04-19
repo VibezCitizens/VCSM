@@ -2,6 +2,7 @@ const ENABLE_KEY = '__vcsm_ios_dbg'
 const LEGACY_ENABLE_KEY = '__vcsm_dbg'
 const LOGS_KEY = '__vcsm_ios_dbg_logs'
 const MAX_LOGS = 500
+const IS_PROD = import.meta.env.PROD
 
 export const IOS_PROD_DEBUG_EVENTS = Object.freeze({
   entry: 'vcsm:ios-debug-log-entry',
@@ -120,6 +121,7 @@ function parseToggleValue(raw) {
 }
 
 export function isIOSProdDebuggerEnabled() {
+  if (IS_PROD) return false
   if (!hasWindow()) return false
   try {
     return (
@@ -132,6 +134,7 @@ export function isIOSProdDebuggerEnabled() {
 }
 
 export function setIOSProdDebuggerEnabled(enabled) {
+  if (IS_PROD) return
   if (!hasWindow()) return
   try {
     if (enabled) window.localStorage?.setItem(ENABLE_KEY, '1')
@@ -147,6 +150,7 @@ export function setIOSProdDebuggerEnabled(enabled) {
 }
 
 export function bootstrapIOSProdDebuggerFromUrl(search = null) {
+  if (IS_PROD) return false
   if (!hasWindow()) return false
 
   let params = null
@@ -176,6 +180,7 @@ export function bootstrapIOSProdDebuggerFromUrl(search = null) {
 }
 
 export function clearIOSProdDebugLogs() {
+  if (IS_PROD) return
   ensureLoaded()
   state.logs = []
   state.seq = 0
@@ -184,6 +189,7 @@ export function clearIOSProdDebugLogs() {
 }
 
 export function getIOSProdDebugLogs() {
+  if (IS_PROD) return []
   ensureLoaded()
   return state.logs.slice()
 }
@@ -213,6 +219,7 @@ export function getIOSProdDebugMeta() {
 }
 
 export function appendIOSProdDebugLog(event, payload = null) {
+  if (IS_PROD) return null
   if (!isIOSProdDebuggerEnabled()) return null
 
   ensureLoaded()

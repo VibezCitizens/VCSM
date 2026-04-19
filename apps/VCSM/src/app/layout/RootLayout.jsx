@@ -84,7 +84,7 @@ export default function RootLayout() {
       </div>
 
       {import.meta.env.DEV && <IOSDebugHUD />}
-      <IOSProdRouteDebugger />
+      {import.meta.env.DEV && <IOSProdRouteDebugger />}
     </div>
   );
 }

@@ -39,7 +39,9 @@ const RootMode = import.meta.env.VITE_REACT_STRICT_MODE === '1'
   ? React.StrictMode
   : React.Fragment
 
-bootstrapIOSProdDebuggerFromUrl()
+if (import.meta.env.DEV) {
+  bootstrapIOSProdDebuggerFromUrl()
+}
 
 if (import.meta.env.PROD) {
   const updateSW = registerSW({
