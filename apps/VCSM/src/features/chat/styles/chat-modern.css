@@ -106,12 +106,21 @@
   border-bottom-color: var(--vc-border-subtle);
 }
 
+/* padding on the scroll container is ignored by WebKit flex+overflow.
+   Clearance lives on the inner list instead (always respected). */
 .chat-modern-conversation .chat-messages {
-  padding-bottom: calc(86px + env(safe-area-inset-bottom));
+  padding-bottom: 0;
 }
 
 .chat-modern-conversation .chat-modern-message-list {
-  padding-bottom: 10px;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+
+.chat-modern-conversation .chat-bottom-t {
+  width: 40px;
+  height: 40px;
+  bottom: env(safe-area-inset-bottom, 0px);
+  font-size: 17px;
 }
 
 .chat-modern-conversation .chat-topbar {

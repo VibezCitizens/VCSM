@@ -78,15 +78,15 @@ textarea {
 .chat-bottom-t {
   position: absolute;
   left: 50%;
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  bottom: env(safe-area-inset-bottom, 0px);
   transform: translateX(-50%);
   z-index: 40;
 
-  width: 54px;
-  height: 54px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
 
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 800;
   line-height: 1;
 
@@ -132,8 +132,8 @@ html.ios .chat-screen.chat-modern-conversation .chat-topbar {
 }
 
 html.ios .chat-screen.chat-modern-conversation .chat-messages {
-  padding-bottom: calc(86px + env(safe-area-inset-bottom));
-  scroll-padding-bottom: calc(86px + env(safe-area-inset-bottom));
+  padding-bottom: 0;
+  scroll-padding-bottom: 0;
 }
 
 .chat-topbar-input {

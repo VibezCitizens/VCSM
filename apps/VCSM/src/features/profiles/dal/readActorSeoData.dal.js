@@ -247,6 +247,10 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
     .eq('slug', key)
     .maybeSingle()
 
+  if (vportErr) {
+    console.error('[resolveActorBySlugOrUsernameDAL] vport.profiles query failed:', vportErr.message, { slug: key })
+  }
+
   if (!vportErr && vportData?.actor_id) {
     const result = { actorId: vportData.actor_id, kind: 'vport' }
     slugResolutionCache.set(key, result)
@@ -260,6 +264,10 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
     .ilike('username', key)
     .maybeSingle()
 
+  if (profileErr) {
+    console.error('[resolveActorBySlugOrUsernameDAL] public.profiles query failed:', profileErr.message, { username: key })
+  }
+
   if (!profileErr && profileData?.id) {
     const { data: actorData, error: actorErr } = await supabase
       .schema('vc')
@@ -269,6 +277,10 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
       .eq('kind', 'user')
       .maybeSingle()
 
+    if (actorErr) {
+      console.error('[resolveActorBySlugOrUsernameDAL] vc.actors query failed:', actorErr.message)
+    }
+
     if (!actorErr && actorData?.id) {
       const result = { actorId: actorData.id, kind: 'user' }
       slugResolutionCache.set(key, result)
@@ -276,9 +288,7 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
     }
   }
 
-  if (import.meta.env?.DEV) {
-    console.warn('[resolveActorBySlugOrUsernameDAL] not found:', slugOrUsername)
-  }
+  console.warn('[resolveActorBySlugOrUsernameDAL] not found:', slugOrUsername)
   return null
 }
 
