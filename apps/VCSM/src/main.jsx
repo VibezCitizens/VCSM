@@ -36,7 +36,28 @@ const RootMode = import.meta.env.VITE_REACT_STRICT_MODE === '1'
   : React.Fragment
 
 if (import.meta.env.PROD) {
-  registerSW({ immediate: true })
+  const updateSW = registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      // Apply updates eagerly so standalone sessions do not keep stale route logic.
+      updateSW(true)
+    },
+    onRegisteredSW(_swUrl, registration) {
+      if (!registration) return
+
+      const maybeUpdate = () => registration.update().catch(() => {})
+      const onVisible = () => {
+        if (document.visibilityState === 'visible') maybeUpdate()
+      }
+
+      // iOS/standalone sessions can remain alive for long periods.
+      // Re-check updates when the app regains focus/visibility.
+      window.addEventListener('focus', maybeUpdate)
+      window.addEventListener('pageshow', maybeUpdate)
+      document.addEventListener('visibilitychange', onVisible)
+      setInterval(maybeUpdate, 60 * 1000)
+    },
+  })
 } else if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) =>
     regs.forEach((r) => r.unregister())

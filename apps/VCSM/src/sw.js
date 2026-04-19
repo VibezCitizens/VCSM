@@ -52,13 +52,13 @@ async function setupProdCaching() {
       (request.destination === "script" ||
         request.destination === "style" ||
         request.destination === "worker"),
-    new CacheFirst({
+    new StaleWhileRevalidate({
       cacheName: CACHE_NAMES.static,
       plugins: [
         cacheableStatuses,
         new ExpirationPlugin({
           maxEntries: 300,
-          maxAgeSeconds: 60 * 60 * 24 * 30,
+          maxAgeSeconds: 60 * 60 * 24 * 7,
           purgeOnQuotaError: true,
         }),
       ],
@@ -100,6 +100,7 @@ async function setupProdCaching() {
   registerRoute(
     ({ request, url }) =>
       request.method === "GET" &&
+      request.mode !== "navigate" &&
       request.destination === "" &&
       url.origin === self.location.origin &&
       !url.pathname.startsWith("/api/"),

@@ -226,7 +226,8 @@ const slugResolutionCache = createTTLCache(SEO_TTL)
  *
  * Tries in order:
  *   1. vport.profiles.slug  — vport actors (actor_id column)
- *   2. public.profiles.username → vc.actors.profile_id — user actors
+ *   2. identity.actor_directory.username — canonical username map (vc domain)
+ *   3. public.profiles.username → vc.actors.profile_id — legacy fallback
  *
  * @param {string} slugOrUsername — raw :actorId param that contains no UUID
  * @returns {Promise<{ actorId: string, kind: 'vport'|'user' }|null>}
@@ -239,6 +240,8 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
   const cached = slugResolutionCache.get(key)
   if (cached) return cached
 
+  let hadQueryError = false
+
   // 1. Try vport slug
   const { data: vportData, error: vportErr } = await supabase
     .schema('vport')
@@ -248,6 +251,7 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
     .maybeSingle()
 
   if (vportErr) {
+    hadQueryError = true
     console.error('[resolveActorBySlugOrUsernameDAL] vport.profiles query failed:', vportErr.message, { slug: key })
   }
 
@@ -257,18 +261,63 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
     return result
   }
 
-  // 2. Try username → profile_id → actor_id (ilike = case-insensitive match)
-  const { data: profileData, error: profileErr } = await supabase
-    .from('profiles')
-    .select('id')
-    .ilike('username', key)
-    .maybeSingle()
+  // 2. Try username via identity.actor_directory (source-of-truth lookup)
+  // Compatibility: canonical slug for user actors normalizes underscores to
+  // hyphens. Try both raw and hyphen/underscore-swapped candidates.
+  const usernameCandidates = Array.from(new Set([
+    key,
+    key.replace(/-/g, '_'),
+    key.replace(/_/g, '-'),
+  ]))
 
-  if (profileErr) {
-    console.error('[resolveActorBySlugOrUsernameDAL] public.profiles query failed:', profileErr.message, { username: key })
+  for (const candidate of usernameCandidates) {
+    const { data: actorDirectoryRow, error: actorDirectoryErr } = await supabase
+      .schema('identity')
+      .from('actor_directory')
+      .select('actor_id, actor_kind')
+      .eq('actor_domain', 'vc')
+      .ilike('username', candidate)
+      .maybeSingle()
+
+    if (actorDirectoryErr) {
+      hadQueryError = true
+      console.error('[resolveActorBySlugOrUsernameDAL] identity.actor_directory query failed:', actorDirectoryErr.message, { username: candidate })
+      continue
+    }
+
+    if (actorDirectoryRow?.actor_id) {
+      const kind = actorDirectoryRow.actor_kind === 'vport' ? 'vport' : 'user'
+      const result = { actorId: actorDirectoryRow.actor_id, kind }
+      slugResolutionCache.set(key, result)
+      return result
+    }
   }
 
-  if (!profileErr && profileData?.id) {
+  // 3. Legacy fallback: public.profiles.username → vc.actors.profile_id
+  let profileData = null
+  let matchedUsername = null
+
+  for (const candidate of usernameCandidates) {
+    const { data, error: profileErr } = await supabase
+      .from('profiles')
+      .select('id')
+      .ilike('username', candidate)
+      .maybeSingle()
+
+    if (profileErr) {
+      hadQueryError = true
+      console.error('[resolveActorBySlugOrUsernameDAL] public.profiles query failed:', profileErr.message, { username: candidate })
+      continue
+    }
+
+    if (data?.id) {
+      profileData = data
+      matchedUsername = candidate
+      break
+    }
+  }
+
+  if (profileData?.id) {
     const { data: actorData, error: actorErr } = await supabase
       .schema('vc')
       .from('actors')
@@ -278,7 +327,8 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
       .maybeSingle()
 
     if (actorErr) {
-      console.error('[resolveActorBySlugOrUsernameDAL] vc.actors query failed:', actorErr.message)
+      hadQueryError = true
+      console.error('[resolveActorBySlugOrUsernameDAL] vc.actors query failed:', actorErr.message, { username: matchedUsername })
     }
 
     if (!actorErr && actorData?.id) {
@@ -286,6 +336,13 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
       slugResolutionCache.set(key, result)
       return result
     }
+  }
+
+  // Do not silently convert infrastructure/permission failures into "not found".
+  if (hadQueryError) {
+    const error = new Error(`Slug resolution query failed for ${slugOrUsername}`)
+    error.code = 'SLUG_RESOLUTION_QUERY_FAILED'
+    throw error
   }
 
   console.warn('[resolveActorBySlugOrUsernameDAL] not found:', slugOrUsername)

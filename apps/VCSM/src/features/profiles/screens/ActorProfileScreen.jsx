@@ -215,6 +215,7 @@ export default function ActorProfileScreen() {
     actorId: actorIdFromSlug,
     loading: slugResolveLoading,
     notFound: slugNotFound,
+    error: slugResolveError,
   } = useResolveActorBySlug(slugToResolve);
 
   // ── Resolved actor ID (strict) ─────────────────────────────
@@ -266,6 +267,28 @@ export default function ActorProfileScreen() {
 
   // ── Slug resolution loading ────────────────────────────────
   if (slugResolveLoading) return <>{probe}{SKELETON}</>
+
+  // ── Slug resolution failure (query/permission/network) ─────
+  // Keep this distinct from true "not found" so production query failures
+  // do not silently bounce users to /feed.
+  if (slugResolveError && !hasUuidInUrl && !isSelf) {
+    if (import.meta.env.DEV) return <>{probe}{SKELETON}</>
+    if (debugMode) {
+      return <_ProdDebugPanel routeParam={routeParam} isSelf={isSelf}
+        hasUuidInUrl={hasUuidInUrl} uuidFromParam={uuidFromParam} slugToResolve={slugToResolve}
+        slugResolveLoading={slugResolveLoading} actorIdFromSlug={actorIdFromSlug}
+        slugNotFound={slugNotFound} resolvedActorId={resolvedActorId}
+        canonicalSlug={canonicalSlug} slugLoading={slugLoading} />
+    }
+
+    return (
+      <div className="profiles-modern px-4 py-6">
+        <div className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-sm text-white/80">
+          We could not load this profile right now. Please try again in a moment.
+        </div>
+      </div>
+    )
+  }
 
   // ── Not found ─────────────────────────────────────────────
   // Show probe before redirecting so the cause is visible in DEV.
