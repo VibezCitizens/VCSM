@@ -147,7 +147,8 @@
         const path = window.location.pathname || ''
         const isPublicMenuRoute =
           /^\/m\/[^/]+\/?$/.test(path) ||
-          /^\/actor\/[^/]+\/menu(?:\/(?:qr|flyer))?\/?$/.test(path)
+          /^\/actor\/[^/]+\/menu(?:\/(?:qr|flyer))?\/?$/.test(path) ||
+          /^\/profile\/[^/]+\/menu\/?$/.test(path)
 
         const isLegalRoute = /^\/legal(\/|$)/.test(path)
 

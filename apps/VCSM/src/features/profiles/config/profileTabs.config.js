@@ -12,12 +12,14 @@ export const TAB = Object.freeze({
 
   GAS: T("gas", "Gas"),
 
-  // ✅ NEW
   SERVICES: T("services", "Services"),
   RATES: T("rates", "Rates"),
 
   PORTFOLIO: T("portfolio", "Portfolio"),
   BOOK: T("book", "Calendar"),
+
+  // ✅ NEW
+  CONTENT: T("content", "Content"),
 });
 
 export const TAB_FLAGS = Object.freeze({
@@ -48,6 +50,7 @@ function makeTabs(keys) {
 export const VPORT_TABS = makeTabs([
   "ABOUT",
   "REVIEWS",
+  "CONTENT",
   "VIBES",
   "PHOTOS",
   "SUBSCRIBERS",
@@ -57,6 +60,7 @@ export const VPORT_SERVICE_TABS = makeTabs([
   "PORTFOLIO",
   "SERVICES",
   "REVIEWS",
+  "CONTENT",
   "ABOUT",
   "VIBES",
   "PHOTOS",
@@ -68,6 +72,7 @@ export const VPORT_BARBER_TABS = makeTabs([
   "BOOK",
   "SERVICES",
   "REVIEWS",
+  "CONTENT",
   "ABOUT",
   "PHOTOS",
   "VIBES",
@@ -77,6 +82,7 @@ export const VPORT_BARBER_TABS = makeTabs([
 export const VPORT_FOOD_TABS = makeTabs([
   "MENU",
   "REVIEWS",
+  "CONTENT",
   "ABOUT",
   "SERVICES",
   "PHOTOS",
@@ -86,7 +92,8 @@ export const VPORT_FOOD_TABS = makeTabs([
 
 export const VPORT_GAS_TABS = makeTabs([
   "GAS",
-  "SERVICES", // ✅ gas amenities live here
+  "SERVICES",
+  "CONTENT",
   "ABOUT",
   "REVIEWS",
   "PHOTOS",
@@ -94,10 +101,10 @@ export const VPORT_GAS_TABS = makeTabs([
   "SUBSCRIBERS",
 ]);
 
-// ✅ NEW: money exchange / rates-driven layout
 export const VPORT_RATES_TABS = makeTabs([
   "RATES",
   "SERVICES",
+  "CONTENT",
   "REVIEWS",
   "ABOUT",
   "PHOTOS",

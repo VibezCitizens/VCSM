@@ -112,7 +112,7 @@ function withCalendarCardIfVportHasBookingTab(view, type) {
 
 export function normalizeVportType(type) {
   if (!type) return "other";
-  return String(type).trim().toLowerCase();
+  return String(type).trim().toLowerCase().replace(/_/g, " ");
 }
 
 export function resolveVportTypeGroup(type) {

@@ -12,6 +12,23 @@ import VportBackButton from "@/features/dashboard/vport/screens/components/Vport
 import { useLocksmithProfile } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithProfile";
 import { useLocksmithOwner } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithOwner";
 
+const US_STATES = [
+  ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+  ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["FL","Florida"],["GA","Georgia"],
+  ["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],
+  ["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],
+  ["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],
+  ["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],
+  ["NM","New Mexico"],["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],
+  ["OK","Oklahoma"],["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],
+  ["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],
+  ["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"],
+  ["DC","D.C."],["PR","Puerto Rico"],
+];
+
+const fieldCls = "rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none focus:border-white/20";
+const selectCls = `${fieldCls} appearance-none`;
+
 // ── Service Area Form ──
 function AreaForm({ initial, onSave, onCancel, saving }) {
   const [label, setLabel] = useState(initial?.label ?? "");
@@ -30,7 +47,7 @@ function AreaForm({ initial, onSave, onCancel, saving }) {
       label: label.trim() || city.trim() || "Coverage area",
       areaType,
       city: city.trim() || null,
-      stateCode: stateCode.trim().toUpperCase() || null,
+      stateCode: stateCode || null,
       zipCode: zipCode.trim() || null,
       radiusMiles: radiusMiles ? parseFloat(radiusMiles) : null,
       minEtaMinutes: minEta ? parseInt(minEta, 10) : null,
@@ -49,24 +66,28 @@ function AreaForm({ initial, onSave, onCancel, saving }) {
 
       <div className="grid grid-cols-2 gap-3">
         <input placeholder="Label (e.g. Downtown)" value={label} onChange={(e) => setLabel(e.target.value)}
-          className="col-span-2 rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={`col-span-2 ${fieldCls}`} />
         <input placeholder="City" value={city} onChange={(e) => setCity(e.target.value)}
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
-        <input placeholder="State (e.g. FL)" value={stateCode} onChange={(e) => setStateCode(e.target.value)} maxLength={2}
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={fieldCls} />
+        <select value={stateCode} onChange={(e) => setStateCode(e.target.value)} className={selectCls}>
+          <option value="">State</option>
+          {US_STATES.map(([code, name]) => (
+            <option key={code} value={code}>{code} — {name}</option>
+          ))}
+        </select>
         <input placeholder="ZIP code" value={zipCode} onChange={(e) => setZipCode(e.target.value)}
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={fieldCls} />
         <input placeholder="Radius (miles)" value={radiusMiles} onChange={(e) => setRadiusMiles(e.target.value)} type="number"
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={fieldCls} />
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         <input placeholder="Min ETA (min)" value={minEta} onChange={(e) => setMinEta(e.target.value)} type="number"
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={fieldCls} />
         <input placeholder="Max ETA (min)" value={maxEta} onChange={(e) => setMaxEta(e.target.value)} type="number"
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={fieldCls} />
         <input placeholder="Travel fee ($)" value={travelFee} onChange={(e) => setTravelFee(e.target.value)} type="number" step="0.01"
-          className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
+          className={fieldCls} />
       </div>
 
       <label className="flex items-center gap-2 cursor-pointer">
@@ -150,20 +171,30 @@ export default function VportDashboardLocksmithScreen() {
   const [deletingAreaId, setDeletingAreaId] = useState(null);
 
   const handleAddArea = useCallback(async (area) => {
-    await owner.addArea(area);
-    setShowAddArea(false);
+    try {
+      await owner.addArea(area);
+      setShowAddArea(false);
+    } catch (_) {
+      // error displayed via owner.error below the form
+    }
   }, [owner]);
 
   const handleUpdateArea = useCallback(async (area) => {
     if (!editingArea?.id) return;
-    await owner.updateArea(editingArea.id, area);
-    setEditingArea(null);
+    try {
+      await owner.updateArea(editingArea.id, area);
+      setEditingArea(null);
+    } catch (_) {
+      // error displayed via owner.error below the form
+    }
   }, [owner, editingArea]);
 
   const handleDeleteArea = useCallback(async (areaId) => {
     setDeletingAreaId(areaId);
     try {
       await owner.deleteArea(areaId);
+    } catch (_) {
+      // error displayed via owner.error below the form
     } finally {
       setDeletingAreaId(null);
     }
@@ -276,7 +307,7 @@ export default function VportDashboardLocksmithScreen() {
 
             {owner.error ? (
               <div className="mt-4 rounded-xl border border-red-500/25 bg-red-500/8 px-4 py-3 text-sm text-red-200">
-                {String(owner.error?.message ?? owner.error)}
+                {owner.error?.message || owner.error?.details || owner.error?.hint || JSON.stringify(owner.error)}
               </div>
             ) : null}
           </div>

@@ -5,6 +5,7 @@ import { saveFlyerPublicDetails } from "../dal/flyer.write.dal";
 
 export default function FlyerEditorPanel({
   vportId,
+  profileId,
   draft,
   setDraft,
   bucket = "vport-public",
@@ -91,7 +92,7 @@ export default function FlyerEditorPanel({
     if (!vportId) return;
     setSaving(true);
     try {
-      const res = await saveFlyerPublicDetails({ vportId, patch: draft });
+      const res = await saveFlyerPublicDetails({ profileId, patch: draft });
       onSaved?.(res);
     } finally {
       setSaving(false);

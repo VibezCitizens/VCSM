@@ -15,7 +15,7 @@ export default function NotificationsScreenView() {
   const headerState = useNotificationsHeader(identity?.actorId ?? null)
 
   return (
-    <div className="profiles-modern notifications-modern-page h-full min-h-0 overflow-y-auto">
+    <div className="profiles-modern notifications-modern-page">
       <div className="notifications-modern-shell w-full px-3 py-3 sm:px-4">
         <NotificationsHeader
           unreadCount={headerState.unreadCount}

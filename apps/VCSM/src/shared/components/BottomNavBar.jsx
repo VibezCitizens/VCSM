@@ -28,7 +28,9 @@ export default function BottomNavBar() {
   const notiCount = useNotificationUnread()
   const chatUnread = useChatUnread()
 
-  const profilePath = personaActorId ? `/profile/${personaActorId}` : '/feed'
+  // /profile/self renders the viewer's own profile directly without UUID in URL.
+  // Falls back to /feed only when identity isn't loaded yet.
+  const profilePath = personaActorId ? '/profile/self' : '/feed'
 
   useEffect(() => {
     if (!personaActorId) return

@@ -8,6 +8,7 @@ import { loadIdentity, saveIdentity } from "@/state/identity/identityStorage";
 import { ensureVcsmPlatformBootstrap } from "@/features/identity/controller/ensureVcsmPlatformBootstrap.controller.js";
 import {
   resolveAuthenticatedContext,
+  invalidateIdentityResultCache,
   switchActiveActor as engineSwitchActiveActor,
   finalizeAccountState,
 } from "@identity";
@@ -559,6 +560,10 @@ export function IdentityProvider({ children }) {
 
   async function refreshAvailableActors() {
     try {
+      // Bust the 120s TTL cache before re-fetching. Without this, calls made
+      // shortly after vport creation return the stale cached actor list and the
+      // new vport's platform link is invisible until the TTL expires.
+      invalidateIdentityResultCache();
       const ctx = await resolveAuthenticatedContext({ appKey: 'vcsm', skipLoginRecord: true });
       if (ctx?.availableActors?.length) {
         setAvailableActors(ctx.availableActors);

@@ -24,7 +24,7 @@ export default async function readVportServiceCatalogByTypeDAL({
 
   let query = vportSchema
     .from("service_catalog")
-    .select("category_key,key,label,category,sort_order,is_active,meta,created_at,updated_at")
+    .select("category_key,key,label,service_group,sort_order,is_active,meta,created_at,updated_at")
     .order("sort_order", { ascending: true })
     .order("label", { ascending: true });
 

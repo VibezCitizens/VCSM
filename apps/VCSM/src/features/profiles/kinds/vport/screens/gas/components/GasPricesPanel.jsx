@@ -34,10 +34,14 @@ export function GasPricesPanel({
   submitSuggestion,
   submitting = false,
 
-  // ✅ NEW: allow owner screen to show bulk update
+  // ✅ allow owner dashboard to show bulk update (fast-track path)
   allowOwnerUpdate = false,
 
-  // ✅ NEW: optional hook for owner to auto-approve + apply to official
+  // ✅ when viewing the public profile tab, pass true if the viewer IS the station owner
+  // so the button is hidden (they should use the dashboard instead)
+  isStationOwner = false,
+
+  // ✅ optional hook for owner to auto-approve + apply to official
   afterSubmitSuggestion = null,
 }) {
   const [showBulkModal, setShowBulkModal] = useState(false);
@@ -45,9 +49,6 @@ export function GasPricesPanel({
   // ✅ normalize identity shape (context vs actor object)
   const me = useMemo(() => identity?.identity ?? identity ?? null, [identity]);
   const canSubmit = !!me?.actorId;
-
-  // ✅ still detect owner actor, but DO NOT hide button automatically anymore
-  const isOwnerActor = me?.kind === "vport";
 
   const fuelKeys = useMemo(() => {
     const fromSettings =
@@ -61,23 +62,23 @@ export function GasPricesPanel({
       ? fromSettings.map((k) => (k ? String(k) : null)).filter(Boolean)
       : [];
 
+    // If settings explicitly defines the fuel list, use it as-is.
     if (cleanSettingsKeys.length) return cleanSettingsKeys;
 
-    const derived = new Set();
+    // Otherwise always show the standard 4 fuels, then add any extra keys
+    // that actually have data (e.g. e85 added later). This prevents a station
+    // with only one price row from rendering only that one card.
+    const keys = new Set(["regular", "midgrade", "premium", "diesel"]);
 
     for (const row of Array.isArray(official) ? official : []) {
       const k = row?.fuelKey ?? row?.fuel_key ?? row?.key ?? null;
-      if (k) derived.add(String(k));
+      if (k) keys.add(String(k));
     }
 
-    for (const k of Object.keys(officialByFuelKey || {})) derived.add(String(k));
-    for (const k of Object.keys(communitySuggestionByFuelKey || {}))
-      derived.add(String(k));
+    for (const k of Object.keys(officialByFuelKey || {})) keys.add(String(k));
+    for (const k of Object.keys(communitySuggestionByFuelKey || {})) keys.add(String(k));
 
-    const derivedList = Array.from(derived);
-    if (derivedList.length) return derivedList;
-
-    return ["regular", "midgrade", "premium", "diesel"];
+    return Array.from(keys);
   }, [settings, official, officialByFuelKey, communitySuggestionByFuelKey]);
 
   const prettyFuelLabel = (fuelKey) => {
@@ -163,15 +164,17 @@ export function GasPricesPanel({
 
   const empty = !loading && !error && rows.length === 0;
 
-  // ✅ show update button rules:
-  // - public/citizen view: show if NOT owner actor (keeps old intent)
-  // - owner dashboard: explicitly enable with allowOwnerUpdate=true
+  // show update button rules:
+  // - not authenticated → never
+  // - owner dashboard (allowOwnerUpdate=true) → always show (fast-track upsert)
+  // - public profile, viewer IS the station owner → hide (use dashboard instead)
+  // - public profile, any other authenticated user → show (citizen suggestion path)
   const showUpdateButton = useMemo(() => {
     if (!canSubmit) return false;
     if (allowOwnerUpdate) return true;
-    if (isOwnerActor) return false; // keep old behavior for public screen
+    if (isStationOwner) return false;
     return true;
-  }, [canSubmit, allowOwnerUpdate, isOwnerActor]);
+  }, [canSubmit, allowOwnerUpdate, isStationOwner]);
 
   return (
     <div className="space-y-4">
@@ -257,8 +260,17 @@ export function GasPricesPanel({
                           </div>
 
                           <div className="mt-1 text-xl font-semibold text-white">
-                            {hasAnyUpdate ? row.lastUpdate.label : "—"}
+                            {hasCommunityUpdate && row.community.price != null
+                              ? row.community.price
+                              : hasOfficialUpdate && row.official.price != null
+                              ? row.official.price
+                              : "—"}
                           </div>
+                          {hasAnyUpdate && row.lastUpdate.label ? (
+                            <div className="mt-0.5 text-[10px] text-white/40">
+                              {row.lastUpdate.label}
+                            </div>
+                          ) : null}
                         </div>
                       </div>
 

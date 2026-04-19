@@ -215,12 +215,17 @@ export default function VportReviewsView({
         );
       }
 
+      // Update hook's myReview/myExists so the form switches to "Edit my review"
+      if (saved && typeof r.setMyReview === "function") r.setMyReview(saved);
+      if (typeof r.setMyExists === "function") r.setMyExists(true);
+
       setBody("");
       setRatingsMap(Object.fromEntries(dynamicDimensions.map((d) => [d.key, 0])));
       if (r.isEditing && typeof r.cancelEdit === "function") r.cancelEdit();
 
-      // Reload stats (non-blocking)
-      if (typeof r.reload === "function") r.reload();
+      // Reload stats only — do NOT reload the list (would set loadingActiveList=true
+      // and show skeletons right as the optimistic card is visible)
+      if (typeof r.reloadStats === "function") r.reloadStats().catch(() => {});
     } catch (e) {
       // Rollback optimistic
       if (typeof r.setActiveList === "function") {

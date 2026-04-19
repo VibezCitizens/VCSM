@@ -1,11 +1,14 @@
 import { useIdentity } from "@/state/identity/identityContext";
+import { useActorSummary } from "@/state/actors/useActorSummary";
 
 export default function ActorPill() {
   const { identity } = useIdentity();
+  const { displayName: hydratedName, avatar: hydratedAvatar } = useActorSummary(identity?.actorId);
+
   if (!identity) return null;
 
-  const name = identity.displayName || (identity.kind === "vport" ? "VPORT" : "Profile");
-  const avatar = identity.avatar || identity.photoUrl || "/avatar.jpg";
+  const name = hydratedName || identity.displayName || (identity.kind === "vport" ? "VPORT" : "Profile");
+  const avatar = hydratedAvatar || identity.avatar || identity.photoUrl || "/avatar.jpg";
 
   return (
     <div

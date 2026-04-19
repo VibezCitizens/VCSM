@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import useDesktopBreakpoint from "@/features/public/vportMenu/hooks/useDesktopBreakpoint";
 import { useVportPublicMenu } from "@/features/public/vportMenu/hooks/useVportPublicMenu";
 import { useVportPublicDetails } from "@/features/public/vportMenu/hooks/useVportPublicDetails";
+import { useVportPublicReviews } from "@/features/public/vportMenu/hooks/useVportPublicReviews";
 import VportPublicMenuPanel from "@/features/public/vportMenu/components/VportPublicMenuPanel";
+import VportPublicReviewsPanel from "@/features/public/vportMenu/components/VportPublicReviewsPanel";
 import { hasDirectionsAddress, openDirections } from "@/features/vport/utils/openDirections";
 
 function actionButtonStyle(enabled) {
@@ -25,10 +27,33 @@ function actionButtonStyle(enabled) {
   };
 }
 
+const TABS = [
+  { id: "menu", label: "Menu" },
+  { id: "reviews", label: "Reviews" },
+];
+
+function tabStyle(active) {
+  return {
+    flex: 1,
+    textAlign: "center",
+    padding: "8px 0",
+    fontSize: 13,
+    fontWeight: active ? 700 : 500,
+    color: active ? "#fff" : "rgba(255,255,255,0.45)",
+    cursor: "pointer",
+    background: "none",
+    border: "none",
+    borderBottom: active ? "2px solid rgba(139,92,246,0.85)" : "2px solid transparent",
+    transition: "color 0.15s",
+    letterSpacing: 0.3,
+  };
+}
+
 export function VportPublicMenuView({ actorId }) {
   const navigate = useNavigate();
   const isDesktop = useDesktopBreakpoint();
   const [query, setQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("menu");
 
   const {
     categories,
@@ -42,6 +67,8 @@ export function VportPublicMenuView({ actorId }) {
     error: detailsError,
     rpcErrorCode: detailsRpcErrorCode,
   } = useVportPublicDetails({ actorId });
+
+  const { summary: reviewSummary } = useVportPublicReviews({ actorId });
 
   const profile = useMemo(
     () => ({
@@ -188,15 +215,42 @@ export function VportPublicMenuView({ actorId }) {
                       @{profile.username}
                     </div>
                   ) : null}
+                  {/* Compact review summary */}
+                  <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+                    {reviewSummary.reviewCount > 0 && reviewSummary.averageRating != null ? (
+                      <>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+                          {Number(reviewSummary.averageRating).toFixed(1)}
+                        </span>
+                        <span style={{ display: 'flex', gap: 1 }}>
+                          {Array.from({ length: 5 }, (_, i) => {
+                            const filled = i < Math.round(reviewSummary.averageRating);
+                            return (
+                              <span
+                                key={i}
+                                style={{
+                                  fontSize: 11,
+                                  color: filled ? '#f59e0b' : 'rgba(255,255,255,0.2)',
+                                }}
+                              >
+                                ★
+                              </span>
+                            );
+                          })}
+                        </span>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+                          ({reviewSummary.reviewCount})
+                        </span>
+                      </>
+                    ) : (
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>No reviews yet</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Action buttons */}
               <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <button type="button" style={actionButtonStyle(!!profile.reviewUrl)} disabled={!profile.reviewUrl}
-                  onClick={() => { if (profile.reviewUrl) window.open(profile.reviewUrl, '_blank', 'noopener,noreferrer') }}>
-                  Review
-                </button>
                 <button type="button" style={actionButtonStyle(canOpenDirections)} disabled={!canOpenDirections}
                   onClick={() => openDirections(profile)}>
                   Directions
@@ -207,43 +261,70 @@ export function VportPublicMenuView({ actorId }) {
                 </button>
               </div>
 
-              {/* Search */}
-              <div style={{ marginTop: 14 }}>
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search menu items..."
-                  style={{
-                    width: '100%',
-                    borderRadius: 14,
-                    padding: '12px',
-                    border: '1px solid var(--vc-border, rgba(139,92,246,0.18))',
-                    background: 'var(--vc-surface-input, rgba(14,12,22,0.78))',
-                    color: '#fff',
-                    outline: 'none',
-                    fontWeight: 500,
-                    fontSize: 14,
-                  }}
-                />
+              {/* Tab bar */}
+              <div
+                style={{
+                  marginTop: 14,
+                  display: "flex",
+                  borderBottom: "1px solid rgba(255,255,255,0.08)",
+                }}
+              >
+                {TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    style={tabStyle(activeTab === tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </div>
+
+              {/* Search — only visible on menu tab */}
+              {activeTab === "menu" ? (
+                <div style={{ marginTop: 14 }}>
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search menu items..."
+                    style={{
+                      width: '100%',
+                      borderRadius: 14,
+                      padding: '12px',
+                      border: '1px solid var(--vc-border, rgba(139,92,246,0.18))',
+                      background: 'var(--vc-surface-input, rgba(14,12,22,0.78))',
+                      color: '#fff',
+                      outline: 'none',
+                      fontWeight: 500,
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
 
         <div style={{ marginTop: 14 }}>
-          <VportPublicMenuPanel
-            categories={categories}
-            query={query}
-            loading={menuLoading}
-            error={menuError}
-            rpcErrorCode={menuRpcErrorCode}
-          />
-
-          {!menuError && !menuRpcErrorCode && (detailsError || detailsRpcErrorCode) ? (
-            <div style={{ marginTop: 12, color: "rgba(255,255,255,0.55)", fontSize: 12 }}>
-              Some header details are unavailable right now.
-            </div>
-          ) : null}
+          {activeTab === "menu" ? (
+            <>
+              <VportPublicMenuPanel
+                categories={categories}
+                query={query}
+                loading={menuLoading}
+                error={menuError}
+                rpcErrorCode={menuRpcErrorCode}
+              />
+              {!menuError && !menuRpcErrorCode && (detailsError || detailsRpcErrorCode) ? (
+                <div style={{ marginTop: 12, color: "rgba(255,255,255,0.55)", fontSize: 12 }}>
+                  Some header details are unavailable right now.
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <VportPublicReviewsPanel actorId={actorId} />
+          )}
         </div>
       </div>
     </div>

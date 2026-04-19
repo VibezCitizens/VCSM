@@ -65,6 +65,8 @@ export async function publishVcsmNotification({
       recipients: [
         {
           recipientActorId,
+          recipientDomain: 'vc',
+          recipientKind: 'actor',
           deliveryChannel: 'in_app',
         },
       ],
@@ -100,7 +102,7 @@ export async function publishVcsmNotificationBatch({
   // Filter out self-notifications
   const recipients = ids
     .filter((rid) => !actorId || String(rid) !== String(actorId))
-    .map((rid) => ({ recipientActorId: rid, deliveryChannel: 'in_app' }))
+    .map((rid) => ({ recipientActorId: rid, recipientDomain: 'vc', recipientKind: 'actor', deliveryChannel: 'in_app' }))
 
   if (!recipients.length) return false
 

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
 import { useActorProfileActions } from "@/features/profiles/hooks/useActorProfileActions";
+import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
 import {
   useBlockStatus,
   PrivateProfileNotice,
@@ -40,6 +41,10 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     profileActorId,
     canViewContent,
   });
+
+  // Sets document.title, meta description, and (for vports) JSON-LD.
+  // Fires after profile resolves; cleans up on unmount.
+  useActorSeoMeta(profile ?? null);
 
   const { loading: blockLoading, canViewProfile } = useBlockStatus(
     viewerActorId,

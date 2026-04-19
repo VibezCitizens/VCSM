@@ -19,6 +19,15 @@ export function useSubmitFuelPriceSuggestion({ targetActorId, identity }) {
   // ✅ normalize identity shape: supports `identity` OR `{ identity }`
   const me = useMemo(() => identity?.identity ?? identity ?? null, [identity]);
 
+  // Owner detected when the caller's actorId matches the target vport actorId
+  const isOwner = useMemo(
+    () =>
+      Boolean(me?.actorId) &&
+      Boolean(targetActorId) &&
+      String(me.actorId) === String(targetActorId),
+    [me, targetActorId]
+  );
+
   const submit = useCallback(
     async ({
       fuelKey,
@@ -41,10 +50,11 @@ export function useSubmitFuelPriceSuggestion({ targetActorId, identity }) {
           targetActorId,
           fuelKey,
           proposedPrice,
-          actorId: me.actorId, // ✅ use normalized actorId
+          actorId: me.actorId,
           currencyCode,
           unit,
           evidence,
+          ownerUpdate: isOwner,
         });
 
         return res;
@@ -55,7 +65,7 @@ export function useSubmitFuelPriceSuggestion({ targetActorId, identity }) {
         setLoading(false);
       }
     },
-    [targetActorId, me]
+    [targetActorId, me, isOwner]
   );
 
   return {

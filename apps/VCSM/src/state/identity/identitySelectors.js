@@ -22,5 +22,6 @@ export const getAvatar = (identity) => identity?.avatar ?? "/avatar.jpg";
 export const getBanner = (identity) =>
   identity?.banner ?? "/default-banner.jpg";
 
+// /profile/self renders the viewer's own profile without exposing a UUID.
 export const getProfilePath = (identity) =>
-  identity?.actorId ? `/profile/${identity.actorId}` : "/me";
+  identity?.actorId ? '/profile/self' : '/me';

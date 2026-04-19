@@ -1,7 +1,7 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
-export async function saveFlyerPublicDetails({ vportId, patch }) {
-  if (!vportId) throw new Error("Missing vportId");
+export async function saveFlyerPublicDetails({ profileId, patch }) {
+  if (!profileId) throw new Error("Missing profileId");
 
   const incomingHours = patch?.hours;
   const cleanHours =
@@ -9,7 +9,6 @@ export async function saveFlyerPublicDetails({ vportId, patch }) {
       ? incomingHours
       : {};
 
-  // Only allow keys that exist in vport_public_details
   const cleanPatch = {
     website_url: patch?.website_url ?? null,
     phone_public: patch?.phone_public ?? null,
@@ -25,11 +24,11 @@ export async function saveFlyerPublicDetails({ vportId, patch }) {
   };
 
   const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_public_details")
-    .upsert({ vport_id: vportId, ...cleanPatch }, { onConflict: "vport_id" })
+    .schema("vport")
+    .from("profile_public_details")
+    .upsert({ profile_id: profileId, ...cleanPatch }, { onConflict: "profile_id" })
     .select(`
-      vport_id,
+      profile_id,
       website_url,
       phone_public,
       hours,

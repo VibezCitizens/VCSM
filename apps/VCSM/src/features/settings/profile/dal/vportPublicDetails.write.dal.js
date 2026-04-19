@@ -49,22 +49,22 @@ function mapPayloadToRow(payload) {
   };
 }
 
-export async function upsertVportPublicDetails(vportId, payload) {
-  if (!vportId) throw new Error("upsertVportPublicDetails: vportId required");
+export async function upsertVportPublicDetails(profileId, payload) {
+  if (!profileId) throw new Error("upsertVportPublicDetails: profileId required");
 
   const row = {
-    vport_id: vportId, // MUST be vc.vports.id
+    profile_id: profileId,
     ...mapPayloadToRow(payload),
     updated_at: new Date().toISOString(),
   };
 
   const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_public_details")
-    .upsert(row, { onConflict: "vport_id" })
+    .schema("vport")
+    .from("profile_public_details")
+    .upsert(row, { onConflict: "profile_id" })
     .select(
       `
-      vport_id,
+      profile_id,
       website_url,
       email_public,
       phone_public,

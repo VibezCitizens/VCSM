@@ -12,6 +12,7 @@ import {
   buildFlyerProfile,
   createFlyerViewStyles,
 } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerView.model";
+import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
 
 const PRINTABLE_VARIANTS = Object.freeze(["table", "half", "full", "sticker"]);
 
@@ -37,11 +38,13 @@ export function VportActorMenuFlyerView({
     () => normalizeDashboardVportDetails(publicDetails),
     [publicDetails]
   );
+  const { canonicalSlug } = useActorCanonicalSlug(actorId);
 
   const menuUrl = useMemo(() => {
     if (!actorId) return "";
-    return `${window.location.origin}/m/${actorId}`;
-  }, [actorId]);
+    if (canonicalSlug) return `${window.location.origin}/profile/${canonicalSlug}/menu`;
+    return `${window.location.origin}/m/${actorId}`; // fallback while slug loads
+  }, [actorId, canonicalSlug]);
 
   const profile = useMemo(() => buildFlyerProfile(dashboardDetails), [dashboardDetails]);
   const actions = useMemo(() => buildFlyerActions(dashboardDetails), [dashboardDetails]);

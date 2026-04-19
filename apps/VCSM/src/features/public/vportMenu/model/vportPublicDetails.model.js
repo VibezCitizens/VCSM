@@ -143,6 +143,7 @@ export function mapVportPublicDetailsRpcResult(raw) {
   const socialLinks = row.social_links ?? row.socialLinks ?? null;
 
   const displayName = firstNonEmpty(
+    row.profile_name,
     row.display_name,
     row.displayName,
     row.vport_name,
@@ -152,6 +153,7 @@ export function mapVportPublicDetailsRpcResult(raw) {
   );
 
   const username = firstNonEmpty(
+    row.profile_slug,
     row.username,
     row.slug,
     row.handle,
@@ -181,7 +183,7 @@ export function mapVportPublicDetailsRpcResult(raw) {
   const avatarUrl = avatarLooksLikeLogoAsset ? "" : safeAvatar;
 
   const bannerUrl = toSafeUrl(
-    firstNonEmpty(row.banner_url, row.bannerUrl, row.cover_url, row.coverUrl)
+    firstNonEmpty(row.profile_banner_url, row.banner_url, row.bannerUrl, row.cover_url, row.coverUrl)
   );
   const reviewUrl = buildReviewUrl(row, socialLinks);
   const directionsUrl = buildDirectionsUrl(row, socialLinks);
@@ -193,7 +195,7 @@ export function mapVportPublicDetailsRpcResult(raw) {
     details: {
       displayName,
       username,
-      tagline: firstNonEmpty(row.tagline, row.bio),
+      tagline: firstNonEmpty(row.tagline, row.profile_bio, row.bio),
       bannerUrl,
       avatarUrl,
       phone: toSafePhone(row.phone_public ?? row.phone ?? row.phone_number ?? row.phoneNumber),

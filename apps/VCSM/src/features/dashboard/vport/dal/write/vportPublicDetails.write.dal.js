@@ -1,7 +1,7 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
 const COLS = `
-  vport_id,
+  profile_id,
   website_url,
   email_public,
   phone_public,
@@ -19,14 +19,14 @@ const COLS = `
 `;
 
 export async function upsertVportPublicDetailsDAL({ row }) {
-  if (!row?.vport_id) {
-    throw new Error("upsertVportPublicDetailsDAL: vport_id required");
+  if (!row?.profile_id) {
+    throw new Error("upsertVportPublicDetailsDAL: profile_id required");
   }
 
   const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_public_details")
-    .upsert(row, { onConflict: "vport_id" })
+    .schema("vport")
+    .from("profile_public_details")
+    .upsert(row, { onConflict: "profile_id" })
     .select(COLS)
     .maybeSingle();
 

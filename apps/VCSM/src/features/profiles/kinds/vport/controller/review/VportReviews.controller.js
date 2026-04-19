@@ -272,7 +272,7 @@ export async function ctrlSubmitReview(input) {
       kind: 'review_created',
       objectType: 'review',
       objectId: mapped.id,
-      linkPath: `/profile/${targetActorId}?tab=reviews`,
+      linkPath: `/actor/${targetActorId}/dashboard/reviews`,
       context: {
         overallRating: mapped.overallRating ?? null,
         body: (normalizedBody ?? '').slice(0, 120) || null,

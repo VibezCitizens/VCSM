@@ -12,6 +12,18 @@ async function resolveProfileId(actorId) {
   return data?.id ?? null;
 }
 
+// Exported so review controller can resolve actor_id from a profile_id
+// when the submission row only carries profile_id (not target_actor_id).
+export async function resolveActorIdFromProfileId(profileId) {
+  if (!profileId) return null;
+  const { data } = await vportSchema
+    .from("profiles")
+    .select("actor_id")
+    .eq("id", profileId)
+    .maybeSingle();
+  return data?.actor_id ?? null;
+}
+
 export async function upsertVportFuelPriceDAL({
   targetActorId,
   fuelKey,

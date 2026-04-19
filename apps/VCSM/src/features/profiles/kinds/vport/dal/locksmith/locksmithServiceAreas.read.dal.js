@@ -2,7 +2,7 @@
 // VCSM — Locksmith Service Areas Read DAL
 // ============================================================
 
-import { supabase } from '@/services/supabase/supabaseClient'
+import vportSchema from '@/services/supabase/vportClient'
 
 const AREA_COLUMNS = `
   id, actor_id, area_type, label, country_code, state_code, city, zip_code,
@@ -17,9 +17,8 @@ const AREA_COLUMNS = `
 export async function dalListLocksmithServiceAreas(actorId) {
   if (!actorId) return []
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_service_areas')
+  const { data, error } = await vportSchema
+    .from('locksmith_service_areas')
     .select(AREA_COLUMNS)
     .eq('actor_id', actorId)
     .eq('is_active', true)

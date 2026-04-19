@@ -6,10 +6,10 @@ export function mapVportServiceCatalogRow(row) {
   if (!row) return null;
 
   return {
-    vportType: str(row.vport_type).trim(),
+    vportType: str(row.category_key).trim(),
     key: str(row.key).trim(),
     label: str(row.label).trim() || str(row.key).trim(),
-    category: str(row.category).trim() || "Other",
+    category: str(row.service_group).trim() || "Other",
     sortOrder: Number.isFinite(row?.sort_order) ? row.sort_order : 0,
     isActive: row?.is_active !== false,
     meta: row?.meta && typeof row.meta === "object" ? row.meta : {},

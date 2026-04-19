@@ -58,6 +58,33 @@ export function useVportGasPrices({ actorId, fuelKey = null }) {
     return map;
   }, [official]);
 
+  // Immediately replace a single official row by fuelKey in local state.
+  // Used after a successful owner write so the UI reflects the new price
+  // before the background refresh completes.
+  const patchOfficialRow = useCallback((updatedRow) => {
+    if (!updatedRow?.fuelKey) return;
+    setOfficial((prev) => {
+      const exists = prev.some((r) => r.fuelKey === updatedRow.fuelKey);
+      if (exists) {
+        return prev.map((r) =>
+          r.fuelKey === updatedRow.fuelKey ? updatedRow : r
+        );
+      }
+      return [...prev, updatedRow];
+    });
+  }, []);
+
+  // Immediately patch a single community suggestion entry.
+  // Used after a citizen submit so the "last update" column reflects the
+  // new submission before the background refresh completes.
+  const patchCommunityRow = useCallback((fuelKey, submission) => {
+    if (!fuelKey) return;
+    setCommunitySuggestionByFuelKey((prev) => ({
+      ...prev,
+      [fuelKey]: submission,
+    }));
+  }, []);
+
   return {
     loading,
     error,
@@ -68,5 +95,7 @@ export function useVportGasPrices({ actorId, fuelKey = null }) {
     communitySuggestionByFuelKey,
 
     refresh,
+    patchOfficialRow,
+    patchCommunityRow,
   };
 }

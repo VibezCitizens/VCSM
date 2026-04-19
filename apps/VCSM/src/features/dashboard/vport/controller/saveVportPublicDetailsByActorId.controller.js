@@ -1,4 +1,4 @@
-import { readActorVportLinkDAL } from "@/features/dashboard/vport/dal/read/actorVport.read.dal";
+import { readVportProfileByActorDAL } from "@/features/profiles/dal/readActorSeoData.dal";
 import { upsertVportPublicDetailsDAL } from "@/features/dashboard/vport/dal/write/vportPublicDetails.write.dal";
 
 function safeObj(value) {
@@ -21,11 +21,11 @@ function safeArr(value) {
   return [value].filter(Boolean);
 }
 
-function mapPayloadToRow(vportId, payload) {
+function mapPayloadToRow(profileId, payload) {
   const p = payload || {};
 
   return {
-    vport_id: vportId,
+    profile_id: profileId,
     website_url: (p.website_url ?? p.websiteUrl ?? "") || "",
     booking_url: (p.booking_url ?? p.bookingUrl ?? "") || "",
     email_public: (p.email_public ?? p.emailPublic ?? "") || "",
@@ -47,11 +47,11 @@ function mapPayloadToRow(vportId, payload) {
 export async function saveVportPublicDetailsByActorIdController(actorId, payload) {
   if (!actorId) throw new Error("saveVportPublicDetailsByActorId: actorId required");
 
-  const actor = await readActorVportLinkDAL({ actorId });
-  const vportId = actor?.vport_id ?? null;
-  if (!vportId) throw new Error("Failed to save VPORT details.");
+  const vportProfile = await readVportProfileByActorDAL(actorId);
+  const profileId = vportProfile?.id ?? null;
+  if (!profileId) throw new Error("Failed to save VPORT details.");
 
   return upsertVportPublicDetailsDAL({
-    row: mapPayloadToRow(vportId, payload),
+    row: mapPayloadToRow(profileId, payload),
   });
 }

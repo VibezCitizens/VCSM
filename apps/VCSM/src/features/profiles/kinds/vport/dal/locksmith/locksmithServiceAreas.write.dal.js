@@ -2,7 +2,7 @@
 // VCSM — Locksmith Service Areas Write DAL
 // ============================================================
 
-import { supabase } from '@/services/supabase/supabaseClient'
+import vportSchema from '@/services/supabase/vportClient'
 
 const RETURN_COLUMNS = `
   id, actor_id, area_type, label, country_code, state_code, city, zip_code,
@@ -14,9 +14,8 @@ const RETURN_COLUMNS = `
 export async function dalUpsertLocksmithServiceArea(row) {
   if (!row?.actor_id) throw new Error('actor_id required')
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_service_areas')
+  const { data, error } = await vportSchema
+    .from('locksmith_service_areas')
     .upsert(row, { onConflict: 'id' })
     .select(RETURN_COLUMNS)
 
@@ -27,9 +26,8 @@ export async function dalUpsertLocksmithServiceArea(row) {
 export async function dalInsertLocksmithServiceArea(row) {
   if (!row?.actor_id) throw new Error('actor_id required')
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_service_areas')
+  const { data, error } = await vportSchema
+    .from('locksmith_service_areas')
     .insert([row])
     .select(RETURN_COLUMNS)
 
@@ -40,9 +38,8 @@ export async function dalInsertLocksmithServiceArea(row) {
 export async function dalDeleteLocksmithServiceArea(areaId) {
   if (!areaId) throw new Error('areaId required')
 
-  const { error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_service_areas')
+  const { error } = await vportSchema
+    .from('locksmith_service_areas')
     .delete()
     .eq('id', areaId)
 
@@ -52,9 +49,8 @@ export async function dalDeleteLocksmithServiceArea(areaId) {
 export async function dalUpdateLocksmithServiceArea(areaId, updates) {
   if (!areaId) throw new Error('areaId required')
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_service_areas')
+  const { data, error } = await vportSchema
+    .from('locksmith_service_areas')
     .update(updates)
     .eq('id', areaId)
     .select(RETURN_COLUMNS)

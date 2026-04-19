@@ -463,7 +463,9 @@ export function useVportReviews(input) {
     dimStats,
     myLoading,
     myReview,
+    setMyReview,
     myExists,
+    setMyExists,
     isEditing,
     isDeleting,
     startEdit,
@@ -484,5 +486,6 @@ export function useVportReviews(input) {
     authorActorId,
     submit,
     reload: loadActiveList,
+    reloadStats: loadCore,
   };
 }

@@ -207,6 +207,10 @@ const VportActorMenuFlyerScreen = lazyWithLog(
     import("@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerScreen"),
 );
 
+const VportMenuBySlugScreen = lazyWithLog("VportMenuBySlugScreen", () =>
+  import("@/features/public/vportMenu/screen/VportPublicMenuBySlugScreen"),
+);
+
 /* ================= POSTS ================= */
 const PostFeedScreen = lazyWithLog("PostFeedScreen", () =>
   import("@/features/post/screens/PostFeed.screen"),
@@ -411,6 +415,7 @@ export default function AppRoutes() {
       VportActorMenuPublicScreen,
       VportActorMenuQrScreen,
       VportActorMenuFlyerScreen,
+      VportMenuBySlugScreen,
     }),
 
     {

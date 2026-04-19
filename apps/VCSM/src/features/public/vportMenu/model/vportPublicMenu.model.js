@@ -60,32 +60,37 @@ function normalizeItemRow(row) {
 }
 
 function normalizeCategoryFromViewRow(row) {
-  if (!row || !row.category_id) return null;
+  // supports both vport.public_menu_read_model_v (menu_category_* prefix) and legacy shapes
+  const id = row.menu_category_id ?? row.category_id ?? null;
+  if (!row || !id) return null;
   return {
-    id: row.category_id ?? null,
-    key: row.category_key ?? null,
-    name: row.category_name ?? "",
-    description: row.category_description ?? null,
-    sortOrder: toInt(row.category_sort_order, 0),
+    id,
+    key: row.menu_category_key ?? row.category_key ?? null,
+    name: row.menu_category_name ?? row.category_name ?? "",
+    description: row.menu_category_description ?? row.category_description ?? null,
+    sortOrder: toInt(row.menu_category_sort_order ?? row.category_sort_order, 0),
     items: [],
   };
 }
 
 function normalizeItemFromViewRow(row) {
-  if (!row || !row.item_id) return null;
-  const primaryMediaUrl = row.primary_media_url ?? "";
-  const media = primaryMediaUrl ? [{ id: null, url: primaryMediaUrl, kind: "image", sortOrder: 0 }] : [];
+  // supports both vport.public_menu_read_model_v (menu_item_* prefix) and legacy shapes
+  const id = row.menu_item_id ?? row.item_id ?? null;
+  if (!row || !id) return null;
+
+  const imageUrl = row.image_url ?? row.primary_media_url ?? "";
+  const media = imageUrl ? [{ id: null, url: imageUrl, kind: "image", sortOrder: 0 }] : [];
 
   return {
-    id: row.item_id ?? null,
-    categoryId: row.category_id ?? null,
-    key: row.item_key ?? null,
-    name: row.item_name ?? "",
-    description: row.item_description ?? null,
+    id,
+    categoryId: row.menu_item_category_id ?? row.category_id ?? null,
+    key: row.menu_item_key ?? row.item_key ?? null,
+    name: row.menu_item_name ?? row.item_name ?? "",
+    description: row.menu_item_description ?? row.item_description ?? null,
     priceCents: typeof row.price_cents === "number" ? row.price_cents : null,
     currencyCode: row.currency_code ?? "USD",
-    imageUrl: row.image_url ?? primaryMediaUrl ?? "",
-    sortOrder: toInt(row.item_sort_order, 0),
+    imageUrl,
+    sortOrder: toInt(row.menu_item_sort_order ?? row.item_sort_order, 0),
     media,
   };
 }

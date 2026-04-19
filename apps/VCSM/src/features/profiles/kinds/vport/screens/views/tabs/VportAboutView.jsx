@@ -1,6 +1,6 @@
 // src/features/profiles/kinds/vport/screens/views/tabs/VportAboutView.jsx
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
 import { useLocksmithProfile } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithProfile";
 
@@ -204,7 +204,7 @@ function LinkRow({ label, href, text }) {
 
 export default function VportAboutView({ profile, details }) {
   const type =
-    profile?.vportType || profile?.type || profile?.vport_type || null;
+    profile?.vportType || profile?.type || profile?.vport_type || details?.vportType || null;
   const group = resolveTypeGroup(type);
   const actorId = profile?.actor_id ?? profile?.actorId ?? null;
   const { isLocksmith, serviceAreas } = useLocksmithProfile(actorId, type);
@@ -227,26 +227,6 @@ export default function VportAboutView({ profile, details }) {
   const highlightsList = normalizeStringArray(highlights);
   const languagesList = normalizeStringArray(languages);
   const paymentMethodsList = normalizeStringArray(paymentMethods);
-
-  // --- DEBUG + stable recompute key (supports string or object hours) ---
-  const hoursKey = useMemo(() => {
-    try {
-      return typeof d.hours === "string" ? d.hours : JSON.stringify(d.hours ?? {});
-    } catch {
-      return "";
-    }
-  }, [d.hours]);
-
-  useEffect(() => {
-    try {
-      console.log(
-        "VportAboutView details.hours (json):",
-        typeof d?.hours === "string" ? d.hours : JSON.stringify(d?.hours, null, 2)
-      );
-    } catch {
-      console.log("VportAboutView details.hours (raw):", d?.hours);
-    }
-  }, [hoursKey, d?.hours]);
 
   const hours = useMemo(() => formatWeeklyHoursPerDay(d.hours), [d.hours]);
   const hasHours = !!hours.days.length;

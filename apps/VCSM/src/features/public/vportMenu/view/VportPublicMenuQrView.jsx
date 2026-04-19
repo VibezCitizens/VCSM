@@ -1,15 +1,18 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
+import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
 
 export function VportPublicMenuQrView({ actorId }) {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const { canonicalSlug } = useActorCanonicalSlug(actorId);
 
   const menuUrl = useMemo(() => {
     if (!actorId) return "";
-    return `${window.location.origin}/m/${actorId}`;
-  }, [actorId]);
+    if (canonicalSlug) return `${window.location.origin}/profile/${canonicalSlug}/menu`;
+    return `${window.location.origin}/m/${actorId}`; // fallback while slug loads
+  }, [actorId, canonicalSlug]);
 
   if (!actorId) return null;
 
@@ -18,7 +21,11 @@ export function VportPublicMenuQrView({ actorId }) {
       navigate(-1);
       return;
     }
-    navigate(`/actor/${actorId}/menu`, { replace: true });
+    if (canonicalSlug) {
+      navigate(`/profile/${canonicalSlug}/menu`, { replace: true });
+    } else {
+      navigate(`/actor/${actorId}/menu`, { replace: true });
+    }
   };
 
   const onCopy = async () => {

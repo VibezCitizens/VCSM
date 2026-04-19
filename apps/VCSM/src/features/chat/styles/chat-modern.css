@@ -176,3 +176,36 @@
 .chat-modern-page code {
   color: var(--vc-text-soft);
 }
+
+/* ── Chat send button — inactive / active ─────────────────── */
+.chat-send-btn {
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+  color: var(--vc-text-muted);
+  opacity: 0.55;
+  cursor: not-allowed;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.chat-send-btn.chat-send-btn--active {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: linear-gradient(90deg, var(--vc-accent-primary), rgba(159, 92, 247, 0.88));
+  color: #fff;
+  box-shadow: var(--vc-shadow-glow);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.chat-send-btn.chat-send-btn--active:hover {
+  filter: brightness(1.1);
+}
+
+.chat-send-btn.chat-send-btn--active:active {
+  filter: brightness(0.95);
+  transform: scale(0.95);
+}

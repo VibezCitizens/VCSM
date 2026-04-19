@@ -43,7 +43,16 @@ export function mapNotification(row, senderMap) {
 function normalizeKind(kind, ctx = {}) {
   const v = String(kind || '').toLowerCase().replaceAll('.', '_')
 
-  // legacy + new reaction normalization
+  // engine event keys for post reactions — map to displayable kinds
+  if (v === 'social_post_like') return 'like'
+  if (v === 'social_post_dislike') return 'dislike'
+  if (v === 'social_post_rose') return 'post_rose'
+  if (v === 'social_post_comment_like') return 'comment_like'
+  if (v === 'social_post_comment') return 'comment'
+  if (v === 'social_post_comment_reply') return 'comment_reply'
+  if (v === 'social_post_mention') return 'post_mention'
+
+  // legacy + new reaction normalization (eventKey = 'reaction' or 'post_reaction')
   if (v === 'reaction' || v === 'post_reaction') {
     if (ctx?.reaction === 'like') return 'like'
     if (ctx?.reaction === 'dislike') return 'dislike'

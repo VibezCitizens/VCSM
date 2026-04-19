@@ -5,7 +5,7 @@ import {
   createFuelPriceSubmissionReviewDAL,
   updateFuelPriceSubmissionStatusDAL,
 } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceReviews.write.dal";
-import { upsertVportFuelPriceDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.write.dal";
+import { upsertVportFuelPriceDAL, resolveActorIdFromProfileId } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.write.dal";
 import { createVportFuelPriceHistoryDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceHistory.write.dal";
 
 import { mapFuelPriceSubmissionRow } from "@/features/profiles/kinds/vport/model/gas/vportFuelPriceSubmission.model";
@@ -57,9 +57,14 @@ export async function reviewFuelPriceSuggestionController({
 
   // ✅ this is the ONLY thing that writes "official prices"
   if (decision === "approved" && applyToOfficialOnApprove) {
+    // submissions table stores profile_id, not target_actor_id —
+    // resolve actor_id before calling DALs that key by actor
+    const targetActorId = await resolveActorIdFromProfileId(updatedSubRow.profile_id);
+    if (!targetActorId) throw new Error("could not resolve actor_id from submission profile_id");
+
     const { data: officialRow, error: officialErr } =
       await upsertVportFuelPriceDAL({
-        targetActorId: updatedSubRow.target_actor_id,
+        targetActorId,
         fuelKey: updatedSubRow.fuel_key,
         price: updatedSubRow.proposed_price,
         currencyCode: updatedSubRow.currency_code,
@@ -74,7 +79,7 @@ export async function reviewFuelPriceSuggestionController({
     official = mapVportFuelPriceRow(officialRow);
 
     const { error: histErr } = await createVportFuelPriceHistoryDAL({
-      targetActorId: updatedSubRow.target_actor_id,
+      targetActorId,
       fuelKey: updatedSubRow.fuel_key,
       price: updatedSubRow.proposed_price,
       currencyCode: updatedSubRow.currency_code,

@@ -13,7 +13,7 @@ import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportT
 
 function normalizeType(v) {
   if (!v) return "other";
-  return String(v).trim().toLowerCase();
+  return String(v).trim().toLowerCase().replace(/_/g, " ");
 }
 
 function resolveGroup(type) {

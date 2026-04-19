@@ -92,8 +92,10 @@ export async function createVport({
   const row = Array.isArray(data) ? data[0] : data;
   if (!row?.profile_id) raise("create_vport returned no result");
 
-  // Refresh actor directory projection (non-fatal)
-  if (row.actor_id) refreshVcActorDirectory(row.actor_id);
+  // Refresh actor directory projection — awaited so the platform.user_app_actor_links
+  // row is committed before createVport() returns. Fire-and-forget caused a race
+  // where switchToVport was attempted before the new actor link existed.
+  if (row.actor_id) await refreshVcActorDirectory(row.actor_id).catch(() => {});
 
   return {
     ok: true,

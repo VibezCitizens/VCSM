@@ -14,6 +14,7 @@ import { useSubmitFuelPriceSuggestion } from "@/features/profiles/kinds/vport/ho
 export function VportGasPricesView({
   actorId,
   identity,
+  isOwner = false,
 }) {
   const {
     loading,
@@ -22,7 +23,8 @@ export function VportGasPricesView({
     official,
     officialByFuelKey,
     communitySuggestionByFuelKey,
-    refresh,
+    patchOfficialRow,
+    patchCommunityRow,
   } = useVportGasPrices({ actorId });
 
   const {
@@ -44,12 +46,38 @@ export function VportGasPricesView({
         communitySuggestionByFuelKey={communitySuggestionByFuelKey}
         settings={settings}
         identity={identity}
+        isStationOwner={isOwner}
         submitting={submitting}
         submitSuggestion={async (payload) => {
           const res = await submit(payload);
+
           if (res?.ok) {
-            await refresh();
+            if (res.submission) {
+              // Citizen path: show community suggestion immediately.
+              patchCommunityRow(res.submission.fuelKey, res.submission);
+            } else {
+              // Owner path: patch official price immediately.
+              // Use server-returned row if available; fall back to input payload
+              // so the UI always reflects the new value even if the upsert's
+              // post-SELECT returns null (e.g. RLS filtering the SELECT result).
+              patchOfficialRow(
+                res.official ?? {
+                  fuelKey: payload.fuelKey,
+                  price: payload.proposedPrice,
+                  currencyCode: payload.currencyCode ?? "USD",
+                  unit: payload.unit ?? "liter",
+                  updatedAt: new Date().toISOString(),
+                  source: "manual",
+                  isAvailable: true,
+                }
+              );
+            }
+            // No background refresh here — calling refresh() sets loading:true
+            // which hides the price rows right as the modal closes, making the
+            // update appear to vanish. The cache was already invalidated in the
+            // controller, so the next mount/navigation fetches fresh data from DB.
           }
+
           return res;
         }}
       />

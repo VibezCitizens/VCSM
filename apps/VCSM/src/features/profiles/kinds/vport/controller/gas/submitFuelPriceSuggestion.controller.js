@@ -1,12 +1,12 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\controller\gas\submitFuelPriceSuggestion.controller.js
 
-import { fetchVportFuelPricesDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.read.dal";
+import { fetchVportFuelPricesDAL, invalidateFuelPriceCache } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.read.dal";
 import { fetchVportStationPriceSettingsDAL } from "@/features/profiles/kinds/vport/dal/gas/vportStationPriceSettings.read.dal";
 import { createFuelPriceSubmissionDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceSubmissions.write.dal";
 
 import { upsertVportFuelPriceDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.write.dal";
 
-import { mapVportFuelPriceRows } from "@/features/profiles/kinds/vport/model/gas/vportFuelPrice.model";
+import { mapVportFuelPriceRow, mapVportFuelPriceRows } from "@/features/profiles/kinds/vport/model/gas/vportFuelPrice.model";
 import { mapFuelPriceSubmissionRow } from "@/features/profiles/kinds/vport/model/gas/vportFuelPriceSubmission.model";
 import { mapVportStationPriceSettingsRow } from "@/features/profiles/kinds/vport/model/gas/vportStationPriceSettings.model";
 
@@ -78,7 +78,10 @@ export async function submitFuelPriceSuggestionController({
 
     if (error) throw error;
 
-    return { ok: true, official: row };
+    // Invalidate read cache so the next refresh fetches fresh data from DB
+    invalidateFuelPriceCache(targetActorId);
+
+    return { ok: true, official: mapVportFuelPriceRow(row) };
   }
 
   // ✅ Citizen path: keep approval pipeline exactly as-is

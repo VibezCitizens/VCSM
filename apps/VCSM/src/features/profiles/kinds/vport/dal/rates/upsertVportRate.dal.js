@@ -21,7 +21,7 @@ export default async function upsertVportRateDal({
   quoteCurrency,
   buyRate,
   sellRate,
-  meta = null,
+  meta = {},
 } = {}) {
   if (!actorId) throw new Error("upsertVportRateDal: actorId is required");
   if (!baseCurrency) throw new Error("upsertVportRateDal: baseCurrency is required");
@@ -40,7 +40,7 @@ export default async function upsertVportRateDal({
         quote_currency: quoteCurrency,
         buy_rate: buyRate,
         sell_rate: sellRate,
-        meta,
+        meta: meta ?? {},
       },
       { onConflict: "profile_id,rate_type,base_currency,quote_currency" }
     )

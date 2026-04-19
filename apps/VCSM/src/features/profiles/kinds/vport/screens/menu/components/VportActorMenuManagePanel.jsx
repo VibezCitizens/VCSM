@@ -23,8 +23,28 @@ export function VportActorMenuManagePanel({
 
   const categoriesMut = useVportActorMenuCategoriesMutations({
     actorId,
-    onSuccess: async () => {
-      await refresh();
+    onSuccess: (result) => {
+      if (result?.id) {
+        patchMenu((prev) => {
+          const already = (prev.categories ?? []).find((c) => c.id === result.id);
+          if (already) {
+            // Edit — replace in-place, keep existing items
+            return {
+              ...prev,
+              categories: prev.categories.map((c) =>
+                c.id === result.id ? { ...result, items: c.items ?? [] } : c
+              ),
+            };
+          }
+          // Create — append immediately with empty items
+          return {
+            ...prev,
+            categories: [...(prev.categories ?? []), { ...result, items: [] }],
+          };
+        });
+      }
+      // Background sync — not awaited so UI updates first
+      refresh();
     },
   });
 

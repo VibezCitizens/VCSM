@@ -23,6 +23,7 @@ import VportMenuView from "@/features/profiles/kinds/vport/screens/views/tabs/Vp
 import VportPortfolioView from "@/features/profiles/kinds/vport/screens/views/tabs/VportPortfolioView";
 import VportServicesView from "@/features/profiles/kinds/vport/screens/services/view/VportServicesView";
 import VportBookingView from "@/features/profiles/kinds/vport/screens/views/tabs/VportBookingView";
+import VportContentView from "@/features/profiles/kinds/vport/screens/views/tabs/VportContentView";
 
 import { shareNative } from "@/shared/lib/shareNative";
 import PrivateProfileNotice from "@/features/social/adapters/components/PrivateProfileNotice.adapter";
@@ -38,6 +39,7 @@ import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportO
 
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
+import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
 // ✅ NEW: Rates tab view
 import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView";
 import "@/features/profiles/styles/profiles-modern.css";
@@ -53,7 +55,10 @@ export default function VportProfileViewScreen({
   const [postsVersion, setPostsVersion] = useState(0);
 
   const [reviewsDefaultTab, setReviewsDefaultTab] = useState(null);
-  const didInitTabRef = useRef(false);
+  // Tracks the last firstKey we auto-applied so we re-apply when type-specific tabs load
+  const autoAppliedFirstKeyRef = useRef(null);
+  // Tracks whether the user has manually selected a tab (vs the auto-resolved default)
+  const userHasSelectedTabRef = useRef(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,10 +87,20 @@ export default function VportProfileViewScreen({
   const { loading: publicDetailsLoading, details: publicDetails } =
     useVportPublicDetails(profileActorId);
 
+  // Sets document.title, meta description, and JSON-LD (LocalBusiness).
+  // Passes publicDetails so the structured data can include phone, website,
+  // address, and geo coordinates when available. Cleans up on unmount.
+  useActorSeoMeta(profile ?? null, publicDetails ?? null);
+
   const isOwner = useMemo(() => {
     if (!viewerActorId || !profileActorId) return false;
     return String(viewerActorId) === String(profileActorId);
   }, [viewerActorId, profileActorId]);
+
+  const handleTabSelect = useCallback((key) => {
+    userHasSelectedTabRef.current = true;
+    setTab(key);
+  }, []);
 
   const openFoodReview = useCallback(() => {
     setReviewsDefaultTab("food");
@@ -129,24 +144,31 @@ export default function VportProfileViewScreen({
 
   useEffect(() => {
     const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
+    if (!list.length) return;
+
     const firstKey = list[0]?.key;
-    if (!firstKey) return;
 
-    if (didInitTabRef.current) return;
-
-    if (tab === "vibes" && firstKey !== "vibes") {
-      setTab(firstKey);
-    }
-
-    didInitTabRef.current = true;
-  }, [effectiveTabs, tab]);
-
-  useEffect(() => {
     setTab((prev) => {
-      const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
-      if (!list.length) return prev || "vibes";
       const exists = list.some((t) => t.key === prev);
-      return exists ? prev : list[0]?.key ?? "vibes";
+
+      // If current tab no longer exists in new layout, reset to first
+      if (!exists) return firstKey ?? "vibes";
+
+      // Auto-advance to firstKey when:
+      //   - user hasn't manually selected a tab, AND
+      //   - firstKey changed (e.g. generic fallback → gas-specific tabs loaded)
+      // This ensures gas stations land on "gas" even though the fallback
+      // briefly set the tab to "about" before publicDetails resolved.
+      if (
+        !userHasSelectedTabRef.current &&
+        firstKey &&
+        firstKey !== autoAppliedFirstKeyRef.current
+      ) {
+        autoAppliedFirstKeyRef.current = firstKey;
+        return firstKey;
+      }
+
+      return prev;
     });
   }, [effectiveTabs]);
 
@@ -299,7 +321,7 @@ export default function VportProfileViewScreen({
         onSubscriptionChanged={() => setGateVersion((v) => v + 1)}
       />
 
-      <VportProfileTabs tab={tab} setTab={setTab} tabs={effectiveTabs} />
+      <VportProfileTabs tab={tab} setTab={handleTabSelect} tabs={effectiveTabs} />
 
       {!gate.canView && (
         <PrivateProfileNotice
@@ -373,6 +395,10 @@ export default function VportProfileViewScreen({
             <VportMenuView profile={profile} onOpenFoodReview={openFoodReview} />
           )}
 
+          {tab === "content" && (
+            <VportContentView profile={profile} isOwner={isOwner} />
+          )}
+
           {/* ✅ NEW: Rates tab */}
           {tab === "rates" && (
             <div className="mt-4">
@@ -382,7 +408,7 @@ export default function VportProfileViewScreen({
 
           {tab === "gas" && (
             <div className="mt-4">
-              <VportGasPricesView actorId={profileActorId} identity={identity} />
+              <VportGasPricesView actorId={profileActorId} identity={identity} isOwner={isOwner} />
             </div>
           )}
 

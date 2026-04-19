@@ -264,11 +264,9 @@ export default function ChatInput({
             <button
               type="submit"
               disabled={actionDisabled || (!value.trim() && !mediaPreview)}
-              className={
-                value.trim() || mediaPreview
-                  ? 'module-modern-btn module-modern-btn--primary chat-modern-send-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white'
-                  : 'module-modern-btn flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-white/12 bg-white/6/40 text-white/40'
-              }
+              className={`chat-send-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-full${
+                value.trim() || mediaPreview ? ' chat-send-btn--active' : ''
+              }`}
               aria-label={inEdit ? 'Save' : 'Send'}
             >
               {submitBusy ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}

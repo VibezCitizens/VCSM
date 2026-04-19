@@ -2,15 +2,15 @@
 
 import { supabase } from "@/services/supabase/supabaseClient";
 
-export async function fetchVportPublicDetails(vportId) {
-  if (!vportId) throw new Error("fetchVportPublicDetails: vportId required");
+export async function fetchVportPublicDetails(profileId) {
+  if (!profileId) throw new Error("fetchVportPublicDetails: profileId required");
 
   const { data, error } = await supabase
-    .schema("vc")
-    .from("vport_public_details")
+    .schema("vport")
+    .from("profile_public_details")
     .select(
       `
-      vport_id,
+      profile_id,
       website_url,
       email_public,
       phone_public,
@@ -27,7 +27,7 @@ export async function fetchVportPublicDetails(vportId) {
       booking_url
     `
     )
-    .eq("vport_id", vportId)
+    .eq("profile_id", profileId)
     .maybeSingle();
 
   if (error) throw error;
@@ -35,7 +35,7 @@ export async function fetchVportPublicDetails(vportId) {
   // if row doesn't exist yet, return a safe default
   const row =
     data || {
-      vport_id: vportId,
+      profile_id: profileId,
       website_url: "",
       email_public: "",
       phone_public: "",

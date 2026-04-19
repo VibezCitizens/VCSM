@@ -2,7 +2,7 @@
 // VCSM — Locksmith Portfolio Details Write DAL
 // ============================================================
 
-import { supabase } from '@/services/supabase/supabaseClient'
+import vportSchema from '@/services/supabase/vportClient'
 
 const RETURN_COLUMNS = `
   portfolio_item_id, job_type, property_type, lock_type, hardware_brand,
@@ -14,9 +14,8 @@ const RETURN_COLUMNS = `
 export async function dalUpsertLocksmithPortfolioDetail(row) {
   if (!row?.portfolio_item_id) throw new Error('portfolio_item_id required')
 
-  const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_portfolio_details')
+  const { data, error } = await vportSchema
+    .from('locksmith_portfolio_details')
     .upsert(row, { onConflict: 'portfolio_item_id' })
     .select(RETURN_COLUMNS)
 
