@@ -3,14 +3,14 @@
 // ============================================================
 
 /**
- * @param {Object} raw - vport_portfolio_items row or RPC result
+ * @param {Object} raw - vport.portfolio_items row
  * @returns {import('../types/index.js').DomainPortfolioItem}
  */
 export function PortfolioItemModel(raw) {
   if (!raw) return null
   return {
     id:               raw.id ?? raw.portfolio_item_id,
-    actorId:          raw.actor_id,
+    profileId:        raw.profile_id,
     serviceId:        raw.service_id ?? null,
     title:            raw.title ?? '',
     description:      raw.description ?? '',

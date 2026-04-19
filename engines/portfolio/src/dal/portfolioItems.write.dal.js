@@ -5,7 +5,7 @@
 import { getSupabaseClient } from '../config.js'
 
 const ITEM_RETURN_COLUMNS = `
-  id, actor_id, service_id, title, description, portfolio_kind,
+  id, profile_id, service_id, title, description, portfolio_kind,
   visibility, cover_media_id, is_featured, is_pinned, is_active,
   sort_order, source_post_id, created_by_actor_id,
   published_at, created_at, updated_at
@@ -14,16 +14,16 @@ const ITEM_RETURN_COLUMNS = `
 /**
  * Insert a new portfolio item.
  */
-export async function dalInsertPortfolioItem({ actorId, title, description, portfolioKind, serviceId, visibility, sourcePostId, createdByActorId, trace = null }) {
+export async function dalInsertPortfolioItem({ profileId, title, description, portfolioKind, serviceId, visibility, sourcePostId, createdByActorId, trace = null }) {
   const supabase = getSupabaseClient()
 
   trace?.report?.({ step: 'ITEM_INSERT_START', status: 'start' })
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_items')
+    .schema('vport')
+    .from('portfolio_items')
     .insert([{
-      actor_id: actorId,
+      profile_id: profileId,
       title: title ?? '',
       description: description ?? '',
       portfolio_kind: portfolioKind ?? 'work',
@@ -63,8 +63,8 @@ export async function dalUpdatePortfolioItem({ itemId, updates, trace = null }) 
   if (updates.sortOrder !== undefined) row.sort_order = updates.sortOrder
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_items')
+    .schema('vport')
+    .from('portfolio_items')
     .update(row)
     .eq('id', itemId)
     .select(ITEM_RETURN_COLUMNS)
@@ -85,8 +85,8 @@ export async function dalSoftDeletePortfolioItem({ itemId, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_items')
+    .schema('vport')
+    .from('portfolio_items')
     .update({
       is_deleted: true,
       deleted_at: new Date().toISOString(),

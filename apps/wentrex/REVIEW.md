@@ -20,7 +20,7 @@ execute the Wentrex architecture audit.
 - `/Users/vcsm/Desktop/VCSM/engines/auth`
 - `/Users/vcsm/Desktop/VCSM/engines/identity`
 - `/Users/vcsm/Desktop/VCSM/engines/chat`
-- `/Users/vcsm/Desktop/VCSM/zcontract`
+- `/Users/vcsm/Desktop/VCSM/zNOTFORPRODUCTION/zcontract`
 
 **Do NOT review:**
 - `/Users/vcsm/Desktop/VCSM/apps/VCSM`

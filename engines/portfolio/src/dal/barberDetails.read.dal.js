@@ -17,8 +17,8 @@ export async function dalGetBarberDetailsByItemId({ itemId, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_barber_portfolio_details')
+    .schema('vport')
+    .from('barber_portfolio_details')
     .select(BARBER_COLUMNS)
     .eq('portfolio_item_id', itemId)
     .limit(1)
@@ -40,8 +40,8 @@ export async function dalListBarberDetailsByItemIds({ itemIds, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_barber_portfolio_details')
+    .schema('vport')
+    .from('barber_portfolio_details')
     .select(BARBER_COLUMNS)
     .in('portfolio_item_id', itemIds)
 

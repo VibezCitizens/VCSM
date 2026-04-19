@@ -5,7 +5,7 @@
 import { getSupabaseClient } from '../config.js'
 
 const MEDIA_RETURN_COLUMNS = `
-  id, portfolio_item_id, actor_id, url, media_type, media_role,
+  id, portfolio_item_id, profile_id, url, media_type, media_role,
   alt_text, width, height, duration_seconds, sort_order, is_active,
   created_at, updated_at
 `
@@ -13,17 +13,17 @@ const MEDIA_RETURN_COLUMNS = `
 /**
  * Insert a media row for a portfolio item.
  */
-export async function dalInsertPortfolioMedia({ portfolioItemId, actorId, url, mediaType, mediaRole, altText, width, height, durationSeconds, sortOrder, trace = null }) {
+export async function dalInsertPortfolioMedia({ portfolioItemId, profileId, url, mediaType, mediaRole, altText, width, height, durationSeconds, sortOrder, trace = null }) {
   const supabase = getSupabaseClient()
 
   trace?.report?.({ step: 'MEDIA_INSERT_START', status: 'start' })
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_media')
+    .schema('vport')
+    .from('portfolio_media')
     .insert([{
       portfolio_item_id: portfolioItemId,
-      actor_id: actorId,
+      profile_id: profileId,
       url,
       media_type: mediaType ?? 'image',
       media_role: mediaRole ?? 'result',
@@ -51,8 +51,8 @@ export async function dalDeletePortfolioMedia({ mediaId, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_media')
+    .schema('vport')
+    .from('portfolio_media')
     .delete()
     .eq('id', mediaId)
 

@@ -3,7 +3,7 @@
 // ============================================================
 
 import { isActorOwner } from '../config.js'
-import { dalGetPortfolioItemById } from '../dal/portfolioItems.read.dal.js'
+import { dalGetPortfolioItemById, dalGetProfileIdByActorId } from '../dal/portfolioItems.read.dal.js'
 import { dalUpdatePortfolioItem } from '../dal/portfolioItems.write.dal.js'
 import { dalReplacePortfolioTags } from '../dal/portfolioTags.write.dal.js'
 import { PortfolioItemModel } from '../model/PortfolioItem.model.js'
@@ -24,12 +24,16 @@ export async function updateItem({ itemId, actorId, updates, tags }) {
     throw new Error('[updateItem] itemId and actorId are required')
   }
 
-  const existing = await dalGetPortfolioItemById({ itemId })
+  const [existing, callerProfileId] = await Promise.all([
+    dalGetPortfolioItemById({ itemId }),
+    dalGetProfileIdByActorId({ actorId }),
+  ])
+
   if (!existing) {
     throw new Error('[updateItem] portfolio item not found')
   }
 
-  if (existing.actor_id !== actorId) {
+  if (existing.profile_id !== callerProfileId) {
     throw new Error('[updateItem] not authorized to update this item')
   }
 

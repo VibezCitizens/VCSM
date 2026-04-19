@@ -2,19 +2,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@chat": [
-        "../../engines/chat/index.js"
-      ],
-      "@/*": [
-        "src/*"
-      ]
+      "@chat": ["../../engines/chat/index.js"],
+      "@/*": ["src/*"]
     },
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "ignoreDeprecations": "6.0"
   },
-  "include": [
-    "src",
-    "vite.config.js",
-    "server",
-    "functions"
-  ]
+  "include": ["src", "vite.config.js", "server", "functions"],
+  "exclude": ["node_modules", "dist"]
 }

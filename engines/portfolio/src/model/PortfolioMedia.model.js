@@ -3,7 +3,7 @@
 // ============================================================
 
 /**
- * @param {Object} raw - vport_portfolio_media row
+ * @param {Object} raw - vport.portfolio_media row
  * @returns {import('../types/index.js').DomainPortfolioMedia}
  */
 export function PortfolioMediaModel(raw) {
@@ -11,7 +11,7 @@ export function PortfolioMediaModel(raw) {
   return {
     id:              raw.id,
     portfolioItemId: raw.portfolio_item_id,
-    actorId:         raw.actor_id,
+    profileId:       raw.profile_id,
     url:             raw.url,
     mediaType:       raw.media_type ?? 'image',
     mediaRole:       raw.media_role ?? 'result',

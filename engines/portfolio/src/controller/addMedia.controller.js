@@ -3,7 +3,7 @@
 // ============================================================
 
 import { isActorOwner } from '../config.js'
-import { dalGetPortfolioItemById } from '../dal/portfolioItems.read.dal.js'
+import { dalGetPortfolioItemById, dalGetProfileIdByActorId } from '../dal/portfolioItems.read.dal.js'
 import { dalInsertPortfolioMedia } from '../dal/portfolioMedia.write.dal.js'
 import { PortfolioMediaModel } from '../model/PortfolioMedia.model.js'
 import { emit, EVENTS } from '../events.js'
@@ -29,12 +29,16 @@ export async function addMedia({ itemId, actorId, url, mediaType, mediaRole, alt
     throw new Error('[addMedia] itemId, actorId, and url are required')
   }
 
-  const item = await dalGetPortfolioItemById({ itemId })
+  const [item, callerProfileId] = await Promise.all([
+    dalGetPortfolioItemById({ itemId }),
+    dalGetProfileIdByActorId({ actorId }),
+  ])
+
   if (!item) {
     throw new Error('[addMedia] portfolio item not found')
   }
 
-  if (item.actor_id !== actorId) {
+  if (item.profile_id !== callerProfileId) {
     throw new Error('[addMedia] not authorized to add media to this item')
   }
 
@@ -45,7 +49,7 @@ export async function addMedia({ itemId, actorId, url, mediaType, mediaRole, alt
 
   const row = await dalInsertPortfolioMedia({
     portfolioItemId: itemId,
-    actorId,
+    profileId: callerProfileId,
     url,
     mediaType,
     mediaRole,

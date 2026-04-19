@@ -3,7 +3,7 @@
 // ============================================================
 
 import { isActorOwner } from '../config.js'
-import { dalGetPortfolioItemById } from '../dal/portfolioItems.read.dal.js'
+import { dalGetPortfolioItemById, dalGetProfileIdByActorId } from '../dal/portfolioItems.read.dal.js'
 import { dalSoftDeletePortfolioItem } from '../dal/portfolioItems.write.dal.js'
 import { PortfolioItemModel } from '../model/PortfolioItem.model.js'
 import { emit, EVENTS } from '../events.js'
@@ -21,12 +21,16 @@ export async function deleteItem({ itemId, actorId }) {
     throw new Error('[deleteItem] itemId and actorId are required')
   }
 
-  const existing = await dalGetPortfolioItemById({ itemId })
+  const [existing, callerProfileId] = await Promise.all([
+    dalGetPortfolioItemById({ itemId }),
+    dalGetProfileIdByActorId({ actorId }),
+  ])
+
   if (!existing) {
     throw new Error('[deleteItem] portfolio item not found')
   }
 
-  if (existing.actor_id !== actorId) {
+  if (existing.profile_id !== callerProfileId) {
     throw new Error('[deleteItem] not authorized to delete this item')
   }
 

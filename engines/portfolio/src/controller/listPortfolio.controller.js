@@ -2,7 +2,7 @@
 // Portfolio Engine — List Portfolio Controller
 // ============================================================
 
-import { dalRpcGetVportPortfolio } from '../dal/portfolioItems.rpc.dal.js'
+import { dalGetProfileIdByActorId, dalListPortfolioItemsByProfileId } from '../dal/portfolioItems.read.dal.js'
 import { dalListMediaByItemIds } from '../dal/portfolioMedia.read.dal.js'
 import { dalListTagsByItemIds } from '../dal/portfolioTags.read.dal.js'
 import { PortfolioItemModel } from '../model/PortfolioItem.model.js'
@@ -23,13 +23,18 @@ export async function listPortfolio({ actorId, limit = 24, offset = 0 }) {
     throw new Error('[listPortfolio] actorId is required')
   }
 
-  const rows = await dalRpcGetVportPortfolio({ actorId, limit, offset })
+  const profileId = await dalGetProfileIdByActorId({ actorId })
+  if (!profileId) {
+    return { items: [], hasMore: false }
+  }
+
+  const rows = await dalListPortfolioItemsByProfileId({ profileId, limit, offset })
 
   if (!rows.length) {
     return { items: [], hasMore: false }
   }
 
-  const itemIds = rows.map((r) => r.portfolio_item_id ?? r.id)
+  const itemIds = rows.map((r) => r.id)
 
   const [mediaRows, tagRows] = await Promise.all([
     dalListMediaByItemIds({ itemIds }),
@@ -49,12 +54,14 @@ export async function listPortfolio({ actorId, limit = 24, offset = 0 }) {
   }
 
   const items = rows.map((row) => {
-    const id = row.portfolio_item_id ?? row.id
     const item = PortfolioItemModel(row)
+    const media = mediaMap.get(item.id) ?? []
+    const coverUrl = media.find((m) => m.mediaRole === 'cover')?.url ?? media[0]?.url ?? null
     return {
       ...item,
-      media: mediaMap.get(id) ?? [],
-      tags: tagMap.get(id) ?? [],
+      coverUrl,
+      media,
+      tags: tagMap.get(item.id) ?? [],
     }
   })
 

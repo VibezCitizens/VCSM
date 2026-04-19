@@ -8,20 +8,24 @@ dist/
 .claude/
 __ignored/
 logan/
-docs/
+/docs/
 db_snapshot/
 contract/
 scripts/
 zcontract/
 planning/
 session-summaries/
+zNOTFORPRODUCTION/
 
 # macOS
 .DS_Store
 
-# TP task planner runtime files
+# TP Kanban queue files
 planning/.tp-lock
 planning/.tp-incoming.md
+planning/.tp-ready.md
+planning/.tp-active.md
+planning/.tp-backlog.md
 
 # IDE
 .idea/
@@ -36,6 +40,9 @@ planning/.tp-incoming.md
 *.pfx
 credentials.json
 serviceAccountKey.json
+
+# Debug clients (never production)
+**/supabaseClient.debug.js
 
 # Logs
 *.log

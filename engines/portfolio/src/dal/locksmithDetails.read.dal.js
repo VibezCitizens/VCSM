@@ -18,8 +18,8 @@ export async function dalGetLocksmithDetailsByItemId({ itemId, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_portfolio_details')
+    .schema('vport')
+    .from('locksmith_portfolio_details')
     .select(LOCKSMITH_COLUMNS)
     .eq('portfolio_item_id', itemId)
     .limit(1)
@@ -41,8 +41,8 @@ export async function dalListLocksmithDetailsByItemIds({ itemIds, trace = null }
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_locksmith_portfolio_details')
+    .schema('vport')
+    .from('locksmith_portfolio_details')
     .select(LOCKSMITH_COLUMNS)
     .in('portfolio_item_id', itemIds)
 

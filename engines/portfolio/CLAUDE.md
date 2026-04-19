@@ -15,10 +15,13 @@
 
 ## Database Tables
 
-- `vc.vport_portfolio_items`
-- `vc.vport_portfolio_media`
-- `vc.vport_barber_portfolio_details`
-- `vc.vport_portfolio_tags`
+- `vport.portfolio_items`
+- `vport.portfolio_media`
+- `vport.portfolio_tags`
+- `vport.barber_portfolio_details`
+- `vport.locksmith_portfolio_details`
+- `vport.portfolio_item_metrics`
+- `vport.portfolio_item_services`
 
 ## Internal Architecture
 

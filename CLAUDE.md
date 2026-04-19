@@ -1,13 +1,18 @@
 # VCSM Workspace — Global Rules
 
-This workspace contains two completely separate products. They share engines and a contract, but they must never be mixed.
+This workspace contains three completely separate products. They share engines and a contract, but they must never be mixed.
 
-## The Two Apps
+## The Three Apps
 
 | App | Path | Product |
 |-----|------|---------|
 | **VCSM** | `apps/VCSM/` | Social marketplace hybrid platform (Instagram + Airbnb) |
 | **Wentrex** | `apps/wentrex/` | Standalone multi-tenant LMS SaaS |
+| **Traffic** | `apps/Traffic/` | Programmatic SEO directory engine (Next.js) |
+
+**VCSM** is the core platform — a social commerce app where creators and service providers manage actor-based identities (personal profiles or business VPORTs), post content, chat, book services, and run storefronts. External business sites like Tripoint Lock & Keys (tripointlockandkeys.com) consume their VPORT data from VCSM via Edge Function APIs, keeping their own domain and UI while VCSM remains the source of truth for business identity, services, reviews, and booking.
+
+**Traffic** is a standalone Next.js 14 static site that generates indexable city/service/neighborhood/provider directory pages for organic search discovery, routing visitors back to the VCSM platform via deep links with tracking parameters. It currently runs entirely on mock data with no database, authentication, or engine imports — it is self-contained and deployment-ready at `traffic.vibezcitizens.com` once data is wired.
 
 ## Non-Negotiable Rules
 
@@ -19,7 +24,7 @@ This workspace contains two completely separate products. They share engines and
 
 ## Shared Infrastructure (Safe to Consume from Both Apps)
 
-- `engines/` — reusable domain engines (chat, notifications, etc.)
+- `engines/` — reusable domain engines (chat, identity, hydration, portfolio, reviews, booking, notifications)
 - `shared/` — domain-neutral primitives (UI, utils, types)
 - `contract/` — locked architecture contracts
 
@@ -33,73 +38,172 @@ apps/wentrex  ──┘
 
 Apps never depend on each other. Ever.
 
-## Architecture Contract
+---
 
-All code in this workspace must comply with the contracts in `contract/`. Run `/review-contract <path>` to check any file or folder.
+## Technology Stack (VCSM)
+
+- **Language:** JavaScript (ES Modules) — **TypeScript is BANNED**
+- **UI:** React 19 + Vite
+- **Styling:** UnoCSS + CSS custom properties (`--vc-*` tokens in `citizens-theme.css`)
+- **State:** Zustand
+- **Routing:** React Router DOM
+- **Database:** Supabase (PostgreSQL + Auth + Realtime)
+- **Config:** `jsconfig.json` — never `tsconfig.json`
+- **Full stack rules:** `logan/platform/vcsm.platform.stack-rules.md`
+
+### Forbidden in VCSM
+- `.ts` / `.tsx` files — zero allowed
+- `tsconfig.json` — project uses `jsconfig.json`
+- CSS-in-JS (styled-components, emotion)
+- Sass/SCSS/Less
+- Redux / MobX
+- Next.js / Remix
+- GraphQL
+
+---
+
+## Architecture Layer Order
+
+```
+DAL → Model → Controller → Hook → Screen
+```
+
+- **DAL:** Raw Supabase queries, single responsibility, explicit column selection (never `.select('*')`)
+- **Model:** Domain models and pure transforms
+- **Controller:** Business logic orchestration, calls DALs
+- **Hook:** React lifecycle management, calls controllers
+- **Screen:** Pure composition, no computation, no direct DB access
+
+---
+
+## Theme System
+
+Single source of truth: `apps/VCSM/src/styles/citizens-theme.css`
+
+- All colors via `--vc-*` CSS custom properties
+- Feature CSS files alias tokens into local `--feature-*` vars
+- `authTheme.js` provides inline style references using `var(--vc-*)`
+- Do NOT hardcode blue/slate/indigo/neutral Tailwind classes — use `white/*` opacity or `purple-*`
+- Full reference: `logan/vcsm/theme/vcsm.theme.design-tokens.md`
+
+---
+
+## Avatar Rule
+
+**Avatars must be SQUARE with ROUNDED CORNERS. Never circular.**
+
+| Size | Radius | Class |
+|---|---|---|
+| Large (64px+) | `rounded-2xl` (16px) | Profile headers |
+| Medium/Small (24-56px) | `rounded-lg` (8px) | Cards, lists, pills |
+| Tiny (<24px) | `rounded-md` (6px) | Compact |
+
+- `rounded-full` is **BANNED** for avatars
+- Always use `object-cover` + `border border-white/12` + `onError` fallback to `/avatar.jpg`
+- Shared component: `shared/components/ActorLink.jsx`
+- Full reference: `logan/platform/vcsm.platform.avatar-rules.md`
+
+---
+
+## Cache System
+
+- Shared utility: `shared/lib/ttlCache.js` — `createTTLCache(ttlMs)`
+- Shared actor store: `engines/hydration/src/store.js` (Zustand, 5min TTL)
+- All caches export `invalidate*()` functions for write-path cache busting
+- Owner/edit modes bypass cache where applicable
+- Full reference: `logan/platform/vcsm.platform.cache-recommendations.md`
+
+---
+
+## iOS Stacking Context Rule
+
+**Never render `position: fixed` modals inside a parent that has:**
+- `backdrop-filter` / `-webkit-backdrop-filter`
+- `transform` (including `translateZ(0)`)
+- `filter`
+- `overflow: hidden` with `border-radius`
+
+Always render modals as **fragment siblings**, not children of styled card containers.
+
+---
+
+## Identity System
+
+- Actor-based: `actorId` + `kind` (`'user'` | `'vport'`)
+- Never expose `profileId` or `vportId` through `useIdentity()`
+- All domain entities scoped to `vc.actors`
+- Ownership via `actor_owners`
+
+---
+
+## Command System
+
+| Command | Purpose | File |
+|---|---|---|
+| `/Wolverine` | Main planning, routing, and execution orchestrator | `.claude/commands/Wolverine.md` |
+| `/Logan` | Documentation review, drift detection, sync | `.claude/commands/Logan.md` |
+| `/BUGSBUNNY` | Root cause debug command | `.claude/commands/BUGSBUNNY.md` |
+| `/CAPTAIN` | Next-session order capture (ideas only) | `.claude/commands/CAPTAIN.md` |
+| `/DB` | Database reviewer and analyst | `.claude/commands/DB.md` |
+| `/ARCHITECT` | Repository architecture mapping & DB read audit | `.claude/commands/ARCHITECT.md` |
+| `/Loki` | Runtime observability and request trace | `.claude/commands/Loki.md` |
+| `/Kraven` | Performance hunter and bottleneck analysis | `.claude/commands/Kraven.md` |
+| `/Venom` | Security sheriff and trust boundary review | `.claude/commands/Venom.md` |
+| `/Carnage` | Database migration architect | `.claude/commands/Carnage.md` |
+| `/Ironman` | Feature ownership and system responsibility | `.claude/commands/Ironman.md` |
+| `/Thor` | Release commander | `.claude/commands/Thor.md` |
+| `/review-contract` | Architecture contract compliance check | `.claude/commands/review-contract.md` |
+| `/session-summary` | End-of-session audit log | `.claude/commands/session-summary.md` |
+
+---
+
+## Documentation
+
+- All system documentation lives in `/logan/` — nowhere else
+- Logan files follow `domain.system.topic.md` naming convention
+- Full index: `logan/README.md`
+
+---
+
+## Production Safety — File Rules
+
+### Files That Must NEVER Ship to Production
+
+| Directory | Purpose |
+|---|---|
+| `.claude/` | Claude Code tooling config |
+| `planning/` | Session planning files |
+| `logan/` | System documentation |
+| `session-summaries/` | Conversation logs |
+| `db_snapshot/` | Schema snapshots and seeds |
+| `debuggers/` | Dev-only debug panels |
+
+### README.md Files
+- README.md files must NOT exist in the codebase unless explicitly approved.
+- The only approved README.md is `logan/README.md`.
+- If a README.md is needed, ask first.
+
+### No Scattered Documentation
+- Do NOT create `.md` files inside `apps/`, `engines/`, `shared/`, or `src/` directories.
+- All documentation belongs in `/logan/`.
+
+### No Files With Spaces
+- All filenames must have valid extensions and no spaces.
+
+---
+
+## Contract References
+
+- `SECURITY_ENGINEERING_CONTRACT.md` — auth, database, infrastructure security
+- `SENIOR_DEVELOPER_CONTRACT.md` — execution quality standards
+- `ANTI_HALLUCINATION_ENGINEERING_CONTRACT.md` — claim verification rules
+- `REAL_WORLD_ENGINEERING_OPS_CONTRACT.md` — operational engineering
+- `STRATEGIC_REALITY_DEBRIEF_CONTRACT.md` — product analysis
 
 ## Wentrex Architecture Review
 
 When the user says "review wentrex", "audit wentrex", or "run deep wentrex review", follow the spec in `apps/wentrex/REVIEW.md`.
 
-## Security Engineering Contract
+## Traffic Architecture Review
 
-All backend, auth, database, and infrastructure work must follow `SECURITY_ENGINEERING_CONTRACT.md`.
-
-The system must follow:
-- least privilege
-- defense in depth
-- strict authorization
-- RLS enforcement
-- secure secrets management
-- safe input validation
-
-## Senior Developer Execution Contract
-
-All work must follow `SENIOR_DEVELOPER_CONTRACT.md`.
-
-Default behavior:
-- act as a premium advanced senior developer
-- verify before claiming
-- never make unknown facts up
-- preserve frozen systems
-- make minimal correct changes
-- respect architecture and ownership boundaries
-- report confirmed vs likely vs uncertain clearly
-
-## Strategic Reality Debrief Contract
-
-For product analysis, strategic review, architecture evaluation, future direction, or long-term planning, follow `STRATEGIC_REALITY_DEBRIEF_CONTRACT.md`.
-
-Evaluate through:
-- real human behavior, not ideal assumptions
-- real organizational workflows
-- real market and operational constraints
-- platform evolution potential
-- bias detection (engineering, founder, feature, security, UX)
-
-## Anti-Hallucination Engineering Rule
-
-All technical claims must follow `ANTI_HALLUCINATION_ENGINEERING_CONTRACT.md`.
-
-Every statement must be classified as:
-- confirmed
-- likely
-- uncertain
-
-Claims must be supported by:
-- code references
-- file paths
-- runtime analysis
-
-Never invent architecture or root causes.
-
-## Real-World Engineering Operations Contract
-
-For system operations, deployment, production readiness, and architecture evolution, follow `REAL_WORLD_ENGINEERING_OPS_CONTRACT.md`.
-
-Engineering must consider:
-- operational recovery, not just ideal usage
-- observability (logging, metrics, tracing, alerting)
-- release discipline (reversible migrations, staged rollouts)
-- developer experience (consistent patterns, traceable paths)
-- domain ownership and platform evolution
+When the user says "review traffic", "audit traffic", or "run deep traffic review", follow the spec in `apps/Traffic/REVIEW.md`.

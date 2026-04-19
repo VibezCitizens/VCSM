@@ -11,8 +11,8 @@ export async function dalListTagsByItemId({ itemId, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_tags')
+    .schema('vport')
+    .from('portfolio_tags')
     .select('portfolio_item_id, tag, created_at')
     .eq('portfolio_item_id', itemId)
     .order('tag', { ascending: true })
@@ -34,8 +34,8 @@ export async function dalListTagsByItemIds({ itemIds, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_tags')
+    .schema('vport')
+    .from('portfolio_tags')
     .select('portfolio_item_id, tag, created_at')
     .in('portfolio_item_id', itemIds)
 

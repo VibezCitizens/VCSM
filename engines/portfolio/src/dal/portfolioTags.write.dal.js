@@ -18,8 +18,8 @@ export async function dalInsertPortfolioTags({ itemId, tags, trace = null }) {
   }))
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_tags')
+    .schema('vport')
+    .from('portfolio_tags')
     .upsert(rows, { onConflict: 'portfolio_item_id,tag', ignoreDuplicates: true })
     .select('portfolio_item_id, tag')
 
@@ -40,8 +40,8 @@ export async function dalDeletePortfolioTags({ itemId, tags, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_tags')
+    .schema('vport')
+    .from('portfolio_tags')
     .delete()
     .eq('portfolio_item_id', itemId)
     .in('tag', tags.map((t) => String(t).trim().toLowerCase()))
@@ -60,8 +60,8 @@ export async function dalReplacePortfolioTags({ itemId, tags, trace = null }) {
 
   // Delete existing
   const { error: delError } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_tags')
+    .schema('vport')
+    .from('portfolio_tags')
     .delete()
     .eq('portfolio_item_id', itemId)
 

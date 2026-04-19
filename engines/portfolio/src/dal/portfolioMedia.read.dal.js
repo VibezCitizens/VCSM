@@ -5,7 +5,7 @@
 import { getSupabaseClient } from '../config.js'
 
 const MEDIA_COLUMNS = `
-  id, portfolio_item_id, actor_id, url, media_type, media_role,
+  id, portfolio_item_id, profile_id, url, media_type, media_role,
   alt_text, width, height, duration_seconds, sort_order, is_active,
   created_at, updated_at
 `
@@ -17,8 +17,8 @@ export async function dalListMediaByItemId({ itemId, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_media')
+    .schema('vport')
+    .from('portfolio_media')
     .select(MEDIA_COLUMNS)
     .eq('portfolio_item_id', itemId)
     .eq('is_active', true)
@@ -42,8 +42,8 @@ export async function dalListMediaByItemIds({ itemIds, trace = null }) {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .schema('vc')
-    .from('vport_portfolio_media')
+    .schema('vport')
+    .from('portfolio_media')
     .select(MEDIA_COLUMNS)
     .in('portfolio_item_id', itemIds)
     .eq('is_active', true)

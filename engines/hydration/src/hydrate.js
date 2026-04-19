@@ -82,19 +82,42 @@ export async function hydrateAndReturnSummaries({ actorIds }) {
     return { rows: [], error: null }
   }
 
-  const { rows: summaries, error } = await getActorSummariesByIdsDAL({ actorIds })
+  const store = useActorStore.getState()
+
+  // Split into fresh (from cache) and stale/missing (need fetch)
+  const fresh = []
+  const staleIds = []
+
+  for (const id of actorIds) {
+    if (!id) continue
+    const cached = store.actors[id]
+    if (cached && cached._hydratedAt && (Date.now() - cached._hydratedAt < 5 * 60 * 1000)) {
+      fresh.push(cached)
+    } else {
+      staleIds.push(id)
+    }
+  }
+
+  // If everything is fresh, return from cache — no network
+  if (!staleIds.length) {
+    return { rows: fresh, error: null }
+  }
+
+  // Fetch only missing/stale
+  const { rows: summaries, error } = await getActorSummariesByIdsDAL({ actorIds: staleIds })
 
   if (error) {
     if (import.meta.env?.DEV) {
       console.warn('[hydration] fetch failed:', error?.message ?? error)
     }
-    return { rows: [], error }
+    // Return fresh cache entries even on error
+    return { rows: fresh, error }
   }
 
   if (summaries.length) {
     const normalized = normalizeActorSummaries(summaries)
-    useActorStore.getState().upsertActors(normalized)
+    store.upsertActors(normalized)
   }
 
-  return { rows: summaries, error: null }
+  return { rows: [...fresh, ...summaries], error: null }
 }

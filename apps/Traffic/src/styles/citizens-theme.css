@@ -1,0 +1,71 @@
+/* ============================================================
+   VIBEZ CITIZENS — DESIGN TOKENS (Traffic consumer copy)
+   ============================================================
+   Mirrors the VCSM main theme token contract so Traffic and VCSM
+   share the same visual foundation.
+   ============================================================ */
+
+:root {
+  /* Background tiers */
+  --vc-bg-0: #0b0b0f;
+  --vc-bg-1: #0e0d14;
+  --vc-bg-2: #13121a;
+
+  /* Page glow gradients */
+  --vc-gradient-a: rgba(108, 77, 246, 0.15);
+  --vc-gradient-b: rgba(59, 130, 246, 0.1);
+
+  /* Surfaces */
+  --vc-surface: rgba(20, 18, 30, 0.66);
+  --vc-surface-strong: rgba(26, 22, 38, 0.84);
+  --vc-surface-input: rgba(14, 12, 22, 0.78);
+
+  /* Borders */
+  --vc-border: rgba(139, 92, 246, 0.18);
+  --vc-border-strong: rgba(139, 92, 246, 0.28);
+  --vc-border-subtle: rgba(139, 92, 246, 0.1);
+
+  /* Text */
+  --vc-text: #f0eef5;
+  --vc-text-soft: #d1d0d8;
+  --vc-text-muted: #9892a6;
+
+  /* Accents */
+  --vc-accent-primary: #8b5cf6;
+  --vc-accent-primary-hover: #a78bfa;
+  --vc-accent-secondary: #4ea4ff;
+  --vc-accent-tertiary: #42d3ff;
+  --vc-accent-pink: #ff69c6;
+
+  /* Semantic */
+  --vc-success: #22c55e;
+  --vc-error: #ef4444;
+  --vc-warning: #f59e0b;
+  --vc-danger-a: rgba(190, 24, 93, 0.7);
+  --vc-danger-b: rgba(220, 38, 38, 0.72);
+
+  /* Elevation */
+  --vc-shadow-card: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --vc-shadow-elevated: 0 24px 45px rgba(0, 0, 0, 0.36), 0 0 22px rgba(139, 92, 246, 0.1);
+  --vc-shadow-glow: 0 10px 30px rgba(139, 92, 246, 0.35);
+
+  /* Surface gradients */
+  --vc-card-bg: linear-gradient(180deg, rgba(20, 20, 26, 0.98) 0%, rgba(20, 20, 26, 0.9) 100%);
+  --vc-card-bg-blue: linear-gradient(160deg, rgba(139, 92, 246, 0.08) 0%, transparent 45%), var(--vc-card-bg);
+
+  /* Focus / glass */
+  --vc-ring: 0 0 0 3px rgba(139, 92, 246, 0.24);
+  --vc-backdrop-blur: blur(12px);
+
+  /* Legacy compat aliases */
+  --cit-bg-0: var(--vc-bg-0);
+  --cit-bg-1: var(--vc-bg-1);
+  --cit-bg-2: var(--vc-bg-2);
+  --cit-surface: var(--vc-surface);
+  --cit-border: var(--vc-border);
+  --cit-text: var(--vc-text);
+  --cit-text-muted: var(--vc-text-muted);
+  --cit-accent-a: var(--vc-accent-primary);
+  --cit-accent-b: var(--vc-accent-pink);
+  --cit-accent-c: var(--vc-accent-secondary);
+}
