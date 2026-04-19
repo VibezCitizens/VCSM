@@ -253,11 +253,11 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
     return result
   }
 
-  // 2. Try username → profile_id → actor_id
+  // 2. Try username → profile_id → actor_id (ilike = case-insensitive match)
   const { data: profileData, error: profileErr } = await supabase
     .from('profiles')
     .select('id')
-    .eq('username', key)
+    .ilike('username', key)
     .maybeSingle()
 
   if (!profileErr && profileData?.id) {

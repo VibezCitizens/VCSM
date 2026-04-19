@@ -100,12 +100,16 @@ export function ActorSeoModel({ actorId: explicitActorId, actorRow, vportProfile
     state,
   }
 
-  // Canonical slug is UUID-free — use the stored vport slug or username directly.
+  // Canonical slug is UUID-free — only use sources that can be reverse-looked-up.
   // Priority:
   //   1. vport.profiles.slug  — already unique and URL-safe (DB-enforced)
   //   2. actor_directory.username — unique handle for user actors
-  //   3. actor_directory.display_name (normalized) — fallback for user actors
-  //   4. vport.profiles.name (normalized) — fallback for vports without a slug
+  //
+  // display_name and vportProfile.name are intentionally excluded — neither is
+  // stored in a column queried by resolveActorBySlugOrUsernameDAL, so routing
+  // to a display_name-derived slug creates an un-reverse-lookupable URL that
+  // redirects to /feed on every visit. Users/vports without a stored slug or
+  // username fall back to bare actorId in the controller.
   let canonicalSlug = null
 
   if (vportProfile?.slug && validateStoredSlug(vportProfile.slug)) {
@@ -114,12 +118,7 @@ export function ActorSeoModel({ actorId: explicitActorId, actorRow, vportProfile
   } else if (actorRow?.username) {
     // Username is a clean handle; normalize defensively
     canonicalSlug = normalizeSlugPart(actorRow.username) || null
-  } else if (actorRow?.display_name) {
-    canonicalSlug = normalizeSlugPart(actorRow.display_name) || null
   }
-  // vportProfile.name is NOT used as a canonical slug — it cannot be reverse-looked-up
-  // by resolveActorBySlugOrUsernameDAL (only vport.profiles.slug is indexed).
-  // Vports without a stored slug fall back to bare actorId in the controller.
 
   return {
     actorId,

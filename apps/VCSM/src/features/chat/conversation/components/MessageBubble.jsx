@@ -106,7 +106,7 @@ export default function MessageBubble({
     >
       {/* Avatar (left only) */}
       {!isMine && showAvatar ? (
-        <div className="shrink-0 pointer-events-none">
+        <div className="shrink-0 w-7 pointer-events-none">
           {actor && (
             <ActorLink
               actor={actor}

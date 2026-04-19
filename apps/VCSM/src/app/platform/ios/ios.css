@@ -132,8 +132,8 @@ html.ios .chat-screen.chat-modern-conversation .chat-topbar {
 }
 
 html.ios .chat-screen.chat-modern-conversation .chat-messages {
-  padding-bottom: calc(1px + env(safe-area-inset-bottom));
-  scroll-padding-bottom: calc(1px + env(safe-area-inset-bottom));
+  padding-bottom: calc(86px + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(86px + env(safe-area-inset-bottom));
 }
 
 .chat-topbar-input {
