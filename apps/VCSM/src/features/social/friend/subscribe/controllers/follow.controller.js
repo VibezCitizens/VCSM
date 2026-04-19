@@ -6,6 +6,7 @@ import { ctrlGetFollowRelationshipState } from '@/features/social/friend/subscri
 import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
 import { FOLLOW_RELATION_STATES } from '@/features/social/friend/subscribe/model/followRelationState.model'
 import { publishVcsmNotification } from '@/features/notifications/publish'
+import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
 
 export async function ctrlSubscribe({
   followerActorId,
@@ -70,6 +71,8 @@ export async function ctrlSubscribe({
     throw error
   }
 
+  invalidateFollowerCount(followedActorId)
+
   // Publish follow notification through engine (replaces DB trigger path)
   publishVcsmNotification({
     recipientActorId: followedActorId,
@@ -109,6 +112,8 @@ export async function ctrlUnsubscribe({
     followerActorId,
     followedActorId,
   })
+
+  invalidateFollowerCount(followedActorId)
 
   return true
 }

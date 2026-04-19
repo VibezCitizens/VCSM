@@ -1,6 +1,6 @@
 // src/features/profiles/screens/views/profileheader/ActorProfileHeader.jsx
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import ProfileHeaderQRCodeModal from '@/features/profiles/screens/views/profileheader/ProfileHeaderQRCodeModal'
@@ -37,12 +37,13 @@ export default function ActorProfileHeader({
   const {
     count: followerCount,
     refresh: refreshFollowerCount,
+    optimisticAdjust,
   } = useFollowerCount(actorId)
 
   const {
     label: subscribeLabel,
     disabled: subscribeDisabled,
-    onClick: onSubscribe,
+    onClick: onSubscribeAsync,
     isSubscribed,
     debugInfo: subscribeDebugInfo,
   } = useSubscribeAction({
@@ -56,6 +57,11 @@ export default function ActorProfileHeader({
       }
     },
   })
+
+  const onSubscribe = useCallback(() => {
+    optimisticAdjust(isSubscribed ? -1 : 1)
+    onSubscribeAsync()
+  }, [optimisticAdjust, isSubscribed, onSubscribeAsync])
 
   const qrValue = actorId ? `${window.location.origin}/profile/${actorId}` : ''
 

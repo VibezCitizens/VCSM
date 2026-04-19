@@ -2,6 +2,7 @@
 
 import { dalDeactivateFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { dalUpdateRequestStatus } from '@/features/social/friend/request/dal/followRequests.dal'
+import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
 
 export async function ctrlUnsubscribe({
   followerActorId,
@@ -23,6 +24,8 @@ export async function ctrlUnsubscribe({
     targetActorId: followedActorId,
     status: 'revoked',
   })
+
+  invalidateFollowerCount(followedActorId)
 
   return true
 }

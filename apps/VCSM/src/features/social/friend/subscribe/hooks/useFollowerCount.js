@@ -10,6 +10,10 @@ export function useFollowerCount(targetActorId) {
     setRefreshKey(k => k + 1)
   }, [])
 
+  const optimisticAdjust = useCallback((delta) => {
+    setCount(c => Math.max(0, c + delta))
+  }, [])
+
   useEffect(() => {
     let alive = true
 
@@ -48,5 +52,6 @@ export function useFollowerCount(targetActorId) {
     count,
     loading,
     refresh,
+    optimisticAdjust,
   }
 }
