@@ -34,6 +34,7 @@ export function useResolveActorBySlug(slug) {
   const [loading, setLoading] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [error, setError] = useState(null)
+  const [resolvedSlug, setResolvedSlug] = useState(null)
 
   useEffect(() => {
     let alive = true
@@ -45,6 +46,7 @@ export function useResolveActorBySlug(slug) {
       setLoading(false)
       setNotFound(false)
       setError(null)
+      setResolvedSlug(null)
       return
     }
 
@@ -74,6 +76,7 @@ export function useResolveActorBySlug(slug) {
           setKind(null)
           setNotFound(true)
         }
+        setResolvedSlug(slug)
       } catch (e) {
         if (!alive) return
         appendIOSProdDebugLog('profile_slug_resolve_error', {
@@ -85,6 +88,7 @@ export function useResolveActorBySlug(slug) {
         setKind(null)
         setNotFound(false)
         setError(e instanceof Error ? e : new Error('Slug resolution failed'))
+        setResolvedSlug(slug)
       } finally {
         if (alive) setLoading(false)
       }
@@ -96,5 +100,14 @@ export function useResolveActorBySlug(slug) {
     }
   }, [slug])
 
-  return { actorId, kind, loading, notFound, error }
+  const isResolvedForCurrentSlug = !!slug && resolvedSlug === slug
+  const pendingForCurrentSlug = !!slug && !isResolvedForCurrentSlug
+
+  return {
+    actorId: isResolvedForCurrentSlug ? actorId : null,
+    kind: isResolvedForCurrentSlug ? kind : null,
+    loading: loading || pendingForCurrentSlug,
+    notFound: isResolvedForCurrentSlug ? notFound : false,
+    error: isResolvedForCurrentSlug ? error : null,
+  }
 }

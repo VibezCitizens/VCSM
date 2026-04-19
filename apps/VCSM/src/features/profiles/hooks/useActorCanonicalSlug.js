@@ -31,8 +31,9 @@ import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 export function useActorCanonicalSlug(actorId) {
   const [canonicalSlug, setCanonicalSlug] = useState(null)
   const [slugParts, setSlugParts] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [resolvedActorId, setResolvedActorId] = useState(null)
 
   useEffect(() => {
     let alive = true
@@ -45,6 +46,7 @@ export function useActorCanonicalSlug(actorId) {
           setSlugParts({})
           setError(null)
           setLoading(false)
+          setResolvedActorId(null)
         }
         return
       }
@@ -65,6 +67,7 @@ export function useActorCanonicalSlug(actorId) {
         })
         setCanonicalSlug(slug)
         setSlugParts(parts ?? {})
+        setResolvedActorId(actorId)
       } catch (e) {
         if (!alive) return
         appendIOSProdDebugLog('profile_canonical_slug_error', {
@@ -75,6 +78,7 @@ export function useActorCanonicalSlug(actorId) {
         // Fallback to bare actorId so a network failure doesn't redirect to /feed.
         // The profile renders at /profile/{uuid} rather than bouncing the user.
         setCanonicalSlug(actorId)
+        setResolvedActorId(actorId)
       } finally {
         if (alive) setLoading(false)
       }
@@ -84,5 +88,13 @@ export function useActorCanonicalSlug(actorId) {
     return () => { alive = false }
   }, [actorId])
 
-  return { canonicalSlug, slugParts, loading, error }
+  const isResolvedForCurrentActor = !!actorId && resolvedActorId === actorId
+  const pendingForCurrentActor = !!actorId && !isResolvedForCurrentActor
+
+  return {
+    canonicalSlug: isResolvedForCurrentActor ? canonicalSlug : null,
+    slugParts: isResolvedForCurrentActor ? slugParts : {},
+    loading: loading || pendingForCurrentActor,
+    error: isResolvedForCurrentActor ? error : null,
+  }
 }
