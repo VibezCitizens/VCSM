@@ -19,7 +19,7 @@
 // Layer: Hook — navigation side effect only, no business logic.
 // ─────────────────────────────────────────────────────────────
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 /**
@@ -31,25 +31,13 @@ import { useNavigate } from 'react-router-dom'
 export function useActorSlugRedirect(routeParam, canonicalSlug, resolvedActorId) {
   const navigate = useNavigate()
 
-  // Guard: redirect fires at most once per mount/slug pair.
-  // Resets automatically when canonicalSlug changes (new actor).
-  const lastRedirectedTo = useRef(null)
-
   useEffect(() => {
     // Wait until we have the canonical slug
     if (!canonicalSlug) return
 
-    // Already on canonical URL — nothing to do
+    // Already on canonical URL — nothing to do (this also prevents redirect loops)
     if (routeParam === canonicalSlug) return
 
-    // Already redirected to this exact slug this session — avoid loop
-    if (lastRedirectedTo.current === canonicalSlug) return
-
-    lastRedirectedTo.current = canonicalSlug
-
-    // Forward actorId in state for informational use at the destination.
-    // The destination screen always performs its own strict resolution —
-    // this state does NOT bypass any DB lookup.
     navigate(`/profile/${canonicalSlug}`, {
       replace: true,
       state: { actorId: resolvedActorId ?? null },
