@@ -1,4 +1,5 @@
 const ENABLE_KEY = '__vcsm_ios_dbg'
+const LEGACY_ENABLE_KEY = '__vcsm_dbg'
 const LOGS_KEY = '__vcsm_ios_dbg_logs'
 const MAX_LOGS = 500
 
@@ -121,7 +122,10 @@ function parseToggleValue(raw) {
 export function isIOSProdDebuggerEnabled() {
   if (!hasWindow()) return false
   try {
-    return window.localStorage?.getItem(ENABLE_KEY) === '1'
+    return (
+      window.localStorage?.getItem(ENABLE_KEY) === '1' ||
+      window.localStorage?.getItem(LEGACY_ENABLE_KEY) === '1'
+    )
   } catch {
     return false
   }
@@ -131,7 +135,10 @@ export function setIOSProdDebuggerEnabled(enabled) {
   if (!hasWindow()) return
   try {
     if (enabled) window.localStorage?.setItem(ENABLE_KEY, '1')
-    else window.localStorage?.removeItem(ENABLE_KEY)
+    else {
+      window.localStorage?.removeItem(ENABLE_KEY)
+      window.localStorage?.removeItem(LEGACY_ENABLE_KEY)
+    }
   } catch {
     // Ignore localStorage errors.
   }

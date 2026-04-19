@@ -191,7 +191,7 @@ export default function IOSProdRouteDebugger() {
           <div style={{ padding: '10px 12px', borderBottom: '1px solid #1f2937' }}>
             <div style={{ color: '#7dd3fc', fontSize: 12, fontWeight: 700 }}>{headerText}</div>
             <div style={{ color: '#9ca3af', fontSize: 11, marginTop: 4 }}>
-              disable with `localStorage.removeItem('__vcsm_ios_dbg')`
+              disable with `localStorage.removeItem('__vcsm_ios_dbg')` (or `__vcsm_dbg`)
             </div>
           </div>
 
