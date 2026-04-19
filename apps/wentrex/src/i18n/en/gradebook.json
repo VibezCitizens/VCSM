@@ -1,0 +1,14 @@
+{
+  "gradebook": "Gradebook",
+  "grade": "Grade",
+  "grades": "Grades",
+  "noGrades": "No grades yet.",
+  "submitGrade": "Submit grade",
+  "updateGrade": "Update grade",
+  "passing": "Passing",
+  "failing": "Failing",
+  "gradeScale": "Grade scale",
+  "average": "Average",
+  "highest": "Highest",
+  "lowest": "Lowest"
+}

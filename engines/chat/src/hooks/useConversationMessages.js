@@ -143,27 +143,29 @@ export default function useConversationMessages({
      Optimistic send lifecycle
      ============================================================ */
 
-  const addOptimistic = useCallback(({ body, kind, mediaUrl, attachments = [] }) => {
-  const clientId = generateClientId()
+  const addOptimistic = useCallback(({ body, kind, mediaUrl, attachments = [], __uploading = false, clientId: externalClientId } = {}) => {
+    const clientId = externalClientId || generateClientId()
 
-  setMessages((prev) => [
-    ...prev,
-    {
-      id: clientId,
-      clientId,
-      body,
-      kind,
-      type: kind,
-      mediaUrl: mediaUrl || (attachments[0]?.public_url || null),
-      attachments,
-      senderActorId: actorId,
-      createdAt: new Date().toISOString(),
-      __optimistic: true,
-    },
-  ])
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: clientId,
+        clientId,
+        body,
+        kind,
+        type: kind,
+        mediaUrl: mediaUrl || (attachments[0]?.public_url || null),
+        attachments,
+        senderActorId: actorId,
+        createdAt: new Date().toISOString(),
+        __optimistic: true,
+        __uploading,
+        __failed: false,
+      },
+    ])
 
-  return clientId
-}, [actorId])
+    return clientId
+  }, [actorId])
 
 
   const replaceOptimistic = useCallback((clientId, message) => {
@@ -211,12 +213,57 @@ export default function useConversationMessages({
     setMessages((prev) => prev.filter((m) => m.id !== clientId))
   }, [])
 
+  const markFailed = useCallback((clientId) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === clientId || m.clientId === clientId
+          ? { ...m, __optimistic: false, __failed: true }
+          : m
+      )
+    )
+  }, [])
+
+  const retryMessage = useCallback(
+    async (clientId) => {
+      const msg = messages.find((m) => m.id === clientId || m.clientId === clientId)
+      if (!msg) return { ok: false, error: 'Message not found.' }
+
+      // reset to pending state
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === clientId || m.clientId === clientId
+            ? { ...m, __optimistic: true, __failed: false }
+            : m
+        )
+      )
+
+      try {
+        const { message } = await sendMessageController({
+          conversationId,
+          actorId,
+          body: msg.body || '',
+          mediaUrl: msg.mediaUrl || null,
+          messageKind: msg.kind || msg.type || 'text',
+          clientId: msg.clientId,
+          attachments: msg.attachments || [],
+        })
+
+        replaceOptimistic(msg.clientId, message)
+        return { ok: true, message }
+      } catch (err) {
+        markFailed(msg.clientId)
+        return { ok: false, error: err?.message || 'Failed to send message.' }
+      }
+    },
+    [messages, conversationId, actorId, replaceOptimistic, markFailed]
+  )
+
   /* ============================================================
      Intent API
      ============================================================ */
 
   const onSendMessage = useCallback(
-  async ({ body = '', type = 'text', mediaUrl = null, attachments = [] }) => {
+  async ({ body = '', type = 'text', mediaUrl = null, attachments = [], prebuiltClientId = null }) => {
     const trimmed = String(body || '').trim()
 
     const hasBody = trimmed.length > 0
@@ -226,7 +273,8 @@ export default function useConversationMessages({
       return { ok: false, error: 'Message is empty.' }
     }
 
-    const clientId = addOptimistic({
+    // if a placeholder was pre-inserted (media upload flow), reuse its clientId
+    const clientId = prebuiltClientId ?? addOptimistic({
       body: hasBody ? trimmed : '',
       kind: type,
       mediaUrl,
@@ -247,11 +295,11 @@ export default function useConversationMessages({
       replaceOptimistic(clientId, message)
       return { ok: true, message }
     } catch (err) {
-      removeOptimistic(clientId)
+      markFailed(clientId)
       return { ok: false, error: err?.message || 'Failed to send message.' }
     }
   },
-  [conversationId, actorId, addOptimistic, replaceOptimistic, removeOptimistic]
+  [conversationId, actorId, addOptimistic, replaceOptimistic, markFailed]
 )
 
 
@@ -384,5 +432,8 @@ export default function useConversationMessages({
     onSendMessage,
     onEditMessage,
     onDeleteMessage,
+    addOptimistic,
+    markFailed,
+    retryMessage,
   }
 }

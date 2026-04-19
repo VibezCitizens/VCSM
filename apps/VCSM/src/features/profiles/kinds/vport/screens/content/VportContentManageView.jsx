@@ -7,21 +7,35 @@ import { useVportContentPages } from "@/features/profiles/kinds/vport/screens/co
 import VportContentOwnerRow from "@/features/profiles/kinds/vport/screens/content/components/VportContentOwnerRow";
 import VportContentPageForm from "@/features/profiles/kinds/vport/screens/content/components/VportContentPageForm";
 import VportContentEmptyState from "@/features/profiles/kinds/vport/screens/content/components/VportContentEmptyState";
+import VportContentTemplatePicker from "@/features/profiles/kinds/vport/screens/content/components/VportContentTemplatePicker";
 
-export function VportContentManageView({ actorId }) {
+// sentinel — create opened but template not yet chosen
+const TEMPLATE_PENDING = Symbol("TEMPLATE_PENDING");
+
+export function VportContentManageView({ actorId, vportType = null }) {
   const { pages, loading, error, createPage, updatePage, deletePage, togglePublish } =
     useVportContentPages({ actorId });
 
   const [formState, setFormState] = useState(null); // null | { mode: 'create' } | { mode: 'edit', page }
   const [formLoading, setFormLoading] = useState(false);
+  // TEMPLATE_PENDING = picker showing; null = blank; object = selected template
+  const [selectedTemplate, setSelectedTemplate] = useState(TEMPLATE_PENDING);
 
-  const openCreate = useCallback(() => setFormState({ mode: "create" }), []);
+  const openCreate = useCallback(() => {
+    setSelectedTemplate(TEMPLATE_PENDING);
+    setFormState({ mode: "create" });
+  }, []);
   const openEdit = useCallback((page) => setFormState({ mode: "edit", page }), []);
-  const closeForm = useCallback(() => setFormState(null), []);
+  const closeForm = useCallback(() => {
+    setFormState(null);
+    setSelectedTemplate(TEMPLATE_PENDING);
+  }, []);
 
   const handleSubmit = useCallback(
-    async (fields) => {
+    async ({ summary, ...rest }) => {
       setFormLoading(true);
+      // summary is the UI label; controller expects excerpt
+      const fields = { ...rest, excerpt: summary ?? null };
       let result;
 
       if (formState?.mode === "create") {
@@ -40,6 +54,22 @@ export function VportContentManageView({ actorId }) {
     },
     [formState, createPage, updatePage, closeForm]
   );
+
+  const initialValues = selectedTemplate && selectedTemplate !== TEMPLATE_PENDING
+    ? {
+        title: selectedTemplate.suggestedTitle ?? "",
+        summary: selectedTemplate.suggestedSummary ?? "",
+        body: selectedTemplate.suggestedContent ?? "",
+        category: selectedTemplate.category ?? "",
+      }
+    : null;
+
+  const showTemplatePicker =
+    formState?.mode === "create" && selectedTemplate === TEMPLATE_PENDING;
+
+  const showForm =
+    formState !== null &&
+    (formState.mode === "edit" || selectedTemplate !== TEMPLATE_PENDING);
 
   return (
     <div className="profiles-card rounded-2xl p-4 flex flex-col gap-4">
@@ -61,13 +91,36 @@ export function VportContentManageView({ actorId }) {
         )}
       </div>
 
-      {formState && (
+      {showTemplatePicker && (
+        <div className="profiles-subcard rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-white/60 text-xs font-semibold uppercase tracking-wider">
+              New Content Page
+            </div>
+            <button
+              type="button"
+              onClick={closeForm}
+              className="text-white/30 hover:text-white/60 text-xs transition"
+            >
+              Cancel
+            </button>
+          </div>
+          <VportContentTemplatePicker
+            vportType={vportType}
+            onSelect={(template) => setSelectedTemplate(template)}
+            onBlank={() => setSelectedTemplate(null)}
+          />
+        </div>
+      )}
+
+      {showForm && (
         <div className="profiles-subcard rounded-2xl p-4">
           <div className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">
             {formState.mode === "create" ? "New Content Page" : "Edit Content Page"}
           </div>
           <VportContentPageForm
             page={formState.mode === "edit" ? formState.page : null}
+            initialValues={initialValues}
             onSubmit={handleSubmit}
             onCancel={closeForm}
             loading={formLoading}

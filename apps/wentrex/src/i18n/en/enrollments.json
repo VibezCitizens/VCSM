@@ -1,0 +1,12 @@
+{
+  "enrollments": "Enrollments",
+  "enrolled": "Enrolled",
+  "notEnrolled": "Not enrolled",
+  "enroll": "Enroll",
+  "unenroll": "Unenroll",
+  "enrollmentDate": "Enrolled on {{date}}",
+  "noEnrollments": "No enrollments yet.",
+  "pendingEnrollment": "Enrollment pending",
+  "enrollmentApproved": "Enrollment approved",
+  "enrollmentRejected": "Enrollment rejected"
+}

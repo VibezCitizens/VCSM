@@ -1,0 +1,17 @@
+{
+  "loading": "Loading...",
+  "saving": "Saving...",
+  "deleting": "Deleting...",
+  "submitting": "Submitting...",
+  "retrying": "Retrying...",
+  "syncing": "Syncing...",
+  "searching": "Searching...",
+  "uploading": "Uploading...",
+  "processing": "Processing...",
+  "refreshing": "Refreshing...",
+  "confirming": "Confirming...",
+  "cancelling": "Cancelling...",
+  "empty": "Nothing here yet.",
+  "noResults": "No results found.",
+  "error": "Something went wrong."
+}

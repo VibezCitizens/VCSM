@@ -41,7 +41,12 @@ export function VportDashboardScreen() {
   );
 
   const goBack = useCallback(() => actorId && navigate(`/profile/${actorId}`), [navigate, actorId]);
-  const openQr = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/qr`), [navigate, actorId]);
+  const openQr = useCallback(() => {
+    if (!actorId) return;
+    const slug = dashboardDetails.slug;
+    if (slug) navigate(`/profile/${slug}/menu/qr`);
+    else navigate(`/actor/${actorId}/menu/qr`);
+  }, [navigate, actorId, dashboardDetails.slug]);
   const openFlyer = useCallback(() => {
     if (!actorId) return;
     const activeType = normalizeVportType(identity?.vportType ?? dashboardDetails.vportType ?? null);
@@ -49,10 +54,21 @@ export function VportDashboardScreen() {
     navigate(`/actor/${actorId}/menu/flyer${query}`);
   }, [navigate, actorId, identity?.vportType, dashboardDetails.vportType]);
   const openFlyerEditor = useCallback(() => actorId && navigate(`/actor/${actorId}/menu/flyer/edit`), [navigate, actorId]);
-  const openOnlineMenuPreview = useCallback(() => actorId && navigate(`/actor/${actorId}/menu`), [navigate, actorId]);
+  const openOnlineMenuPreview = useCallback(() => {
+    if (!actorId) return;
+    const slug = dashboardDetails.slug;
+    if (slug) navigate(`/profile/${slug}/menu`);
+    else navigate(`/actor/${actorId}/menu`);
+  }, [navigate, actorId, dashboardDetails.slug]);
   const openExchangeRates = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/exchange`), [navigate, actorId]);
   const openServices = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/services`), [navigate, actorId]);
   const openReviews = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/reviews`), [navigate, actorId]);
+  const openReviewsQr = useCallback(() => {
+    if (!actorId) return;
+    const slug = dashboardDetails.slug;
+    if (slug) navigate(`/profile/${slug}/reviews/qr`);
+    else navigate(`/actor/${actorId}/reviews/qr`);
+  }, [navigate, actorId, dashboardDetails.slug]);
   const openCalendar = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/calendar`), [navigate, actorId]);
   const openPortfolio = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/portfolio`), [navigate, actorId]);
   const openBookingHistory = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/booking-history`), [navigate, actorId]);
@@ -84,6 +100,7 @@ export function VportDashboardScreen() {
           openExchangeRates,
           openServices,
           openReviews,
+          openReviewsQr,
           openCalendar,
           openGasPrices,
           openAdsPipeline,
@@ -103,6 +120,7 @@ export function VportDashboardScreen() {
       openExchangeRates,
       openServices,
       openReviews,
+      openReviewsQr,
       openCalendar,
       openGasPrices,
       openAdsPipeline,

@@ -222,6 +222,17 @@ export function useFeed(viewerActorId, realmId, { viewerIsAdult: viewerIsAdultPr
             recordStep("hydration_skipped_all_fresh", { actorCount: feedActorIds.length });
           }
 
+          // vport.profiles has owner-only RLS → vportMap is empty for non-owner users.
+          // These actors were stamped fresh by the upsert above but have null names.
+          // Force the canonical RPC (vc.get_actor_summaries, SECURITY DEFINER) for them.
+          const vportActorsWithNoName = (actors || [])
+            .filter((a) => a.kind === 'vport' && !vportMap[a.id]?.name)
+            .map((a) => a.id)
+            .filter((id) => !staleOrMissing.includes(id));
+          if (vportActorsWithNoName.length) {
+            hydrateActorsByIds(vportActorsWithNoName, { force: true }).catch(() => {});
+          }
+
           setHiddenPostIds((prev) => {
             const next = new Set(prev);
             hiddenByMeSet.forEach((id) => next.add(id));

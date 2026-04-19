@@ -1,24 +1,16 @@
 // src/features/profiles/kinds/vport/controller/content/updateVportContentPage.controller.js
+// Slug is intentionally excluded from the patch — slugs are immutable after creation.
 
 import readVportContentPageDAL from "@/features/profiles/kinds/vport/dal/content/readVportContentPage.dal";
 import updateVportContentPageDAL from "@/features/profiles/kinds/vport/dal/content/updateVportContentPage.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
 
 const VALID_CATEGORIES = ["guide", "faq", "emergency", "tips", "educational"];
-const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function validateSlug(slug) {
-  if (!slug) return "Slug is required.";
-  if (slug.length > 160) return "Slug must be 160 characters or fewer.";
-  if (!SLUG_RE.test(slug)) return "Slug must be lowercase with hyphens only (e.g. my-guide).";
-  return null;
-}
 
 export async function updateVportContentPageController({
   actorId,
   id,
   title,
-  slug,
   excerpt,
   body,
   category,
@@ -36,12 +28,6 @@ export async function updateVportContentPageController({
   if (title !== undefined) {
     if (!title?.trim()) throw new Error("Title is required.");
     patch.title = title.trim();
-  }
-
-  if (slug !== undefined) {
-    const slugErr = validateSlug(slug);
-    if (slugErr) throw new Error(slugErr);
-    patch.slug = slug.trim();
   }
 
   if (excerpt !== undefined) patch.excerpt = excerpt?.trim() || null;

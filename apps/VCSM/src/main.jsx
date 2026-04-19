@@ -24,6 +24,8 @@ setupVcsmNotificationsEngine()
 import App from './App'
 import { AuthProvider } from '@/app/providers/AuthProvider'
 import { IdentityProvider } from '@/state/identity/identityContext'
+import { I18nProvider } from '@i18n'
+import { vcsmDictionary } from '@/i18n/setup'
 
 import { registerSW } from 'virtual:pwa-register'
 
@@ -48,11 +50,13 @@ if (import.meta.env.PROD) {
 createRoot(document.getElementById('root')).render(
   <RootMode>
     <BrowserRouter>
-      <AuthProvider>
-        <IdentityProvider>
-          <App />
-        </IdentityProvider>
-      </AuthProvider>
+      <I18nProvider dictionary={vcsmDictionary}>
+        <AuthProvider>
+          <IdentityProvider>
+            <App />
+          </IdentityProvider>
+        </AuthProvider>
+      </I18nProvider>
     </BrowserRouter>
   </RootMode>
 )

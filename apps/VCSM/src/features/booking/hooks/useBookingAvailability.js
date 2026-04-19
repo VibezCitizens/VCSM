@@ -7,6 +7,7 @@ export default function useBookingAvailability({
   rangeEnd = null,
   statuses = null,
   exceptionTypes = null,
+  publicMode = false,
   enabled = true,
 } = {}) {
   const [data, setData] = useState(null);
@@ -31,6 +32,7 @@ export default function useBookingAvailability({
         rangeEnd,
         statuses,
         exceptionTypes,
+        publicMode,
       });
 
       setData(next);

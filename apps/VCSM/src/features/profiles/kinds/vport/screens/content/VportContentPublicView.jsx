@@ -1,5 +1,5 @@
 // src/features/profiles/kinds/vport/screens/content/VportContentPublicView.jsx
-// Public view: grid of published content cards for any viewer.
+// Public view: list of published content cards for any viewer.
 
 import { useState, useCallback } from "react";
 
@@ -10,15 +10,24 @@ import VportContentEmptyState from "@/features/profiles/kinds/vport/screens/cont
 
 export function VportContentPublicView({ actorId }) {
   const { pages, loading, error } = useVportPublicContent({ actorId });
-  const [openPageId, setOpenPageId] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null);
 
   const handleOpenPage = useCallback((page) => {
-    setOpenPageId(page?.id ?? null);
+    const idx = pages.findIndex((p) => p.id === page?.id);
+    if (idx !== -1) setOpenIndex(idx);
+  }, [pages]);
+
+  const handleCloseViewer = useCallback(() => setOpenIndex(null), []);
+
+  const handleNext = useCallback(() => {
+    setOpenIndex((i) => (i < pages.length - 1 ? i + 1 : i));
+  }, [pages.length]);
+
+  const handlePrev = useCallback(() => {
+    setOpenIndex((i) => (i > 0 ? i - 1 : i));
   }, []);
 
-  const handleCloseViewer = useCallback(() => {
-    setOpenPageId(null);
-  }, []);
+  const openPageId = openIndex !== null ? pages[openIndex]?.id ?? null : null;
 
   return (
     <div className="mt-2 flex flex-col gap-3">
@@ -35,7 +44,7 @@ export function VportContentPublicView({ actorId }) {
       )}
 
       {!loading && pages.length > 0 && (
-        <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+        <div className="flex flex-col gap-2">
           {pages.map((page) => (
             <VportContentPageCard key={page.id} page={page} onClick={handleOpenPage} />
           ))}
@@ -43,7 +52,14 @@ export function VportContentPublicView({ actorId }) {
       )}
 
       {openPageId && (
-        <VportContentPageViewer pageId={openPageId} onClose={handleCloseViewer} />
+        <VportContentPageViewer
+          pageId={openPageId}
+          onClose={handleCloseViewer}
+          onNext={openIndex < pages.length - 1 ? handleNext : null}
+          onPrev={openIndex > 0 ? handlePrev : null}
+          position={openIndex + 1}
+          total={pages.length}
+        />
       )}
     </div>
   );

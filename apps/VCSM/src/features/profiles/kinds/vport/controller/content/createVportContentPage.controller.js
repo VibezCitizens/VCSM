@@ -2,21 +2,42 @@
 
 import createVportContentPageDAL from "@/features/profiles/kinds/vport/dal/content/createVportContentPage.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
+import vportSchema from "@/services/supabase/vportClient";
 
 const VALID_CATEGORIES = ["guide", "faq", "emergency", "tips", "educational"];
-const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-function validateSlug(slug) {
-  if (!slug) return "Slug is required.";
-  if (slug.length > 160) return "Slug must be 160 characters or fewer.";
-  if (!SLUG_RE.test(slug)) return "Slug must be lowercase with hyphens only (e.g. my-guide).";
-  return null;
+function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 160);
+}
+
+async function resolveUniqueSlug(actorId, baseSlug) {
+  const { data } = await vportSchema
+    .from("content_pages")
+    .select("slug")
+    .eq("actor_id", actorId)
+    .like("slug", `${baseSlug}%`);
+
+  const existing = new Set((data ?? []).map((r) => r.slug));
+  if (!existing.has(baseSlug)) return baseSlug;
+
+  for (let i = 2; i <= 20; i++) {
+    const candidate = `${baseSlug}-${i}`;
+    if (!existing.has(candidate)) return candidate;
+  }
+
+  return `${baseSlug}-${Date.now().toString(36)}`;
 }
 
 export async function createVportContentPageController({
   actorId,
   title,
-  slug,
   excerpt = null,
   body = null,
   category = null,
@@ -25,8 +46,10 @@ export async function createVportContentPageController({
   if (!actorId) throw new Error("createVportContentPageController: actorId is required");
   if (!title?.trim()) throw new Error("Title is required.");
 
-  const slugErr = validateSlug(slug);
-  if (slugErr) throw new Error(slugErr);
+  const baseSlug = slugify(title.trim());
+  if (!baseSlug) throw new Error("Could not generate a valid slug from this title. Please use letters or numbers.");
+
+  const slug = await resolveUniqueSlug(actorId, baseSlug);
 
   if (category && !VALID_CATEGORIES.includes(category)) {
     throw new Error(`Invalid category. Must be one of: ${VALID_CATEGORIES.join(", ")}`);
@@ -35,7 +58,7 @@ export async function createVportContentPageController({
   const row = await createVportContentPageDAL({
     actorId,
     title: title.trim(),
-    slug: slug.trim(),
+    slug,
     excerpt: excerpt?.trim() || null,
     body: body?.trim() || null,
     category: category || null,

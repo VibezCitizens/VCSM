@@ -1,85 +1,58 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 
 const IS_DEV = import.meta.env.DEV
 
 export default function SubscribeDebugPanel({ debugInfo }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
+  const [railTarget, setRailTarget] = useState(null)
 
-  if (!IS_DEV || !debugInfo) return null
+  useEffect(() => {
+    setRailTarget(document.getElementById('debug-rail-right'))
+  }, [])
 
-  return (
-    <>
-      {!open && (
+  if (!IS_DEV || !debugInfo || !railTarget) return null
+
+  const copy = () => {
+    try { navigator.clipboard.writeText(JSON.stringify(debugInfo, null, 2)) } catch (_) {}
+  }
+
+  return createPortal(
+    <div>
+      {!open ? (
         <button
           onClick={() => setOpen(true)}
           style={{
-            position: 'fixed',
-            top: '50%',
-            right: 8,
-            transform: 'translateY(-50%)',
-            zIndex: 9999,
-            background: '#000',
-            color: '#0f0',
-            border: '1px solid #0f0',
-            borderRadius: 999,
-            padding: '6px 10px',
-            fontSize: 11,
-            fontFamily: 'monospace',
-            boxShadow: '0 0 6px #0f0',
-            opacity: 0.75,
-            cursor: 'pointer',
+            background: '#000', color: '#0f0', border: '1px solid #0f0',
+            borderRadius: 999, padding: '4px 12px', fontSize: 11,
+            fontFamily: 'monospace', boxShadow: '0 0 6px #0f0',
+            opacity: 0.85, cursor: 'pointer',
           }}
         >
           SUB
         </button>
-      )}
-
-      {open && (
+      ) : (
         <div
           style={{
-            position: 'fixed',
-            top: '50%',
-            right: 8,
-            transform: 'translateY(-50%)',
-            width: 'min(380px, calc(100vw - 24px))',
-            maxHeight: '70vh',
-            overflow: 'auto',
-            background: '#000',
-            color: '#0f0',
-            fontSize: 12,
-            padding: 10,
-            zIndex: 9999,
-            borderRadius: 8,
-            border: '1px solid #0f0',
-            boxShadow: '0 0 8px #0f0',
-            fontFamily: 'monospace',
-            opacity: 0.92,
+            width: 'min(380px, calc(100vw - 24px))', maxHeight: '70vh', overflow: 'auto',
+            background: '#000', color: '#0f0', fontSize: 12, padding: 10,
+            borderRadius: 8, border: '1px solid #0f0', boxShadow: '0 0 8px #0f0',
+            fontFamily: 'monospace', opacity: 0.92,
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
             <strong>SUBSCRIBE DEBUG</strong>
-            <button
-              onClick={() => setOpen(false)}
-              style={{
-                background: 'transparent',
-                color: '#0f0',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 12,
-              }}
-            >
-              x
-            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={copy} style={{ background: 'transparent', color: '#0f0', border: 'none', cursor: 'pointer', fontSize: 11 }}>copy</button>
+              <button onClick={() => setOpen(false)} style={{ background: 'transparent', color: '#0f0', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>_</button>
+            </div>
           </div>
-
-          <div style={{ marginTop: 6 }}>
-            <pre style={{ whiteSpace: 'pre-wrap', marginTop: 6 }}>
-              {JSON.stringify(debugInfo, null, 2)}
-            </pre>
-          </div>
+          <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
+            {JSON.stringify(debugInfo, null, 2)}
+          </pre>
         </div>
       )}
-    </>
+    </div>,
+    railTarget
   )
 }
-

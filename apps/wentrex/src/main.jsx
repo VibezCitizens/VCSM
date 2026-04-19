@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import 'uno.css'
 import App from "./App";
+import { I18nProvider } from '@i18n'
+import { wentrexDictionary } from '@/i18n/setup'
 import { setupWentrexIdentityEngine } from "@/features/identity/setup";
 import { setupWentrexChatEngine } from "@/features/communication/setup";
 
@@ -30,7 +32,9 @@ if (import.meta.env.PROD) {
 createRoot(document.getElementById('root')).render(
   <RootMode>
     <BrowserRouter>
-      <App />
+      <I18nProvider dictionary={wentrexDictionary}>
+        <App />
+      </I18nProvider>
     </BrowserRouter>
   </RootMode>
 )

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
 
 export function VportActorMenuManageHeader({
   actorId,
@@ -12,6 +13,7 @@ export function VportActorMenuManageHeader({
   deletingCategory = false,
 } = {}) {
   const navigate = useNavigate();
+  const { canonicalSlug } = useActorCanonicalSlug(actorId);
 
   const canShowQr = !!actorId;
 
@@ -44,7 +46,8 @@ export function VportActorMenuManageHeader({
           type="button"
           onClick={() => {
             if (!actorId) return;
-            navigate(`/vport/${actorId}/menu/qr`);
+            if (canonicalSlug) navigate(`/profile/${canonicalSlug}/menu/qr`);
+            else navigate(`/actor/${actorId}/menu/qr`);
           }}
           disabled={!canShowQr}
           style={{ padding: "8px 12px", borderRadius: 12 }}

@@ -408,6 +408,7 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
       });
 
       // Upload files as media
+      const uploadedMedia = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const url = await uploadPortfolioFile(file, actorId);
@@ -427,6 +428,7 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
           mediaRole,
           sortOrder: i,
         });
+        uploadedMedia.push({ url, type: "image", role: mediaRole, sortOrder: i });
       }
 
       // Save locksmith-specific details if applicable
@@ -447,7 +449,16 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
       // Clean up previews
       previews.forEach(URL.revokeObjectURL);
 
-      onCreated?.();
+      const optimisticItem = {
+        id: item.id,
+        title: item.title ?? null,
+        portfolioKind: kind,
+        tags: item.tags ?? [],
+        coverUrl: uploadedMedia[0]?.url ?? null,
+        media: uploadedMedia,
+        mediaCount: uploadedMedia.length,
+      };
+      onCreated?.(optimisticItem);
     } catch (e) {
       setError(e);
     } finally {
@@ -722,17 +733,17 @@ export default function VportDashboardPortfolioScreen() {
     allItems,
     loading,
     error,
-    reload,
     optimisticRemove,
+    optimisticAdd,
   } = useVportPortfolio(targetActorId);
 
   const [showCreate, setShowCreate] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
-  const handleCreated = useCallback(() => {
+  const handleCreated = useCallback((optimisticItem) => {
     setShowCreate(false);
-    reload();
-  }, [reload]);
+    if (optimisticItem) optimisticAdd(optimisticItem);
+  }, [optimisticAdd]);
 
   const handleDelete = useCallback(async (item) => {
     if (!item?.id || !targetActorId) return;

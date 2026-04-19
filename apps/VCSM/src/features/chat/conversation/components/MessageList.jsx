@@ -10,6 +10,7 @@ export default function MessageList({
   statusForMessage,
   onOpenActions,
   onOpenMedia,
+  retryMessage,
 }) {
   const bottomRef = useRef(null)
   const lastCountRef = useRef(0)
@@ -102,7 +103,7 @@ export default function MessageList({
 
         return (
           <MessageGroup
-            key={`${group.senderActorId}-${index}`}
+            key={`group-${group.messages[0]?.id ?? group.messages[0]?.clientId ?? index}`}
             messages={group.messages}
             senderActor={group.senderActor}
             isMine={isMine}
@@ -110,6 +111,7 @@ export default function MessageList({
             statusForMessage={statusForMessage}
             onOpenActions={onOpenActions}
             onOpenMedia={onOpenMedia}
+            onRetry={retryMessage}
           />
         )
       })}

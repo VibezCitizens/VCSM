@@ -72,6 +72,8 @@ export function useVportBookingView({ profile, isOwner = false }) {
   const [ownerCustomerActorId, setOwnerCustomerActorId] = useState(null);
   const [selectedDurationMinutes, setSelectedDurationMinutes] = useState(null);
   const [viewMode, setViewMode] = useState("calendar");
+  const [optimisticCancelledIds, setOptimisticCancelledIds] = useState([]);
+  const [optimisticConfirmedIds, setOptimisticConfirmedIds] = useState([]);
   const ownerFollowerSearch = useSubscribers(ownerActorId, {
     limit: 200,
     offset: 0,
@@ -92,12 +94,26 @@ export function useVportBookingView({ profile, isOwner = false }) {
     resourceId,
     rangeStart,
     rangeEnd,
+    publicMode: !isOwner,
     enabled: Boolean(resourceId),
   });
 
   const createBooking = useCreateBooking();
   const manageAvailability = useManageAvailability();
-  const { bookings, rules, exceptions, serviceProfiles } = useAvailabilityData(availability);
+  const { bookings: rawBookings, rules, exceptions, serviceProfiles } = useAvailabilityData(availability);
+
+  const bookings = useMemo(() => {
+    let result = rawBookings;
+    if (optimisticCancelledIds.length) {
+      result = result.filter((b) => !optimisticCancelledIds.includes(b.id));
+    }
+    if (optimisticConfirmedIds.length) {
+      result = result.map((b) =>
+        optimisticConfirmedIds.includes(b.id) ? { ...b, status: "confirmed" } : b
+      );
+    }
+    return result;
+  }, [rawBookings, optimisticCancelledIds, optimisticConfirmedIds]);
 
   const serviceDurationMinutes = useMemo(() => {
     const firstProfileWithDuration = serviceProfiles.find(
@@ -357,6 +373,8 @@ export function useVportBookingView({ profile, isOwner = false }) {
     createBooking,
     manageAvailability,
     availability,
+    setOptimisticCancelledIds,
+    setOptimisticConfirmedIds,
   });
 
   return {

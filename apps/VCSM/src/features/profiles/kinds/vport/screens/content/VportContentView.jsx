@@ -11,11 +11,15 @@ export function VportContentView({ profile, isOwner = false }) {
     () => profile?.actorId ?? profile?.actor_id ?? null,
     [profile]
   );
+  const vportType = useMemo(
+    () => profile?.vportType ?? profile?.vport_type ?? null,
+    [profile]
+  );
 
   if (!actorId) return null;
 
   if (isOwner) {
-    return <VportContentManageView actorId={actorId} />;
+    return <VportContentManageView actorId={actorId} vportType={vportType} />;
   }
 
   return <VportContentPublicView actorId={actorId} />;

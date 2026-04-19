@@ -17,6 +17,7 @@ export default function MessageBubble({
   statusSlot = null,
   onOpenActions,
   onOpenMedia,
+  onRetry,
 }) {
   const longPressTimer = useRef(null)
 
@@ -72,7 +73,11 @@ export default function MessageBubble({
     })
   }
 
-  const isMediaOnly = !!message.mediaUrl && !message.body
+  const isUploading = !!message.__uploading
+  const isFailed = !!message.__failed
+  const isPending = !!message.__optimistic && !isFailed
+
+  const isMediaOnly = (!!message.mediaUrl || isUploading) && !message.body
 
   const showTextTimestamp = !!timeText && !!message.body && !message.isDeleted
 
@@ -94,7 +99,9 @@ export default function MessageBubble({
     <div
       className={clsx(
         'chat-modern-message-row flex items-end gap-2',
-        isMine ? 'justify-end' : 'justify-start'
+        isMine ? 'justify-end' : 'justify-start',
+        isPending && 'opacity-65',
+        isFailed && 'opacity-80',
       )}
     >
       {/* Avatar (left only) */}
@@ -173,6 +180,13 @@ export default function MessageBubble({
           {/* NEVER mount content once deleted */}
           {!message.isDeleted && (
             <>
+              {/* uploading placeholder — no URL yet */}
+              {isUploading && !message.mediaUrl && (
+                <div className="w-36 h-36 rounded-xl bg-white/10 flex items-center justify-center">
+                  <span className="text-white/40 text-xs">Uploading…</span>
+                </div>
+              )}
+
               {message.mediaUrl && (
                 <MessageMedia
                   type={message.type}
@@ -216,6 +230,29 @@ export default function MessageBubble({
         {isMine && statusSlot && (
           <div className="mt-0.5 text-right text-[10px] text-white/50">
             {statusSlot}
+          </div>
+        )}
+
+        {/* Optimistic states */}
+        {isMine && isUploading && (
+          <div className="mt-0.5 text-right text-[10px] text-white/35">
+            Uploading…
+          </div>
+        )}
+        {isMine && isPending && !isUploading && (
+          <div className="mt-0.5 text-right text-[10px] text-white/35">
+            Sending…
+          </div>
+        )}
+        {isMine && isFailed && (
+          <div className="mt-0.5 text-right">
+            <button
+              type="button"
+              onClick={() => onRetry?.(message.clientId || message.id)}
+              className="text-[11px] text-rose-400 active:text-rose-300"
+            >
+              Failed · Retry
+            </button>
           </div>
         )}
       </div>

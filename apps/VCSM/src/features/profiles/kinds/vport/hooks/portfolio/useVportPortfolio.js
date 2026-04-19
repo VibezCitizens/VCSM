@@ -103,6 +103,12 @@ export function useVportPortfolio(actorId) {
     return () => setItems(snapshot)
   }, [actorId])
 
+  const optimisticAdd = useCallback((item) => {
+    if (!item?.id) return
+    setItems((prev) => [item, ...prev])
+    invalidatePortfolioCache(actorId)
+  }, [actorId])
+
   useEffect(() => {
     loadPortfolio()
   }, [loadPortfolio])
@@ -144,5 +150,6 @@ export function useVportPortfolio(actorId) {
     openItem,
     closeItem,
     optimisticRemove,
+    optimisticAdd,
   }
 }

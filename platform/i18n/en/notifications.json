@@ -1,0 +1,13 @@
+{
+  "notifications": "Notifications",
+  "noNotifications": "No notifications yet.",
+  "markAllRead": "Mark all as read",
+  "newMessage": "New message",
+  "newFollower": "New follower",
+  "bookingRequest": "Booking request",
+  "bookingConfirmed": "Booking confirmed",
+  "bookingCancelled": "Booking cancelled",
+  "reviewReceived": "New review",
+  "roseReceived": "Someone sent you a rose",
+  "systemUpdate": "System update"
+}

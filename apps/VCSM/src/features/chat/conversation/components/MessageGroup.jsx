@@ -3,14 +3,15 @@
 import React from 'react'
 import MessageBubble from './MessageBubble'
 
-export default function MessageGroup({
+function MessageGroup({
   messages = [],
   senderActor,
   isMine,
   isGroupChat,
   statusForMessage,
   onOpenActions,
-  onOpenMedia, // ✅ add
+  onOpenMedia,
+  onRetry,
 }) {
   if (!Array.isArray(messages) || messages.length === 0) return null
 
@@ -34,10 +35,13 @@ export default function MessageGroup({
                 : null
             }
             onOpenActions={onOpenActions}
-            onOpenMedia={onOpenMedia} // ✅ add
+            onOpenMedia={onOpenMedia}
+            onRetry={onRetry}
           />
         )
       })}
     </div>
   )
 }
+
+export default React.memo(MessageGroup)

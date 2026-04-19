@@ -1,5 +1,8 @@
+import { useEffect } from "react";
 import ActorLink from "@/shared/components/ActorLink";
 import { useActorSummary } from "@/state/actors/useActorSummary";
+import { hydrateActorsFromRows } from "@/state/actors/hydrateActors";
+import { useTranslation } from "@i18n";
 
 function AppointmentStatusBadge({ status, statusLabels }) {
   const label = statusLabels[status] || "Pending";
@@ -11,11 +14,18 @@ function AppointmentStatusBadge({ status, statusLabels }) {
 }
 
 function AppointmentClientIdentity({ item, isOwner }) {
+  const customerActorId = item?.customerActorId ?? null;
+
+  useEffect(() => {
+    if (!customerActorId) return;
+    hydrateActorsFromRows([{ actor_id: customerActorId }]).catch(() => {});
+  }, [customerActorId]);
+
   const actorSummary = useActorSummary({
-    actorId: item?.customerActorId,
+    actorId: customerActorId,
     displayName: item?.clientName,
   });
-  const canLink = Boolean(item?.customerActorId && actorSummary?.actorId);
+  const canLink = Boolean(customerActorId && actorSummary?.actorId);
 
   if (canLink) {
     return (
@@ -49,7 +59,7 @@ function AppointmentClientIdentity({ item, isOwner }) {
   );
 }
 
-function OwnerCustomerPicker({
+function OwnerCustomerPicker({ t,
   ownerCustomerName = "",
   ownerFollowerMatches = [],
   ownerFollowersLoading = false,
@@ -72,7 +82,7 @@ function OwnerCustomerPicker({
         className="profiles-booking-owner-input"
         value={ownerCustomerName}
         onChange={(e) => onOwnerCustomerNameChange(e.target.value)}
-        placeholder="Search follower or type client name (optional)"
+        placeholder={t('booking.searchFollowerPlaceholder')}
       />
 
       {selectedOwnerFollower ? (
@@ -88,7 +98,7 @@ function OwnerCustomerPicker({
               className="profiles-booking-owner-selected-follower-clear"
               onClick={onClearOwnerFollower}
             >
-              Clear
+              {t('actions.clear')}
             </button>
           ) : null}
         </div>
@@ -123,18 +133,18 @@ function OwnerCustomerPicker({
       ) : null}
 
       {ownerFollowersLoading && hasQuery ? (
-        <p className="profiles-booking-owner-picker-meta">Searching followers...</p>
+        <p className="profiles-booking-owner-picker-meta">{t('booking.searchingFollowers')}</p>
       ) : null}
 
       {!ownerFollowersLoading && hasQuery && !hasMatches ? (
         <p className="profiles-booking-owner-picker-meta">
-          No follower match found. You can still save with this custom name.
+          {t('booking.noFollowerMatch')}
         </p>
       ) : null}
 
       {ownerFollowersError ? (
         <p className="profiles-booking-owner-picker-meta is-error">
-          Could not load followers right now. You can still type a custom name.
+          {t('booking.followersError')}
         </p>
       ) : null}
     </div>
@@ -172,16 +182,18 @@ export function BookingCalendarDayPanel({
   onCancelAppointment,
   cancellingAppointmentId = null,
 }) {
+  const { t } = useTranslation();
+
   return (
     <section className="profiles-booking-panel-shell" aria-label="Day details">
       <div className="profiles-booking-panel-head">
         <div>
-          <p className="profiles-booking-panel-kicker">Selected Day</p>
+          <p className="profiles-booking-panel-kicker">{t('booking.selectedDay')}</p>
           <h5 className="profiles-booking-panel-title">{selectedDateLabel}</h5>
         </div>
 
         <div className="profiles-booking-panel-count">
-          {selectedAppointments.length} appointments
+          {selectedAppointments.length} {t('booking.appointments')}
         </div>
       </div>
 
@@ -209,7 +221,7 @@ export function BookingCalendarDayPanel({
                 ))}
               </div>
             ) : (
-              <div className="profiles-booking-empty-slots">No open slots</div>
+              <div className="profiles-booking-empty-slots">{t('booking.noOpenSlots')}</div>
             )}
           </div>
         ))}
@@ -217,19 +229,20 @@ export function BookingCalendarDayPanel({
 
       {isOwner ? (
         <div className="profiles-booking-owner-hint">
-          Owner mode: select a slot, optionally add client name, then save appointment.
+          {t('booking.ownerModeHint')}
         </div>
       ) : null}
 
       <div className="profiles-booking-actions">
         {!isOwner && !viewerCanBook ? (
           <div className="profiles-booking-citizen-notice">
-            <p>Switch to your citizen profile to reserve an appointment.</p>
+            <p>{t('booking.citizenSwitchHint')}</p>
           </div>
         ) : null}
 
         {isOwner && typeof onOwnerCustomerNameChange === "function" ? (
           <OwnerCustomerPicker
+            t={t}
             ownerCustomerName={ownerCustomerName}
             ownerFollowerMatches={ownerFollowerMatches}
             ownerFollowersLoading={ownerFollowersLoading}
@@ -248,7 +261,7 @@ export function BookingCalendarDayPanel({
             onClick={onCreateAppointmentFromSelectedSlot}
             disabled={!selectedSlot}
           >
-            {primaryActionLabel || (isOwner ? "Create hold from selected slot" : "Request selected slot")}
+            {primaryActionLabel || (isOwner ? t('booking.createHold') : t('booking.requestSlot'))}
           </button>
         )}
 
@@ -259,7 +272,7 @@ export function BookingCalendarDayPanel({
             onClick={onToggleAvailabilityForSelectedSlot}
             disabled={!selectedSlot}
           >
-            {isSelectedSlotAvailable ? "Mark selected slot unavailable" : "Restore selected slot"}
+            {isSelectedSlotAvailable ? t('booking.markSlotUnavailable') : t('booking.restoreSlot')}
           </button>
         )}
 
@@ -268,7 +281,7 @@ export function BookingCalendarDayPanel({
           className="profiles-booking-action-btn is-ghost"
           onClick={onResetDay}
         >
-          Clear selected day
+          {t('booking.clearSelectedDay')}
         </button>
       </div>
 
@@ -302,7 +315,7 @@ export function BookingCalendarDayPanel({
                         onClick={() => onConfirmAppointment(item.id)}
                         disabled={confirmingAppointmentId === item.id}
                       >
-                        {confirmingAppointmentId === item.id ? "..." : "Accept"}
+                        {confirmingAppointmentId === item.id ? "..." : t('booking.accept')}
                       </button>
                     ) : null}
                     {typeof onCancelAppointment === "function" ? (
@@ -312,7 +325,7 @@ export function BookingCalendarDayPanel({
                         onClick={() => onCancelAppointment(item.id)}
                         disabled={cancellingAppointmentId === item.id}
                       >
-                        {cancellingAppointmentId === item.id ? "..." : "Cancel"}
+                        {cancellingAppointmentId === item.id ? "..." : t('actions.cancel')}
                       </button>
                     ) : null}
                   </div>
@@ -330,7 +343,7 @@ export function BookingCalendarDayPanel({
                       onClick={() => onCancelAppointment(item.id)}
                       disabled={cancellingAppointmentId === item.id}
                     >
-                      {cancellingAppointmentId === item.id ? "..." : "Cancel"}
+                      {cancellingAppointmentId === item.id ? "..." : t('actions.cancel')}
                     </button>
                   </div>
                 ) : null}
@@ -339,7 +352,7 @@ export function BookingCalendarDayPanel({
           ))
         ) : (
           <div className="profiles-booking-empty-appointments">
-            No appointments yet for this date.
+            {t('booking.noAppointmentsForDate')}
           </div>
         )}
       </div>

@@ -18,6 +18,8 @@ export function useVportBookingMutations({
   createBooking,
   manageAvailability,
   availability,
+  setOptimisticCancelledIds,
+  setOptimisticConfirmedIds,
 }) {
   const [confirmingAppointmentId, setConfirmingAppointmentId] = useState(null);
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState(null);
@@ -91,27 +93,38 @@ export function useVportBookingMutations({
 
   const onCancelSelectedAppointment = useCallback(
     async (bookingId) => {
-      if (!isOwner || !bookingId || !viewerActorId) return;
+      if (!bookingId || !viewerActorId) return;
 
+      setOptimisticCancelledIds?.((prev) => [...prev, bookingId]);
       setCancellingAppointmentId(bookingId);
       try {
         const result = await manageAvailability.cancelBooking({
           bookingId,
           requestActorId: viewerActorId,
-          cancelNote: "Cancelled by owner from profile booking panel.",
+          cancelNote: isOwner
+            ? "Cancelled by owner from profile booking panel."
+            : "Cancelled by customer from profile booking panel.",
         });
-        if (result?.ok) await availability.refresh();
+        if (result?.ok) {
+          await availability.refresh();
+          setOptimisticCancelledIds?.([]);
+        } else {
+          setOptimisticCancelledIds?.((prev) => prev.filter((id) => id !== bookingId));
+        }
+      } catch {
+        setOptimisticCancelledIds?.((prev) => prev.filter((id) => id !== bookingId));
       } finally {
         setCancellingAppointmentId(null);
       }
     },
-    [isOwner, viewerActorId, manageAvailability, availability]
+    [isOwner, viewerActorId, manageAvailability, availability, setOptimisticCancelledIds]
   );
 
   const onConfirmSelectedAppointment = useCallback(
     async (bookingId) => {
       if (!isOwner || !bookingId || !viewerActorId) return;
 
+      setOptimisticConfirmedIds?.((prev) => [...prev, bookingId]);
       setConfirmingAppointmentId(bookingId);
       try {
         const result = await manageAvailability.confirmBooking({
@@ -119,12 +132,19 @@ export function useVportBookingMutations({
           requestActorId: viewerActorId,
           internalNote: "Confirmed by owner from profile booking panel.",
         });
-        if (result?.ok) await availability.refresh();
+        if (result?.ok) {
+          await availability.refresh();
+          setOptimisticConfirmedIds?.([]);
+        } else {
+          setOptimisticConfirmedIds?.((prev) => prev.filter((id) => id !== bookingId));
+        }
+      } catch {
+        setOptimisticConfirmedIds?.((prev) => prev.filter((id) => id !== bookingId));
       } finally {
         setConfirmingAppointmentId(null);
       }
     },
-    [isOwner, viewerActorId, manageAvailability, availability]
+    [isOwner, viewerActorId, manageAvailability, availability, setOptimisticConfirmedIds]
   );
 
   return {

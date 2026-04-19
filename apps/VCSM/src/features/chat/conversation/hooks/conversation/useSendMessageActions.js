@@ -67,7 +67,7 @@ async function prepareUploadImage(file) {
   }
 }
 
-export default function useSendMessageActions({ conversationId, actorId, onSendMessage }) {
+export default function useSendMessageActions({ conversationId, actorId, onSendMessage, addOptimistic, markFailed }) {
   /* ============================================================
      Send
      ============================================================ */
@@ -88,6 +88,11 @@ export default function useSendMessageActions({ conversationId, actorId, onSendM
         return { ok: false, error: 'Only images are supported in chat right now.' }
       }
 
+      // insert uploading placeholder immediately so the user sees feedback
+      const placeholderClientId = addOptimistic
+        ? addOptimistic({ kind: 'image', body: '', __uploading: true })
+        : null
+
       const uploadFile = await prepareUploadImage(file)
 
       const now = new Date()
@@ -105,7 +110,7 @@ export default function useSendMessageActions({ conversationId, actorId, onSendM
       const { url, error: upErr } = await uploadToCloudflare(uploadFile, key)
 
       if (upErr || !url) {
-        console.error('upload failed:', upErr)
+        if (placeholderClientId && markFailed) markFailed(placeholderClientId)
         return { ok: false, error: upErr || 'Image upload failed.' }
       }
 
@@ -123,15 +128,17 @@ export default function useSendMessageActions({ conversationId, actorId, onSendM
           upload_status: 'ready',
           sort_order: 0,
         }],
+        prebuiltClientId: placeholderClientId,
       })
 
       if (sendResult?.ok === false) {
+        if (placeholderClientId && markFailed) markFailed(placeholderClientId)
         return { ok: false, error: sendResult.error || 'Image failed to send.' }
       }
 
       return { ok: true, url }
     },
-    [conversationId, actorId, onSendMessage]
+    [conversationId, actorId, onSendMessage, addOptimistic, markFailed]
   )
 
   return {

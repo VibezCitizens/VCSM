@@ -12,6 +12,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
       "flyer_edit",
       "menu_preview",
       "reviews",
+      "reviews_qr",
       "ads",
       "settings",
     ]),
@@ -19,17 +20,17 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
   service: {
     id: "service",
     label: "Service",
-    cardKeys: Object.freeze(["portfolio", "qr", "services", "reviews", "ads", "settings"]),
+    cardKeys: Object.freeze(["portfolio", "qr", "services", "reviews", "reviews_qr", "ads", "settings"]),
   },
   barber: {
     id: "barber",
     label: "Barber",
-    cardKeys: Object.freeze(["portfolio", "calendar", "booking_history", "services", "reviews", "ads", "settings"]),
+    cardKeys: Object.freeze(["portfolio", "calendar", "booking_history", "services", "reviews", "reviews_qr", "ads", "settings"]),
   },
   locksmith: {
     id: "locksmith",
     label: "Locksmith",
-    cardKeys: Object.freeze(["locksmith", "portfolio", "calendar", "booking_history", "services", "reviews", "ads", "settings"]),
+    cardKeys: Object.freeze(["locksmith", "portfolio", "calendar", "booking_history", "services", "reviews", "reviews_qr", "ads", "settings"]),
   },
   food: {
     id: "food",
@@ -41,6 +42,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
       "menu_preview",
       "services",
       "reviews",
+      "reviews_qr",
       "ads",
       "settings",
     ]),
@@ -48,7 +50,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
   gas: {
     id: "gas",
     label: "Gas & Fuel",
-    cardKeys: Object.freeze(["gas", "services", "reviews", "ads", "settings"]),
+    cardKeys: Object.freeze(["gas", "services", "reviews", "reviews_qr", "ads", "settings"]),
   },
   exchange: {
     id: "exchange",
@@ -57,6 +59,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
       "exchange",
       "services",
       "reviews",
+      "reviews_qr",
       "ads",
       "settings",
     ]),

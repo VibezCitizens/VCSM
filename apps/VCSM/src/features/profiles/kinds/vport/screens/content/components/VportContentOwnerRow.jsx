@@ -58,16 +58,30 @@ export function VportContentOwnerRow({ page, onEdit, onDelete, onTogglePublish }
           type="button"
           onClick={handleTogglePublish}
           disabled={publishPending}
+          title={page.isPublished ? "Click to unpublish" : "Click to publish"}
           className={`
-            px-2.5 py-1 rounded-lg text-[11px] font-semibold transition
+            flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition select-none
             ${page.isPublished
               ? "bg-green-500/15 text-green-400 hover:bg-green-500/25"
-              : "bg-white/8 text-white/40 hover:bg-white/15"
+              : "bg-white/6 text-white/35 hover:bg-white/12 hover:text-white/60"
             }
             ${publishPending ? "opacity-50 pointer-events-none" : ""}
           `}
         >
-          {page.isPublished ? "Live" : "Draft"}
+          <span
+            className={`
+              relative inline-flex w-7 h-4 rounded-full transition-colors duration-200 shrink-0
+              ${page.isPublished ? "bg-green-500" : "bg-white/20"}
+            `}
+          >
+            <span
+              className={`
+                absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform duration-200
+                ${page.isPublished ? "translate-x-3" : "translate-x-0"}
+              `}
+            />
+          </span>
+          {publishPending ? "Saving..." : page.isPublished ? "Live" : "Draft"}
         </button>
 
         <button

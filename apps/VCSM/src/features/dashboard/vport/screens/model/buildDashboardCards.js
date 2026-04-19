@@ -57,6 +57,12 @@ const CARD_CATALOG = Object.freeze({
     body: "View and manage your reviews and overall rating.",
     handlerKey: "openReviews",
   },
+  reviews_qr: {
+    key: "reviews_qr",
+    title: "Reviews QR",
+    body: "Share a QR code that lets customers scan directly to your reviews page.",
+    handlerKey: "openReviewsQr",
+  },
   booking_history: {
     key: "booking_history",
     title: "Booking History",

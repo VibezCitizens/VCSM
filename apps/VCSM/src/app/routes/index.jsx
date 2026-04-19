@@ -211,6 +211,17 @@ const VportMenuBySlugScreen = lazyWithLog("VportMenuBySlugScreen", () =>
   import("@/features/public/vportMenu/screen/VportPublicMenuBySlugScreen"),
 );
 
+const VportMenuQrBySlugScreen = lazyWithLog("VportMenuQrBySlugScreen", () =>
+  import("@/features/public/vportMenu/screen/VportPublicMenuQrBySlugScreen"),
+);
+
+const VportReviewsBySlugScreen = lazyWithLog("VportReviewsBySlugScreen", () =>
+  import("@/features/public/vportMenu/screen/VportPublicReviewsBySlugScreen"),
+);
+const VportReviewsQrBySlugScreen = lazyWithLog("VportReviewsQrBySlugScreen", () =>
+  import("@/features/public/vportMenu/screen/VportPublicReviewsQrBySlugScreen"),
+);
+
 /* ================= POSTS ================= */
 const PostFeedScreen = lazyWithLog("PostFeedScreen", () =>
   import("@/features/post/screens/PostFeed.screen"),
@@ -416,6 +427,9 @@ export default function AppRoutes() {
       VportActorMenuQrScreen,
       VportActorMenuFlyerScreen,
       VportMenuBySlugScreen,
+      VportMenuQrBySlugScreen,
+      VportReviewsBySlugScreen,
+      VportReviewsQrBySlugScreen,
     }),
 
     {

@@ -44,6 +44,9 @@ serviceAccountKey.json
 # Debug clients (never production)
 **/supabaseClient.debug.js
 
+# Supabase migrations (applied locally, never committed)
+**/supabase/migrations/
+
 # Logs
 *.log
 npm-debug.log*

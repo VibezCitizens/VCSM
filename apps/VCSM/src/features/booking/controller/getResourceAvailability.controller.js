@@ -15,6 +15,7 @@ export async function getResourceAvailabilityController({
   rangeEnd,
   statuses = null,
   exceptionTypes = null,
+  publicMode = false,
 } = {}) {
   if (!resourceId) {
     throw new Error("getResourceAvailabilityController: resourceId is required");
@@ -26,7 +27,7 @@ export async function getResourceAvailabilityController({
     throw new Error("getResourceAvailabilityController: rangeEnd is required");
   }
 
-  const cacheKey = `${resourceId}:${rangeStart}:${rangeEnd}`
+  const cacheKey = `${resourceId}:${rangeStart}:${rangeEnd}:${publicMode ? 'pub' : 'own'}`
   const cached = availabilityCache.get(cacheKey)
   if (cached) return cached
 
@@ -48,6 +49,7 @@ export async function getResourceAvailabilityController({
       rangeStart,
       rangeEnd,
       statuses,
+      publicMode,
     }),
   ]);
 

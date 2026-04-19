@@ -217,14 +217,26 @@ async function buildContextualNavigation(page) {
 
 async function buildRelatedGuideLinks(page) {
   const primaryService = getPrimaryServiceKey(page);
+  const directoryLocationTag = page.citySlug ?? page.countrySlug ?? null;
   const [serviceRelated, locationRelated] = await Promise.all([
     primaryService
-      ? getPublicContentPagesByService(primaryService, { limit: 6 })
+      ? getPublicContentPagesByService(primaryService, {
+          limit: 6,
+          ...(directoryLocationTag
+            ? { cacheTags: [`directory:${directoryLocationTag}:${primaryService}`] }
+            : {})
+        })
       : Promise.resolve([]),
     page.citySlug
-      ? getPublicContentPagesByLocation(page.citySlug, { limit: 6 })
+      ? getPublicContentPagesByLocation(page.citySlug, {
+          limit: 6,
+          ...(primaryService ? { cacheTags: [`directory:${page.citySlug}:${primaryService}`] } : {})
+        })
       : page.countrySlug
-        ? getPublicContentPagesByLocation(page.countrySlug, { limit: 6 })
+        ? getPublicContentPagesByLocation(page.countrySlug, {
+            limit: 6,
+            ...(primaryService ? { cacheTags: [`directory:${page.countrySlug}:${primaryService}`] } : {})
+          })
         : Promise.resolve([])
   ]);
 

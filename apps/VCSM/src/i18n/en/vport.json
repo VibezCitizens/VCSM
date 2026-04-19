@@ -1,0 +1,20 @@
+{
+  "dashboard": "Dashboard",
+  "manageMenu": "Manage Menu",
+  "contentPages": "Content Pages",
+  "services": "Services",
+  "reviews": "Reviews",
+  "portfolio": "Portfolio",
+  "about": "About",
+  "photos": "Photos",
+  "booking": "Booking",
+  "noBioProvided": "No bio provided.",
+  "subscribers": "subscribers",
+  "subscribe": "Subscribe",
+  "unsubscribe": "Unsubscribe",
+  "message": "Message",
+  "qrCode": "QR Code",
+  "shareMenu": "Share menu",
+  "viewMenu": "View menu",
+  "openMenu": "Open menu"
+}

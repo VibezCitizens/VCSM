@@ -106,13 +106,30 @@ export async function getRelatedGuideLinksForContext(rawContext = {}, options = 
 
   const querySize = clampedLimit * 4;
   const queryTasks = [];
+  const directoryLocationKey = context.citySlug ?? context.localitySlug ?? context.countrySlug ?? null;
+  const directoryTag =
+    context.serviceSlug && directoryLocationKey
+      ? `directory:${directoryLocationKey}:${context.serviceSlug}`
+      : null;
 
   if (context.serviceSlug) {
-    queryTasks.push(getPublicContentPagesByService(context.serviceSlug, { limit: querySize }));
+    queryTasks.push(
+      getPublicContentPagesByService(context.serviceSlug, {
+        limit: querySize,
+        ...(directoryTag ? { cacheTags: [directoryTag] } : {})
+      })
+    );
   }
 
   for (const locationToken of locationTokens) {
-    queryTasks.push(getPublicContentPagesByLocation(locationToken, { limit: querySize }));
+    queryTasks.push(
+      getPublicContentPagesByLocation(locationToken, {
+        limit: querySize,
+        ...(context.serviceSlug
+          ? { cacheTags: [`directory:${locationToken}:${context.serviceSlug}`] }
+          : {})
+      })
+    );
   }
 
   const buckets = await Promise.all(queryTasks);

@@ -36,7 +36,7 @@ export default function InboxScreen() {
   const hideEmptyThreads = settings?.hideEmptyConversations ?? false
   const showThreadPreview = settings?.showThreadPreview ?? true
 
-  const { entries = [], loading: inboxLoading, error, hideConversation } = useInbox({ actorId })
+  const { entries = [], loading: inboxLoading, error, refresh, hideConversation } = useInbox({ actorId })
   const inboxActions = useInboxActions({ actorId })
 
   useEffect(() => {
@@ -77,7 +77,18 @@ export default function InboxScreen() {
     .filter(Boolean)
 
   if (identityLoading || !actorId) return null
-  if (error) return <div className="p-4 text-rose-300">Failed to load Vox</div>
+  if (error) return (
+    <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+      <p className="text-sm text-white/50">Couldn&apos;t load Vox</p>
+      <button
+        type="button"
+        onClick={refresh}
+        className="rounded-xl bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/15 active:bg-white/20"
+      >
+        Try again
+      </button>
+    </div>
+  )
 
   const handlePick = async (picked) => {
     setStartOpen(false)

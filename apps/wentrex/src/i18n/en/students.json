@@ -1,0 +1,10 @@
+{
+  "students": "Students",
+  "student": "Student",
+  "noStudents": "No students yet.",
+  "addStudent": "Add student",
+  "removeStudent": "Remove student",
+  "studentProgress": "Progress",
+  "gradeReport": "Grade report",
+  "attendance": "Attendance"
+}

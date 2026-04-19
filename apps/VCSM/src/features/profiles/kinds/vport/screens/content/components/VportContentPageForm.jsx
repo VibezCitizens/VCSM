@@ -1,7 +1,8 @@
 // src/features/profiles/kinds/vport/screens/content/components/VportContentPageForm.jsx
 // Create / edit form for a vport content page.
+// Slug is not shown — it is auto-generated from the title in the create controller.
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 const CATEGORIES = [
   { value: "", label: "No category" },
@@ -12,32 +13,14 @@ const CATEGORIES = [
   { value: "educational", label: "Educational" },
 ];
 
-function slugify(text) {
-  return String(text || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 160);
-}
-
-export function VportContentPageForm({ page = null, onSubmit, onCancel, loading = false }) {
+export function VportContentPageForm({ page = null, initialValues = null, onSubmit, onCancel, loading = false }) {
   const isEditing = !!page?.id;
 
-  const [title, setTitle] = useState(page?.title ?? "");
-  const [slug, setSlug] = useState(page?.slug ?? "");
-  const [summary, setSummary] = useState(page?.summary ?? "");
-  const [body, setBody] = useState(page?.body ?? "");
-  const [category, setCategory] = useState(page?.category ?? "");
-  const [slugTouched, setSlugTouched] = useState(isEditing);
+  const [title, setTitle] = useState(page?.title ?? initialValues?.title ?? "");
+  const [summary, setSummary] = useState(page?.excerpt ?? initialValues?.summary ?? "");
+  const [body, setBody] = useState(page?.body ?? initialValues?.body ?? "");
+  const [category, setCategory] = useState(page?.category ?? initialValues?.category ?? "");
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (!slugTouched && title) {
-      setSlug(slugify(title));
-    }
-  }, [title, slugTouched]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -46,7 +29,6 @@ export function VportContentPageForm({ page = null, onSubmit, onCancel, loading 
 
       const result = await onSubmit?.({
         title: title.trim(),
-        slug: slug.trim(),
         summary: summary.trim() || null,
         body: body.trim() || null,
         category: category || null,
@@ -56,7 +38,7 @@ export function VportContentPageForm({ page = null, onSubmit, onCancel, loading 
         setError(result.error ?? "Something went wrong.");
       }
     },
-    [title, slug, summary, body, category, onSubmit]
+    [title, summary, body, category, onSubmit]
   );
 
   const inputClass =
@@ -76,24 +58,6 @@ export function VportContentPageForm({ page = null, onSubmit, onCancel, loading 
           className={inputClass}
           required
         />
-      </div>
-
-      <div>
-        <label className={labelClass}>Slug *</label>
-        <input
-          type="text"
-          value={slug}
-          onChange={(e) => {
-            setSlug(e.target.value);
-            setSlugTouched(true);
-          }}
-          placeholder="e.g. emergency-lockout-guide"
-          className={`${inputClass} font-mono`}
-          required
-        />
-        <div className="text-white/25 text-[11px] mt-1">
-          Lowercase letters, numbers, and hyphens only. Max 160 characters.
-        </div>
       </div>
 
       <div>
@@ -149,7 +113,7 @@ export function VportContentPageForm({ page = null, onSubmit, onCancel, loading 
         </button>
         <button
           type="submit"
-          disabled={loading || !title.trim() || !slug.trim()}
+          disabled={loading || !title.trim()}
           className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-purple-600 hover:bg-purple-500 text-white transition disabled:opacity-40"
         >
           {loading ? "Saving..." : isEditing ? "Save Changes" : "Create Page"}

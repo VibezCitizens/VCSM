@@ -1,5 +1,6 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
+// Full owner columns — includes customer PII
 const BOOKING_SELECT = [
   "id",
   "resource_id",
@@ -25,6 +26,17 @@ const BOOKING_SELECT = [
   "updated_at",
 ].join(",");
 
+// Citizen-safe columns — timing, status, and booking creator identity only (no customer PII)
+const BOOKING_SELECT_PUBLIC = [
+  "id",
+  "resource_id",
+  "starts_at",
+  "ends_at",
+  "status",
+  "duration_minutes",
+  "created_by_actor_id",
+].join(",");
+
 function asTimestampInput(value, fieldName) {
   if (!value) {
     throw new Error(`listBookingsInRangeDAL: ${fieldName} is required`);
@@ -45,6 +57,7 @@ export async function listBookingsInRangeDAL({
   rangeStart,
   rangeEnd,
   statuses = null,
+  publicMode = false,
 } = {}) {
   if (!resourceId) {
     throw new Error("listBookingsInRangeDAL: resourceId is required");
@@ -56,7 +69,7 @@ export async function listBookingsInRangeDAL({
   let query = supabase
     .schema("vc")
     .from("bookings")
-    .select(BOOKING_SELECT)
+    .select(publicMode ? BOOKING_SELECT_PUBLIC : BOOKING_SELECT)
     .eq("resource_id", resourceId)
     .lt("starts_at", endIso)
     .gt("ends_at", startIso)

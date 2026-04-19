@@ -50,7 +50,7 @@ export default function ConversationView({ conversationId }) {
 
   const { conversation, loading, error } = useConversation({ conversationId, actorId })
   const { members } = useConversationMembers({ conversationId, actorId })
-  const { messages, onEditMessage, onDeleteMessage, onSendMessage } =
+  const { messages, onEditMessage, onDeleteMessage, onSendMessage, addOptimistic, markFailed, retryMessage } =
     useConversationMessages({ conversationId, actorId })
   const { notifyTyping } = useTypingChannel({ conversationId, actorId })
 
@@ -117,12 +117,34 @@ export default function ConversationView({ conversationId }) {
     closeMessageMenu: closeMenu,
   })
 
+  const [showJumpButton, setShowJumpButton] = useState(false)
+
   const scrollToBottom = useCallback((behavior = 'auto') => {
     messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight, behavior })
   }, [])
 
+  // track scroll distance from bottom to show/hide jump button
   useEffect(() => {
-    requestAnimationFrame(() => scrollToBottom('auto'))
+    const container = messagesRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      const dist = container.scrollHeight - container.scrollTop - container.clientHeight
+      setShowJumpButton(dist > 120)
+    }
+
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // only auto-scroll when user is already near the bottom
+  useEffect(() => {
+    const container = messagesRef.current
+    if (!container) return
+    const dist = container.scrollHeight - container.scrollTop - container.clientHeight
+    if (dist < 100) {
+      requestAnimationFrame(() => scrollToBottom('auto'))
+    }
   }, [messages?.length, scrollToBottom])
 
   // ✅ This is your real send+attach pipeline (uploads media -> sends message)
@@ -130,6 +152,8 @@ export default function ConversationView({ conversationId }) {
     conversationId,
     actorId,
     onSendMessage,
+    addOptimistic,
+    markFailed,
   })
 
   // ✅ Now it’s safe to early-return
@@ -148,7 +172,7 @@ export default function ConversationView({ conversationId }) {
   const editingInitialText = editing?.initialBody ?? ''
 
   return (
-    <div className="chat-screen chat-modern-conversation">
+    <div className="chat-screen chat-modern-conversation relative">
       <ChatScreenLayout
         messagesRef={messagesRef}
         header={
@@ -166,10 +190,26 @@ export default function ConversationView({ conversationId }) {
             isGroupChat={conversation.isGroup}
             onOpenActions={conversationCovered ? undefined : openMenu}
             onOpenMedia={conversationCovered ? undefined : openViewer}
+            retryMessage={retryMessage}
           />
         }
         footer={null}
       />
+
+      {showJumpButton && (
+        <div className="absolute bottom-20 left-0 right-0 flex justify-center pointer-events-none z-20">
+          <button
+            type="button"
+            onClick={() => {
+              scrollToBottom('smooth')
+              setShowJumpButton(false)
+            }}
+            className="pointer-events-auto rounded-full bg-purple-600/90 px-4 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm active:bg-purple-500"
+          >
+            Jump to latest ↓
+          </button>
+        </div>
+      )}
 
       {!conversationCovered && (
         <ChatInput
