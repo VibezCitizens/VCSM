@@ -59,10 +59,6 @@ export function VportActorMenuItemFormPhotoField({
             >
               Item photo
             </div>
-            <div style={helperStyle}>
-              Uploads to Cloudflare R2 and saves the URL on the item.
-            </div>
-
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <label
                 style={{
@@ -105,17 +101,6 @@ export function VportActorMenuItemFormPhotoField({
           </div>
         </div>
 
-        {imageUrlValue ? (
-          <div
-            style={{
-              fontSize: 12,
-              color: "rgba(255,255,255,0.55)",
-              wordBreak: "break-all",
-            }}
-          >
-            {imageUrlValue}
-          </div>
-        ) : null}
       </div>
     </div>
   );

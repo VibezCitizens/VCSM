@@ -104,20 +104,20 @@ export default function MessageBubble({
         isFailed && 'opacity-80',
       )}
     >
-      {/* Avatar (left only) */}
-      {!isMine && showAvatar ? (
-        <div className="shrink-0 w-7 pointer-events-none">
-          {actor && (
-            <ActorLink
-              actor={actor}
-              avatarSize="w-7 h-7"
-              textSize="text-xs"
-              className="pointer-events-none"
-            />
-          )}
-        </div>
-      ) : (
-        !isMine && <div className="w-7" />
+      {/* Avatar slot — only rendered when actor is present.
+          No actor → no slot on any message in the group (flush left).
+          Actor present → last message shows avatar, others show spacer for alignment. */}
+      {!isMine && actor && (
+        showAvatar
+          ? <div className="shrink-0 w-7 pointer-events-none">
+              <ActorLink
+                actor={actor}
+                avatarSize="w-7 h-7"
+                textSize="text-xs"
+                className="pointer-events-none"
+              />
+            </div>
+          : <div className="w-7" />
       )}
 
       {/* Message bubble */}

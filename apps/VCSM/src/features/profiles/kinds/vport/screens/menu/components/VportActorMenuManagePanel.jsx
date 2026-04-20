@@ -5,6 +5,7 @@ import React, { useMemo, useState, useCallback, useRef } from "react";
 import useVportActorMenu from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenu";
 import useVportActorMenuCategoriesMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuCategoriesMutations";
 import useVportActorMenuItemsMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuItemsMutations";
+import { invalidateMenuCache } from "@/features/profiles/kinds/vport/controller/menu/getVportActorMenu.controller";
 
 import VportActorMenuEmptyState from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuEmptyState";
 import VportActorMenuCategory from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuCategory";
@@ -43,6 +44,7 @@ export function VportActorMenuManagePanel({
           };
         });
       }
+      invalidateMenuCache(actorId);
       // Background sync — not awaited so UI updates first
       refresh();
     },
@@ -51,6 +53,7 @@ export function VportActorMenuManagePanel({
   const itemsMut = useVportActorMenuItemsMutations({
     actorId,
     onSuccess: async () => {
+      invalidateMenuCache(actorId);
       await refresh();
     },
   });
@@ -234,7 +237,10 @@ export function VportActorMenuManagePanel({
   );
 
   const requestDeleteItem = useCallback(
-    ({ itemId }) => {
+    (arg) => {
+      const itemId = arg?.itemId ?? arg?.id ?? null;
+      if (!itemId) return;
+
       setConfirmTitle("Delete item");
       setConfirmDescription(
         "Are you sure you want to delete this item? This action cannot be undone."

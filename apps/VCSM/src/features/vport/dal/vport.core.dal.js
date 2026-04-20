@@ -224,6 +224,57 @@ export async function updateVport(
   return data;
 }
 
+export async function softDeleteVport(vportId) {
+  if (!vportId) raise("softDeleteVport: vportId is required");
+
+  const { data, error } = await vportSchema.rpc("soft_delete_vport", {
+    p_vport_id: vportId,
+  });
+
+  if (error) {
+    const msg = error.message || String(error);
+    if (msg.includes("AUTH_REQUIRED")) raise("Not authenticated");
+    if (msg.includes("VPORT_NOT_FOUND_OR_UNAUTHORIZED")) raise("Vport not found or not owned by you");
+    raise(msg, { error });
+  }
+
+  return data;
+}
+
+export async function hardDeleteVport(vportId) {
+  if (!vportId) raise("hardDeleteVport: vportId is required");
+
+  const { data, error } = await vportSchema.rpc("hard_delete_vport", {
+    p_vport_id: vportId,
+  });
+
+  if (error) {
+    const msg = error.message || String(error);
+    if (msg.includes("AUTH_REQUIRED")) raise("Not authenticated");
+    if (msg.includes("VPORT_NOT_FOUND_OR_NOT_DELETED")) raise("Vport must be soft-deleted before hard delete");
+    raise(msg, { error });
+  }
+
+  return data;
+}
+
+export async function restoreVport(vportId) {
+  if (!vportId) raise("restoreVport: vportId is required");
+
+  const { data, error } = await vportSchema.rpc("restore_vport", {
+    p_vport_id: vportId,
+  });
+
+  if (error) {
+    const msg = error.message || String(error);
+    if (msg.includes("AUTH_REQUIRED")) raise("Not authenticated");
+    if (msg.includes("VPORT_NOT_FOUND_OR_NOT_DELETED")) raise("Vport not found or not currently deleted");
+    raise(msg, { error });
+  }
+
+  return data;
+}
+
 export default {
   createVport,
   listMyVports,
@@ -231,4 +282,7 @@ export default {
   getVportBySlug,
   getVportsByIds,
   updateVport,
+  softDeleteVport,
+  restoreVport,
+  hardDeleteVport,
 };

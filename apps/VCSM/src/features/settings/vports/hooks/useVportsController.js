@@ -19,6 +19,7 @@ export function useVportsController() {
   const [busy, setBusy] = useState(false);
   const [showCreator, setShowCreator] = useState(false);
   const [activeActor, setActiveActor] = useState("profile");
+  const [blockedMsg, setBlockedMsg] = useState(null);
 
   const { switchToProfile, switchToVport } = useVportSwitch({
     user,
@@ -26,6 +27,7 @@ export function useVportsController() {
     switchActor,
     availableActors,
     navigate,
+    onBlocked: (msg) => setBlockedMsg(msg),
   });
 
   useEffect(() => {
@@ -77,5 +79,7 @@ export function useVportsController() {
     switchToVport,
     resolveVportActorId,
     onVportCreated,
+    blockedMsg,
+    clearBlockedMsg: () => setBlockedMsg(null),
   };
 }

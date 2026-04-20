@@ -64,7 +64,7 @@ function resolveActorIdFromLinks(v, availableActors) {
   return null;
 }
 
-export function useVportSwitch({ user, identity, switchActor, availableActors, navigate }) {
+export function useVportSwitch({ user, identity, switchActor, availableActors, navigate, onBlocked }) {
   const getAuthedUserId = async () => {
     if (user?.id) return user.id;
     return ctrlGetAuthedUserId();
@@ -88,6 +88,11 @@ export function useVportSwitch({ user, identity, switchActor, availableActors, n
   };
 
   const switchToVport = async (v, setBusy) => {
+    if (v.is_deleted) {
+      onBlocked?.('This VPORT has been deactivated. Restore it from Settings → Account to continue.')
+      return
+    }
+
     // Resolve correct actorId from the cached actor links.
     // If the cache misses (e.g. vport was just created and availableActors hasn't
     // refreshed yet), fall through to v.actor_id and let switchActor be the

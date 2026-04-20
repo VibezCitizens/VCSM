@@ -134,6 +134,10 @@ const VportActorMenuFlyerEditorScreen = lazyWithLog(
     ),
 );
 
+const RestoreVportScreen = lazyWithLog("RestoreVportScreen", () =>
+  import("@/features/vport/screens/RestoreVportScreen"),
+);
+
 const VportDashboardScreen = lazyWithLog("VportDashboardScreen", () =>
   import("@/features/dashboard/vport/screens/VportDashboardScreen"),
 );
@@ -476,6 +480,7 @@ export default function AppRoutes() {
             VportGasPricesScreen,
 
             VportActorMenuFlyerEditorScreen,
+            RestoreVportScreen,
             VportDashboardScreen,
             VportDashboardGasScreen,
             VportDashboardReviewScreen,

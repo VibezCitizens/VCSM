@@ -1,9 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import React from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, Outlet, useParams } from "react-router-dom";
 import { releaseFlags } from "@/shared/config/releaseFlags";
 import { learningProtectedRoutes } from "@/app/routes/learning/learning.routes";
+import { useIdentity } from "@/state/identity/identityContext";
+
+function BlockedVportGuard() {
+  const { identity, loading, blockedVport } = useIdentity()
+  if (loading) return null
+  if (!identity) return <Navigate to="/feed" replace />
+  if (blockedVport) return <Navigate to="/vport/restore" replace />
+  return <Outlet />
+}
 
 const devDiagnosticsEnabled =
   import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
@@ -131,6 +140,7 @@ export function protectedAppRoutes({
   VportGasPricesScreen,
 
   VportActorMenuFlyerEditorScreen,
+  RestoreVportScreen,
   VportDashboardScreen,
   VportDashboardGasScreen,
   VportDashboardReviewScreen,
@@ -258,41 +268,23 @@ export function protectedAppRoutes({
       ),
     },
 
-    { path: "/actor/:actorId/dashboard", element: <VportDashboardScreen /> },
-    {
-      path: "/actor/:actorId/dashboard/gas",
-      element: <VportDashboardGasScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/reviews",
-      element: <VportDashboardReviewScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/services",
-      element: <VportDashboardServicesScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/exchange",
-      element: <VportDashboardExchangeScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/calendar",
-      element: <VportDashboardCalendarScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/portfolio",
-      element: <VportDashboardPortfolioScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/locksmith",
-      element: <VportDashboardLocksmithScreen />,
-    },
-    {
-      path: "/actor/:actorId/dashboard/booking-history",
-      element: <VportDashboardBookingHistoryScreen />,
-    },
+    { path: "/vport/restore", element: <RestoreVportScreen /> },
 
-    { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
+    {
+      element: <BlockedVportGuard />,
+      children: [
+        { path: "/actor/:actorId/dashboard", element: <VportDashboardScreen /> },
+        { path: "/actor/:actorId/dashboard/gas", element: <VportDashboardGasScreen /> },
+        { path: "/actor/:actorId/dashboard/reviews", element: <VportDashboardReviewScreen /> },
+        { path: "/actor/:actorId/dashboard/services", element: <VportDashboardServicesScreen /> },
+        { path: "/actor/:actorId/dashboard/exchange", element: <VportDashboardExchangeScreen /> },
+        { path: "/actor/:actorId/dashboard/calendar", element: <VportDashboardCalendarScreen /> },
+        { path: "/actor/:actorId/dashboard/portfolio", element: <VportDashboardPortfolioScreen /> },
+        { path: "/actor/:actorId/dashboard/locksmith", element: <VportDashboardLocksmithScreen /> },
+        { path: "/actor/:actorId/dashboard/booking-history", element: <VportDashboardBookingHistoryScreen /> },
+        { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
+      ],
+    },
 
     {
       path: "/vport/:actorId/menu/qr",

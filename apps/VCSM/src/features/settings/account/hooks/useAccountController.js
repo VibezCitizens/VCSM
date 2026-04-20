@@ -4,7 +4,8 @@ import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/state/identity/identityContext'
 import {
   ctrlDeleteAccount,
-  ctrlDeleteVport,
+  ctrlSoftDeleteVport,
+  ctrlHardDeleteVport,
   ctrlResolveVportIdByActorId,
 } from '@/features/settings/account/controller/account.controller'
 
@@ -25,7 +26,6 @@ export function useAccountController() {
         if (!cancelled) setVportId(null)
         return
       }
-
       try {
         const nextVportId = await ctrlResolveVportIdByActorId(actorId)
         if (!cancelled) setVportId(nextVportId)
@@ -36,18 +36,18 @@ export function useAccountController() {
     }
 
     run()
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [isVport, actorId])
 
   const [showConfirmAccount, setShowConfirmAccount] = useState(false)
   const [busyAccount, setBusyAccount] = useState(false)
   const [errAccount, setErrAccount] = useState('')
 
-  const [showConfirmVport, setShowConfirmVport] = useState(false)
-  const [busyVport, setBusyVport] = useState(false)
-  const [errVport, setErrVport] = useState('')
+  const [busySoft, setBusySoft] = useState(false)
+  const [errSoft, setErrSoft] = useState('')
+
+  const [busyHard, setBusyHard] = useState(false)
+  const [errHard, setErrHard] = useState('')
 
   async function logout() {
     await logoutFromAuth()
@@ -56,9 +56,13 @@ export function useAccountController() {
   async function deleteAccount() {
     setBusyAccount(true)
     setErrAccount('')
-
     try {
       await ctrlDeleteAccount()
+      // Clear cached actor state so the identity engine doesn't try to
+      // resume a void actor on the next session
+      localStorage.removeItem('actor_kind')
+      localStorage.removeItem('actor_vport_id')
+      localStorage.removeItem('actor_touch')
       await logoutFromAuth()
     } catch (error) {
       setErrAccount(error?.message || 'Could not delete your account.')
@@ -67,49 +71,57 @@ export function useAccountController() {
     }
   }
 
-  async function deleteVport() {
-    setBusyVport(true)
-    setErrVport('')
+  function _switchToProfile() {
+    localStorage.setItem('actor_kind', 'profile')
+    localStorage.removeItem('actor_vport_id')
+    localStorage.setItem('actor_touch', String(Date.now()))
+    window.dispatchEvent(new CustomEvent('actor:changed', { detail: { kind: 'profile', id: null } }))
+  }
 
+  async function softDeleteVport(targetVportId) {
+    setBusySoft(true)
+    setErrSoft('')
     try {
-      if (!user?.id) throw new Error('Not signed in.')
-      if (!isVport) throw new Error('Not in VPORT scope.')
-      if (!vportId) throw new Error('No VPORT selected.')
+      if (!targetVportId) throw new Error('No VPORT selected.')
+      await ctrlSoftDeleteVport({ vportId: targetVportId })
+    } catch (error) {
+      setErrSoft(error?.message || 'Could not deactivate the VPORT.')
+    } finally {
+      setBusySoft(false)
+    }
+  }
 
-      await ctrlDeleteVport({ vportId, userId: user.id })
-
-      localStorage.setItem('actor_kind', 'profile')
-      localStorage.removeItem('actor_vport_id')
-      localStorage.setItem('actor_touch', String(Date.now()))
-
-      window.dispatchEvent(
-        new CustomEvent('actor:changed', {
-          detail: { kind: 'profile', id: null },
-        })
-      )
-
+  async function hardDeleteVport(targetVportId) {
+    setBusyHard(true)
+    setErrHard('')
+    try {
+      if (!targetVportId) throw new Error('No VPORT selected.')
+      await ctrlHardDeleteVport({ vportId: targetVportId })
+      _switchToProfile()
       window.location.replace('/me')
     } catch (error) {
-      setErrVport(error?.message || 'Could not delete the VPORT.')
+      setErrHard(error?.message || 'Could not permanently delete the VPORT.')
     } finally {
-      setBusyVport(false)
-      setShowConfirmVport(false)
+      setBusyHard(false)
     }
   }
 
   return {
     isVport,
+    vportId,
+    identity,
     user,
     showConfirmAccount,
     busyAccount,
     errAccount,
-    showConfirmVport,
-    busyVport,
-    errVport,
+    busySoft,
+    errSoft,
+    busyHard,
+    errHard,
     setShowConfirmAccount,
-    setShowConfirmVport,
     logout,
     deleteAccount,
-    deleteVport,
+    softDeleteVport,
+    hardDeleteVport,
   }
 }

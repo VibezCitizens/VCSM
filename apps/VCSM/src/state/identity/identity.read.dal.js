@@ -96,7 +96,7 @@ export async function readVportIdentityDAL(vportId) {
   const [profileResult, catResult] = await Promise.all([
     vportSchema
       .from("profiles")
-      .select("id,owner_user_id,name,slug,avatar_url,bio,is_active,banner_url,created_at,updated_at")
+      .select("id,owner_user_id,name,slug,avatar_url,bio,is_active,is_deleted,banner_url,created_at,updated_at")
       .eq("id", vportId)
       .maybeSingle(),
     vportSchema

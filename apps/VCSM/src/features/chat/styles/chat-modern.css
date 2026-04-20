@@ -113,14 +113,7 @@
 }
 
 .chat-modern-conversation .chat-modern-message-list {
-  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-}
-
-.chat-modern-conversation .chat-bottom-t {
-  width: 40px;
-  height: 40px;
-  bottom: env(safe-area-inset-bottom, 0px);
-  font-size: 17px;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
 }
 
 .chat-modern-conversation .chat-topbar {
@@ -142,7 +135,8 @@
 .chat-modern-conversation .chat-bottom-t {
   width: 52px;
   height: 52px;
-  bottom: calc(20px + env(safe-area-inset-bottom));
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  font-size: 17px;
   border: 1px solid rgba(139, 92, 246, 0.32);
   background: linear-gradient(135deg, var(--vc-accent-primary), rgba(167, 139, 250, 0.9));
   color: #fff;

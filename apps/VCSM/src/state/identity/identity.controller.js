@@ -50,6 +50,7 @@ export function mapVportActor(actor, vport, realmId) {
     banner: vport?.banner_url ?? null,
     bio: vport?.bio ?? null,
     isActive: vport?.is_active ?? null,
+    isDeleted: vport?.is_deleted ?? false,
     createdAt: vport?.created_at ?? null,
     updatedAt: vport?.updated_at ?? null,
     vportType: vport?.vport_type ?? null,

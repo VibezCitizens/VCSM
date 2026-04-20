@@ -1,3 +1,4 @@
+apps/emergency/
 node_modules/
 dist/
 .env

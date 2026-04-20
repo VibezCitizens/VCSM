@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { resolveActorBySlugOrUsernameDAL } from "@/features/profiles/dal/readActorSeoData.dal";
+import { resolveVportSlugDAL } from "@/features/public/vportMenu/dal/resolveVportSlug.dal";
 import VportPublicReviewsQrView from "@/features/public/vportMenu/view/VportPublicReviewsQrView";
 
 const notFoundStyle = {
@@ -29,7 +29,7 @@ export function VportPublicReviewsQrBySlugScreen() {
       return;
     }
 
-    resolveActorBySlugOrUsernameDAL(slug)
+    resolveVportSlugDAL(slug)
       .then((result) => {
         if (!alive) return;
         if (result?.actorId) {

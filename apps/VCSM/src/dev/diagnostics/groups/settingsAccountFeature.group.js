@@ -3,12 +3,13 @@ import { runDiagnosticsTests } from "@/dev/diagnostics/helpers/timedTest";
 import { getFeatureSourceEntries } from "@/dev/diagnostics/helpers/featureSourceIndex";
 import {
   ctrlDeleteAccount,
-  ctrlDeleteVport,
+  ctrlSoftDeleteVport,
+  ctrlHardDeleteVport,
   ctrlResolveVportIdByActorId,
 } from "@/features/settings/account/controller/account.controller";
 import { dalReadVportIdByActorId } from "@/features/settings/account/dal/account.read.dal";
 import {
-  dalDeleteMyAccount,
+  dalSoftDeleteCitizenAccount,
   dalDeleteMyVport,
   dalDeleteOwnedVportById,
 } from "@/features/settings/account/dal/account.write.dal";
@@ -99,9 +100,10 @@ export async function runSettingsAccountFeatureGroup({ onTestUpdate, shared }) {
         hasUseAccountControllerHook: typeof useAccountController === "function",
         hasCtrlResolveVportIdByActorId: typeof ctrlResolveVportIdByActorId === "function",
         hasCtrlDeleteAccount: typeof ctrlDeleteAccount === "function",
-        hasCtrlDeleteVport: typeof ctrlDeleteVport === "function",
+        hasCtrlSoftDeleteVport: typeof ctrlSoftDeleteVport === "function",
+        hasCtrlHardDeleteVport: typeof ctrlHardDeleteVport === "function",
         hasDalReadVportIdByActorId: typeof dalReadVportIdByActorId === "function",
-        hasDalDeleteMyAccount: typeof dalDeleteMyAccount === "function",
+        hasDalSoftDeleteCitizenAccount: typeof dalSoftDeleteCitizenAccount === "function",
         hasDalDeleteMyVport: typeof dalDeleteMyVport === "function",
         hasDalDeleteOwnedVportById: typeof dalDeleteOwnedVportById === "function",
       }),
@@ -114,7 +116,7 @@ export async function runSettingsAccountFeatureGroup({ onTestUpdate, shared }) {
         const hookSource = getAccountSource("hooks/useAccountController.js");
 
         return {
-          hasDeleteMyAccountRpc: writeDalSource.includes("rpc('delete_my_account'"),
+          hasSoftDeleteCitizenRpc: writeDalSource.includes("rpc('soft_delete_citizen_account'"),
           hasDeleteMyVportRpc: writeDalSource.includes("rpc('delete_my_vport'"),
           hasOwnedVportSoftDelete: writeDalSource.includes(".from('profiles')") && writeDalSource.includes("is_deleted"),
           hookUsesIdentityActorFirst: hookSource.includes("identity?.actorId") && hookSource.includes("identity?.kind"),

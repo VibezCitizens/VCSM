@@ -571,6 +571,10 @@ export function IdentityProvider({ children }) {
     } catch (_) {}
   }
 
+  const blockedVport =
+    identity?.kind === 'vport' &&
+    (identity?.isDeleted === true || identity?.isVoid === true || identity?.isActive === false)
+
   return (
     <IdentityContext.Provider
       value={{
@@ -581,6 +585,7 @@ export function IdentityProvider({ children }) {
         switchActor,
         availableActors,
         refreshAvailableActors,
+        blockedVport,
       }}
     >
       {children}

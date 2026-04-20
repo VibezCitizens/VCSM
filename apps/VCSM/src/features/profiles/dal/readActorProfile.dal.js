@@ -31,7 +31,7 @@ export async function readActorProfileDAL(actorId) {
   }
 
   if (!data) {
-    throw new Error('Profile row missing')
+    return null
   }
 
   if (privacyError) {
