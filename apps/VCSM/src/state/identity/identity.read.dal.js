@@ -2,7 +2,7 @@ import { supabase } from "@/services/supabase/supabaseClient";
 import vc from "@/services/supabase/vcClient";
 import vportSchema from "@/services/supabase/vportClient";
 
-const ACTOR_COLUMNS = "id,kind,profile_id,vport_id,is_void";
+const ACTOR_COLUMNS = "id,kind,profile_id,vport_id,is_void,is_deleted";
 const PROFILE_COLUMNS = [
   "id",
   "display_name",

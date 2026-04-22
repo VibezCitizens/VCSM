@@ -3,6 +3,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import {
   loadDefaultIdentityForUser,
   loadIdentityForActorId,
+  DELETED_ACCOUNT_SENTINEL,
 } from "@/state/identity/identity.controller";
 import { loadIdentity, saveIdentity } from "@/state/identity/identityStorage";
 import { ensureVcsmPlatformBootstrap } from "@/features/identity/controller/ensureVcsmPlatformBootstrap.controller.js";
@@ -28,7 +29,7 @@ let _switchVersion = 0;
 let _explicitSwitchAborted = false;
 
 export function IdentityProvider({ children }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const [identity, setIdentity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [availableActors, setAvailableActors] = useState([]);
@@ -312,6 +313,19 @@ export function IdentityProvider({ children }) {
           resolveAttempt: 'initial',
         });
         const resolveMs = Math.round(performance.now() - t0)
+
+        // Deleted account gate: actor exists but is soft-deleted — force sign out.
+        if (nextIdentity === DELETED_ACCOUNT_SENTINEL) {
+          debugLoginEvent('IDENTITY_DELETED_ACCOUNT', {
+            phase: 'identity', status: 'warn',
+            message: 'Account is soft-deleted — signing out',
+            payload: { userId: user.id },
+          })
+          setIdentity(null)
+          setLoading(false)
+          await logout({ accountDeleted: true })
+          return
+        }
 
         if (nextIdentity) {
           debugLoginEvent('IDENTITY_RESOLVED', {

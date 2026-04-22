@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const logout = async () => {
+  const logout = async (navState = {}) => {
     appendIOSProdDebugLog('auth_logout_start', { userId: user?.id ?? null })
     debugLoginEvent('AUTH_SIGNOUT_START', { phase: 'auth', status: 'start', payload: { userId: user?.id ?? null } })
 
@@ -131,7 +131,7 @@ export function AuthProvider({ children }) {
     )
 
     hideLaunchSplash()
-    navigate('/login', { replace: true })
+    navigate('/login', { replace: true, state: navState })
 
     try {
       await supabase.auth.signOut({ scope: 'local' })

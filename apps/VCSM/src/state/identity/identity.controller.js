@@ -9,6 +9,11 @@ import { hydrateActor } from "@hydration";
 
 const IS_DEV = import.meta.env.DEV;
 
+// Sentinel returned when the resolved actor's account has been soft-deleted.
+// Callers (identityContext) must detect this and force-logout rather than
+// treating it as a missing identity (which would trigger self-heal).
+export const DELETED_ACCOUNT_SENTINEL = Object.freeze({ __accountDeleted: true });
+
 // In-flight dedup: if loadDefaultIdentityForUser is called while a previous
 // call with the same userId is still running, return the same promise.
 // Prevents duplicate platform reads from concurrent auth state changes.
@@ -236,6 +241,15 @@ async function _loadDefaultIdentityForUserInner({ userId, resolveAttempt }) {
         payload: { actorId: selectedActorId },
       })
       return null
+    }
+
+    if (actorRow.is_deleted) {
+      debugLoginEvent('HYDRATION_ACTOR_DELETED', {
+        phase: 'hydration', status: 'warn',
+        message: `Actor ${selectedActorId} is soft-deleted — returning DELETED_ACCOUNT_SENTINEL`,
+        payload: { actorId: selectedActorId, kind: actorRow.kind },
+      })
+      return DELETED_ACCOUNT_SENTINEL
     }
 
     debugLoginEvent('HYDRATION_ACTOR_READ_SUCCESS', {

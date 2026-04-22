@@ -31,12 +31,13 @@ function LoginScreen() {
 
   const canSubmit = !loading && email.trim() && password.trim()
 
+  const accountDeleted = location?.state?.accountDeleted === true
+
   const navState = useMemo(() => {
     const s = location?.state || {}
     return {
       from: typeof s.from === 'string' ? s.from : null,
       card: typeof s.card === 'string' ? s.card : null,
-      // ✅ Option A: no wandersClientKey
     }
   }, [location])
 
@@ -142,6 +143,17 @@ function LoginScreen() {
                   className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-[#9ca3af] outline-none transition duration-200 focus:border-[#6C4DF6]/80 focus:ring-2 focus:ring-[#6C4DF6]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
                 />
               </div>
+
+              {accountDeleted && (
+                <div
+                  className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2.5 text-sm text-amber-200"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  <p className="font-semibold">Account not found</p>
+                  <p className="mt-0.5 text-amber-200/75 text-xs">This account has been deleted. If you think this is a mistake, please contact support.</p>
+                </div>
+              )}
 
               {error && (
                 <div
