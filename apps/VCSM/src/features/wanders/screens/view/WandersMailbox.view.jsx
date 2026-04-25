@@ -227,7 +227,7 @@ const styles = {
 
   subPanel: {
     borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.10)",
+    border: "1px solid var(--vc-border)",
     background: "rgba(0,0,0,0.30)",
     padding: 10,
     boxSizing: "border-box",
@@ -237,21 +237,21 @@ const styles = {
     fontSize: 13,
     fontWeight: 700,
     marginBottom: 10,
-    color: "rgba(255,255,255,0.80)",
+    color: "var(--vc-text-soft)",
   },
 
   loadingText: {
     padding: "24px 0",
     textAlign: "center",
     fontSize: 14,
-    color: "rgba(255,255,255,0.55)",
+    color: "var(--vc-text-muted)",
   },
 
   replyError: {
     marginBottom: 8,
     fontSize: 14,
     fontWeight: 700,
-    color: "rgba(252,165,165,0.95)",
+    color: "var(--vc-error)",
   },
 
   // modal styles
@@ -271,9 +271,9 @@ const styles = {
   modalCard: {
     width: "min(720px, 100%)",
     borderRadius: 18,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(0,0,0,0.72)",
-    boxShadow: "0 22px 70px rgba(0,0,0,0.72), 0 0 42px rgba(124,58,237,0.16)",
+    border: "1px solid var(--vc-border)",
+    background: "var(--vc-surface-strong)",
+    boxShadow: "0 22px 70px rgba(0,0,0,0.72), 0 0 42px rgba(139,92,246,0.16)",
     overflow: "hidden",
   },
 
@@ -283,21 +283,21 @@ const styles = {
     justifyContent: "space-between",
     gap: 10,
     padding: "12px 14px",
-    borderBottom: "1px solid rgba(255,255,255,0.10)",
+    borderBottom: "1px solid var(--vc-border)",
   },
 
   modalTitle: {
     fontSize: 14,
     fontWeight: 900,
     letterSpacing: "0.02em",
-    color: "rgba(255,255,255,0.95)",
+    color: "var(--vc-text)",
   },
 
   modalCloseBtn: {
     appearance: "none",
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
-    color: "rgba(255,255,255,0.85)",
+    border: "1px solid var(--vc-border)",
+    background: "var(--vc-surface)",
+    color: "var(--vc-text-soft)",
     borderRadius: 10,
     padding: "6px 10px",
     cursor: "pointer",
@@ -312,7 +312,7 @@ const styles = {
   modalText: {
     fontSize: 13,
     lineHeight: 1.55,
-    color: "rgba(255,255,255,0.78)",
+    color: "var(--vc-text-soft)",
   },
 
   modalActionsRow: {
@@ -329,7 +329,7 @@ const styles = {
     alignItems: "center",
     gap: 8,
     fontSize: 12,
-    color: "rgba(255,255,255,0.65)",
+    color: "var(--vc-text-muted)",
     userSelect: "none",
   },
 
@@ -345,9 +345,9 @@ const styles = {
 
   modalBtnGhost: {
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
-    color: "rgba(255,255,255,0.90)",
+    border: "1px solid var(--vc-border)",
+    background: "var(--vc-surface)",
+    color: "var(--vc-text)",
     padding: "10px 12px",
     cursor: "pointer",
     fontSize: 12,
@@ -358,6 +358,6 @@ const styles = {
     marginTop: 10,
     fontSize: 12,
     lineHeight: 1.45,
-    color: "rgba(255,255,255,0.45)",
+    color: "var(--vc-text-muted)",
   },
 };

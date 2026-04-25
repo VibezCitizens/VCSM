@@ -1,0 +1,304 @@
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Mail, Send, CheckCircle2, ArrowLeft, Users } from 'lucide-react'
+import { authTheme } from '@/features/auth/styles/authTheme'
+import { useInvite } from '../hooks/useInvite'
+
+const S = {
+  page: {
+    minHeight: '100dvh',
+    background: authTheme.pageBackground,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: '0 16px 48px',
+  },
+  header: {
+    width: '100%',
+    maxWidth: 480,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '16px 0',
+    gap: 8,
+  },
+  backBtn: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'rgba(255,255,255,0.55)',
+    display: 'flex',
+    alignItems: 'center',
+    padding: 4,
+    borderRadius: 8,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 480,
+    background: authTheme.cardBackground,
+    borderRadius: 20,
+    boxShadow: authTheme.cardShadow,
+    padding: '32px 28px',
+    border: '1px solid rgba(255,255,255,0.06)',
+  },
+  iconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    background: 'rgba(139,92,246,0.18)',
+    border: '1px solid rgba(139,92,246,0.30)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 700,
+    color: '#fff',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.50)',
+    lineHeight: 1.55,
+    marginBottom: 28,
+  },
+  senderBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    background: 'rgba(139,92,246,0.12)',
+    border: '1px solid rgba(139,92,246,0.22)',
+    borderRadius: 10,
+    padding: '10px 14px',
+    marginBottom: 24,
+  },
+  senderLabel: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.40)',
+    lineHeight: 1,
+    marginBottom: 2,
+  },
+  senderName: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#c4b5fd',
+  },
+  fieldLabel: {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 500,
+    color: 'rgba(255,255,255,0.55)',
+    marginBottom: 8,
+  },
+  input: {
+    width: '100%',
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.10)',
+    borderRadius: 12,
+    padding: '13px 14px',
+    fontSize: 15,
+    color: '#fff',
+    outline: 'none',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.15s',
+  },
+  inputError: {
+    borderColor: 'rgba(239,68,68,0.55)',
+  },
+  errorText: {
+    fontSize: 13,
+    color: '#f87171',
+    marginTop: 8,
+  },
+  sendBtn: {
+    width: '100%',
+    marginTop: 20,
+    padding: '14px 0',
+    borderRadius: 12,
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: 15,
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+    color: '#fff',
+    boxShadow: '0 6px 20px rgba(109,40,217,0.35)',
+    transition: 'opacity 0.15s',
+  },
+  sendBtnDisabled: {
+    opacity: 0.55,
+    cursor: 'not-allowed',
+  },
+  successCard: {
+    textAlign: 'center',
+    padding: '8px 0',
+  },
+  successIcon: {
+    margin: '0 auto 16px',
+    color: '#4ade80',
+  },
+  successTitle: {
+    fontSize: 18,
+    fontWeight: 700,
+    color: '#fff',
+    marginBottom: 8,
+  },
+  successText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.50)',
+    lineHeight: 1.55,
+    marginBottom: 24,
+  },
+  anotherBtn: {
+    background: 'rgba(139,92,246,0.15)',
+    border: '1px solid rgba(139,92,246,0.28)',
+    borderRadius: 12,
+    color: '#c4b5fd',
+    fontSize: 14,
+    fontWeight: 600,
+    padding: '12px 24px',
+    cursor: 'pointer',
+  },
+}
+
+export default function InviteView() {
+  const navigate = useNavigate()
+  const {
+    email, setEmail,
+    sending, success, error,
+    rawDebugError, // DEV PROBE
+    send, reset,
+    inviterName, inviterType,
+  } = useInvite()
+
+  const disabled = sending || !email.trim()
+
+  // After invite sends, navigate back so the onboarding card refreshes and turns green
+  useEffect(() => {
+    if (!success) return
+    const t = setTimeout(() => navigate(-1), 2000)
+    return () => clearTimeout(t)
+  }, [success, navigate])
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !disabled) send()
+  }
+
+  return (
+    <div style={S.page}>
+      <div style={S.header}>
+        <button style={S.backBtn} onClick={() => navigate(-1)} aria-label="Go back">
+          <ArrowLeft size={20} />
+        </button>
+      </div>
+
+      <div style={S.card}>
+        {success ? (
+          <div style={S.successCard}>
+            <CheckCircle2 size={48} style={S.successIcon} />
+            <p style={S.successTitle}>Invite sent!</p>
+            <p style={S.successText}>
+              We've sent an invitation to{' '}
+              <strong style={{ color: '#e9d5ff' }}>{email || 'your contact'}</strong>.
+              They'll receive a link to join Vibez Citizens.
+            </p>
+            <p style={{ ...S.successText, fontSize: 12, opacity: 0.6, marginBottom: 0 }}>
+              Taking you back…
+            </p>
+            {import.meta.env.DEV && rawDebugError && (
+              <pre style={{
+                marginTop: 12,
+                padding: '8px 10px',
+                background: 'rgba(139,92,246,0.10)',
+                border: '1px solid rgba(139,92,246,0.30)',
+                borderRadius: 8,
+                fontSize: 11,
+                color: '#c4b5fd',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+                textAlign: 'left',
+              }}>
+                [DEV INVITE] {rawDebugError}
+              </pre>
+            )}
+          </div>
+        ) : (
+          <>
+            <div style={S.iconWrap}>
+              <Users size={24} color="#a78bfa" />
+            </div>
+
+            <p style={S.title}>Invite a friend</p>
+            <p style={S.subtitle}>
+              Send a personal invite to join Vibez Citizens. They'll get an email with a sign-up link — no app download required to get started.
+            </p>
+
+            {inviterName && (
+              <div style={S.senderBadge}>
+                <Mail size={15} color="#a78bfa" />
+                <div>
+                  <p style={S.senderLabel}>Sending as</p>
+                  <p style={S.senderName}>
+                    {inviterName}
+                    {inviterType === 'vport' && (
+                      <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.35)', marginLeft: 6 }}>
+                        · VPORT
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <label htmlFor="invite-email" style={S.fieldLabel}>Email address</label>
+            <input
+              id="invite-email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="friend@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
+              style={{ ...S.input, ...(error ? S.inputError : {}) }}
+              disabled={sending}
+            />
+
+            {error && <p style={S.errorText}>{error}</p>}
+
+            {/* DEV PROBE — remove after invite tracking confirmed working */}
+            {import.meta.env.DEV && rawDebugError && (
+              <pre style={{
+                marginTop: 8,
+                padding: '8px 10px',
+                background: 'rgba(139,92,246,0.10)',
+                border: '1px solid rgba(139,92,246,0.30)',
+                borderRadius: 8,
+                fontSize: 11,
+                color: '#c4b5fd',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+              }}>
+                [DEV INVITE] {rawDebugError}
+              </pre>
+            )}
+
+            <button
+              style={{ ...S.sendBtn, ...(disabled ? S.sendBtnDisabled : {}) }}
+              onClick={send}
+              disabled={disabled}
+            >
+              <Send size={16} />
+              {sending ? 'Sending…' : 'Send invite'}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -1,5 +1,6 @@
-# SPA fallback for profile-related client routes.
+# SPA fallback for client routes.
 # Keep scope narrow to avoid interfering with Cloudflare Functions endpoints.
 /profile/* /index.html 200
 /u/* /index.html 200
 /me /index.html 200
+/how-to/* /index.html 200

@@ -1,6 +1,7 @@
 // src/features/wanders/screens/WandersCreate.screen.jsx
 import React, { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
 
 import WandersLoading from "@/features/wanders/components/WandersLoading";
 import WandersEmptyState from "@/features/wanders/components/WandersEmptyState";
@@ -84,10 +85,21 @@ export default function WandersCreateScreen({ realmId: realmIdProp, baseUrl: bas
                 <p className={C.headerSub}>Pick a style, write a message, share a link.</p>
               </div>
 
-              <button type="button" onClick={() => navigate("/wanders")} className={C.btnLift}>
-                <span aria-hidden className={C.btnSheen} />
-                <span aria-hidden className={C.btnInnerRing} />
-                <span className="relative">Back</span>
+              <button
+                type="button"
+                onClick={() => navigate("/wanders")}
+                className={[
+                  "inline-flex items-center gap-1.5 rounded-[10px] px-[14px] py-[8px]",
+                  "border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.08)] text-white",
+                  "text-sm font-medium transition-all duration-200",
+                  "hover:bg-[rgba(255,255,255,0.14)] active:scale-[0.97]",
+                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                  "focus-visible:outline-[rgba(139,92,246,0.6)]",
+                  "shadow-[0_8px_22px_rgba(0,0,0,0.32)] backdrop-blur-sm",
+                ].join(" ")}
+              >
+                <ChevronLeft size={16} aria-hidden />
+                <span>Back</span>
               </button>
             </div>
           </div>

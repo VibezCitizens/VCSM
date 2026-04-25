@@ -27,7 +27,16 @@ export default function useOnboardingCards(actorId) {
         throw new Error(result?.error?.message || 'Failed to load onboarding cards')
       }
 
-      setCards(result?.data?.cards ?? [])
+      const cards = result?.data?.cards ?? []
+      // DEV PROBE — remove after invite tracking confirmed working
+      if (import.meta.env.DEV) {
+        console.log('[DEV onboarding/cards] refresh result', {
+          actorId,
+          cards: cards.map(c => ({ key: c.key, status: c.status, progress: c.progress })),
+          inviteSnapshot: result?.data?.snapshots?.invites ?? null,
+        })
+      }
+      setCards(cards)
     } catch (e) {
       console.error('[onboarding/cards] refresh failed', {
         actorId,

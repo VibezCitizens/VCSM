@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Compass } from 'lucide-react'
 import { useIdentity } from '@/state/identity/identityContext'
 import useOnboardingCards from '@/features/onboarding/hooks/useOnboardingCards'
 import OnboardingCardList from '@/features/onboarding/components/OnboardingCardList'
@@ -82,6 +81,7 @@ export default function OnboardingCardsView() {
   }
 
   if (!cards.length) return null
+  if (allCompleted) return null
 
   return (
     <div className="mx-auto w-full max-w-2xl px-2 pb-4">
@@ -92,111 +92,76 @@ export default function OnboardingCardsView() {
         <div className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full blur-3xl" style={{ background: 'rgba(139, 92, 246, 0.15)' }} />
         <div className="pointer-events-none absolute -bottom-24 -left-20 h-52 w-52 rounded-full blur-3xl" style={{ background: 'rgba(139, 92, 246, 0.08)' }} />
 
-        {!allCompleted && (
-          <>
-            <header className="relative z-10 border-b border-white/8 p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-base font-semibold tracking-tight" style={{ color: 'var(--vc-text)' }}>
-                    Get started
-                  </h2>
-                  <p className="mt-1 text-sm" style={{ color: 'var(--vc-text-soft)' }}>
-                    Complete these steps to unlock your full Vibez experience.
-                  </p>
-                </div>
-
-                <div
-                  className="relative h-14 w-14 shrink-0 rounded-full p-[3px]"
-                  style={{
-                    background: `conic-gradient(rgba(139,92,246,0.92) ${completionRatio * 360}deg, rgba(255,255,255,0.08) 0deg)`,
-                  }}
-                  aria-label={`${completedCount} of ${totalCount} completed`}
-                >
-                  <div
-                    className="flex h-full w-full items-center justify-center rounded-full text-[11px] font-semibold"
-                    style={{ background: 'var(--vc-bg-0)', color: 'var(--vc-text-soft)' }}
-                  >
-                    {completionPercent}%
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-3 grid grid-cols-3 gap-2" aria-hidden="true">
-                {cards.map((card) => {
-                  const segmentProgress = card.status === 'completed'
-                    ? 100
-                    : Math.round(Math.max(0, Math.min(1, Number(card.progress ?? 0))) * 100)
-
-                  return (
-                    <div
-                      key={`segment:${card.key}`}
-                      className="h-1.5 overflow-hidden rounded-full"
-                      style={{ background: 'rgba(255, 255, 255, 0.06)' }}
-                    >
-                      <span
-                        className="block h-full rounded-full transition-[width,background-color] duration-500 ease-out"
-                        style={{
-                          width: `${segmentProgress}%`,
-                          background: card.status === 'completed'
-                            ? 'var(--vc-success)'
-                            : segmentProgress > 0
-                            ? 'var(--vc-accent-primary)'
-                            : 'rgba(255,255,255,0.1)',
-                        }}
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-
-              <p className="mt-2 text-xs" style={{ color: 'var(--vc-text-muted)' }}>
-                {completedCount} of {totalCount} completed
-              </p>
-            </header>
-
-            <div className="relative z-10 p-4">
-              <OnboardingCardList
-                cards={cards}
-                onPressAction={(card) => {
-                  const route = resolveCardRoute(card)
-                  if (!route) return
-                  navigate(route)
-                }}
-              />
-            </div>
-          </>
-        )}
-
-        {allCompleted && (
-          <div className="relative z-10 p-5">
-            <div className="rounded-2xl border border-[#22c55e]/25 bg-[#22c55e]/[0.08] p-5 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[#22c55e]/40 bg-[#22c55e]/15 text-[#86efac]">
-                <CheckCircle2 size={22} className="animate-pulse" />
-              </div>
-
-              <h2 className="mt-3 text-lg font-semibold tracking-tight" style={{ color: 'var(--vc-text)' }}>
-                You&apos;re all set!
+        <header className="relative z-10 border-b border-white/8 p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-base font-semibold tracking-tight" style={{ color: 'var(--vc-text)' }}>
+                Get started
               </h2>
               <p className="mt-1 text-sm" style={{ color: 'var(--vc-text-soft)' }}>
-                Your Vibez Citizen profile is ready. Start exploring the network.
+                Complete these steps to unlock your full Vibez experience.
               </p>
+            </div>
 
-              <button
-                type="button"
-                onClick={() => navigate('/explore')}
-                className="mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5"
-                style={{
-                  borderColor: 'rgba(139, 92, 246, 0.35)',
-                  background: 'rgba(139, 92, 246, 0.2)',
-                  color: 'var(--vc-accent-primary-hover)',
-                }}
+            <div
+              className="relative h-14 w-14 shrink-0 rounded-full p-[3px]"
+              style={{
+                background: `conic-gradient(rgba(139,92,246,0.92) ${completionRatio * 360}deg, rgba(255,255,255,0.08) 0deg)`,
+              }}
+              aria-label={`${completedCount} of ${totalCount} completed`}
+            >
+              <div
+                className="flex h-full w-full items-center justify-center rounded-full text-[11px] font-semibold"
+                style={{ background: 'var(--vc-bg-0)', color: 'var(--vc-text-soft)' }}
               >
-                <Compass size={15} />
-                Explore Citizens
-              </button>
+                {completionPercent}%
+              </div>
             </div>
           </div>
-        )}
+
+          <div className="mt-3 grid grid-cols-3 gap-2" aria-hidden="true">
+            {cards.map((card) => {
+              const segmentProgress = card.status === 'completed'
+                ? 100
+                : Math.round(Math.max(0, Math.min(1, Number(card.progress ?? 0))) * 100)
+
+              return (
+                <div
+                  key={`segment:${card.key}`}
+                  className="h-1.5 overflow-hidden rounded-full"
+                  style={{ background: 'rgba(255, 255, 255, 0.06)' }}
+                >
+                  <span
+                    className="block h-full rounded-full transition-[width,background-color] duration-500 ease-out"
+                    style={{
+                      width: `${segmentProgress}%`,
+                      background: card.status === 'completed'
+                        ? 'var(--vc-success)'
+                        : segmentProgress > 0
+                        ? 'var(--vc-accent-primary)'
+                        : 'rgba(255,255,255,0.1)',
+                    }}
+                  />
+                </div>
+              )
+            })}
+          </div>
+
+          <p className="mt-2 text-xs" style={{ color: 'var(--vc-text-muted)' }}>
+            {completedCount} of {totalCount} completed
+          </p>
+        </header>
+
+        <div className="relative z-10 p-4">
+          <OnboardingCardList
+            cards={cards}
+            onPressAction={(card) => {
+              const route = resolveCardRoute(card)
+              if (!route) return
+              navigate(route)
+            }}
+          />
+        </div>
       </section>
     </div>
   )

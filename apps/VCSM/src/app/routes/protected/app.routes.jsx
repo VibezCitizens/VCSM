@@ -124,6 +124,7 @@ export function protectedAppRoutes({
   NotiViewPostScreen,
 
   UploadScreen,
+  InviteScreen,
   ProfessionalAccessScreen,
   ProfessionalBriefingsScreen,
   SettingsScreen,
@@ -224,6 +225,7 @@ export function protectedAppRoutes({
       ),
     },
     { path: "/settings", element: <SettingsScreen /> },
+    { path: "/invite", element: <InviteScreen /> },
     {
       path: "/ads/vport/:actorId",
       element: releaseFlags.vportAdsPipeline ? (

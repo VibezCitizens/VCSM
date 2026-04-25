@@ -6,7 +6,7 @@ export default function FilterTabs({ active, onChange }) {
     'Vports',
     'Posts',
     'Videos',
-    'Groups'
+    'Districts'
   ];
 
   return (

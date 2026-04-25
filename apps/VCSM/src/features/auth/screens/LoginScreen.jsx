@@ -241,6 +241,20 @@ function LoginScreen() {
               )}
             </form>
           </div>
+
+          <nav
+            className="mt-8 text-center text-xs"
+            aria-label="Site links"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
+          >
+            <Link to="/about" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">About</Link>
+            <span className="mx-2" style={{ color: 'rgba(255,255,255,0.22)' }}>·</span>
+            <Link to="/contact" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">Contact</Link>
+            <span className="mx-2" style={{ color: 'rgba(255,255,255,0.22)' }}>·</span>
+            <Link to="/legal/privacy-policy" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">Privacy</Link>
+            <span className="mx-2" style={{ color: 'rgba(255,255,255,0.22)' }}>·</span>
+            <Link to="/legal/terms-of-service" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">Terms</Link>
+          </nav>
         </div>
       </div>
 

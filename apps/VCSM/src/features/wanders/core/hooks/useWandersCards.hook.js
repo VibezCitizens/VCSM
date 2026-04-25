@@ -11,6 +11,7 @@ import {
   markWandersCardOpened,
   readWandersCardById,
   readWandersCardByPublicId,
+  trackWandersCardCtaClicked,
 } from "@/features/wanders/core/controllers/cards.controller";
 
 function useWandersCards(input = {}) {
@@ -90,6 +91,23 @@ function useWandersCards(input = {}) {
     return updated;
   }, []);
 
+  const trackCtaClick = useCallback(async (input = {}) => {
+    setError(null);
+
+    try {
+      return await trackWandersCardCtaClicked({
+        cardId: input?.cardId,
+        ctaType: input?.ctaType,
+        ctaUrl: input?.ctaUrl,
+        templateKey: input?.templateKey,
+        campaign: input?.campaign,
+      });
+    } catch (e) {
+      setError(e);
+      return null;
+    }
+  }, []);
+
   return {
     cards,
     loading,
@@ -98,6 +116,7 @@ function useWandersCards(input = {}) {
     readById,
     readByPublicId,
     markOpened,
+    trackCtaClick,
   };
 }
 

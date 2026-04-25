@@ -24,6 +24,7 @@ import ReportedPostCover from '@/features/moderation/adapters/components/ReportT
 import { useCentralFeedActions } from '@/features/feed/hooks/useCentralFeedActions'
 import FeedConfirmModal from '@/features/feed/screens/FeedConfirmModal'
 import Toast from '@/shared/components/components/Toast'
+import WelcomeFeedCard from '@/features/feed/components/WelcomeFeedCard'
 import '@/features/profiles/styles/profiles-modern.css'
 
 function FeedSkeletonList({ count = 3 }) {
@@ -239,6 +240,10 @@ export default function CentralFeed() {
       className="profiles-modern post-modern h-full min-h-full overflow-y-auto text-white px-0 py-2"
     >
       {showInitialSkeleton && <FeedSkeletonList count={3} />}
+
+      {!showInitialSkeleton && (
+        <WelcomeFeedCard actorId={actorId} kind={identity?.kind} />
+      )}
 
       {!showInitialSkeleton && !loading && posts.length === 0 && (
         <p className="text-center text-gray-400">No Vibes found.</p>

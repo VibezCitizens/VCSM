@@ -99,6 +99,8 @@ export async function onRequest(context) {
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${CANONICAL}" />
     <meta property="og:image" content="${escapeHtml(image)}" />
+    <meta property="og:image:secure_url" content="${escapeHtml(image)}" />
+    <meta property="og:image:type" content="${getImageMimeType(image)}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -117,6 +119,14 @@ export async function onRequest(context) {
       "cache-control": "public, max-age=60",
     },
   });
+}
+
+function getImageMimeType(url) {
+  const ext = (url || "").split("?")[0].split(".").pop().toLowerCase();
+  if (ext === "png") return "image/png";
+  if (ext === "webp") return "image/webp";
+  if (ext === "gif") return "image/gif";
+  return "image/jpeg";
 }
 
 function escapeHtml(str) {

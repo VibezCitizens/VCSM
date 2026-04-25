@@ -14,6 +14,7 @@ import { resolveRealm } from "@/shared/utils/resolveRealm";
 import { aboutPublicRoutes } from "@/app/routes/public/about.routes";
 import { authPublicRoutes } from "@/app/routes/public/auth.routes";
 import { contactPublicRoutes } from "@/app/routes/public/contact.routes";
+import { howToPublicRoutes } from "@/app/routes/public/howto.routes";
 import { legalPublicRoutes } from "@/app/routes/public/legal.routes";
 import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
@@ -43,10 +44,18 @@ import LegalDocumentScreen from "@/features/legal/screens/LegalDocumentScreen";
 
 /* ================= ABOUT / CONTACT (static public pages — no auth) ================= */
 const AboutScreen = lazyWithLog("AboutScreen", () =>
-  import("@/features/public/about/About.screen"),
+  import("@/features/legal/screens/AboutScreen"),
 );
 const ContactScreen = lazyWithLog("ContactScreen", () =>
-  import("@/features/public/contact/Contact.screen"),
+  import("@/features/legal/screens/ContactScreen"),
+);
+
+/* ================= HOW-TO GUIDES (public, no auth) ================= */
+const HowToCreateProfileScreen = lazyWithLog("HowToCreateProfileScreen", () =>
+  import("@/features/legal/screens/HowToCreateProfileScreen"),
+);
+const HowToCreateVportScreen = lazyWithLog("HowToCreateVportScreen", () =>
+  import("@/features/legal/screens/HowToCreateVportScreen"),
 );
 
 /* ================= AUTH ================= */
@@ -64,6 +73,9 @@ const ResetPasswordScreen = lazyWithLog("ResetPasswordScreen", () =>
 );
 const OnboardingScreen = lazyWithLog("OnboardingScreen", () =>
   import("@/features/auth/screens/Onboarding"),
+);
+const WelcomeScreen = lazyWithLog("WelcomeScreen", () =>
+  import("@/features/auth/screens/WelcomeScreen"),
 );
 const AuthCallbackScreen = lazyWithLog("AuthCallbackScreen", () =>
   import("@/features/auth/screens/AuthCallbackScreen"),
@@ -106,6 +118,9 @@ const ProfessionalBriefingsScreen = lazyWithLog(
 );
 
 /* ================= ACCOUNT / MISC ================= */
+const InviteScreen = lazyWithLog("InviteScreen", () =>
+  import("@/features/invite/screens/InviteScreen"),
+);
 const SettingsScreen = lazyWithLog("Settings", () =>
   import("@/features/settings/screen/SettingsScreen"),
 );
@@ -433,6 +448,8 @@ export default function AppRoutes() {
     ...aboutPublicRoutes({ AboutScreen }),
     ...contactPublicRoutes({ ContactScreen }),
 
+    ...howToPublicRoutes({ HowToCreateProfileScreen, HowToCreateVportScreen }),
+
     ...legalPublicRoutes({
       LegalDocumentScreen,
     }),
@@ -470,6 +487,10 @@ export default function AppRoutes() {
           element: <OnboardingScreen />,
         },
         {
+          path: '/welcome',
+          element: <WelcomeScreen />,
+        },
+        {
           element: <ProfileGatedOutlet />,
           children: [
             {
@@ -498,6 +519,7 @@ export default function AppRoutes() {
             NotiViewPostScreen,
 
             UploadScreen,
+            InviteScreen,
             ProfessionalAccessScreen,
             ProfessionalBriefingsScreen,
             SettingsScreen,

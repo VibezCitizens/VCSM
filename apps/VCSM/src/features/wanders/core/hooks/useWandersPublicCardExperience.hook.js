@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWandersCards } from "@/features/wanders/core/hooks/useWandersCards.hook";
 
 export function useWandersPublicCardExperience({ publicId }) {
-  const { readByPublicId, markOpened } = useWandersCards();
+  const { readByPublicId, markOpened, trackCtaClick } = useWandersCards();
 
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(Boolean(publicId));
@@ -71,10 +71,34 @@ export function useWandersPublicCardExperience({ publicId }) {
     })();
   }, [cardId, markOpened]);
 
+  const trackPublicCardCtaClick = useCallback(
+    async ({ ctaType, ctaUrl, templateKey, campaign } = {}) => {
+      if (!cardId) return null;
+
+      try {
+        return await Promise.resolve(
+          trackCtaClick?.({
+            cardId,
+            ctaType,
+            ctaUrl,
+            templateKey,
+            campaign,
+          })
+        );
+      } catch (_ERR) {
+        // UI-only best effort
+        void _ERR;
+        return null;
+      }
+    },
+    [cardId, trackCtaClick]
+  );
+
   return {
     card,
     cardId,
     loading,
     error,
+    trackCtaClick: trackPublicCardCtaClick,
   };
 }

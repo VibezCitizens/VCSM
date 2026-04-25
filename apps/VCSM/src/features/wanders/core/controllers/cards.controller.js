@@ -15,6 +15,7 @@ import {
 } from "@/features/wanders/core/dal/read/cards.read.dal";
 import { createWandersCard, updateWandersCard as updateCardDAL } from "@/features/wanders/core/dal/write/cards.write.dal";
 import { createWandersMailboxItem } from "@/features/wanders/core/dal/write/mailbox.write.dal";
+import { createWandersCardEvent } from "@/features/wanders/core/dal/write/events.write.dal";
 import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
 import { buildWandersImageKey } from "@/features/wanders/utils/buildWandersImageKey";
 
@@ -72,6 +73,44 @@ export async function markWandersCardOpened(input) {
   });
 
   return updated ?? null;
+}
+
+function normalizeCtaType(value) {
+  const s = String(value || "").trim().toLowerCase();
+  if (s === "visit_vport" || s === "call" || s === "message") return s;
+  return "none";
+}
+
+export async function trackWandersCardCtaClicked(input = {}) {
+  const cardId = safeTrim(input?.cardId);
+  if (!cardId) return null;
+
+  let user = null;
+  try {
+    user = await ensureGuestUser();
+  } catch (_ERR) {
+    // Best effort only; keep CTA navigation unblocked.
+    void _ERR;
+  }
+
+  try {
+    return await createWandersCardEvent({
+      cardId,
+      userId: user?.id ?? null,
+      actorId: null,
+      eventType: "opened",
+      meta: {
+        action: "cta_clicked",
+        cta_type: normalizeCtaType(input?.ctaType),
+        cta_url: safeTrim(input?.ctaUrl),
+        template_key: safeTrim(input?.templateKey),
+        campaign: safeTrim(input?.campaign),
+      },
+    });
+  } catch (error) {
+    console.warn("[trackWandersCardCtaClicked] failed", error);
+    return null;
+  }
 }
 
 function stripTrailingSlashes(url) {

@@ -2,6 +2,7 @@
 // src/features/wanders/components/cardstemplates/CardBuilder.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { templates } from "./registry";
+import { formatTemplateLabel } from "@/features/wanders/utils/formatTemplateLabel";
 
 function normalizeFormData(value) {
   // Turn undefined/null into "" so inputs never flip uncontrolled -> controlled
@@ -59,6 +60,22 @@ const TONES = {
     iconRing: "ring-violet-400/15",
     iconBg: "bg-violet-50",
     iconBorder: "border-violet-200/70",
+  },
+  mothers_day: {
+    ring: "ring-fuchsia-400/25",
+    border: "border-fuchsia-200/60",
+    glow: "bg-[radial-gradient(220px_120px_at_50%_0%,rgba(236,72,153,0.22),transparent)]",
+    iconRing: "ring-fuchsia-400/20",
+    iconBg: "bg-fuchsia-50",
+    iconBorder: "border-fuchsia-200/70",
+  },
+  teacher_appreciation: {
+    ring: "ring-amber-400/25",
+    border: "border-amber-200/60",
+    glow: "bg-[radial-gradient(220px_120px_at_50%_0%,rgba(245,158,11,0.18),transparent)]",
+    iconRing: "ring-amber-400/20",
+    iconBg: "bg-amber-50",
+    iconBorder: "border-amber-200/70",
   },
   generic: {
     ring: "ring-zinc-400/20",
@@ -132,6 +149,8 @@ export default function CardBuilder({
       { key: "birthday", label: "Birthday", sub: "Celebrate them", icon: "🎉" },
       { key: "valentines", label: "Valentine", sub: "Love notes", icon: "💝" },
       { key: "business", label: "Business", sub: "Professional intro", icon: "💼" },
+      { key: "mothers_day", label: "Mother's Day", sub: "Premium holiday", icon: "💐" },
+      { key: "teacher_appreciation", label: "Teacher Appreciation", sub: "May 4–8, 2026", icon: "🍎" },
 
       // ✅ NEW: Photo
       { key: "photo", label: "Photo", sub: "Add a picture", icon: "📷" },
@@ -270,7 +289,7 @@ export default function CardBuilder({
           >
             {(templates[cardType] || []).map((tpl) => (
               <option key={tpl.id} value={tpl.id}>
-                {tpl.id}
+                {formatTemplateLabel(tpl.id)}
               </option>
             ))}
           </select>

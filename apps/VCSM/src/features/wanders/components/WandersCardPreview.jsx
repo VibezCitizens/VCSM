@@ -19,39 +19,39 @@ function getTemplateTheme(templateKey) {
   switch (templateKey) {
     case "cute":
       return {
-        wrapperBg: "rgba(253,242,248,1)",
-        wrapperBorder: "rgba(251,207,232,1)",
-        titleColor: "rgba(190,24,93,1)",
-        accentColor: "rgba(219,39,119,1)",
+        wrapperBg: "var(--vc-surface)",
+        wrapperBorder: "rgba(255,105,198,0.25)",
+        titleColor: "var(--vc-accent-pink)",
+        accentColor: "var(--vc-accent-pink)",
       };
     case "spicy":
       return {
-        wrapperBg: "rgba(254,242,242,1)",
-        wrapperBorder: "rgba(254,202,202,1)",
-        titleColor: "rgba(185,28,28,1)",
-        accentColor: "rgba(220,38,38,1)",
+        wrapperBg: "var(--vc-surface)",
+        wrapperBorder: "rgba(239,68,68,0.25)",
+        titleColor: "var(--vc-error)",
+        accentColor: "var(--vc-error)",
       };
     case "mystery":
       return {
-        wrapperBg: "rgba(17,24,39,1)",
-        wrapperBorder: "rgba(55,65,81,1)",
-        titleColor: "rgba(255,255,255,1)",
-        accentColor: "rgba(229,231,235,1)",
+        wrapperBg: "var(--vc-bg-0)",
+        wrapperBorder: "var(--vc-border)",
+        titleColor: "var(--vc-text)",
+        accentColor: "var(--vc-text-soft)",
       };
     case "generic-minimal":
       return {
-        wrapperBg: "rgba(255,255,255,1)",
-        wrapperBorder: "rgba(229,231,235,1)",
-        titleColor: "rgba(17,24,39,1)",
-        accentColor: "rgba(55,65,81,1)",
+        wrapperBg: "var(--vc-surface)",
+        wrapperBorder: "var(--vc-border)",
+        titleColor: "var(--vc-text)",
+        accentColor: "var(--vc-text-soft)",
       };
     case "classic":
     default:
       return {
-        wrapperBg: "rgba(255,241,242,1)",
-        wrapperBorder: "rgba(254,205,211,1)",
-        titleColor: "rgba(136,19,55,1)",
-        accentColor: "rgba(190,18,60,1)",
+        wrapperBg: "var(--vc-surface)",
+        wrapperBorder: "rgba(255,105,198,0.20)",
+        titleColor: "var(--vc-accent-pink)",
+        accentColor: "var(--vc-accent-primary)",
       };
   }
 }
@@ -149,6 +149,12 @@ function toTemplateData({ isAnonymous, customization, messageText, toName, fromN
   };
 
   if (customization && typeof customization === "object") {
+    // Pass template-specific customization fields through so specialized
+    // preview components can render richer variants.
+    for (const [key, value] of Object.entries(customization)) {
+      if (data[key] === undefined) data[key] = value;
+    }
+
     if (customization.accent !== undefined) data.accent = customization.accent;
     if (customization.company !== undefined) data.company = customization.company;
 
@@ -157,6 +163,10 @@ function toTemplateData({ isAnonymous, customization, messageText, toName, fromN
 
     data.imageUrl = customization.imageUrl ?? customization.image_url ?? customization.imageURL ?? null;
     data.imageDataUrl = customization.imageDataUrl ?? customization.image_data_url ?? null;
+
+    if (!data.imageUrl && customization.hero_image_url) {
+      data.imageUrl = customization.hero_image_url;
+    }
   }
 
   return data;
@@ -367,7 +377,7 @@ export function WandersCardPreview({
       borderRadius: 12,
       border: `1px solid ${theme.wrapperBorder}`,
       background: theme.wrapperBg,
-      boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+      boxShadow: "var(--vc-shadow-card)",
       boxSizing: "border-box",
     },
     bgImg: {
@@ -390,16 +400,16 @@ export function WandersCardPreview({
       padding: 16,
       boxSizing: "border-box",
       border: isMystery
-        ? "1px solid rgba(255,255,255,0.15)"
+        ? "1px solid var(--vc-border)"
         : hasImage
         ? "1px solid rgba(255,255,255,0.40)"
-        : "1px solid rgba(0,0,0,0.06)",
+        : "1px solid var(--vc-border-subtle)",
       background: isMystery
         ? "rgba(0,0,0,0.55)"
         : hasImage
         ? "rgba(255,255,255,0.70)"
-        : "rgba(255,255,255,1)",
-      color: isMystery ? "rgba(255,255,255,0.92)" : "rgba(17,24,39,1)",
+        : "var(--vc-surface)",
+      color: "var(--vc-text)",
       backdropFilter: hasImage || isMystery ? "blur(12px)" : "none",
       WebkitBackdropFilter: hasImage || isMystery ? "blur(12px)" : "none",
     },
@@ -411,7 +421,7 @@ export function WandersCardPreview({
     },
     toText: {
       fontSize: 13,
-      color: isMystery ? "rgba(229,231,235,0.92)" : "rgba(55,65,81,0.95)",
+      color: "var(--vc-text-soft)",
       fontWeight: 700,
     },
     titleText: {
@@ -426,12 +436,12 @@ export function WandersCardPreview({
       whiteSpace: "pre-wrap",
       fontSize: 16,
       lineHeight: 1.45,
-      color: isMystery ? "rgba(255,255,255,0.95)" : "rgba(17,24,39,1)",
+      color: "var(--vc-text)",
     },
     fromText: {
       marginTop: 14,
       fontSize: 13,
-      color: isMystery ? "rgba(229,231,235,0.92)" : "rgba(55,65,81,0.95)",
+      color: "var(--vc-text-soft)",
       fontWeight: 700,
     },
   };

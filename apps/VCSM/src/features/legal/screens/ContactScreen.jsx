@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import ContactView from './Contact.view'
+import ContactView from './ContactView'
 
 const PAGE_TITLE = 'Contact Vibez Citizens'
 const PAGE_DESCRIPTION =

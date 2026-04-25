@@ -1,1 +1,13 @@
-﻿ 
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /reset
+Disallow: /auth
+Disallow: /settings
+Disallow: /dashboard
+
+Sitemap: https://vibezcitizens.com/sitemap.xml

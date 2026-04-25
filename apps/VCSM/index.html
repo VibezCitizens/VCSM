@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://vibezcitizens.com/" />
     <meta
       name="description"
-      content="Discover local events, support vendors, share drops, and connect with people around you — all in the fast, PWA-only Vibez Citizens experience."
+      content="Discover local events, connect with people, and explore businesses near you. Share profiles and VPORT business cards on Vibez Citizens."
     />
 
     <!-- 🔹 Icons (use your gradient V) -->
@@ -145,15 +145,33 @@
         if (!splash) return
 
         const path = window.location.pathname || ''
-        const isPublicMenuRoute =
-          /^\/m\/[^/]+\/?$/.test(path) ||
-          /^\/actor\/[^/]+\/menu(?:\/(?:qr|flyer))?\/?$/.test(path) ||
-          /^\/profile\/[^/]+\/menu\/?$/.test(path)
 
-        const isLegalRoute = /^\/legal(\/|$)/.test(path)
+        const isPublicRoute =
+          // menu / reviews (slug-based)
+          /^\/profile\/[^/]+\/(?:menu|reviews)(\/|$)/.test(path) ||
+          // menu (actor-based legacy + short link)
+          /^\/m\/[^/]+\/?$/.test(path) ||
+          /^\/actor\/[^/]+\/menu(\/|$)/.test(path) ||
+          // VPORT business card
+          /^\/vport\/[^/]+\/card\/?$/.test(path) ||
+          // Wanders (all public wanders routes)
+          /^\/wanders(\/|$)/.test(path) ||
+          // legal
+          /^\/legal(\/|$)/.test(path) ||
+          // static public pages
+          path === '/about' ||
+          path === '/contact' ||
+          // how-to guide pages (SEO landing pages)
+          /^\/how-to(\/|$)/.test(path) ||
+          // auth screens (no splash needed — users arrive here from outside)
+          path === '/login' ||
+          path === '/register' ||
+          path === '/forgot-password' ||
+          path === '/reset-password' ||
+          /^\/auth(\/|$)/.test(path)
 
         // Routes that should open instantly with no launch splash.
-        if (isPublicMenuRoute || isLegalRoute) {
+        if (isPublicRoute) {
           splash.remove()
           return
         }

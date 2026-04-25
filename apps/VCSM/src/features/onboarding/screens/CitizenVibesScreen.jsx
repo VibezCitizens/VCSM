@@ -1,14 +1,82 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import VibeTagPicker from '@/features/onboarding/components/VibeTagPicker'
 import useOnboardingVibeTags from '@/features/onboarding/hooks/useOnboardingVibeTags'
+import { authTheme } from '@/features/auth/styles/authTheme'
+
+const S = {
+  page: {
+    minHeight: '100dvh',
+    background: authTheme.pageBackground,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '24px 16px 48px',
+  },
+  inner: {
+    width: '100%',
+    maxWidth: 560,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+  },
+  headerCard: {
+    background: authTheme.cardBackground,
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: 20,
+    boxShadow: authTheme.cardShadow,
+    padding: '20px 22px',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 700,
+    color: '#fff',
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.50)',
+    lineHeight: 1.5,
+    marginBottom: 8,
+  },
+  count: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.35)',
+  },
+  errorCard: {
+    background: 'rgba(239,68,68,0.10)',
+    border: '1px solid rgba(239,68,68,0.30)',
+    borderRadius: 14,
+    padding: '12px 16px',
+    fontSize: 13,
+    color: '#fca5a5',
+  },
+  footerRow: {
+    display: 'flex',
+    gap: 8,
+    marginTop: 4,
+  },
+  ghostBtn: {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.10)',
+    borderRadius: 12,
+    color: 'rgba(255,255,255,0.70)',
+    fontSize: 13,
+    fontWeight: 500,
+    padding: '10px 18px',
+    cursor: 'pointer',
+  },
+}
 
 function VibeTagsSkeleton() {
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-4">
-      <div className="rounded-2xl border border-white/10 bg-white/4/60 p-4 space-y-3">
-        <div className="h-5 w-44 animate-pulse rounded bg-white/8" />
-        <div className="h-4 w-10/12 animate-pulse rounded bg-white/6" />
-        <div className="h-20 animate-pulse rounded bg-white/6/60" />
+    <div style={S.page}>
+      <div style={S.inner}>
+        <div style={{ ...S.headerCard, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ height: 20, width: 160, borderRadius: 6, background: 'rgba(255,255,255,0.08)', animation: 'pulse 1.5s infinite' }} />
+          <div style={{ height: 14, width: '80%', borderRadius: 6, background: 'rgba(255,255,255,0.05)' }} />
+        </div>
+        <div style={{ ...S.headerCard, height: 120 }} />
       </div>
     </div>
   )
@@ -28,47 +96,38 @@ export default function CitizenVibesScreen() {
     reload,
   } = useOnboardingVibeTags()
 
+  useEffect(() => {
+    document.title = 'Vibe Tags — Vibez Citizens'
+    return () => { document.title = 'Vibez Citizens' }
+  }, [])
+
   if (loading) return <VibeTagsSkeleton />
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-4">
-      <header className="rounded-2xl border border-white/10 bg-white/4/60 p-4">
-        <h1 className="text-lg font-semibold text-white">Set your vibe tags</h1>
-        <p className="mt-1 text-sm text-white/70">
-          Pick tags that represent you. You can update these later.
-        </p>
-        <p className="mt-2 text-xs text-white/50">{selectedCount} selected</p>
-      </header>
-
-      {errorMessage && (
-        <div className="rounded-2xl border border-rose-400/40 bg-rose-500/10 p-4 text-sm text-rose-200">
-          {errorMessage}
+    <div style={S.page}>
+      <div style={S.inner}>
+        <div style={S.headerCard}>
+          <p style={S.title}>Set your vibe tags</p>
+          <p style={S.subtitle}>Pick tags that represent you. You can update these later.</p>
+          <p style={S.count}>{selectedCount} selected</p>
         </div>
-      )}
 
-      <VibeTagPicker
-        tags={tags}
-        selectedTagIds={selectedTagIds}
-        onToggleTag={toggleTag}
-        onSave={save}
-        saving={saving}
-      />
+        {errorMessage && (
+          <div style={S.errorCard}>{errorMessage}</div>
+        )}
 
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={reload}
-          className="rounded-xl bg-white/6 px-3 py-2 text-xs text-white/90"
-        >
-          Reload
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/explore')}
-          className="rounded-xl bg-white/8 px-3 py-2 text-xs text-white/90"
-        >
-          Back
-        </button>
+        <VibeTagPicker
+          tags={tags}
+          selectedTagIds={selectedTagIds}
+          onToggleTag={toggleTag}
+          onSave={save}
+          saving={saving}
+        />
+
+        <div style={S.footerRow}>
+          <button style={S.ghostBtn} type="button" onClick={reload}>Reload</button>
+          <button style={S.ghostBtn} type="button" onClick={() => navigate('/explore')}>Back</button>
+        </div>
       </div>
     </div>
   )

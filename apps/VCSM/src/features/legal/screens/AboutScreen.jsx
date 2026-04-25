@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import AboutView from './About.view'
+import AboutView from './AboutView'
 
 const PAGE_TITLE = 'About Vibez Citizens'
 const PAGE_DESCRIPTION =

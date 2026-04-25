@@ -33,14 +33,35 @@ export function useRegister() {
     }
   }, [waitingForEmailConfirm, user?.email_confirmed_at, navigate])
 
+  // Read intent from URL query param (/register?intent=profile|vport)
+  // Maps to a post-onboarding destination so the funnel lands the user in the right place.
+  const intent = useMemo(() => {
+    const params = new URLSearchParams(location.search)
+    const raw = params.get('intent') || ''
+    if (raw === 'profile' || raw === 'vport') return raw
+    return null
+  }, [location.search])
+
+  // Preserve invite_code from /register?invite_code=... so it survives navigation.
+  // TODO: after signup, look up vc.vibe_invites by invite_code and mark it accepted
+  //       to attribute the new user back to the inviter actor.
+  const inviteCode = useMemo(() => {
+    const params = new URLSearchParams(location.search)
+    return params.get('invite_code') || null
+  }, [location.search])
+
   const navState = useMemo(() => {
     const state = location?.state || {}
+    const fromState = typeof state.from === 'string' ? state.from : null
+    // state.from takes priority (preserves Wanders flow + direct nav).
+    // Falls back to intent-based destination, then /welcome for all other signups.
+    const intentDest = intent ? `/welcome?intent=${intent}` : '/welcome'
     return {
-      from: typeof state.from === 'string' ? state.from : null,
+      from: fromState ?? intentDest,
       card: typeof state.card === 'string' ? state.card : null,
       wandersFlow: Boolean(state.wandersFlow),
     }
-  }, [location])
+  }, [location, intent])
 
   const isWandersFlow = Boolean(navState.wandersFlow)
 
@@ -161,6 +182,7 @@ export function useRegister() {
     errorMessage,
     successMessage,
     navState,
+    inviteCode,
     showPassword,
     showConfirmPassword,
     passwordValidation,

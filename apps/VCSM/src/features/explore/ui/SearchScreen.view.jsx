@@ -15,7 +15,7 @@ export default function SearchScreen() {
     { key: 'users', label: 'Citizens' },
     { key: 'vports', label: 'Vports' },
     { key: 'posts', label: 'Vibes' },
-    { key: 'groups', label: 'Groups' },
+    { key: 'groups', label: 'Districts' },
   ]
 
   return (
@@ -30,7 +30,7 @@ export default function SearchScreen() {
 
         <input
           type="text"
-          placeholder="Search citizens, vports, vibes..."
+          placeholder="Search citizens, vports, vibes, districts..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="explore-search-input"

@@ -77,10 +77,8 @@ export function WandersMailboxItemRow({
   }, [view.createdAt]);
 
   const styles = useMemo(() => {
-    const baseBg = "rgba(0,0,0,0)";
-
-    const rowBg = isSelected ? "rgba(255,255,255,0.06)" : baseBg;
-    const rowBorder = isSelected ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.08)";
+    const rowBg = isSelected ? "var(--vc-surface-strong)" : "transparent";
+    const rowBorder = isSelected ? "var(--vc-border-strong)" : "var(--vc-border-subtle)";
 
     return {
       btn: {
@@ -88,7 +86,7 @@ export function WandersMailboxItemRow({
         textAlign: "left",
         border: `1px solid ${rowBorder}`,
         background: rowBg,
-        color: "rgba(255,255,255,0.92)",
+        color: "var(--vc-text)",
         borderRadius: 14,
         padding: "12px 12px",
         cursor: "pointer",
@@ -96,8 +94,8 @@ export function WandersMailboxItemRow({
         boxSizing: "border-box",
       },
       btnHover: {
-        background: isSelected ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.04)",
-        borderColor: "rgba(255,255,255,0.14)",
+        background: isSelected ? "var(--vc-surface-strong)" : "var(--vc-surface)",
+        borderColor: "var(--vc-border-strong)",
       },
       row: {
         display: "flex",
@@ -119,14 +117,14 @@ export function WandersMailboxItemRow({
         width: 8,
         height: 8,
         borderRadius: 999,
-        background: "rgba(236,72,153,0.95)", // pink-ish dot
+        background: "var(--vc-accent-pink)",
         flexShrink: 0,
-        boxShadow: "0 0 0 3px rgba(236,72,153,0.10)",
+        boxShadow: "0 0 0 3px rgba(255,105,198,0.15)",
       },
       from: {
         fontSize: 13,
         fontWeight: 800,
-        color: "rgba(255,255,255,0.92)",
+        color: "var(--vc-text)",
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
@@ -140,7 +138,7 @@ export function WandersMailboxItemRow({
       preview: {
         marginTop: 6,
         fontSize: 13,
-        color: "rgba(255,255,255,0.65)",
+        color: "var(--vc-text-soft)",
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
@@ -148,7 +146,7 @@ export function WandersMailboxItemRow({
       right: {
         flexShrink: 0,
         fontSize: 12,
-        color: "rgba(255,255,255,0.45)",
+        color: "var(--vc-text-muted)",
       },
     };
   }, [isSelected]);

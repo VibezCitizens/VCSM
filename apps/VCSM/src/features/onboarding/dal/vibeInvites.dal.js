@@ -67,6 +67,15 @@ export async function readQualifyingVibeInviteCountDAL({ senderActorId }) {
     .eq('inviter_actor_id', senderActorId)
     .in('status', ['pending', 'accepted'])
 
+  // DEV PROBE — remove after invite tracking confirmed working
+  if (import.meta.env.DEV) {
+    console.log('[DEV onboarding/vibe_invites] qualifying count', {
+      senderActorId,
+      count: count ?? 0,
+      error: error?.message ?? null,
+    })
+  }
+
   if (error) throw error
   return count ?? 0
 }
