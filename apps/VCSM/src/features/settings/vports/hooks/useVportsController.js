@@ -33,6 +33,7 @@ export function useVportsController() {
 
   const [busyCardPublishId, setBusyCardPublishId] = useState(null);
   const [errCardPublish, setErrCardPublish] = useState('');
+  const [errCardPublishId, setErrCardPublishId] = useState(null);
 
   const { switchToProfile, switchToVport } = useVportSwitch({
     user,
@@ -102,12 +103,14 @@ export function useVportsController() {
   const setBusinessCardPublished = useCallback(async (vportId, published) => {
     setBusyCardPublishId(vportId);
     setErrCardPublish('');
+    setErrCardPublishId(null);
     try {
       await ctrlSetVportBusinessCardPublishState({ vportId, published });
       setItems(prev => prev.map(v => v.id === vportId ? { ...v, business_card_published: published } : v));
       return true;
     } catch (err) {
       setErrCardPublish(err?.message || 'Could not update business card.');
+      setErrCardPublishId(vportId);
       return false;
     } finally {
       setBusyCardPublishId(null);
@@ -142,6 +145,7 @@ export function useVportsController() {
     hardDeleteVport,
     busyCardPublishId,
     errCardPublish,
+    errCardPublishId,
     setBusinessCardPublished,
   };
 }

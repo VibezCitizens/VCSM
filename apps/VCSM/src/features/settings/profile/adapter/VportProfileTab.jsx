@@ -17,17 +17,17 @@ export default function VportProfileTab({ controller }) {
 
   const avatarInputRef = useRef(null);
   const bannerInputRef = useRef(null);
+  const avatarBlobRef = useRef(null);
+  const bannerBlobRef = useRef(null);
 
   const [draft, setDraft] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [previewAvatarUrl, setPreviewAvatarUrl] = useState(null);
+  const [previewBannerUrl, setPreviewBannerUrl] = useState(null);
 
   useEffect(() => {
     if (!profile) return;
-    setDraft({
-      ...profile,
-      __avatarFile: null,
-      __bannerFile: null,
-    });
+    setDraft({ ...profile, __avatarFile: null, __bannerFile: null });
   }, [profile]);
 
   useEffect(() => {
@@ -36,62 +36,87 @@ export default function VportProfileTab({ controller }) {
     return () => clearTimeout(t);
   }, [saved]);
 
+  // Revoke any remaining blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (avatarBlobRef.current) URL.revokeObjectURL(avatarBlobRef.current);
+      if (bannerBlobRef.current) URL.revokeObjectURL(bannerBlobRef.current);
+    };
+  }, []);
+
   if (!ready || loading || !draft) {
     return <div className="py-6 text-sm text-white/50">Loading VPORT...</div>;
   }
 
-  // Avatar / Banner handlers (same behavior)
   const onPickAvatar = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setDraft((d) => ({
-      ...d,
-      __avatarFile: file,
-      photoUrl: URL.createObjectURL(file),
-    }));
+    if (avatarBlobRef.current) URL.revokeObjectURL(avatarBlobRef.current);
+    const blobUrl = URL.createObjectURL(file);
+    avatarBlobRef.current = blobUrl;
+    setPreviewAvatarUrl(blobUrl);
+    setDraft((d) => ({ ...d, __avatarFile: file }));
   };
 
-  const onRemoveAvatar = () =>
+  const onRemoveAvatar = () => {
+    if (avatarBlobRef.current) { URL.revokeObjectURL(avatarBlobRef.current); avatarBlobRef.current = null; }
+    setPreviewAvatarUrl(null);
     setDraft((d) => ({ ...d, __avatarFile: null, photoUrl: "" }));
+  };
 
   const onPickBanner = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setDraft((d) => ({
-      ...d,
-      __bannerFile: file,
-      bannerUrl: URL.createObjectURL(file),
-    }));
+    if (bannerBlobRef.current) URL.revokeObjectURL(bannerBlobRef.current);
+    const blobUrl = URL.createObjectURL(file);
+    bannerBlobRef.current = blobUrl;
+    setPreviewBannerUrl(blobUrl);
+    setDraft((d) => ({ ...d, __bannerFile: file }));
   };
 
-  const onRemoveBanner = () =>
-    setDraft((d) => ({
-      ...d,
-      __bannerFile: null,
-      bannerUrl: "/default-banner.jpg",
-    }));
+  const onRemoveBanner = () => {
+    if (bannerBlobRef.current) { URL.revokeObjectURL(bannerBlobRef.current); bannerBlobRef.current = null; }
+    setPreviewBannerUrl(null);
+    setDraft((d) => ({ ...d, __bannerFile: null, bannerUrl: "/default-banner.jpg" }));
+  };
 
   const onSaveProfile = async () => {
-    const ok = await saveProfile(draft);
-    if (ok !== false) setSaved(true);
+    try {
+      await saveProfile(draft);
+      // Revoke and clear previews — profile effect will sync draft with confirmed URLs
+      if (avatarBlobRef.current) { URL.revokeObjectURL(avatarBlobRef.current); avatarBlobRef.current = null; }
+      if (bannerBlobRef.current) { URL.revokeObjectURL(bannerBlobRef.current); bannerBlobRef.current = null; }
+      setPreviewAvatarUrl(null);
+      setPreviewBannerUrl(null);
+      setSaved(true);
+    } catch {
+      // Rollback preview — draft.photoUrl was never mutated, so original URL is restored automatically
+      if (avatarBlobRef.current) { URL.revokeObjectURL(avatarBlobRef.current); avatarBlobRef.current = null; }
+      if (bannerBlobRef.current) { URL.revokeObjectURL(bannerBlobRef.current); bannerBlobRef.current = null; }
+      setPreviewAvatarUrl(null);
+      setPreviewBannerUrl(null);
+      setDraft((d) => ({ ...d, __avatarFile: null, __bannerFile: null }));
+    }
   };
+
+  const busyAvatar = saving && !!draft.__avatarFile;
+  const busyBanner = saving && !!draft.__bannerFile;
 
   return (
     <>
-      {/* VPORT BASIC PROFILE (existing) */}
       <ProfileTabView
         mode={mode}
         username={draft.username}
         displayName={draft.displayName}
-        email={draft.email} // null for vport in mapper (fine)
+        email={draft.email}
         bio={draft.bio}
         photoUrl={draft.photoUrl}
         bannerUrl={draft.bannerUrl}
-        previewAvatar={draft.__avatarFile ? draft.photoUrl : null}
-        previewBanner={draft.__bannerFile ? draft.bannerUrl : null}
+        previewAvatar={previewAvatarUrl}
+        previewBanner={previewBannerUrl}
         saving={saving}
+        busyAvatar={busyAvatar}
+        busyBanner={busyBanner}
         error={error}
         saved={saved}
         avatarInputRef={avatarInputRef}

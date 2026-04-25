@@ -16,7 +16,7 @@ const UUID_RX =
 
 export function useProfileController() {
   const { user } = useAuth();
-  const { identity } = useIdentity();
+  const { identity, setIdentity } = useIdentity();
 
   const location = useLocation();
   const params = useParams();
@@ -140,6 +140,13 @@ export function useProfileController() {
           ...(p || {}),
           ...updatedUi,
         }));
+
+        // Patch identity so nav/header avatar refreshes without waiting for TTL
+        if (updatedUi.actorId && identity?.actorId === updatedUi.actorId) {
+          setIdentity((prev) =>
+            prev ? { ...prev, avatar: updatedUi.photoUrl, banner: updatedUi.bannerUrl } : prev
+          );
+        }
       } catch (e) {
         setError(e?.message || "Could not save changes.");
         throw e;
@@ -147,7 +154,7 @@ export function useProfileController() {
         setSaving(false);
       }
     },
-    [subjectId, mode, uploads]
+    [subjectId, mode, uploads, identity?.actorId, setIdentity]
   );
 
   const profilePath =

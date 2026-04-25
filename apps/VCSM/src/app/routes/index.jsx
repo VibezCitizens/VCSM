@@ -11,7 +11,9 @@ import ProfileGatedOutlet from "@/app/guards/ProfileGatedOutlet";
 import RootLayout from "@/app/layout/RootLayout";
 import { resolveRealm } from "@/shared/utils/resolveRealm";
 
+import { aboutPublicRoutes } from "@/app/routes/public/about.routes";
 import { authPublicRoutes } from "@/app/routes/public/auth.routes";
+import { contactPublicRoutes } from "@/app/routes/public/contact.routes";
 import { legalPublicRoutes } from "@/app/routes/public/legal.routes";
 import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
@@ -38,6 +40,14 @@ function lazyWithLog(label, importer) {
 
 /* ================= LEGAL (static — no lazy flash on navigation) ================= */
 import LegalDocumentScreen from "@/features/legal/screens/LegalDocumentScreen";
+
+/* ================= ABOUT / CONTACT (static public pages — no auth) ================= */
+const AboutScreen = lazyWithLog("AboutScreen", () =>
+  import("@/features/public/about/About.screen"),
+);
+const ContactScreen = lazyWithLog("ContactScreen", () =>
+  import("@/features/public/contact/Contact.screen"),
+);
 
 /* ================= AUTH ================= */
 const LoginScreen = lazyWithLog("LoginScreen", () =>
@@ -419,6 +429,9 @@ export default function AppRoutes() {
       ResetPasswordScreen,
       AuthCallbackScreen,
     }),
+
+    ...aboutPublicRoutes({ AboutScreen }),
+    ...contactPublicRoutes({ ContactScreen }),
 
     ...legalPublicRoutes({
       LegalDocumentScreen,

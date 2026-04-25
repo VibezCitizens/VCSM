@@ -122,6 +122,14 @@ export default function VportBusinessCardPublicView({ slug }) {
     [card?.avatarUrl, card?.logoUrl],
   );
 
+  // Always absolute — og:image must never be a relative path for crawlers
+  const ogImageUrl = useMemo(() => {
+    const src = card?.logoUrl || card?.avatarUrl || "";
+    if (!src) return "https://vibezcitizens.com/VportBusinnesCard.jpeg";
+    if (src.startsWith("http://") || src.startsWith("https://")) return src;
+    return `${window.location.origin}${src}`;
+  }, [card?.avatarUrl, card?.logoUrl]);
+
   const addressLabel = useMemo(() => composeAddressLabel(card), [card]);
 
   const publicCardUrl = useMemo(() => {
@@ -139,34 +147,50 @@ export default function VportBusinessCardPublicView({ slug }) {
     const description = card.description
       ? `${card.businessName} on Vibez Citizens. ${card.description}`
       : `${card.businessName} business card on Vibez Citizens.`;
+    const canonicalUrl = publicCardUrl || window.location.href;
 
     document.title = title;
 
-    // SPA note: these meta tags are runtime-only. Some social crawlers require
-    // server-rendered metadata for reliable previews.
+    // Canonical <link> — create/restore on cleanup
+    let canonicalEl = document.head.querySelector('link[rel="canonical"]');
+    const canonicalCreated = !canonicalEl;
+    const prevCanonical = canonicalEl?.getAttribute("href") ?? null;
+    if (!canonicalEl) {
+      canonicalEl = document.createElement("link");
+      canonicalEl.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute("href", canonicalUrl);
+
+    // Client-side meta tags (authoritative for Google/Twitter; edge function
+    // handles iMessage/WhatsApp/Facebook before JS executes).
     const cleanups = [
       upsertMetaTag({ name: "description", content: description }),
       upsertMetaTag({ property: "og:title", content: title }),
       upsertMetaTag({ property: "og:description", content: description }),
       upsertMetaTag({ property: "og:type", content: "website" }),
-      upsertMetaTag({ property: "og:url", content: publicCardUrl || window.location.href }),
+      upsertMetaTag({ property: "og:url", content: canonicalUrl }),
+      upsertMetaTag({ property: "og:image", content: ogImageUrl }),
+      upsertMetaTag({ name: "twitter:card", content: "summary_large_image" }),
+      upsertMetaTag({ name: "twitter:title", content: title }),
+      upsertMetaTag({ name: "twitter:description", content: description }),
+      upsertMetaTag({ name: "twitter:image", content: ogImageUrl }),
     ];
-
-    if (avatarSrc) {
-      cleanups.push(upsertMetaTag({ property: "og:image", content: avatarSrc }));
-    }
 
     return () => {
       document.title = prevTitle;
+
+      if (canonicalCreated) {
+        canonicalEl.remove();
+      } else if (prevCanonical !== null) {
+        canonicalEl.setAttribute("href", prevCanonical);
+      }
+
       for (let i = cleanups.length - 1; i >= 0; i -= 1) {
-        try {
-          cleanups[i]?.();
-        } catch {
-          // no-op
-        }
+        try { cleanups[i]?.(); } catch { /* no-op */ }
       }
     };
-  }, [avatarSrc, card, publicCardUrl]);
+  }, [card, ogImageUrl, publicCardUrl]);
 
   const scrollToLeadForm = () => {
     leadFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });

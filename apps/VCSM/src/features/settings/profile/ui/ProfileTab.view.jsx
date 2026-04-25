@@ -13,6 +13,8 @@ export default function ProfileTabView({
   previewAvatar,
   previewBanner,
   saving,
+  busyAvatar,
+  busyBanner,
   error,
   saved,
   avatarInputRef,
@@ -54,7 +56,7 @@ export default function ProfileTabView({
               type="button"
               onClick={() => bannerInputRef.current?.click()}
               className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
-              disabled={saving}
+              disabled={saving || busyBanner}
             >
               Choose banner
             </button>
@@ -63,7 +65,7 @@ export default function ProfileTabView({
                 type="button"
                 onClick={onRemoveBanner}
                 className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
-                disabled={saving}
+                disabled={saving || busyBanner}
               >
                 Remove
               </button>
@@ -86,7 +88,7 @@ export default function ProfileTabView({
                 type="button"
                 onClick={() => avatarInputRef.current?.click()}
                 className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
-                disabled={saving}
+                disabled={saving || busyAvatar}
               >
                 Choose image
               </button>
@@ -95,7 +97,7 @@ export default function ProfileTabView({
                   type="button"
                   onClick={onRemoveAvatar}
                   className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
-                  disabled={saving}
+                  disabled={saving || busyAvatar}
                 >
                   Remove
                 </button>

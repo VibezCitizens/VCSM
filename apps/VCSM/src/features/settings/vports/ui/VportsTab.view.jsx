@@ -32,9 +32,15 @@ export default function VportsTabView() {
     busyHardDelete,
     errHardDelete,
     hardDeleteVport,
+    busyCardPublishId,
+    errCardPublish,
+    errCardPublishId,
+    setBusinessCardPublished,
   } = useVportsController()
 
   const [hardDeleteConfirmText, setHardDeleteConfirmText] = useState('')
+  const [unpublishTarget, setUnpublishTarget] = useState(null)
+  const [copiedId, setCopiedId] = useState(null)
 
   const activeVports = items.filter(v => !v.is_deleted)
   const deactivatedVports = items.filter(v => v.is_deleted)
@@ -55,6 +61,21 @@ export default function VportsTabView() {
       refreshAvailableActors()
       setHardDeleteTarget(null)
       setHardDeleteConfirmText('')
+    }
+  }
+
+  async function handleUnpublishConfirm() {
+    const ok = await setBusinessCardPublished(unpublishTarget.id, false)
+    if (ok) setUnpublishTarget(null)
+  }
+
+  function handleCopyLink(v) {
+    const url = `https://vibezcitizens.com/vport/${v.slug}/card`
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        setCopiedId(v.id)
+        setTimeout(() => setCopiedId(id => id === v.id ? null : id), 2000)
+      }).catch(() => {})
     }
   }
 
@@ -182,6 +203,111 @@ export default function VportsTabView() {
         </div>
       )}
 
+      {/* ── Business Card section ─────────────────────── */}
+      {items.filter(v => v.slug).length > 0 && (
+        <Card>
+          <div className="mb-3 text-sm font-semibold text-white">Business Cards</div>
+          <div className="space-y-3">
+            {items.filter(v => v.slug).map(v => {
+              const isDisabled = v.is_deleted || !v.is_active
+              const isBusy = busyCardPublishId === v.id
+              const isPublished = !!v.business_card_published
+              const cardUrl = `https://vibezcitizens.com/vport/${v.slug}/card`
+              const isCopied = copiedId === v.id
+
+              return (
+                <div
+                  key={v.id}
+                  className="rounded-xl p-3"
+                  style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(0,0,0,0.18)' }}
+                >
+                  <div className="mb-2.5 flex items-center gap-2.5">
+                    <img
+                      src={v.avatar_url || '/avatar.jpg'}
+                      alt=""
+                      className="h-8 w-8 shrink-0 rounded-lg border border-white/10 object-cover"
+                      style={isDisabled ? { filter: 'grayscale(0.5) opacity(0.6)' } : {}}
+                      onError={e => { e.currentTarget.src = '/avatar.jpg' }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium text-white/90">{v.name}</div>
+                      <div className="truncate text-xs text-white/35">@{v.slug}</div>
+                    </div>
+                    <span
+                      className="settings-status-badge shrink-0"
+                      style={isPublished && !isDisabled
+                        ? { border: '1px solid rgba(52,211,153,0.3)', background: 'rgba(52,211,153,0.1)', color: '#6ee7b7' }
+                        : { border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.3)' }
+                      }
+                    >
+                      {isPublished && !isDisabled ? 'Published' : 'Unpublished'}
+                    </span>
+                  </div>
+
+                  {isDisabled ? (
+                    <p className="mb-2.5 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                      {v.is_deleted
+                        ? 'Restore this VPORT before publishing its business card.'
+                        : 'This VPORT is inactive.'}
+                    </p>
+                  ) : (
+                    <div className="mb-2.5 flex items-center gap-1.5 overflow-hidden rounded-lg px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                      <span className="min-w-0 flex-1 truncate text-xs" style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>
+                        {cardUrl}
+                      </span>
+                    </div>
+                  )}
+
+                  {errCardPublish && errCardPublishId === v.id && (
+                    <p className="mb-2 text-xs text-rose-400">{errCardPublish}</p>
+                  )}
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {isPublished ? (
+                      <button
+                        onClick={() => setUnpublishTarget(v)}
+                        disabled={isBusy || isDisabled}
+                        className="settings-btn settings-btn--ghost px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                        style={{ color: '#fcd34d', borderColor: 'rgba(217,119,6,0.35)' }}
+                      >
+                        {isBusy ? 'Updating…' : 'Unpublish'}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setBusinessCardPublished(v.id, true)}
+                        disabled={isBusy || isDisabled}
+                        className="settings-btn px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                        style={{ background: 'var(--vc-accent)', color: '#fff' }}
+                      >
+                        {isBusy ? 'Publishing…' : 'Publish card'}
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => handleCopyLink(v)}
+                      disabled={!isPublished || isDisabled}
+                      className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      {isCopied ? 'Copied' : 'Copy link'}
+                    </button>
+
+                    <button
+                      onClick={() => window.open(cardUrl, '_blank')}
+                      disabled={!isPublished || isDisabled}
+                      className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Preview
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </Card>
+      )}
+
       <OnemoredaysAd />
 
       {/* ── Create VPORT modal ─────────────────────────── */}
@@ -254,6 +380,44 @@ export default function VportsTabView() {
                   style={{ background: 'var(--vc-accent)', color: '#fff' }}
                 >
                   {busyRestore ? 'Recovering…' : 'Recover VPORT'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Unpublish business card modal ─────────────── */}
+      {unpublishTarget && (
+        <div className="fixed inset-0 z-[120]">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setUnpublishTarget(null)} />
+          <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
+            <div className="settings-shell relative w-full max-w-[400px] overflow-hidden rounded-2xl">
+              <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
+                <div className="text-sm font-semibold text-white">Unpublish business card?</div>
+                <button onClick={() => setUnpublishTarget(null)} className="settings-btn settings-btn--ghost p-1.5 text-white/70">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="p-5">
+                <p className="text-sm text-white/70">
+                  The public link for <span className="font-medium text-white">{unpublishTarget.name}</span> will stop working immediately. Leads collected so far are kept.
+                </p>
+                {errCardPublish && <p className="mt-3 text-xs text-rose-400">{errCardPublish}</p>}
+              </div>
+
+              <div className="flex gap-2 border-t border-white/8 px-4 py-3">
+                <button onClick={() => setUnpublishTarget(null)} className="settings-btn settings-btn--ghost flex-1 py-2 text-sm">
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUnpublishConfirm}
+                  disabled={busyCardPublishId === unpublishTarget.id}
+                  className="settings-btn flex-1 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
+                  style={{ background: 'rgba(217,119,6,0.8)', color: '#fff' }}
+                >
+                  {busyCardPublishId === unpublishTarget.id ? 'Unpublishing…' : 'Unpublish'}
                 </button>
               </div>
             </div>
