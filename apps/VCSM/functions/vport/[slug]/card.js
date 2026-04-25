@@ -1,4 +1,5 @@
 // functions/vport/[slug]/card.js
+import { SECURITY_HEADERS } from "../../_shared/securityHeaders.js";
 // Cloudflare Pages Function — intercepts /vport/:slug/card at the edge,
 // rewrites index.html with per-VPORT Open Graph + Twitter Card meta tags
 // before the SPA loads. This is the only way to support iMessage, WhatsApp,
@@ -114,6 +115,7 @@ export async function onRequest(context) {
 
   return new Response(html, {
     headers: {
+      ...SECURITY_HEADERS,
       "content-type": "text/html; charset=UTF-8",
       // 60s public cache — short enough that unpublish/delete propagates quickly
       "cache-control": "public, max-age=60",

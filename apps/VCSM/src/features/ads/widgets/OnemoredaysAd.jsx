@@ -60,7 +60,7 @@ export default function OnemoredaysAd() {
             className="w-full h-[420px] bg-black"
             loading="lazy"
             referrerPolicy="no-referrer"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+            sandbox="allow-scripts allow-popups-to-escape-sandbox"
           />
         </div>
 

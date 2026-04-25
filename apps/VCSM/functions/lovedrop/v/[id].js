@@ -1,3 +1,5 @@
+import { SECURITY_HEADERS } from "../../_shared/securityHeaders.js";
+
 export async function onRequest(context) {
   const { params, env } = context;
   const id = params.id;
@@ -53,6 +55,7 @@ export async function onRequest(context) {
 
   return new Response(html, {
     headers: {
+      ...SECURITY_HEADERS,
       "content-type": "text/html; charset=utf-8",
       "cache-control": "no-store",
     },

@@ -1,4 +1,6 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\functions\wanders\i\[publicId].js
+// functions/wanders/i/[publicId].js
+import { SECURITY_HEADERS } from "../../_shared/securityHeaders.js";
+
 export async function onRequest(context) {
   const { request, params, env } = context;
 
@@ -52,6 +54,7 @@ export async function onRequest(context) {
 
   return new Response(html, {
     headers: {
+      ...SECURITY_HEADERS,
       "content-type": "text/html; charset=UTF-8",
       "cache-control": "public, max-age=60",
     },

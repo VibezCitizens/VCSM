@@ -1,4 +1,5 @@
 // functions/m/[actorId].js
+import { SECURITY_HEADERS } from "../_shared/securityHeaders.js";
 // Cloudflare Pages Function — intercepts /m/:actorId (QR short link) at the edge.
 // Same OG injection as /profile/:slug/menu but looks up by actor_id.
 //
@@ -99,6 +100,7 @@ export async function onRequest(context) {
 
   return new Response(html, {
     headers: {
+      ...SECURITY_HEADERS,
       "content-type": "text/html; charset=UTF-8",
       "cache-control": "public, max-age=60",
     },

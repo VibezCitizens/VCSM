@@ -1,4 +1,5 @@
 // functions/profile/[slug]/menu.js
+import { SECURITY_HEADERS } from "../../_shared/securityHeaders.js";
 // Cloudflare Pages Function — intercepts /profile/:slug/menu at the edge,
 // rewrites index.html with VPORT-specific Open Graph + Twitter Card meta tags
 // before the SPA loads. Supports iMessage, WhatsApp, Facebook, Discord, etc.
@@ -100,6 +101,7 @@ export async function onRequest(context) {
 
   return new Response(html, {
     headers: {
+      ...SECURITY_HEADERS,
       "content-type": "text/html; charset=UTF-8",
       "cache-control": "public, max-age=60",
     },
