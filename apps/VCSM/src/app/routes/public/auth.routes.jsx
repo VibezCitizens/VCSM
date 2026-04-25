@@ -6,6 +6,7 @@ export function authPublicRoutes({
   ForgotPasswordScreen,
   ResetPasswordScreen,
   AuthCallbackScreen,
+  VerifyEmailRequiredScreen,
 }) {
   return [
     {
@@ -54,6 +55,14 @@ export function authPublicRoutes({
       element: (
         <AuthPublicRoute>
           <AuthCallbackScreen />
+        </AuthPublicRoute>
+      ),
+    },
+    {
+      path: '/verify-email',
+      element: (
+        <AuthPublicRoute>
+          <VerifyEmailRequiredScreen />
         </AuthPublicRoute>
       ),
     },

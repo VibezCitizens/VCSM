@@ -80,6 +80,9 @@ const WelcomeScreen = lazyWithLog("WelcomeScreen", () =>
 const AuthCallbackScreen = lazyWithLog("AuthCallbackScreen", () =>
   import("@/features/auth/screens/AuthCallbackScreen"),
 );
+const VerifyEmailRequiredScreen = lazyWithLog("VerifyEmailRequiredScreen", () =>
+  import("@/features/auth/screens/VerifyEmailRequiredScreen"),
+);
 
 /* ================= MAIN APP ================= */
 const CentralFeed = lazyWithLog("CentralFeed", () =>
@@ -443,6 +446,7 @@ export default function AppRoutes() {
       ForgotPasswordScreen,
       ResetPasswordScreen,
       AuthCallbackScreen,
+      VerifyEmailRequiredScreen,
     }),
 
     ...aboutPublicRoutes({ AboutScreen }),

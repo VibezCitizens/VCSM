@@ -18,7 +18,7 @@ export function useAuthCallback() {
           if (result.error) {
             setError(result.error)
           } else {
-            navigate('/login', { replace: true })
+            navigate('/login', { replace: true, state: { emailConfirmed: true } })
           }
           return
         }
@@ -31,7 +31,7 @@ export function useAuthCallback() {
 
         // Email verification: session established.
         // ProtectedRoute and CompleteProfileGate take over from here.
-        navigate('/feed', { replace: true })
+        navigate('/explore', { replace: true })
       } catch {
         if (!alive) return
         setError('Something went wrong. Please try logging in.')

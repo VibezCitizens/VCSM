@@ -32,6 +32,7 @@ function LoginScreen() {
   const canSubmit = !loading && email.trim() && password.trim()
 
   const accountDeleted = location?.state?.accountDeleted === true
+  const emailConfirmed = location?.state?.emailConfirmed === true
 
   const navState = useMemo(() => {
     const s = location?.state || {}
@@ -143,6 +144,17 @@ function LoginScreen() {
                   className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-[#9ca3af] outline-none transition duration-200 focus:border-[#6C4DF6]/80 focus:ring-2 focus:ring-[#6C4DF6]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
                 />
               </div>
+
+              {emailConfirmed && (
+                <div
+                  className="rounded-xl border border-[#22c55e]/30 bg-[#22c55e]/10 px-3 py-2.5 text-sm text-[#86efac]"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <p className="font-semibold">Email confirmed</p>
+                  <p className="mt-0.5 text-[#86efac]/75 text-xs">You can now log in to your account.</p>
+                </div>
+              )}
 
               {accountDeleted && (
                 <div

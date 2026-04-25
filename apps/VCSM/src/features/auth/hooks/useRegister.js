@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { useAuth } from '@/app/providers/AuthProvider'
 import { ctrlRegisterAccount } from '@/features/auth/controllers/register.controller'
 import { recordSignupConsent } from '@/features/legal/controllers/legalConsent.controller'
 import {
@@ -12,7 +11,6 @@ import {
 export function useRegister() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user } = useAuth()
 
   const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' })
   const [termsAccepted, setTermsAccepted] = useState(false)
@@ -22,16 +20,6 @@ export function useRegister() {
   const [successMessage, setSuccessMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [waitingForEmailConfirm, setWaitingForEmailConfirm] = useState(false)
-
-  // When the user verifies their email in another tab, Supabase fires onAuthStateChange
-  // which updates the AuthContext user. Navigate to /feed as soon as we see email_confirmed_at.
-  useEffect(() => {
-    if (!waitingForEmailConfirm) return
-    if (user?.email_confirmed_at) {
-      navigate('/feed', { replace: true })
-    }
-  }, [waitingForEmailConfirm, user?.email_confirmed_at, navigate])
 
   // Read intent from URL query param (/register?intent=profile|vport)
   // Maps to a post-onboarding destination so the funnel lands the user in the right place.
@@ -140,8 +128,7 @@ export function useRegister() {
 
       // No session yet — user must verify email before continuing.
       if (result?.requiresEmailConfirm) {
-        setSuccessMessage('Check your email to verify your account before continuing.')
-        setWaitingForEmailConfirm(true)
+        navigate('/verify-email', { replace: true, state: { email: form.email } })
         return true
       }
 

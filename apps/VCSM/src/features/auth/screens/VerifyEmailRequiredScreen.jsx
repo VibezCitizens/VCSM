@@ -1,9 +1,32 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useResendVerification } from '@/features/auth/hooks/useResendVerification'
 import { authTheme } from '@/features/auth/styles/authTheme'
 
-export default function VerifyEmailRequiredScreen({ email }) {
+const REDIRECT_SECONDS = 4
+
+export default function VerifyEmailRequiredScreen({ email: emailProp }) {
+  const location = useLocation()
+  const navigate = useNavigate()
   const { loading, sent, error, resend } = useResendVerification()
+
+  const email = emailProp || location.state?.email || null
+
+  const [countdown, setCountdown] = useState(REDIRECT_SECONDS)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          navigate('/login', { replace: true })
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [navigate])
 
   return (
     <div
@@ -19,22 +42,22 @@ export default function VerifyEmailRequiredScreen({ email }) {
       >
         <div className="mb-6 space-y-1 text-center">
           <h1 className="text-[1.5rem] font-semibold tracking-tight text-white">
-            Verify your email
+            Check your email
           </h1>
           <p className="text-sm text-[#9ca3af]">
-            You must verify your email address before continuing.
+            Check your email to confirm your account.
           </p>
         </div>
 
         {email ? (
           <p className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-center text-sm text-[#d1d5db]">
-            A verification link was sent to{' '}
+            A confirmation link was sent to{' '}
             <span className="font-medium text-white">{email}</span>
           </p>
         ) : null}
 
         <p className="mb-6 text-center text-sm text-[#9ca3af]">
-          Click the link in your email to activate your account, then log in here.
+          After confirming, return and log in.
         </p>
 
         {error ? (
@@ -51,7 +74,7 @@ export default function VerifyEmailRequiredScreen({ email }) {
             className="mb-4 rounded-xl border border-[#22c55e]/30 bg-[#22c55e]/10 px-3 py-2 text-center text-sm text-[#86efac]"
             role="status"
           >
-            Verification email resent. Check your inbox.
+            Confirmation email resent. Check your inbox.
           </div>
         ) : null}
 
@@ -67,17 +90,15 @@ export default function VerifyEmailRequiredScreen({ email }) {
                 : 'cursor-not-allowed bg-white/10 text-white/60 shadow-none',
             ].join(' ')}
           >
-            {loading ? 'Sending…' : sent ? 'Email sent' : 'Resend verification email'}
+            {loading ? 'Sending…' : sent ? 'Email sent' : 'Resend confirmation email'}
           </button>
         ) : null}
 
-        <Link
-          to="/login"
-          replace
-          className="block w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:text-white"
-        >
-          Back to login
-        </Link>
+        <p className="mt-4 text-center text-xs text-[#6b7280]">
+          {countdown > 0
+            ? `Redirecting to login in ${countdown}s…`
+            : 'Redirecting…'}
+        </p>
       </div>
     </div>
   )
