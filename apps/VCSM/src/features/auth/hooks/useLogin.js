@@ -4,6 +4,10 @@ import { ensureProfileDiscoverable } from '@/features/auth/controllers/profile.c
 import { hydrateAuthSession } from '@/features/auth/controllers/authSession.controller'
 import { debugLoginEvent, debugLoginError, debugLoginSessionSnapshot } from '@debuggers/identity'
 
+function isEmailNotConfirmedError(error) {
+  return String(error?.message ?? '').toLowerCase().includes('email not confirmed')
+}
+
 export function useLogin(navigate, location) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,6 +29,10 @@ export function useLogin(navigate, location) {
 
       if (signInError) {
         debugLoginError('SUPABASE_SIGNIN_ERROR', signInError, { phase: 'auth' })
+        if (isEmailNotConfirmedError(signInError)) {
+          setError('Please verify your email before continuing.')
+          return false
+        }
         throw signInError
       }
 

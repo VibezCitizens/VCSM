@@ -30,7 +30,7 @@ export async function readProfileShellDAL(profileId) {
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('id,display_name,username')
+    .select('id,display_name,username,birthdate,age,sex')
     .eq('id', profileId)
     .maybeSingle()
 

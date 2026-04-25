@@ -6,12 +6,13 @@ import {
   ctrlDeleteAccount,
   ctrlSoftDeleteVport,
   ctrlHardDeleteVport,
+  ctrlRestoreVport,
   ctrlResolveVportIdByActorId,
 } from '@/features/settings/account/controller/account.controller'
 
 export function useAccountController() {
   const { user, logout: logoutFromAuth } = useAuth()
-  const { identity } = useIdentity()
+  const { identity, availableActors, switchActor } = useIdentity()
 
   const isVport = identity?.kind === 'vport'
   const actorId = identity?.actorId ?? null
@@ -49,6 +50,9 @@ export function useAccountController() {
   const [busyHard, setBusyHard] = useState(false)
   const [errHard, setErrHard] = useState('')
 
+  const [busyRestore, setBusyRestore] = useState(false)
+  const [errRestore, setErrRestore] = useState('')
+
   async function logout() {
     await logoutFromAuth()
   }
@@ -84,8 +88,26 @@ export function useAccountController() {
     try {
       if (!targetVportId) throw new Error('No VPORT selected.')
       await ctrlSoftDeleteVport({ vportId: targetVportId })
+      if (isVport) {
+        const citizenActor = availableActors.find(a => a.actorKind === 'user')
+        if (citizenActor?.actorId) {
+          // switchActor returns { success } — it never throws. Check the result
+          // and fall back to a hard reload if the switch fails, otherwise the
+          // in-memory identity stays as the VPORT and navigation stays open.
+          const result = await switchActor(citizenActor.actorId, 'soft_delete_vport')
+          if (!result?.success) {
+            _switchToProfile()
+            window.location.replace('/me')
+          }
+        } else {
+          _switchToProfile()
+          window.location.replace('/me')
+        }
+      }
+      return true
     } catch (error) {
       setErrSoft(error?.message || 'Could not deactivate the VPORT.')
+      return false
     } finally {
       setBusySoft(false)
     }
@@ -106,6 +128,21 @@ export function useAccountController() {
     }
   }
 
+  async function restoreVport(targetVportId) {
+    setBusyRestore(true)
+    setErrRestore('')
+    try {
+      if (!targetVportId) throw new Error('No VPORT selected.')
+      await ctrlRestoreVport({ vportId: targetVportId })
+      return true
+    } catch (error) {
+      setErrRestore(error?.message || 'Could not restore the VPORT.')
+      return false
+    } finally {
+      setBusyRestore(false)
+    }
+  }
+
   return {
     isVport,
     vportId,
@@ -118,10 +155,13 @@ export function useAccountController() {
     errSoft,
     busyHard,
     errHard,
+    busyRestore,
+    errRestore,
     setShowConfirmAccount,
     logout,
     deleteAccount,
     softDeleteVport,
     hardDeleteVport,
+    restoreVport,
   }
 }

@@ -589,6 +589,26 @@ export function IdentityProvider({ children }) {
     identity?.kind === 'vport' &&
     (identity?.isDeleted === true || identity?.isVoid === true || identity?.isActive === false)
 
+  // Systemic guard: when the active identity is a blocked VPORT (deleted, void,
+  // or inactive), immediately switch to the citizen actor.
+  //
+  // Why this is needed:
+  // (1) After soft delete from VPORT mode, if switchActor in useAccountController
+  //     partially fails, the in-memory identity stays as the VPORT.
+  // (2) After a page reload, loadDefaultIdentityForUser re-hydrates the platform
+  //     preference (VPORT) and loads it fresh from DB — isDeleted is now true —
+  //     but BlockedVportGuard only covers VPORT dashboard routes. /feed, /chat,
+  //     /settings etc. are unguarded, so the user navigates freely as a deleted VPORT.
+  //
+  // This effect fires once when blockedVport becomes true, switches to citizen,
+  // and then blockedVport becomes false — no loop.
+  useEffect(() => {
+    if (!blockedVport) return
+    const citizenActor = availableActors.find(a => a.actorKind === 'user')
+    if (!citizenActor?.actorId) return
+    switchActor(citizenActor.actorId, 'blocked_vport_auto_switch').catch(() => {})
+  }, [blockedVport]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <IdentityContext.Provider
       value={{

@@ -9,6 +9,7 @@ export function wandersPublicRoutes({
   WandersOutboxScreen,
   WandersSentScreen,
   WandersIntegrateActorScreen,
+  VportBusinessCardPublicScreen,
 }) {
   return [
     { path: "/wanders", element: <WandersHomeScreen /> },
@@ -24,5 +25,8 @@ export function wandersPublicRoutes({
     { path: "/wanders/sent/:cardPublicId", element: <WandersSentScreen /> },
     { path: "/wanders/claim", element: <WandersIntegrateActorScreen /> },
     { path: "/wanders/connect", element: <WandersIntegrateActorScreen /> },
+
+    // Public shareable VPORT business card (Wanders-owned v1 implementation)
+    { path: "/vport/:slug/card", element: <VportBusinessCardPublicScreen /> },
   ];
 }

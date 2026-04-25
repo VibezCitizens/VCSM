@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { useAuth } from '@/app/providers/AuthProvider'
 import { ctrlRegisterAccount } from '@/features/auth/controllers/register.controller'
 import { recordSignupConsent } from '@/features/legal/controllers/legalConsent.controller'
 import {
@@ -11,6 +12,7 @@ import {
 export function useRegister() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useAuth()
 
   const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' })
   const [termsAccepted, setTermsAccepted] = useState(false)
@@ -20,6 +22,16 @@ export function useRegister() {
   const [successMessage, setSuccessMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [waitingForEmailConfirm, setWaitingForEmailConfirm] = useState(false)
+
+  // When the user verifies their email in another tab, Supabase fires onAuthStateChange
+  // which updates the AuthContext user. Navigate to /feed as soon as we see email_confirmed_at.
+  useEffect(() => {
+    if (!waitingForEmailConfirm) return
+    if (user?.email_confirmed_at) {
+      navigate('/feed', { replace: true })
+    }
+  }, [waitingForEmailConfirm, user?.email_confirmed_at, navigate])
 
   const navState = useMemo(() => {
     const state = location?.state || {}
@@ -105,7 +117,14 @@ export function useRegister() {
         isWandersFlow,
       })
 
-      // Record legal consent after successful auth signup
+      // No session yet — user must verify email before continuing.
+      if (result?.requiresEmailConfirm) {
+        setSuccessMessage('Check your email to verify your account before continuing.')
+        setWaitingForEmailConfirm(true)
+        return true
+      }
+
+      // Session is active — record legal consent now.
       const userId = result?.userId ?? null
       if (userId) {
         try {
@@ -117,14 +136,6 @@ export function useRegister() {
           )
           return false
         }
-      }
-
-      if (result?.requiresEmailConfirm) {
-        setSuccessMessage(
-          result?.message ||
-            'Registration initiated. Please check your email to confirm your account.'
-        )
-        return true
       }
 
       goOnboarding()

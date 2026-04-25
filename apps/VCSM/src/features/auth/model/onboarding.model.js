@@ -16,7 +16,10 @@ export function mapProfileOnboardingRowToFormModel(row) {
 export function isProfileShellIncompleteModel(row) {
   const displayName = String(row?.display_name ?? '').trim()
   const username = String(row?.username ?? '').trim()
-  return displayName === '' || username === ''
+  const birthdate = String(row?.birthdate ?? '').trim()
+  const sex = String(row?.sex ?? '').trim()
+  const age = row?.age ?? null
+  return displayName === '' || username === '' || birthdate === '' || sex === '' || age == null
 }
 
 export function normalizeOnboardingFormModel(form) {

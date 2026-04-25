@@ -7,6 +7,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 import { useVportsList } from "@/features/settings/vports/hooks/useVportsList";
 import { useProfileActor } from "@/features/settings/vports/hooks/useProfileActor";
 import { useVportSwitch } from "@/features/settings/vports/hooks/useVportSwitcher";
+import { ctrlRestoreVport, ctrlHardDeleteVport } from "@/features/settings/account/controller/account.controller";
 
 export function useVportsController() {
   const { user } = useAuth() || {};
@@ -20,6 +21,14 @@ export function useVportsController() {
   const [showCreator, setShowCreator] = useState(false);
   const [activeActor, setActiveActor] = useState("profile");
   const [blockedMsg, setBlockedMsg] = useState(null);
+
+  const [restoreTarget, setRestoreTarget] = useState(null);
+  const [busyRestore, setBusyRestore] = useState(false);
+  const [errRestore, setErrRestore] = useState('');
+
+  const [hardDeleteTarget, setHardDeleteTarget] = useState(null);
+  const [busyHardDelete, setBusyHardDelete] = useState(false);
+  const [errHardDelete, setErrHardDelete] = useState('');
 
   const { switchToProfile, switchToVport } = useVportSwitch({
     user,
@@ -38,11 +47,6 @@ export function useVportsController() {
     }
   }, [identity?.kind, identity?.actorId]);
 
-  /**
-   * Resolve the correct switchable actorId for a vport profile row.
-   * Used for isActive display — vport.profiles.actor_id may be stale.
-   * Falls back to v.actor_id so the UI renders something even on cache miss.
-   */
   const resolveVportActorId = useCallback((v) => {
     const vportLinks = (availableActors ?? []).filter(
       (a) => a.actorKind === 'vport' && a.isSwitchable !== false,
@@ -56,15 +60,40 @@ export function useVportsController() {
     return v.actor_id;
   }, [availableActors]);
 
-  /**
-   * Called by VportsTab after a vport is successfully created.
-   * Updates the display list AND refreshes availableActors so the new
-   * vport actor link is immediately switchable without a full reload.
-   */
   const onVportCreated = useCallback(({ list }) => {
     if (Array.isArray(list)) setItems(list);
     refreshAvailableActors();
   }, [refreshAvailableActors]);
+
+  const restoreVport = useCallback(async (targetVportId) => {
+    setBusyRestore(true);
+    setErrRestore('');
+    try {
+      if (!targetVportId) throw new Error('No VPORT selected.');
+      await ctrlRestoreVport({ vportId: targetVportId });
+      return true;
+    } catch (error) {
+      setErrRestore(error?.message || 'Could not restore the VPORT.');
+      return false;
+    } finally {
+      setBusyRestore(false);
+    }
+  }, []);
+
+  const hardDeleteVport = useCallback(async (targetVportId) => {
+    setBusyHardDelete(true);
+    setErrHardDelete('');
+    try {
+      if (!targetVportId) throw new Error('No VPORT selected.');
+      await ctrlHardDeleteVport({ vportId: targetVportId });
+      return true;
+    } catch (error) {
+      setErrHardDelete(error?.message || 'Could not permanently delete the VPORT.');
+      return false;
+    } finally {
+      setBusyHardDelete(false);
+    }
+  }, []);
 
   return {
     items,
@@ -81,5 +110,16 @@ export function useVportsController() {
     onVportCreated,
     blockedMsg,
     clearBlockedMsg: () => setBlockedMsg(null),
+    refreshAvailableActors,
+    restoreTarget,
+    setRestoreTarget,
+    busyRestore,
+    errRestore,
+    restoreVport,
+    hardDeleteTarget,
+    setHardDeleteTarget,
+    busyHardDelete,
+    errHardDelete,
+    hardDeleteVport,
   };
 }

@@ -70,6 +70,14 @@ export function AuthProvider({ children }) {
             payload: { event: _evt, userId: nextUserId },
           })
 
+          // PASSWORD_RECOVERY: the user clicked a password reset link.
+          // Navigate to /reset-password regardless of which route the link landed on.
+          // This is the safety net for recovery links that bypass /reset-password.
+          if (_evt === 'PASSWORD_RECOVERY') {
+            appendIOSProdDebugLog('auth_password_recovery', { userId: nextUserId })
+            navigate('/reset-password', { replace: true })
+          }
+
           // Guard: skip state updates on TOKEN_REFRESHED when the userId is unchanged.
           // setUser() creates a new object reference, which would trigger re-renders
           // across all AuthContext consumers and downstream identity resolution —

@@ -91,8 +91,11 @@ export async function ctrlRegisterAccount({
     password,
   })
   const newUserId = authData?.user?.id ?? null
+  const newSession = authData?.session ?? null
 
-  if (!newUserId) {
+  // Supabase returns user.id but no session when email confirmation is required.
+  // Treat either missing user or missing session as "awaiting email verification".
+  if (!newUserId || !newSession) {
     return {
       ok: true,
       requiresEmailConfirm: true,

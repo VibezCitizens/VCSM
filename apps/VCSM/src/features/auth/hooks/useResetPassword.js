@@ -1,38 +1,64 @@
-import { useCallback, useMemo, useState } from 'react'
-
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ctrlSendResetPasswordEmail } from '@/features/auth/controllers/sendResetPassword.controller'
 
+const REDIRECT_DELAY_MS = 4000
+
+function isValidEmailFormat(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim())
+}
+
 export function useResetPassword() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const canSubmit = useMemo(() => email.trim() !== '' && !loading, [email, loading])
+  // Auto-redirect to /login after success. Cleans up on unmount.
+  useEffect(() => {
+    if (!successMessage || errorMessage) return
+    const timer = setTimeout(() => {
+      navigate('/login', { replace: true })
+    }, REDIRECT_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [successMessage, errorMessage, navigate])
+
+  const canSubmit = useMemo(
+    () => isValidEmailFormat(email) && !loading && !successMessage,
+    [email, loading, successMessage]
+  )
 
   const handleReset = useCallback(async (event) => {
-    event.preventDefault()
-
+    event?.preventDefault()
     if (!canSubmit) return
 
-    setStatus('')
+    setErrorMessage('')
     setLoading(true)
 
     try {
       await ctrlSendResetPasswordEmail(email)
-      setStatus('Check your email for the reset link.')
-    } catch (_error) {
-      setStatus('Error sending reset email. Please try again.')
+      // Neutral message — do not reveal whether the account exists.
+      setSuccessMessage('If an account exists for that email, a reset link has been sent.')
+    } catch {
+      setErrorMessage('Unable to send reset email. Please try again.')
     } finally {
       setLoading(false)
     }
   }, [canSubmit, email])
 
+  const goToLogin = useCallback(() => {
+    navigate('/login', { replace: true })
+  }, [navigate])
+
   return {
     email,
-    status,
+    setEmail,
+    successMessage,
+    errorMessage,
     loading,
     canSubmit,
-    setEmail,
     handleReset,
+    goToLogin,
   }
 }

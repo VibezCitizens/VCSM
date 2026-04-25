@@ -10,6 +10,8 @@ import { useAuth } from '@/app/providers/AuthProvider'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 import { useLegalConsent } from '@/features/legal/hooks/useLegalConsent'
 import ConsentGateScreen from '@/features/legal/screens/ConsentGateScreen'
+import { isEmailVerifiedModel } from '@/features/auth/model/emailVerification.model'
+import VerifyEmailRequiredScreen from '@/features/auth/screens/VerifyEmailRequiredScreen'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 export default function ProtectedRoute() {
@@ -35,6 +37,14 @@ export default function ProtectedRoute() {
     })
     hideLaunchSplash()
     return <Navigate to="/login" replace />
+  }
+
+  if (!isEmailVerifiedModel(user)) {
+    appendIOSProdDebugLog('protected_route_email_unverified', {
+      userId: user.id ?? null,
+    })
+    hideLaunchSplash()
+    return <VerifyEmailRequiredScreen email={user.email ?? ''} />
   }
 
   if (consentLoading) return null

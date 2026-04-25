@@ -3,8 +3,9 @@ import AuthPublicRoute from '@/app/routes/public/AuthPublicRoute'
 export function authPublicRoutes({
   LoginScreen,
   RegisterScreen,
+  ForgotPasswordScreen,
   ResetPasswordScreen,
-  OnboardingScreen,
+  AuthCallbackScreen,
 }) {
   return [
     {
@@ -23,8 +24,25 @@ export function authPublicRoutes({
         </AuthPublicRoute>
       ),
     },
+    // /reset kept as alias for backward compat (linked from login screen)
     {
       path: '/reset',
+      element: (
+        <AuthPublicRoute>
+          <ForgotPasswordScreen />
+        </AuthPublicRoute>
+      ),
+    },
+    {
+      path: '/forgot-password',
+      element: (
+        <AuthPublicRoute>
+          <ForgotPasswordScreen />
+        </AuthPublicRoute>
+      ),
+    },
+    {
+      path: '/reset-password',
       element: (
         <AuthPublicRoute>
           <ResetPasswordScreen />
@@ -32,10 +50,10 @@ export function authPublicRoutes({
       ),
     },
     {
-      path: '/onboarding',
+      path: '/auth/callback',
       element: (
         <AuthPublicRoute>
-          <OnboardingScreen />
+          <AuthCallbackScreen />
         </AuthPublicRoute>
       ),
     },

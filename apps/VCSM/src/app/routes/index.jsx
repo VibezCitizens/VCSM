@@ -7,6 +7,7 @@ import { Suspense, lazy } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
 import ProtectedRoute from "@/app/guards/ProtectedRoute";
+import ProfileGatedOutlet from "@/app/guards/ProfileGatedOutlet";
 import RootLayout from "@/app/layout/RootLayout";
 import { resolveRealm } from "@/shared/utils/resolveRealm";
 
@@ -45,11 +46,17 @@ const LoginScreen = lazyWithLog("LoginScreen", () =>
 const RegisterScreen = lazyWithLog("RegisterScreen", () =>
   import("@/features/auth/screens/RegisterScreen"),
 );
+const ForgotPasswordScreen = lazyWithLog("ForgotPasswordScreen", () =>
+  import("@/features/auth/screens/ForgotPasswordScreen"),
+);
 const ResetPasswordScreen = lazyWithLog("ResetPasswordScreen", () =>
   import("@/features/auth/screens/ResetPasswordScreen"),
 );
 const OnboardingScreen = lazyWithLog("OnboardingScreen", () =>
   import("@/features/auth/screens/Onboarding"),
+);
+const AuthCallbackScreen = lazyWithLog("AuthCallbackScreen", () =>
+  import("@/features/auth/screens/AuthCallbackScreen"),
 );
 
 /* ================= MAIN APP ================= */
@@ -296,6 +303,10 @@ const WandersOutboxScreen = lazyWithLog("WandersOutboxScreen", () =>
 const WandersCreateScreen = lazyWithLog("WandersCreateScreen", () =>
   import("@/features/wanders/screens/WandersCreate.screen"),
 );
+const VportBusinessCardPublicScreen = lazyWithLog(
+  "VportBusinessCardPublicScreen",
+  () => import("@/features/wanders/screens/VportBusinessCardPublic.screen"),
+);
 
 /* ================= LEARNING ================= */
 const LearningHomeScreen = lazyWithLog("LearningHomeScreen", () =>
@@ -404,8 +415,9 @@ export default function AppRoutes() {
     ...authPublicRoutes({
       LoginScreen,
       RegisterScreen,
+      ForgotPasswordScreen,
       ResetPasswordScreen,
-      OnboardingScreen,
+      AuthCallbackScreen,
     }),
 
     ...legalPublicRoutes({
@@ -423,6 +435,7 @@ export default function AppRoutes() {
       WandersOutboxScreen,
       WandersSentScreen,
       WandersIntegrateActorScreen,
+      VportBusinessCardPublicScreen,
     }),
 
     ...vportMenuPublicRoutes({
@@ -440,8 +453,15 @@ export default function AppRoutes() {
       element: <ProtectedRoute />,
       children: [
         {
-          element: <RootLayout />,
-          children: protectedAppRoutes({
+          path: '/onboarding',
+          element: <OnboardingScreen />,
+        },
+        {
+          element: <ProfileGatedOutlet />,
+          children: [
+            {
+              element: <RootLayout />,
+              children: protectedAppRoutes({
             CentralFeed,
             ExploreScreen,
             CitizenVibesScreen,
@@ -511,6 +531,8 @@ export default function AppRoutes() {
             LearningOrganizationScreen,
             LearningCourseRosterScreen,
           }),
+            },
+          ],
         },
       ],
     },

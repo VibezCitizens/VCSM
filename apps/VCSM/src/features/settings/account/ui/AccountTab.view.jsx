@@ -16,23 +16,27 @@ export default function AccountTabView() {
     errSoft,
     busyHard,
     errHard,
+    busyRestore,
+    errRestore,
     setShowConfirmAccount,
     logout,
     deleteAccount,
     softDeleteVport,
     hardDeleteVport,
+    restoreVport,
   } = useAccountController()
 
   const [dangerOpen, setDangerOpen] = useState(false)
   const [softTarget, setSoftTarget] = useState(null)
   const [hardTarget, setHardTarget] = useState(null)
+  const [restoreTarget, setRestoreTarget] = useState(null)
 
   const citizenName = identity?.displayName ?? 'Your account'
   const citizenAvatar = identity?.photoUrl || '/avatar.jpg'
 
   async function handleSoftConfirm() {
-    await softDeleteVport(softTarget.id)
-    if (!errSoft) {
+    const ok = await softDeleteVport(softTarget.id)
+    if (ok) {
       setVports(prev => prev.map(v => v.id === softTarget.id ? { ...v, is_deleted: true } : v))
       setSoftTarget(null)
     }
@@ -41,6 +45,14 @@ export default function AccountTabView() {
   async function handleHardConfirm() {
     await hardDeleteVport(hardTarget.id)
     // navigation happens inside hardDeleteVport on success
+  }
+
+  async function handleRestoreConfirm() {
+    const ok = await restoreVport(restoreTarget.id)
+    if (ok) {
+      setVports(prev => prev.map(v => v.id === restoreTarget.id ? { ...v, is_deleted: false } : v))
+      setRestoreTarget(null)
+    }
   }
 
   // ── VPORT mode: only show the active VPORT ──────────────
@@ -86,9 +98,10 @@ export default function AccountTabView() {
                   vport={activeVport}
                   onSoftDelete={() => setSoftTarget(activeVport)}
                   onHardDelete={() => setHardTarget(activeVport)}
+                  onRestore={() => setRestoreTarget(activeVport)}
                 />
-                {(errSoft || errHard) && (
-                  <div className="settings-danger-error px-3 py-2 text-sm">{errSoft || errHard}</div>
+                {(errSoft || errHard || errRestore) && (
+                  <div className="settings-danger-error px-3 py-2 text-sm">{errSoft || errHard || errRestore}</div>
                 )}
               </div>
             )}
@@ -110,6 +123,15 @@ export default function AccountTabView() {
             busy={busyHard}
             onCancel={() => !busyHard && setHardTarget(null)}
             onConfirm={handleHardConfirm}
+          />
+        )}
+
+        {restoreTarget && (
+          <RestoreModal
+            vport={restoreTarget}
+            busy={busyRestore}
+            onCancel={() => !busyRestore && setRestoreTarget(null)}
+            onConfirm={handleRestoreConfirm}
           />
         )}
       </div>
@@ -155,11 +177,12 @@ export default function AccountTabView() {
                 vport={vport}
                 onSoftDelete={() => setSoftTarget(vport)}
                 onHardDelete={() => setHardTarget(vport)}
+                onRestore={() => setRestoreTarget(vport)}
               />
             ))}
 
-            {(errSoft || errHard) && (
-              <div className="settings-danger-error px-3 py-2 text-sm">{errSoft || errHard}</div>
+            {(errSoft || errHard || errRestore) && (
+              <div className="settings-danger-error px-3 py-2 text-sm">{errSoft || errHard || errRestore}</div>
             )}
 
             {/* Delete account */}
@@ -205,6 +228,15 @@ export default function AccountTabView() {
         />
       )}
 
+      {restoreTarget && (
+        <RestoreModal
+          vport={restoreTarget}
+          busy={busyRestore}
+          onCancel={() => !busyRestore && setRestoreTarget(null)}
+          onConfirm={handleRestoreConfirm}
+        />
+      )}
+
       {showConfirmAccount && (
         <DeleteModal
           title="Delete your account"
@@ -226,7 +258,7 @@ export default function AccountTabView() {
 
 // ── Sub-components ───────────────────────────────────────
 
-function VportDangerRow({ vport, onSoftDelete, onHardDelete }) {
+function VportDangerRow({ vport, onSoftDelete, onHardDelete, onRestore }) {
   return (
     <div className="settings-danger-row rounded-xl p-3">
       <div className="flex items-center gap-3">
@@ -237,17 +269,37 @@ function VportDangerRow({ vport, onSoftDelete, onHardDelete }) {
           onError={e => { e.currentTarget.src = '/avatar.jpg' }}
         />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-rose-100">{vport.name}</div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="truncate text-sm font-semibold text-rose-100">{vport.name}</span>
+            {vport.is_deleted && (
+              <span className="settings-status-badge settings-status-badge--inactive shrink-0">Deactivated</span>
+            )}
+          </div>
           <div className="truncate text-xs text-rose-100/50">@{vport.slug}</div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {vport.is_deleted ? (
-            <button onClick={onHardDelete} className="settings-btn settings-btn--danger px-2.5 py-1.5 text-xs">
-              Permanently delete
-            </button>
+            <>
+              <button
+                onClick={onRestore}
+                className="settings-btn settings-btn--ghost px-2.5 py-1.5 text-xs"
+              >
+                Restore
+              </button>
+              <button
+                onClick={onHardDelete}
+                className="settings-btn settings-btn--danger px-2.5 py-1.5 text-xs"
+              >
+                Delete permanently
+              </button>
+            </>
           ) : (
-            <button onClick={onSoftDelete} className="settings-btn settings-btn--danger px-3 py-1.5 text-xs">
-              Delete…
+            <button
+              onClick={onSoftDelete}
+              className="settings-btn settings-btn--ghost px-2.5 py-1.5 text-xs"
+              style={{ color: '#fcd34d', borderColor: 'rgba(217,119,6,0.35)' }}
+            >
+              Deactivate…
             </button>
           )}
         </div>
@@ -259,40 +311,81 @@ function VportDangerRow({ vport, onSoftDelete, onHardDelete }) {
 function SoftDeleteModal({ vport, busy, onCancel, onConfirm }) {
   return (
     <DeleteModal
-      title="Delete VPORT"
+      title="Deactivate this VPORT?"
       busy={busy}
+      busyLabel="Deactivating…"
       onCancel={onCancel}
       onConfirm={onConfirm}
       confirmLabel="Deactivate VPORT"
+      confirmClassName="settings-btn border border-amber-500/40 bg-amber-500/15 text-amber-300"
     >
       <p className="text-sm text-white/70">
-        <span className="font-semibold text-white">{vport.name}</span> will be deactivated and removed
-        from public view. This is step 1 of 2 — you'll then be able to permanently delete it.
+        <span className="font-semibold text-white">{vport.name}</span> will be hidden from public
+        pages and you won't be able to switch into it. You can restore it later from this screen.
       </p>
-      <p className="mt-2 text-xs text-white/40">You can permanently delete it from this screen afterward.</p>
     </DeleteModal>
   )
 }
 
 function HardDeleteModal({ vport, busy, onCancel, onConfirm }) {
+  const [confirmText, setConfirmText] = useState('')
+  const canConfirm = confirmText.trim() === vport.name.trim()
+
   return (
     <DeleteModal
-      title="Permanently delete VPORT"
+      title="Permanently delete this VPORT?"
       busy={busy}
+      busyLabel="Deleting…"
       onCancel={onCancel}
       onConfirm={onConfirm}
-      confirmLabel="Delete forever"
+      confirmLabel="Delete permanently"
+      confirmDisabled={!canConfirm}
     >
       <p className="text-sm text-white/70">
-        All data for <span className="font-semibold text-white">{vport.name}</span> will be destroyed —
-        services, reviews, menus, media, and posts.
+        All data for <span className="font-semibold text-white">{vport.name}</span> will be
+        destroyed — services, reviews, menus, media, and posts.
       </p>
-      <p className="mt-2 text-sm font-semibold text-rose-300">This is permanent. There is no recovery.</p>
+      <p className="mt-2 text-sm font-semibold text-rose-300">This is permanent and cannot be undone.</p>
+      <div className="mt-3 space-y-1.5">
+        <label className="block text-xs text-white/50">
+          Type <span className="font-semibold text-white/80">{vport.name}</span> to confirm
+        </label>
+        <input
+          type="text"
+          value={confirmText}
+          onChange={e => setConfirmText(e.target.value)}
+          placeholder={vport.name}
+          className="settings-input w-full rounded-xl px-3 py-2 text-sm"
+        />
+      </div>
     </DeleteModal>
   )
 }
 
-function DeleteModal({ title, busy, onCancel, onConfirm, confirmLabel, children }) {
+function RestoreModal({ vport, busy, onCancel, onConfirm }) {
+  return (
+    <DeleteModal
+      title="Restore this VPORT?"
+      busy={busy}
+      busyLabel="Restoring…"
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+      confirmLabel="Restore VPORT"
+      confirmClassName="settings-btn settings-btn--primary"
+    >
+      <p className="text-sm text-white/70">
+        <span className="font-semibold text-white">{vport.name}</span> will become publicly visible
+        again and you'll be able to switch into it.
+      </p>
+    </DeleteModal>
+  )
+}
+
+function DeleteModal({ title, busy, busyLabel, onCancel, onConfirm, confirmLabel, confirmClassName, confirmDisabled, children }) {
+  const btnClass = confirmClassName ?? 'settings-btn settings-btn--danger'
+  const activeBusyLabel = busyLabel ?? 'Deleting…'
+  const isDisabled = busy || !!confirmDisabled
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm">
       <div className="settings-shell mx-4 w-full max-w-md rounded-2xl">
@@ -303,8 +396,13 @@ function DeleteModal({ title, busy, onCancel, onConfirm, confirmLabel, children 
         <div className="p-4">{children}</div>
         <div className="flex justify-end gap-2 border-t border-white/8 p-4">
           <button onClick={onCancel} disabled={busy} className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm">Cancel</button>
-          <button onClick={onConfirm} disabled={busy} className="settings-btn settings-btn--danger px-3 py-1.5 text-sm">
-            {busy ? 'Deleting…' : confirmLabel}
+          <button
+            onClick={onConfirm}
+            disabled={isDisabled}
+            className={`${btnClass} px-3 py-1.5 text-sm`}
+            style={isDisabled ? { opacity: 0.45, cursor: 'not-allowed', transform: 'none' } : {}}
+          >
+            {busy ? activeBusyLabel : confirmLabel}
           </button>
         </div>
       </div>
