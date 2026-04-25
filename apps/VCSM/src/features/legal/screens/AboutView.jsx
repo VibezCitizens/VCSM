@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import { Users, Store, Zap, ArrowRight } from 'lucide-react'
 import { authTheme } from '@/features/auth/styles/authTheme'
 
-function Card({ children, style }) {
+function Card({ children, style, className = '' }) {
   return (
     <div
-      className="rounded-2xl border border-white/10 p-6"
+      className={`rounded-2xl border border-white/10 p-6 ${className}`}
       style={{ background: authTheme.cardBackground, ...style }}
     >
       {children}
@@ -94,23 +94,33 @@ export default function AboutView() {
 
         {/* For People + For Businesses — 2-column on sm+ */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Card>
+          <Card className="flex flex-col h-full">
             <SectionIcon icon={Users} color="#8b5cf6" />
             <h2 className="text-base font-semibold text-white">For People</h2>
+            <p className="mt-1 text-xs" style={{ color: 'var(--vc-text-muted)' }}>
+              Your personal identity on Vibez Citizens.
+            </p>
             <BulletList items={[
               'Create a profile and represent yourself',
               'Discover other citizens and businesses nearby',
               'Connect through posts, messages, and communities',
               'Explore local services and find what you need',
             ]} />
+            <Link
+              to="/how-to/create-profile"
+              className="mt-auto pt-4 inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-purple-300"
+              style={{ color: '#a78bfa' }}
+            >
+              How to create your profile
+              <ArrowRight size={12} />
+            </Link>
           </Card>
 
-          <Card>
-            <SectionIcon icon={Store} color="#a855f7" />
+          <Card className="flex flex-col h-full">
+            <SectionIcon icon={Store} color="#8b5cf6" />
             <h2 className="text-base font-semibold text-white">For Businesses</h2>
             <p className="mt-1 text-xs" style={{ color: 'var(--vc-text-muted)' }}>
-              A <span className="font-semibold text-purple-300">VPORT</span> is a public business
-              identity inside Vibez Citizens.
+              Your business identity on Vibez Citizens.
             </p>
             <BulletList items={[
               'Create a shareable business card with a single link',
@@ -118,6 +128,14 @@ export default function AboutView() {
               'Share a public profile customers can find and trust',
               'Stay reachable without fragmented social profiles',
             ]} />
+            <Link
+              to="/how-to/create-vport"
+              className="mt-auto pt-4 inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-purple-300"
+              style={{ color: '#a78bfa' }}
+            >
+              How to create your VPORT
+              <ArrowRight size={12} />
+            </Link>
           </Card>
         </div>
 
