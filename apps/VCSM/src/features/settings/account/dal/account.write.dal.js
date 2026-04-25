@@ -14,6 +14,28 @@ export async function dalSoftDeleteCitizenAccount() {
   return data
 }
 
+/**
+ * Permanently deletes the citizen's app/domain data AND their Supabase Auth user.
+ * Delegates to the delete-citizen-account Edge Function which holds the service role key.
+ * Ordering: app data first, auth user second.
+ * If app data deletion fails the auth user is untouched.
+ */
+export async function dalDeleteCitizenAccountFull() {
+  const { data, error } = await supabase.functions.invoke('delete-citizen-account', {
+    method: 'POST',
+  })
+
+  if (error) {
+    throw new Error(error?.message || 'Could not delete account.')
+  }
+
+  if (data?.code === 'AUTH_DELETE_FAILED') {
+    throw new Error(data.error || 'Auth deletion failed after account data was removed. Contact support.')
+  }
+
+  return data
+}
+
 export async function dalDeleteMyVport(vportId) {
   if (!vportId) throw new Error('dalDeleteMyVport: vportId required')
 

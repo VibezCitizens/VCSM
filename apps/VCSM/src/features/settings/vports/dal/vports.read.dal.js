@@ -25,7 +25,7 @@ export async function listMyVportsDAL() {
 
   const { data, error } = await vportSchema
     .from("profiles")
-    .select("id,name,slug,avatar_url,banner_url,bio,is_active,is_deleted,created_at,actor_id")
+    .select("id,name,slug,avatar_url,banner_url,bio,is_active,is_deleted,business_card_published,created_at,actor_id")
     .eq("owner_user_id", userId)
     .order("created_at", { ascending: false });
 

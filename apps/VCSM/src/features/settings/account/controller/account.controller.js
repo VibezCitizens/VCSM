@@ -1,6 +1,6 @@
 import { dalReadVportIdByActorId } from '@/features/settings/account/dal/account.read.dal'
 import {
-  dalSoftDeleteCitizenAccount,
+  dalDeleteCitizenAccountFull,
   dalDeleteMyVport,
   dalHardDeleteVport,
 } from '@/features/settings/account/dal/account.write.dal'
@@ -11,7 +11,7 @@ export async function ctrlResolveVportIdByActorId(actorId) {
 }
 
 export async function ctrlDeleteAccount() {
-  await dalSoftDeleteCitizenAccount()
+  await dalDeleteCitizenAccountFull()
 }
 
 export async function ctrlSoftDeleteVport({ vportId }) {

@@ -8,6 +8,7 @@ import { useVportsList } from "@/features/settings/vports/hooks/useVportsList";
 import { useProfileActor } from "@/features/settings/vports/hooks/useProfileActor";
 import { useVportSwitch } from "@/features/settings/vports/hooks/useVportSwitcher";
 import { ctrlRestoreVport, ctrlHardDeleteVport } from "@/features/settings/account/controller/account.controller";
+import { ctrlSetVportBusinessCardPublishState } from "@/features/settings/vports/controller/vportBusinessCard.controller";
 
 export function useVportsController() {
   const { user } = useAuth() || {};
@@ -29,6 +30,9 @@ export function useVportsController() {
   const [hardDeleteTarget, setHardDeleteTarget] = useState(null);
   const [busyHardDelete, setBusyHardDelete] = useState(false);
   const [errHardDelete, setErrHardDelete] = useState('');
+
+  const [busyCardPublishId, setBusyCardPublishId] = useState(null);
+  const [errCardPublish, setErrCardPublish] = useState('');
 
   const { switchToProfile, switchToVport } = useVportSwitch({
     user,
@@ -95,6 +99,21 @@ export function useVportsController() {
     }
   }, []);
 
+  const setBusinessCardPublished = useCallback(async (vportId, published) => {
+    setBusyCardPublishId(vportId);
+    setErrCardPublish('');
+    try {
+      await ctrlSetVportBusinessCardPublishState({ vportId, published });
+      setItems(prev => prev.map(v => v.id === vportId ? { ...v, business_card_published: published } : v));
+      return true;
+    } catch (err) {
+      setErrCardPublish(err?.message || 'Could not update business card.');
+      return false;
+    } finally {
+      setBusyCardPublishId(null);
+    }
+  }, [setItems]);
+
   return {
     items,
     setItems,
@@ -121,5 +140,8 @@ export function useVportsController() {
     busyHardDelete,
     errHardDelete,
     hardDeleteVport,
+    busyCardPublishId,
+    errCardPublish,
+    setBusinessCardPublished,
   };
 }
