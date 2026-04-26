@@ -28,11 +28,11 @@ import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPag
 
 export const revalidate = 900;
 
-const LEGACY_TRANSITION_ROBOTS = {
-  index: false,
+const PROVIDER_ROBOTS = {
+  index: true,
   follow: true,
   googleBot: {
-    index: false,
+    index: true,
     follow: true
   }
 };
@@ -90,7 +90,7 @@ export function generateMetadata({ params }) {
     description,
     path: countryProviderPath(graph.country.slug, graph.provider.slug),
     locale: getLocaleForCountryCode(graph.country.code),
-    robots: LEGACY_TRANSITION_ROBOTS
+    robots: PROVIDER_ROBOTS
   });
 }
 

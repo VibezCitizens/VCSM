@@ -1,4 +1,4 @@
-import { MOCK_PRICE_AGGREGATES, MOCK_PROVIDER_STATS } from "@/data/connectors/mockDataset";
+import { MOCK_PRICE_AGGREGATES, MOCK_PROVIDER_STATS } from "@/data/connectors/unifiedDataset";
 
 export function getProviderStats(providerId) {
   return MOCK_PROVIDER_STATS.find((stats) => stats.providerId === providerId) ?? null;

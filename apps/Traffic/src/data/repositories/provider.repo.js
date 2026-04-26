@@ -1,4 +1,4 @@
-import { MOCK_PROVIDERS, MOCK_PROVIDER_SERVICES } from "@/data/connectors/mockDataset";
+import { MOCK_PROVIDERS, MOCK_PROVIDER_SERVICES } from "@/data/connectors/unifiedDataset";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { slugEquals } from "@/lib/slugs";
 

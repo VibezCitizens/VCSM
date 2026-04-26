@@ -14,6 +14,8 @@
  * @property {string} description
  * @property {import("@/data/types").Provider} provider
  * @property {string[]} serviceNames
+ * @property {string|null} cityName
+ * @property {string|null} countryName
  */
 
 function formatPrice(cents, currencyCode, locale = "en-US") {
@@ -66,6 +68,8 @@ export function buildProviderPageModel(args) {
     title: `${args.provider.displayName}${location ? ` in ${location}` : ""}`,
     description: `${args.provider.displayName} serves ${args.localityName || args.cityName}. Explore services, reputation signals, and continue booking on TRAZE.`,
     provider: args.provider,
-    serviceNames: args.services.map((service) => service.name)
+    serviceNames: args.services.map((service) => service.name),
+    cityName: args.cityName ?? null,
+    countryName: args.countryName ?? null
   };
 }

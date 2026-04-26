@@ -107,6 +107,7 @@ export const MOCK_COUNTRIES = [
 export const MOCK_REGIONS = [
   { id: "region-us-ca", countryId: "country-us", code: "CA", slug: "california", name: "California", type: "state", isActive: true },
   { id: "region-us-fl", countryId: "country-us", code: "FL", slug: "florida", name: "Florida", type: "state", isActive: true },
+  { id: "region-us-tx", countryId: "country-us", code: "TX", slug: "texas", name: "Texas", type: "state", isActive: true },
   { id: "region-ca-on", countryId: "country-ca", code: "ON", slug: "ontario", name: "Ontario", type: "province", isActive: true },
   { id: "region-mx-cdmx", countryId: "country-mx", code: "CDMX", slug: "ciudad-de-mexico", name: "Ciudad de Mexico", type: "state", isActive: true },
   { id: "region-gb-eng", countryId: "country-gb", code: "ENG", slug: "england", name: "England", type: "county", isActive: true },
@@ -240,6 +241,17 @@ export const MOCK_CITIES = [
     countryCode: "IN",
     timezone: "Asia/Kolkata",
     isActive: true
+  },
+  {
+    id: "city-laredo",
+    countryId: "country-us",
+    regionId: "region-us-tx",
+    slug: "laredo",
+    name: "Laredo",
+    stateCode: "TX",
+    countryCode: "US",
+    timezone: "America/Chicago",
+    isActive: true
   }
 ];
 
@@ -269,7 +281,10 @@ export const MOCK_SERVICES = [
   { id: "svc-barber", slug: "barber", name: "Barber", category: "grooming", isActive: true },
   { id: "svc-hair-color", slug: "hair-color", name: "Hair Color", category: "beauty", isActive: true },
   { id: "svc-makeup", slug: "makeup", name: "Makeup", category: "beauty", isActive: true },
-  { id: "svc-locksmith", slug: "locksmith", name: "Locksmith", category: "home-services", isActive: true }
+  { id: "svc-locksmith", slug: "locksmith", name: "Locksmith", category: "home-services", isActive: true },
+  { id: "svc-restaurant", slug: "restaurant", name: "Restaurant", category: "food-beverage", isActive: true },
+  { id: "svc-gas-station", slug: "gas-station", name: "Gas Station", category: "automotive", isActive: true },
+  { id: "svc-money-exchange", slug: "money-exchange", name: "Money Exchange", category: "financial", isActive: true }
 ];
 
 /** @type {Specialty[]} */

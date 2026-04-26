@@ -85,6 +85,9 @@
  * @property {string|null} vcsmActorId — VCSM actor UUID, set when provider is claimed and linked
  * @property {string|null} vcsmSlug — VCSM vport slug, used for deep linking to the real profile
  * @property {string|null} claimedAt — ISO 8601 timestamp of when the claim was approved
+ * @property {string|null} avatarUrl — VPORT avatar image URL from Supabase storage
+ * @property {string|null} bannerUrl — VPORT banner image URL from Supabase storage
+ * @property {string|null} locationText — human-readable location string, e.g. "Laredo, TX"
  */
 
 /**

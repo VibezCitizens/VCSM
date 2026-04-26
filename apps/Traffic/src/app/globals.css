@@ -639,3 +639,355 @@ p {
     align-items: flex-start;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PROVIDER PAGE — .pro-*
+   ═══════════════════════════════════════════════════════════ */
+
+.pro-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+
+.pro-hero {
+  padding: 1.75rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.pro-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pro-hero-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.pro-hero-initials {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--traffic-font-sans);
+  line-height: 1;
+}
+
+.pro-hero-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+}
+
+.pro-hero-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.pro-hero-name {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-family: var(--traffic-font-display);
+  color: var(--vc-text);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.pro-hero-subtitle {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.pro-hero-bio {
+  font-size: 0.95rem;
+  color: var(--vc-text-soft);
+  max-width: 62ch;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.pro-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 0.15rem;
+}
+
+.pro-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.pro-stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--vc-text);
+  font-family: var(--traffic-font-display);
+}
+
+.pro-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--vc-text-muted);
+}
+
+.pro-stat-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--vc-border);
+}
+
+.pro-new-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--vc-accent-primary);
+  padding: 0.28rem 0.82rem;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 9999px;
+  background: rgba(139, 92, 246, 0.08);
+}
+
+/* ── Body layout ──────────────────────────────────────────── */
+
+.pro-body {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "sidebar"
+    "main";
+}
+
+.pro-sidebar {
+  grid-area: sidebar;
+}
+
+.pro-main {
+  grid-area: main;
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 760px) {
+  .pro-body {
+    grid-template-columns: 1fr 360px;
+    grid-template-areas: "main sidebar";
+    align-items: start;
+  }
+}
+
+/* ── Section title ────────────────────────────────────────── */
+
+.pro-section-title {
+  font-size: 0.95rem;
+  font-family: var(--traffic-font-sans);
+  font-weight: 600;
+  color: var(--vc-text);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+/* ── Trust section ────────────────────────────────────────── */
+
+.pro-trust {
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pro-trust-empty {
+  display: flex;
+  align-items: flex-start;
+}
+
+.pro-trust-empty-text {
+  font-size: 0.9rem;
+  color: var(--vc-text-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── CTA card ─────────────────────────────────────────────── */
+
+.pro-cta {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.pro-cta-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pro-cta-tagline {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--vc-text-muted);
+}
+
+.pro-cta-title {
+  font-size: 1.3rem;
+  font-family: var(--traffic-font-display);
+  color: var(--vc-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.pro-cta-desc {
+  font-size: 0.875rem;
+  color: var(--vc-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.pro-cta-actions {
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease,
+    border-color 160ms ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: none;
+}
+
+.btn--primary {
+  background: linear-gradient(90deg, var(--vc-accent-primary), var(--vc-accent-primary-hover));
+  color: #fff;
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: var(--vc-shadow-glow);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 12px 36px rgba(139, 92, 246, 0.45);
+  opacity: 0.94;
+}
+
+.btn--ghost {
+  background: var(--vc-surface);
+  color: var(--vc-text-soft);
+  border-color: var(--vc-border);
+}
+
+.btn--ghost:hover {
+  border-color: var(--vc-border-strong);
+  color: #fff;
+  opacity: 1;
+}
+
+.btn--claim {
+  background: transparent;
+  color: var(--vc-text-muted);
+  border: 1px dashed var(--vc-border);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.btn--claim:hover {
+  border-color: var(--vc-border-strong);
+  color: var(--vc-text-soft);
+  opacity: 1;
+}
+
+/* ── Contact section ──────────────────────────────────────── */
+
+.pro-contact {
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pro-contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pro-contact-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.pro-contact-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--vc-text-muted);
+  padding-top: 0.15rem;
+}
+
+.pro-contact-value {
+  font-size: 0.9rem;
+  color: var(--vc-text-soft);
+  line-height: 1.5;
+}
+
+.pro-contact-link {
+  color: var(--vc-accent-secondary);
+  transition: color 140ms ease;
+}
+
+.pro-contact-link:hover {
+  color: #fff;
+}
+
+.pro-contact-address {
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}

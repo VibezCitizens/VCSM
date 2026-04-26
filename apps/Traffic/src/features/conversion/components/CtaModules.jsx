@@ -9,9 +9,9 @@ import {
 export function DirectoryCtaModules({ context }) {
   return (
     <div className="card stack-grid">
-      <h3 className="homepage-card-title">Continue on TRAZE</h3>
+      <h3 className="homepage-card-title">Continue on Vibez Citizens</h3>
       <p>
-        Open live provider profiles, compare availability, and continue booking workflows on TRAZE.
+        Open live provider profiles, compare availability, and continue booking workflows on the platform.
       </p>
       <div className="row-wrap">
         <a
@@ -20,7 +20,7 @@ export function DirectoryCtaModules({ context }) {
           target="_blank"
           rel="noreferrer"
         >
-          Explore on TRAZE
+          Explore on Vibez Citizens
         </a>
       </div>
     </div>
@@ -32,32 +32,38 @@ export function ProviderCtaModules({ providerSlug, context, claimStatus, vcsmAct
   const claimLink = buildPlatformClaimLink(providerSlug, vcsmActorId, "provider");
 
   return (
-    <div className="card stack-grid">
-      <h3 className="homepage-card-title">Take Action on TRAZE</h3>
-      <p>
+    <div className="card card--cta pro-cta">
+      <div className="pro-cta-brand">
+        <span className="pro-cta-tagline">Vibez Citizens</span>
+      </div>
+
+      <h2 className="pro-cta-title">Continue on Vibez Citizens</h2>
+
+      <p className="pro-cta-desc">
         {isLinked
-          ? "This provider is verified on TRAZE. View their live profile, book, or follow."
-          : "Book, follow, or open the full provider profile on TRAZE."}
+          ? "View this provider's live profile, book a service, or follow their updates."
+          : "Explore this provider's full profile and book directly on the platform."}
       </p>
-      <div className="row-wrap">
+
+      <div className="pro-cta-actions">
         <a
-          className="pill"
+          className="btn btn--primary"
           href={buildPlatformProviderLink(providerSlug, vcsmSlug, "provider")}
           target="_blank"
           rel="noreferrer"
         >
-          View Profile
+          View Live Profile
         </a>
         <a
-          className="pill"
+          className="btn btn--ghost"
           href={buildPlatformBookingLink(providerSlug, context, vcsmSlug, "provider")}
           target="_blank"
           rel="noreferrer"
         >
-          Book Now
+          Book a Service
         </a>
         <a
-          className="pill"
+          className="btn btn--ghost"
           href={buildPlatformFollowLink(providerSlug, vcsmSlug, "provider")}
           target="_blank"
           rel="noreferrer"
@@ -65,8 +71,8 @@ export function ProviderCtaModules({ providerSlug, context, claimStatus, vcsmAct
           Follow
         </a>
         {claimStatus !== "claimed" && claimLink ? (
-          <a className="pill" href={claimLink} target="_blank" rel="noreferrer">
-            Claim Profile
+          <a className="btn btn--claim" href={claimLink} target="_blank" rel="noreferrer">
+            Claim This Profile
           </a>
         ) : null}
       </div>
