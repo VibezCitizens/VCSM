@@ -59,3 +59,4 @@ export { mapOrganizationRow, mapOrganizationRows, mapOrganizationMemberRow, mapO
 export { mapLocationRow, mapLocationRows, mapLocationMemberRow, mapLocationMemberRows } from '../model/Location.model.js'
 export { mapResourceServiceOverrideRow, mapResourceServiceOverrideRows, resolveServicePricing } from '../model/ResourceServiceOverride.model.js'
 export { mapQrLinkRow, mapQrLinkRows, buildQrDestinationPath } from '../model/QrLink.model.js'
+export { mapVportResourceRow, mapVportResourceRows }             from '../model/VportResource.model.js'

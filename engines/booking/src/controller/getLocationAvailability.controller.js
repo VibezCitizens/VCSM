@@ -1,4 +1,4 @@
-import { dalListBookingResourcesByLocationId } from '../dal/resource.read.dal.js'
+import { dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
 import { getResourceAvailability } from './getResourceAvailability.controller.js'
 
 /**
@@ -13,7 +13,7 @@ export async function getLocationAvailability({ locationId, rangeStart, rangeEnd
   if (!rangeStart)  throw new Error('[BookingEngine] rangeStart is required')
   if (!rangeEnd)    throw new Error('[BookingEngine] rangeEnd is required')
 
-  const resources = await dalListBookingResourcesByLocationId({ locationId, includeInactive: false })
+  const resources = await dalListVportResourcesByLocationId({ locationId, includeInactive: false })
   if (!resources.length) return []
 
   const results = await Promise.allSettled(

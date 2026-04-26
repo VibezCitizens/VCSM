@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { listResourceServiceOverrides, upsertResourceServiceOverride } from "@booking";
 
 export default function useResourceServiceOverrides({ resourceId, enabled = true } = {}) {
@@ -6,6 +6,8 @@ export default function useResourceServiceOverrides({ resourceId, enabled = true
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [error, setError]         = useState(null);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const load = useCallback(async () => {
     if (!enabled || !resourceId) {
@@ -16,11 +18,11 @@ export default function useResourceServiceOverrides({ resourceId, enabled = true
     setError(null);
     try {
       const result = await listResourceServiceOverrides({ resourceId });
-      setOverrides(Array.isArray(result) ? result : []);
+      if (mountedRef.current) setOverrides(Array.isArray(result) ? result : []);
     } catch (e) {
-      setError(e);
+      if (mountedRef.current) setError(e);
     } finally {
-      setIsLoading(false);
+      if (mountedRef.current) setIsLoading(false);
     }
   }, [resourceId, enabled]);
 

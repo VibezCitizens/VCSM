@@ -18,6 +18,18 @@ export async function dalGetActorById({ actorId }) {
   return data ?? null
 }
 
+export async function dalGetActorByProfileId({ profileId }) {
+  if (!profileId) throw new Error('BookingEngine: profileId is required')
+  const { data, error } = await getSupabaseClient()
+    .schema('vc')
+    .from('actors')
+    .select(ACTOR_SELECT)
+    .eq('profile_id', profileId)
+    .maybeSingle()
+  if (error) throw error
+  return data ?? null
+}
+
 export async function dalReadActorOwnerLink({ targetActorId, userProfileId }) {
   if (!targetActorId)   throw new Error('BookingEngine: targetActorId is required')
   if (!userProfileId)   throw new Error('BookingEngine: userProfileId is required')

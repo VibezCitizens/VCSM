@@ -56,7 +56,7 @@ export async function dalUpsertLocationMember({ locationId, actorId, role, resou
       { location_id: locationId, actor_id: actorId, role, resource_id: resourceId ?? null },
       { onConflict: 'location_id,actor_id' }
     )
-    .select('id,location_id,actor_id,role,resource_id,created_at')
+    .select('location_id,actor_id,role,resource_id,created_at')
     .single()
   if (error) throw error
   return data

@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { listLocationsByOrganization } from "@booking";
 
 export default function useOrganizationLocations({ organizationId, enabled = true } = {}) {
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]         = useState(null);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const load = useCallback(async () => {
     if (!enabled || !organizationId) {
@@ -15,11 +17,11 @@ export default function useOrganizationLocations({ organizationId, enabled = tru
     setError(null);
     try {
       const result = await listLocationsByOrganization({ organizationId });
-      setLocations(Array.isArray(result) ? result : []);
+      if (mountedRef.current) setLocations(Array.isArray(result) ? result : []);
     } catch (e) {
-      setError(e);
+      if (mountedRef.current) setError(e);
     } finally {
-      setIsLoading(false);
+      if (mountedRef.current) setIsLoading(false);
     }
   }, [organizationId, enabled]);
 

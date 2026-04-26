@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   listOrganizationsByOwnerActor,
   createOrganizationLocationWorkspace,
@@ -9,6 +9,8 @@ export default function useOrganizationWorkspace({ ownerActorId, enabled = true 
   const [isLoading, setIsLoading]           = useState(false);
   const [isPending, setIsPending]           = useState(false);
   const [error, setError]                   = useState(null);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const load = useCallback(async () => {
     if (!enabled || !ownerActorId) return;
@@ -16,11 +18,11 @@ export default function useOrganizationWorkspace({ ownerActorId, enabled = true 
     setError(null);
     try {
       const result = await listOrganizationsByOwnerActor({ ownerActorId });
-      setOrganizations(Array.isArray(result) ? result : []);
+      if (mountedRef.current) setOrganizations(Array.isArray(result) ? result : []);
     } catch (e) {
-      setError(e);
+      if (mountedRef.current) setError(e);
     } finally {
-      setIsLoading(false);
+      if (mountedRef.current) setIsLoading(false);
     }
   }, [ownerActorId, enabled]);
 

@@ -7,7 +7,7 @@ const LOCATION_SELECT = [
 ].join(',')
 
 const LOCATION_MEMBER_SELECT = [
-  'id', 'location_id', 'actor_id', 'role', 'resource_id', 'created_at',
+  'location_id', 'actor_id', 'role', 'resource_id', 'created_at',
 ].join(',')
 
 export async function dalGetLocationById({ locationId }) {

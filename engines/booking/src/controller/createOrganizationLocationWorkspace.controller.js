@@ -1,7 +1,7 @@
 import { dalGetActorById } from '../dal/actor.read.dal.js'
 import { dalInsertOrganization, dalUpsertOrganizationProfile, dalUpsertOrganizationMember } from '../dal/organization.write.dal.js'
 import { dalInsertLocation, dalUpsertLocationMember } from '../dal/location.write.dal.js'
-import { dalInsertBookingResource } from '../dal/resource.write.dal.js'
+import { dalInsertVportResource } from '../dal/vportResource.write.dal.js'
 
 /**
  * Bootstrap a complete workspace: Organization → Profile link → Owner member →
@@ -77,7 +77,7 @@ export async function createOrganizationLocationWorkspace({
     isPrimary: true,
   })
 
-  const resource = await dalInsertBookingResource({
+  const resource = await dalInsertVportResource({
     row: {
       owner_actor_id:  requestActorId,
       organization_id: org.id,

@@ -11,6 +11,7 @@ export function mapQrLinkRow(row) {
     label:           row.label ?? null,
     slug:            row.slug,
     destinationPath: row.destination_path,
+    isActive:        row.is_active === true,
     scanCount:       row.scan_count ?? 0,
     createdAt:       row.created_at,
   }

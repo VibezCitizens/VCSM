@@ -1,11 +1,10 @@
-import { dalGetBookingResourceById, dalListBookingResourcesByLocationId } from '../dal/resource.read.dal.js'
-import { dalGetPrimaryLocation } from '../dal/location.read.dal.js'
+import { dalGetVportResourceById, dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
+import { dalGetLocationById, dalGetPrimaryLocation } from '../dal/location.read.dal.js'
 import { dalGetPrimaryOrganizationByProfile } from '../dal/organization.read.dal.js'
 import { dalGetResourceServiceOverride } from '../dal/resourceServiceOverride.read.dal.js'
 import { dalListBookingServiceProfilesByServiceIds } from '../dal/serviceProfile.read.dal.js'
-import { mapBookingResourceRow, mapBookingResourceRows } from '../model/BookingResource.model.js'
-import { mapResourceServiceOverrideRow } from '../model/ResourceServiceOverride.model.js'
-import { resolveServicePricing } from '../model/ResourceServiceOverride.model.js'
+import { mapVportResourceRow, mapVportResourceRows } from '../model/VportResource.model.js'
+import { mapResourceServiceOverrideRow, resolveServicePricing } from '../model/ResourceServiceOverride.model.js'
 
 /**
  * Resolve the full booking context for a given profile + optional filters.
@@ -35,10 +34,10 @@ export async function resolveBookingContext({ profileId, resourceId = null, loca
 
   // ── Mode: selected_resource ──────────────────────────────
   if (resourceId) {
-    const resourceRow = await dalGetBookingResourceById({ resourceId })
+    const resourceRow = await dalGetVportResourceById({ resourceId })
     if (!resourceRow || !resourceRow.is_active) throw new Error('Resource not found or inactive.')
 
-    const resource = mapBookingResourceRow(resourceRow)
+    const resource = mapVportResourceRow(resourceRow)
     const pricing = serviceId ? await _resolveServicePricing({ resourceId, serviceId }) : null
 
     return {
@@ -53,8 +52,11 @@ export async function resolveBookingContext({ profileId, resourceId = null, loca
 
   // ── Mode: any_available (locationId provided) ────────────
   if (locationId) {
-    const resourceRows = await dalListBookingResourcesByLocationId({ locationId, includeInactive: false })
-    const resources = mapBookingResourceRows(resourceRows)
+    const [locationRow, resourceRows] = await Promise.all([
+      dalGetLocationById({ locationId }),
+      dalListVportResourcesByLocationId({ locationId, includeInactive: false }),
+    ])
+    const resources = mapVportResourceRows(resourceRows)
     const primary = resources[0] ?? null
 
     const pricing = (serviceId && primary)
@@ -65,7 +67,7 @@ export async function resolveBookingContext({ profileId, resourceId = null, loca
       mode:         'any_available',
       resource:     primary,
       resources,
-      location:     null,
+      location:     locationRow ?? null,
       organization: null,
       pricing,
     }
@@ -78,11 +80,11 @@ export async function resolveBookingContext({ profileId, resourceId = null, loca
     const primaryLocation = await dalGetPrimaryLocation({ organizationId: org.id })
 
     if (primaryLocation) {
-      const resourceRows = await dalListBookingResourcesByLocationId({
+      const resourceRows = await dalListVportResourcesByLocationId({
         locationId: primaryLocation.id,
         includeInactive: false,
       })
-      const resources = mapBookingResourceRows(resourceRows)
+      const resources = mapVportResourceRows(resourceRows)
       const primary = resources[0] ?? null
 
       const pricing = (serviceId && primary)

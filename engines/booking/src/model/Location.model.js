@@ -26,7 +26,6 @@ export function mapLocationRows(rows) {
 export function mapLocationMemberRow(row) {
   if (!row) return null
   return {
-    id:         row.id,
     locationId: row.location_id,
     actorId:    row.actor_id,
     role:       row.role,

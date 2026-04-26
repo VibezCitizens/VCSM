@@ -1,4 +1,5 @@
 import { dalGetBookingResourceById } from '../dal/resource.read.dal.js'
+import { dalGetVportResourceById } from '../dal/vportResource.read.dal.js'
 import { dalGetOrganizationById, dalGetOrganizationMember } from '../dal/organization.read.dal.js'
 import { dalGetLocationMember } from '../dal/location.read.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
@@ -10,7 +11,9 @@ export async function assertActorCanManageResource({ requestActorId, resourceId 
   if (!requestActorId) throw new Error('[BookingEngine] requestActorId is required')
   if (!resourceId) throw new Error('[BookingEngine] resourceId is required')
 
-  const resource = await dalGetBookingResourceById({ resourceId })
+  // Try vport.resources first (new org/location system), fall back to vc.booking_resources (legacy)
+  const resource = await dalGetVportResourceById({ resourceId }).catch(() => null)
+    ?? await dalGetBookingResourceById({ resourceId })
   if (!resource) throw new Error('Booking resource not found.')
 
   // Direct ownership (legacy barber flow)

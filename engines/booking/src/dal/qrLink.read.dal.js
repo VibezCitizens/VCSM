@@ -2,7 +2,7 @@ import { getVportClient } from '../config.js'
 
 const QR_SELECT = [
   'id', 'organization_id', 'location_id', 'profile_id', 'resource_id', 'service_id',
-  'qr_type', 'label', 'slug', 'destination_path', 'scan_count', 'created_at',
+  'qr_type', 'label', 'slug', 'destination_path', 'scan_count', 'is_active', 'created_at',
 ].join(',')
 
 export async function dalGetQrLinkBySlug({ slug }) {
@@ -11,6 +11,7 @@ export async function dalGetQrLinkBySlug({ slug }) {
     .from('qr_links')
     .select(QR_SELECT)
     .eq('slug', slug)
+    .eq('is_active', true)
     .maybeSingle()
   if (error) throw error
   return data ?? null

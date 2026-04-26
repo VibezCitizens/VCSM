@@ -1,4 +1,5 @@
-import { dalGetBookingResourceById, dalListBookingResourcesByLocationId } from '../dal/resource.read.dal.js'
+import { dalGetBookingResourceById } from '../dal/resource.read.dal.js'
+import { dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
 import { dalGetActorById } from '../dal/actor.read.dal.js'
 import { dalInsertBooking } from '../dal/booking.write.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
@@ -11,7 +12,7 @@ const CITIZEN_SOURCES    = new Set(['public'])
 
 export async function createBooking({
   requestActorId = null,
-  resourceId,
+  resourceId = null,
   locationId = null,
   serviceId = null,
   customerActorId = null,
@@ -38,7 +39,7 @@ export async function createBooking({
   // Resolve resourceId from locationId (any_available mode) when not explicitly given
   let resolvedResourceId = resourceId
   if (!resolvedResourceId && locationId) {
-    const locationResources = await dalListBookingResourcesByLocationId({ locationId, includeInactive: false })
+    const locationResources = await dalListVportResourcesByLocationId({ locationId, includeInactive: false })
     if (!locationResources.length) throw new Error('No available resources at this location.')
     // Sort by sort_order ASC, then created_at ASC — pick first
     const sorted = [...locationResources].sort((a, b) => {

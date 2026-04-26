@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { resolveBookingContext } from "@booking";
 
 export default function useBookingContextResolver({
@@ -11,11 +11,6 @@ export default function useBookingContextResolver({
   const [context, setContext]   = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]       = useState(null);
-
-  const paramsKey = useMemo(
-    () => [profileId, resourceId, locationId, serviceId].join("|"),
-    [profileId, resourceId, locationId, serviceId]
-  );
 
   const resolve = useCallback(async () => {
     if (!enabled || !profileId) {
@@ -35,7 +30,7 @@ export default function useBookingContextResolver({
     }
   }, [profileId, resourceId, locationId, serviceId, enabled]);
 
-  useEffect(() => { resolve(); }, [resolve, paramsKey]);
+  useEffect(() => { resolve(); }, [resolve]);
 
   return {
     context,
