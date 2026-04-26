@@ -1,17 +1,17 @@
 import { useCallback, useState } from "react";
-import createBookingController from "@/features/booking/controller/createBooking.controller";
+import { createBooking } from "@booking";
 
 export default function useCreateBooking() {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(null);
   const [lastCreated, setLastCreated] = useState(null);
 
-  const createBooking = useCallback(async (payload) => {
+  const createBookingFn = useCallback(async (payload) => {
     setIsPending(true);
     setError(null);
 
     try {
-      const data = await createBookingController(payload ?? {});
+      const data = await createBooking(payload ?? {});
       setLastCreated(data ?? null);
       return { ok: true, data, error: null };
     } catch (e) {
@@ -23,7 +23,7 @@ export default function useCreateBooking() {
   }, []);
 
   return {
-    createBooking,
+    createBooking: createBookingFn,
     isPending,
     error,
     lastCreated,

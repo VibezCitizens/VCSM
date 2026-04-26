@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import listBookingHistoryController from "@/features/booking/controller/listBookingHistory.controller";
+import { listBookingHistory as listBookingHistoryController } from "@booking";
 
 const PAGE_SIZE = 30;
 

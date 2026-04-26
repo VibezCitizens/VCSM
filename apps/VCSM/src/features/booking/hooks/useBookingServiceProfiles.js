@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { getBookingServiceProfiles } from "@booking";
 
-import getBookingServiceProfilesController from "@/features/booking/controller/getBookingServiceProfiles.controller";
-
-function normalizeServiceIds(serviceIds) {
-  return [...new Set((Array.isArray(serviceIds) ? serviceIds : []).map(String).filter(Boolean))];
+function normalizeIds(ids) {
+  return [...new Set((Array.isArray(ids) ? ids : []).map(String).filter(Boolean))];
 }
 
 export default function useBookingServiceProfiles({
@@ -11,15 +10,15 @@ export default function useBookingServiceProfiles({
   enabled = true,
   includeNonBookable = false,
 } = {}) {
-  const normalizedServiceIds = useMemo(() => normalizeServiceIds(serviceIds), [serviceIds]);
-  const serviceIdsKey = normalizedServiceIds.join("|");
+  const normalizedIds = useMemo(() => normalizeIds(serviceIds), [serviceIds]);
+  const idsKey = normalizedIds.join("|");
 
-  const [isLoading, setIsLoading] = useState(Boolean(enabled && normalizedServiceIds.length));
+  const [isLoading, setIsLoading] = useState(Boolean(enabled && normalizedIds.length));
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
 
   const refetch = useCallback(async () => {
-    if (!enabled || !normalizedServiceIds.length) {
+    if (!enabled || !normalizedIds.length) {
       setData([]);
       setError(null);
       setIsLoading(false);
@@ -30,40 +29,23 @@ export default function useBookingServiceProfiles({
     setError(null);
 
     try {
-      const result = await getBookingServiceProfilesController({
-        serviceIds: normalizedServiceIds,
-        includeNonBookable,
-      });
-
+      const result = await getBookingServiceProfiles({ serviceIds: normalizedIds, includeNonBookable });
       setData(Array.isArray(result) ? result : []);
       return result;
-    } catch (nextError) {
+    } catch (e) {
       setData([]);
-      setError(nextError);
+      setError(e);
       return [];
     } finally {
       setIsLoading(false);
     }
-  }, [enabled, normalizedServiceIds, includeNonBookable]);
+  }, [enabled, normalizedIds, includeNonBookable]);
 
   useEffect(() => {
     let alive = true;
+    refetch().then(() => { if (!alive) return; });
+    return () => { alive = false; };
+  }, [refetch, idsKey]);
 
-    (async () => {
-      const result = await refetch();
-      if (!alive) return;
-      return result;
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [refetch, serviceIdsKey]);
-
-  return {
-    isLoading,
-    error,
-    data,
-    refetch,
-  };
+  return { isLoading, error, data, refetch };
 }

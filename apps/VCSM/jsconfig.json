@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@identity": ["../../engines/identity/index.js"],
+      "@booking": ["../../engines/booking/index.js"],
       "@/*": ["src/*"]
     },
     "jsx": "react-jsx",

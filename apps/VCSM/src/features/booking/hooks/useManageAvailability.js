@@ -1,20 +1,23 @@
 import { useCallback, useState } from "react";
-import cancelBookingController from "@/features/booking/controller/cancelBooking.controller";
-import confirmBookingController from "@/features/booking/controller/confirmBooking.controller";
-import setResourceSlotDurationController from "@/features/booking/controller/setResourceSlotDuration.controller";
-import setAvailabilityExceptionController from "@/features/booking/controller/setAvailabilityException.controller";
-import setAvailabilityRuleController from "@/features/booking/controller/setAvailabilityRule.controller";
+import {
+  cancelBooking,
+  confirmBooking,
+  completeBooking,
+  markNoShow,
+  setResourceSlotDuration,
+  setAvailabilityException,
+  setAvailabilityRule,
+} from "@booking";
 
 export default function useManageAvailability() {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(null);
 
-  const setAvailabilityRule = useCallback(async (payload) => {
+  const runMutation = useCallback(async (fn, payload) => {
     setIsPending(true);
     setError(null);
-
     try {
-      const data = await setAvailabilityRuleController(payload ?? {});
+      const data = await fn(payload ?? {});
       return { ok: true, data, error: null };
     } catch (e) {
       setError(e);
@@ -24,73 +27,23 @@ export default function useManageAvailability() {
     }
   }, []);
 
-  const setAvailabilityException = useCallback(async (payload) => {
-    setIsPending(true);
-    setError(null);
-
-    try {
-      const data = await setAvailabilityExceptionController(payload ?? {});
-      return { ok: true, data, error: null };
-    } catch (e) {
-      setError(e);
-      return { ok: false, data: null, error: e };
-    } finally {
-      setIsPending(false);
-    }
-  }, []);
-
-  const cancelBooking = useCallback(async (payload) => {
-    setIsPending(true);
-    setError(null);
-
-    try {
-      const data = await cancelBookingController(payload ?? {});
-      return { ok: true, data, error: null };
-    } catch (e) {
-      setError(e);
-      return { ok: false, data: null, error: e };
-    } finally {
-      setIsPending(false);
-    }
-  }, []);
-
-  const confirmBooking = useCallback(async (payload) => {
-    setIsPending(true);
-    setError(null);
-
-    try {
-      const data = await confirmBookingController(payload ?? {});
-      return { ok: true, data, error: null };
-    } catch (e) {
-      setError(e);
-      return { ok: false, data: null, error: e };
-    } finally {
-      setIsPending(false);
-    }
-  }, []);
-
-  const setResourceSlotDuration = useCallback(async (payload) => {
-    setIsPending(true);
-    setError(null);
-
-    try {
-      const data = await setResourceSlotDurationController(payload ?? {});
-      return { ok: true, data, error: null };
-    } catch (e) {
-      setError(e);
-      return { ok: false, data: null, error: e };
-    } finally {
-      setIsPending(false);
-    }
-  }, []);
+  const setAvailabilityRuleFn     = useCallback((p) => runMutation(setAvailabilityRule, p),     [runMutation]);
+  const setAvailabilityExceptionFn= useCallback((p) => runMutation(setAvailabilityException, p),[runMutation]);
+  const cancelBookingFn           = useCallback((p) => runMutation(cancelBooking, p),            [runMutation]);
+  const confirmBookingFn          = useCallback((p) => runMutation(confirmBooking, p),           [runMutation]);
+  const completeBookingFn         = useCallback((p) => runMutation(completeBooking, p),          [runMutation]);
+  const markNoShowFn              = useCallback((p) => runMutation(markNoShow, p),               [runMutation]);
+  const setResourceSlotDurationFn = useCallback((p) => runMutation(setResourceSlotDuration, p), [runMutation]);
 
   return {
     isPending,
     error,
-    setAvailabilityRule,
-    setAvailabilityException,
-    cancelBooking,
-    confirmBooking,
-    setResourceSlotDuration,
+    setAvailabilityRule:      setAvailabilityRuleFn,
+    setAvailabilityException:  setAvailabilityExceptionFn,
+    cancelBooking:            cancelBookingFn,
+    confirmBooking:           confirmBookingFn,
+    completeBooking:          completeBookingFn,
+    markNoShow:               markNoShowFn,
+    setResourceSlotDuration:  setResourceSlotDurationFn,
   };
 }

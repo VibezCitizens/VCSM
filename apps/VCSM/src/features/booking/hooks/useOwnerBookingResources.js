@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import listOwnerBookingResourcesController from "@/features/booking/controller/listOwnerBookingResources.controller";
+import { listOwnerBookingResources } from "@booking";
 
 export default function useOwnerBookingResources({
   ownerActorId = null,
@@ -22,11 +22,7 @@ export default function useOwnerBookingResources({
     setError(null);
 
     try {
-      const data = await listOwnerBookingResourcesController({
-        ownerActorId,
-        includeInactive,
-      });
-
+      const data = await listOwnerBookingResources({ ownerActorId, includeInactive });
       setItems(Array.isArray(data) ? data : []);
       return { ok: true, data: Array.isArray(data) ? data : [], error: null };
     } catch (e) {
@@ -38,9 +34,7 @@ export default function useOwnerBookingResources({
     }
   }, [enabled, ownerActorId, includeInactive]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const primary = useMemo(() => {
     if (!Array.isArray(items) || items.length === 0) return null;
@@ -51,11 +45,5 @@ export default function useOwnerBookingResources({
     );
   }, [items]);
 
-  return {
-    loading,
-    error,
-    items,
-    primary,
-    refresh,
-  };
+  return { loading, error, items, primary, refresh };
 }

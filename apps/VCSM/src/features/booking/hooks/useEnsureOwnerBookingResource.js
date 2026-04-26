@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import ensureOwnerBookingResourceController from "@/features/booking/controller/ensureOwnerBookingResource.controller";
+import { ensureOwnerBookingResource } from "@booking";
 
 export default function useEnsureOwnerBookingResource() {
   const [isPending, setIsPending] = useState(false);
@@ -10,7 +10,7 @@ export default function useEnsureOwnerBookingResource() {
     setError(null);
 
     try {
-      const data = await ensureOwnerBookingResourceController(payload ?? {});
+      const data = await ensureOwnerBookingResource(payload ?? {});
       return { ok: true, data, error: null };
     } catch (e) {
       setError(e);
@@ -20,9 +20,5 @@ export default function useEnsureOwnerBookingResource() {
     }
   }, []);
 
-  return {
-    isPending,
-    error,
-    ensure,
-  };
+  return { isPending, error, ensure };
 }

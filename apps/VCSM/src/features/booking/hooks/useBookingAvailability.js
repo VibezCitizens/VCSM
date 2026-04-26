@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import getResourceAvailabilityController from "@/features/booking/controller/getResourceAvailability.controller";
+import { getResourceAvailability } from "@booking";
 
 export default function useBookingAvailability({
   resourceId = null,
@@ -26,15 +26,10 @@ export default function useBookingAvailability({
     setError(null);
 
     try {
-      const next = await getResourceAvailabilityController({
-        resourceId,
-        rangeStart,
-        rangeEnd,
-        statuses,
-        exceptionTypes,
-        publicMode,
+      const next = await getResourceAvailability({
+        resourceId, rangeStart, rangeEnd,
+        statuses, exceptionTypes, publicMode,
       });
-
       setData(next);
       return { ok: true, data: next, error: null };
     } catch (e) {
@@ -43,16 +38,11 @@ export default function useBookingAvailability({
     } finally {
       setLoading(false);
     }
-  }, [enabled, resourceId, rangeStart, rangeEnd, statuses, exceptionTypes]);
+  }, [enabled, resourceId, rangeStart, rangeEnd, statuses, exceptionTypes, publicMode]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
-  return {
-    loading,
-    error,
-    data,
-    refresh,
-  };
+  return { loading, error, data, refresh };
 }
