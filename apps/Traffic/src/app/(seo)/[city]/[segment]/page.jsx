@@ -32,10 +32,10 @@ import {
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
 
 const LEGACY_TRANSITION_ROBOTS = {
-  index: false,
+  index: true,
   follow: true,
   googleBot: {
-    index: false,
+    index: true,
     follow: true
   }
 };

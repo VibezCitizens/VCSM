@@ -4,7 +4,6 @@ export function GET() {
   const body = [
     "User-agent: *",
     "Allow: /",
-    "Disallow: /pro/",
     "",
     `Sitemap: ${buildCanonical("/sitemap-index.xml")}`
   ].join("\n");

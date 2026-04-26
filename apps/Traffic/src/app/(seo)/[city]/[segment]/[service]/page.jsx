@@ -62,10 +62,10 @@ import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPag
 export const revalidate = 900;
 
 const LEGACY_TRANSITION_ROBOTS = {
-  index: false,
+  index: true,
   follow: true,
   googleBot: {
-    index: false,
+    index: true,
     follow: true
   }
 };
