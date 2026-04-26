@@ -66,6 +66,7 @@ export function useVportBookingView({ profile, isOwner = false }) {
   useActorConsistencyCheck('booking', viewerActorId, identity?.kind);
   const viewerCanBook = isOwner || canCitizenBook(identity);
   const ownerActorId = profile?.actorId ?? profile?.actor_id ?? null;
+  const profileId = profile?.id ?? null;
   const [monthCursor, setMonthCursor] = useState(() => startOfMonth(new Date()));
   const [selectedDateKey, setSelectedDateKey] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -81,13 +82,21 @@ export function useVportBookingView({ profile, isOwner = false }) {
     enabled: Boolean(isOwner && ownerActorId),
   });
 
+  // Org/location context — resolves primary_calendar or any_available mode
+  const bookingContext = useBookingContextResolver({
+    profileId,
+    enabled: Boolean(profileId),
+  });
+
   const resources = useOwnerBookingResources({
     ownerActorId,
     includeInactive: isOwner,
     enabled: Boolean(ownerActorId),
   });
 
-  const resourceId = resources.primary?.id ?? null;
+  // Prefer org context resource when available, fall back to legacy primary resource
+  const resourceId = bookingContext.resource?.id ?? resources.primary?.id ?? null;
+  const bookingLocationId = bookingContext.location?.id ?? null;
   const rangeStart = startOfMonth(monthCursor).toISOString();
   const rangeEnd = endOfMonth(monthCursor).toISOString();
 
@@ -363,6 +372,7 @@ export function useVportBookingView({ profile, isOwner = false }) {
     viewerActorId,
     viewerIdentityKind: identity?.kind ?? null,
     resourceId,
+    locationId: bookingLocationId,
     selectedSlot,
     selectedDateKey,
     selectedSlots,
@@ -381,6 +391,7 @@ export function useVportBookingView({ profile, isOwner = false }) {
   return {
     viewerActorId,
     resources,
+    bookingContext,
     availability,
     createBooking,
     manageAvailability,

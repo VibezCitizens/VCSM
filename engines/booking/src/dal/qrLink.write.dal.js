@@ -29,19 +29,6 @@ export async function dalInsertQrLink({
   return data
 }
 
-export async function dalIncrementQrScanCount({ qrLinkId }) {
-  if (!qrLinkId) throw new Error('[BookingEngine] qrLinkId is required')
-  const { data, error } = await getVportClient()
-    .from('qr_links')
-    .update({ scan_count: getVportClient().rpc('increment_scan_count', { row_id: qrLinkId }) })
-    .eq('id', qrLinkId)
-    .select('id,scan_count')
-    .single()
-  // rpc approach may not be available — use raw SQL increment via rpc or just fetch+update
-  if (error) throw error
-  return data
-}
-
 export async function dalIncrementQrScanCountRaw({ qrLinkId, currentCount }) {
   if (!qrLinkId) throw new Error('[BookingEngine] qrLinkId is required')
   const { data, error } = await getVportClient()

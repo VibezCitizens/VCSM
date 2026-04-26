@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   listOrganizationsByOwnerActor,
-  getOrganizationMembers,
-  getOrganizationLocations,
   createOrganizationLocationWorkspace,
 } from "@booking";
 

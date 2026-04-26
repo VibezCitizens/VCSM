@@ -7,6 +7,7 @@ export function useVportBookingMutations({
   viewerActorId,
   viewerIdentityKind,
   resourceId,
+  locationId = null,
   selectedSlot,
   selectedDateKey,
   selectedSlots,
@@ -25,7 +26,8 @@ export function useVportBookingMutations({
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState(null);
 
   const onCreateAppointmentFromSelectedSlot = useCallback(async () => {
-    if (!resourceId || !selectedSlot || !selectedDateKey) return;
+    if (!resourceId && !locationId) return;
+    if (!selectedSlot || !selectedDateKey) return;
     if (!selectedSlots.includes(selectedSlot)) return;
     if (isOwner && !viewerActorId) return;
     if (!isOwner && viewerIdentityKind !== "user") return;
@@ -37,32 +39,33 @@ export function useVportBookingMutations({
     const endsAtDate = new Date(startsAtDate.getTime() + slotDurationMinutes * 60 * 1000);
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
+    const basePayload = {
+      resourceId: resourceId ?? undefined,
+      locationId: locationId ?? undefined,
+      startsAt: startsAtDate.toISOString(),
+      endsAt: endsAtDate.toISOString(),
+      timezone,
+      durationMinutes: slotDurationMinutes,
+    };
+
     const payload = isOwner
       ? {
+        ...basePayload,
         requestActorId: viewerActorId,
-        resourceId,
         customerActorId: ownerCustomerActorId ?? null,
         source: "owner",
         status: "confirmed",
-        startsAt: startsAtDate.toISOString(),
-        endsAt: endsAtDate.toISOString(),
-        timezone,
         serviceLabelSnapshot: "Owner scheduled appointment",
-        durationMinutes: slotDurationMinutes,
         customerName: String(ownerCustomerName || "").trim() || null,
         customerNote: null,
       }
       : {
+        ...basePayload,
         requestActorId: viewerActorId ?? null,
-        resourceId,
         customerActorId: viewerActorId ?? null,
         source: "public",
         status: "pending",
-        startsAt: startsAtDate.toISOString(),
-        endsAt: endsAtDate.toISOString(),
-        timezone,
         serviceLabelSnapshot: "Requested appointment",
-        durationMinutes: slotDurationMinutes,
         customerName: null,
         customerNote: null,
       };
@@ -76,6 +79,7 @@ export function useVportBookingMutations({
     await availability.refresh();
   }, [
     resourceId,
+    locationId,
     selectedSlot,
     selectedDateKey,
     selectedSlots,
