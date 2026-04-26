@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { hydrateActorsFromRows } from "@/state/actors/hydrateActors";
 import {
   useBookingAvailability,
+  useBookingContextResolver,
   useCreateBooking,
   useManageAvailability,
   useOwnerBookingResources,

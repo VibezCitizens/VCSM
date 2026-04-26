@@ -4,3 +4,10 @@ export { default as useManageAvailability }        from "@/features/booking/hook
 export { default as useOwnerBookingResources }     from "@/features/booking/hooks/useOwnerBookingResources";
 export { default as useEnsureOwnerBookingResource } from "@/features/booking/hooks/useEnsureOwnerBookingResource";
 export { default as useBookingServiceProfiles }    from "@/features/booking/hooks/useBookingServiceProfiles";
+export { default as useBookingHistory }            from "@/features/booking/hooks/useBookingHistory";
+export { default as useOrganizationWorkspace }     from "@/features/booking/hooks/useOrganizationWorkspace";
+export { default as useOrganizationLocations }     from "@/features/booking/hooks/useOrganizationLocations";
+export { default as useLocationResources }         from "@/features/booking/hooks/useLocationResources";
+export { default as useResourceServiceOverrides }  from "@/features/booking/hooks/useResourceServiceOverrides";
+export { default as useBookingContextResolver }    from "@/features/booking/hooks/useBookingContextResolver";
+export { default as useQrLinks }                   from "@/features/booking/hooks/useQrLinks";

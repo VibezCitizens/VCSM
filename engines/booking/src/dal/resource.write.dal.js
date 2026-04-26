@@ -1,13 +1,16 @@
 import { getSupabaseClient } from '../config.js'
 
 const RESOURCE_SELECT = [
-  'id', 'owner_actor_id', 'resource_type', 'name',
-  'is_active', 'timezone', 'sort_order', 'created_at', 'updated_at',
+  'id', 'owner_actor_id', 'organization_id', 'location_id', 'member_actor_id',
+  'resource_type', 'name', 'is_active', 'timezone', 'sort_order', 'created_at', 'updated_at',
 ].join(',')
 
 const RESOURCE_SERVICE_SELECT = ['resource_id', 'service_id', 'is_active', 'created_at'].join(',')
 
-const WRITE_COLUMNS = Object.freeze(['owner_actor_id', 'resource_type', 'name', 'is_active', 'timezone', 'sort_order'])
+const WRITE_COLUMNS = Object.freeze([
+  'owner_actor_id', 'organization_id', 'location_id', 'member_actor_id',
+  'resource_type', 'name', 'is_active', 'timezone', 'sort_order',
+])
 
 function pickDefined(input, columns) {
   return columns.reduce((acc, key) => {

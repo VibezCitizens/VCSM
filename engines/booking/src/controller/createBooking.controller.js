@@ -1,4 +1,4 @@
-import { dalGetBookingResourceById } from '../dal/resource.read.dal.js'
+import { dalGetBookingResourceById, dalListBookingResourcesByLocationId } from '../dal/resource.read.dal.js'
 import { dalGetActorById } from '../dal/actor.read.dal.js'
 import { dalInsertBooking } from '../dal/booking.write.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
@@ -12,6 +12,7 @@ const CITIZEN_SOURCES    = new Set(['public'])
 export async function createBooking({
   requestActorId = null,
   resourceId,
+  locationId = null,
   serviceId = null,
   customerActorId = null,
   customerProfileId = null,
@@ -28,14 +29,28 @@ export async function createBooking({
   customerNote = null,
   internalNote = null,
 } = {}) {
-  if (!resourceId)            throw new Error('[BookingEngine] resourceId is required')
   if (!startsAt)              throw new Error('[BookingEngine] startsAt is required')
   if (!endsAt)                throw new Error('[BookingEngine] endsAt is required')
   if (!timezone)              throw new Error('[BookingEngine] timezone is required')
   if (!serviceLabelSnapshot)  throw new Error('[BookingEngine] serviceLabelSnapshot is required')
   if (!durationMinutes)       throw new Error('[BookingEngine] durationMinutes is required')
 
-  const resource = await dalGetBookingResourceById({ resourceId })
+  // Resolve resourceId from locationId (any_available mode) when not explicitly given
+  let resolvedResourceId = resourceId
+  if (!resolvedResourceId && locationId) {
+    const locationResources = await dalListBookingResourcesByLocationId({ locationId, includeInactive: false })
+    if (!locationResources.length) throw new Error('No available resources at this location.')
+    // Sort by sort_order ASC, then created_at ASC — pick first
+    const sorted = [...locationResources].sort((a, b) => {
+      if (a.sort_order !== b.sort_order) return (a.sort_order ?? 0) - (b.sort_order ?? 0)
+      return new Date(a.created_at) - new Date(b.created_at)
+    })
+    resolvedResourceId = sorted[0].id
+  }
+
+  if (!resolvedResourceId) throw new Error('[BookingEngine] resourceId or locationId is required')
+
+  const resource = await dalGetBookingResourceById({ resourceId: resolvedResourceId })
   if (!resource || resource.is_active !== true) {
     throw new Error('Booking resource is unavailable.')
   }
@@ -59,7 +74,7 @@ export async function createBooking({
 
   const inserted = await dalInsertBooking({
     row: {
-      resource_id: resourceId, service_id: serviceId,
+      resource_id: resolvedResourceId, service_id: serviceId,
       customer_actor_id: customerActorId, customer_profile_id: customerProfileId,
       status, source, starts_at: startsAt, ends_at: endsAt, timezone,
       service_label_snapshot: serviceLabelSnapshot, duration_minutes: durationMinutes,
@@ -71,7 +86,7 @@ export async function createBooking({
 
   const mapped = mapBookingRow(inserted)
 
-  if (source === 'public' && resource.owner_actor_id && requestActorId) {
+  if (source === 'public' && resource?.owner_actor_id && requestActorId) {
     if (String(requestActorId) !== String(resource.owner_actor_id)) {
       getNotifyFn()?.({
         recipientActorId: resource.owner_actor_id,
