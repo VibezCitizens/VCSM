@@ -1,4 +1,4 @@
-const DEFAULT_SITE_ORIGIN = "https://traffic.vibezcitizens.com";
+const DEFAULT_SITE_ORIGIN = "https://traze.vibezcitizens.com";
 const DEFAULT_PLATFORM_ORIGIN = "https://vibezcitizens.com";
 const DEFAULT_PUBLIC_CONTENT_PATH = "/api/public/content-pages";
 const DEFAULT_PUBLIC_REVIEW_SUMMARY_PATH = "/api/public/vport-review-summary";
