@@ -2,21 +2,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
-import { Image as ImageIcon, Plus, Trash2, X, Sparkles, Tag, Bug } from "lucide-react";
+import { Image as ImageIcon, Pencil, Plus, Trash2, X, Sparkles, Tag, Bug } from "lucide-react";
 
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
-import { createItem, addMedia, deleteItem, manageTags } from "@portfolio";
+import { createItem, addMedia, deleteItem, manageTags, updateItem } from "@portfolio";
 import { portfolioTraceStore } from "@/features/portfolio/setup";
 import { useVportPortfolio } from "@/features/profiles/kinds/vport/hooks/portfolio/useVportPortfolio";
+import { ctrlGetPortfolioItem } from "@/features/profiles/kinds/vport/controller/portfolio/VportPortfolio.controller";
 import { ctrlSavePortfolioDetail } from "@/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller";
 import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
 import { compressIfNeeded } from "@/features/upload/lib/compressIfNeeded";
 import { buildR2Key } from "@/services/cloudflare/buildR2Key";
 import { supabase } from "@/services/supabase/supabaseClient";
+import ConsentCheckbox from "@/features/auth/components/ConsentCheckbox";
 
 // ── BugsBunny: Portfolio Create Diagnostic Panel (DEV only) ──
 function PortfolioBugsBunnyPanel({ actorId, identity }) {
@@ -38,7 +40,6 @@ function PortfolioBugsBunnyPanel({ actorId, identity }) {
     setProbe(null);
     const result = {};
     try {
-      // 1. Identity snapshot
       result.identity = {
         actorId: identity?.actorId ?? null,
         kind: identity?.kind ?? null,
@@ -46,7 +47,6 @@ function PortfolioBugsBunnyPanel({ actorId, identity }) {
         ownerActorId: identity?.ownerActorId ?? null,
       };
 
-      // 2. Resolve profile_id from vport.profiles
       const { data: profileRow, error: profileErr } = await supabase
         .schema("vport")
         .from("profiles")
@@ -63,7 +63,6 @@ function PortfolioBugsBunnyPanel({ actorId, identity }) {
       const profileId = profileRow?.[0]?.id ?? null;
       result.resolvedProfileId = profileId;
 
-      // 3. Check profile_actor_access
       if (profileId) {
         const { data: accessRows, error: accessErr } = await supabase
           .schema("vport")
@@ -74,34 +73,23 @@ function PortfolioBugsBunnyPanel({ actorId, identity }) {
         result.profileActorAccess = {
           rows: accessRows ?? [],
           error: accessErr?.message ?? null,
-          activeActorFound: (accessRows ?? []).some(
-            (r) => r.actor_id === actorId
-          ),
+          activeActorFound: (accessRows ?? []).some((r) => r.actor_id === actorId),
         };
       } else {
         result.profileActorAccess = null;
       }
 
-      // 4. Check actor_owners for the vport actor
       const { data: ownerRows, error: ownerErr } = await supabase
         .schema("vc")
         .from("actor_owners")
         .select("actor_id, user_id")
         .eq("actor_id", actorId);
 
-      result.actorOwners = {
-        rows: ownerRows ?? [],
-        error: ownerErr?.message ?? null,
-      };
+      result.actorOwners = { rows: ownerRows ?? [], error: ownerErr?.message ?? null };
 
-      // 5. Supabase auth session
       const { data: { session } } = await supabase.auth.getSession();
-      result.session = {
-        userId: session?.user?.id ?? null,
-        email: session?.user?.email ?? null,
-      };
+      result.session = { userId: session?.user?.id ?? null, email: session?.user?.email ?? null };
 
-      // 6. Expected insert payload
       result.expectedInsertPayload = {
         profile_id: profileId,
         created_by_actor_id: null,
@@ -110,29 +98,14 @@ function PortfolioBugsBunnyPanel({ actorId, identity }) {
         visibility: "public",
       };
 
-      // 7. Assertions
       const assertions = [];
-      if (!actorId) assertions.push({ label: "actorId present", pass: false });
-      else assertions.push({ label: "actorId present", pass: true, value: actorId });
-
-      if (identity?.kind !== "vport")
-        assertions.push({ label: "identity.kind === vport", pass: false, value: identity?.kind });
-      else assertions.push({ label: "identity.kind === vport", pass: true });
-
-      if (!profileId)
-        assertions.push({ label: "profileId resolved", pass: false, value: "NO PROFILE FOUND for actor" });
-      else assertions.push({ label: "profileId resolved", pass: true, value: profileId });
-
-      if (profileId && profileRow?.[0]?.actor_id !== actorId)
-        assertions.push({ label: "profile.actor_id matches actorId", pass: false, got: profileRow?.[0]?.actor_id });
-      else if (profileId)
-        assertions.push({ label: "profile.actor_id matches actorId", pass: true });
-
-      if (profileRow?.[0]?.is_deleted)
-        assertions.push({ label: "profile not deleted", pass: false });
-      else if (profileId)
-        assertions.push({ label: "profile not deleted", pass: true });
-
+      assertions.push({ label: "actorId present", pass: !!actorId, value: actorId });
+      assertions.push({ label: "identity.kind === vport", pass: identity?.kind === "vport", value: identity?.kind });
+      assertions.push({ label: "profileId resolved", pass: !!profileId, value: profileId ?? "NO PROFILE FOUND for actor" });
+      if (profileId) {
+        assertions.push({ label: "profile.actor_id matches actorId", pass: profileRow?.[0]?.actor_id === actorId, got: profileRow?.[0]?.actor_id });
+        assertions.push({ label: "profile not deleted", pass: !profileRow?.[0]?.is_deleted });
+      }
       result.assertions = assertions;
     } catch (e) {
       result.probeError = e?.message ?? String(e);
@@ -197,131 +170,55 @@ function PortfolioBugsBunnyPanel({ actorId, identity }) {
             </button>
           </div>
 
-          {/* Probe results */}
           {probe && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ color: "rgba(250,200,50,0.8)", marginBottom: 6, fontWeight: 700 }}>
-                — PROBE RESULTS —
-              </div>
-
-              {/* Assertions */}
+              <div style={{ color: "rgba(250,200,50,0.8)", marginBottom: 6, fontWeight: 700 }}>— PROBE RESULTS —</div>
               <div style={{ marginBottom: 8 }}>
                 <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>ASSERTIONS</div>
                 {(probe.assertions ?? []).map((a, i) => (
                   <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 2 }}>
-                    <span style={{ color: a.pass ? "rgba(100,255,100,0.9)" : "rgba(255,80,80,0.9)", minWidth: 16 }}>
-                      {a.pass ? "✓" : "✗"}
-                    </span>
-                    <span style={{ color: a.pass ? "rgba(200,255,200,0.7)" : "rgba(255,180,180,0.9)" }}>
-                      {a.label}
-                    </span>
-                    {a.value !== undefined && (
-                      <span style={{ color: "rgba(255,255,255,0.35)" }}>
-                        {typeof a.value === "string" ? a.value : JSON.stringify(a.value)}
-                      </span>
-                    )}
-                    {a.got !== undefined && (
-                      <span style={{ color: "rgba(255,100,100,0.7)" }}>
-                        got: {JSON.stringify(a.got)}
-                      </span>
-                    )}
+                    <span style={{ color: a.pass ? "rgba(100,255,100,0.9)" : "rgba(255,80,80,0.9)", minWidth: 16 }}>{a.pass ? "✓" : "✗"}</span>
+                    <span style={{ color: a.pass ? "rgba(200,255,200,0.7)" : "rgba(255,180,180,0.9)" }}>{a.label}</span>
+                    {a.value !== undefined && <span style={{ color: "rgba(255,255,255,0.35)" }}>{typeof a.value === "string" ? a.value : JSON.stringify(a.value)}</span>}
+                    {a.got !== undefined && <span style={{ color: "rgba(255,100,100,0.7)" }}>got: {JSON.stringify(a.got)}</span>}
                   </div>
                 ))}
               </div>
-
-              {/* Identity */}
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>IDENTITY</div>
-                <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(probe.identity, null, 2)}
-                </pre>
-              </div>
-
-              {/* Profile lookup */}
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>PROFILE LOOKUP (vport.profiles)</div>
-                <pre style={{ margin: 0, color: probe.profileLookup?.row ? "rgba(200,220,255,0.75)" : "rgba(255,150,150,0.8)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(probe.profileLookup, null, 2)}
-                </pre>
-              </div>
-
-              {/* profile_actor_access */}
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>PROFILE_ACTOR_ACCESS</div>
-                <pre style={{ margin: 0, color: probe.profileActorAccess?.activeActorFound ? "rgba(200,255,200,0.75)" : "rgba(255,150,150,0.8)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(probe.profileActorAccess, null, 2)}
-                </pre>
-              </div>
-
-              {/* actor_owners */}
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>ACTOR_OWNERS (vc.actor_owners)</div>
-                <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(probe.actorOwners, null, 2)}
-                </pre>
-              </div>
-
-              {/* session */}
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>AUTH SESSION</div>
-                <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap" }}>
-                  {JSON.stringify(probe.session, null, 2)}
-                </pre>
-              </div>
-
-              {/* expected payload */}
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>EXPECTED INSERT PAYLOAD</div>
-                <pre style={{ margin: 0, color: "rgba(255,230,150,0.8)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(probe.expectedInsertPayload, null, 2)}
-                </pre>
-              </div>
-
-              {probe.probeError && (
-                <div style={{ color: "rgba(255,80,80,0.9)" }}>
-                  PROBE ERROR: {probe.probeError}
+              {[
+                ["IDENTITY", "identity"],
+                ["PROFILE LOOKUP (vport.profiles)", "profileLookup"],
+                ["PROFILE_ACTOR_ACCESS", "profileActorAccess"],
+                ["ACTOR_OWNERS (vc.actor_owners)", "actorOwners"],
+                ["AUTH SESSION", "session"],
+                ["EXPECTED INSERT PAYLOAD", "expectedInsertPayload"],
+              ].map(([label, key]) => (
+                <div key={key} style={{ marginBottom: 6 }}>
+                  <div style={{ color: "rgba(255,255,255,0.5)", marginBottom: 2 }}>{label}</div>
+                  <pre style={{ margin: 0, color: "rgba(200,220,255,0.75)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                    {JSON.stringify(probe[key], null, 2)}
+                  </pre>
                 </div>
-              )}
+              ))}
+              {probe.probeError && <div style={{ color: "rgba(255,80,80,0.9)" }}>PROBE ERROR: {probe.probeError}</div>}
             </div>
           )}
 
-          {/* Engine trace events */}
           {traceEvents.length > 0 && (
             <div>
-              <div style={{ color: "rgba(250,200,50,0.8)", marginBottom: 6, fontWeight: 700 }}>
-                — ENGINE TRACE ({traceEvents.length}) —
-              </div>
+              <div style={{ color: "rgba(250,200,50,0.8)", marginBottom: 6, fontWeight: 700 }}>— ENGINE TRACE ({traceEvents.length}) —</div>
               {traceEvents.map((ev, i) => (
-                <div
-                  key={i}
-                  style={{
-                    marginBottom: 4, padding: "4px 8px", borderRadius: 6,
-                    background: ev.step?.includes("ERROR") || ev.step?.includes("FAIL")
-                      ? "rgba(255,80,80,0.1)"
-                      : "rgba(255,255,255,0.03)",
-                    borderLeft: `2px solid ${
-                      ev.step?.includes("ERROR") || ev.step?.includes("FAIL")
-                        ? "rgba(255,80,80,0.5)"
-                        : ev.step?.includes("SUCCESS")
-                        ? "rgba(100,255,100,0.4)"
-                        : "rgba(255,255,255,0.1)"
-                    }`,
-                  }}
-                >
-                  <span style={{ color: "rgba(255,200,100,0.7)", marginRight: 6 }}>
-                    {new Date(ev.ts).toISOString().slice(11, 23)}
-                  </span>
-                  <span style={{ color: "rgba(255,255,255,0.8)", marginRight: 6 }}>
-                    {ev.step}
-                  </span>
-                  {Object.entries(ev)
-                    .filter(([k]) => k !== "step" && k !== "ts")
-                    .map(([k, v]) => (
-                      <span key={k} style={{ color: "rgba(180,220,255,0.6)", marginRight: 6 }}>
-                        {k}={typeof v === "object" ? JSON.stringify(v) : String(v)}
-                      </span>
-                    ))
-                  }
+                <div key={i} style={{
+                  marginBottom: 4, padding: "4px 8px", borderRadius: 6,
+                  background: ev.step?.includes("ERROR") || ev.step?.includes("FAIL") ? "rgba(255,80,80,0.1)" : "rgba(255,255,255,0.03)",
+                  borderLeft: `2px solid ${ev.step?.includes("ERROR") || ev.step?.includes("FAIL") ? "rgba(255,80,80,0.5)" : ev.step?.includes("SUCCESS") ? "rgba(100,255,100,0.4)" : "rgba(255,255,255,0.1)"}`,
+                }}>
+                  <span style={{ color: "rgba(255,200,100,0.7)", marginRight: 6 }}>{new Date(ev.ts).toISOString().slice(11, 23)}</span>
+                  <span style={{ color: "rgba(255,255,255,0.8)", marginRight: 6 }}>{ev.step}</span>
+                  {Object.entries(ev).filter(([k]) => k !== "step" && k !== "ts").map(([k, v]) => (
+                    <span key={k} style={{ color: "rgba(180,220,255,0.6)", marginRight: 6 }}>
+                      {k}={typeof v === "object" ? JSON.stringify(v) : String(v)}
+                    </span>
+                  ))}
                 </div>
               ))}
             </div>
@@ -347,28 +244,77 @@ async function uploadPortfolioFile(file, actorId) {
   return url;
 }
 
-// ── Create form ──
-function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
-  const isLocksmith = String(vportType ?? "").toLowerCase() === "locksmith";
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [kind, setKind] = useState("work");
-  const [tagsInput, setTagsInput] = useState("");
+// ── Build initialValues from a full portfolio detail object ──
+function buildInitialValues(detail) {
+  if (!detail) return null;
+  return {
+    title: detail.title ?? "",
+    description: detail.description ?? "",
+    kind: detail.portfolioKind ?? "work",
+    tagsInput: (detail.tags ?? []).join(", "),
+    existingMediaCount: (detail.media ?? []).length || detail.mediaCount || 0,
+    locksmith: detail.locksmithDetails
+      ? {
+          jobType: detail.locksmithDetails.jobType ?? "other",
+          propertyType: detail.locksmithDetails.propertyType ?? "",
+          lockType: detail.locksmithDetails.lockType ?? "",
+          hardwareBrand: detail.locksmithDetails.hardwareBrand ?? "",
+          serviceMode: detail.locksmithDetails.serviceMode ?? "",
+          estimatedDurationMinutes: String(detail.locksmithDetails.estimatedDurationMinutes ?? ""),
+          isEmergencyJob: detail.locksmithDetails.isEmergencyJob ?? false,
+          isSecurityUpgrade: detail.locksmithDetails.isSecurityUpgrade ?? false,
+        }
+      : null,
+  };
+}
 
-  // Locksmith-specific fields
-  const [jobType, setJobType] = useState("other");
-  const [propertyType, setPropertyType] = useState("");
-  const [lockType, setLockType] = useState("");
-  const [hardwareBrand, setHardwareBrand] = useState("");
-  const [serviceMode, setServiceMode] = useState("");
-  const [isEmergencyJob, setIsEmergencyJob] = useState(false);
-  const [isSecurityUpgrade, setIsSecurityUpgrade] = useState(false);
-  const [estimatedDuration, setEstimatedDuration] = useState("");
+const KIND_OPTIONS = [
+  { value: "work", label: "Work Sample" },
+  { value: "before_after", label: "Before & After" },
+  { value: "style_card", label: "Style Card" },
+  { value: "space", label: "Space / Setup" },
+];
+
+const TITLE_MAX = 22;
+
+// ── Portfolio item form — used for both create and edit ──
+function PortfolioItemForm({
+  mode = "create",
+  editItemId = null,
+  existingItem = null,
+  initialValues = null,
+  actorId,
+  vportType,
+  onOptimisticUpdate = null,
+  onDone,
+  onCancel,
+}) {
+  const isEdit = mode === "edit";
+  const isLocksmith = String(vportType ?? "").toLowerCase() === "locksmith";
+
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [description, setDescription] = useState(initialValues?.description ?? "");
+  const [kind, setKind] = useState(initialValues?.kind ?? "work");
+  const [tagsInput, setTagsInput] = useState(initialValues?.tagsInput ?? "");
+
+  // Locksmith fields
+  const lk = initialValues?.locksmith ?? null;
+  const [jobType, setJobType] = useState(lk?.jobType ?? "other");
+  const [propertyType, setPropertyType] = useState(lk?.propertyType ?? "");
+  const [lockType, setLockType] = useState(lk?.lockType ?? "");
+  const [hardwareBrand, setHardwareBrand] = useState(lk?.hardwareBrand ?? "");
+  const [serviceMode, setServiceMode] = useState(lk?.serviceMode ?? "");
+  const [isEmergencyJob, setIsEmergencyJob] = useState(lk?.isEmergencyJob ?? false);
+  const [isSecurityUpgrade, setIsSecurityUpgrade] = useState(lk?.isSecurityUpgrade ?? false);
+  const [estimatedDuration, setEstimatedDuration] = useState(lk?.estimatedDurationMinutes ?? "");
+
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const fileRef = useRef(null);
+
+  const existingMediaCount = initialValues?.existingMediaCount ?? 0;
 
   const handleFiles = useCallback((e) => {
     const selected = Array.from(e.target.files || []).slice(0, 10);
@@ -385,55 +331,88 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!files.length) {
+    if (!isEdit && !files.length) {
       setError(new Error("Add at least one photo."));
+      return;
+    }
+
+    const trimmedTitle = title.trim();
+    if (trimmedTitle.length > TITLE_MAX) {
+      setError(new Error(`Title must be ${TITLE_MAX} characters or less.`));
       return;
     }
 
     setSaving(true);
     setError(null);
 
-    try {
-      const tags = tagsInput
-        .split(",")
-        .map((t) => t.trim().toLowerCase())
-        .filter((t) => t.length > 0 && t.length <= 48);
+    const tags = tagsInput
+      .split(",")
+      .map((t) => t.trim().toLowerCase())
+      .filter((t) => t.length > 0 && t.length <= 48);
 
-      const item = await createItem({
-        actorId,
-        title: title.trim() || undefined,
-        description: description.trim() || undefined,
+    // Apply optimistic update immediately in edit mode
+    let rollback = null;
+    if (isEdit && onOptimisticUpdate) {
+      rollback = onOptimisticUpdate(editItemId, {
+        ...(existingItem ?? {}),
+        title: trimmedTitle || null,
+        description: description.trim() || null,
         portfolioKind: kind,
-        tags: tags.length ? tags : undefined,
+        tags,
       });
+    }
 
-      // Upload files as media
-      const uploadedMedia = [];
+    try {
+      let itemId;
+      let resultItem;
+
+      if (isEdit) {
+        resultItem = await updateItem({
+          itemId: editItemId,
+          actorId,
+          updates: {
+            title: trimmedTitle || null,
+            description: description.trim() || null,
+            portfolioKind: kind,
+          },
+          tags,
+        });
+        itemId = editItemId;
+      } else {
+        resultItem = await createItem({
+          actorId,
+          title: trimmedTitle || undefined,
+          description: description.trim() || undefined,
+          portfolioKind: kind,
+          tags: tags.length ? tags : undefined,
+        });
+        itemId = resultItem.id;
+      }
+
+      // Upload new files (both modes)
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const url = await uploadPortfolioFile(file, actorId);
-        const mediaRole = kind === "before_after" && i === 0
-          ? "before"
-          : kind === "before_after" && i === 1
-            ? "after"
-            : i === 0
-              ? "cover"
-              : "result";
+        const isFirstOfItem = !isEdit && i === 0;
+        const mediaRole =
+          kind === "before_after" && i === 0 ? "before"
+          : kind === "before_after" && i === 1 ? "after"
+          : isFirstOfItem ? "cover"
+          : "result";
 
         await addMedia({
-          itemId: item.id,
+          itemId,
           actorId,
           url,
           mediaType: "image",
           mediaRole,
-          sortOrder: i,
+          sortOrder: (isEdit ? existingMediaCount : 0) + i,
         });
-        uploadedMedia.push({ url, type: "image", role: mediaRole, sortOrder: i });
       }
 
-      // Save locksmith-specific details if applicable
+      // Locksmith details (upsert — works for both create and edit)
       if (isLocksmith) {
-        await ctrlSavePortfolioDetail(item.id, {
+        await ctrlSavePortfolioDetail(itemId, {
           jobType: jobType || "other",
           propertyType: propertyType || null,
           lockType: lockType.trim() || null,
@@ -446,43 +425,37 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
         });
       }
 
-      // Clean up previews
       previews.forEach(URL.revokeObjectURL);
-
-      const optimisticItem = {
-        id: item.id,
-        title: item.title ?? null,
-        portfolioKind: kind,
-        tags: item.tags ?? [],
-        coverUrl: uploadedMedia[0]?.url ?? null,
-        media: uploadedMedia,
-        mediaCount: uploadedMedia.length,
-      };
-      onCreated?.(optimisticItem);
+      onDone?.(resultItem);
     } catch (e) {
+      rollback?.();
       setError(e);
     } finally {
       setSaving(false);
     }
-  }, [actorId, files, title, description, kind, tagsInput, previews, onCreated]);
+  }, [
+    isEdit, editItemId, existingItem, actorId, files, title, description, kind,
+    tagsInput, previews, onDone, isLocksmith, onOptimisticUpdate,
+    jobType, propertyType, lockType, hardwareBrand, serviceMode,
+    isEmergencyJob, isSecurityUpgrade, estimatedDuration, existingMediaCount,
+  ]);
+
+  const canSubmit = isEdit ? !saving : !saving && files.length > 0;
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <div className="mb-4 flex items-center justify-between">
-        <div className="text-base font-semibold text-white">New Portfolio Item</div>
+        <div className="text-base font-semibold text-white">
+          {isEdit ? "Edit Portfolio Item" : "New Portfolio Item"}
+        </div>
         <button type="button" onClick={onCancel} className="text-white/40 hover:text-white/70">
           <X size={18} />
         </button>
       </div>
 
       {/* Kind selector */}
-      <div className="mb-4 flex gap-2">
-        {[
-          { value: "work", label: "Work Sample" },
-          { value: "before_after", label: "Before & After" },
-          { value: "style_card", label: "Style Card" },
-          { value: "space", label: "Space / Setup" },
-        ].map((opt) => (
+      <div className="mb-4 flex flex-wrap gap-2">
+        {KIND_OPTIONS.map((opt) => (
           <button
             key={opt.value}
             type="button"
@@ -500,14 +473,27 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
       </div>
 
       {/* Title */}
-      <input
-        type="text"
-        placeholder="Title (optional)"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        maxLength={120}
-        className="mb-3 w-full rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none focus:border-white/20"
-      />
+      <div className="mb-3">
+        <input
+          type="text"
+          placeholder="Title (optional)"
+          value={title}
+          onChange={(e) => setTitle(e.target.value.slice(0, TITLE_MAX))}
+          onPaste={(e) => {
+            e.preventDefault();
+            const pasted = e.clipboardData.getData("text").slice(0, TITLE_MAX);
+            setTitle(pasted);
+          }}
+          maxLength={TITLE_MAX}
+          className="w-full rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none focus:border-white/20"
+        />
+        <div
+          className="mt-1 text-right text-[11px] tabular-nums"
+          style={{ color: title.length >= TITLE_MAX ? "#facc15" : "rgba(255,255,255,0.25)" }}
+        >
+          {title.length} / {TITLE_MAX}
+        </div>
+      </div>
 
       {/* Description */}
       <textarea
@@ -523,7 +509,7 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
         <Tag size={14} className="shrink-0 text-white/30" />
         <input
           type="text"
-          placeholder="Tags (comma separated — e.g. fade, lineup, beard)"
+          placeholder="Tags (comma separated — e.g. lockout, emergency, residential)"
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
           className="w-full rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none focus:border-white/20"
@@ -532,7 +518,7 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
 
       {/* Locksmith-specific fields */}
       {isLocksmith ? (
-        <div className="rounded-xl border border-white/8 bg-white/[0.02] p-3 space-y-3">
+        <div className="mb-3 rounded-xl border border-white/8 bg-white/[0.02] p-3 space-y-3">
           <div className="text-[11px] font-medium uppercase tracking-wider text-white/35">Locksmith Details</div>
           <div className="grid grid-cols-2 gap-3">
             <select value={jobType} onChange={(e) => setJobType(e.target.value)}
@@ -573,16 +559,12 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
               className="rounded-xl border border-white/8 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/30 outline-none" />
           </div>
           <div className="flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={isEmergencyJob} onChange={(e) => setIsEmergencyJob(e.target.checked)}
-                className="h-4 w-4 rounded border-white/20 bg-black/30 accent-red-400" />
-              <span className="text-xs text-white/60">Emergency job</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={isSecurityUpgrade} onChange={(e) => setIsSecurityUpgrade(e.target.checked)}
-                className="h-4 w-4 rounded border-white/20 bg-black/30 accent-emerald-400" />
-              <span className="text-xs text-white/60">Security upgrade</span>
-            </label>
+            <ConsentCheckbox checked={isEmergencyJob} onChange={() => setIsEmergencyJob((v) => !v)}>
+              Emergency job
+            </ConsentCheckbox>
+            <ConsentCheckbox checked={isSecurityUpgrade} onChange={() => setIsSecurityUpgrade((v) => !v)}>
+              Security upgrade
+            </ConsentCheckbox>
           </div>
         </div>
       ) : null}
@@ -597,6 +579,15 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
         onChange={handleFiles}
       />
 
+      {/* Existing media indicator (edit mode) */}
+      {isEdit && existingMediaCount > 0 && !files.length ? (
+        <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/6 bg-white/[0.02] px-3 py-2.5 text-xs text-white/40">
+          <ImageIcon size={13} className="shrink-0 text-white/25" />
+          {existingMediaCount} existing photo{existingMediaCount !== 1 ? "s" : ""} — add more below
+        </div>
+      ) : null}
+
+      {/* New file previews */}
       {previews.length ? (
         <div className="mb-3 grid grid-cols-3 gap-2">
           {previews.map((src, i) => (
@@ -625,7 +616,11 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
         className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] py-4 text-sm text-white/40 hover:border-white/25 hover:text-white/60 transition-colors"
       >
         <ImageIcon size={18} />
-        {files.length ? `${files.length} photo${files.length > 1 ? "s" : ""} selected — tap to change` : "Tap to add photos"}
+        {files.length
+          ? `${files.length} new photo${files.length > 1 ? "s" : ""} selected — tap to change`
+          : isEdit
+            ? "Add more photos (optional)"
+            : "Tap to add photos"}
       </button>
 
       {error ? (
@@ -644,28 +639,31 @@ function CreateItemForm({ actorId, vportType, onCreated, onCancel }) {
         </button>
         <button
           type="button"
-          disabled={saving || !files.length}
+          disabled={!canSubmit}
           onClick={handleSubmit}
           className={[
             "rounded-full px-5 py-2 text-sm font-semibold transition-all",
             saving
               ? "bg-white/8 text-white/30 cursor-wait"
-              : !files.length
+              : !canSubmit
                 ? "bg-white/5 text-white/25 cursor-not-allowed border border-white/8"
                 : "border border-sky-300/40 bg-sky-300/15 text-sky-100 hover:bg-sky-300/22",
           ].join(" ")}
         >
-          {saving ? "Uploading..." : "Publish"}
+          {saving
+            ? isEdit ? "Saving..." : "Uploading..."
+            : isEdit ? "Save changes" : "Publish"}
         </button>
       </div>
     </div>
   );
 }
 
-// ── Item card (dashboard version) ──
-function PortfolioManagerCard({ item, onDelete, deleting }) {
+// ── Item card (dashboard list view) ──
+function PortfolioManagerCard({ item, onEdit, onDelete, deleting }) {
   const coverUrl = item?.coverUrl ?? item?.media?.[0]?.url ?? null;
   const isTransformation = item?.portfolioKind === "before_after";
+  const mediaCount = item?.mediaCount ?? 0;
 
   return (
     <div className="flex gap-3 rounded-xl border border-white/8 bg-white/[0.02] p-3">
@@ -698,23 +696,37 @@ function PortfolioManagerCard({ item, onDelete, deleting }) {
           ) : null}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-white/25">
-            {item.mediaCount ?? 0} photo{(item.mediaCount ?? 0) !== 1 ? "s" : ""}
-          </span>
+          {mediaCount > 0 ? (
+            <span className="flex items-center gap-1 text-[10px] text-white/30">
+              <ImageIcon size={10} />
+              {mediaCount} {mediaCount === 1 ? "photo" : "photos"}
+            </span>
+          ) : null}
           {item.isFeatured ? (
             <span className="text-[10px] text-sky-300/60">Featured</span>
           ) : null}
         </div>
       </div>
 
-      <button
-        type="button"
-        disabled={deleting}
-        onClick={() => onDelete?.(item)}
-        className="shrink-0 self-center grid h-8 w-8 place-items-center rounded-xl border border-red-400/20 bg-red-400/8 text-red-300/60 hover:bg-red-400/15 disabled:opacity-50 transition-colors"
-      >
-        <Trash2 size={14} />
-      </button>
+      <div className="shrink-0 self-center flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => onEdit?.(item)}
+          className="grid h-8 w-8 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/70 transition-colors"
+          aria-label="Edit"
+        >
+          <Pencil size={13} />
+        </button>
+        <button
+          type="button"
+          disabled={deleting}
+          onClick={() => onDelete?.(item)}
+          className="grid h-8 w-8 place-items-center rounded-xl border border-red-400/20 bg-red-400/8 text-red-300/60 hover:bg-red-400/15 disabled:opacity-50 transition-colors"
+          aria-label="Delete"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -729,21 +741,48 @@ export default function VportDashboardPortfolioScreen() {
   const isDesktop = useDesktopBreakpoint();
   const isOwner = Boolean(targetActorId) && Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId);
 
-  const {
-    allItems,
-    loading,
-    error,
-    optimisticRemove,
-    optimisticAdd,
-  } = useVportPortfolio(targetActorId);
+  const { allItems, loading, error, reload, optimisticRemove, optimisticAdd, optimisticUpdate } =
+    useVportPortfolio(targetActorId);
 
   const [showCreate, setShowCreate] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+
+  // Edit state
+  const [editingItem, setEditingItem] = useState(null);
+  const [editingItemDetail, setEditingItemDetail] = useState(null);
+  const [loadingEdit, setLoadingEdit] = useState(false);
 
   const handleCreated = useCallback((optimisticItem) => {
     setShowCreate(false);
     if (optimisticItem) optimisticAdd(optimisticItem);
   }, [optimisticAdd]);
+
+  const handleEdit = useCallback(async (item) => {
+    setLoadingEdit(true);
+    setEditingItem(item);
+    setEditingItemDetail(null);
+    setShowCreate(false);
+    try {
+      const detail = await ctrlGetPortfolioItem(item.id, { includeLocksmithDetails: true });
+      setEditingItemDetail(detail);
+    } catch (_) {
+      setEditingItem(null);
+    } finally {
+      setLoadingEdit(false);
+    }
+  }, []);
+
+  const handleEdited = useCallback(() => {
+    setEditingItem(null);
+    setEditingItemDetail(null);
+    // Optimistic update already applied — reload only as background sync
+    reload();
+  }, [reload]);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingItem(null);
+    setEditingItemDetail(null);
+  }, []);
 
   const handleDelete = useCallback(async (item) => {
     if (!item?.id || !targetActorId) return;
@@ -768,22 +807,18 @@ export default function VportDashboardPortfolioScreen() {
       <div style={shell.container}>
         <div style={shell.headerWrap}>
           <div style={shell.topBar}>
-            <VportBackButton
-              isDesktop={isDesktop}
-              onClick={() => navigate(`/actor/${targetActorId}/dashboard`)}
-            />
+            <VportBackButton isDesktop={isDesktop} onClick={() => navigate(`/actor/${targetActorId}/dashboard`)} />
             <div style={shell.title}>PORTFOLIO</div>
             <div style={shell.rightSpacer} />
           </div>
 
           <div style={{ padding: 16 }}>
-            {/* BugsBunny diagnostic panel — DEV only */}
             {import.meta.env.DEV && (
               <PortfolioBugsBunnyPanel actorId={targetActorId} identity={identity} />
             )}
 
-            {/* Add button */}
-            {!showCreate ? (
+            {/* Add button — hidden while creating or editing */}
+            {!showCreate && !editingItem ? (
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
@@ -797,16 +832,42 @@ export default function VportDashboardPortfolioScreen() {
             {/* Create form */}
             {showCreate ? (
               <div className="mb-4">
-                <CreateItemForm
+                <PortfolioItemForm
+                  mode="create"
                   actorId={targetActorId}
                   vportType={identity?.vportType ?? null}
-                  onCreated={handleCreated}
+                  onDone={handleCreated}
                   onCancel={() => setShowCreate(false)}
                 />
               </div>
             ) : null}
 
-            {/* Loading */}
+            {/* Edit form — loading state */}
+            {editingItem && loadingEdit ? (
+              <div className="mb-4 flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/[0.02] py-8 text-sm text-white/40">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
+                Loading item...
+              </div>
+            ) : null}
+
+            {/* Edit form — ready */}
+            {editingItem && editingItemDetail && !loadingEdit ? (
+              <div className="mb-4">
+                <PortfolioItemForm
+                  mode="edit"
+                  editItemId={editingItem.id}
+                  existingItem={editingItem}
+                  initialValues={buildInitialValues(editingItemDetail)}
+                  actorId={targetActorId}
+                  vportType={identity?.vportType ?? null}
+                  onOptimisticUpdate={optimisticUpdate}
+                  onDone={handleEdited}
+                  onCancel={handleCancelEdit}
+                />
+              </div>
+            ) : null}
+
+            {/* List */}
             {loading ? (
               <div className="flex flex-col items-center gap-3 py-10">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
@@ -829,6 +890,7 @@ export default function VportDashboardPortfolioScreen() {
                   <PortfolioManagerCard
                     key={item.id}
                     item={item}
+                    onEdit={handleEdit}
                     onDelete={handleDelete}
                     deleting={deletingId === item.id}
                   />

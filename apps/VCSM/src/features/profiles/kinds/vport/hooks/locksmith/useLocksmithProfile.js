@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { dalListLocksmithServiceAreas } from '@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.read.dal'
 import { dalListLocksmithServiceDetails } from '@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.read.dal'
+import { readVportServicesByActor } from '@/features/profiles/kinds/vport/dal/services/readVportServicesByActor'
 
 function mapServiceArea(row) {
   if (!row) return null
@@ -50,10 +51,14 @@ function mapServiceDetail(row) {
 /**
  * Hook for locksmith-specific profile data (service areas + service details).
  * Returns null-safe data — non-locksmith vports get empty arrays.
+ *
+ * gapServices: enabled services that have no locksmith_service_details row yet.
+ * These appear in the dashboard as "Needs configuration".
  */
 export function useLocksmithProfile(actorId, vportType) {
   const [serviceAreas, setServiceAreas] = useState([])
   const [serviceDetails, setServiceDetails] = useState([])
+  const [gapServices, setGapServices] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const mountedRef = useRef(false)
@@ -69,6 +74,7 @@ export function useLocksmithProfile(actorId, vportType) {
     if (!actorId || !isLocksmith) {
       setServiceAreas([])
       setServiceDetails([])
+      setGapServices([])
       return
     }
 
@@ -76,15 +82,21 @@ export function useLocksmithProfile(actorId, vportType) {
     setError(null)
 
     try {
-      const [areas, details] = await Promise.all([
+      const [areas, details, enabledServices] = await Promise.all([
         dalListLocksmithServiceAreas(actorId),
         dalListLocksmithServiceDetails(actorId),
+        readVportServicesByActor({ actorId, includeDisabled: false }),
       ])
 
       if (!mountedRef.current) return
 
+      const mappedDetails = (details ?? []).map(mapServiceDetail).filter(Boolean)
+      const detailServiceIds = new Set(mappedDetails.map((d) => d.serviceId))
+      const gaps = (enabledServices ?? []).filter((s) => s.id && !detailServiceIds.has(s.id))
+
       setServiceAreas((areas ?? []).map(mapServiceArea).filter(Boolean))
-      setServiceDetails((details ?? []).map(mapServiceDetail).filter(Boolean))
+      setServiceDetails(mappedDetails)
+      setGapServices(gaps)
     } catch (e) {
       if (mountedRef.current) setError(e)
     } finally {
@@ -100,6 +112,7 @@ export function useLocksmithProfile(actorId, vportType) {
     isLocksmith,
     serviceAreas,
     serviceDetails,
+    gapServices,
     loading,
     error,
     reload: load,

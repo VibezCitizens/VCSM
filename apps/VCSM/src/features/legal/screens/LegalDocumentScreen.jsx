@@ -4,6 +4,7 @@ import { authTheme } from '@/features/auth/styles/authTheme'
 import { dalGetLegalDocument } from '../dal/legalDocuments.read.dal'
 import PrivacyPolicyContent from '../docs/PrivacyPolicyContent'
 import TermsOfServiceContent from '../docs/TermsOfServiceContent'
+import PublicTopNav from '../components/PublicTopNav'
 import '@/features/legal/styles/legalDocument.css'
 
 const DOCUMENT_MAP = {
@@ -60,8 +61,9 @@ export default function LegalDocumentScreen() {
     return (
       <div
         className="min-h-screen flex items-center justify-center p-6 text-white"
-        style={{ background: authTheme.pageBackground }}
+        style={{ background: authTheme.pageBackground, paddingTop: 60 }}
       >
+        <PublicTopNav />
         <p style={{ color: 'var(--vc-text-muted)' }}>Document not found.</p>
       </div>
     )
@@ -76,9 +78,10 @@ export default function LegalDocumentScreen() {
 
   return (
     <div
-      className="min-h-screen px-4 py-8 text-white"
-      style={{ background: authTheme.pageBackground }}
+      className="min-h-screen px-4 text-white"
+      style={{ background: authTheme.pageBackground, paddingTop: 60 + 32 }}
     >
+      <PublicTopNav />
       <div className="mx-auto w-full max-w-2xl">
         <div
           className="rounded-2xl border border-white/10 p-6 sm:p-8"

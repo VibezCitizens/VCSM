@@ -16,6 +16,7 @@ export function mapVibeTagRow(row) {
     name: row?.name ?? '',
     slug: row?.slug ?? '',
     color: row?.color ?? null,
+    category: row?.category ?? null,
     sortOrder: Number(row?.sort_order ?? 0),
     isActive: row?.is_active !== false,
   }

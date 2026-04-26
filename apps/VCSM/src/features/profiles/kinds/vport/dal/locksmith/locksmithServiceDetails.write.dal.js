@@ -26,6 +26,19 @@ export async function dalUpsertLocksmithServiceDetail(row) {
   return data?.[0] ?? null
 }
 
+// INSERT only — never overwrites existing user edits. Use this for default provisioning.
+export async function dalInsertLocksmithServiceDetailDefaults(row) {
+  if (!row?.service_id || !row?.actor_id) throw new Error('service_id and actor_id required')
+
+  const { data, error } = await vportSchema
+    .from('locksmith_service_details')
+    .upsert(row, { onConflict: 'service_id', ignoreDuplicates: true })
+    .select(RETURN_COLUMNS)
+
+  if (error) throw error
+  return data?.[0] ?? null
+}
+
 export async function dalDeleteLocksmithServiceDetail(serviceId) {
   if (!serviceId) throw new Error('serviceId required')
 

@@ -122,6 +122,7 @@ export default function CitizenVibesScreen() {
           onToggleTag={toggleTag}
           onSave={save}
           saving={saving}
+          minRequired={3}
         />
 
         <div style={S.footerRow}>

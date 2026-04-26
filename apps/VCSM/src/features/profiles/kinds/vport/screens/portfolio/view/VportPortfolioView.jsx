@@ -1,20 +1,19 @@
 // ============================================================
 // VCSM — Vport Portfolio View (Engine-Backed)
-// Uses Photos tab ImageViewerModal for media presentation.
 //
-// CRITICAL: ImageViewerModal is rendered as a SIBLING of the
+// CRITICAL: PortfolioItemModal is rendered as a SIBLING of the
 // card container via a fragment, NOT inside it. On iOS, fixed
 // elements inside scrollable/overflow containers get trapped
 // in the parent's stacking context and fail to go fullscreen.
+// Rendering as a sibling lets it escape.
 // ============================================================
 
 import { useMemo, useState, useCallback } from "react";
 import { Image as ImageIcon, Sparkles } from "lucide-react";
 import { useVportPortfolio } from "@/features/profiles/kinds/vport/hooks/portfolio/useVportPortfolio";
-import ImageViewerModal from "@/features/profiles/screens/views/tabs/photos/components/ImageViewerModal";
+import PortfolioItemModal from "@/features/profiles/kinds/vport/screens/portfolio/PortfolioItemModal";
 
 import "@/features/profiles/styles/profiles-portfolio-modern.css";
-import "@/features/profiles/styles/profiles-photos-modern.css";
 
 function PortfolioItemCard({ item, onOpen }) {
   const coverUrl = item?.coverUrl ?? item?.media?.[0]?.url ?? null;
@@ -66,12 +65,12 @@ function PortfolioItemCard({ item, onOpen }) {
 
       <div className="p-3">
         {item.title ? (
-          <div className="truncate text-sm font-semibold text-white">{item.title}</div>
+          <div className="line-clamp-2 text-sm font-semibold leading-snug text-white">{item.title}</div>
         ) : null}
         {tags.length ? (
           <div className="mt-1 flex flex-wrap gap-1">
             {tags.slice(0, 3).map((t) => (
-              <span key={t} className="rounded-md bg-white/6 px-1.5 py-0.5 text-[10px] text-white/40">
+              <span key={t} className="rounded-md bg-white/6 px-1.5 py-0.5 text-xs text-white/55">
                 {t}
               </span>
             ))}
@@ -80,25 +79,6 @@ function PortfolioItemCard({ item, onOpen }) {
       </div>
     </article>
   );
-}
-
-/**
- * Convert portfolio item media into the shape ImageViewerModal expects.
- */
-function toViewerImages(item, detail) {
-  const media = detail?.media ?? item?.media ?? [];
-  if (media.length > 0) {
-    return media
-      .filter((m) => !!m?.url)
-      .map((m) => ({ url: m.url, type: "image", id: m.id }));
-  }
-
-  const coverUrl = item?.coverUrl ?? null;
-  if (coverUrl) {
-    return [{ url: coverUrl, type: "image", id: item?.id ?? "cover" }];
-  }
-
-  return [];
 }
 
 export default function VportPortfolioView({
@@ -126,31 +106,23 @@ export default function VportPortfolioView({
     closeItem,
   } = useVportPortfolio(actorId);
 
-  const [showViewer, setShowViewer] = useState(false);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  const viewerImages = useMemo(
-    () => (selectedItem ? toViewerImages(selectedItem, selectedItemDetail) : []),
-    [selectedItem, selectedItemDetail]
-  );
+  const [showModal, setShowModal] = useState(false);
 
   const handleOpenItem = useCallback(
     (item) => {
-      setActiveImageIndex(0);
       openItem(item);
-      setShowViewer(true);
+      setShowModal(true);
     },
     [openItem]
   );
 
-  const handleCloseViewer = useCallback(() => {
-    setShowViewer(false);
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
     closeItem();
   }, [closeItem]);
 
   if (!actorId) return null;
 
-  // Loading state
   if (loading) {
     return (
       <div className="profiles-card rounded-2xl p-5">
@@ -162,7 +134,6 @@ export default function VportPortfolioView({
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="profiles-card rounded-2xl p-5">
@@ -173,7 +144,6 @@ export default function VportPortfolioView({
     );
   }
 
-  // Empty state
   if (!items.length && !filterTag) {
     return (
       <div className="profiles-card rounded-2xl p-5">
@@ -198,7 +168,7 @@ export default function VportPortfolioView({
     );
   }
 
-  // Main content — modal rendered as SIBLING via fragment, NOT inside the card
+  // Modal rendered as SIBLING via fragment — critical for iOS stacking context
   return (
     <>
       <div className="profiles-card rounded-2xl p-5">
@@ -246,7 +216,7 @@ export default function VportPortfolioView({
         ) : null}
 
         {/* Grid */}
-        <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <PortfolioItemCard key={item.id} item={item} onOpen={handleOpenItem} />
           ))}
@@ -266,24 +236,16 @@ export default function VportPortfolioView({
         ) : null}
       </div>
 
-      {/* ImageViewerModal — OUTSIDE the card div, at fragment level.
-          This is critical on iOS: fixed elements inside overflow/transform
-          containers get trapped. Rendering as a sibling lets it go fullscreen. */}
-      {showViewer && selectedItem && viewerImages.length > 0 && (
-        <ImageViewerModal
-          imagePosts={viewerImages}
-          activePost={null}
-          activePostId={null}
-          activeIndex={activeImageIndex}
-          viewerOrigin="grid"
-          setActiveIndex={setActiveImageIndex}
-          onClose={handleCloseViewer}
-          toggleReaction={null}
-          sendRose={null}
-          handleShare={null}
-          openComments={null}
+      {/* PortfolioItemModal — OUTSIDE the card div, at fragment level.
+          Fixed elements inside overflow/transform containers get trapped on iOS. */}
+      {showModal && selectedItem ? (
+        <PortfolioItemModal
+          item={selectedItem}
+          detail={selectedItemDetail}
+          loadingDetail={loadingDetail}
+          onClose={handleCloseModal}
         />
-      )}
+      ) : null}
     </>
   );
 }

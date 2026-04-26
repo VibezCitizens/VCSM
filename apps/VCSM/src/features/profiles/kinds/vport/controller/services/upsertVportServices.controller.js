@@ -3,6 +3,8 @@
 import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
 import upsertVportServicesByActorDal from "@/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js";
 import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportServiceCatalogFallback.model";
+import { dalInsertLocksmithServiceDetailDefaults } from "@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal";
+import { getLocksmithServiceDefaults } from "@/features/profiles/kinds/vport/model/locksmith/locksmithServiceDefaults.model";
 
 /**
  * Controller:
@@ -73,6 +75,34 @@ export default async function upsertVportServicesController({
 
   // ✅ this is the actual DB save
   const saved = await upsertVportServicesByActorDal({ actorId: targetActorId, rows: payload });
+
+  // For locksmith vports, provision default detail rows for newly-enabled services.
+  // ignoreDuplicates=true means this never overwrites existing user-customized data.
+  if (String(vportType).toLowerCase() === 'locksmith') {
+    const enabledRows = saved.filter((r) => r.enabled && r.id);
+    const results = await Promise.allSettled(
+      enabledRows.map((row) =>
+        dalInsertLocksmithServiceDetailDefaults({
+          service_id: row.id,
+          actor_id: targetActorId,
+          ...getLocksmithServiceDefaults(row.key),
+        })
+      )
+    );
+    if (process.env.NODE_ENV !== 'production') {
+      results.forEach((result, i) => {
+        if (result.status === 'rejected') {
+          const row = enabledRows[i];
+          console.error('[locksmith] detail provision failed', {
+            actorId: targetActorId,
+            serviceId: row?.id,
+            serviceKey: row?.key,
+            error: result.reason?.message,
+          });
+        }
+      });
+    }
+  }
 
   return {
     ok: true,

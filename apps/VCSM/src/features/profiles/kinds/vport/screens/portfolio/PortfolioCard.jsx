@@ -89,7 +89,7 @@ export default function PortfolioCard({
       <div className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h4 className="text-base font-semibold text-white sm:text-lg">
+            <h4 className="profiles-portfolio-card-title text-base font-semibold text-white sm:text-lg">
               {item.title || "Recent work"}
             </h4>
             {item.description ? (

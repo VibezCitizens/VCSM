@@ -109,6 +109,15 @@ export function useVportPortfolio(actorId) {
     invalidatePortfolioCache(actorId)
   }, [actorId])
 
+  const optimisticUpdate = useCallback((itemId, updates) => {
+    const snapshot = itemsRef.current
+    setItems((current) =>
+      current.map((i) => (i.id === itemId ? { ...i, ...updates } : i))
+    )
+    invalidatePortfolioCache(actorId)
+    return () => setItems(snapshot)
+  }, [actorId])
+
   useEffect(() => {
     loadPortfolio()
   }, [loadPortfolio])
@@ -151,5 +160,6 @@ export function useVportPortfolio(actorId) {
     closeItem,
     optimisticRemove,
     optimisticAdd,
+    optimisticUpdate,
   }
 }

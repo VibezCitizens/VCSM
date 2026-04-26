@@ -11,6 +11,7 @@ import VportBackButton from "@/features/dashboard/vport/screens/components/Vport
 
 import { useLocksmithProfile } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithProfile";
 import { useLocksmithOwner } from "@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithOwner";
+import ConsentCheckbox from "@/features/auth/components/ConsentCheckbox";
 
 const US_STATES = [
   ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
@@ -90,11 +91,9 @@ function AreaForm({ initial, onSave, onCancel, saving }) {
           className={fieldCls} />
       </div>
 
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" checked={emergency} onChange={(e) => setEmergency(e.target.checked)}
-          className="h-4 w-4 rounded border-white/20 bg-black/30 accent-red-400" />
-        <span className="text-sm text-white/70">Emergency service available in this area</span>
-      </label>
+      <ConsentCheckbox checked={emergency} onChange={() => setEmergency((v) => !v)}>
+        Emergency service available in this area
+      </ConsentCheckbox>
 
       <div className="flex justify-end gap-2 pt-1">
         <button type="button" onClick={onCancel} className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 hover:bg-white/10">Cancel</button>
@@ -153,6 +152,17 @@ function ServiceDetailRow({ detail }) {
   );
 }
 
+// ── Gap Service Row (enabled service with no detail row yet) ──
+function GapServiceRow({ service }) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2">
+      <Wrench size={12} className="shrink-0 text-amber-300/50" />
+      <span className="text-xs text-white/50">{service.label ?? service.key}</span>
+      <span className="text-[10px] text-amber-300/60">· Needs configuration</span>
+    </div>
+  );
+}
+
 // ── Main Screen ──
 export default function VportDashboardLocksmithScreen() {
   const navigate = useNavigate();
@@ -163,7 +173,7 @@ export default function VportDashboardLocksmithScreen() {
   const isDesktop = useDesktopBreakpoint();
   const isOwner = Boolean(targetActorId) && Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId);
 
-  const { serviceAreas, serviceDetails, loading, reload } = useLocksmithProfile(targetActorId, "locksmith");
+  const { serviceAreas, serviceDetails, gapServices, loading, reload } = useLocksmithProfile(targetActorId, "locksmith");
   const owner = useLocksmithOwner(targetActorId, { onSuccess: reload });
 
   const [showAddArea, setShowAddArea] = useState(false);
@@ -273,15 +283,18 @@ export default function VportDashboardLocksmithScreen() {
                 <div className="mt-0.5 text-xs text-white/40">Locksmith-specific metadata for your services</div>
               </div>
 
-              {serviceDetails.length ? (
+              {serviceDetails.length || gapServices.length ? (
                 <div className="space-y-1.5">
                   {serviceDetails.map((d) => (
                     <ServiceDetailRow key={d.serviceId} detail={d} />
                   ))}
+                  {gapServices.map((svc) => (
+                    <GapServiceRow key={svc.id} service={svc} />
+                  ))}
                 </div>
               ) : (
                 <div className="rounded-xl border border-white/6 bg-white/[0.02] py-6 text-center text-sm text-white/30">
-                  No locksmith service details configured. Add them via the Services editor after attaching services to your profile.
+                  No service details configured yet. Select services first, then configure response time, pricing, and requirements here.
                 </div>
               )}
             </div>
@@ -295,7 +308,7 @@ export default function VportDashboardLocksmithScreen() {
                   <div className="text-[10px] text-white/35">Areas</div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-white">{serviceDetails.length}</div>
+                  <div className="text-lg font-bold text-white">{serviceDetails.length + gapServices.length}</div>
                   <div className="text-[10px] text-white/35">Services</div>
                 </div>
                 <div>

@@ -3,30 +3,39 @@ import ContactView from './ContactView'
 
 const PAGE_TITLE = 'Contact Vibez Citizens'
 const PAGE_DESCRIPTION =
-  'Contact Vibez Citizens for support, business inquiries, privacy requests, or reports.'
+  'Reach Vibez Citizens for support, partnerships, privacy requests, or reports. Choose the right channel and we\'ll guide you from there.'
+const PAGE_URL = 'https://vibezcitizens.com/contact'
+
+function setMeta(property, content, isName = false) {
+  const attr = isName ? 'name' : 'property'
+  let el = document.head.querySelector(`meta[${attr}="${property}"]`)
+  const created = !el
+  if (!el) {
+    el = document.createElement('meta')
+    el.setAttribute(attr, property)
+    document.head.appendChild(el)
+  }
+  const prev = el.getAttribute('content')
+  el.setAttribute('content', content)
+  return () => {
+    if (created) el.remove()
+    else el.setAttribute('content', prev || '')
+  }
+}
 
 export default function ContactScreen() {
   useEffect(() => {
     const prevTitle = document.title
     document.title = PAGE_TITLE
-
-    let descEl = document.head.querySelector('meta[name="description"]')
-    const created = !descEl
-    if (!descEl) {
-      descEl = document.createElement('meta')
-      descEl.setAttribute('name', 'description')
-      document.head.appendChild(descEl)
-    }
-    const prevDesc = descEl.getAttribute('content')
-    descEl.setAttribute('content', PAGE_DESCRIPTION)
-
+    const cleanups = [
+      setMeta('description', PAGE_DESCRIPTION, true),
+      setMeta('og:title', PAGE_TITLE),
+      setMeta('og:description', PAGE_DESCRIPTION),
+      setMeta('og:url', PAGE_URL),
+    ]
     return () => {
       document.title = prevTitle
-      if (created) {
-        descEl.remove()
-      } else {
-        descEl.setAttribute('content', prevDesc || '')
-      }
+      cleanups.forEach((fn) => fn())
     }
   }, [])
 
