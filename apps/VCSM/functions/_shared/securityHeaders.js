@@ -16,7 +16,7 @@ const CSP =
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
   "font-src 'self' https://fonts.gstatic.com; " +
   "img-src 'self' data: blob: https://cdn.vibezcitizens.com https://*.supabase.co; " +
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://upload.vibezcitizens.com; " +
+  "connect-src 'self' https://upload.vibezcitizens.com https://*.supabase.co wss://*.supabase.co; " +
   "frame-src https://onemoredays.com; " +
   "object-src 'none'; " +
   "base-uri 'self'; " +

@@ -1,13 +1,13 @@
 // worker.js — VCSM Upload Worker
 // ============================================================
-// Auth:   RS256 JWT verified against Supabase JWKS endpoint.
-//         No secrets stored in this file or wrangler.toml.
-//         Requires: env.SUPABASE_URL (set in [vars])
+// Auth:   Token validated by calling Supabase /auth/v1/user.
+//         Works with HS256 and RS256 — no JWT secret needed.
+//         Requires: env.SUPABASE_URL     (set in [vars])
 //                   env.SUPABASE_ANON_KEY (set in [vars])
 //
-// Authorization: After JWT verification, the user's sub (userId)
-//         is used to query vc.actor_owners to confirm the actorId
-//         embedded in the upload key is owned by this user.
+// Authorization: The user's Supabase user.id is used to query
+//         vc.actor_owners to confirm the actorId embedded in the
+//         upload key is owned by this user.
 //         Client-supplied actorId/userId is never trusted.
 //
 // Upload: MIME deny list, MIME allow list, 100MB cap,
@@ -66,149 +66,41 @@ const ALLOWED_KEY_PREFIXES = new Set([
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // ============================================================
-// JWKS in-memory cache
+// Token verification
+//
+// Delegates to Supabase — works for any JWT algorithm (HS256,
+// RS256). Returns { ok, userId } on success.
+// Fails closed on any error.
 // ============================================================
 
-const JWKS_TTL_MS = 5 * 60 * 1000
-
-/** @type {{ keys: Map<string, CryptoKey>, fetchedAt: number } | null} */
-let jwksCache = null
-
-// ============================================================
-// Base64url helpers
-// ============================================================
-
-function b64urlToBytes(b64url) {
-  const padded = b64url.replace(/-/g, '+').replace(/_/g, '/') +
-    '='.repeat((4 - (b64url.length % 4)) % 4)
-  return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0))
-}
-
-function b64urlToJson(b64url) {
-  return JSON.parse(new TextDecoder().decode(b64urlToBytes(b64url)))
-}
-
-// ============================================================
-// JWKS fetching and key import
-// ============================================================
-
-async function importRsaPublicKey(jwk) {
-  return crypto.subtle.importKey(
-    'jwk',
-    jwk,
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-    false,
-    ['verify']
-  )
-}
-
-async function fetchAndCacheJwks(jwksUrl) {
-  const res = await fetch(jwksUrl)
-  if (!res.ok) throw new Error(`JWKS fetch failed (${res.status}).`)
-
-  const body = await res.json()
-  if (!Array.isArray(body?.keys) || body.keys.length === 0) {
-    throw new Error('JWKS response contained no keys.')
-  }
-
-  const keyMap = new Map()
-  for (const jwk of body.keys) {
-    if (jwk.kty !== 'RSA' || !jwk.kid) continue
-    try {
-      keyMap.set(jwk.kid, await importRsaPublicKey(jwk))
-    } catch {
-      // A single malformed key must not block the rest.
-    }
-  }
-
-  if (keyMap.size === 0) throw new Error('JWKS contained no usable RSA keys.')
-
-  jwksCache = { keys: keyMap, fetchedAt: Date.now() }
-  return keyMap
-}
-
-async function getKeyByKid(kid, jwksUrl) {
-  const now = Date.now()
-
-  if (jwksCache && (now - jwksCache.fetchedAt) < JWKS_TTL_MS) {
-    const cached = jwksCache.keys.get(kid)
-    if (cached) return cached
-  }
-
-  const keyMap = await fetchAndCacheJwks(jwksUrl)
-  return keyMap.get(kid) ?? null
-}
-
-// ============================================================
-// RS256 JWT verification
-// ============================================================
-
-async function verifyJwt(token, jwksUrl) {
-  const parts = token.split('.')
-  if (parts.length !== 3) return { ok: false, error: 'Malformed token.' }
-  const [headerB64, payloadB64, sigB64] = parts
-
-  let header
-  try { header = b64urlToJson(headerB64) } catch {
-    return { ok: false, error: 'Malformed token header.' }
-  }
-
-  if (header.alg !== 'RS256') {
-    return { ok: false, error: 'Unsupported algorithm.' }
-  }
-  if (!header.kid) {
-    return { ok: false, error: 'Token missing kid.' }
-  }
-
-  let cryptoKey
+async function verifyToken(token, supabaseUrl, supabaseAnonKey) {
   try {
-    cryptoKey = await getKeyByKid(header.kid, jwksUrl)
-  } catch (err) {
-    return { ok: false, error: `Unable to fetch signing keys: ${err.message}` }
-  }
-  if (!cryptoKey) {
-    return { ok: false, error: 'Unknown signing key.' }
-  }
+    const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'apikey': supabaseAnonKey,
+      },
+    })
 
-  let valid
-  try {
-    valid = await crypto.subtle.verify(
-      'RSASSA-PKCS1-v1_5',
-      cryptoKey,
-      b64urlToBytes(sigB64),
-      new TextEncoder().encode(`${headerB64}.${payloadB64}`)
-    )
+    if (!res.ok) return { ok: false }
+
+    const user = await res.json().catch(() => null)
+    if (!user?.id) return { ok: false }
+
+    return { ok: true, userId: user.id }
   } catch {
-    return { ok: false, error: 'Signature verification error.' }
+    return { ok: false }
   }
-  if (!valid) return { ok: false, error: 'Invalid token signature.' }
-
-  let payload
-  try { payload = b64urlToJson(payloadB64) } catch {
-    return { ok: false, error: 'Malformed token payload.' }
-  }
-
-  const nowSec = Math.floor(Date.now() / 1000)
-  if (!payload.exp || nowSec > payload.exp) {
-    return { ok: false, error: 'Token expired.' }
-  }
-
-  if (!payload.sub) {
-    return { ok: false, error: 'Token missing subject.' }
-  }
-
-  return { ok: true, payload }
 }
 
 // ============================================================
 // Actor ownership verification
 //
 // Queries vc.actor_owners to confirm the actorId embedded in
-// the upload key belongs to the authenticated user (jwt.sub).
+// the upload key belongs to the authenticated user.
 // Uses the user's own JWT so Supabase RLS limits the query to
 // rows where user_id = auth.uid() — no service role key needed.
-//
-// Fails closed: any error (network, DB, bad actorId) → false.
+// Fails closed on any error.
 // ============================================================
 
 async function verifyActorOwnership(userId, actorId, supabaseUrl, supabaseAnonKey, userToken) {
@@ -285,8 +177,6 @@ export default {
       return jsonResponse({ error: 'Worker misconfigured.' }, 500)
     }
 
-    const jwksUrl = `${env.SUPABASE_URL}/auth/v1/.well-known/jwks.json`
-
     // ── Authentication ─────────────────────────────────────────
     const authHeader = String(request.headers.get('Authorization') || '')
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null
@@ -295,12 +185,12 @@ export default {
       return jsonResponse({ error: 'Unauthorized.' }, 401)
     }
 
-    const authResult = await verifyJwt(token, jwksUrl)
+    const authResult = await verifyToken(token, env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
     if (!authResult.ok) {
       return jsonResponse({ error: 'Unauthorized.' }, 401)
     }
 
-    const userId = authResult.payload.sub
+    const userId = authResult.userId
 
     // ── Upload ─────────────────────────────────────────────────
     try {
@@ -326,9 +216,9 @@ export default {
       const keyResult = validateKey(objectKey)
       if (!keyResult.ok) return jsonResponse({ error: keyResult.error }, 400)
 
-      // ── Authorization: verify the actorId in the key is owned by this user ──
+      // ── Authorization: verify actorId in key is owned by this user ──
       // Key format: {prefix}/{actorId}/{date/…}/{uuid}.{ext}
-      // We derive actorId from the key — never trust a client-supplied field.
+      // actorId is derived from the key — never from a client-supplied field.
       const keyActorId = objectKey.split('/')[1] ?? ''
       const owned = await verifyActorOwnership(userId, keyActorId, env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token)
       if (!owned) {
