@@ -11,7 +11,7 @@ import { ctrlResolveVportIdByActorId } from '@/features/settings/profile/control
 import {
   loadProfileCore,
   saveProfileCore,
-} from '@/features/settings/profile/controller/profile.controller.core'
+} from '@/features/settings/profile/controller/profile.controller'
 import { useProfilesOps } from '@/features/profiles/adapters/profiles.adapter'
 import { useIdentityOps } from '@/features/identity/adapters/identity.adapter'
 

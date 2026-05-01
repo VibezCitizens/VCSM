@@ -12,7 +12,7 @@ import { useProfileController } from "@/features/settings/profile/hooks/useProfi
 import { useProfileUploads } from "@/features/settings/profile/hooks/useProfileUploads";
 import { ctrlGetCurrentAuthUserId } from "@/features/settings/profile/controller/authSession.controller";
 import { ctrlResolveVportIdByActorId } from "@/features/settings/profile/controller/resolveVportIdByActorId.controller";
-import { loadProfileCore, saveProfileCore } from "@/features/settings/profile/controller/profile.controller.core";
+import { loadProfileCore, saveProfileCore } from "@/features/settings/profile/controller/profile.controller";
 import { saveProfile } from "@/features/settings/profile/controller/saveProfile.controller";
 import { dalGetCurrentAuthUserId } from "@/features/settings/profile/dal/auth.read.dal";
 import { dalReadVportIdByActorId } from "@/features/settings/profile/dal/actors.read.dal";

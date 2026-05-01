@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { queryKeys } from '@/queries/queryKeys'
-import { loadProfileCore } from '@/features/settings/profile/controller/profile.controller.core'
+import { loadProfileCore } from '@/features/settings/profile/controller/profile.controller'
 
 /**
  * User profile settings query.
