@@ -15,16 +15,15 @@ export async function resolveVportSlugDAL(slug) {
 
   const { data, error } = await supabase
     .schema("vport")
-    .from("profiles")
-    .select("actor_id, slug")
-    .eq("slug", key)
-    .eq("is_deleted", false)
+    .from("public_actor_seo_v")
+    .select("actor_id, vport_slug")
+    .eq("vport_slug", key)
     .limit(1)
     .maybeSingle();
 
   if (error || !data?.actor_id) return null;
 
-  const result = { actorId: data.actor_id, slug: data.slug };
+  const result = { actorId: data.actor_id, slug: data.vport_slug };
   cache.set(key, result);
   return result;
 }

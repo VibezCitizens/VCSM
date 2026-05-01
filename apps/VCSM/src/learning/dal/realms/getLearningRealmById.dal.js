@@ -1,3 +1,4 @@
+import { supabase } from "@/services/supabase/supabaseClient";
 import { logRealmDebug } from "@/learning/utils/realmDebug";
 
 const REALM_COLUMNS = `
@@ -11,11 +12,7 @@ const REALM_COLUMNS = `
   updated_at
 `;
 
-export async function getLearningRealmByIdDal({ supabase, realmId }) {
-  if (!supabase) {
-    throw new Error("getLearningRealmByIdDal requires supabase");
-  }
-
+export async function getLearningRealmByIdDal({ realmId }) {
   if (!realmId) {
     throw new Error("getLearningRealmByIdDal requires realmId");
   }

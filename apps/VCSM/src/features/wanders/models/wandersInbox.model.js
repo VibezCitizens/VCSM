@@ -116,7 +116,6 @@ export function toWandersMailboxItem(row) {
 
     ownerActorId: row.owner_actor_id ?? row.ownerActorId,
     ownerUserId: row.owner_user_id ?? row.ownerUserId,
-    ownerAnonId: row.owner_anon_id ?? row.ownerAnonId,
 
     ownerRole: row.owner_role ?? row.ownerRole,
     folder: row.folder,

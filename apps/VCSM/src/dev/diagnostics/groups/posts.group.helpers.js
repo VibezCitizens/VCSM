@@ -1,5 +1,6 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 import { ensureBasicVport } from "@/dev/diagnostics/helpers/ensureSeedData";
+import { isSeedMissingError, makeSkipped } from "@/dev/diagnostics/helpers/supabaseAssert";
 
 export function getPostsState(shared) {
   if (!shared.cache.postsState) {
@@ -75,6 +76,21 @@ async function findOwnedActorIds({ actorId, userId }) {
   }
 
   return ownedActorIds;
+}
+
+export function resolvePostId(localShared) {
+  const state = getPostsState(localShared);
+  return state.post?.id ?? null;
+}
+
+export function skipIfSeedMissing(error, reason, extra = null) {
+  if (!isSeedMissingError(error)) {
+    throw error;
+  }
+  return makeSkipped(reason, {
+    ...extra,
+    error,
+  });
 }
 
 export async function findForeignPostId({ actorId, userId }) {

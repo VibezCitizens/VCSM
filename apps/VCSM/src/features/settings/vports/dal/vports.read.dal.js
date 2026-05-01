@@ -25,7 +25,7 @@ export async function listMyVportsDAL() {
 
   const { data, error } = await vportSchema
     .from("profiles")
-    .select("id,name,slug,avatar_url,banner_url,bio,is_active,is_deleted,business_card_published,created_at,actor_id")
+    .select("id,name,slug,avatar_url,banner_url,bio,is_active,is_deleted,business_card_published,directory_visible,directory_status,created_at,actor_id")
     .eq("owner_user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -54,4 +54,50 @@ export async function readMyVports() {
 
   if (error) throw error;
   return data || [];
+}
+
+/**
+ * Read business_card_settings for a single vport.
+ * Ownership enforced via owner_user_id = auth.uid().
+ */
+export async function readVportBusinessCardSettingsDAL(vportId) {
+  if (!vportId) return null;
+
+  const { data: auth, error: authError } = await supabase.auth.getUser();
+  if (authError) throw authError;
+  const userId = auth?.user?.id;
+  if (!userId) throw new Error("Not authenticated");
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select("id,business_card_settings")
+    .eq("id", vportId)
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ?? null;
+}
+
+/**
+ * Read directory_visible and directory_status for a single vport.
+ * Ownership enforced via owner_user_id = auth.uid().
+ */
+export async function readVportDirectoryStateDAL(vportId) {
+  if (!vportId) return null;
+
+  const { data: auth, error: authError } = await supabase.auth.getUser();
+  if (authError) throw authError;
+  const userId = auth?.user?.id;
+  if (!userId) throw new Error("Not authenticated");
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select("id,directory_visible,directory_status")
+    .eq("id", vportId)
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ?? null;
 }

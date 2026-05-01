@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import VportReviewsView from "@/features/profiles/adapters/kinds/vport/screens/review/VportReviewsView.adapter";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 export default function VportDashboardReviewScreen({

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
-import { createFlyerEditorScreenStyles } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerEditorScreen.styles";
+import { createFlyerEditorScreenStyles } from "@/features/dashboard/flyerBuilder/styles/vportActorMenuFlyerEditorScreen.styles";
 import VportDesignStudioViewScreen from "@/features/dashboard/flyerBuilder/designStudio/screens/VportDesignStudioViewScreen";
 
 export function VportActorMenuFlyerEditorScreen() {

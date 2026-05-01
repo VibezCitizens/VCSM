@@ -1,11 +1,8 @@
+import { supabase } from "@/services/supabase/supabaseClient";
 import { REALM_COLUMNS } from "@/learning/dal/realms/getLearningRealmById.dal";
 import { logRealmDebug } from "@/learning/utils/realmDebug";
 
-export async function getLearningRealmByVcRealmIdDal({ supabase, vcRealmId }) {
-  if (!supabase) {
-    throw new Error("getLearningRealmByVcRealmIdDal requires supabase");
-  }
-
+export async function getLearningRealmByVcRealmIdDal({ vcRealmId }) {
   if (!vcRealmId) {
     throw new Error("getLearningRealmByVcRealmIdDal requires vcRealmId");
   }

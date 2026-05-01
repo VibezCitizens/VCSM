@@ -4,7 +4,7 @@
 // Owns meaning: "my mailbox" == rows for owner_user_id = auth user.
 // ============================================================================
 
-import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGuestUser";
+import { ensureGuestUser } from "@/features/wanders/core/controllers/ensureGuestUser.controller";
 
 import {
   listWandersMailboxItemsByOwnerUserId,

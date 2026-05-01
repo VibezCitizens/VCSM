@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
 import ProfilePrivacyToggle from '@/features/settings/privacy/ui/ProfilePrivacyToggle'
 import UserLookup from '@/features/settings/privacy/ui/UserLookup'

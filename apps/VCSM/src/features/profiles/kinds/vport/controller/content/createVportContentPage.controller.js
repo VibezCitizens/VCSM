@@ -1,8 +1,7 @@
 // src/features/profiles/kinds/vport/controller/content/createVportContentPage.controller.js
 
-import createVportContentPageDAL from "@/features/profiles/kinds/vport/dal/content/createVportContentPage.dal";
+import createVportContentPageDAL, { readContentPageSlugsByPrefixDAL } from "@/features/profiles/kinds/vport/dal/content/createVportContentPage.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
-import vportSchema from "@/services/supabase/vportClient";
 
 const VALID_CATEGORIES = ["guide", "faq", "emergency", "tips", "educational"];
 
@@ -18,13 +17,8 @@ function slugify(text) {
 }
 
 async function resolveUniqueSlug(actorId, baseSlug) {
-  const { data } = await vportSchema
-    .from("content_pages")
-    .select("slug")
-    .eq("actor_id", actorId)
-    .like("slug", `${baseSlug}%`);
-
-  const existing = new Set((data ?? []).map((r) => r.slug));
+  const slugs = await readContentPageSlugsByPrefixDAL({ actorId, slugPrefix: baseSlug });
+  const existing = new Set(slugs);
   if (!existing.has(baseSlug)) return baseSlug;
 
   for (let i = 2; i <= 20; i++) {

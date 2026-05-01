@@ -1,7 +1,11 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 
-const LEGAL_DOC_SELECT = [
+const SCHEMA = 'platform'
+const VIEW   = 'public_legal_documents_v'
+
+const VIEW_SELECT = [
   'id',
+  'app_key',
   'app_id',
   'document_type',
   'version',
@@ -13,27 +17,15 @@ const LEGAL_DOC_SELECT = [
 
 /**
  * Fetch all active legal documents for a given app key.
- * Returns rows from platform.legal_documents where is_active = true.
+ * Reads from platform.public_legal_documents_v — view pre-filters
+ * both apps.is_active and legal_documents.is_active.
  */
 export async function dalGetActiveLegalDocuments({ appKey }) {
-  // First resolve app_id from key
-  const { data: app, error: appError } = await supabase
-    .schema('platform')
-    .from('apps')
-    .select('id')
-    .eq('key', appKey)
-    .eq('is_active', true)
-    .maybeSingle()
-
-  if (appError) throw appError
-  if (!app) return []
-
   const { data, error } = await supabase
-    .schema('platform')
-    .from('legal_documents')
-    .select(LEGAL_DOC_SELECT)
-    .eq('app_id', app.id)
-    .eq('is_active', true)
+    .schema(SCHEMA)
+    .from(VIEW)
+    .select(VIEW_SELECT)
+    .eq('app_key', appKey)
     .order('document_type')
 
   if (error) throw error
@@ -42,32 +34,20 @@ export async function dalGetActiveLegalDocuments({ appKey }) {
 
 /**
  * Fetch a single legal document by document_type and optional version.
- * If version is provided, returns that specific version.
- * Otherwise returns the active version for the given type.
+ * Reads from platform.public_legal_documents_v.
+ * View pre-filters active documents — version-specific lookup only returns
+ * documents that are currently active.
  */
 export async function dalGetLegalDocument({ appKey, documentType, version }) {
-  const { data: app, error: appError } = await supabase
-    .schema('platform')
-    .from('apps')
-    .select('id')
-    .eq('key', appKey)
-    .eq('is_active', true)
-    .maybeSingle()
-
-  if (appError) throw appError
-  if (!app) return null
-
   let query = supabase
-    .schema('platform')
-    .from('legal_documents')
-    .select(LEGAL_DOC_SELECT)
-    .eq('app_id', app.id)
+    .schema(SCHEMA)
+    .from(VIEW)
+    .select(VIEW_SELECT)
+    .eq('app_key', appKey)
     .eq('document_type', documentType)
 
   if (version) {
     query = query.eq('version', version)
-  } else {
-    query = query.eq('is_active', true)
   }
 
   const { data, error } = await query.maybeSingle()

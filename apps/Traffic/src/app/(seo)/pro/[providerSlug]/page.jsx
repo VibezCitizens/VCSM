@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
-import { getProviderBySlug, listServicesForProvider } from "@/data/repositories/provider.repo";
+import {
+  getProviderBySlug,
+  getStructuredCityBySlug,
+  listServicesForProvider
+} from "@/data/repositories/provider.repo";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { getCityById, getLocalityById } from "@/data/repositories/city.repo";
 import {
@@ -8,8 +12,12 @@ import {
   getRegionByCode
 } from "@/data/repositories/geo.repo";
 import { getServiceById, listSpecialtiesByService } from "@/data/repositories/service.repo";
-import { listProviderStaticParams } from "@/data/repositories/pageCandidate.repo";
-import { buildProviderPageModel } from "@/data/mappers/pageModel.mapper";
+import { listProviderStaticParams } from "@/data/repositories/staticParams.repo";
+import {
+  getPublicReviewSummaryForProvider,
+  listVisibleReviewsForProvider
+} from "@/data/repositories/reviewSummary.repo";
+import { buildProviderPageModel } from "@/data/mappers/pageModel.model";
 import { buildProviderMetadata } from "@/seo/metadata";
 import { buildBreadcrumbSchema, buildProviderSchema } from "@/seo/schemaOrg";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
@@ -37,8 +45,26 @@ const PROVIDER_ROBOTS = {
   }
 };
 
+const CATEGORY_KEY_TO_SLUG = {
+  barber: "barber",
+  hairstylist: "barber",
+  barbershop: "barber",
+  esthetician: "barber",
+  locksmith: "locksmith",
+  lock_smith: "locksmith"
+};
+
 export function generateStaticParams() {
   return listProviderStaticParams();
+}
+
+function resolveCategorySlug(provider, services) {
+  if (services[0]?.slug) {
+    return services[0].slug;
+  }
+
+  const key = String(provider?.categoryKey ?? "").trim().toLowerCase();
+  return CATEGORY_KEY_TO_SLUG[key] ?? null;
 }
 
 function buildProviderGraph(providerSlug) {
@@ -52,7 +78,12 @@ function buildProviderGraph(providerSlug) {
     return null;
   }
 
-  const city = getCityById(provider.primaryCityId);
+  const cityFromStaticTaxonomy = provider.primaryCityId ? getCityById(provider.primaryCityId) : null;
+  const cityFromStructuredSlug = provider.primaryCitySlug
+    ? getStructuredCityBySlug(country.code, provider.primaryCitySlug)
+    : null;
+  const city = cityFromStaticTaxonomy ?? cityFromStructuredSlug ?? null;
+
   const locality = provider.primaryLocalityId ? getLocalityById(provider.primaryLocalityId) : null;
   const region = provider.primaryRegionCode
     ? getRegionByCode(country.id, provider.primaryRegionCode)
@@ -62,10 +93,20 @@ function buildProviderGraph(providerSlug) {
   const serviceIds = [...new Set(providerServices.map((item) => item.serviceId))];
   const services = serviceIds.map((serviceId) => getServiceById(serviceId)).filter(Boolean);
 
+  const citySlug = city?.slug ?? provider.primaryCitySlug ?? null;
+  const categorySlug = resolveCategorySlug(provider, services);
+  const cityCategoryHref =
+    citySlug && categorySlug
+      ? countryCityServicePath(country.slug, citySlug, categorySlug)
+      : null;
+
   return {
     provider,
     country,
     city,
+    citySlug,
+    categorySlug,
+    cityCategoryHref,
     locality,
     region,
     providerServices,
@@ -80,7 +121,9 @@ export function generateMetadata({ params }) {
     return {};
   }
 
-  const title = `${graph.provider.displayName}${graph.city?.name ? ` in ${graph.city.name}, ${graph.country.name}` : ""}`;
+  const cityName = graph.city?.name ?? graph.provider.primaryCityName ?? null;
+
+  const title = `${graph.provider.displayName}${cityName ? ` in ${cityName}, ${graph.country.name}` : ""}`;
   const description =
     graph.provider.shortBio ||
     `Learn more about ${graph.provider.displayName}. View services, reviews, and book directly.`;
@@ -94,17 +137,34 @@ export function generateMetadata({ params }) {
   });
 }
 
-export default function ProviderPage({ params }) {
+export default async function ProviderPage({ params }) {
   const graph = buildProviderGraph(params.providerSlug);
   if (!graph) {
     notFound();
   }
 
-  const { provider, country, city, locality, region, providerServices, services, stats } = graph;
+  const {
+    provider,
+    country,
+    city,
+    citySlug,
+    categorySlug,
+    cityCategoryHref,
+    locality,
+    region,
+    providerServices,
+    services,
+    stats
+  } = graph;
+
+  const [reviewSummary, visibleReviews] = await Promise.all([
+    getPublicReviewSummaryForProvider(provider, stats, { allowReviewsTableFallback: true }),
+    listVisibleReviewsForProvider(provider, { limit: 50 })
+  ]);
 
   const model = buildProviderPageModel({
     provider,
-    cityName: city?.name ?? "",
+    cityName: city?.name ?? provider.primaryCityName ?? "",
     countryName: country.name,
     localityName: locality?.name ?? "",
     services
@@ -113,12 +173,21 @@ export default function ProviderPage({ params }) {
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: country.name, href: countryPath(country.slug) },
-    ...(city ? [{ label: city.name, href: countryCityPath(country.slug, city.slug) }] : []),
-    ...(city && services[0]
+    ...(citySlug
       ? [
           {
-            label: `${services[0].name} in ${city.name}`,
-            href: countryCityServicePath(country.slug, city.slug, services[0].slug)
+            label: city?.name ?? provider.primaryCityName ?? citySlug,
+            href: countryCityPath(country.slug, citySlug)
+          }
+        ]
+      : []),
+    ...(cityCategoryHref
+      ? [
+          {
+            label: services[0]?.name
+              ? `${services[0].name} in ${city?.name ?? provider.primaryCityName ?? citySlug}`
+              : "Back to city listings",
+            href: cityCategoryHref
           }
         ]
       : []),
@@ -159,11 +228,19 @@ export default function ProviderPage({ params }) {
           }));
         })
       : []),
-    ...(city
+    ...(citySlug
       ? services.map((service) => ({
-          label: `All ${service.name} in ${city.name}`,
-          href: countryCityServicePath(country.slug, city.slug, service.slug)
+          label: `All ${service.name} in ${city?.name ?? provider.primaryCityName ?? citySlug}`,
+          href: countryCityServicePath(country.slug, citySlug, service.slug)
         }))
+      : []),
+    ...(cityCategoryHref
+      ? [
+          {
+            label: "Back to city listings",
+            href: cityCategoryHref
+          }
+        ]
       : []),
     ...(city && locality
       ? services.map((service) => ({
@@ -193,7 +270,7 @@ export default function ProviderPage({ params }) {
       reviewCount: stats?.reviewCount,
       addressLine1: provider.addressLine1,
       postalCode: provider.postalCode,
-      cityName: city?.name,
+      cityName: city?.name ?? provider.primaryCityName,
       localityName: locality?.name,
       regionName: region?.name,
       countryCode: provider.primaryCountryCode,
@@ -203,9 +280,9 @@ export default function ProviderPage({ params }) {
 
   const context = {
     countrySlug: country.slug,
-    citySlug: city?.slug,
+    citySlug,
     localitySlug: locality?.slug,
-    serviceSlug: services[0]?.slug
+    serviceSlug: categorySlug ?? services[0]?.slug
   };
 
   return (
@@ -213,6 +290,8 @@ export default function ProviderPage({ params }) {
       model={model}
       stats={stats}
       context={context}
+      reviewSummary={reviewSummary}
+      visibleReviews={visibleReviews}
       relatedLinks={relatedLinks}
       schema={schema}
     />

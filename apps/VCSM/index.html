@@ -53,6 +53,10 @@
 
     <!-- Google Font: GFS Didot -->
     <link href="https://fonts.googleapis.com/css2?family=GFS+Didot&display=swap" rel="stylesheet" />
+    <!-- VPORT public pages: DM Serif Display + Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- 🔹 Structured data (helps rich results) -->
     <script type="application/ld+json">
@@ -128,6 +132,8 @@
         }
       }
     </style>
+    <!-- OneSignal Web Push SDK — loads asynchronously, does not block render -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   </head>
   <body>
     <!-- Splash shown before React mounts -->
@@ -152,6 +158,8 @@
           // menu (actor-based legacy + short link)
           /^\/m\/[^/]+\/?$/.test(path) ||
           /^\/actor\/[^/]+\/menu(\/|$)/.test(path) ||
+          // VPORT category landing pages (/vport/barber, /vport/restaurant, etc.)
+          /^\/vport\/[^/]+\/?$/.test(path) ||
           // VPORT business card
           /^\/vport\/[^/]+\/card\/?$/.test(path) ||
           // Wanders (all public wanders routes)

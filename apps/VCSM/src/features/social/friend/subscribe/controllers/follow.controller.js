@@ -5,7 +5,7 @@ import {
 import { ctrlGetFollowRelationshipState } from '@/features/social/friend/subscribe/controllers/getFollowRelationshipState.controller'
 import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
 import { FOLLOW_RELATION_STATES } from '@/features/social/friend/subscribe/model/followRelationState.model'
-import { publishVcsmNotification } from '@/features/notifications/publish'
+import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
 
 export async function ctrlSubscribe({

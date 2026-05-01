@@ -1,17 +1,12 @@
-﻿// src/features/profiles/kinds/vport/ui/menu/VportActorMenuManagePanel.jsx
-
-import React, { useMemo, useState, useCallback, useRef } from "react";
-
 import useVportActorMenu from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenu";
 import useVportActorMenuCategoriesMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuCategoriesMutations";
 import useVportActorMenuItemsMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuItemsMutations";
-import { invalidateMenuCache } from "@/features/profiles/kinds/vport/controller/menu/getVportActorMenu.controller";
-
+import { invalidateMenuCache } from "@/features/profiles/kinds/vport/lib/menuCache";
 import VportActorMenuEmptyState from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuEmptyState";
 import VportActorMenuCategory from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuCategory";
-
 import VportActorMenuManageHeader from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuManageHeader";
 import VportActorMenuManageModals from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuManageModals";
+import { useVportActorMenuManageState } from "@/features/profiles/kinds/vport/screens/menu/hooks/useVportActorMenuManageState";
 
 export function VportActorMenuManagePanel({
   actorId,
@@ -29,7 +24,6 @@ export function VportActorMenuManagePanel({
         patchMenu((prev) => {
           const already = (prev.categories ?? []).find((c) => c.id === result.id);
           if (already) {
-            // Edit — replace in-place, keep existing items
             return {
               ...prev,
               categories: prev.categories.map((c) =>
@@ -37,7 +31,6 @@ export function VportActorMenuManagePanel({
               ),
             };
           }
-          // Create — append immediately with empty items
           return {
             ...prev,
             categories: [...(prev.categories ?? []), { ...result, items: [] }],
@@ -45,7 +38,6 @@ export function VportActorMenuManagePanel({
         });
       }
       invalidateMenuCache(actorId);
-      // Background sync — not awaited so UI updates first
       refresh();
     },
   });
@@ -58,229 +50,44 @@ export function VportActorMenuManagePanel({
     },
   });
 
-  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
-  const [categoryModalCategory, setCategoryModalCategory] = useState(null);
-
-  const [itemModalOpen, setItemModalOpen] = useState(false);
-  const [itemModalItem, setItemModalItem] = useState(null);
-  const [itemModalLockCategory, setItemModalLockCategory] = useState(false);
-
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmTitle, setConfirmTitle] = useState("Delete");
-  const [confirmDescription, setConfirmDescription] = useState(
-    "Are you sure you want to delete this? This action cannot be undone."
-  );
-  const [confirmLoading, setConfirmLoading] = useState(false);
-
-  // âœ… FIX: don't access React.useRef without importing React default
-  const confirmActionRef = useRef(null);
-
-  const [deletingItemIds, setDeletingItemIds] = useState(() => new Set());
+  const {
+    categoryModalOpen,
+    categoryModalCategory,
+    itemModalOpen,
+    itemModalItem,
+    itemModalLockCategory,
+    confirmOpen,
+    confirmTitle,
+    confirmDescription,
+    confirmLoading,
+    deletingItemIds,
+    categorySelectOptions,
+    openCreateCategory,
+    openEditCategory,
+    closeCategoryModal,
+    openCreateItemForCategory,
+    openEditItem,
+    closeItemModal,
+    closeConfirm,
+    runConfirm,
+    handleSaveCategory,
+    handleSaveItem,
+    requestDeleteCategory,
+    requestDeleteItem,
+  } = useVportActorMenuManageState({
+    actorId,
+    categories,
+    categoriesMut,
+    itemsMut,
+    patchMenu,
+    refresh,
+  });
 
   const hasCategories = (categories ?? []).length > 0;
-
-  const openCreateCategory = useCallback(() => {
-    setCategoryModalCategory(null);
-    setCategoryModalOpen(true);
-  }, []);
-
-  const openEditCategory = useCallback((category) => {
-    setCategoryModalCategory(category ?? null);
-    setCategoryModalOpen(true);
-  }, []);
-
-  const closeCategoryModal = useCallback(() => {
-    setCategoryModalOpen(false);
-    setCategoryModalCategory(null);
-  }, []);
-
-  // accepts either (categoryId) OR ({ categoryId, name, description, price, priceCents })
-  const openCreateItemForCategory = useCallback(
-    (arg) => {
-      const categoryId = typeof arg === "string" ? arg : arg?.categoryId ?? null;
-
-      const prefillName = typeof arg === "object" ? arg?.name ?? "" : "";
-      const prefillDescription =
-        typeof arg === "object" ? arg?.description ?? null : null;
-
-      const prefillPriceCents =
-        typeof arg === "object" && typeof arg?.priceCents === "number"
-          ? arg.priceCents
-          : typeof arg === "object" && typeof arg?.price_cents === "number"
-          ? arg.price_cents
-          : null;
-
-      const prefillPrice =
-        typeof arg === "object" && typeof arg?.price === "number"
-          ? arg.price
-          : prefillPriceCents != null
-          ? prefillPriceCents / 100
-          : null;
-
-      setItemModalItem({
-        id: null,
-        actorId,
-        categoryId,
-        key: null,
-        name: prefillName,
-        description: prefillDescription,
-        price: prefillPrice,
-        priceCents: prefillPriceCents,
-        sortOrder: 0,
-        isActive: true,
-      });
-      setItemModalLockCategory(true);
-      setItemModalOpen(true);
-    },
-    [actorId]
-  );
-
-  const openEditItem = useCallback((item) => {
-    setItemModalItem(item ?? null);
-    setItemModalLockCategory(false);
-    setItemModalOpen(true);
-  }, []);
-
-  const closeItemModal = useCallback(() => {
-    setItemModalOpen(false);
-    setItemModalItem(null);
-    setItemModalLockCategory(false);
-  }, []);
-
-  const closeConfirm = useCallback(() => {
-    if (confirmLoading) return;
-    setConfirmOpen(false);
-    setConfirmTitle("Delete");
-    setConfirmDescription(
-      "Are you sure you want to delete this? This action cannot be undone."
-    );
-    confirmActionRef.current = null;
-  }, [confirmLoading]);
-
-  const runConfirm = useCallback(async () => {
-    const action = confirmActionRef.current;
-    if (!action) return;
-
-    setConfirmLoading(true);
-    try {
-      await action();
-      closeConfirm();
-    } finally {
-      setConfirmLoading(false);
-    }
-  }, [closeConfirm]);
-
-  const handleSaveCategory = useCallback(
-    async (payload) => {
-      await categoriesMut.saveCategory(payload);
-    },
-    [categoriesMut]
-  );
-
-  const handleSaveItem = useCallback(
-    async (payload) => {
-      const isCreate = !payload.itemId;
-
-      if (isCreate && payload.categoryId) {
-        const tempId = `_opt_${Date.now()}`;
-        const optimisticItem = {
-          id: tempId,
-          actorId,
-          categoryId: payload.categoryId,
-          key: payload.key ?? null,
-          name: payload.name ?? "",
-          description: payload.description ?? null,
-          sortOrder: typeof payload.sortOrder === "number" ? payload.sortOrder : 0,
-          isActive: typeof payload.isActive === "boolean" ? payload.isActive : true,
-          priceCents: typeof payload.priceCents === "number" ? payload.priceCents : null,
-          currencyCode: payload.currencyCode ?? "USD",
-          imageUrl: payload.imageUrl ?? null,
-          createdAt: null,
-          updatedAt: null,
-          _optimistic: true,
-        };
-
-        patchMenu((prev) => ({
-          ...prev,
-          categories: (prev.categories ?? []).map((cat) =>
-            cat.id === payload.categoryId
-              ? { ...cat, items: [...(cat.items ?? []), optimisticItem] }
-              : cat
-          ),
-        }));
-
-        try {
-          await itemsMut.saveItem(payload);
-        } catch (err) {
-          await refresh();
-          throw err;
-        }
-      } else {
-        await itemsMut.saveItem(payload);
-      }
-    },
-    [actorId, itemsMut, patchMenu, refresh]
-  );
-
-  const requestDeleteCategory = useCallback(
-    ({ categoryId }) => {
-      setConfirmTitle("Delete category");
-      setConfirmDescription(
-        "Are you sure you want to delete this category? Items under it may become orphaned depending on your database constraints."
-      );
-      confirmActionRef.current = async () => {
-        await categoriesMut.deleteCategory({ categoryId });
-      };
-      setConfirmOpen(true);
-    },
-    [categoriesMut]
-  );
-
-  const requestDeleteItem = useCallback(
-    (arg) => {
-      const itemId = arg?.itemId ?? arg?.id ?? null;
-      if (!itemId) return;
-
-      setConfirmTitle("Delete item");
-      setConfirmDescription(
-        "Are you sure you want to delete this item? This action cannot be undone."
-      );
-      confirmActionRef.current = async () => {
-        setDeletingItemIds((prev) => {
-          const next = new Set(prev);
-          next.add(itemId);
-          return next;
-        });
-
-        try {
-          await itemsMut.deleteItem({ itemId });
-        } finally {
-          setDeletingItemIds((prev) => {
-            const next = new Set(prev);
-            next.delete(itemId);
-            return next;
-          });
-        }
-      };
-      setConfirmOpen(true);
-    },
-    [itemsMut]
-  );
-
-  const categorySelectOptions = useMemo(() => {
-    return (categories ?? []).map((c) => ({
-      id: c?.id ?? "",
-      name: c?.name ?? "Category",
-    }));
-  }, [categories]);
-
   const errorMessage = menuError?.message ?? null;
 
   return (
-    <div
-      className={className}
-      style={{ display: "flex", flexDirection: "column", gap: 12 }}
-    >
+    <div className={className} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {showHeader ? (
         <VportActorMenuManageHeader
           loading={loadingMenu}
@@ -293,16 +100,7 @@ export function VportActorMenuManagePanel({
       ) : null}
 
       {errorMessage ? (
-        <div
-          style={{
-            padding: 12,
-            borderRadius: 12,
-            border: "1px solid #fecaca",
-            background: "#fef2f2",
-            color: "#991b1b",
-            fontSize: 13,
-          }}
-        >
+        <div style={{ padding: 12, borderRadius: 12, border: "1px solid #fecaca", background: "#fef2f2", color: "#991b1b", fontSize: 13 }}>
           {errorMessage}
         </div>
       ) : null}
@@ -318,15 +116,14 @@ export function VportActorMenuManagePanel({
       ) : null}
 
       {!loadingMenu && hasCategories ? (
-  <VportActorMenuEmptyState
-    title="Create a new category"
-    subtitle="Keep your VPORT menu structured by grouping items into clear sections."
-    actionLabel="Add category"
-    onAction={openCreateCategory}
-    disabled={!actorId || categoriesMut.saving || categoriesMut.deleting}
-  />
-) : null}
-
+        <VportActorMenuEmptyState
+          title="Create a new category"
+          subtitle="Keep your VPORT menu structured by grouping items into clear sections."
+          actionLabel="Add category"
+          onAction={openCreateCategory}
+          disabled={!actorId || categoriesMut.saving || categoriesMut.deleting}
+        />
+      ) : null}
 
       {hasCategories ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -338,13 +135,7 @@ export function VportActorMenuManagePanel({
               onEditCategory={openEditCategory}
               onDeleteCategory={requestDeleteCategory}
               onCreateItem={({ categoryId, name, description, price, priceCents }) =>
-                openCreateItemForCategory({
-                  categoryId,
-                  name,
-                  description,
-                  price,
-                  priceCents,
-                })
+                openCreateItemForCategory({ categoryId, name, description, price, priceCents })
               }
               onEditItem={openEditItem}
               onDeleteItem={requestDeleteItem}
@@ -383,4 +174,3 @@ export function VportActorMenuManagePanel({
 }
 
 export default VportActorMenuManagePanel;
-

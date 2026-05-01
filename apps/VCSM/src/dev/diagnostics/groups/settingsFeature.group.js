@@ -36,7 +36,7 @@ import { ctrlGetProfileActorId } from "@/features/settings/vports/controller/get
 import { readAuthedUserDAL } from "@/features/settings/vports/dal/auth.read.dal";
 import { readActorOwnersByUserDAL } from "@/features/settings/vports/dal/actorOwners.read.dal";
 import { readMyVports } from "@/features/settings/vports/dal/vports.read.dal";
-import { mapVport, mapVports } from "@/features/settings/vports/model/vport.mapper";
+import { mapVport, mapVports } from "@/features/settings/vports/model/vport.model";
 
 export const GROUP_ID = "settingsFeature";
 export const GROUP_LABEL = "Settings Feature";

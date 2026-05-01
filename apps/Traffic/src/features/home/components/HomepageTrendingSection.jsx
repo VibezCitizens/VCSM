@@ -2,24 +2,30 @@ import Link from "next/link";
 
 export default function HomepageTrendingSection({ groups }) {
   return (
-    <section className="card homepage-section">
+    <section className="homepage-section homepage-section--divider homepage-trending-section homepage-directory-surface-soft" id="browse">
       <div className="homepage-section-heading">
-        <h2 className="section-title">Popular TRAZE Searches</h2>
-        <p>Trending intents that help users discover providers faster.</p>
+        <h2 className="section-title">Popular searches</h2>
+        <p>Useful directory shortcuts by need, service type, and city.</p>
       </div>
 
-      <div className="homepage-trending-grid">
+      <div className="homepage-trending-groups">
         {groups.map((group) => (
-          <article key={group.title} className="homepage-card homepage-trending-card">
-            <h3 className="homepage-card-title">{group.title}</h3>
-            <p className="homepage-meta-note">{group.description}</p>
-            <div className="homepage-chip-row">
-              {group.links.map((link) => (
-                <Link key={`${group.title}-${link.label}`} className="pill" href={link.href}>
-                  {link.label}
-                </Link>
-              ))}
+          <article key={group.title} className="homepage-trending-group">
+            <div className="homepage-trending-group-head">
+              <h3 className="homepage-trending-title">{group.title}</h3>
+              <p className="homepage-meta-note">{group.description}</p>
             </div>
+
+            <ul className="homepage-directory-links">
+              {group.links.map((link) => (
+                <li key={`${group.title}-${link.label}`}>
+                  <Link className="homepage-directory-link" href={link.href}>
+                    <span>{link.label}</span>
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </article>
         ))}
       </div>

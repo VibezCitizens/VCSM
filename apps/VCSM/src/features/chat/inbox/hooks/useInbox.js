@@ -1,33 +1,22 @@
 // src/features/chat/inbox/hooks/useInbox.js
 // ============================================================
-// useInbox — VCSM inbox hook
+// useInbox - VCSM inbox hook
 // ------------------------------------------------------------
-// MIGRATED (Slice 2): Delegates to shared chat engine for reads.
-// Authority: chat.inbox_entries (via engine)
+// Delegates to useChatInbox (React Query).
+// React Query owns all server data (inbox_entries).
+// Polling/refetch owns freshness while realtime is disabled.
+// No direct Supabase calls from this hook.
 //
-// The engine hook handles:
-//   - inbox loading from chat.* schema
-//   - InboxEntryModel shaping
-//   - realtime subscription (chat.inbox_entries)
-//   - actor switch reset
-//   - optimistic hide
-//
-// Return contract is identical to the previous VCSM-local hook:
-//   { entries, loading, error, refresh, hideConversation }
-//
+// Return contract: { entries, loading, error, refresh, hideConversation }
 // Entry shape matches what CardInbox / InboxList / buildInboxPreview expect.
 // ============================================================
 
-import { useInbox as useEngineInbox } from '@chat'
+import { useChatInbox } from '@/features/chat/inbox/hooks/useChatInbox'
 
 export default function useInbox({
   actorId,
   includeArchived = false,
   folder = 'inbox',
 }) {
-  return useEngineInbox({
-    actorId,
-    includeArchived,
-    folder,
-  })
+  return useChatInbox(actorId, { folder, includeArchived })
 }

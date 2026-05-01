@@ -1,11 +1,16 @@
 import { useState } from 'react'
-import { AlertTriangle, Check, Copy, ExternalLink, Plus, RotateCcw, Trash2, X } from 'lucide-react'
+import { AlertTriangle, Plus, RotateCcw, Trash2 } from 'lucide-react'
 
 import Card from '@/features/settings/ui/Card'
-import CreateVportForm from '@/features/vport/adapters/CreateVportForm.jsx.adapter'
 import OnemoredaysAd from '@/features/ads/adapters/widgets/OnemoredaysAd.adapter'
-
 import { useVportsController } from '@/features/settings/vports/hooks/useVportsController'
+
+import { VportsBusinessCardSection } from '@/features/settings/vports/ui/VportsBusinessCardSection'
+import { VportsCreateModal } from '@/features/settings/vports/ui/VportsCreateModal'
+import { VportsRecoverModal } from '@/features/settings/vports/ui/VportsRecoverModal'
+import { VportsUnpublishModal } from '@/features/settings/vports/ui/VportsUnpublishModal'
+import { VportsHardDeleteModal } from '@/features/settings/vports/ui/VportsHardDeleteModal'
+import { VportsQrModal } from '@/features/settings/vports/ui/VportsQrModal'
 
 export default function VportsTabView() {
   const {
@@ -41,6 +46,8 @@ export default function VportsTabView() {
   const [hardDeleteConfirmText, setHardDeleteConfirmText] = useState('')
   const [unpublishTarget, setUnpublishTarget] = useState(null)
   const [copiedId, setCopiedId] = useState(null)
+  const [qrTarget, setQrTarget] = useState(null)
+  const [qrCopied, setQrCopied] = useState(false)
 
   const activeVports = items.filter(v => !v.is_deleted)
   const deactivatedVports = items.filter(v => v.is_deleted)
@@ -67,16 +74,6 @@ export default function VportsTabView() {
   async function handleUnpublishConfirm() {
     const ok = await setBusinessCardPublished(unpublishTarget.id, false)
     if (ok) setUnpublishTarget(null)
-  }
-
-  function handleCopyLink(v) {
-    const url = `https://vibezcitizens.com/vport/${v.slug}/card`
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(url).then(() => {
-        setCopiedId(v.id)
-        setTimeout(() => setCopiedId(id => id === v.id ? null : id), 2000)
-      }).catch(() => {})
-    }
   }
 
   return (
@@ -134,7 +131,6 @@ export default function VportsTabView() {
                     />
                     <div className="min-w-0 text-[1rem] font-medium text-white truncate">{v.name}</div>
                   </div>
-
                   <button
                     onClick={() => switchToVport(v, setBusy)}
                     disabled={busy || isActive}
@@ -161,7 +157,6 @@ export default function VportsTabView() {
             <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: '#fbbf24' }} />
             <span className="text-sm font-semibold" style={{ color: '#fcd34d' }}>Deactivated VPORTs</span>
           </div>
-
           <div className="space-y-2 p-3">
             {deactivatedVports.map(v => (
               <div
@@ -203,299 +198,69 @@ export default function VportsTabView() {
         </div>
       )}
 
-      {/* ── Business Card section ─────────────────────── */}
-      {items.filter(v => v.slug).length > 0 && (
-        <Card>
-          <div className="mb-3 text-sm font-semibold text-white">Business Cards</div>
-          <div className="space-y-3">
-            {items.filter(v => v.slug).map(v => {
-              const isDisabled = v.is_deleted || !v.is_active
-              const isBusy = busyCardPublishId === v.id
-              const isPublished = !!v.business_card_published
-              const cardUrl = `https://vibezcitizens.com/vport/${v.slug}/card`
-              const isCopied = copiedId === v.id
-
-              return (
-                <div
-                  key={v.id}
-                  className="rounded-xl p-3"
-                  style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(0,0,0,0.18)' }}
-                >
-                  <div className="mb-2.5 flex items-center gap-2.5">
-                    <img
-                      src={v.avatar_url || '/avatar.jpg'}
-                      alt=""
-                      className="h-8 w-8 shrink-0 rounded-lg border border-white/10 object-cover"
-                      style={isDisabled ? { filter: 'grayscale(0.5) opacity(0.6)' } : {}}
-                      onError={e => { e.currentTarget.src = '/avatar.jpg' }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium text-white/90">{v.name}</div>
-                      <div className="truncate text-xs text-white/35">@{v.slug}</div>
-                    </div>
-                    <span
-                      className="settings-status-badge shrink-0"
-                      style={isPublished && !isDisabled
-                        ? { border: '1px solid rgba(52,211,153,0.3)', background: 'rgba(52,211,153,0.1)', color: '#6ee7b7' }
-                        : { border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.3)' }
-                      }
-                    >
-                      {isPublished && !isDisabled ? 'Published' : 'Unpublished'}
-                    </span>
-                  </div>
-
-                  {isDisabled ? (
-                    <p className="mb-2.5 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                      {v.is_deleted
-                        ? 'Restore this VPORT before publishing its business card.'
-                        : 'This VPORT is inactive.'}
-                    </p>
-                  ) : (
-                    <div className="mb-2.5 flex items-center gap-1.5 overflow-hidden rounded-lg px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                      <span className="min-w-0 flex-1 truncate text-xs" style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>
-                        {cardUrl}
-                      </span>
-                    </div>
-                  )}
-
-                  {errCardPublish && errCardPublishId === v.id && (
-                    <p className="mb-2 text-xs text-rose-400">{errCardPublish}</p>
-                  )}
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {isPublished ? (
-                      <button
-                        onClick={() => setUnpublishTarget(v)}
-                        disabled={isBusy || isDisabled}
-                        className="settings-btn settings-btn--ghost px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-                        style={{ color: '#fcd34d', borderColor: 'rgba(217,119,6,0.35)' }}
-                      >
-                        {isBusy ? 'Updating…' : 'Unpublish'}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setBusinessCardPublished(v.id, true)}
-                        disabled={isBusy || isDisabled}
-                        className="settings-btn px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-                        style={{ background: 'var(--vc-accent)', color: '#fff' }}
-                      >
-                        {isBusy ? 'Publishing…' : 'Publish card'}
-                      </button>
-                    )}
-
-                    <button
-                      onClick={() => handleCopyLink(v)}
-                      disabled={!isPublished || isDisabled}
-                      className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                      {isCopied ? 'Copied' : 'Copy link'}
-                    </button>
-
-                    <button
-                      onClick={() => window.open(cardUrl, '_blank')}
-                      disabled={!isPublished || isDisabled}
-                      className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      Preview
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </Card>
-      )}
+      <VportsBusinessCardSection
+        items={items}
+        activeActor={activeActor}
+        resolveVportActorId={resolveVportActorId}
+        busyCardPublishId={busyCardPublishId}
+        errCardPublish={errCardPublish}
+        errCardPublishId={errCardPublishId}
+        setBusinessCardPublished={setBusinessCardPublished}
+        copiedId={copiedId}
+        setCopiedId={setCopiedId}
+        setUnpublishTarget={setUnpublishTarget}
+        setQrTarget={setQrTarget}
+        setQrCopied={setQrCopied}
+      />
 
       <OnemoredaysAd />
 
-      {/* ── Create VPORT modal ─────────────────────────── */}
       {showCreator && (
-        <div className="fixed inset-0 z-[120]">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setShowCreator(false)} />
-          <div className="relative z-10 flex h-full w-full items-start justify-center overflow-y-auto p-3 sm:items-center sm:p-4">
-            <div className="settings-shell relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[560px] flex-col overflow-hidden rounded-2xl sm:max-h-[calc(100dvh-2rem)]">
-              <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-4 py-3">
-                <div className="text-sm font-semibold text-white">Create a VPORT</div>
-                <button onClick={() => setShowCreator(false)} className="settings-btn settings-btn--ghost p-1.5 text-white/70">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="min-h-0 overflow-y-auto overscroll-contain p-4 touch-pan-y">
-                <CreateVportForm
-                  onCreated={(payload) => {
-                    onVportCreated(payload)
-                    setShowCreator(false)
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <VportsCreateModal
+          onClose={() => setShowCreator(false)}
+          onCreated={(payload) => { onVportCreated(payload); setShowCreator(false) }}
+        />
       )}
 
-      {/* ── Recover (restore) modal ────────────────────── */}
       {restoreTarget && (
-        <div className="fixed inset-0 z-[120]">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setRestoreTarget(null)} />
-          <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
-            <div className="settings-shell relative w-full max-w-[420px] overflow-hidden rounded-2xl">
-              <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
-                <div className="text-sm font-semibold text-white">Recover VPORT</div>
-                <button onClick={() => setRestoreTarget(null)} className="settings-btn settings-btn--ghost p-1.5 text-white/70">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="p-5">
-                <div className="mb-4 flex items-center gap-3">
-                  <img
-                    src={restoreTarget.avatar_url || '/avatar.jpg'}
-                    alt=""
-                    className="h-12 w-12 shrink-0 rounded-lg border border-white/10 object-cover"
-                    onError={e => { e.currentTarget.src = '/avatar.jpg' }}
-                  />
-                  <div>
-                    <div className="text-sm font-semibold text-white">{restoreTarget.name}</div>
-                    {restoreTarget.slug && <div className="text-xs text-white/40">@{restoreTarget.slug}</div>}
-                  </div>
-                </div>
-
-                <p className="mb-1 text-sm text-white/70">
-                  Recovering this VPORT will make it <span className="font-medium text-white">fully visible</span> to the public again. Its profile, services, and content will be restored.
-                </p>
-
-                {errRestore && <p className="mt-3 text-xs text-rose-400">{errRestore}</p>}
-              </div>
-
-              <div className="flex gap-2 border-t border-white/8 px-4 py-3">
-                <button onClick={() => setRestoreTarget(null)} className="settings-btn settings-btn--ghost flex-1 py-2 text-sm">
-                  Cancel
-                </button>
-                <button
-                  onClick={handleRecoverConfirm}
-                  disabled={busyRestore}
-                  className="settings-btn flex-1 py-2 text-sm font-medium"
-                  style={{ background: 'var(--vc-accent)', color: '#fff' }}
-                >
-                  {busyRestore ? 'Recovering…' : 'Recover VPORT'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <VportsRecoverModal
+          target={restoreTarget}
+          onClose={() => setRestoreTarget(null)}
+          onConfirm={handleRecoverConfirm}
+          busy={busyRestore}
+          error={errRestore}
+        />
       )}
 
-      {/* ── Unpublish business card modal ─────────────── */}
       {unpublishTarget && (
-        <div className="fixed inset-0 z-[120]">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setUnpublishTarget(null)} />
-          <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
-            <div className="settings-shell relative w-full max-w-[400px] overflow-hidden rounded-2xl">
-              <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
-                <div className="text-sm font-semibold text-white">Unpublish business card?</div>
-                <button onClick={() => setUnpublishTarget(null)} className="settings-btn settings-btn--ghost p-1.5 text-white/70">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="p-5">
-                <p className="text-sm text-white/70">
-                  The public link for <span className="font-medium text-white">{unpublishTarget.name}</span> will stop working immediately. Leads collected so far are kept.
-                </p>
-                {errCardPublish && <p className="mt-3 text-xs text-rose-400">{errCardPublish}</p>}
-              </div>
-
-              <div className="flex gap-2 border-t border-white/8 px-4 py-3">
-                <button onClick={() => setUnpublishTarget(null)} className="settings-btn settings-btn--ghost flex-1 py-2 text-sm">
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUnpublishConfirm}
-                  disabled={busyCardPublishId === unpublishTarget.id}
-                  className="settings-btn flex-1 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ background: 'rgba(217,119,6,0.8)', color: '#fff' }}
-                >
-                  {busyCardPublishId === unpublishTarget.id ? 'Unpublishing…' : 'Unpublish'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <VportsUnpublishModal
+          target={unpublishTarget}
+          onClose={() => setUnpublishTarget(null)}
+          onConfirm={handleUnpublishConfirm}
+          busyId={busyCardPublishId}
+          error={errCardPublish}
+        />
       )}
 
-      {/* ── Delete permanently modal ───────────────────── */}
       {hardDeleteTarget && (
-        <div className="fixed inset-0 z-[120]">
-          <div className="absolute inset-0 bg-black/70" onClick={() => { setHardDeleteTarget(null); setHardDeleteConfirmText('') }} />
-          <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
-            <div className="settings-shell relative w-full max-w-[420px] overflow-hidden rounded-2xl">
-              <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <Trash2 className="h-4 w-4 text-rose-400" />
-                  <div className="text-sm font-semibold text-rose-200">Permanently delete VPORT</div>
-                </div>
-                <button
-                  onClick={() => { setHardDeleteTarget(null); setHardDeleteConfirmText('') }}
-                  className="settings-btn settings-btn--ghost p-1.5 text-white/70"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
+        <VportsHardDeleteModal
+          target={hardDeleteTarget}
+          onClose={() => { setHardDeleteTarget(null); setHardDeleteConfirmText('') }}
+          onConfirm={handleHardDeleteConfirm}
+          busy={busyHardDelete}
+          error={errHardDelete}
+          confirmText={hardDeleteConfirmText}
+          onConfirmTextChange={setHardDeleteConfirmText}
+        />
+      )}
 
-              <div className="p-5">
-                <div className="mb-4 flex items-center gap-3">
-                  <img
-                    src={hardDeleteTarget.avatar_url || '/avatar.jpg'}
-                    alt=""
-                    className="h-12 w-12 shrink-0 rounded-lg border border-white/10 object-cover"
-                    style={{ filter: 'grayscale(0.7) opacity(0.6)' }}
-                    onError={e => { e.currentTarget.src = '/avatar.jpg' }}
-                  />
-                  <div>
-                    <div className="text-sm font-semibold text-white">{hardDeleteTarget.name}</div>
-                    {hardDeleteTarget.slug && <div className="text-xs text-white/40">@{hardDeleteTarget.slug}</div>}
-                  </div>
-                </div>
-
-                <p className="mb-4 text-sm text-white/70">
-                  This action is <span className="font-semibold text-rose-300">permanent and cannot be undone.</span> The VPORT, its services, bookings, and all associated data will be deleted forever.
-                </p>
-
-                <label className="mb-1.5 block text-xs font-medium text-white/50">
-                  Type <span className="font-semibold text-white/80">{hardDeleteTarget.name}</span> to confirm
-                </label>
-                <input
-                  type="text"
-                  value={hardDeleteConfirmText}
-                  onChange={e => setHardDeleteConfirmText(e.target.value)}
-                  placeholder={hardDeleteTarget.name}
-                  className="settings-input w-full rounded-lg px-3 py-2 text-sm"
-                  autoComplete="off"
-                />
-
-                {errHardDelete && <p className="mt-3 text-xs text-rose-400">{errHardDelete}</p>}
-              </div>
-
-              <div className="flex gap-2 border-t border-white/8 px-4 py-3">
-                <button
-                  onClick={() => { setHardDeleteTarget(null); setHardDeleteConfirmText('') }}
-                  className="settings-btn settings-btn--ghost flex-1 py-2 text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleHardDeleteConfirm}
-                  disabled={busyHardDelete || hardDeleteConfirmText !== hardDeleteTarget.name}
-                  className="settings-btn settings-btn--danger flex-1 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {busyHardDelete ? 'Deleting…' : 'Delete permanently'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {qrTarget && (
+        <VportsQrModal
+          target={qrTarget}
+          onClose={() => setQrTarget(null)}
+          qrCopied={qrCopied}
+          setQrCopied={setQrCopied}
+        />
       )}
     </div>
   )

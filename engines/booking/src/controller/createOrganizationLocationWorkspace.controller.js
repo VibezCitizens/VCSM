@@ -82,6 +82,7 @@ export async function createOrganizationLocationWorkspace({
       owner_actor_id:  requestActorId,
       organization_id: org.id,
       location_id:     location.id,
+      profile_id:      profileId,
       resource_type:   resourceType,
       name:            resourceName,
       is_active:       true,

@@ -1,5 +1,6 @@
 import { mapBookingRow, mapBookingRows } from './Booking.model.js'
 import { mapBookingResourceRow } from './BookingResource.model.js'
+import { mapVportResourceRow } from './VportResource.model.js'
 import { mapBookingServiceProfileRows } from './BookingServiceProfile.model.js'
 
 /** @param {Object} row @returns {import('../types/index.js').DomainAvailabilityRule|null} */
@@ -46,12 +47,12 @@ export function mapAvailabilityExceptionRows(rows) {
   return rows.map(mapAvailabilityExceptionRow).filter(Boolean)
 }
 
-export function mapResourceAvailabilityModel({ resource, rules, exceptions, bookings, serviceProfiles } = {}) {
+export function mapResourceAvailabilityModel({ resource, rules, exceptions, bookings, serviceProfiles, isVportResource = false } = {}) {
   return {
-    resource:       mapBookingResourceRow(resource),
-    rules:          mapAvailabilityRuleRows(rules),
-    exceptions:     mapAvailabilityExceptionRows(exceptions),
-    bookings:       mapBookingRows(bookings),
+    resource:        isVportResource ? mapVportResourceRow(resource) : mapBookingResourceRow(resource),
+    rules:           mapAvailabilityRuleRows(rules),
+    exceptions:      mapAvailabilityExceptionRows(exceptions),
+    bookings:        mapBookingRows(bookings),
     serviceProfiles: mapBookingServiceProfileRows(serviceProfiles),
   }
 }

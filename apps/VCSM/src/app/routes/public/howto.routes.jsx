@@ -1,6 +1,10 @@
 import React from 'react'
 
-export function howToPublicRoutes({ HowToCreateProfileScreen, HowToCreateVportScreen }) {
+export function howToPublicRoutes({
+  HowToCreateProfileScreen,
+  HowToCreateVportScreen,
+  VportCategoryLandingScreen,
+}) {
   return [
     {
       path: '/how-to/create-profile',
@@ -9,6 +13,10 @@ export function howToPublicRoutes({ HowToCreateProfileScreen, HowToCreateVportSc
     {
       path: '/how-to/create-vport',
       element: <HowToCreateVportScreen />,
+    },
+    {
+      path: '/vport/:type',
+      element: <VportCategoryLandingScreen />,
     },
   ]
 }

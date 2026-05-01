@@ -11,27 +11,14 @@
 //   • Keeps other features decoupled from internal structure
 // ============================================================
 
-/* ===================== DAL ===================== */
+/* ===================== CONTROLLERS ===================== */
 export {
-  isBlocked,
-  isBlocked as isActorBlocked,
-  checkBlockStatus,
-} from "./dal/block.check.dal";
-export {
-  fetchActorsIBlocked,
-  fetchActorsWhoBlockedMe,
-  fetchBlockGraph,
-  filterBlockedActors,
-  fetchActorsIBlocked as fetchBlockedActors,
-  fetchActorsWhoBlockedMe as fetchBlockedByActors,
-} from "./dal/block.read.dal";
-export {
-  blockActor,
-  unblockActor,
-} from "./dal/block.write.dal";
-
-/* ===================== HELPERS ===================== */
-export { deleteFriendRankRowsBetweenActors } from "./helpers/applyBlockSideEffects";
+  blockActorController,
+  unblockActorController,
+  toggleBlockActorController,
+} from "./controllers/blockActor.controller";
+export { ctrlGetBlockStatus } from "./controllers/getBlockStatus.controller";
+export { ctrlGetBlockedActorSet } from "./controllers/getBlockedActorSet.controller";
 
 /* ===================== HOOKS ===================== */
 export { useBlockActions } from "./hooks/useBlockActions";

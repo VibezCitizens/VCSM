@@ -12,7 +12,7 @@ import {
   normalizeObserverRole,
   OBSERVER_ROLES,
   saveCourseMembership,
-} from "@/learning/controller/administration/adminAccess";
+} from "@/learning/controller/administration/adminAccess.controller";
 
 async function getExistingLink({
   supabase,

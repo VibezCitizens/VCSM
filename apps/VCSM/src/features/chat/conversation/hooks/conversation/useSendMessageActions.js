@@ -9,65 +9,12 @@
 // ============================================================
 
 import { useCallback } from 'react'
-import { uploadToCloudflare } from '@/services/cloudflare/uploadToCloudflare'
-import { compressImageFile } from '@/shared/lib/compressImage'
+import { useChatAttachmentUpload } from './useChatAttachmentUpload'
+import { recordChatAttachmentController } from '@/features/chat/conversation/controller/recordChatAttachment.controller'
 
-function pad2(n) {
-  return String(n).padStart(2, '0')
-}
+export default function useSendMessageActions({ conversationId, actorId, onSendMessage, addOptimistic, updateOptimistic, markFailed }) {
+  const { upload: uploadAttachment } = useChatAttachmentUpload({ actorId })
 
-function randomHex(bytes = 3) {
-  // 3 bytes => 6 hex chars (enough to avoid collisions alongside timestamp)
-  const arr = new Uint8Array(bytes)
-  crypto.getRandomValues(arr)
-  return Array.from(arr).map((b) => b.toString(16).padStart(2, '0')).join('')
-}
-
-function extFromFile(file) {
-  const name = String(file?.name || '')
-  const dot = name.lastIndexOf('.')
-  if (dot > -1 && dot < name.length - 1) {
-    return name.slice(dot + 1).toLowerCase().replace(/[^\w]+/g, '') || 'bin'
-  }
-
-  const type = String(file?.type || '').toLowerCase()
-  if (type.startsWith('image/')) {
-    const e = type.split('/')[1]
-    if (e === 'jpeg') return 'jpg'
-    return e.replace(/[^\w]+/g, '') || 'bin'
-  }
-
-  return 'bin'
-}
-
-function isIOSDevice() {
-  if (typeof navigator === 'undefined') return false
-  const ua = String(navigator.userAgent || '')
-  return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-}
-
-function isHeicLike(file) {
-  const type = String(file?.type || '').toLowerCase()
-  const name = String(file?.name || '').toLowerCase()
-  return type.includes('heic') || type.includes('heif') || name.endsWith('.heic') || name.endsWith('.heif')
-}
-
-async function prepareUploadImage(file) {
-  if (!file || !String(file.type || '').startsWith('image/')) return file
-
-  const limit = isIOSDevice() ? 750 * 1024 : 2 * 1024 * 1024
-  const shouldCompress = file.size > limit || isHeicLike(file)
-  if (!shouldCompress) return file
-
-  try {
-    return await compressImageFile(file, 1600, 0.82)
-  } catch (err) {
-    console.warn('[useSendMessageActions] image compression skipped', err)
-    return file
-  }
-}
-
-export default function useSendMessageActions({ conversationId, actorId, onSendMessage, addOptimistic, markFailed }) {
   /* ============================================================
      Send
      ============================================================ */
@@ -84,34 +31,32 @@ export default function useSendMessageActions({ conversationId, actorId, onSendM
       const file = files[0]
       if (!file) return { ok: false, error: 'No file selected.' }
 
+      // Early return for non-image types — chat currently images only.
+      // The engine also validates, but this avoids showing a placeholder for invalid files.
       if (!String(file.type || '').startsWith('image/')) {
         return { ok: false, error: 'Only images are supported in chat right now.' }
       }
 
-      // insert uploading placeholder immediately so the user sees feedback
+      // Insert uploading placeholder immediately so the user sees feedback
       const placeholderClientId = addOptimistic
         ? addOptimistic({ kind: 'image', body: '', __uploading: true })
         : null
 
-      const uploadFile = await prepareUploadImage(file)
-
-      const now = new Date()
-      const yyyy = String(now.getFullYear())
-      const mm = pad2(now.getMonth() + 1)
-      const dd = pad2(now.getDate())
-
-      const ts = Math.floor(Date.now() / 1000)
-      const rand = randomHex(3)
-      const ext = extFromFile(uploadFile)
-
-      // vox/CONV456/ACTOR123/2026/02/02/1706845200-1d0fef.jpg
-      const key = `vox/${conversationId}/${actorId}/${yyyy}/${mm}/${dd}/${ts}-${rand}.${ext}`
-
-      const { url, error: upErr } = await uploadToCloudflare(uploadFile, key)
-
-      if (upErr || !url) {
+      // Upload via media engine: validates, compresses (1600px/0.82), builds UUID key, transports
+      let result
+      try {
+        result = await uploadAttachment(file, { extraPath: conversationId })
+      } catch (err) {
         if (placeholderClientId && markFailed) markFailed(placeholderClientId)
-        return { ok: false, error: upErr || 'Image upload failed.' }
+        return { ok: false, error: err?.message || 'Image upload failed.' }
+      }
+
+      const url = result.publicUrl
+      const key = result.storageKey
+
+      // Image is on CDN — show it immediately before DB round-trip
+      if (placeholderClientId && updateOptimistic) {
+        updateOptimistic(placeholderClientId, { mediaUrl: url, __uploading: false })
       }
 
       const sendResult = await onSendMessage({
@@ -123,8 +68,8 @@ export default function useSendMessageActions({ conversationId, actorId, onSendM
           public_url: url,
           storage_path: key,
           original_name: file.name || null,
-          mime_type: uploadFile.type || file.type || null,
-          size_bytes: uploadFile.size || file.size || null,
+          mime_type: result.mimeType,
+          size_bytes: result.sizeBytes,
           upload_status: 'ready',
           sort_order: 0,
         }],
@@ -136,9 +81,18 @@ export default function useSendMessageActions({ conversationId, actorId, onSendM
         return { ok: false, error: sendResult.error || 'Image failed to send.' }
       }
 
+      recordChatAttachmentController({
+        mediaUploadResult: result,
+        ownerActorId:      actorId,
+        messageId:         sendResult?.message?.id ?? null,
+        storageKey:        result.storageKey ?? null,
+      }).catch((e) => {
+        if (import.meta.env?.DEV) console.warn('[useSendMessageActions] media_assets record failed (non-fatal):', e?.message)
+      })
+
       return { ok: true, url }
     },
-    [conversationId, actorId, onSendMessage, addOptimistic, markFailed]
+    [conversationId, actorId, onSendMessage, addOptimistic, updateOptimistic, markFailed, uploadAttachment]
   )
 
   return {

@@ -13,7 +13,7 @@ import {
   isPlatformAdmin,
   OBSERVER_ROLES,
   TEACHING_ROLES,
-} from "@/learning/controller/administration/adminAccess";
+} from "@/learning/controller/administration/adminAccess.controller";
 
 async function listObserverLinksByCourseId({ supabase, courseId }) {
   const { data, error } = await supabase

@@ -1,24 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useIdentity } from '@/state/identity/identityContext'
-import { ctrlResolveVportIdByActorId, ctrlRestoreVport } from '@/features/settings/account/controller/account.controller'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useRestoreVport } from '@/features/vport/hooks/useRestoreVport'
 
 export default function RestoreVportScreen() {
   const navigate = useNavigate()
   const { identity, switchActor, blockedVport } = useIdentity()
+  const { vportId, busy, err, restore } = useRestoreVport(identity?.actorId)
 
-  const [vportId, setVportId] = useState(null)
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState('')
-
-  useEffect(() => {
-    if (!identity?.actorId) return
-    ctrlResolveVportIdByActorId(identity.actorId)
-      .then((id) => setVportId(id))
-      .catch(() => {})
-  }, [identity?.actorId])
-
-  // If not actually blocked, redirect away
   useEffect(() => {
     if (!blockedVport && identity) {
       navigate('/feed', { replace: true })
@@ -26,18 +15,11 @@ export default function RestoreVportScreen() {
   }, [blockedVport, identity, navigate])
 
   async function handleRestore() {
-    if (!vportId) return
-    setBusy(true)
-    setErr('')
     try {
-      await ctrlRestoreVport({ vportId })
+      await restore()
       await switchActor(identity.actorId, 'RestoreVportScreen.handleRestore')
       navigate('/feed', { replace: true })
-    } catch (e) {
-      setErr(e?.message || 'Could not restore VPORT. Try again.')
-    } finally {
-      setBusy(false)
-    }
+    } catch {} // err already set by hook
   }
 
   async function handleSwitchToProfile() {

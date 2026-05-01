@@ -11,15 +11,15 @@ import { auditFeature } from "@/dev/diagnostics/helpers/featureAudit";
 import { getFeatureSourceEntries } from "@/dev/diagnostics/helpers/featureSourceIndex";
 import { getNotifications } from "@/features/notifications/inbox/controller/Notifications.controller";
 import { getUnreadNotificationCount } from "@/features/notifications/inbox/controller/notificationsCount.controller";
-import { getInboxUnreadBadgeCount } from "@/features/notifications/inbox/controller/inboxUnread.controller";
+import { getChatInboxUnreadBadgeCount as getInboxUnreadBadgeCount } from "@/features/chat/inbox/controller/chatUnread.controller";
 import {
   loadNotificationHeader,
   markAllNotificationsSeen,
 } from "@/features/notifications/inbox/controller/NotificationsHeader.controller";
 import { resolveInboxActor } from "@/features/notifications/inbox/lib/resolveInboxActor";
 import { resolveSenders } from "@/features/notifications/inbox/lib/resolveSenders";
-import { mapNotification } from "@/features/notifications/inbox/model/notification.mapper";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { mapNotification } from "@/features/notifications/inbox/model/notification.model";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 import { markRead } from "@notifications";
 import {
   subscribeInboxBadge,

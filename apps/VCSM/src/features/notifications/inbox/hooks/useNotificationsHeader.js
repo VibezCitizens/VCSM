@@ -1,32 +1,20 @@
-import { useCallback, useEffect, useState } from 'react'
-import {
-  loadNotificationHeader,
-  markAllNotificationsSeen,
-} from '../controller/NotificationsHeader.controller'
+import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { markAllNotificationsSeen } from '../controller/NotificationsHeader.controller'
+import { useNotificationUnread } from '@/bootstrap/bootstrap.selectors'
+import { queryKeys } from '@/queries/queryKeys'
 
 export function useNotificationsHeader(actorId) {
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-
-  const refresh = useCallback(async () => {
-    if (!actorId) return
-    setLoading(true)
-    const res = await loadNotificationHeader(actorId)
-    setUnreadCount(res.unreadCount)
-    setLoading(false)
-  }, [actorId])
+  const queryClient = useQueryClient()
+  const unreadCount = useNotificationUnread()
 
   const markAllSeen = useCallback(async () => {
+    if (!actorId) return
+
     await markAllNotificationsSeen(actorId)
-    setUnreadCount(0)
-    window.dispatchEvent(new Event('noti:refresh'))
-  }, [actorId])
+    queryClient.invalidateQueries({ queryKey: queryKeys.notificationsInbox(actorId) })
+    queryClient.invalidateQueries({ queryKey: queryKeys.notificationUnread(actorId) })
+  }, [actorId, queryClient])
 
-  useEffect(() => {
-    refresh()
-    window.addEventListener('noti:refresh', refresh)
-    return () => window.removeEventListener('noti:refresh', refresh)
-  }, [refresh])
-
-  return { unreadCount, loading, markAllSeen }
+  return { unreadCount, loading: false, markAllSeen }
 }

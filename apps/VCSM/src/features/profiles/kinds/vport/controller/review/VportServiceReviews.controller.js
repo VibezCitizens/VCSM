@@ -1,6 +1,6 @@
 // src/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller.js
 
-import { readVportServicesByActor } from "@/features/profiles/kinds/vport/dal/services/readVportServicesByActor";
+import { readVportServicesByActor } from "@/features/profiles/kinds/vport/dal/services/readVportServicesByActor.dal";
 import { ctrlListReviews } from "@/features/profiles/kinds/vport/controller/review/VportReviews.controller";
 
 function assertActorId(id, label) {

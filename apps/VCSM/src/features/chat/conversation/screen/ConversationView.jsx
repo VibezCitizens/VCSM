@@ -1,7 +1,7 @@
 // src/features/chat/conversation/screen/ConversationView.jsx
-import { useMemo, useRef, useCallback, useEffect, useState } from 'react'
+import { useMemo, useRef, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { ios } from '@/app/platform'
 
 import useConversation from '@/features/chat/conversation/hooks/conversation/useConversation'
@@ -15,6 +15,7 @@ import useConversationActionsMenu from '@/features/chat/conversation/hooks/conve
 import useConversationCover from '@/features/moderation/adapters/hooks/useConversationCover.adapter'
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useInboxEntryForConversation from '@/features/chat/inbox/hooks/useInboxEntryForConversation'
+import { useMarkChatRead } from '@/features/chat/inbox/hooks/useMarkChatRead'
 
 // ✅ add this import
 import useSendMessageActions from '@/features/chat/conversation/hooks/conversation/useSendMessageActions'
@@ -29,6 +30,7 @@ import ChatSpamCover from '@/features/moderation/adapters/components/ChatSpamCov
 import ChatInput from '@/features/chat/conversation/components/ChatInput'
 import Spinner from '@/shared/components/Spinner'
 
+import { useConversationScroll } from '@/features/chat/conversation/hooks/conversation/useConversationScroll'
 import resolvePartnerActor from '@/features/chat/conversation/lib/resolvePartnerActor'
 import canReadConversation from '@/features/chat/conversation/permissions/canReadConversation'
 
@@ -48,9 +50,16 @@ export default function ConversationView({ conversationId }) {
   ios.useIOSPlatform({ enableKeyboard: true })
   ios.useIOSKeyboard(true)
 
+  const markRead = useMarkChatRead(actorId)
+  useEffect(() => {
+    if (!conversationId || !actorId) return
+    markRead.mutate(conversationId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, actorId])
+
   const { conversation, loading, error } = useConversation({ conversationId, actorId })
   const { members } = useConversationMembers({ conversationId, actorId })
-  const { messages, onEditMessage, onDeleteMessage, onSendMessage, addOptimistic, markFailed, retryMessage } =
+  const { messages, onEditMessage, onDeleteMessage, onSendMessage, addOptimistic, updateOptimistic, markFailed, retryMessage } =
     useConversationMessages({ conversationId, actorId })
   const { notifyTyping } = useTypingChannel({ conversationId, actorId })
 
@@ -117,35 +126,10 @@ export default function ConversationView({ conversationId }) {
     closeMessageMenu: closeMenu,
   })
 
-  const [showJumpButton, setShowJumpButton] = useState(false)
-
-  const scrollToBottom = useCallback((behavior = 'auto') => {
-    messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight, behavior })
-  }, [])
-
-  // track scroll distance from bottom to show/hide jump button
-  useEffect(() => {
-    const container = messagesRef.current
-    if (!container) return
-
-    const handleScroll = () => {
-      const dist = container.scrollHeight - container.scrollTop - container.clientHeight
-      setShowJumpButton(dist > 120)
-    }
-
-    container.addEventListener('scroll', handleScroll, { passive: true })
-    return () => container.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  // only auto-scroll when user is already near the bottom
-  useEffect(() => {
-    const container = messagesRef.current
-    if (!container) return
-    const dist = container.scrollHeight - container.scrollTop - container.clientHeight
-    if (dist < 100) {
-      requestAnimationFrame(() => scrollToBottom('auto'))
-    }
-  }, [messages?.length, scrollToBottom])
+  const { showJumpButton, setShowJumpButton, scrollToBottom } = useConversationScroll({
+    messagesRef,
+    messagesLength: messages?.length,
+  })
 
   // ✅ This is your real send+attach pipeline (uploads media -> sends message)
   const { handleSend, handleAttach } = useSendMessageActions({
@@ -153,6 +137,7 @@ export default function ConversationView({ conversationId }) {
     actorId,
     onSendMessage,
     addOptimistic,
+    updateOptimistic,
     markFailed,
   })
 

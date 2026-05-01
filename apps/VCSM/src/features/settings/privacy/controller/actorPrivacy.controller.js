@@ -2,16 +2,15 @@ import {
   dalGetActorPrivacy,
   dalSetActorPrivacy,
 } from '@/features/settings/privacy/dal/visibility.dal'
-import { refreshVcActorDirectory } from '@/features/identity/dal/refreshActorDirectory.dal'
 
 export async function ctrlGetActorPrivacy(actorId) {
   if (!actorId) return false
   return dalGetActorPrivacy(actorId)
 }
 
-export async function ctrlSetActorPrivacy({ actorId, isPrivate }) {
+export async function ctrlSetActorPrivacy({ actorId, isPrivate, refreshActorFn }) {
   if (!actorId) throw new Error('Missing actorId')
   await dalSetActorPrivacy(actorId, Boolean(isPrivate))
-  refreshVcActorDirectory(actorId)
+  refreshActorFn?.(actorId)
   return true
 }

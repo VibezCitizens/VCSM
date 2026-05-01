@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import WandersSendCardSentView from "@/features/wanders/components/WandersSendCardSentView";
-import { WANDERS_TEMPLATE_STYLES } from "@/features/wanders/components/model/wandersSendCardTemplates";
+import { WANDERS_TEMPLATE_STYLES } from "@/features/wanders/components/model/wandersSendCardTemplates.model";
 
 export function WandersSendCardForm({
   onSubmit,

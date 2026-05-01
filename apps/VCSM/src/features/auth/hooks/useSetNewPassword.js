@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/services/supabase/supabaseClient'
 import {
   resolveRecoverySessionController,
   updatePasswordController,
+  watchPasswordRecoveryController,
 } from '@/features/auth/controllers/setNewPassword.controller'
 import {
   evaluateConfirmPasswordState,
@@ -42,13 +42,10 @@ export function useSetNewPassword() {
 
     // Path A: listen for PASSWORD_RECOVERY event fired by detectSessionInUrl.
     // This is the primary path for PKCE recovery links (?code=).
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+    unsubFn = watchPasswordRecoveryController((hasSession) => {
       if (!alive) return
-      if (event === 'PASSWORD_RECOVERY') {
-        resolve(!!session, 'Reset link is invalid or has expired. Please request a new one.')
-      }
+      resolve(hasSession, 'Reset link is invalid or has expired. Please request a new one.')
     })
-    unsubFn = () => listener?.subscription?.unsubscribe?.()
 
     // Path B: getSession() fallback — handles cases where detectSessionInUrl already
     // finished before we subscribed (implicit hash tokens, or fast PKCE exchange).

@@ -1,8 +1,8 @@
 // features/profiles/controller/buildActorCanonicalSlug.controller.js
 // ─────────────────────────────────────────────────────────────
 // Orchestrates the SEO slug pipeline:
-//   1. Fetch actor + vport data in parallel (4 DAL calls)
-//   2. Pass raw rows to ActorSeoModel
+//   1. Single query against vport.public_actor_seo_v
+//   2. Pass reshaped row to ActorSeoModel
 //   3. Return the canonical slug and structured slug parts
 //
 // Called by useActorCanonicalSlug hook. Result is cached so
@@ -12,14 +12,9 @@
 // ─────────────────────────────────────────────────────────────
 
 import { createTTLCache } from '@/shared/lib/ttlCache'
-import { ActorSeoModel } from '@/features/profiles/model/ActorSeoModel'
+import { ActorSeoModel } from '@/features/profiles/model/actorSeo.model'
 
-import {
-  readActorDirectoryRowDAL,
-  readVportProfileByActorDAL,
-  readVportPublicDetailsForSeoDAL,
-  readVportPrimaryCategoryDAL,
-} from '@/features/profiles/dal/readActorSeoData.dal'
+import { readActorSeoViewDAL } from '@/features/profiles/dal/readActorSeoData.dal'
 
 // Controller-level cache so the full pipeline runs at most once per actor
 // within a 10-minute window. Invalidated on profile writes if needed.
@@ -50,38 +45,35 @@ export async function buildActorCanonicalSlugController(actorId) {
   const cached = controllerCache.get(actorId)
   if (cached) return cached
 
-  // ── Step 1: Fetch actor directory + vport profile in parallel ──
-  // actor_directory row is always present for both user and vport actors.
-  // vport profile row is null for user actors — that's fine, model handles it.
-  const [actorRow, vportProfile] = await Promise.all([
-    readActorDirectoryRowDAL(actorId).catch(() => null),
-    readVportProfileByActorDAL(actorId).catch(() => null),
-  ])
+  // ── Step 1: Single view query replaces 4 parallel raw-table calls ──
+  const seoRow = await readActorSeoViewDAL(actorId).catch(() => null)
 
-  const actorKind = actorRow?.actor_kind ?? null
-  // If actor_directory failed but vport.profiles returned a row, the actor is
-  // definitely a vport — still fetch location + category for a full slug.
-  const isVport = actorKind === 'vport' || (actorKind === null && vportProfile !== null)
+  const actorKind = seoRow?.actor_kind ?? null
 
-  // ── Step 2: Fetch location + category (vport only, parallel) ──
-  // Skip these fetches for user actors to avoid unnecessary queries.
-  const vportProfileId = vportProfile?.id ?? null
+  // Reshape view row into the shape ActorSeoModel expects
+  const actorRow = seoRow
+    ? { actor_id: seoRow.actor_id, actor_kind: seoRow.actor_kind, display_name: seoRow.profile_display_name, username: seoRow.profile_username }
+    : null
 
-  const [publicDetails, category] = isVport
-    ? await Promise.all([
-        readVportPublicDetailsForSeoDAL(vportProfileId).catch(() => null),
-        readVportPrimaryCategoryDAL(vportProfileId).catch(() => null),
-      ])
-    : [null, null]
+  const vportProfile = seoRow?.vport_profile_id
+    ? { id: seoRow.vport_profile_id, actor_id: seoRow.actor_id, name: seoRow.vport_name, slug: seoRow.vport_slug }
+    : null
 
-  // ── Step 3: Build canonical slug via model ─────────────────
-  // Pass actorId explicitly so the model never derives null from failed fetches.
+  const publicDetails = seoRow
+    ? { location_text: seoRow.location_text, address: seoRow.address }
+    : null
+
+  const category = seoRow?.primary_category_key
+    ? { key: seoRow.primary_category_key, label: seoRow.primary_category_label }
+    : null
+
+  // ── Step 2: Build canonical slug via model ─────────────────
   const result = ActorSeoModel({ actorId, actorRow, vportProfile, publicDetails, category })
 
   let canonicalSlug = result.canonicalSlug
   let slugParts = result.slugParts ?? {}
 
-  // ── Step 4: Hydration store fallback ───────────────────────
+  // ── Step 3: Hydration store fallback ───────────────────────
   // If all fetches failed and the model returned no slug (no name available),
   // check the hydration store for a cached display name before giving up.
   // Worst case: produce "{uuid}-profile" — a valid canonical slug that unblocks

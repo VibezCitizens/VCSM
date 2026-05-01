@@ -1,8 +1,8 @@
-import { MOCK_SERVICES, MOCK_SPECIALTIES } from "@/data/connectors/mockDataset";
+import { SERVICES, SPECIALTIES } from "@/data/connectors/taxonomyDataset";
 import { slugEquals } from "@/lib/slugs";
 
 export function listServices() {
-  return MOCK_SERVICES.filter((service) => service.isActive);
+  return SERVICES.filter((service) => service.isActive);
 }
 
 export function getServiceById(serviceId) {
@@ -14,7 +14,7 @@ export function getServiceBySlug(serviceSlug) {
 }
 
 export function listSpecialtiesByService(serviceId) {
-  return MOCK_SPECIALTIES.filter(
+  return SPECIALTIES.filter(
     (specialty) => specialty.serviceId === serviceId && specialty.isActive
   );
 }

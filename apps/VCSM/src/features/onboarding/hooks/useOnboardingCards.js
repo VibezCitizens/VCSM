@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getOnboardingCardsController } from '@/features/onboarding/controller/onboardingController'
+import { getOnboardingCardsController } from '@/features/onboarding/controller/onboarding.controller'
 
 export default function useOnboardingCards(actorId) {
   const [cards, setCards] = useState([])

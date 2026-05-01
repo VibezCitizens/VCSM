@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
 import { hydrateActorsFromRows } from "@/state/actors/hydrateActors";
 import {
   useBookingAvailability,
@@ -14,14 +13,10 @@ import {
   buildBookingsByDate,
   buildCustomerActorRows,
   buildMonthCells,
-  buildMonthStats,
   buildOccupiedIntervalsByDate,
   buildSlotsByDate,
-  buildUpcomingAppointments,
-  buildWeeklyAvailabilityDays,
 } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarAvailability.model";
 import {
-  addDays,
   endOfMonth,
   formatDateLabel,
   formatMonthLabel,
@@ -32,33 +27,14 @@ import {
   normalizeDurationMinutes,
   shiftMonth,
   startOfMonth,
-  startOfWeek,
   VISITOR_SLOT_DURATION_MINUTES,
 } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { canCitizenBook } from "@/state/identity/identitySelectors";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
-
-function useAvailabilityData(availability) {
-  const bookings = useMemo(
-    () => (Array.isArray(availability.data?.bookings) ? availability.data.bookings : []),
-    [availability.data?.bookings]
-  );
-  const rules = useMemo(
-    () => (Array.isArray(availability.data?.rules) ? availability.data.rules : []),
-    [availability.data?.rules]
-  );
-  const exceptions = useMemo(
-    () => (Array.isArray(availability.data?.exceptions) ? availability.data.exceptions : []),
-    [availability.data?.exceptions]
-  );
-  const serviceProfiles = useMemo(
-    () =>
-      (Array.isArray(availability.data?.serviceProfiles) ? availability.data.serviceProfiles : []),
-    [availability.data?.serviceProfiles]
-  );
-  return { bookings, rules, exceptions, serviceProfiles };
-}
+import { useAvailabilityData } from "@/features/profiles/kinds/vport/screens/booking/hooks/useAvailabilityData";
+import { useOwnerFollowerSelector } from "@/features/profiles/kinds/vport/screens/booking/hooks/useOwnerFollowerSelector";
+import { useAgendaCalendarValues } from "@/features/profiles/kinds/vport/screens/booking/hooks/useAgendaCalendarValues";
 
 export function useVportBookingView({ profile, isOwner = false }) {
   const { identity } = useIdentity();
@@ -82,7 +58,6 @@ export function useVportBookingView({ profile, isOwner = false }) {
     enabled: Boolean(isOwner && ownerActorId),
   });
 
-  // Org/location context — resolves primary_calendar or any_available mode
   const bookingContext = useBookingContextResolver({
     profileId,
     enabled: Boolean(profileId),
@@ -94,7 +69,6 @@ export function useVportBookingView({ profile, isOwner = false }) {
     enabled: Boolean(ownerActorId),
   });
 
-  // Prefer org context resource when available, fall back to legacy primary resource
   const resourceId = bookingContext.resource?.id ?? resources.primary?.id ?? null;
   const bookingLocationId = bookingContext.location?.id ?? null;
   const rangeStart = startOfMonth(monthCursor).toISOString();
@@ -179,57 +153,35 @@ export function useVportBookingView({ profile, isOwner = false }) {
     () => bookingsByDate[selectedDateKey] ?? [],
     [bookingsByDate, selectedDateKey]
   );
-  const selectedSlots = useMemo(() => slotsByDate[selectedDateKey] ?? [], [slotsByDate, selectedDateKey]);
-  const ownerFollowerOptions = useMemo(() => {
-    const rows = Array.isArray(ownerFollowerSearch.rows) ? ownerFollowerSearch.rows : [];
-    const seenActorIds = new Set();
-
-    return rows
-      .map((row) => {
-        const actorId = row?.actor_id ?? row?.id ?? null;
-        if (!actorId || seenActorIds.has(actorId)) return null;
-        seenActorIds.add(actorId);
-
-        const displayName = String(row?.display_name || row?.username || "Citizen").trim();
-        const username = String(row?.username || row?.slug || row?.vport_slug || "").trim() || null;
-
-        return {
-          actorId,
-          displayName: displayName || "Citizen",
-          username,
-          avatar: row?.photo_url || "/avatar.jpg",
-        };
-      })
-      .filter(Boolean);
-  }, [ownerFollowerSearch.rows]);
-
-  const selectedOwnerFollower = useMemo(
-    () => ownerFollowerOptions.find((follower) => follower.actorId === ownerCustomerActorId) ?? null,
-    [ownerFollowerOptions, ownerCustomerActorId]
+  const selectedSlots = useMemo(
+    () => slotsByDate[selectedDateKey] ?? [],
+    [slotsByDate, selectedDateKey]
   );
+  const {
+    selectedOwnerFollower,
+    ownerFollowerMatches,
+    onOwnerCustomerNameChange,
+    onSelectOwnerFollower,
+    onClearOwnerFollower,
+  } = useOwnerFollowerSelector({
+    isOwner,
+    ownerFollowerSearch,
+    ownerCustomerName,
+    ownerCustomerActorId,
+    setOwnerCustomerName,
+    setOwnerCustomerActorId,
+  });
 
-  const ownerFollowerMatches = useMemo(() => {
-    if (!isOwner) return [];
-
-    const query = String(ownerCustomerName || "").trim().toLowerCase();
-    if (!query) return [];
-
-    return ownerFollowerOptions
-      .filter((follower) => {
-        if (!follower) return false;
-        if (ownerCustomerActorId && follower.actorId === ownerCustomerActorId) return false;
-
-        const displayName = String(follower.displayName || "").toLowerCase();
-        const username = String(follower.username || "").toLowerCase();
-        const handle = username ? `@${username}` : "";
-        return (
-          displayName.includes(query) ||
-          username.includes(query) ||
-          handle.includes(query)
-        );
-      })
-      .slice(0, 7);
-  }, [isOwner, ownerCustomerName, ownerFollowerOptions, ownerCustomerActorId]);
+  const { agendaWeekLabel, weeklyAvailabilityDays, upcomingAppointments, monthStats } =
+    useAgendaCalendarValues({
+      selectedDateKey,
+      rules,
+      exceptions,
+      occupiedIntervalsByDate,
+      slotDurationMinutes,
+      bookingsByDate,
+      slotsByDate,
+    });
 
   useEffect(() => {
     if (!selectedSlot) return;
@@ -237,7 +189,6 @@ export function useVportBookingView({ profile, isOwner = false }) {
     setSelectedSlot(null);
   }, [selectedSlot, selectedSlots]);
 
-  // Auto-clear expired selected slot every 30 seconds
   useEffect(() => {
     if (!selectedSlot || !selectedDateKey) return;
     const checkExpiry = () => {
@@ -250,12 +201,6 @@ export function useVportBookingView({ profile, isOwner = false }) {
   }, [selectedSlot, selectedDateKey]);
 
   useEffect(() => {
-    if (!ownerCustomerActorId) return;
-    if (ownerFollowerOptions.some((follower) => follower.actorId === ownerCustomerActorId)) return;
-    setOwnerCustomerActorId(null);
-  }, [ownerCustomerActorId, ownerFollowerOptions]);
-
-  useEffect(() => {
     const customerActorRows = buildCustomerActorRows(bookings);
     if (!customerActorRows.length) return;
     Promise.resolve(hydrateActorsFromRows(customerActorRows)).catch(() => {});
@@ -266,39 +211,6 @@ export function useVportBookingView({ profile, isOwner = false }) {
     if (viewMode !== "agenda") return;
     setViewMode("calendar");
   }, [isOwner, viewMode]);
-
-  const agendaWeekAnchor = useMemo(() => {
-    const selectedDate = selectedDateKey ? fromDateKey(selectedDateKey) : null;
-    if (selectedDate instanceof Date && !Number.isNaN(selectedDate.getTime())) return selectedDate;
-    return new Date();
-  }, [selectedDateKey]);
-  const agendaWeekStart = useMemo(() => startOfWeek(agendaWeekAnchor), [agendaWeekAnchor]);
-  const agendaWeekLabel = useMemo(() => {
-    const weekEnd = addDays(agendaWeekStart, 6);
-    const startLabel = agendaWeekStart.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-    const endLabel = weekEnd.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-    return `${startLabel} - ${endLabel}`;
-  }, [agendaWeekStart]);
-
-  const weeklyAvailabilityDays = useMemo(
-    () =>
-      buildWeeklyAvailabilityDays({
-        agendaWeekStart,
-        rules,
-        exceptions,
-        occupiedIntervalsByDate,
-        slotDurationMinutes,
-      }),
-    [agendaWeekStart, rules, exceptions, occupiedIntervalsByDate, slotDurationMinutes]
-  );
-  const upcomingAppointments = useMemo(
-    () => buildUpcomingAppointments(bookingsByDate),
-    [bookingsByDate]
-  );
-  const monthStats = useMemo(
-    () => buildMonthStats({ slotsByDate, bookingsByDate }),
-    [slotsByDate, bookingsByDate]
-  );
 
   const onSelectDate = useCallback(
     (dateKey) => {
@@ -320,50 +232,6 @@ export function useVportBookingView({ profile, isOwner = false }) {
     setSelectedSlot(null);
     setSelectedDateKey(null);
     setOwnerCustomerName("");
-    setOwnerCustomerActorId(null);
-  }, []);
-
-  const onOwnerCustomerNameChange = useCallback(
-    (nextValue) => {
-      const nextName = String(nextValue ?? "");
-      setOwnerCustomerName(nextName);
-
-      if (!ownerCustomerActorId) return;
-
-      const normalized = nextName.trim().toLowerCase();
-      if (!normalized) {
-        setOwnerCustomerActorId(null);
-        return;
-      }
-
-      const selectedFollower = ownerFollowerOptions.find(
-        (follower) => follower.actorId === ownerCustomerActorId
-      );
-      if (!selectedFollower) {
-        setOwnerCustomerActorId(null);
-        return;
-      }
-
-      const normalizedName = String(selectedFollower.displayName || "").trim().toLowerCase();
-      const normalizedUsername = String(selectedFollower.username || "").trim().toLowerCase();
-      if (
-        normalized !== normalizedName &&
-        normalized !== normalizedUsername &&
-        normalized !== (normalizedUsername ? `@${normalizedUsername}` : "")
-      ) {
-        setOwnerCustomerActorId(null);
-      }
-    },
-    [ownerCustomerActorId, ownerFollowerOptions]
-  );
-
-  const onSelectOwnerFollower = useCallback((follower) => {
-    if (!follower?.actorId) return;
-    setOwnerCustomerActorId(follower.actorId);
-    setOwnerCustomerName(String(follower.displayName || follower.username || ""));
-  }, []);
-
-  const onClearOwnerFollower = useCallback(() => {
     setOwnerCustomerActorId(null);
   }, []);
 
@@ -413,20 +281,14 @@ export function useVportBookingView({ profile, isOwner = false }) {
     viewerCanBook,
     canRequestSelectedSlot: viewerCanBook && (!isOwner || Boolean(viewerActorId)),
     isSelectedSlotAvailable: Boolean(selectedSlot) && selectedSlots.includes(selectedSlot),
-    hasSelectedAvailableDay:
-      Boolean(selectedDateKey) &&
-      Array.isArray(slotsByDate[selectedDateKey]) &&
-      slotsByDate[selectedDateKey].length > 0,
+    hasSelectedAvailableDay: Boolean(selectedDateKey) && Array.isArray(slotsByDate[selectedDateKey]) && slotsByDate[selectedDateKey].length > 0,
     upcomingAppointments,
     weeklyAvailabilityDays,
     agendaWeekLabel,
     onPrevMonth: () => setMonthCursor((prev) => shiftMonth(prev, -1)),
     onNextMonth: () => setMonthCursor((prev) => shiftMonth(prev, 1)),
     onSelectDate,
-    onSelectSlot: (slotValue) => {
-      if (!viewerCanBook) return;
-      setSelectedSlot((prev) => (prev === slotValue ? null : slotValue));
-    },
+    onSelectSlot: (slotValue) => { if (!viewerCanBook) return; setSelectedSlot((prev) => (prev === slotValue ? null : slotValue)); },
     onChangeViewMode: setViewMode,
     onChangeDuration: setSelectedDurationMinutes,
     onOwnerCustomerNameChange,

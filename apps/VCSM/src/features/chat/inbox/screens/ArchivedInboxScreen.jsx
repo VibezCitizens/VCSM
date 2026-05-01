@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import useInboxFolder from '@/features/chat/inbox/hooks/useInboxFolder'
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'

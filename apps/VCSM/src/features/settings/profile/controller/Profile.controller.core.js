@@ -6,12 +6,10 @@
 // - Calls DAL + Models
 // ============================================================
 
-import { fetchProfile } from '../dal/profile.read.dal'
-import { updateProfile } from '../dal/profile.write.dal'
-import { mapProfileToView, mapProfileUpdate } from '../model/profile.mapper'
-import { refreshVcActorDirectory } from '@/features/identity/dal/refreshActorDirectory.dal'
-import { dalReadActorIdByProfileId, dalReadActorIdByVportId } from '../dal/actorIdBySubject.read.dal'
-import { invalidateActorProfileCache } from '@/features/profiles/dal/readActorProfile.dal'
+import { fetchProfile } from '@/features/settings/profile/dal/profile.read.dal'
+import { updateProfile } from '@/features/settings/profile/dal/profile.write.dal'
+import { mapProfileToView, mapProfileUpdate } from '@/features/settings/profile/model/profile.model'
+import { dalReadActorIdByProfileId, dalReadActorIdByVportId } from '@/features/settings/profile/dal/actorIdBySubject.read.dal'
 import { useActorStore } from '@hydration'
 
 export async function loadProfileCore({ subjectId, mode }) {
@@ -24,6 +22,8 @@ export async function saveProfileCore({
   mode,
   draft,
   uploads,
+  invalidateActorProfileCache,
+  refreshVcActorDirectory,
 }) {
   if (!subjectId) throw new Error('saveProfile: subjectId missing')
 
@@ -73,14 +73,13 @@ export async function saveProfileCore({
     }
   } catch {}
 
-  // Refresh actor directory projection (non-fatal)
   if (actorId) {
-    try { refreshVcActorDirectory(actorId) } catch {}
+    try { refreshVcActorDirectory?.(actorId) } catch {}
   }
 
   // Bust the 30s profile page cache so navigation to the profile sees fresh data
   if (actorId) {
-    try { invalidateActorProfileCache(actorId) } catch {}
+    try { invalidateActorProfileCache?.(actorId) } catch {}
   }
 
   // Force-update the hydration store — feeds/chat avatars update without waiting for TTL

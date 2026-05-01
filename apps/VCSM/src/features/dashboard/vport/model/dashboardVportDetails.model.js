@@ -191,6 +191,7 @@ export function normalizeDashboardVportDetails(details) {
 
   const normalized = {
     actorId: source.actorId ?? source.actor_id ?? null,
+    cityId: source.cityId ?? source.city_id ?? null,
     kind: asText(source.kind),
     vportType: asText(source.vportType ?? source.vport_type),
     name: asText(source.name ?? source.displayName ?? source.display_name),

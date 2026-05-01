@@ -29,3 +29,8 @@ export async function dalSignOutRecoverySession() {
   const { error } = await supabase.auth.signOut({ scope: 'local' })
   if (error) throw error
 }
+
+export function dalSubscribeToAuthStateChange(handler) {
+  const { data: listener } = supabase.auth.onAuthStateChange(handler)
+  return () => listener?.subscription?.unsubscribe?.()
+}

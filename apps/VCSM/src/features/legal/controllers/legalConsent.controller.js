@@ -1,7 +1,7 @@
 import { dalGetActiveLegalDocuments } from '../dal/legalDocuments.read.dal'
 import { dalGetUserConsents } from '../dal/userConsents.read.dal'
 import { dalRecordLegalAcceptance } from '../dal/userConsents.write.dal'
-import { getPublicIp } from '../dal/getPublicIp'
+import { getPublicIp } from '../dal/getPublicIp.dal'
 import { buildConsentComplianceStatus } from '../engine/legalCompliance.engine'
 import { createTTLCache } from '@/shared/lib/ttlCache'
 

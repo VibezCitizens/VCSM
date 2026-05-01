@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Globe, MessageCircle, Shield, AlertTriangle, Mail, Briefcase, Flag } from 'lucide-react'
-import PublicTopNav from '../components/PublicTopNav'
+import PublicNavbar, { PUBLIC_NAV_HEIGHT } from '@/shared/components/PublicNavbar'
 
 const CONTACT_CARDS = [
   {
@@ -75,9 +75,9 @@ const GUIDE_CARDS = [
 
 export default function ContactView() {
   return (
-    <div style={{ minHeight: '100vh', background: '#060609', color: '#fff', paddingTop: 60 }}>
+    <div style={{ minHeight: '100vh', background: '#060609', color: '#fff', paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top))` }}>
 
-      <PublicTopNav />
+      <PublicNavbar />
 
       {/* ── HERO ──────────────────────────────────────────────── */}
       <div style={{ position: 'relative', padding: '52px 20px 68px', textAlign: 'center', overflow: 'hidden' }}>

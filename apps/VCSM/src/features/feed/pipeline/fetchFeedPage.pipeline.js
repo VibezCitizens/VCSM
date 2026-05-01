@@ -5,12 +5,12 @@ import { readHiddenPostsForViewer as _readHiddenPostsForViewer } from "@/feature
 import { readActorsBundle as _readActorsBundle } from "@/features/feed/dal/feed.read.actorsBundle.dal";
 import { readFeedBlockRowsDAL as _readFeedBlockRowsDAL } from "@/features/feed/dal/feed.read.blockRows.dal";
 import { readFeedFollowRowsDAL as _readFeedFollowRowsDAL } from "@/features/feed/dal/feed.read.followRows.dal";
-import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows";
+import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows.model";
 import { buildBlockedActorSetModel } from "@/features/feed/model/feedBlockVisibility.model";
 import { buildFollowedActorSetModel } from "@/features/feed/model/feedFollowVisibility.model";
 
 import { fetchPostMentionRows as _fetchPostMentionRows } from "@/features/feed/dal/feed.mentions.dal";
-import { buildMentionMaps } from "@/features/feed/model/buildMentionMaps";
+import { buildMentionMaps } from "@/features/feed/model/buildMentionMaps.model";
 
 import { readCommentCountsBatch as _readCommentCountsBatch } from "@/features/feed/dal/feed.read.commentCounts.dal";
 import { readViewerReactionsBatch as _readViewerReactionsBatch } from "@/features/feed/dal/feed.read.viewerReactions.dal";

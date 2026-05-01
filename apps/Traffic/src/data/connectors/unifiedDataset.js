@@ -1,72 +1,72 @@
 /**
- * Unified dataset — merges mock provider data with real VPORT data from Supabase.
+ * Live dataset — loads real VPORT data from Supabase.
  *
- * Uses top-level await (supported in Next.js 14 / webpack 5 ESM modules) so
- * repositories can continue to import synchronous arrays with no API changes.
+ * Previously merged mock provider data with live VPORT data.
+ * Mock provider merging has been removed. Only real VPORT profiles
+ * from vport.public_traze_profiles_v are used at runtime.
  *
- * Merge rules:
- *   - Real VPORT providers win on slug collision (production data takes precedence)
- *   - Mock providers whose slug matches a live VPORT are silently dropped
- *   - If Supabase is unavailable (missing env vars or network error), the build
- *     continues with mock data only — this file never throws
+ * Export names kept for backward compatibility with provider.repo.js
+ * and aggregate.repo.js — the MOCK_ prefix is now a legacy artifact.
+ *
+ * If Supabase is unavailable (missing env vars or network error), the
+ * build continues with empty provider arrays — this file never throws.
  */
 
-import {
-  MOCK_PROVIDERS as RAW_MOCK_PROVIDERS,
-  MOCK_PROVIDER_SERVICES as RAW_MOCK_PROVIDER_SERVICES,
-  MOCK_PROVIDER_STATS as RAW_MOCK_PROVIDER_STATS,
-  MOCK_PRICE_AGGREGATES as RAW_MOCK_PRICE_AGGREGATES
-} from "@/data/connectors/mockDataset";
-import { loadVportDataset } from "@/data/connectors/vportDataset";
+import { loadVportRows } from "@/data/connectors/vportDataset";
+import { mapVportRowToProvider } from "@/data/mappers/vportToProvider.model";
 
-// ─── Load real VPORT data ─────────────────────────────────────────────────────
+/** @typedef {import("@/data/types").Provider} Provider */
+/** @typedef {import("@/data/types").ProviderService} ProviderService */
+/** @typedef {import("@/data/types").ProviderStats} ProviderStats */
 
-let vportData = { providers: [], providerServices: [], providerStats: [] };
+// ─── Load and map real VPORT data ────────────────────────────────────────────
+
+/** @type {Provider[]} */
+const providers = [];
+/** @type {ProviderService[]} */
+const providerServices = [];
+/** @type {ProviderStats[]} */
+const providerStats = [];
 
 try {
-  vportData = await loadVportDataset();
+  const rows = await loadVportRows();
+
+  for (const row of rows) {
+    let mapped;
+    try {
+      mapped = mapVportRowToProvider(row);
+    } catch (err) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[unifiedDataset] Failed to map row", row?.slug, err?.message ?? err);
+      }
+      continue;
+    }
+
+    if (!mapped) continue;
+
+    providers.push(mapped.provider);
+    if (mapped.providerService) providerServices.push(mapped.providerService);
+    providerStats.push(mapped.providerStats);
+  }
 } catch {
-  // Never let a load failure break the build — mock data carries on
+  // Never let a load failure break the build
 }
 
-// ─── Slug deduplication ───────────────────────────────────────────────────────
-// Real VPORT data wins. Any mock provider sharing a slug with a live VPORT is
-// dropped so the real profile page is the only one generated.
+// ─── Live-only exports ────────────────────────────────────────────────────────
+// These names are kept for backward compat with importing repos.
+// No mock data is mixed in — these arrays contain only real VPORT profiles.
 
-const realSlugs = new Set(vportData.providers.map((p) => p.slug.toLowerCase()));
-const realProviderIds = new Set(vportData.providers.map((p) => p.id));
+/** @type {Provider[]} */
+export const MOCK_PROVIDERS = providers;
 
-const dedupedMockProviders = RAW_MOCK_PROVIDERS.filter(
-  (p) => !realSlugs.has(p.slug.toLowerCase())
-);
-const dedupedMockProviderServices = RAW_MOCK_PROVIDER_SERVICES.filter(
-  (ps) => !realProviderIds.has(ps.providerId)
-);
-const dedupedMockProviderStats = RAW_MOCK_PROVIDER_STATS.filter(
-  (s) => !realProviderIds.has(s.providerId)
-);
+/** @type {ProviderService[]} */
+export const MOCK_PROVIDER_SERVICES = providerServices;
 
-// ─── Merged exports ───────────────────────────────────────────────────────────
-// Exported under the exact same names that provider.repo.js and aggregate.repo.js
-// already use, so those files only need their import path updated — nothing else.
-
-/** @type {import("@/data/types").Provider[]} */
-export const MOCK_PROVIDERS = [
-  ...vportData.providers,
-  ...dedupedMockProviders
-];
-
-/** @type {import("@/data/types").ProviderService[]} */
-export const MOCK_PROVIDER_SERVICES = [
-  ...vportData.providerServices,
-  ...dedupedMockProviderServices
-];
-
-/** @type {import("@/data/types").ProviderStats[]} */
-export const MOCK_PROVIDER_STATS = [
-  ...vportData.providerStats,
-  ...dedupedMockProviderStats
-];
+/** @type {ProviderStats[]} */
+export const MOCK_PROVIDER_STATS = providerStats;
 
 /** @type {import("@/data/types").PriceAggregate[]} */
-export const MOCK_PRICE_AGGREGATES = RAW_MOCK_PRICE_AGGREGATES;
+export const MOCK_PRICE_AGGREGATES = [];
+
+/** Whether live VPORT data loaded successfully. "ok" | "unavailable" */
+export const LIVE_DATA_STATUS = providers.length > 0 ? "ok" : "unavailable";

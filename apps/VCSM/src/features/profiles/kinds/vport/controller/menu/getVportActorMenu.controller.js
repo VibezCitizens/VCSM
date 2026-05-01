@@ -4,9 +4,7 @@ import listVportActorMenuItemsDAL from "@/features/profiles/kinds/vport/dal/menu
 import { VportActorMenuCategoryModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenuCategory.model";
 import { VportActorMenuItemModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenuItem.model";
 import { VportActorMenuModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenu.model";
-import { createTTLCache } from "@/shared/lib/ttlCache";
-
-const menuCache = createTTLCache(60_000); // 60 seconds
+import { menuCache } from "@/features/profiles/kinds/vport/lib/menuCache";
 
 export async function getVportActorMenuController({
   actorId,

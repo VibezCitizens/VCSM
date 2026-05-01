@@ -8,7 +8,7 @@
 // ============================================================
 
 import { useParams, Navigate } from 'react-router-dom'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
 import ConversationView from '@/features/chat/conversation/screen/ConversationView'
 import '@/features/ui/modern/module-modern.css'

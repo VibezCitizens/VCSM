@@ -2,8 +2,8 @@ import { InternalLinkGrid } from "@/features/directories/components/InternalLink
 import { ProviderCtaModules } from "@/features/conversion/components/CtaModules";
 import { getProviderGuideLinks } from "@/features/providers/lib/providerGuideLinks";
 import { ContactSection } from "@/features/providers/components/ContactSection";
+import ProviderReviewList from "@/features/providers/components/ProviderReviewList";
 import { ReviewTrustSummary } from "@/features/reviews/components/ReviewTrustSummary";
-import { getPublicReviewSummaryForProvider } from "@/data/repositories/reviewSummary.repo";
 import { JsonLdScript } from "@/shared/components/JsonLdScript";
 
 const SERVICE_GRADIENT = {
@@ -50,6 +50,7 @@ export async function ProviderPageTemplate({
   stats,
   context,
   reviewSummary = null,
+  visibleReviews = [],
   guideLinks = [],
   relatedLinks,
   schema
@@ -57,9 +58,6 @@ export async function ProviderPageTemplate({
   const providerGuideLinks = guideLinks.length
     ? guideLinks
     : await getProviderGuideLinks(model.provider, { limit: 4 });
-  const providerReviewSummary = reviewSummary
-    ? reviewSummary
-    : await getPublicReviewSummaryForProvider(model.provider, stats);
 
   const { provider } = model;
   const serviceInitials = getServiceInitials(model.serviceNames);
@@ -70,7 +68,18 @@ export async function ProviderPageTemplate({
     model.countryName
   );
   const isVerified = Boolean(provider.vcsmActorId);
-  const hasRealReviews = (stats?.reviewCount ?? 0) > 0 && (stats?.ratingAvg ?? 0) > 0;
+  const summaryReviewCount = Number(reviewSummary?.reviewCount ?? 0);
+  const summaryAverageRating = Number(reviewSummary?.averageRating ?? 0);
+  const statsReviewCount = Number(stats?.reviewCount ?? 0);
+  const statsAverageRating = Number(stats?.ratingAvg ?? 0);
+
+  const ratingValue = summaryAverageRating > 0 ? summaryAverageRating : (statsAverageRating > 0 ? statsAverageRating : null);
+  const reviewCountValue = summaryReviewCount > 0 ? summaryReviewCount : (statsReviewCount > 0 ? statsReviewCount : null);
+  const hasVisibleReviewSignals = Boolean(
+    (reviewCountValue ?? 0) > 0 &&
+    (ratingValue ?? 0) > 0
+  );
+  const hasVisibleReviews = visibleReviews.length > 0 || hasVisibleReviewSignals;
   const showBio = !isDefaultBio(provider.shortBio, provider.displayName);
 
   // Banner: real image with dark overlay, else pure CSS gradient hero
@@ -137,15 +146,15 @@ export async function ProviderPageTemplate({
         ) : null}
 
         <div className="pro-hero-stats">
-          {hasRealReviews ? (
+          {hasVisibleReviewSignals ? (
             <>
               <span className="pro-stat">
-                <span className="pro-stat-value">&#9733; {stats.ratingAvg.toFixed(1)}</span>
+                <span className="pro-stat-value">&#9733; {ratingValue.toFixed(1)}</span>
                 <span className="pro-stat-label">Rating</span>
               </span>
               <span className="pro-stat-divider" aria-hidden="true" />
               <span className="pro-stat">
-                <span className="pro-stat-value">{stats.reviewCount}</span>
+                <span className="pro-stat-value">{reviewCountValue}</span>
                 <span className="pro-stat-label">Reviews</span>
               </span>
             </>
@@ -160,7 +169,9 @@ export async function ProviderPageTemplate({
         <aside className="pro-sidebar">
           <ProviderCtaModules
             providerSlug={provider.slug}
-            context={context}
+            providerProfileId={provider.id}
+            providerPhone={provider.phoneE164}
+            providerName={provider.displayName}
             claimStatus={provider.claimStatus}
             vcsmActorId={provider.vcsmActorId}
             vcsmSlug={provider.vcsmSlug}
@@ -182,10 +193,20 @@ export async function ProviderPageTemplate({
 
           {/* Trust / Reviews */}
           <section className="card card--subtle pro-trust" aria-label="Reviews and trust">
-            {providerReviewSummary && hasRealReviews ? (
+            {hasVisibleReviews ? (
               <>
                 <h2 className="pro-section-title">Reviews</h2>
-                <ReviewTrustSummary summary={providerReviewSummary} />
+                {reviewSummary ? (
+                  <ReviewTrustSummary summary={reviewSummary} />
+                ) : null}
+
+                {visibleReviews.length > 0 ? (
+                  <ProviderReviewList reviews={visibleReviews} />
+                ) : hasVisibleReviewSignals ? (
+                  <p className="pro-review-meta-note">
+                    This profile has ratings, but no written comments yet.
+                  </p>
+                ) : null}
               </>
             ) : (
               <div className="pro-trust-empty">

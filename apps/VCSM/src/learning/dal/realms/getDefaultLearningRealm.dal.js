@@ -1,11 +1,8 @@
+import { supabase } from "@/services/supabase/supabaseClient";
 import { REALM_COLUMNS } from "@/learning/dal/realms/getLearningRealmById.dal";
 import { logRealmDebug } from "@/learning/utils/realmDebug";
 
-export async function getDefaultLearningRealmDal({ supabase }) {
-  if (!supabase) {
-    throw new Error("getDefaultLearningRealmDal requires supabase");
-  }
-
+export async function getDefaultLearningRealmDal() {
   logRealmDebug("getDefaultLearningRealmDal", "query:start");
 
   const { data, error } = await supabase

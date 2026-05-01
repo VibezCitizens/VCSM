@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { authTheme } from '@/features/auth/styles/authTheme'
+import { authTheme } from '@/features/auth/adapters/auth.adapter'
 
 const CATEGORY_ORDER = [
   'Music',

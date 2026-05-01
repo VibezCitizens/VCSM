@@ -4,7 +4,6 @@ import {
   dalDeleteMyVport,
   dalHardDeleteVport,
 } from '@/features/settings/account/dal/account.write.dal'
-import { restoreVport } from '@/features/vport/dal/vport.core.dal'
 
 export async function ctrlResolveVportIdByActorId(actorId) {
   return dalReadVportIdByActorId(actorId)
@@ -22,6 +21,6 @@ export async function ctrlHardDeleteVport({ vportId }) {
   await dalHardDeleteVport(vportId)
 }
 
-export async function ctrlRestoreVport({ vportId }) {
-  await restoreVport(vportId)
+export async function ctrlRestoreVport({ vportId, restoreVportFn }) {
+  await restoreVportFn?.(vportId)
 }

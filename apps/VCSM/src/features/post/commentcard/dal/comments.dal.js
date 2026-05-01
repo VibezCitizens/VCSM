@@ -76,6 +76,19 @@ export async function softDeleteCommentDAL({ actorId, commentId }) {
  * Optional legacy function (no owner gate).
  * Keep only if older code still calls it.
  */
+export async function readCommentActorAndPostIdDAL(commentId) {
+  if (!commentId) return null;
+
+  const { data } = await supabase
+    .schema("vc")
+    .from("post_comments")
+    .select("actor_id, post_id")
+    .eq("id", commentId)
+    .maybeSingle();
+
+  return data ?? null;
+}
+
 export async function deleteComment(commentId) {
   const { data, error } = await supabase
     .schema("vc")

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { editCommentController } from "@/features/post/commentcard/controller/editComment.controller";
+import { useEditCommentAction } from "@/features/post/commentcard/hooks/useEditCommentAction";
 import { useIdentity } from "@/state/identity/identityContext";
 
 export default function EditCommentScreen() {
@@ -14,27 +14,17 @@ export default function EditCommentScreen() {
 
   const initialText = state?.initialText ?? "";
   const [text, setText] = useState(initialText);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const editComment = useEditCommentAction({ actorId: identity?.actorId });
 
   const handleSave = async () => {
     setLoading(true);
     setError(null);
-
-    const { ok, error } = await editCommentController({
-      actorId: identity.actorId,
-      commentId,
-      text,
-    });
-
+    const { ok, error: saveError } = await editComment({ commentId, text });
     setLoading(false);
-
-    if (!ok) {
-      setError(error);
-      return;
-    }
-
+    if (!ok) { setError(saveError); return; }
     navigate(-1);
   };
 

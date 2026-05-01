@@ -22,8 +22,8 @@ import { fetchFeedPagePipeline } from "@/features/feed/pipeline/fetchFeedPage.pi
 import { getFeedViewerIsAdult } from "@/features/feed/controllers/getFeedViewerContext.controller";
 import { listActorPosts } from "@/features/feed/controllers/listActorPosts.controller";
 import { listFeedPosts } from "@/features/feed/dal/feed.posts.dal";
-import { inferMediaType } from "@/features/feed/model/inferMediaType";
-import { buildMentionMaps } from "@/features/feed/model/buildMentionMaps";
+import { inferMediaType } from "@/features/feed/model/inferMediaType.model";
+import { buildMentionMaps } from "@/features/feed/model/buildMentionMaps.model";
 import {
   buildBlockedActorSetModel,
   isActorBlockedForViewerModel,
@@ -34,7 +34,7 @@ import {
 } from "@/features/feed/model/feedFollowVisibility.model";
 import { canViewPrivateFeedActorModel } from "@/features/feed/model/feedPrivateVisibility.model";
 import { resolveFeedRowVisibilityModel } from "@/features/feed/model/feedRowVisibility.model";
-import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows";
+import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows.model";
 import CentralFeed from "@/features/feed/screens/CentralFeedScreen";
 import DebugFeedFilterPanel from "@/features/feed/screens/DebugFeedFilterPanel";
 import DebugPrivacyPanel from "@/features/feed/screens/DebugPrivacyPanel";

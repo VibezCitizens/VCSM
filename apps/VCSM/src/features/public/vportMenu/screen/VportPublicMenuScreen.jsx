@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import VportPublicMenuView from "@/features/public/vportMenu/view/VportPublicMenuView";
-import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
+import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
 
 export function VportPublicMenuScreen() {
   const params = useParams();

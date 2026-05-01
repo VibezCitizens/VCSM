@@ -3,9 +3,8 @@
 import { getInboxNotifications } from '@notifications'
 import { loadBlockSets, filterByBlocks } from '../lib/blockFilter'
 import { resolveSenders } from '../lib/resolveSenders'
-import { mapNotification } from '../model/notification.mapper'
+import { mapNotification } from '../model/notification.model'
 import { resolveInboxActor } from '../lib/resolveInboxActor'
-import { ctrlListIncomingRequests } from '@/features/social/friend/request/controllers/followRequests.controller'
 
 function normalizeNotificationKind(kind) {
   return String(kind || '').toLowerCase().replaceAll('.', '_')
@@ -25,7 +24,7 @@ function extractRequesterActorId(row) {
   )
 }
 
-async function filterResolvedFollowRequestRows({ rows, targetActorId }) {
+async function filterResolvedFollowRequestRows({ rows, targetActorId, listIncomingRequests }) {
   const safeRows = Array.isArray(rows) ? rows : []
   if (!targetActorId || safeRows.length === 0) return safeRows
 
@@ -33,9 +32,10 @@ async function filterResolvedFollowRequestRows({ rows, targetActorId }) {
     (row) => normalizeNotificationKind(row?.eventKey) === 'follow_request'
   )
   if (!followRequestRows.length) return safeRows
+  if (typeof listIncomingRequests !== 'function') return safeRows
 
   try {
-    const pendingRows = await ctrlListIncomingRequests({ targetActorId })
+    const pendingRows = await listIncomingRequests({ targetActorId })
     const pendingRequesterIds = new Set(
       (pendingRows ?? [])
         .map((row) => row?.requester_actor_id ?? row?.requesterActorId ?? null)
@@ -59,7 +59,7 @@ async function filterResolvedFollowRequestRows({ rows, targetActorId }) {
   }
 }
 
-export async function getNotifications(identity) {
+export async function getNotifications(identity, { listIncomingRequests } = {}) {
   const { targetActorId, myActorId } =
     await resolveInboxActor(identity)
 
@@ -89,6 +89,7 @@ export async function getNotifications(identity) {
   const visibleRows = await filterResolvedFollowRequestRows({
     rows: filtered,
     targetActorId,
+    listIncomingRequests,
   })
 
   // ------------------------------------------------------------
@@ -106,6 +107,11 @@ export async function getNotifications(identity) {
   const mapped = visibleRows.map(r =>
     mapNotification(r, senderMap)
   )
+
+  // VPORTs don't receive follow/subscribe notifications — irrelevant for business actors
+  if (identity?.kind === 'vport') {
+    return mapped.filter(n => n.kind !== 'follow')
+  }
 
   return mapped
 }

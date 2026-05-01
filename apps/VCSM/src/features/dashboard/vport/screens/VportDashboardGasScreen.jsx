@@ -11,7 +11,7 @@ import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopB
 import { useVportGasPrices } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useVportGasPrices.adapter";
 import { useSubmitFuelPriceSuggestion } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion.adapter";
 import { useOwnerPendingSuggestions } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useOwnerPendingSuggestions.adapter";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import {
   VportDashboardOfficialGasPanel,

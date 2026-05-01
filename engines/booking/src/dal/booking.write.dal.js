@@ -42,6 +42,18 @@ export async function dalInsertBooking({ row } = {}) {
   return data ?? null
 }
 
+export async function dalDeleteBooking({ bookingId } = {}) {
+  if (!bookingId) throw new Error('BookingEngine: bookingId is required')
+
+  const { error } = await getSupabaseClient()
+    .schema('vc')
+    .from('bookings')
+    .delete()
+    .eq('id', bookingId)
+
+  if (error) throw error
+}
+
 export async function dalUpdateBookingStatus({ bookingId, status, cancelledAt, completedAt, internalNote } = {}) {
   if (!bookingId) throw new Error('BookingEngine: bookingId is required')
   if (!status)    throw new Error('BookingEngine: status is required')

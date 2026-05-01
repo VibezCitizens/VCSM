@@ -17,6 +17,7 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
       banner_url,
       is_active,
       public_details:profile_public_details (
+        city_id,
         website_url,
         email_public,
         phone_public,
@@ -56,6 +57,7 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
       banner_url: newData.banner_url ?? null,
       is_active: newData.is_active ?? null,
 
+      city_id: pd?.city_id ?? null,
       website_url: pd?.website_url ?? null,
       email_public: pd?.email_public ?? null,
       phone_public: pd?.phone_public ?? null,

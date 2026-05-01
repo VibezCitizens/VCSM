@@ -1,11 +1,20 @@
 import {
+  readActorPrivacyDiagnosticDAL,
   readFallbackRealmDAL,
   readIdentityActorByIdDAL,
+  readIdentityActorsByIdsDAL,
   readPreferredRealmByVoidStateDAL,
 } from "@/state/identity/identity.read.dal";
-import { resolveAuthenticatedContext } from "@identity";
+import {
+  resolveAuthenticatedContext,
+} from "@identity";
 import { debugLoginEvent, debugLoginError } from "@debuggers/identity";
 import { hydrateActor } from "@hydration";
+import {
+  _identityInflight,
+  _identityResolveCounts,
+  logIdentityResolveCount,
+} from "@/state/identity/identity.controller.inflight";
 
 const IS_DEV = import.meta.env.DEV;
 
@@ -13,54 +22,6 @@ const IS_DEV = import.meta.env.DEV;
 // Callers (identityContext) must detect this and force-logout rather than
 // treating it as a missing identity (which would trigger self-heal).
 export const DELETED_ACCOUNT_SENTINEL = Object.freeze({ __accountDeleted: true });
-
-// In-flight dedup: if loadDefaultIdentityForUser is called while a previous
-// call with the same userId is still running, return the same promise.
-// Prevents duplicate platform reads from concurrent auth state changes.
-const _identityInflight = new Map();
-
-export function mapProfileActor(actor, profile, realmId) {
-  return {
-    actorId: actor.id,
-    kind: "user",
-    realmId,
-    isVoid: actor.is_void,
-    displayName: profile?.display_name ?? null,
-    username: profile?.username ?? null,
-    email: profile?.email ?? null,
-    avatar: profile?.photo_url ?? null,
-    banner: profile?.banner_url ?? null,
-    bio: profile?.bio ?? null,
-    birthdate: profile?.birthdate ?? null,
-    age: profile?.age ?? null,
-    sex: profile?.sex ?? null,
-    isAdult: profile?.is_adult ?? null,
-    discoverable: profile?.discoverable ?? null,
-    publish: profile?.publish ?? null,
-    lastSeen: profile?.last_seen ?? null,
-    createdAt: profile?.created_at ?? null,
-    updatedAt: profile?.updated_at ?? null,
-  };
-}
-
-export function mapVportActor(actor, vport, realmId) {
-  return {
-    actorId: actor.id,
-    kind: "vport",
-    realmId,
-    isVoid: actor.is_void,
-    displayName: vport?.name ?? null,
-    username: vport?.slug ?? null,
-    avatar: vport?.avatar_url ?? null,
-    banner: vport?.banner_url ?? null,
-    bio: vport?.bio ?? null,
-    isActive: vport?.is_active ?? null,
-    isDeleted: vport?.is_deleted ?? false,
-    createdAt: vport?.created_at ?? null,
-    updatedAt: vport?.updated_at ?? null,
-    vportType: vport?.vport_type ?? null,
-  };
-}
 
 export async function resolveRealmId(actor) {
   if (!actor) return null;
@@ -113,7 +74,8 @@ export async function loadIdentityForActorId(actorId) {
  * This function then enriches the engine-selected actor with VCSM domain data
  * through the shared hydration engine and the app-owned VCSM hydrator adapter.
  *
- * Returns the same shape as before for useIdentity() consumers.
+ * Returns hydrated identity details. The provider reduces the public
+ * useIdentity() surface to actor-first { actorId, kind }.
  */
 export async function loadDefaultIdentityForUser({
   userId,
@@ -138,6 +100,8 @@ export async function loadDefaultIdentityForUser({
 
 async function _loadDefaultIdentityForUserInner({ userId, resolveAttempt }) {
   try {
+    logIdentityResolveCount(userId, resolveAttempt);
+
     debugLoginEvent('ENGINE_RESOLVE_START', {
       phase: 'engine',
       payload: { appKey: 'vcsm', userId, resolveAttempt },
@@ -199,21 +163,23 @@ async function _loadDefaultIdentityForUserInner({ userId, resolveAttempt }) {
     // Gated behind explicit opt-in flag to avoid extra DB read on every identity load.
     if (IS_DEV && import.meta.env.VITE_DEBUG_RLS_DIAGNOSTIC === '1') {
       try {
-        const { supabase: _sb } = await import("@/services/supabase/supabaseClient")
-        const { data: privRow, error: privErr } = await _sb
-          .schema('vc')
-          .from('actor_privacy_settings')
-          .select('actor_id, is_private')
-          .eq('actor_id', selectedActorId)
-          .maybeSingle()
+        const privRow = await readActorPrivacyDiagnosticDAL(selectedActorId)
         console.log('[IdentityHydration] RLS_DIAGNOSTIC', {
           actorId: selectedActorId,
           hasPrivacyRow: !!privRow,
           isPrivate: privRow?.is_private ?? null,
-          privErr: privErr?.message ?? null,
+          privErr: null,
           warning: !privRow ? 'MISSING actor_privacy_settings row — can_view_actor will return NULL — RLS will block vc.actors read' : null,
         })
-      } catch (_) {}
+      } catch (privErr) {
+        console.log('[IdentityHydration] RLS_DIAGNOSTIC', {
+          actorId: selectedActorId,
+          hasPrivacyRow: false,
+          isPrivate: null,
+          privErr: privErr?.message ?? null,
+          warning: 'actor_privacy_settings diagnostic read failed',
+        })
+      }
     }
 
     let actorRow = null
@@ -291,10 +257,14 @@ async function _loadDefaultIdentityForUserInner({ userId, resolveAttempt }) {
 /**
  * List actor choices through the shared identity engine.
  * Uses a single batched query instead of N+1 individual actor reads.
+ *
+ * @param {string} _userId
+ * @param {{ ctx?: object }} [opts] - Pass a pre-resolved engine ctx (e.g. from
+ *   useIdentityEngineQuery cache) to skip the resolveAuthenticatedContext call.
  */
-export async function loadOwnedActorChoices(_userId) {
+export async function loadOwnedActorChoices(_userId, { ctx: preResolvedCtx } = {}) {
   try {
-    const ctx = await resolveAuthenticatedContext({
+    const ctx = preResolvedCtx ?? await resolveAuthenticatedContext({
       appKey: "vcsm",
       skipLoginRecord: true,
     });
@@ -305,18 +275,7 @@ export async function loadOwnedActorChoices(_userId) {
     const actorIds = ctx.availableActors.map((link) => link.actorId).filter(Boolean);
     if (!actorIds.length) return [];
 
-    const { supabase } = await import("@/services/supabase/supabaseClient");
-    const { default: vc } = await import("@/services/supabase/vcClient");
-    const { data: actorRows, error } = await vc
-      .from("actors")
-      .select("id, kind, profile_id, vport_id, is_void")
-      .in("id", actorIds);
-
-    if (error) {
-      if (IS_DEV) console.warn("[Identity] Batch actor read failed:", error?.message);
-      return [];
-    }
-
+    const actorRows = await readIdentityActorsByIdsDAL(actorIds);
     const actorMap = new Map((actorRows || []).map((a) => [a.id, a]));
     const linkIdMap = new Map(ctx.availableActors.map((link) => [link.actorId, link.id]));
 

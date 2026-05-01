@@ -25,6 +25,7 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
 
   "Beauty & Wellness": [
     "barber",
+    "barbershop",
     "esthetician",
     "fitness instructor",
     "hairstylist",

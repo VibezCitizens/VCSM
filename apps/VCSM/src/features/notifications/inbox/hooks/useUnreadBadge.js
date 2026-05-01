@@ -1,122 +1,34 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getInboxUnreadBadgeCount } from '../controller/inboxUnread.controller'
-import { subscribeInboxBadge } from '@/features/notifications/inbox/realtime/badgeSubscriptions'
+import { useQuery } from '@tanstack/react-query'
+import { useChatUnreadOps } from '@/features/chat/adapters/chat.adapter'
+import { queryKeys } from '@/queries/queryKeys'
 
-const UNREAD_CACHE_TTL_MS = 10_000
-const unreadCache = new Map()
-const unreadInflight = new Map()
+const CHAT_UNREAD_REFETCH_MS = 30_000
 
-function readCachedUnread(actorId) {
-  const hit = unreadCache.get(actorId)
-  if (!hit) return null
-  if (Date.now() > hit.expiresAt) {
-    unreadCache.delete(actorId)
-    return null
-  }
-  return hit.count
+function toRefetchInterval(refreshMs) {
+  if (refreshMs === false || refreshMs === 0) return false
+  const next = Number(refreshMs)
+  return Number.isFinite(next) && next > 0 ? next : CHAT_UNREAD_REFETCH_MS
 }
 
-function writeCachedUnread(actorId, count) {
-  unreadCache.set(actorId, {
-    count,
-    expiresAt: Date.now() + UNREAD_CACHE_TTL_MS,
+export default function useUnreadBadge({ actorId, refreshMs = CHAT_UNREAD_REFETCH_MS } = {}) {
+  const { getUnreadBadgeCount } = useChatUnreadOps()
+  const canQuery = typeof actorId === 'string' && actorId.length >= 32
+
+  const query = useQuery({
+    queryKey: queryKeys.chatUnread(actorId),
+    queryFn: () => getUnreadBadgeCount(actorId),
+    enabled: canQuery,
+    staleTime: CHAT_UNREAD_REFETCH_MS,
+    gcTime: 5 * 60_000,
+    refetchInterval: toRefetchInterval(refreshMs),
+    refetchIntervalInBackground: false,
+    retry: 1,
+    placeholderData: 0,
   })
-}
 
-function invalidateUnread(actorId) {
-  unreadCache.delete(actorId)
-}
-
-async function loadUnread(actorId, { force = false } = {}) {
-  if (force) invalidateUnread(actorId)
-
-  const cached = force ? null : readCachedUnread(actorId)
-  if (cached != null) return cached
-
-  const inflight = force ? null : unreadInflight.get(actorId)
-  if (inflight) return inflight
-
-  const pending = getInboxUnreadBadgeCount(actorId)
-    .then((count) => {
-      writeCachedUnread(actorId, count)
-      return count
-    })
-    .finally(() => {
-      unreadInflight.delete(actorId)
-    })
-
-  unreadInflight.set(actorId, pending)
-  return pending
-}
-
-export default function useUnreadBadge({ actorId, refreshMs = 20000 } = {}) {
-  const [count, setCount] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const aliveRef = useRef(true)
-  const unsubscribeRealtimeRef = useRef(null)
-
-  const canQuery = useMemo(
-    () => typeof actorId === 'string' && actorId.length >= 32,
-    [actorId]
-  )
-
-  const load = useCallback(async (force = false) => {
-    if (!canQuery) {
-      setCount(0)
-      setLoading(false)
-      return
-    }
-
-    setLoading(true)
-    try {
-      const total = await loadUnread(actorId, { force })
-      if (aliveRef.current) setCount(total)
-    } finally {
-      if (aliveRef.current) setLoading(false)
-    }
-  }, [actorId, canQuery])
-
-  useEffect(() => {
-    aliveRef.current = true
-    load(true)
-
-    const onRefresh = () => load(true)
-    window.addEventListener('noti:refresh', onRefresh)
-
-    if (unsubscribeRealtimeRef.current) {
-      unsubscribeRealtimeRef.current()
-      unsubscribeRealtimeRef.current = null
-    }
-
-    // Debounce realtime: coalesce rapid INSERT+UPDATE+DELETE bursts into one refresh
-    let realtimeTimer = null
-    if (canQuery) {
-      const onRealtime = () => {
-        if (realtimeTimer) clearTimeout(realtimeTimer)
-        realtimeTimer = setTimeout(() => load(true), 2_000)
-      }
-      unsubscribeRealtimeRef.current = subscribeInboxBadge({
-        actorId,
-        onChange: onRealtime,
-      })
-    }
-
-    let timer = null
-    if (refreshMs > 0) {
-      timer = setInterval(load, refreshMs)
-    }
-
-    return () => {
-      aliveRef.current = false
-      window.removeEventListener('noti:refresh', onRefresh)
-      if (realtimeTimer) clearTimeout(realtimeTimer)
-      if (timer) clearInterval(timer)
-      if (unsubscribeRealtimeRef.current) {
-        unsubscribeRealtimeRef.current()
-        unsubscribeRealtimeRef.current = null
-      }
-    }
-  }, [actorId, canQuery, load, refreshMs])
-
-  return { count, loading }
+  return {
+    count: canQuery ? query.data ?? 0 : 0,
+    loading: canQuery ? query.isPending || query.isFetching : false,
+    refresh: query.refetch,
+  }
 }

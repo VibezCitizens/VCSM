@@ -5,7 +5,7 @@
 // Owns meaning: claim recipient on first interaction, create reply, emit events.
 // ============================================================================
 
-import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGuestUser";
+import { ensureGuestUser } from "@/features/wanders/core/controllers/ensureGuestUser.controller";
 
 import {
   createWandersReply,

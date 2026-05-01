@@ -1,0 +1,10 @@
+/* VPORT preview carousel — hides scrollbar across all browsers */
+.vport-carousel {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.vport-carousel::-webkit-scrollbar {
+  display: none;
+}

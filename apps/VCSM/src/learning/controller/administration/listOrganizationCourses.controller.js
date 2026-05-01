@@ -11,7 +11,7 @@ import {
   isPlatformAdmin,
   OBSERVER_ROLES,
   TEACHING_ROLES,
-} from "@/learning/controller/administration/adminAccess";
+} from "@/learning/controller/administration/adminAccess.controller";
 
 function buildMembershipSummary(membershipRows = []) {
   const summary = {

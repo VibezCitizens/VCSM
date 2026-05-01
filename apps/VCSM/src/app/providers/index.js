@@ -1,1 +1,1 @@
-export { IdentityProvider } from '@/state/identity/identityContext'
+export { IdentityProvider } from '@/features/identity/adapters/identity.adapter'

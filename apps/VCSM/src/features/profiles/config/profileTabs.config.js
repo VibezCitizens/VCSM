@@ -20,6 +20,7 @@ export const TAB = Object.freeze({
 
   // ✅ NEW
   CONTENT: T("content", "Content"),
+  TEAM: T("team", "Team"),
 });
 
 export const TAB_FLAGS = Object.freeze({
@@ -76,6 +77,19 @@ export const VPORT_BARBER_TABS = makeTabs([
   "ABOUT",
   "PHOTOS",
   "VIBES",
+  "SUBSCRIBERS",
+]);
+
+export const VPORT_BARBERSHOP_TABS = makeTabs([
+  "PORTFOLIO",
+  "BOOK",
+  "TEAM",
+  "SERVICES",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "VIBES",
+  "CONTENT",
   "SUBSCRIBERS",
 ]);
 

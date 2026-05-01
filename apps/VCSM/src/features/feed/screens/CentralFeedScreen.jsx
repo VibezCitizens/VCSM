@@ -1,14 +1,14 @@
 // src/features/feed/screens/CentralFeedScreen.jsx
 
-import { useEffect, useRef, useCallback, useState } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { Navigate, useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
 import PostCard from '@/features/post/adapters/postCard.adapter'
 
 import PullToRefresh from '@/shared/components/PullToRefresh'
-import { useFeed } from '@/features/feed/hooks/useFeed'
+import { useCentralFeed } from '@/features/feed/hooks/useCentralFeed'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 
 import DebugPrivacyPanel from '@/features/feed/screens/DebugPrivacyPanel'
@@ -25,34 +25,10 @@ import { useCentralFeedActions } from '@/features/feed/hooks/useCentralFeedActio
 import FeedConfirmModal from '@/features/feed/screens/FeedConfirmModal'
 import Toast from '@/shared/components/components/Toast'
 import WelcomeFeedCard from '@/features/feed/components/WelcomeFeedCard'
+import { FeedSkeletonList } from '@/features/feed/components/FeedSkeletonList'
+import { useFeedConfirmToast } from '@/features/feed/hooks/useFeedConfirmToast'
+import { useFeedInfiniteScroll } from '@/features/feed/hooks/useFeedInfiniteScroll'
 import '@/features/profiles/styles/profiles-modern.css'
-
-function FeedSkeletonList({ count = 3 }) {
-  return (
-    <div className="space-y-3 px-4">
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={`feed-skeleton:${i}`}
-          className="profiles-card overflow-hidden rounded-2xl"
-        >
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="h-10 w-10 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.08)' }} />
-            <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3 w-32 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.1)' }} />
-              <div className="h-2 w-20 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.07)' }} />
-            </div>
-          </div>
-
-          <div className="space-y-2 px-4 pb-4">
-            <div className="h-3 w-11/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.08)' }} />
-            <div className="h-3 w-8/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.06)' }} />
-            <div className="mt-3 h-44 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.04)' }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
 
 export default function CentralFeed() {
   const navigate = useNavigate()
@@ -64,7 +40,6 @@ export default function CentralFeed() {
   const realmId = identity?.realmId ?? null
   useActorConsistencyCheck('feed', actorId, identity?.kind)
 
-  // Feed debugger: log feed screen mount event (viewer snapshot is now synced globally in IdentityProvider)
   useEffect(() => {
     if (import.meta.env.DEV) {
       debugFeedEvent('FEED_SCREEN_MOUNT', {
@@ -74,48 +49,17 @@ export default function CentralFeed() {
       })
     }
   }, [actorId, realmId, user?.id])
-  const confirmResolverRef = useRef(null)
-  const [confirmState, setConfirmState] = useState({
-    open: false,
-    title: '',
-    message: '',
-    confirmLabel: 'Confirm',
-    cancelLabel: 'Cancel',
-    tone: 'danger',
-  })
-  const [toastOpen, setToastOpen] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
 
-  const closeConfirm = useCallback((accepted) => {
-    const resolve = confirmResolverRef.current
-    confirmResolverRef.current = null
-    setConfirmState((prev) => ({ ...prev, open: false }))
-    if (typeof resolve === 'function') resolve(Boolean(accepted))
-  }, [])
+  const {
+    confirmState,
+    closeConfirm,
+    requestConfirm,
+    toastOpen,
+    setToastOpen,
+    toastMessage,
+    showToast,
+  } = useFeedConfirmToast()
 
-  const requestConfirm = useCallback((options = {}) => {
-    return new Promise((resolve) => {
-      confirmResolverRef.current = resolve
-      setConfirmState({
-        open: true,
-        title: options.title ?? 'Confirm',
-        message: options.message ?? 'Are you sure?',
-        confirmLabel: options.confirmLabel ?? 'Confirm',
-        cancelLabel: options.cancelLabel ?? 'Cancel',
-        tone: options.tone ?? 'danger',
-      })
-    })
-  }, [])
-
-  const showToast = useCallback((message) => {
-    const next = String(message || '')
-    setToastMessage(next)
-    setToastOpen(false)
-    setTimeout(() => setToastOpen(true), 0)
-  }, [])
-
-  // Derive viewerIsAdult from identity instead of independent DB queries.
-  // Vport actors are always treated as adult; user actors carry the profile flag.
   const viewerIsAdult = identity?.kind === 'vport' ? true : (identity?.isAdult ?? null)
 
   const {
@@ -127,7 +71,7 @@ export default function CentralFeed() {
     hiddenPostIds: serverHiddenPostIds,
     filterDebugRows,
     firstBatchReady,
-  } = useFeed(actorId, realmId, { viewerIsAdult })
+  } = useCentralFeed(actorId, realmId, { viewerIsAdult })
 
   const {
     reportFlow,
@@ -163,64 +107,20 @@ export default function CentralFeed() {
   const debugFilter = IS_DEV && (debugMode === 'filter' || debugMode === 'all')
 
   const ptrRef = useRef(null)
-  const sentinelRef = useRef(null)
 
   useEffect(() => {
     if (!firstBatchReady) return
     hideLaunchSplash()
   }, [firstBatchReady])
 
-  useEffect(() => {
-    return () => {
-      const resolve = confirmResolverRef.current
-      confirmResolverRef.current = null
-      if (typeof resolve === 'function') resolve(false)
-    }
-  }, [])
-
-  // Stable refs for IntersectionObserver — avoids recreating the observer
-  // every time posts/loading/hasMore change, which was causing the observer
-  // to immediately fire a pagination request right after the initial fetch.
-  const postsLenRef = useRef(0)
-  postsLenRef.current = posts.length
-  const hasMoreRef = useRef(true)
-  hasMoreRef.current = hasMore
-  const loadingRef = useRef(false)
-  loadingRef.current = loading
-  const fetchPostsRef = useRef(fetchPosts)
-  fetchPostsRef.current = fetchPosts
-
-  useEffect(() => {
-    const root = ptrRef.current
-    const sentinel = sentinelRef.current
-    if (!root || !sentinel) return
-
-    let locked = false
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        const first = entries[0]
-        if (
-          first?.isIntersecting &&
-          postsLenRef.current > 0 &&
-          hasMoreRef.current &&
-          !loadingRef.current &&
-          !locked
-        ) {
-          locked = true
-          fetchPostsRef.current(false).finally(() => {
-            locked = false
-          })
-        }
-      },
-      { root, rootMargin: '0px 0px 600px 0px', threshold: 0.01 }
-    )
-
-    io.observe(sentinel)
-    return () => io.disconnect()
-    // Only reconnect when the scroll container or sentinel element changes
-    // (effectively once on mount). State checks use refs to avoid churn.
-  }, [firstBatchReady])
+  const { sentinelRef } = useFeedInfiniteScroll({
+    ptrRef,
+    posts,
+    hasMore,
+    loading,
+    fetchPosts,
+    firstBatchReady,
+  })
 
   const handleRefresh = useCallback(async () => {
     ptrRef.current?.scrollTo({ top: 0, behavior: 'auto' })

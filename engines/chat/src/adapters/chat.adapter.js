@@ -30,6 +30,7 @@ import { getOrCreateDirectConversation } from '../controller/getOrCreateDirectCo
 import { sendMessageController as sendMessage } from '../controller/sendMessage.controller.js'
 import { editMessageController as editMessage } from '../controller/editMessage.controller.js'
 import { deleteMessageForMeController } from '../controller/deleteMessageForMe.controller.js'
+import { deleteThreadForMeController } from '../controller/deleteThreadForMe.controller.js'
 import { unsendMessageController as unsendMessage } from '../controller/unsendMessage.controller.js'
 import { deleteMessageController } from '../controller/deleteMessage.controller.js'
 import { markConversationRead } from '../controller/markConversationRead.controller.js'
@@ -132,6 +133,7 @@ export async function getUnreadCount(params) {
 }
 
 export const hideMessage = deleteMessageForMeController
+export const deleteInboxThread = deleteThreadForMeController
 export const deleteMessageForSelf = deleteMessageForMeController
 export const deleteMessage = deleteMessageForMeController
 export const hardDeleteMessage = deleteMessageController

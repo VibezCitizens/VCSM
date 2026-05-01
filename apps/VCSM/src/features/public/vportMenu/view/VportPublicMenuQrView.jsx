@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
-import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
+import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
 
 export function VportPublicMenuQrView({ actorId }) {
   const navigate = useNavigate();

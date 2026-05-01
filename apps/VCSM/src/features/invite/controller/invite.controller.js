@@ -1,5 +1,4 @@
 import { sendCitizenInviteDAL } from '../dal/invite.dal'
-import { markActorOnboardingStepCompletedDAL } from '@/features/onboarding/dal/onboardingSteps.dal'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -24,6 +23,3 @@ export async function ctrlSendCitizenInvite({ targetEmail, inviterType, inviterA
   return sendCitizenInviteDAL({ targetEmail: email, inviterType, inviterActorId })
 }
 
-export async function ctrlMarkInviteStepCompleted({ actorId }) {
-  await markActorOnboardingStepCompletedDAL({ actorId, stepKey: 'invite_first_citizen' })
-}

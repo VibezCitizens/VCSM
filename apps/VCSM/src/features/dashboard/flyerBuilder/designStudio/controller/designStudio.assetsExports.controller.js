@@ -1,5 +1,4 @@
-import { buildR2Key } from "@/services/cloudflare/buildR2Key";
-import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
+import { uploadMediaController } from '@media'
 import {
   dalListDesignExportsByDocument,
   dalListDesignRenderJobsByExportIds,
@@ -15,42 +14,45 @@ import {
   mapDesignRenderJob,
 } from "@/features/dashboard/flyerBuilder/designStudio/model/designStudioMapper.model";
 import { requireOwnerActorAccess } from "@/features/dashboard/flyerBuilder/designStudio/controller/designStudio.shared.controller";
-
-async function readImageDimensions(url) {
-  if (!url) return { width: null, height: null };
-
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve({ width: img.naturalWidth || null, height: img.naturalHeight || null });
-    img.onerror = () => resolve({ width: null, height: null });
-    img.src = url;
-  });
-}
+import { createMediaAssetController } from "@/features/media/controller/createMediaAsset.controller";
+import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
 
 export async function ctrlUploadDesignAsset({ ownerActorId, file }) {
-  await requireOwnerActorAccess(ownerActorId);
-  if (!file) throw new Error("File required.");
+  await requireOwnerActorAccess(ownerActorId)
+  if (!file) throw new Error('File required.')
 
-  const key = buildR2Key("design-assets", ownerActorId, file, { extraPath: "flyer" });
-  const { url, error } = await uploadToCloudflare(file, key);
-
-  if (error) throw new Error(error);
-  if (!url) throw new Error("Upload failed.");
-
-  const dimensions = file.type?.startsWith("image/")
-    ? await readImageDimensions(url)
-    : { width: null, height: null };
+  const result = await uploadMediaController({
+    file,
+    scope: 'design_asset',
+    ownerActorId,
+    opts: { extraPath: 'flyer' },
+  })
 
   const assetRow = await dalCreateDesignAsset({
     ownerActorId,
-    url,
-    mime: file.type || "application/octet-stream",
-    sizeBytes: file.size || null,
-    width: dimensions.width,
-    height: dimensions.height,
-  });
+    url: result.publicUrl,
+    mime: result.mimeType,
+    sizeBytes: result.sizeBytes,
+    width: result.width,
+    height: result.height,
+  })
 
-  return mapDesignAsset(assetRow);
+  // Record in platform.media_assets — additive, never blocks the caller.
+  try {
+    const appId = await resolveVcsmAppIdDAL()
+    await createMediaAssetController({
+      mediaUploadResult:  result,
+      ownerActorId,
+      createdByActorId:   ownerActorId,
+      scope:              'design_asset',
+      scopeId:            assetRow.id,
+      appId,
+    })
+  } catch (e) {
+    if (import.meta.env?.DEV) console.warn('[ctrlUploadDesignAsset] media_assets record failed (non-fatal):', e?.message)
+  }
+
+  return mapDesignAsset(assetRow)
 }
 
 export async function ctrlQueueDesignExport({

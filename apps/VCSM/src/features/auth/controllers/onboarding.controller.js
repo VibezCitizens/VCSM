@@ -1,5 +1,4 @@
 import { createUserActorForProfile } from '@/features/auth/controllers/createUserActor.controller'
-import { ensureVcsmPlatformBootstrap } from '@/features/identity/controller/ensureVcsmPlatformBootstrap.controller.js'
 import {
   generateUsernameDAL,
   readCurrentSessionUserDAL,
@@ -59,6 +58,8 @@ export async function getOnboardingBootstrapController() {
 export async function completeOnboardingController({
   userId,
   form,
+  ensureVcsmPlatformBootstrap,
+  refreshActorFn,
 }) {
   const user = await readCurrentSessionUserDAL()
   const authState = buildSessionRedirectResult(user)
@@ -113,11 +114,11 @@ export async function completeOnboardingController({
   const actor = await createUserActorForProfile({
     profileId: user.id,
     userId: user.id,
+    refreshActorFn,
   })
 
-  // Platform provisioning: account + actor link + vc bridge (non-fatal)
   if (actor?.id) {
-    await ensureVcsmPlatformBootstrap({
+    await ensureVcsmPlatformBootstrap?.({
       userId: user.id,
       actorId: actor.id,
     }).catch(() => {})

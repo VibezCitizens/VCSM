@@ -7,10 +7,10 @@ export function mapVportPublicDetailsModel(raw, vportTypeRow) {
   // vportTypeRow shape comes from readVportTypeDAL()
 
   return {
-    actorId: raw.actor_id ?? null,
-    kind: raw.kind ?? null,
+    actorId:   raw.actor_id ?? null,
+    profileId: raw.vport_id ?? null,  // vport.profiles.id — stable key for tab sub-queries
+    kind:      raw.kind ?? null,
 
-    // ✅ include vport type but DO NOT expose vportId
     vportType: vportTypeRow?.vport_type ?? null,
 
     // vport-facing fields
@@ -22,6 +22,7 @@ export function mapVportPublicDetailsModel(raw, vportTypeRow) {
     isActive: raw.is_active ?? null,
 
     // public details
+    cityId: raw.city_id ?? null,
     websiteUrl: raw.website_url ?? null,
     emailPublic: raw.email_public ?? null,
     phonePublic: raw.phone_public ?? null,

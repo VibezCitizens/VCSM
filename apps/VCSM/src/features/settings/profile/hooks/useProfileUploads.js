@@ -1,101 +1,168 @@
 // src/features/settings/profile/hooks/useProfileUploads.js
 // ============================================================
 // Profile Uploads Hook (UPLOAD ONLY)
-// - Handles avatar + banner uploads
-// - User + VPORT aware
-// - Upload ONLY (no DB writes)
-// - Accepts File as argument (controller owns draft state)
+// - Uploads avatar/banner via media engine
+// - Creates platform.media_assets record
+// - Writes media_asset_id back to the owning profile column
+// - Identity flows as actorId only — no profileId or vportProfileId
+// - All write-back is non-blocking (IIFE + catch)
+// - actorId is snapshotted at upload action time, not hook render time
 // ============================================================
 
-import imageCompression from 'browser-image-compression'
-import { uploadToCloudflare } from '@/services/cloudflare/uploadToCloudflare'
-import { buildR2Key } from '@/services/cloudflare/buildR2Key'
+import { uploadMediaController } from '@media'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { ctrlGetCurrentAuthUserId } from '@/features/settings/profile/controller/authSession.controller'
+import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
+import { recordProfileMediaAssetController } from '@/features/settings/profile/controller/recordProfileMediaAsset.controller'
 
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const DEV = import.meta.env?.DEV
 
-function validateImage(file, label) {
-  if (!file) return null
-  if (!file.type?.startsWith('image/')) {
-    throw new Error(`${label} must be an image`)
-  }
-  if (file.size > MAX_IMAGE_BYTES) {
-    throw new Error(`${label} too large (max 5MB)`)
-  }
-  return file
-}
-
-/**
- * useProfileUploads
- *
- * @param {Object} opts
- * @param {'user'|'vport'} opts.mode
- * @param {string} opts.subjectId
- */
 export function useProfileUploads({ mode, subjectId }) {
+  const { identity, setIdentity } = useIdentity()
+
+  // ── user avatar ──────────────────────────────────────────────
   async function uploadAvatar(file) {
-    const f = validateImage(file, 'Avatar')
-    if (!f) return null
+    if (!file) return null
     if (!subjectId) throw new Error('uploadAvatar: subjectId missing')
 
-    // ---- USER AVATAR PHOTO (NEW) ----
+    // Snapshot at action time — guards against actor switch between pick and save.
+    const actorId = identity?.actorId ?? null
+
     if (mode === 'user') {
       const userId = await ctrlGetCurrentAuthUserId()
       if (!userId) throw new Error('Not authenticated')
 
-      const compressed = await imageCompression(f, {
-        maxSizeMB: 0.7,
-        maxWidthOrHeight: 600,
-        useWebWorker: true,
-      })
+      const result = await uploadMediaController({ file, scope: 'user_avatar', ownerActorId: userId })
+      if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'user_avatar', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
-      // avatar-photos/<userId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
-      const key = buildR2Key('avatar-photos', userId, compressed)
+      ;(async () => {
+        try {
+          if (!actorId) {
+            if (DEV) console.warn('[useProfileUploads] actorId is null for user_avatar — media_assets record skipped. Identity not loaded?')
+            return
+          }
+          const payload = { mediaUploadResult: result, ownerActorId: actorId, createdByActorId: actorId, scope: 'user_avatar', scopeId: subjectId, mediaRole: 'avatar' }
+          if (DEV) console.log('[useProfileUploads] media asset payload (user_avatar):', payload)
 
-      const { url, error } = await uploadToCloudflare(compressed, key)
-      if (error || !url) throw new Error(error || 'Avatar upload failed')
+          const mediaAsset = await createMediaAssetController(payload)
+          if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
 
-      return url
+          await recordProfileMediaAssetController({ scope: 'user_avatar', mediaAssetId: mediaAsset?.id ?? null, actorId })
+
+          // Patch identityDetails.avatar so nav/header consumers (useIdentityDisplayDeprecated)
+          // reflect the new avatar without waiting for the next identity engine re-resolution.
+          if (identity?.kind === 'user') {
+            setIdentity(prev => prev ? { ...prev, avatar: result.publicUrl } : prev)
+          }
+        } catch (e) {
+          if (DEV) console.warn('[useProfileUploads] user_avatar media record failed:', e?.code, e?.message, e)
+        }
+      })()
+
+      return result.publicUrl
     }
 
-    // ---- VPORT AVATAR PHOTO (NEW) ----
-    // vport-avatar-photos/<subjectId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
-    const key = buildR2Key('vport-avatar-photos', subjectId, f)
+    // ── vport avatar ─────────────────────────────────────────────
+    const result = await uploadMediaController({ file, scope: 'vport_avatar', ownerActorId: subjectId })
+    if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'vport_avatar', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
-    const { url, error } = await uploadToCloudflare(f, key)
-    if (error || !url) throw new Error(error || 'VPORT avatar upload failed')
+    ;(async () => {
+      try {
+        if (!actorId) {
+          if (DEV) console.warn('[useProfileUploads] actorId is null for vport_avatar — media_assets record skipped. Identity not loaded?')
+          return
+        }
+        const payload = { mediaUploadResult: result, ownerActorId: actorId, createdByActorId: actorId, scope: 'vport_avatar', scopeId: subjectId, mediaRole: 'avatar' }
+        if (DEV) console.log('[useProfileUploads] media asset payload (vport_avatar):', payload)
 
-    return url
+        const mediaAsset = await createMediaAssetController(payload)
+        if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+
+        await recordProfileMediaAssetController({ scope: 'vport_avatar', mediaAssetId: mediaAsset?.id ?? null, actorId })
+
+        // Patch identityDetails.avatar only if this vport is the currently active actor.
+        if (identity?.kind === 'vport') {
+          setIdentity(prev => prev ? { ...prev, avatar: result.publicUrl } : prev)
+        }
+      } catch (e) {
+        if (DEV) console.warn('[useProfileUploads] vport_avatar media record failed:', e?.code, e?.message, e)
+      }
+    })()
+
+    return result.publicUrl
   }
 
+  // ── banners ───────────────────────────────────────────────────
   async function uploadBanner(file) {
-    const f = validateImage(file, 'Banner')
-    if (!f) return null
+    if (!file) return null
     if (!subjectId) throw new Error('uploadBanner: subjectId missing')
 
-    // ---- VPORT AVATAR BANNER (NEW) ----
+    // Snapshot at action time — guards against actor switch between pick and save.
+    const actorId = identity?.actorId ?? null
+
     if (mode === 'vport') {
-      // vport-avatar-banners/<subjectId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
-      const key = buildR2Key('vport-avatar-banners', subjectId, f)
+      const result = await uploadMediaController({ file, scope: 'vport_banner', ownerActorId: subjectId })
+      if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'vport_banner', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
-      const { url, error } = await uploadToCloudflare(f, key)
-      if (error || !url) throw new Error(error || 'Banner upload failed')
+      ;(async () => {
+        try {
+          if (!actorId) {
+            if (DEV) console.warn('[useProfileUploads] actorId is null for vport_banner — media_assets record skipped. Identity not loaded?')
+            return
+          }
+          const payload = { mediaUploadResult: result, ownerActorId: actorId, createdByActorId: actorId, scope: 'vport_banner', scopeId: subjectId, mediaRole: 'banner' }
+          if (DEV) console.log('[useProfileUploads] media asset payload (vport_banner):', payload)
 
-      return url
+          const mediaAsset = await createMediaAssetController(payload)
+          if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+
+          await recordProfileMediaAssetController({ scope: 'vport_banner', mediaAssetId: mediaAsset?.id ?? null, actorId })
+
+          // Patch identityDetails.banner only if this vport is the currently active actor.
+          if (identity?.kind === 'vport') {
+            setIdentity(prev => prev ? { ...prev, banner: result.publicUrl } : prev)
+          }
+        } catch (e) {
+          if (DEV) console.warn('[useProfileUploads] vport_banner media record failed:', e?.code, e?.message, e)
+        }
+      })()
+
+      return result.publicUrl
     }
 
-    // ---- USER AVATAR BANNER (NEW) ----
-    // avatar-banners/<userId>/<yyyy>/<mm>/<dd>/<ts>-<rand>.<ext>
-    const key = buildR2Key('avatar-banners', subjectId, f)
+    // ── user banner ───────────────────────────────────────────────
+    const userId = await ctrlGetCurrentAuthUserId()
+    if (!userId) throw new Error('Not authenticated')
 
-    const { url, error } = await uploadToCloudflare(f, key)
-    if (error || !url) throw new Error(error || 'Banner upload failed')
+    const result = await uploadMediaController({ file, scope: 'user_banner', ownerActorId: userId })
+    if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'user_banner', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
-    return url
+    ;(async () => {
+      try {
+        if (!actorId) {
+          if (DEV) console.warn('[useProfileUploads] actorId is null for user_banner — media_assets record skipped. Identity not loaded?')
+          return
+        }
+        const payload = { mediaUploadResult: result, ownerActorId: actorId, createdByActorId: actorId, scope: 'user_banner', scopeId: subjectId, mediaRole: 'banner' }
+        if (DEV) console.log('[useProfileUploads] media asset payload (user_banner):', payload)
+
+        const mediaAsset = await createMediaAssetController(payload)
+        if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+
+        await recordProfileMediaAssetController({ scope: 'user_banner', mediaAssetId: mediaAsset?.id ?? null, actorId })
+
+        // Patch identityDetails.banner so nav/header consumers (useIdentityDisplayDeprecated)
+        // reflect the new banner without waiting for the next identity engine re-resolution.
+        if (identity?.kind === 'user') {
+          setIdentity(prev => prev ? { ...prev, banner: result.publicUrl } : prev)
+        }
+      } catch (e) {
+        if (DEV) console.warn('[useProfileUploads] user_banner media record failed:', e?.code, e?.message, e)
+      }
+    })()
+
+    return result.publicUrl
   }
 
-  return {
-    uploadAvatar,
-    uploadBanner,
-  }
+  return { uploadAvatar, uploadBanner }
 }

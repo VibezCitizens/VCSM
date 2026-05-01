@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import PublicTopNav from '../components/PublicTopNav'
+import PublicNavbar, { PUBLIC_NAV_HEIGHT } from '@/shared/components/PublicNavbar'
 
 const PEOPLE_BULLETS = [
   'Create your citizen profile',
@@ -87,9 +87,9 @@ function BulletItem({ text }) {
 
 export default function AboutView() {
   return (
-    <div style={{ minHeight: '100vh', background: '#060609', color: '#fff', paddingTop: 60 }}>
+    <div style={{ minHeight: '100vh', background: '#060609', color: '#fff', paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top))` }}>
 
-      <PublicTopNav />
+      <PublicNavbar />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section style={{
@@ -164,24 +164,6 @@ export default function AboutView() {
             gap: 12,
             marginTop: 36,
           }}>
-            <Link
-              to="/"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 7,
-                padding: '13px 26px',
-                borderRadius: 14,
-                background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                fontSize: 14,
-                fontWeight: 600,
-                color: 'rgba(255,255,255,0.85)',
-                textDecoration: 'none',
-              }}
-            >
-              Explore
-            </Link>
             <Link
               to="/register?intent=vport"
               style={{
@@ -483,24 +465,6 @@ export default function AboutView() {
                 }}
               >
                 Create your VPORT
-              </Link>
-              <Link
-                to="/"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  padding: '13px 22px',
-                  borderRadius: 14,
-                  background: 'rgba(255,255,255,0.07)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: 'rgba(255,255,255,0.85)',
-                  textDecoration: 'none',
-                }}
-              >
-                Explore
               </Link>
             </div>
           </div>

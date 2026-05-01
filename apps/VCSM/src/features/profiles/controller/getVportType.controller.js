@@ -1,7 +1,7 @@
 // src/features/profiles/controller/getVportType.controller.js
 
 import { readVportTypeDAL } from "@/features/profiles/dal/readVportType.dal";
-import { toVportType } from "@/features/profiles/model/VportTypeModel";
+import { toVportType } from "@/features/profiles/model/vportType.model";
 
 /**
  * Returns null for non-vport actors.

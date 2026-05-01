@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { editPostController } from "@/features/post/postcard/controller/editPost.controller";
+import { useEditPost } from "@/features/post/postcard/hooks/useEditPost";
 import { useIdentity } from "@/state/identity/identityContext";
 import "@/features/ui/modern/module-modern.css";
 import "@/features/post/styles/post-modern.css";
@@ -17,35 +17,15 @@ export default function EditPostScreen() {
 
   const initialText = state?.initialText ?? "";
   const [text, setText] = useState(initialText);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { loading, error, editPost } = useEditPost();
 
   const trimmedText = useMemo(() => String(text ?? "").trim(), [text]);
   const canSave = Boolean(identity?.actorId) && !loading && trimmedText.length > 0;
 
   const handleSave = async () => {
-    if (!identity?.actorId) {
-      setError(new Error("Sign in required"));
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    const { ok, error: saveError } = await editPostController({
-      actorId: identity.actorId,
-      postId,
-      text: trimmedText,
-    });
-
-    setLoading(false);
-
-    if (!ok) {
-      setError(saveError);
-      return;
-    }
-
-    navigate(-1);
+    if (!identity?.actorId) return;
+    const { ok } = await editPost({ actorId: identity.actorId, postId, text: trimmedText });
+    if (ok) navigate(-1);
   };
 
   return (

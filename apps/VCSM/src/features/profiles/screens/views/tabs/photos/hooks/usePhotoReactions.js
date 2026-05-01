@@ -1,14 +1,11 @@
 // src/features/profiles/screens/views/tabs/photos/hooks/usePhotoReactions.js
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-// ✅ READ/WRITE controllers for Photos tab
-import {
-  enrichPhotoPostsController,
-  togglePhotoReactionController,
-  sendPhotoRoseController,
-} from "@/features/profiles/adapters/photos/photoReactions.adapter";
+import { enrichPhotoPostsController } from "@/features/profiles/controller/photos/photoReactions.controller";
+import { usePostReactionOps } from "@/features/post/adapters/post.adapter";
 
 export function usePhotoReactions(posts = [], actorId) {
+  const { toggleReaction: togglePostReaction, sendRose: sendPostRose } = usePostReactionOps()
   const safePosts = useMemo(() => (Array.isArray(posts) ? posts : []), [posts]);
 
   // Track latest posts to clean up removed ones
@@ -193,7 +190,7 @@ export function usePhotoReactions(posts = [], actorId) {
       });
 
       try {
-        await togglePhotoReactionController({
+        await togglePostReaction({
           postId,
           actorId,
           reaction: reactionType,
@@ -240,7 +237,7 @@ export function usePhotoReactions(posts = [], actorId) {
       });
 
       try {
-        await sendPhotoRoseController({
+        await sendPostRose({
           postId,
           actorId,
           qty: 1,

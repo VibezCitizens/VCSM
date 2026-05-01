@@ -1,15 +1,25 @@
 import Link from "next/link";
 
-export default function HomepageLocationContext({ currentLocationLabel, nearbyOptions }) {
+export default function HomepageLocationContext({
+  currentLocationLabel,
+  nearbyOptions,
+  isLocationSpecific = true
+}) {
+  const headline = isLocationSpecific
+    ? `Available now in ${currentLocationLabel}.`
+    : "Providers on TRAZE.";
+
   return (
-    <section className="card homepage-section homepage-location-block">
+    <section className="homepage-section homepage-section--divider homepage-location-block" id="location-strip">
       <div className="homepage-section-heading">
-        <h2 className="section-title">Explore TRAZE Providers In Your Area</h2>
-        <p>Showing TRAZE results near {currentLocationLabel}.</p>
+        <h2 className="section-title">Location</h2>
+        <p>{headline}</p>
       </div>
 
       <div className="homepage-location-row">
-        <span className="pill pill--ok">Showing TRAZE results near {currentLocationLabel}</span>
+        <span className="pill pill--ok">
+          {isLocationSpecific ? `Available now: ${currentLocationLabel}` : "Live directory view"}
+        </span>
         <button className="pill pill--ghost" type="button" aria-label="Change location preference">
           Change location
         </button>

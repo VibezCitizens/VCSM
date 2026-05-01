@@ -6,13 +6,15 @@
 
 import { nanoid } from "nanoid";
 
-import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGuestUser";
+import { ensureGuestUser } from "@/features/wanders/core/controllers/ensureGuestUser.controller";
 
-import { uploadToCloudflare } from "@/services/cloudflare/uploadToCloudflare";
-import { buildWandersImageKey } from "@/features/wanders/utils/buildWandersImageKey";
+import { uploadMediaController } from '@media'
+import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
+import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger'
 
 // ✅ NEW ARCH: core write DALs
-import { createWandersCard } from "@/features/wanders/core/dal/write/cards.write.dal";
+import { createWandersCard, updateWandersCard } from "@/features/wanders/core/dal/write/cards.write.dal";
 import { createWandersMailboxItem } from "@/features/wanders/core/dal/write/mailbox.write.dal";
 
 function stripTrailingSlashes(url) {
@@ -62,7 +64,7 @@ function safeParseJson(value) {
  *  payload: any
  * }} input
  */
-export async function publishWandersFromBuilder({ realmId, baseUrl, payload }) {
+export async function publishWandersFromBuilder({ realmId, baseUrl, payload, senderActorId = null }) {
   if (!realmId) throw new Error("publishWandersFromBuilder requires realmId");
 
   const user = await ensureGuestUser();
@@ -124,15 +126,16 @@ export async function publishWandersFromBuilder({ realmId, baseUrl, payload }) {
     customizationObj?.image_data_url ??
     null;
 
-  // Upload if needed
+  let wandersUploadResult = null
   if (!imageUrl && imageFile) {
-    const key = buildWandersImageKey({ publicId, file: imageFile });
-    const up = await uploadToCloudflare(imageFile, key);
-    if (up?.error) throw new Error(up.error);
-    imageUrl = up?.url || null;
-
-    // After upload, don't persist base64 by default (keeps customization small)
-    imageDataUrl = null;
+    wandersUploadResult = await uploadMediaController({
+      file: imageFile,
+      scope: 'wanders_card',
+      ownerActorId: user.id,
+      opts: { extraPath: 'cards' },
+    })
+    imageUrl    = wandersUploadResult.publicUrl
+    imageDataUrl = null
   }
 
   const insertPayload = {
@@ -179,6 +182,33 @@ export async function publishWandersFromBuilder({ realmId, baseUrl, payload }) {
     folder: "outbox",
     isRead: true,
   });
+
+  if (wandersUploadResult && senderActorId && card?.id) {
+    ;(async () => {
+      bugBunnyUploadStep('wanders_card', 'writeback:start', { cardId: card.id, senderActorId })
+      try {
+        const appId = await resolveVcsmAppIdDAL()
+        const mediaAsset = await createMediaAssetController({
+          mediaUploadResult:  wandersUploadResult,
+          ownerActorId:       senderActorId,
+          createdByActorId:   senderActorId,
+          scope:              'wanders_card',
+          scopeId:            card.id,
+          mediaRole:          'original',
+          appId,
+        })
+        if (mediaAsset?.id) {
+          await updateWandersCard({ cardId: card.id, patch: { media_asset_id: mediaAsset.id } })
+          bugBunnyUploadStep('wanders_card', 'writeback:card', { cardId: card.id, mediaAssetId: mediaAsset.id })
+        } else {
+          bugBunnyUploadStep('wanders_card', 'writeback:card-skipped', { cardId: card.id })
+        }
+      } catch (e) {
+        bugBunnyUploadError('wanders_card', 'writeback:failed', e, { cardId: card.id, senderActorId })
+        if (import.meta.env?.DEV) console.warn('[publishWandersFromBuilder] media_assets write-back failed (non-fatal):', e?.message)
+      }
+    })()
+  }
 
   const url = baseUrl
     ? `${stripTrailingSlashes(baseUrl)}/wanders/c/${card.public_id}`

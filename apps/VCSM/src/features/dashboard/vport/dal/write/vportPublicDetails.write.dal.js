@@ -2,6 +2,7 @@ import { supabase } from "@/services/supabase/supabaseClient";
 
 const COLS = `
   profile_id,
+  city_id,
   website_url,
   email_public,
   phone_public,

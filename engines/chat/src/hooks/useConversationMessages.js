@@ -101,7 +101,13 @@ export default function useConversationMessages({
 
           byClientId.delete(msg.clientId)
           if (optimistic.id) byId.delete(optimistic.id)
-          byId.set(msg.id, msg)
+          // Preserve mediaUrl from the optimistic message when the server row doesn't have it.
+          // chat.messages.media_url may be null if the RPC doesn't set it — the CDN URL
+          // is already correct from the optimistic path and should not be lost on reconciliation.
+          byId.set(msg.id, {
+            ...msg,
+            mediaUrl: msg.mediaUrl ?? optimistic.mediaUrl ?? null,
+          })
           continue
         }
 
@@ -218,6 +224,16 @@ export default function useConversationMessages({
       prev.map((m) =>
         m.id === clientId || m.clientId === clientId
           ? { ...m, __optimistic: false, __failed: true }
+          : m
+      )
+    )
+  }, [])
+
+  const updateOptimistic = useCallback((clientId, patch) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === clientId || m.clientId === clientId
+          ? { ...m, ...patch }
           : m
       )
     )
@@ -404,6 +420,9 @@ export default function useConversationMessages({
               const next = [...prev]
               next[idx] = {
                 ...message,
+                // Realtime delivers a raw chat.messages row — no joined attachments,
+                // so mediaUrl may be null. Preserve the URL from the optimistic message.
+                mediaUrl: message.mediaUrl ?? prev[idx].mediaUrl,
                 __optimistic: false,
               }
               return next
@@ -433,6 +452,7 @@ export default function useConversationMessages({
     onEditMessage,
     onDeleteMessage,
     addOptimistic,
+    updateOptimistic,
     markFailed,
     retryMessage,
   }

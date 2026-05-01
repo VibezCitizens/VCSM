@@ -91,6 +91,33 @@ export function mapGroupSearchResult(row) {
 }
 
 /**
+ * Normalize a raw row from identity.search_actor_directory RPC.
+ * Distinct from mapActorSearchResult — maps RPC-specific column names.
+ */
+export function normalizeActorRow(row) {
+  if (!row || !row.actor_id) return null
+
+  return {
+    resultType: 'actor',
+    result_type: 'actor',
+    actorDomain: row.actor_domain ?? 'vc',
+    actorId: row.actor_id,
+    actor_id: row.actor_id,
+    actorKind: row.actor_kind ?? null,
+    displayName: row.display_name ?? '',
+    display_name: row.display_name ?? '',
+    username: row.username ?? '',
+    avatarUrl: row.avatar_url ?? '/avatar.jpg',
+    photo_url: row.avatar_url ?? '/avatar.jpg',
+    bannerUrl: row.banner_url ?? null,
+    bio: row.bio ?? null,
+    isPrivate: row.is_private === true,
+    private: row.is_private === true,
+    rank: row.rank ?? null,
+  }
+}
+
+/**
  * Generic dispatcher (optional helper)
  * Keeps controller code clean if you want to use it later
  */

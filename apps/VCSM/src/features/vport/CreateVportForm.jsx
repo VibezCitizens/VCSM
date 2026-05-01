@@ -1,25 +1,15 @@
 // src/features/vport/CreateVportForm.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { useAuth } from '@/app/providers/AuthProvider';
 import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from '@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter';
-import useUpsertVportServices from '@/features/profiles/adapters/kinds/vport/hooks/services/useUpsertVportServices.adapter';
 import useVportServiceCatalog from '@/features/vport/hooks/useVportServiceCatalog';
-import { listMyVports } from '@/features/vport/model/vport.read.vportRecords';
-import { createVport } from '@/features/vport/model/vport.model';
-
-const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
-
-function cx(...xs) {
-  return xs.filter(Boolean).join(' ');
-}
+import { useCreateVport } from '@/features/vport/hooks/useCreateVport';
+import { MAX_IMAGE_BYTES, cx, setsEqual, groupServicesByCategory } from '@/features/vport/createVportForm.model';
+import { CreateVportProfileTab } from '@/features/vport/components/CreateVportProfileTab';
+import { CreateVportServicesTab } from '@/features/vport/components/CreateVportServicesTab';
+import { CreateVportDebugPanel } from '@/features/vport/components/CreateVportDebugPanel';
 
 export default function CreateVportForm({ onCreated }) {
-  const navigate = useNavigate();
-  const { user } = useAuth() || {};
-
   const [name, setName] = useState('');
   const [type, setType] = useState('other');
   const [activeTab, setActiveTab] = useState('profile');
@@ -28,14 +18,13 @@ export default function CreateVportForm({ onCreated }) {
   const [avatarPreview, setAvatarPreview] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [selectedServiceKeys, setSelectedServiceKeys] = useState(() => new Set());
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [_bbDebug, _setBbDebug] = useState(null);
+  const [directoryVisible, setDirectoryVisible] = useState(true);
+  const [fileError, setFileError] = useState('');
 
   const inputRef = useRef(null);
 
   const serviceCatalog = useVportServiceCatalog({ vportType: type });
-  const upsertServices = useUpsertVportServices();
+  const { submit, isBusy, error, _bbDebug, _setBbDebug } = useCreateVport({ onCreated });
 
   const catalogServices = useMemo(() => {
     return Array.isArray(serviceCatalog.data?.services) ? serviceCatalog.data.services : [];
@@ -45,14 +34,11 @@ export default function CreateVportForm({ onCreated }) {
     return groupServicesByCategory(catalogServices);
   }, [catalogServices]);
 
-  const isBusy = submitting || upsertServices.isPending;
-
   useEffect(() => {
     if (!avatarFile) {
       setAvatarPreview('');
       return;
     }
-
     const url = URL.createObjectURL(avatarFile);
     setAvatarPreview(url);
     return () => URL.revokeObjectURL(url);
@@ -60,52 +46,34 @@ export default function CreateVportForm({ onCreated }) {
 
   useEffect(() => {
     const allowedKeys = new Set(catalogServices.map((service) => service?.key).filter(Boolean));
-
     setSelectedServiceKeys((prev) => {
       const next = new Set([...prev].filter((key) => allowedKeys.has(key)));
       return setsEqual(prev, next) ? prev : next;
     });
   }, [catalogServices]);
 
-  const canSubmit = !!(user?.id && name.trim() && type);
+  const canSubmit = !!(name.trim() && type && (avatarFile || avatarUrl));
 
-  async function handlePickFile(e) {
+  function handlePickFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setError('Please choose an image file.');
+      setFileError('Please choose an image file.');
       return;
     }
 
     if (file.size > MAX_IMAGE_BYTES) {
-      setError('Image is too large (max 5MB).');
+      setFileError('Image is too large (max 5MB).');
       return;
     }
 
-    setError('');
+    setFileError('');
     setAvatarFile(file);
-  }
-
-  async function uploadAvatar() {
-    if (!avatarFile) return '';
-
-    const fd = new FormData();
-    fd.append('file', avatarFile);
-    fd.append('folder', `vports/${user.id}`);
-
-    const res = await fetch(UPLOAD_ENDPOINT, { method: 'POST', body: fd });
-    if (!res.ok) throw new Error(`Upload failed (${res.status})`);
-
-    const json = await res.json();
-    if (!json?.url) throw new Error('Upload response missing URL');
-
-    return json.url;
   }
 
   function toggleServiceKey(key) {
     if (!key) return;
-
     setSelectedServiceKeys((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
@@ -114,66 +82,21 @@ export default function CreateVportForm({ onCreated }) {
     });
   }
 
-  async function onSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit || isBusy) return;
 
-    setSubmitting(true);
-    setError('');
+    const result = await submit({
+      name,
+      type,
+      description,
+      avatarFile,
+      avatarUrl,
+      directoryVisible,
+      selectedServiceKeys,
+    });
 
-    try {
-      let finalAvatarUrl = avatarUrl;
-      if (!finalAvatarUrl && avatarFile) {
-        finalAvatarUrl = await uploadAvatar();
-        setAvatarUrl(finalAvatarUrl);
-      }
-
-      const normalizedType = String(type).toLowerCase();
-      const allTypes = Object.values(TYPE_GROUPS).flat();
-      if (!allTypes.includes(normalizedType)) {
-        throw new Error('Invalid Vport type.');
-      }
-
-      const _bbPayload = {
-        name: name.trim(),
-        vportType: normalizedType,
-        bio: (description || '').trim() || null,
-        avatarUrl: finalAvatarUrl || null,
-      };
-      if (import.meta.env.DEV) _setBbDebug({ stage: 'sending', payload: _bbPayload, result: null, error: null });
-
-      const res = await createVport({
-        name: name.trim(),
-        slug: null,
-        avatarUrl: finalAvatarUrl || null,
-        bio: (description || '').trim() || null,
-        vportType: normalizedType,
-      });
-
-      if (import.meta.env.DEV) _setBbDebug((p) => ({ ...p, stage: 'success', result: res }));
-
-      if (selectedServiceKeys.size > 0 && res?.actorId) {
-        const selectedItems = [...selectedServiceKeys].map((key) => ({ key, enabled: true }));
-
-        try {
-          await upsertServices.mutate({
-            targetActorId: res.actorId,
-            vportType: normalizedType,
-            items: selectedItems,
-          });
-        } catch (serviceError) {
-          // non-fatal — services can be added later
-        }
-      }
-
-      if (onCreated) {
-        const list = await listMyVports().catch(() => null);
-        onCreated({ created: res, list });
-      } else {
-        if (res?.actorId) navigate(`/profile/${res.actorId}`);
-        else navigate('/settings?tab=vports');
-      }
-
+    if (result?.ok) {
       setName('');
       setType('other');
       setActiveTab('profile');
@@ -182,16 +105,14 @@ export default function CreateVportForm({ onCreated }) {
       setAvatarPreview('');
       setAvatarUrl('');
       setDescription('');
-    } catch (err) {
-      if (import.meta.env.DEV) _setBbDebug((p) => ({ ...(p || {}), stage: 'error', error: { message: err.message, meta: err.meta ?? null } }));
-      setError(err.message || 'Failed to create Vport.');
-    } finally {
-      setSubmitting(false);
+      setDirectoryVisible(true);
     }
   }
 
+  const displayError = fileError || error;
+
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="mb-1.5 block text-sm text-zinc-300">Name</label>
         <input
@@ -252,128 +173,31 @@ export default function CreateVportForm({ onCreated }) {
       </div>
 
       {activeTab === 'profile' ? (
-        <>
-          <div>
-            <label className="mb-1.5 block text-sm text-zinc-300">Avatar</label>
-            <div className="flex items-center gap-3">
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-zinc-900">
-                {avatarPreview || avatarUrl ? (
-                  <img src={avatarPreview || avatarUrl} alt="avatar preview" className="h-full w-full object-cover" />
-                ) : (
-                  <svg viewBox="0 0 24 24" className="h-7 w-7 text-zinc-500">
-                    <path
-                      fill="currentColor"
-                      d="M12 12a5 5 0 100-10 5 5 0 000 10Zm-7 9a7 7 0 0114 0v1H5v-1Z"
-                    />
-                  </svg>
-                )}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  ref={inputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handlePickFile}
-                />
-                <button
-                  type="button"
-                  onClick={() => inputRef.current?.click()}
-                  className="rounded-xl bg-zinc-800 px-4 py-2 text-sm hover:bg-zinc-700"
-                >
-                  Choose image
-                </button>
-
-                {(avatarFile || avatarUrl) && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAvatarFile(null);
-                      setAvatarUrl('');
-                    }}
-                    className="rounded-xl bg-zinc-800 px-3 py-2 text-sm hover:bg-zinc-700"
-                  >
-                    Remove
-                  </button>
-                )}
-
-                <span className="text-xs text-zinc-500">PNG/JPG up to 5MB.</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm text-zinc-300">Description (optional)</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              placeholder="Tell people what this Vport is about..."
-              className="min-h-24 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-black outline-none placeholder-black/50 focus:ring-2 focus:ring-violet-600"
-            />
-          </div>
-        </>
+        <CreateVportProfileTab
+          avatarPreview={avatarPreview}
+          avatarUrl={avatarUrl}
+          avatarFile={avatarFile}
+          description={description}
+          directoryVisible={directoryVisible}
+          inputRef={inputRef}
+          handlePickFile={handlePickFile}
+          setAvatarFile={setAvatarFile}
+          setAvatarUrl={setAvatarUrl}
+          setDescription={setDescription}
+          setDirectoryVisible={setDirectoryVisible}
+        />
       ) : (
-        <div className="space-y-4">
-          <div className="text-xs text-zinc-400">
-            Select the services this VPORT offers. You can edit these later.
-          </div>
-
-          {serviceCatalog.isLoading ? (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-sm text-zinc-400">
-              Loading services...
-            </div>
-          ) : null}
-
-          {serviceCatalog.error ? (
-            <div className="rounded-xl border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-200">
-              Failed to load services for this type.
-            </div>
-          ) : null}
-
-          {!serviceCatalog.isLoading && !serviceCatalog.error && catalogServices.length === 0 ? (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-sm text-zinc-400">
-              No catalog services found for this type.
-            </div>
-          ) : null}
-
-          {!serviceCatalog.isLoading && !serviceCatalog.error && catalogServices.length > 0 ? (
-            <div className="space-y-3">
-              {groupedCatalogServices.map(([category, services]) => (
-                <section key={category} className="space-y-2">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-zinc-400">{category}</div>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {services.map((service) => {
-                      const key = service?.key ?? '';
-                      const selected = selectedServiceKeys.has(key);
-
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => toggleServiceKey(key)}
-                          className={cx(
-                            'rounded-xl border px-3 py-2 text-left transition-colors',
-                            selected
-                              ? 'border-emerald-400/50 bg-emerald-500/10 text-emerald-200'
-                              : 'border-zinc-700 bg-zinc-900/40 text-zinc-200 hover:border-zinc-500'
-                          )}
-                        >
-                          <div className="text-sm font-medium">{service.label}</div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </section>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        <CreateVportServicesTab
+          serviceCatalog={serviceCatalog}
+          catalogServices={catalogServices}
+          groupedCatalogServices={groupedCatalogServices}
+          selectedServiceKeys={selectedServiceKeys}
+          toggleServiceKey={toggleServiceKey}
+        />
       )}
 
-      {error ? (
-        <div className="rounded-xl border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-200">{error}</div>
+      {displayError ? (
+        <div className="rounded-xl border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-200">{displayError}</div>
       ) : null}
 
       <div className="flex items-center gap-3 pt-2">
@@ -408,64 +232,8 @@ export default function CreateVportForm({ onCreated }) {
           {isBusy ? 'Creating...' : 'Create Vport'}
         </button>
       </div>
-      {import.meta.env.DEV && _bbDebug && (
-        <div style={{ marginTop: 16, border: '1.5px solid #7c3aed', borderRadius: 10, background: '#1e1b4b', padding: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#a78bfa', marginBottom: 6, letterSpacing: 1 }}>
-            ◉ BUGSBUNNY — create_vport probe [{_bbDebug.stage}]
-          </div>
-          {_bbDebug.payload && (
-            <>
-              <div style={{ fontSize: 10, color: '#818cf8', marginBottom: 2 }}>SENDING →</div>
-              <pre style={{ fontSize: 11, color: '#e0e7ff', margin: '0 0 8px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                {JSON.stringify(_bbDebug.payload, null, 2)}
-              </pre>
-            </>
-          )}
-          {_bbDebug.result && (
-            <>
-              <div style={{ fontSize: 10, color: '#34d399', marginBottom: 2 }}>RESULT ←</div>
-              <pre style={{ fontSize: 11, color: '#d1fae5', margin: '0 0 8px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                {JSON.stringify(_bbDebug.result, null, 2)}
-              </pre>
-            </>
-          )}
-          {_bbDebug.error && (
-            <>
-              <div style={{ fontSize: 10, color: '#f87171', marginBottom: 2 }}>ERROR ←</div>
-              <pre style={{ fontSize: 11, color: '#fecaca', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                {JSON.stringify(_bbDebug.error, null, 2)}
-              </pre>
-            </>
-          )}
-          <button
-            type="button"
-            onClick={() => _setBbDebug(null)}
-            style={{ marginTop: 8, fontSize: 10, color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-          >
-            clear
-          </button>
-        </div>
-      )}
+
+      <CreateVportDebugPanel _bbDebug={_bbDebug} _setBbDebug={_setBbDebug} />
     </form>
   );
-}
-
-function setsEqual(a, b) {
-  if (a.size !== b.size) return false;
-  for (const value of a.values()) {
-    if (!b.has(value)) return false;
-  }
-  return true;
-}
-
-function groupServicesByCategory(services) {
-  const groups = new Map();
-
-  for (const service of services ?? []) {
-    const category = (service?.category ?? 'Other').toString().trim() || 'Other';
-    if (!groups.has(category)) groups.set(category, []);
-    groups.get(category).push(service);
-  }
-
-  return [...groups.entries()];
 }

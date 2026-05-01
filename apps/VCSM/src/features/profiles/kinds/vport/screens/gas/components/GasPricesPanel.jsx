@@ -1,27 +1,7 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\screens\gas\components\GasPricesPanel.jsx
-
-import { useMemo, useState, useEffect } from "react";
-
+import { useMemo, useState } from "react";
 import { GasStates } from "@/features/profiles/kinds/vport/screens/gas/components/GasStates";
-
-function toEpochMs(ts) {
-  if (!ts) return null;
-  const ms = new Date(ts).getTime();
-  return Number.isFinite(ms) ? ms : null;
-}
-
-function formatLastUpdatedAt(ts) {
-  if (!ts) return "";
-  const d = new Date(ts);
-  if (Number.isNaN(d.getTime())) return "";
-
-  return d.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
+import { BulkUpdateFuelPricesModal } from "@/features/profiles/kinds/vport/screens/gas/components/BulkUpdateFuelPricesModal";
+import { toEpochMs, formatLastUpdatedAt, prettyFuelLabel } from "@/features/profiles/kinds/vport/screens/gas/components/gasPrices.model";
 
 export function GasPricesPanel({
   loading,
@@ -33,20 +13,12 @@ export function GasPricesPanel({
   identity,
   submitSuggestion,
   submitting = false,
-
-  // ✅ allow owner dashboard to show bulk update (fast-track path)
   allowOwnerUpdate = false,
-
-  // ✅ when viewing the public profile tab, pass true if the viewer IS the station owner
-  // so the button is hidden (they should use the dashboard instead)
   isStationOwner = false,
-
-  // ✅ optional hook for owner to auto-approve + apply to official
   afterSubmitSuggestion = null,
 }) {
   const [showBulkModal, setShowBulkModal] = useState(false);
 
-  // ✅ normalize identity shape (context vs actor object)
   const me = useMemo(() => identity?.identity ?? identity ?? null, [identity]);
   const canSubmit = !!me?.actorId;
 
@@ -62,76 +34,43 @@ export function GasPricesPanel({
       ? fromSettings.map((k) => (k ? String(k) : null)).filter(Boolean)
       : [];
 
-    // If settings explicitly defines the fuel list, use it as-is.
     if (cleanSettingsKeys.length) return cleanSettingsKeys;
 
-    // Otherwise always show the standard 4 fuels, then add any extra keys
-    // that actually have data (e.g. e85 added later). This prevents a station
-    // with only one price row from rendering only that one card.
     const keys = new Set(["regular", "midgrade", "premium", "diesel"]);
-
     for (const row of Array.isArray(official) ? official : []) {
       const k = row?.fuelKey ?? row?.fuel_key ?? row?.key ?? null;
       if (k) keys.add(String(k));
     }
-
     for (const k of Object.keys(officialByFuelKey || {})) keys.add(String(k));
     for (const k of Object.keys(communitySuggestionByFuelKey || {})) keys.add(String(k));
-
     return Array.from(keys);
   }, [settings, official, officialByFuelKey, communitySuggestionByFuelKey]);
-
-  const prettyFuelLabel = (fuelKey) => {
-    const map = {
-      regular: "Regular",
-      midgrade: "Midgrade",
-      premium: "Premium",
-      diesel: "Diesel",
-      e85: "E85",
-    };
-    return (
-      map[String(fuelKey).toLowerCase()] ??
-      String(fuelKey)
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (m) => m.toUpperCase())
-    );
-  };
 
   const rows = useMemo(() => {
     return fuelKeys.map((fuelKey) => {
       const officialRow =
         officialByFuelKey?.[fuelKey] ??
         (Array.isArray(official)
-          ? official.find((r) => (r?.fuelKey ?? r?.fuel_key ?? r?.key) === fuelKey) ??
-            null
+          ? official.find((r) => (r?.fuelKey ?? r?.fuel_key ?? r?.key) === fuelKey) ?? null
           : null);
 
       const suggestion = communitySuggestionByFuelKey?.[fuelKey] ?? null;
-
       const officialPrice = officialRow?.price ?? null;
-      const officialCurrencyCode =
-        officialRow?.currencyCode ?? officialRow?.currency_code ?? "USD";
+      const officialCurrencyCode = officialRow?.currencyCode ?? officialRow?.currency_code ?? "USD";
       const officialUnit = officialRow?.unit ?? "liter";
-      const officialUpdatedAt =
-        officialRow?.updatedAt ?? officialRow?.updated_at ?? null;
+      const officialUpdatedAt = officialRow?.updatedAt ?? officialRow?.updated_at ?? null;
 
       const suggestedPrice = suggestion?.proposedPrice ?? suggestion?.proposed_price ?? null;
-      const suggestedCurrencyCode =
-        suggestion?.currencyCode ?? suggestion?.currency_code ?? officialCurrencyCode;
+      const suggestedCurrencyCode = suggestion?.currencyCode ?? suggestion?.currency_code ?? officialCurrencyCode;
       const suggestedUnit = suggestion?.unit ?? officialUnit;
-      const suggestionSubmittedAt =
-        suggestion?.submittedAt ?? suggestion?.submitted_at ?? null;
+      const suggestionSubmittedAt = suggestion?.submittedAt ?? suggestion?.submitted_at ?? null;
 
       const officialUpdatedMs = toEpochMs(officialUpdatedAt);
       const suggestionSubmittedMs = toEpochMs(suggestionSubmittedAt);
 
       let lastUpdateAt = null;
       let lastUpdateSource = "none";
-
-      if (
-        suggestionSubmittedMs !== null &&
-        (officialUpdatedMs === null || suggestionSubmittedMs >= officialUpdatedMs)
-      ) {
+      if (suggestionSubmittedMs !== null && (officialUpdatedMs === null || suggestionSubmittedMs >= officialUpdatedMs)) {
         lastUpdateAt = suggestionSubmittedAt;
         lastUpdateSource = "community";
       } else if (officialUpdatedMs !== null) {
@@ -142,21 +81,9 @@ export function GasPricesPanel({
       return {
         fuelKey,
         label: prettyFuelLabel(fuelKey),
-        official: {
-          price: officialPrice,
-          currencyCode: officialCurrencyCode,
-          unit: officialUnit,
-        },
-        community: {
-          price: suggestedPrice,
-          currencyCode: suggestedCurrencyCode,
-          unit: suggestedUnit,
-        },
-        lastUpdate: {
-          at: lastUpdateAt,
-          source: lastUpdateSource,
-          label: formatLastUpdatedAt(lastUpdateAt),
-        },
+        official: { price: officialPrice, currencyCode: officialCurrencyCode, unit: officialUnit },
+        community: { price: suggestedPrice, currencyCode: suggestedCurrencyCode, unit: suggestedUnit },
+        lastUpdate: { at: lastUpdateAt, source: lastUpdateSource, label: formatLastUpdatedAt(lastUpdateAt) },
         suggestion,
       };
     });
@@ -164,11 +91,6 @@ export function GasPricesPanel({
 
   const empty = !loading && !error && rows.length === 0;
 
-  // show update button rules:
-  // - not authenticated → never
-  // - owner dashboard (allowOwnerUpdate=true) → always show (fast-track upsert)
-  // - public profile, viewer IS the station owner → hide (use dashboard instead)
-  // - public profile, any other authenticated user → show (citizen suggestion path)
   const showUpdateButton = useMemo(() => {
     if (!canSubmit) return false;
     if (allowOwnerUpdate) return true;
@@ -184,14 +106,9 @@ export function GasPricesPanel({
         <>
           <div className="flex items-end justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-[18px] font-semibold tracking-tight text-white">
-                Fuel Prices
-              </div>
-              <div className="mt-0.5 text-xs text-white/50">
-                Official rates + last community update
-              </div>
+              <div className="text-[18px] font-semibold tracking-tight text-white">Fuel Prices</div>
+              <div className="mt-0.5 text-xs text-white/50">Official rates + last community update</div>
             </div>
-
             {showUpdateButton ? (
               <button
                 type="button"
@@ -210,7 +127,6 @@ export function GasPricesPanel({
               const hasCommunityUpdate = row.lastUpdate?.source === "community";
               const hasOfficialUpdate = row.lastUpdate?.source === "official";
               const hasAnyUpdate = Boolean(row.lastUpdate?.label);
-
               return (
                 <div
                   key={row.fuelKey}
@@ -218,7 +134,6 @@ export function GasPricesPanel({
                 >
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-white/10" />
                   <div className="pointer-events-none absolute -top-24 right-[-60px] h-52 w-52 rounded-full bg-purple-500/10 blur-3xl" />
-
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
@@ -227,38 +142,22 @@ export function GasPricesPanel({
                           {row.official.currencyCode}/{row.official.unit}
                         </span>
                       </div>
-
                       <div className="mt-3 grid grid-cols-2 gap-3">
                         <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
-                          <div className="text-[11px] uppercase tracking-wide text-white/50">
-                            Official
-                          </div>
-                          <div className="mt-1 text-xl font-semibold text-white">
-                            {row.official.price ?? "—"}
-                          </div>
+                          <div className="text-[11px] uppercase tracking-wide text-white/50">Official</div>
+                          <div className="mt-1 text-xl font-semibold text-white">{row.official.price ?? "—"}</div>
                         </div>
-
                         <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
                           <div className="flex items-center justify-between gap-2">
-                            <div className="text-[11px] uppercase tracking-wide text-white/50">
-                              Last update
-                            </div>
-
+                            <div className="text-[11px] uppercase tracking-wide text-white/50">Last update</div>
                             {hasCommunityUpdate ? (
-                              <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[11px] text-sky-200">
-                                Community
-                              </span>
+                              <span className="rounded-full bg-sky-400/15 px-2 py-0.5 text-[11px] text-sky-200">Community</span>
                             ) : hasOfficialUpdate ? (
-                              <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] text-emerald-200">
-                                Official
-                              </span>
+                              <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] text-emerald-200">Official</span>
                             ) : (
-                              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-white/50">
-                                None yet
-                              </span>
+                              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-white/50">None yet</span>
                             )}
                           </div>
-
                           <div className="mt-1 text-xl font-semibold text-white">
                             {hasCommunityUpdate && row.community.price != null
                               ? row.community.price
@@ -267,17 +166,12 @@ export function GasPricesPanel({
                               : "—"}
                           </div>
                           {hasAnyUpdate && row.lastUpdate.label ? (
-                            <div className="mt-0.5 text-[10px] text-white/40">
-                              {row.lastUpdate.label}
-                            </div>
+                            <div className="mt-0.5 text-[10px] text-white/40">{row.lastUpdate.label}</div>
                           ) : null}
                         </div>
                       </div>
-
                       {!hasCommunityUpdate ? (
-                        <div className="mt-2 text-xs text-white/40">
-                          Be the first to update this station.
-                        </div>
+                        <div className="mt-2 text-xs text-white/40">Be the first to update this station.</div>
                       ) : null}
                     </div>
                   </div>
@@ -296,178 +190,6 @@ export function GasPricesPanel({
           />
         </>
       )}
-    </div>
-  );
-}
-
-function BulkUpdateFuelPricesModal({
-  open,
-  onClose,
-  rows,
-  submitting,
-  submitSuggestion,
-
-  // owner can auto-approve and apply to official
-  afterSubmitSuggestion = null,
-}) {
-  const [values, setValues] = useState({});
-  const [localError, setLocalError] = useState(null);
-
-  useEffect(() => {
-    if (!open) return;
-    setValues({});
-    setLocalError(null);
-  }, [open]);
-
-  const anyValue = useMemo(() => {
-    return Object.values(values).some(
-      (v) => v !== undefined && v !== null && String(v).trim() !== ""
-    );
-  }, [values]);
-
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-3 sm:p-6">
-      <div className="profiles-card flex max-h-[88dvh] w-full max-w-lg flex-col overflow-hidden rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.75)]">
-        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-4">
-          <div className="min-w-0">
-            <div className="text-lg font-semibold text-white">Update prices</div>
-            <div className="mt-1 text-xs text-white/50">
-              Fill any fuels you want. Blank = skip.
-            </div>
-          </div>
-
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={submitting ? undefined : onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/90 hover:bg-black/50 disabled:opacity-60"
-            disabled={submitting}
-          >
-            X
-          </button>
-        </div>
-
-        <div className="overflow-y-auto px-4 py-4">
-          <div className="space-y-3">
-            {rows.map((row) => (
-              <div
-                key={row.fuelKey}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-3"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-white">{row.label}</div>
-                    <div className="mt-0.5 text-[11px] text-white/50">
-                      {row.official.currencyCode}/{row.official.unit}
-                    </div>
-                  </div>
-
-                  <div className="w-40">
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      placeholder="e.g. 1.23"
-                      value={values[row.fuelKey] ?? ""}
-                      onChange={(e) => {
-                        const next = e.target.value;
-                        setValues((s) => ({ ...s, [row.fuelKey]: next }));
-                      }}
-                      className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-black placeholder:text-zinc-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-300/25"
-                      disabled={submitting}
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-white/40">
-                  <div>
-                    Official:{" "}
-                    <span className="text-white/70">{row.official.price ?? "-"}</span>
-                  </div>
-                  <div>
-                    Last update:{" "}
-                    <span className="text-white/70">{row.lastUpdate?.label || "-"}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {localError ? (
-            <div className="profiles-error mt-4 rounded-2xl p-3 text-sm">
-              {String(localError?.message ?? localError)}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="mt-auto flex items-center justify-end gap-2 border-t border-white/10 bg-black/20 px-4 py-3">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={submitting}
-            className="profiles-pill-btn rounded-2xl px-4 py-2 text-sm font-semibold disabled:opacity-60"
-          >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            disabled={!anyValue || submitting}
-            onClick={async () => {
-              setLocalError(null);
-
-              // Submit only filled fuels, stop on first failure
-              for (const row of rows) {
-                const raw = values[row.fuelKey];
-                if (raw === undefined || raw === null || String(raw).trim() === "") continue;
-
-                const proposedPrice = Number(raw);
-                if (!Number.isFinite(proposedPrice) || proposedPrice <= 0) {
-                  setLocalError(`Invalid number for ${row.label}`);
-                  return;
-                }
-
-                const res = await submitSuggestion?.({
-                  fuelKey: row.fuelKey,
-                  proposedPrice,
-                  currencyCode: row.official.currencyCode ?? "USD",
-                  unit: row.official.unit ?? "liter",
-                });
-
-                if (!res?.ok) {
-                  setLocalError(res?.reason ?? "Failed to submit");
-                  return;
-                }
-
-                if (afterSubmitSuggestion) {
-                  const submissionId =
-                    res?.submissionId ?? res?.id ?? res?.submission?.id ?? null;
-
-                  if (submissionId) {
-                    const r2 = await afterSubmitSuggestion({
-                      submissionId,
-                      fuelKey: row.fuelKey,
-                      proposedPrice,
-                    });
-
-                    if (r2 && r2.ok === false) {
-                      setLocalError(r2?.reason ?? "Failed to apply to official");
-                      return;
-                    }
-                  }
-                }
-              }
-
-              onClose();
-            }}
-            className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {submitting ? "Submitting..." : "Save updates"}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

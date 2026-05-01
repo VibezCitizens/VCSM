@@ -86,7 +86,6 @@ export default function LearningLayout() {
 
     try {
       const result = await resolveLearningRealm({
-        supabase,
         vcRealmId,
         fallbackToDefault: true,
       });

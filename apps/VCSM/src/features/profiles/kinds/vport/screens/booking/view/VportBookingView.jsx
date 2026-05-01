@@ -2,11 +2,11 @@ import { BookingCalendarAgendaPanel } from "@/features/profiles/kinds/vport/scre
 import { BookingCalendarDayPanel } from "@/features/profiles/kinds/vport/screens/booking/components/BookingCalendarDayPanel";
 import { BookingCalendarMonthGrid } from "@/features/profiles/kinds/vport/screens/booking/components/BookingCalendarMonthGrid";
 import { useVportBookingView } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView";
+import VportPublicBookingFlow from "@/features/profiles/kinds/vport/screens/booking/view/VportPublicBookingFlow";
 import {
   DURATION_OPTIONS,
   SEGMENT_LABELS,
   STATUS_LABELS,
-  VISITOR_SLOT_DURATION_MINUTES,
   WEEKDAY_LABELS,
 } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendar.model";
 import "@/features/profiles/styles/profiles-booking-modern.css";
@@ -22,6 +22,13 @@ function BookingError({ error }) {
 }
 
 export default function VportBookingView({ profile, isOwner = false }) {
+  if (!isOwner) return <VportPublicBookingFlow profile={profile} />;
+
+  return <VportOwnerBookingView profile={profile} />;
+}
+
+function VportOwnerBookingView({ profile }) {
+  const isOwner = true;
   const {
     viewerActorId,
     resources,
@@ -100,7 +107,17 @@ export default function VportBookingView({ profile, isOwner = false }) {
         </article>
       </div>
 
-      {isOwner ? (
+      <div
+        className="rounded-xl mb-3"
+        style={{ border: "1px solid rgba(255,255,255,0.08)", padding: "12px 14px 14px" }}
+      >
+        <div
+          className="text-[9px] font-semibold uppercase tracking-widest mb-3"
+          style={{ color: "rgba(255,255,255,0.2)" }}
+        >
+          Owner Tools
+        </div>
+
         <div className="profiles-booking-duration-switch" role="radiogroup" aria-label="Appointment duration">
           <span className="profiles-booking-duration-label">Duration</span>
           {DURATION_OPTIONS.map((durationOption) => {
@@ -119,27 +136,17 @@ export default function VportBookingView({ profile, isOwner = false }) {
             );
           })}
         </div>
-      ) : (
-        <div className="profiles-booking-duration-switch" aria-label="Appointment duration">
-          <span className="profiles-booking-duration-label">Duration</span>
-          <button type="button" className="profiles-booking-duration-btn is-active" disabled>
-            {VISITOR_SLOT_DURATION_MINUTES} min
+
+        <div className="profiles-booking-view-switch mt-2" role="tablist" aria-label="Calendar view mode">
+          <button
+            type="button"
+            className={`profiles-booking-view-btn ${viewMode === "calendar" ? "is-active" : ""}`}
+            onClick={() => onChangeViewMode("calendar")}
+            role="tab"
+            aria-selected={viewMode === "calendar"}
+          >
+            Calendar
           </button>
-        </div>
-      )}
-
-      <div className="profiles-booking-view-switch" role="tablist" aria-label="Calendar view mode">
-        <button
-          type="button"
-          className={`profiles-booking-view-btn ${viewMode === "calendar" ? "is-active" : ""}`}
-          onClick={() => onChangeViewMode("calendar")}
-          role="tab"
-          aria-selected={viewMode === "calendar"}
-        >
-          Calendar
-        </button>
-
-        {isOwner ? (
           <button
             type="button"
             className={`profiles-booking-view-btn ${viewMode === "agenda" ? "is-active" : ""}`}
@@ -149,7 +156,7 @@ export default function VportBookingView({ profile, isOwner = false }) {
           >
             Agenda
           </button>
-        ) : null}
+        </div>
       </div>
 
       {viewMode === "calendar" ? (

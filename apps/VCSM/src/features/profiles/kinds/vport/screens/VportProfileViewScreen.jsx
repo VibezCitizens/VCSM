@@ -1,10 +1,7 @@
-// src/features/profiles/kinds/vport/screens/VportProfileViewScreen.jsx
-
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 
 import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
-
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
 import { useBlockStatus } from "@/features/block/adapters/hooks/useBlockStatus.adapter";
@@ -12,37 +9,23 @@ import { useBlockStatus } from "@/features/block/adapters/hooks/useBlockStatus.a
 import VportProfileHeader from "@/features/profiles/kinds/vport/ui/vportprofileheader/VportProfileHeader";
 import VportProfileTabs from "@/features/profiles/kinds/vport/ui/tabs/VportProfileTabs";
 
-import ActorProfilePostsView from "@/features/profiles/screens/views/ActorProfilePostsView";
-import ActorProfilePhotosView from "@/features/profiles/screens/views/ActorProfilePhotosView";
-
-import VportAboutView from "@/features/profiles/kinds/vport/screens/views/tabs/VportAboutView";
-import VportSubscribersView from "@/features/profiles/kinds/vport/screens/views/tabs/VportSubscribersView";
-import VportReviewsView from "@/features/profiles/kinds/vport/screens/views/tabs/VportReviewsView";
-import VportMenuView from "@/features/profiles/kinds/vport/screens/views/tabs/VportMenuView";
-
-import VportPortfolioView from "@/features/profiles/kinds/vport/screens/views/tabs/VportPortfolioView";
-import VportServicesView from "@/features/profiles/kinds/vport/screens/services/view/VportServicesView";
-import VportBookingView from "@/features/profiles/kinds/vport/screens/views/tabs/VportBookingView";
-import VportContentView from "@/features/profiles/kinds/vport/screens/views/tabs/VportContentView";
-
-import { shareNative } from "@/shared/lib/shareNative";
 import PrivateProfileNotice from "@/features/social/adapters/components/PrivateProfileNotice.adapter";
-
-import ShareModal from "@/features/post/adapters/postcard/components/ShareModal.adapter";
 import PostActionsMenu from "@/features/post/adapters/postcard/components/PostActionsMenu.adapter";
-import useReportFlow from "@/features/moderation/adapters/hooks/useReportFlow.adapter";
 import ReportModal from "@/features/moderation/adapters/components/ReportModal.adapter";
-import { useDeletePostAction } from "@/features/post/adapters/postcard/hooks/useDeletePostAction.adapter";
+import ShareModal from "@/features/post/adapters/postcard/components/ShareModal.adapter";
 
-import { VportGasPricesView } from "@/features/profiles/kinds/vport/screens/gas/view/VportGasPricesView";
-import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportOwnerView";
+import VportBarberShopOwnerBand from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopOwnerBand";
+import VportBarberShopBookingView from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopBookingView";
 
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
-import { useVportPublicDetails } from "@/features/profiles/kinds/vport/hooks/useVportPublicDetails";
+import { useVportProfileBySlug } from "@/features/profiles/kinds/vport/hooks/useVportProfileBySlug";
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
-// ✅ NEW: Rates tab view
-import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView";
+import { useIsActorOwner } from "@/features/profiles/hooks/useIsActorOwner";
+import { useVportProfileActions } from "@/features/profiles/kinds/vport/hooks/useVportProfileActions";
+import VportProfileTabContent from "./components/VportProfileTabContent";
+
 import "@/features/profiles/styles/profiles-modern.css";
+import "@/features/profiles/styles/barbershop-owner-mode.css";
 
 export default function VportProfileViewScreen({
   viewerActorId,
@@ -53,64 +36,46 @@ export default function VportProfileViewScreen({
   const [tab, setTab] = useState("vibes");
   const [gateVersion, setGateVersion] = useState(0);
   const [postsVersion, setPostsVersion] = useState(0);
-
   const [reviewsDefaultTab, setReviewsDefaultTab] = useState(null);
-  // Tracks the last firstKey we auto-applied so we re-apply when type-specific tabs load
+
   const autoAppliedFirstKeyRef = useRef(null);
-  // Tracks whether the user has manually selected a tab (vs the auto-resolved default)
   const userHasSelectedTabRef = useRef(false);
+  const appliedSearchTabRef = useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const deletePost = useDeletePostAction({ actorId: viewerActorId });
-  const appliedSearchTabRef = useRef(null);
 
-  const gate = useProfileGate({
-    viewerActorId,
-    targetActorId: profileActorId,
-    version: gateVersion,
-  });
-
+  const gate = useProfileGate({ viewerActorId, targetActorId: profileActorId, version: gateVersion });
   const canViewContent = gate.loading ? undefined : gate.canView;
 
-  const { loading, error, profile, posts, loadingPosts } = useProfileView({
-    viewerActorId,
-    profileActorId,
-    canViewContent,
-  });
+  const { loading, error, profile, posts, loadingPosts } = useProfileView({ viewerActorId, profileActorId, canViewContent });
+  const { loading: blockLoading, canViewProfile } = useBlockStatus(viewerActorId, profileActorId);
 
-  const { loading: blockLoading, canViewProfile } = useBlockStatus(
-    viewerActorId,
-    profileActorId
-  );
+  const { actorId: routeSlug } = useParams();
+  const { publicDetails, isLoading: publicDetailsLoading } = useVportProfileBySlug(routeSlug);
 
-  const { loading: publicDetailsLoading, details: publicDetails } =
-    useVportPublicDetails(profileActorId);
-
-  // Sets document.title, meta description, and JSON-LD (LocalBusiness).
-  // Passes publicDetails so the structured data can include phone, website,
-  // address, and geo coordinates when available. Cleans up on unmount.
   useActorSeoMeta(profile ?? null, publicDetails ?? null);
 
-  const isOwner = useMemo(() => {
+  const isDirectMatch = useMemo(() => {
     if (!viewerActorId || !profileActorId) return false;
     return String(viewerActorId) === String(profileActorId);
   }, [viewerActorId, profileActorId]);
+
+  const userId = identity?.userId ?? null;
+  const { ownsViaAccount } = useIsActorOwner({ userId, actorId: profileActorId, directMatch: isDirectMatch });
+  const isOwner = isDirectMatch || ownsViaAccount;
+
+  const vportType = useMemo(() => (
+    publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? profile?.category ?? null
+  ), [publicDetails, profile]);
 
   const handleTabSelect = useCallback((key) => {
     userHasSelectedTabRef.current = true;
     setTab(key);
   }, []);
 
-  const openFoodReview = useCallback(() => {
-    setReviewsDefaultTab("food");
-    setTab("reviews");
-  }, []);
-
   useEffect(() => {
-    if (!blockLoading && canViewProfile === false) {
-      navigate("/feed", { replace: true });
-    }
+    if (!blockLoading && canViewProfile === false) navigate("/feed", { replace: true });
   }, [blockLoading, canViewProfile, navigate]);
 
   const visibleProfilePosts = useMemo(() => {
@@ -118,173 +83,46 @@ export default function VportProfileViewScreen({
     return list.filter((p) => !p?.deleted_at);
   }, [posts]);
 
-  // ============================================================
-  // TAB LAYOUT SELECTION (+ OWNER TAB ONLY IF isOwner)
-  // ============================================================
   const effectiveTabs = useMemo(() => {
     const fallbackTabs = Array.isArray(tabs) && tabs.length ? tabs : VPORT_TABS;
-
-    const vportType =
-      publicDetails?.vportType ??
-      profile?.vport_type ??
-      profile?.vportType ??
-      profile?.category ??
-      null;
-
-    const baseTabs = vportType ? getVportTabsByType(vportType) : fallbackTabs;
-
+    const type = publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? profile?.category ?? null;
+    const baseTabs = type ? getVportTabsByType(type) : fallbackTabs;
     if (isOwner) {
       if (baseTabs.some((t) => t.key === "owner")) return baseTabs;
       return [...baseTabs, { key: "owner", label: "Owner" }];
     }
-
-    // viewer → never include owner tab
     return baseTabs.filter((t) => t.key !== "owner");
   }, [tabs, publicDetails, profile, isOwner]);
 
   useEffect(() => {
     const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
     if (!list.length) return;
-
     const firstKey = list[0]?.key;
-
     setTab((prev) => {
       const exists = list.some((t) => t.key === prev);
-
-      // If current tab no longer exists in new layout, reset to first
       if (!exists) return firstKey ?? "vibes";
-
-      // Auto-advance to firstKey when:
-      //   - user hasn't manually selected a tab, AND
-      //   - firstKey changed (e.g. generic fallback → gas-specific tabs loaded)
-      // This ensures gas stations land on "gas" even though the fallback
-      // briefly set the tab to "about" before publicDetails resolved.
-      if (
-        !userHasSelectedTabRef.current &&
-        firstKey &&
-        firstKey !== autoAppliedFirstKeyRef.current
-      ) {
+      if (!userHasSelectedTabRef.current && firstKey && firstKey !== autoAppliedFirstKeyRef.current) {
         autoAppliedFirstKeyRef.current = firstKey;
         return firstKey;
       }
-
       return prev;
     });
   }, [effectiveTabs]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search || "");
-    const requestedTabRaw = params.get("tab");
-    const requestedTab = String(requestedTabRaw || "").trim().toLowerCase();
-
-    if (!requestedTab) {
-      appliedSearchTabRef.current = null;
-      return;
-    }
-
-    if (appliedSearchTabRef.current === requestedTab) return;
-
+    const requestedTab = String(params.get("tab") || "").trim().toLowerCase();
+    if (!requestedTab || appliedSearchTabRef.current === requestedTab) return;
     const list = Array.isArray(effectiveTabs) ? effectiveTabs : [];
-    const hasRequestedTab = list.some(
-      (t) => String(t?.key || "").toLowerCase() === requestedTab
-    );
-    if (!hasRequestedTab) return;
-
+    if (!list.some((t) => String(t?.key || "").toLowerCase() === requestedTab)) return;
     setTab(requestedTab);
     appliedSearchTabRef.current = requestedTab;
   }, [location.search, effectiveTabs]);
 
-  // ============================================================
-  // SHARE
-  // ============================================================
-  const [shareState, setShareState] = useState({
-    open: false,
-    url: "",
-    postId: null,
+  const actions = useVportProfileActions({
+    viewerActorId,
+    onPostDeleted: () => { setPostsVersion((v) => v + 1); setGateVersion((v) => v + 1); },
   });
-
-  const closeShare = useCallback(() => {
-    setShareState({ open: false, url: "", postId: null });
-  }, []);
-
-  const handleShare = useCallback(async (postId) => {
-    if (!postId) return;
-
-    const url = `${window.location.origin}/post/${postId}`;
-
-    const res = await shareNative({
-      title: "Spread",
-      text: "",
-      url,
-    });
-
-    if (!res.ok) {
-      setShareState({ open: true, url, postId });
-    }
-  }, []);
-
-  const reportFlow = useReportFlow({ reporterActorId: viewerActorId });
-
-  const [postMenu, setPostMenu] = useState(null);
-
-  const openPostMenu = useCallback(
-    ({ postId, postActorId, anchorRect }) => {
-      if (!postId || !anchorRect) return;
-
-      setPostMenu({
-        postId,
-        postActorId: postActorId ?? null,
-        isOwn: (postActorId ?? null) === (viewerActorId ?? null),
-        anchorRect,
-      });
-    },
-    [viewerActorId]
-  );
-
-  const closePostMenu = useCallback(() => setPostMenu(null), []);
-
-  const handleReportPost = useCallback(() => {
-    if (!viewerActorId) return;
-    if (!postMenu?.postId) return;
-
-    reportFlow.start({
-      objectType: "post",
-      objectId: postMenu.postId,
-      postId: postMenu.postId,
-      dedupeKey: `report:post:${postMenu.postId}`,
-      title: "Report Vibe",
-      subtitle: "Tell us what’s wrong with this Vibe.",
-    });
-
-    closePostMenu();
-  }, [viewerActorId, postMenu, reportFlow, closePostMenu]);
-
-  const handleEditPost = useCallback(() => {
-    if (!postMenu?.postId) return;
-    closePostMenu();
-    navigate(`/post/${postMenu.postId}/edit`);
-  }, [postMenu, navigate, closePostMenu]);
-
-  const handleDeletePost = useCallback(async () => {
-    if (!viewerActorId) return;
-    if (!postMenu?.postId) return;
-
-    const okConfirm = window.confirm("Delete this Vibe?");
-    if (!okConfirm) return;
-
-    const res = await deletePost({
-      postId: postMenu.postId,
-    });
-
-    if (!res.ok) {
-      window.alert(res.error?.message ?? "Failed to delete Vibe");
-      return;
-    }
-
-    setPostsVersion((v) => v + 1);
-    setGateVersion((v) => v + 1);
-    closePostMenu();
-  }, [viewerActorId, postMenu, closePostMenu, deletePost]);
 
   if (loading || blockLoading || gate.loading) {
     return (
@@ -295,31 +133,38 @@ export default function VportProfileViewScreen({
   }
 
   if (error || !profile) {
-    return (
-      <div className="profiles-modern flex justify-center py-20 text-rose-300">
-        Failed to load profile.
-      </div>
-    );
+    return <div className="profiles-modern flex justify-center py-20 text-rose-300">Failed to load profile.</div>;
   }
 
   if (profile.kind !== "vport") {
-    return (
-      <div className="profiles-modern flex justify-center py-20 profiles-muted">
-        Profile kind mismatch.
-      </div>
-    );
+    return <div className="profiles-modern flex justify-center py-20 profiles-muted">Profile kind mismatch.</div>;
   }
 
-  const actorIdForOwnerView = profile?.actorId ?? profileActorId ?? null;
+  const isBarbershopOwner = isOwner && vportType === "barbershop";
+  const isCalendarActive = isBarbershopOwner && tab === "book";
+
+  const rootClass = [
+    "profiles-modern", "h-full", "w-full", "touch-pan-y",
+    isBarbershopOwner ? "bs-owner-mode" : "",
+    isCalendarActive ? "bs-owner-calendar-active" : "overflow-y-auto",
+  ].filter(Boolean).join(" ");
 
   return (
-    <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
+    <div className={rootClass}>
       <VportProfileHeader
         profile={profile}
         viewerActorId={viewerActorId}
         profileIsPrivate={gate.isPrivate}
         onSubscriptionChanged={() => setGateVersion((v) => v + 1)}
       />
+
+      {isBarbershopOwner && profile?.actorId && (
+        <VportBarberShopOwnerBand
+          actorId={profile.actorId}
+          onNewBooking={() => handleTabSelect("book")}
+          hideBookingButton={isCalendarActive}
+        />
+      )}
 
       <VportProfileTabs tab={tab} setTab={handleTabSelect} tabs={effectiveTabs} />
 
@@ -338,117 +183,60 @@ export default function VportProfileViewScreen({
         />
       )}
 
-      {gate.canView && (
-        <div className="profiles-shell px-4 pb-24">
-          {tab === "vibes" && (
-            <ActorProfilePostsView
-              profileActorId={profile.actorId}
-              onShare={handleShare}
-              onOpenMenu={openPostMenu}
-              version={postsVersion}
-            />
-          )}
+      {gate.canView && isCalendarActive && (
+        <VportBarberShopBookingView profile={profile} isOwner={isOwner} />
+      )}
 
-          {tab === "photos" && (
-            <ActorProfilePhotosView
-              actorId={profile.actorId}
-              viewerActorId={viewerActorId}
-              posts={visibleProfilePosts}
-              loadingPosts={loadingPosts}
-              canViewContent={gate.canView}
-              handleShare={handleShare}
-            />
-          )}
-
-          {tab === "portfolio" && (
-            <VportPortfolioView
-              profile={profile}
-              posts={visibleProfilePosts}
-              loadingPosts={loadingPosts}
-              availableTabs={effectiveTabs}
-              onSelectTab={setTab}
-            />
-          )}
-
-          {tab === "services" && (
-            <VportServicesView profile={profile} viewerActorId={viewerActorId} />
-          )}
-
-          {tab === "book" && <VportBookingView profile={profile} isOwner={isOwner} />}
-
-          {tab === "about" && (
-            <VportAboutView profile={profile} details={publicDetails} />
-          )}
-
-          {tab === "subscribers" && <VportSubscribersView profile={profile} />}
-
-          {tab === "reviews" && (
-            <VportReviewsView
-              profile={profile}
-              viewerActorId={viewerActorId}
-              initialReviewTab={reviewsDefaultTab}
-              onConsumedInitialTab={() => setReviewsDefaultTab(null)}
-            />
-          )}
-
-          {tab === "menu" && (
-            <VportMenuView profile={profile} onOpenFoodReview={openFoodReview} />
-          )}
-
-          {tab === "content" && (
-            <VportContentView profile={profile} isOwner={isOwner} />
-          )}
-
-          {/* ✅ NEW: Rates tab */}
-          {tab === "rates" && (
-            <div className="mt-4">
-              <VportRatesView actorId={profileActorId} rateType="fx" />
-            </div>
-          )}
-
-          {tab === "gas" && (
-            <div className="mt-4">
-              <VportGasPricesView actorId={profileActorId} identity={identity} isOwner={isOwner} />
-            </div>
-          )}
-
-          {/* ✅ HARD GATE: owner view only renders for owner */}
-          {tab === "owner" && isOwner ? (
-            <VportOwnerView actorId={actorIdForOwnerView} />
-          ) : null}
-
-          {tab === "about" && publicDetailsLoading && !publicDetails && (
-            <div className="mt-4 text-xs profiles-muted">
-              Loading public details...
-            </div>
-          )}
-        </div>
+      {gate.canView && !isCalendarActive && (
+        <VportProfileTabContent
+          tab={tab}
+          profile={profile}
+          publicDetails={publicDetails}
+          publicDetailsLoading={publicDetailsLoading}
+          visibleProfilePosts={visibleProfilePosts}
+          loadingPosts={loadingPosts}
+          viewerActorId={viewerActorId}
+          profileActorId={profileActorId}
+          identity={identity}
+          isOwner={isOwner}
+          vportType={vportType}
+          effectiveTabs={effectiveTabs}
+          postsVersion={postsVersion}
+          reviewsDefaultTab={reviewsDefaultTab}
+          onSetTab={handleTabSelect}
+          onConsumedReviewsTab={(defaultTab) => {
+            if (defaultTab) setReviewsDefaultTab(defaultTab);
+            else setReviewsDefaultTab(null);
+          }}
+          onShare={actions.handleShare}
+          onOpenMenu={actions.openPostMenu}
+        />
       )}
 
       <PostActionsMenu
-        open={!!postMenu}
-        anchorRect={postMenu?.anchorRect}
-        isOwn={!!postMenu?.isOwn}
-        onClose={closePostMenu}
-        onEdit={handleEditPost}
-        onDelete={handleDeletePost}
-        onReport={handleReportPost}
+        open={!!actions.postMenu}
+        anchorRect={actions.postMenu?.anchorRect}
+        isOwn={!!actions.postMenu?.isOwn}
+        onClose={actions.closePostMenu}
+        onEdit={actions.handleEditPost}
+        onDelete={actions.handleDeletePost}
+        onReport={actions.handleReportPost}
       />
 
       <ReportModal
-        open={reportFlow.open}
-        title={reportFlow.context?.title ?? "Report"}
-        subtitle={reportFlow.context?.subtitle ?? null}
-        loading={reportFlow.loading}
-        onClose={reportFlow.close}
-        onSubmit={reportFlow.submit}
+        open={actions.reportFlow.open}
+        title={actions.reportFlow.context?.title ?? "Report"}
+        subtitle={actions.reportFlow.context?.subtitle ?? null}
+        loading={actions.reportFlow.loading}
+        onClose={actions.reportFlow.close}
+        onSubmit={actions.reportFlow.submit}
       />
 
       <ShareModal
-        open={shareState.open}
+        open={actions.shareState.open}
         title="Spread"
-        url={shareState.url}
-        onClose={closeShare}
+        url={actions.shareState.url}
+        onClose={actions.closeShare}
       />
     </div>
   );

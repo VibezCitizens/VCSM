@@ -2,6 +2,16 @@
 
 import vportSchema from "@/services/supabase/vportClient";
 
+export async function readContentPageSlugsByPrefixDAL({ actorId, slugPrefix }) {
+  const { data } = await vportSchema
+    .from("content_pages")
+    .select("slug")
+    .eq("actor_id", actorId)
+    .like("slug", `${slugPrefix}%`);
+
+  return (data ?? []).map((r) => r.slug);
+}
+
 const CONTENT_SELECT =
   "id,actor_id,profile_id,title,slug,excerpt,body,category,service_keys,is_published,is_indexable,published_at,created_at,updated_at";
 

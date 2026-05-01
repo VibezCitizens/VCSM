@@ -1,8 +1,10 @@
 import { dalGetBookingResourceById } from '../dal/resource.read.dal.js'
-import { dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
+import { dalGetVportResourceById, dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
 import { dalGetActorById } from '../dal/actor.read.dal.js'
 import { dalInsertBooking } from '../dal/booking.write.dal.js'
+import { dalInsertVportBooking } from '../dal/vportBooking.write.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
+import { assertActorCanManageResource } from './assertActorCanManageResource.controller.js'
 import { mapBookingRow } from '../model/Booking.model.js'
 import { getNotifyFn } from '../config.js'
 import { BOOKING_EVENTS } from '../events.js'
@@ -36,12 +38,12 @@ export async function createBooking({
   if (!serviceLabelSnapshot)  throw new Error('[BookingEngine] serviceLabelSnapshot is required')
   if (!durationMinutes)       throw new Error('[BookingEngine] durationMinutes is required')
 
-  // Resolve resourceId from locationId (any_available mode) when not explicitly given
+  // Resolve resourceId from locationId (any_available mode) when not explicitly given.
+  // Location-based resolution always points to vport.resources.
   let resolvedResourceId = resourceId
   if (!resolvedResourceId && locationId) {
     const locationResources = await dalListVportResourcesByLocationId({ locationId, includeInactive: false })
     if (!locationResources.length) throw new Error('No available resources at this location.')
-    // Sort by sort_order ASC, then created_at ASC — pick first
     const sorted = [...locationResources].sort((a, b) => {
       if (a.sort_order !== b.sort_order) return (a.sort_order ?? 0) - (b.sort_order ?? 0)
       return new Date(a.created_at) - new Date(b.created_at)
@@ -51,10 +53,75 @@ export async function createBooking({
 
   if (!resolvedResourceId) throw new Error('[BookingEngine] resourceId or locationId is required')
 
-  const resource = await dalGetBookingResourceById({ resourceId: resolvedResourceId })
-  if (!resource || resource.is_active !== true) {
-    throw new Error('Booking resource is unavailable.')
+  const slotStart = new Date(startsAt).getTime()
+  if (!Number.isFinite(slotStart) || slotStart <= Date.now()) {
+    throw new Error('This time slot is no longer available.')
   }
+
+  // ── Detect resource source ─────────────────────────────────────────────────
+  const vportResource = await dalGetVportResourceById({ resourceId: resolvedResourceId }).catch(() => null)
+
+  if (vportResource) {
+    // ── VPORT FLOW: resource lives in vport.resources → insert into vport.bookings ──
+    if (vportResource.is_active !== true) throw new Error('Booking resource is unavailable.')
+    if (!vportResource.profile_id)        throw new Error('Booking resource has no associated profile.')
+
+    if (MANAGEMENT_SOURCES.has(String(source))) {
+      if (!requestActorId) throw new Error('[BookingEngine] requestActorId is required for management source')
+      await assertActorCanManageResource({ requestActorId, resourceId: resolvedResourceId })
+    }
+
+    if (CITIZEN_SOURCES.has(String(source))) {
+      if (!requestActorId) throw new Error('Only citizens can book appointments.')
+      const actor = await dalGetActorById({ actorId: requestActorId })
+      if (!actor || actor.is_void === true) throw new Error('Only citizens can book appointments.')
+      if (actor.kind !== 'user') throw new Error('Only citizens can book appointments. Switch to your citizen profile to reserve.')
+    }
+
+    const inserted = await dalInsertVportBooking({
+      row: {
+        resource_id:            resolvedResourceId,
+        profile_id:             vportResource.profile_id,
+        service_id:             serviceId,
+        customer_actor_id:      customerActorId,
+        status,
+        source,
+        starts_at:              startsAt,
+        ends_at:                endsAt,
+        timezone,
+        service_label_snapshot: serviceLabelSnapshot,
+        duration_minutes:       durationMinutes,
+        customer_name:          customerName,
+        customer_phone:         customerPhone,
+        customer_email:         customerEmail,
+        customer_note:          customerNote,
+        internal_note:          internalNote,
+        created_by_actor_id:    requestActorId,
+      },
+    })
+
+    const mapped = mapBookingRow(inserted)
+
+    if (source === 'public' && vportResource.owner_actor_id && requestActorId) {
+      if (String(requestActorId) !== String(vportResource.owner_actor_id)) {
+        getNotifyFn()?.({
+          recipientActorId: vportResource.owner_actor_id,
+          actorId:          requestActorId,
+          kind:             BOOKING_EVENTS.CREATED,
+          objectType:       'booking',
+          objectId:         mapped.id,
+          linkPath:         `/actor/${vportResource.owner_actor_id}/dashboard/booking-history`,
+          context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
+        })
+      }
+    }
+
+    return mapped
+  }
+
+  // ── LEGACY VC FLOW: resource lives in vc.booking_resources → insert into vc.bookings ──
+  const resource = await dalGetBookingResourceById({ resourceId: resolvedResourceId })
+  if (!resource || resource.is_active !== true) throw new Error('Booking resource is unavailable.')
 
   if (MANAGEMENT_SOURCES.has(String(source))) {
     if (!requestActorId) throw new Error('[BookingEngine] requestActorId is required for management source')
@@ -68,20 +135,25 @@ export async function createBooking({
     if (actor.kind !== 'user') throw new Error('Only citizens can book appointments. Switch to your citizen profile to reserve.')
   }
 
-  const slotStart = new Date(startsAt).getTime()
-  if (!Number.isFinite(slotStart) || slotStart <= Date.now()) {
-    throw new Error('This time slot is no longer available.')
-  }
-
   const inserted = await dalInsertBooking({
     row: {
-      resource_id: resolvedResourceId, service_id: serviceId,
-      customer_actor_id: customerActorId, customer_profile_id: customerProfileId,
-      status, source, starts_at: startsAt, ends_at: endsAt, timezone,
-      service_label_snapshot: serviceLabelSnapshot, duration_minutes: durationMinutes,
-      customer_name: customerName, customer_phone: customerPhone,
-      customer_email: customerEmail, customer_note: customerNote,
-      internal_note: internalNote, created_by_actor_id: requestActorId,
+      resource_id:            resolvedResourceId,
+      service_id:             serviceId,
+      customer_actor_id:      customerActorId,
+      customer_profile_id:    customerProfileId,
+      status,
+      source,
+      starts_at:              startsAt,
+      ends_at:                endsAt,
+      timezone,
+      service_label_snapshot: serviceLabelSnapshot,
+      duration_minutes:       durationMinutes,
+      customer_name:          customerName,
+      customer_phone:         customerPhone,
+      customer_email:         customerEmail,
+      customer_note:          customerNote,
+      internal_note:          internalNote,
+      created_by_actor_id:    requestActorId,
     },
   })
 
@@ -91,12 +163,12 @@ export async function createBooking({
     if (String(requestActorId) !== String(resource.owner_actor_id)) {
       getNotifyFn()?.({
         recipientActorId: resource.owner_actor_id,
-        actorId: requestActorId,
-        kind: BOOKING_EVENTS.CREATED,
-        objectType: 'booking',
-        objectId: mapped.id,
-        linkPath: `/profile/${resource.owner_actor_id}?tab=book`,
-        context: { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
+        actorId:          requestActorId,
+        kind:             BOOKING_EVENTS.CREATED,
+        objectType:       'booking',
+        objectId:         mapped.id,
+        linkPath:         `/actor/${resource.owner_actor_id}/dashboard/booking-history`,
+        context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
       })
     }
   }

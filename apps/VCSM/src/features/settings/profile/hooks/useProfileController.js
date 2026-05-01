@@ -1,174 +1,110 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { useCallback, useMemo } from 'react'
+import { useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { useAuth } from "@/app/providers/AuthProvider";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useAuth } from '@/app/providers/AuthProvider'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { queryKeys } from '@/queries/queryKeys'
 
-import { useProfileUploads } from "@/features/settings/profile/hooks/useProfileUploads";
-import { ctrlResolveVportIdByActorId } from "@/features/settings/profile/controller/resolveVportIdByActorId.controller";
+import { useProfileUploads } from '@/features/settings/profile/hooks/useProfileUploads'
+import { ctrlResolveVportIdByActorId } from '@/features/settings/profile/controller/resolveVportIdByActorId.controller'
 import {
   loadProfileCore,
   saveProfileCore,
-} from "@/features/settings/profile/controller/Profile.controller.core";
+} from '@/features/settings/profile/controller/profile.controller.core'
+import { useProfilesOps } from '@/features/profiles/adapters/profiles.adapter'
+import { useIdentityOps } from '@/features/identity/adapters/identity.adapter'
 
 const UUID_RX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export function useProfileController() {
-  const { user } = useAuth();
-  const { identity, setIdentity } = useIdentity();
+  const { user } = useAuth()
+  const { identity, setIdentity } = useIdentity()
+  const qc = useQueryClient()
+  const { invalidateActorProfileCache } = useProfilesOps()
+  const { refreshVcActorDirectory } = useIdentityOps()
 
-  const location = useLocation();
-  const params = useParams();
-  const [searchParams] = useSearchParams();
+  const location = useLocation()
+  const params = useParams()
+  const [searchParams] = useSearchParams()
 
   const mode = useMemo(() => {
-    const qp = searchParams.get("mode");
-    if (qp === "vport") return "vport";
+    const qp = searchParams.get('mode')
+    if (qp === 'vport') return 'vport'
+    if (identity?.kind === 'vport') return 'vport'
+    const segs = location.pathname.split('/').filter(Boolean)
+    if (segs.includes('vport')) return 'vport'
+    return 'user'
+  }, [searchParams, identity?.kind, location.pathname])
 
-    if (identity?.kind === "vport") return "vport";
+  // Phase 1: resolve vportId from actorId (only needed in vport mode without URL param)
+  const needsVportResolution =
+    mode === 'vport' && !params.vportId && !!identity?.actorId
 
-    const segs = location.pathname.split("/").filter(Boolean);
-    if (segs.includes("vport")) return "vport";
+  const { data: resolvedVportId } = useQuery({
+    queryKey: ['settings', 'vport-id-from-actor', identity?.actorId],
+    queryFn: () => ctrlResolveVportIdByActorId(identity?.actorId),
+    enabled: needsVportResolution,
+    staleTime: 10 * 60 * 1000,
+  })
 
-    return "user";
-  }, [searchParams, identity?.kind, location.pathname]);
+  const subjectId = useMemo(() => {
+    if (mode === 'vport') return params.vportId || resolvedVportId || null
+    return user?.id || null
+  }, [mode, params.vportId, resolvedVportId, user?.id])
 
-  const [subjectId, setSubjectId] = useState(null);
+  const profileKey =
+    mode === 'vport'
+      ? queryKeys.settingsVportProfile(subjectId)
+      : queryKeys.settingsProfile(subjectId)
 
-  useEffect(() => {
-    let cancelled = false;
+  const validSubjectId =
+    subjectId && (mode !== 'vport' || UUID_RX.test(subjectId))
 
-    async function resolve() {
-      if (mode !== "vport") {
-        if (!cancelled) setSubjectId(user?.id || null);
-        return;
-      }
+  // Phase 2: load profile using resolved subjectId
+  const {
+    data: profile = null,
+    isLoading,
+    error: loadError,
+  } = useQuery({
+    queryKey: profileKey,
+    queryFn: () => loadProfileCore({ subjectId, mode }),
+    enabled: !!validSubjectId,
+    staleTime: 5 * 60 * 1000,
+  })
 
-      if (params.vportId) {
-        if (!cancelled) setSubjectId(params.vportId);
-        return;
-      }
+  const uploads = useProfileUploads({ mode, subjectId })
 
-      const actorId = identity?.actorId || null;
-      if (!actorId) {
-        if (!cancelled) setSubjectId(null);
-        return;
-      }
+  const { mutateAsync: saveProfile, isPending: saving, error: saveError } = useMutation({
+    mutationFn: (draft) => saveProfileCore({ subjectId, mode, draft, uploads, invalidateActorProfileCache, refreshVcActorDirectory }),
+    onSuccess: (updatedUi) => {
+      qc.setQueryData(profileKey, (prev) => ({ ...(prev || {}), ...updatedUi }))
 
-      try {
-        const vportId = await ctrlResolveVportIdByActorId(actorId);
-        if (!cancelled) setSubjectId(vportId || null);
-      } catch (error) {
-        console.error(
-          "[ProfileController] resolveVportIdFromActor failed",
-          error
-        );
-        if (!cancelled) setSubjectId(null);
-      }
-    }
-
-    resolve();
-    return () => {
-      cancelled = true;
-    };
-  }, [mode, params.vportId, identity?.actorId, user?.id]);
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [profile, setProfile] = useState(null);
-
-  const uploads = useProfileUploads({ mode, subjectId });
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setError("");
-      setProfile(null);
-
-      if (!subjectId) {
-        setLoading(false);
-        return;
-      }
-
-      if (mode === "vport" && !UUID_RX.test(subjectId)) {
-        setError("Invalid VPORT id.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-
-        const mapped = await loadProfileCore({ subjectId, mode });
-        if (cancelled) return;
-
-        setProfile(mapped);
-      } catch (e) {
-        if (!cancelled) {
-          setError(e?.message || "Failed to load profile.");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [subjectId, mode]);
-
-  const saveProfile = useCallback(
-    async (draft) => {
-      if (!subjectId) return;
-
-      setSaving(true);
-      setError("");
-
-      try {
-        const updatedUi = await saveProfileCore({
-          subjectId,
-          mode,
-          draft,
-          uploads,
-        });
-
-        setProfile((p) => ({
-          ...(p || {}),
-          ...updatedUi,
-        }));
-
-        // Patch identity so nav/header avatar refreshes without waiting for TTL
-        if (updatedUi.actorId && identity?.actorId === updatedUi.actorId) {
-          setIdentity((prev) =>
-            prev ? { ...prev, avatar: updatedUi.photoUrl, banner: updatedUi.bannerUrl } : prev
-          );
-        }
-      } catch (e) {
-        setError(e?.message || "Could not save changes.");
-        throw e;
-      } finally {
-        setSaving(false);
+      if (updatedUi.actorId && identity?.actorId === updatedUi.actorId) {
+        setIdentity((prev) =>
+          prev
+            ? { ...prev, avatar: updatedUi.photoUrl, banner: updatedUi.bannerUrl }
+            : prev
+        )
       }
     },
-    [subjectId, mode, uploads, identity?.actorId, setIdentity]
-  );
+  })
+
+  const error = loadError?.message ?? saveError?.message ?? ''
 
   const profilePath =
-    mode === "vport"
+    mode === 'vport'
       ? subjectId
         ? `/vport/${subjectId}`
-        : "#"
+        : '#'
       : user
-      ? "/me"
-      : "#";
+      ? '/me'
+      : '#'
 
   return {
-    ready: !!subjectId && !loading,
-    loading,
+    ready: !!subjectId && !isLoading,
+    loading: isLoading,
     saving,
     error,
     mode,
@@ -176,5 +112,5 @@ export function useProfileController() {
     profile,
     profilePath,
     saveProfile,
-  };
+  }
 }

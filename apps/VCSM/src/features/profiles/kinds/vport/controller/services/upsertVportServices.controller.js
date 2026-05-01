@@ -1,6 +1,6 @@
 // src/features/profiles/kinds/vport/controller/services/upsertVportServices.controller.js
 
-import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
+import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.dal.js";
 import upsertVportServicesByActorDal from "@/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js";
 import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportServiceCatalogFallback.model";
 import { dalInsertLocksmithServiceDetailDefaults } from "@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal";

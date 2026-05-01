@@ -4,34 +4,16 @@ function NotificationsSkeleton({ count = 6 }) {
   return (
     <ul className="notifications-list" aria-hidden="true">
       {Array.from({ length: count }).map((_, i) => (
-        <li
-          key={`noti-skeleton:${i}`}
-          className="notifications-card flex items-center justify-between gap-3 rounded-xl px-4 py-3"
-        >
-          <div className="flex min-w-0 items-center gap-3">
-            <div
-              className="h-11 w-11 shrink-0 animate-pulse rounded-xl"
-              style={{ background: 'rgba(139, 92, 246, 0.08)' }}
-            />
-            <div className="min-w-0 flex-1 space-y-2">
-              <div
-                className="h-3 w-32 animate-pulse rounded"
-                style={{ background: 'rgba(139, 92, 246, 0.1)' }}
-              />
-              <div
-                className="h-3 w-52 max-w-[70vw] animate-pulse rounded"
-                style={{ background: 'rgba(139, 92, 246, 0.07)' }}
-              />
-              <div
-                className="h-2 w-16 animate-pulse rounded"
-                style={{ background: 'rgba(139, 92, 246, 0.05)' }}
-              />
-            </div>
-          </div>
+        <li key={`noti-skeleton:${i}`} className="noti-skeleton-item">
           <div
-            className="h-7 w-14 animate-pulse rounded-md"
-            style={{ background: 'rgba(139, 92, 246, 0.08)' }}
+            className="noti-skeleton-pulse"
+            style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0 }}
           />
+          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="noti-skeleton-pulse" style={{ height: 12, width: 128, borderRadius: 6 }} />
+            <div className="noti-skeleton-pulse" style={{ height: 12, width: 200, maxWidth: "70%", borderRadius: 6 }} />
+            <div className="noti-skeleton-pulse" style={{ height: 10, width: 64, borderRadius: 6 }} />
+          </div>
         </li>
       ))}
     </ul>
@@ -46,7 +28,13 @@ export default function NotificationsView({ rows, loading }) {
   if (!rows.length) {
     return (
       <div className="notifications-empty">
-        No notifications
+        <span style={{ fontSize: 32, lineHeight: 1 }}>🔔</span>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--vc-text-soft)", marginTop: 8 }}>
+          You're all caught up
+        </div>
+        <div style={{ fontSize: 12, color: "var(--vc-text-muted)" }}>
+          New activity will appear here.
+        </div>
       </div>
     )
   }

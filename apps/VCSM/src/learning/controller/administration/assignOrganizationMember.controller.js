@@ -9,7 +9,7 @@ import {
   normalizeMembershipStatus,
   normalizeOrganizationRole,
   saveOrganizationMembership,
-} from "@/learning/controller/administration/adminAccess";
+} from "@/learning/controller/administration/adminAccess.controller";
 
 function mapOrganizationMembershipRow(row) {
   if (!row) {

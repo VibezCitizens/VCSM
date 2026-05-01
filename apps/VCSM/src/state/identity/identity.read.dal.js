@@ -60,6 +60,18 @@ export async function readIdentityActorByIdDAL(actorId) {
   return data ?? null;
 }
 
+export async function readIdentityActorsByIdsDAL(actorIds) {
+  if (!Array.isArray(actorIds) || actorIds.length === 0) return [];
+
+  const { data, error } = await vc
+    .from("actors")
+    .select(ACTOR_COLUMNS)
+    .in("id", actorIds);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 // listOwnedActorRowsByUserDAL — REMOVED
 // Was: legacy identity resolution via vc.actor_owners
 // Now: identity resolution uses engine (resolveAuthenticatedContext)
@@ -83,6 +95,19 @@ export async function readActorPrivacyDAL(actorId) {
   const { data, error } = await vc
     .from("actor_privacy_settings")
     .select("is_private")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ?? null;
+}
+
+export async function readActorPrivacyDiagnosticDAL(actorId) {
+  if (!actorId) return null;
+
+  const { data, error } = await vc
+    .from("actor_privacy_settings")
+    .select("actor_id,is_private")
     .eq("actor_id", actorId)
     .maybeSingle();
 

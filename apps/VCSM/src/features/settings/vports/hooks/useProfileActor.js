@@ -1,30 +1,13 @@
-// src/features/settings/vports/hooks/useProfileActor.js
-import { useEffect, useState } from "react";
-import { ctrlGetProfileActorId } from "@/features/settings/vports/controller/getProfileActorId.controller";
+import { useQuery } from '@tanstack/react-query'
+import { ctrlGetProfileActorId } from '@/features/settings/vports/controller/getProfileActorId.controller'
 
 export function useProfileActor(userId) {
-  const [profileActorId, setProfileActorId] = useState(null);
+  const { data: profileActorId = null } = useQuery({
+    queryKey: ['settings', 'profile-actor', userId],
+    queryFn: () => ctrlGetProfileActorId({ userId }),
+    enabled: !!userId,
+    staleTime: 10 * 60 * 1000,
+  })
 
-  useEffect(() => {
-    if (!userId) return;
-
-    let alive = true;
-
-    (async () => {
-      try {
-        const userActorId = await ctrlGetProfileActorId({ userId });
-        if (alive) {
-          setProfileActorId(userActorId ?? null);
-        }
-      } catch (e) {
-        console.error("[useProfileActor] failed", e);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [userId]);
-
-  return profileActorId;
+  return profileActorId
 }

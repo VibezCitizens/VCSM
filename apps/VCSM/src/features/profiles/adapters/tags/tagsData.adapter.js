@@ -1,4 +1,1 @@
-export {
-  readActorSelectedVibeTagKeysDAL,
-  readVibeTagCatalogByKeysDAL,
-} from "@/features/profiles/dal/tags/readActorVibeTags.dal";
+export { useActorVibeTags } from "@/features/profiles/screens/views/tabs/tags/hooks/useActorVibeTags";

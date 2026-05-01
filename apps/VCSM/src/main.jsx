@@ -13,6 +13,7 @@ import { setupVcsmReviewsEngine } from '@/features/reviews/setup'
 import { setupVcsmPortfolioEngine } from '@/features/portfolio/setup'
 import { setupVcsmNotificationsEngine } from '@/features/notifications/setup'
 import { setupVcsmBookingEngine } from '@/features/booking/setup'
+import { setupVcsmMediaEngine } from '@/features/media/setup'
 
 // Configure engines before any component renders or auth checks run.
 setupVcsmIdentityEngine()
@@ -22,10 +23,13 @@ setupVcsmReviewsEngine()
 setupVcsmPortfolioEngine()
 setupVcsmNotificationsEngine()
 setupVcsmBookingEngine()
+setupVcsmMediaEngine()
 
 import App from './App'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from '@/queries/queryClient'
 import { AuthProvider } from '@/app/providers/AuthProvider'
-import { IdentityProvider } from '@/state/identity/identityContext'
+import { IdentityProvider } from '@/features/identity/adapters/identity.adapter'
 import { I18nProvider } from '@i18n'
 import { vcsmDictionary } from '@/i18n/setup'
 
@@ -91,14 +95,16 @@ if (import.meta.env.PROD) {
 
 createRoot(document.getElementById('root')).render(
   <RootMode>
-    <BrowserRouter>
-      <I18nProvider dictionary={vcsmDictionary}>
-        <AuthProvider>
-          <IdentityProvider>
-            <App />
-          </IdentityProvider>
-        </AuthProvider>
-      </I18nProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <I18nProvider dictionary={vcsmDictionary}>
+          <AuthProvider>
+            <IdentityProvider>
+              <App />
+            </IdentityProvider>
+          </AuthProvider>
+        </I18nProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   </RootMode>
 )

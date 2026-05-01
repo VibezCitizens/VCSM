@@ -23,6 +23,19 @@ export async function listPostComments(postId) {
   return data ?? [];
 }
 
+export async function readPostCommentActorIdDAL(commentId) {
+  if (!commentId) return null;
+
+  const { data } = await supabase
+    .schema("vc")
+    .from("post_comments")
+    .select("actor_id")
+    .eq("id", commentId)
+    .maybeSingle();
+
+  return data?.actor_id ?? null;
+}
+
 export async function insertPostComment({
   postId,
   actorId,

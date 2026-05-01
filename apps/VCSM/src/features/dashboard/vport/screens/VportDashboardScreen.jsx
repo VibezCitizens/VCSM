@@ -5,11 +5,12 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
 import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
+import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { DashboardCard, VportBannerHeader } from "@/features/dashboard/vport/screens/components/VportDashboardParts";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
-import { buildDashboardCards } from "@/features/dashboard/vport/screens/model/buildDashboardCards";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import { buildDashboardCards } from "@/features/dashboard/vport/screens/model/buildDashboardCards.model";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import {
   getDashboardViewByVportType,
   normalizeVportType,
@@ -28,6 +29,7 @@ export function VportDashboardScreen() {
 
   const isDesktop = useDesktopBreakpoint();
   const isOwner = Boolean(actorId) && Boolean(identity?.actorId) && String(identity.actorId) === String(actorId);
+  const { getVportTabsByType } = useProfilesOps();
 
   const profile = useMemo(
     () => ({
@@ -63,12 +65,14 @@ export function VportDashboardScreen() {
   const openExchangeRates = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/exchange`), [navigate, actorId]);
   const openServices = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/services`), [navigate, actorId]);
   const openReviews = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/reviews`), [navigate, actorId]);
+  const openLeads = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/leads`), [navigate, actorId]);
   const openReviewsQr = useCallback(() => {
     if (!actorId) return;
     const slug = dashboardDetails.slug;
     if (slug) navigate(`/profile/${slug}/reviews/qr`);
     else navigate(`/actor/${actorId}/reviews/qr`);
   }, [navigate, actorId, dashboardDetails.slug]);
+  const openTeam = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/team`), [navigate, actorId]);
   const openCalendar = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/calendar`), [navigate, actorId]);
   const openPortfolio = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/portfolio`), [navigate, actorId]);
   const openBookingHistory = useCallback(() => actorId && navigate(`/actor/${actorId}/dashboard/booking-history`), [navigate, actorId]);
@@ -82,24 +86,27 @@ export function VportDashboardScreen() {
     [identity?.vportType, dashboardDetails.vportType]
   );
 
-  const dashboardView = useMemo(() => getDashboardViewByVportType(vportType), [vportType]);
+  const dashboardView = useMemo(() => getDashboardViewByVportType(vportType, { getTabsFn: getVportTabsByType }), [vportType, getVportTabsByType]);
 
   const cards = useMemo(
     () =>
       buildDashboardCards({
         isDesktop,
         vportType,
+        getTabsFn: getVportTabsByType,
         handlers: {
           openQr,
           openFlyer,
           openFlyerEditor,
           openOnlineMenuPreview,
+          openTeam,
           openPortfolio,
           openBookingHistory,
           openLocksmith,
           openExchangeRates,
           openServices,
           openReviews,
+          openLeads,
           openReviewsQr,
           openCalendar,
           openGasPrices,
@@ -114,12 +121,14 @@ export function VportDashboardScreen() {
       openFlyer,
       openFlyerEditor,
       openOnlineMenuPreview,
+      openTeam,
       openPortfolio,
       openBookingHistory,
       openLocksmith,
       openExchangeRates,
       openServices,
       openReviews,
+      openLeads,
       openReviewsQr,
       openCalendar,
       openGasPrices,

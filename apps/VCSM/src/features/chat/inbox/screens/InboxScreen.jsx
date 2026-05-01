@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import useInbox from '@/features/chat/inbox/hooks/useInbox'
-import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
+import { useDeleteChat } from '@/features/chat/inbox/hooks/useDeleteChat'
+import { useMarkChatRead } from '@/features/chat/inbox/hooks/useMarkChatRead'
 
 import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxListSkeleton from '@/features/chat/inbox/components/InboxListSkeleton'
@@ -37,7 +38,8 @@ export default function InboxScreen() {
   const showThreadPreview = settings?.showThreadPreview ?? true
 
   const { entries = [], loading: inboxLoading, error, refresh, hideConversation } = useInbox({ actorId })
-  const inboxActions = useInboxActions({ actorId })
+  const deleteChat = useDeleteChat(actorId)
+  const markRead = useMarkChatRead(actorId)
 
   useEffect(() => {
     if (!actionsOpen) return undefined
@@ -174,10 +176,13 @@ export default function InboxScreen() {
             <InboxList
               entries={previews}
               showThreadPreview={showThreadPreview}
-              onSelect={(id) => navigate(`/chat/${id}`)}
+              onSelect={(id) => {
+                markRead.mutate(id)
+                navigate(`/chat/${id}`)
+              }}
               onDelete={(conversationId) => {
                 hideConversation(conversationId)
-                inboxActions.deleteThreadForMe(conversationId)
+                deleteChat.mutate(conversationId)
               }}
             />
           )}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import { resolveVportSlugDAL } from "@/features/public/vportMenu/dal/resolveVportSlug.dal";
+import { useResolveVportSlug } from "@/features/public/vportMenu/hooks/useResolveVportSlug";
 import VportPublicReviewsView from "@/features/public/vportMenu/view/VportPublicReviewsView";
 
 const notFoundStyle = {
@@ -16,41 +16,9 @@ const notFoundStyle = {
 
 export function VportPublicReviewsBySlugScreen() {
   const { slug } = useParams();
-  const [actorId, setActorId] = useState(null);
-  const [notFound, setNotFound] = useState(false);
+  const { actorId, notFound } = useResolveVportSlug(slug);
 
-  useEffect(() => {
-    let alive = true;
-    setActorId(null);
-    setNotFound(false);
-
-    if (!slug) {
-      setNotFound(true);
-      return;
-    }
-
-    resolveVportSlugDAL(slug)
-      .then((result) => {
-        if (!alive) return;
-        if (result?.actorId) {
-          setActorId(result.actorId);
-        } else {
-          setNotFound(true);
-        }
-      })
-      .catch(() => {
-        if (alive) setNotFound(true);
-      });
-
-    return () => { alive = false; };
-  }, [slug]);
-
-  // No loading state — VportPublicReviewsView handles its own skeleton.
-  // Showing nothing while resolving avoids any flash of loading UI.
-  if (notFound) {
-    return <div style={notFoundStyle}>Reviews not found.</div>;
-  }
-
+  if (notFound) return <div style={notFoundStyle}>Reviews not found.</div>;
   if (!actorId) return null;
 
   return <VportPublicReviewsView actorId={actorId} />;

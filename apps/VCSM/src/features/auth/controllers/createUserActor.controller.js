@@ -2,7 +2,6 @@ import { dalCreateUserActor } from '../dal/actorCreate.dal'
 import { dalCreateActorOwner } from '../dal/actorOwnerCreate.dal'
 import { dalGetActorByProfile } from '../dal/actorGetByProfile.dal'
 import { ActorModel } from '../model/actor.model'
-import { refreshVcActorDirectory } from '@/features/identity/dal/refreshActorDirectory.dal'
 
 /**
  * createUserActorForProfile
@@ -13,7 +12,7 @@ import { refreshVcActorDirectory } from '@/features/identity/dal/refreshActorDir
  * - actor is created once (idempotent)
  * - ownership is guaranteed
  */
-export async function createUserActorForProfile({ profileId, userId }) {
+export async function createUserActorForProfile({ profileId, userId, refreshActorFn }) {
   if (!profileId || !userId) {
     throw new Error('profileId and userId are required')
   }
@@ -35,8 +34,7 @@ export async function createUserActorForProfile({ profileId, userId }) {
     }
   }
 
-  // 3️⃣ Refresh actor directory projection (non-fatal)
-  if (actor?.id) refreshVcActorDirectory(actor.id)
+  if (actor?.id) refreshActorFn?.(actor.id)
 
   // 4️⃣ Return domain-safe actor
   return ActorModel(actor)

@@ -2,8 +2,6 @@ import { listPostReactions } from "@/features/profiles/dal/photos/listPostReacti
 import { listPostCommentsCount } from "@/features/profiles/dal/photos/listPostCommentsCount.dal";
 import { listPostRoseCount } from "@/features/profiles/dal/photos/listPostRoseCount.dal";
 import { enrichPhotoPostsModel } from "@/features/profiles/model/photos/enrichPhotoPosts.model";
-import { togglePostReactionController } from "@/features/post/postcard/controller/togglePostReaction.controller";
-import { sendRoseController as sendPostRoseController } from "@/features/post/postcard/controller/sendRose.controller";
 
 /**
  * Enrich image posts with reaction + comment metadata.
@@ -37,38 +35,3 @@ export async function enrichPhotoPostsController({
   });
 }
 
-/**
- * Toggle like/dislike using post feature authority.
- */
-export async function togglePhotoReactionController({
-  postId,
-  actorId,
-  reaction,
-}) {
-  if (!actorId) throw new Error("Missing actorId");
-  if (!postId) throw new Error("Missing postId");
-
-  await togglePostReactionController({
-    postId,
-    actorId,
-    reaction,
-  });
-}
-
-/**
- * Send rose using post feature authority.
- */
-export async function sendPhotoRoseController({
-  postId,
-  actorId,
-  qty = 1,
-}) {
-  if (!actorId) throw new Error("Missing actorId");
-  if (!postId) throw new Error("Missing postId");
-
-  await sendPostRoseController({
-    postId,
-    actorId,
-    qty,
-  });
-}

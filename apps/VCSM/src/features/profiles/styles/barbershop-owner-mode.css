@@ -1,0 +1,184 @@
+/* ── Owner Band ──────────────────────────────────────────────── */
+.bs-owner-band {
+  --bs-accent:       var(--vc-accent-primary, #8b5cf6);
+  --bs-accent-bg:    rgba(139, 92, 246, 0.08);
+  --bs-accent-border: rgba(139, 92, 246, 0.20);
+
+  margin: 0 12px 2px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: var(--bs-accent-bg);
+  border: 1px solid var(--bs-accent-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bs-owner-band-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bs-owner-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--bs-accent);
+  background: rgba(139, 92, 246, 0.18);
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+}
+
+.bs-owner-dash-link {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.38);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: color 140ms ease;
+  text-decoration: none;
+}
+
+.bs-owner-dash-link:hover {
+  color: rgba(255, 255, 255, 0.70);
+}
+
+.bs-owner-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.bs-stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  min-width: 52px;
+  flex-shrink: 0;
+}
+
+.bs-stat-value {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.bs-stat-label {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
+
+.bs-new-booking-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 15px;
+  border-radius: 10px;
+  background: var(--bs-accent);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 130ms ease, transform 130ms ease;
+}
+
+.bs-new-booking-btn:active {
+  opacity: 0.82;
+  transform: scale(0.96);
+}
+
+/* ── Owner mode root class ───────────────────────────────────── */
+/* Slightly wider shell so the calendar & team grids breathe */
+.bs-owner-mode .profiles-shell {
+  max-width: 68rem;
+}
+
+/* ── Calendar-active layout ──────────────────────────────────── */
+/* When the calendar tab is open, the outer wrapper becomes
+   flex-column + overflow:hidden so the schedule grid manages its
+   own scroll instead of competing with the page scroll */
+.bs-owner-calendar-active {
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The embedded schedule fills remaining height and inherits the profile background */
+.bs-owner-calendar-active .sched-page {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  background: transparent;
+}
+
+/* ── Owner team card management actions ──────────────────────── */
+.barber-owner-actions {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.barber-card:hover .barber-owner-actions,
+.barber-card:focus-within .barber-owner-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* On touch devices show actions always */
+@media (hover: none) {
+  .barber-owner-actions {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.barber-owner-btn {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 110ms ease;
+}
+
+.barber-owner-btn:active {
+  opacity: 0.70;
+}
+
+.barber-owner-btn--schedule {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.32);
+  color: rgba(196, 170, 250, 0.95);
+}
+
+.barber-owner-btn--hours {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.55);
+}

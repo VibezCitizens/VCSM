@@ -1,0 +1,6 @@
+export { useAuthOps } from '@/features/auth/hooks/useAuthOps'
+export { authTheme } from '@/features/auth/styles/authTheme'
+export { isEmailVerifiedModel } from '@/features/auth/model/emailVerification.model'
+export { default as CompleteProfileGate } from '@/features/auth/screens/CompleteProfileGate'
+export { default as VerifyEmailRequiredScreen } from '@/features/auth/screens/VerifyEmailRequiredScreen'
+export { default as ConsentCheckbox } from '@/features/auth/components/ConsentCheckbox'

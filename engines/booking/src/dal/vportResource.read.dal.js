@@ -1,7 +1,7 @@
 import { getVportClient } from '../config.js'
 
 const VPORT_RESOURCE_SELECT = [
-  'id', 'owner_actor_id', 'organization_id', 'location_id', 'member_actor_id',
+  'id', 'owner_actor_id', 'profile_id', 'organization_id', 'location_id', 'member_actor_id',
   'resource_type', 'name', 'is_active', 'timezone', 'sort_order', 'created_at', 'updated_at',
 ].join(',')
 

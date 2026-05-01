@@ -1,4 +1,4 @@
-import { filterBlockedActors } from "@/features/block";
+import { ctrlGetBlockedActorSet } from "@/features/block";
 import {
   readActiveFollowRows,
   readActorRows,
@@ -74,7 +74,7 @@ export async function getTopFriendActorIdsController({
     const [followRows, actorRows, blockedSet] = await Promise.all([
       readActiveFollowRows(ownerActorId, candidateIds),
       readActorRows(candidateIds),
-      filterBlockedActors(ownerActorId, candidateIds),
+      ctrlGetBlockedActorSet({ actorId: ownerActorId, candidateActorIds: candidateIds }),
     ]);
 
     const activeFollowSet = new Set(

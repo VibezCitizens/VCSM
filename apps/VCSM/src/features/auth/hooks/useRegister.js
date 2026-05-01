@@ -2,13 +2,14 @@ import { useCallback, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ctrlRegisterAccount } from '@/features/auth/controllers/register.controller'
-import { recordSignupConsent } from '@/features/legal/controllers/legalConsent.controller'
+import { useSignupConsent } from '@/features/legal/adapters/legal.adapter'
 import {
   evaluateConfirmPasswordState,
   evaluateRegisterPasswordRules,
 } from '@/features/auth/model/registerPasswordRules.model'
 
 export function useRegister() {
+  const { recordSignupConsent } = useSignupConsent()
   const navigate = useNavigate()
   const location = useLocation()
 

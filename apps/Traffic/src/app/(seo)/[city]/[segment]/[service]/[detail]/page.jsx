@@ -4,8 +4,8 @@ import { getCountryBySlug, getLocaleForCountryCode } from "@/data/repositories/g
 import { getServiceBySlug, listServices, listSpecialtiesByService } from "@/data/repositories/service.repo";
 import { listProvidersByLocalityAndService } from "@/data/repositories/provider.repo";
 import { getPriceAggregate } from "@/data/repositories/aggregate.repo";
-import { listCountryLocalityServiceStaticParams } from "@/data/repositories/pageCandidate.repo";
-import { buildDirectoryPageModel } from "@/data/mappers/pageModel.mapper";
+import { listCountryLocalityServiceStaticParams } from "@/data/repositories/staticParams.repo";
+import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
@@ -20,6 +20,7 @@ import {
   neighborhoodServicePath
 } from "@/lib/paths";
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
+import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 
 export function generateStaticParams() {
   return listCountryLocalityServiceStaticParams().map((entry) => ({
@@ -187,6 +188,7 @@ export default function CountryCityLocalityServicePage({ params }) {
       }}
       relatedLinks={relatedLinks}
       schema={schema}
+      liveDataStatus={LIVE_DATA_STATUS}
     />
   );
 }

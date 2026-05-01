@@ -9,7 +9,7 @@
 import { configureBookingEngine } from '@booking'
 import { supabase } from '@/services/supabase/supabaseClient'
 import { vport } from '@/services/supabase/vportClient'
-import { publishVcsmNotification } from '@/features/notifications/publish'
+import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 
 let _configured = false
 

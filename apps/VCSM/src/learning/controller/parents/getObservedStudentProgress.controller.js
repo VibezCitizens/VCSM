@@ -3,6 +3,7 @@ import { getCourseMembershipByActorDal } from "@/learning/dal/memberships/getCou
 import { listModulesByCourseIdDal } from "@/learning/dal/modules/listModulesByCourseId.dal";
 import { listLessonsByCourseIdDal } from "@/learning/dal/lessons/listLessonsByCourseId.dal";
 import { listLessonProgressByCourseAndActorDal } from "@/learning/dal/lessonProgress/listLessonProgressByCourseAndActor.dal";
+import { getObserverStudentLinkDAL } from "@/learning/dal/observerStudentLinks/observerStudentLinks.dal";
 
 import { mapCourse } from "@/learning/model/course.model";
 import { mapMembership } from "@/learning/model/membership.model";
@@ -12,34 +13,6 @@ import { mapLessonProgressList } from "@/learning/model/lessonProgress.model";
 
 function isObserverRole(role) {
   return ["parent", "observer"].includes(role);
-}
-
-async function getObserverStudentLink({
-  supabase,
-  observerActorId,
-  studentActorId,
-  courseId,
-}) {
-  const { data, error } = await supabase
-    .schema("learning")
-    .from("observer_student_links")
-    .select(`
-      id,
-      course_id,
-      observer_actor_id,
-      student_actor_id,
-      created_at
-    `)
-    .eq("observer_actor_id", observerActorId)
-    .eq("student_actor_id", studentActorId)
-    .eq("course_id", courseId)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data ?? null;
 }
 
 function buildSummary({ lessons = [], progress = [] }) {
@@ -154,7 +127,7 @@ export async function getObservedStudentProgressController({
       courseId,
       actorId: studentActorId,
     }),
-    getObserverStudentLink({
+    getObserverStudentLinkDAL({
       supabase,
       observerActorId: actorId,
       studentActorId,

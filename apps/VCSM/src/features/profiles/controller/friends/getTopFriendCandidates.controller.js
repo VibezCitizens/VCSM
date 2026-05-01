@@ -1,5 +1,5 @@
 import { fetchFollowGraph } from '@/features/profiles/dal/friends/friends.read.dal'
-import { filterBlockedActors } from '@/features/block'
+import { ctrlGetBlockedActorSet } from '@/features/block'
 
 export async function getTopFriendCandidatesController({
   ownerActorId,
@@ -38,7 +38,7 @@ export async function getTopFriendCandidatesController({
       }
     }
 
-    const blockedSet = await filterBlockedActors(ownerActorId, unranked)
+    const blockedSet = await ctrlGetBlockedActorSet({ actorId: ownerActorId, candidateActorIds: unranked })
     const candidateIds = unranked
       .filter((id) => id && id !== ownerActorId && !blockedSet.has(id))
       .slice(0, safeMax)

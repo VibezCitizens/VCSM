@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import useOnboardingCards from '@/features/onboarding/hooks/useOnboardingCards'
 import OnboardingCardList from '@/features/onboarding/components/OnboardingCardList'
 
@@ -32,8 +32,8 @@ function resolveCardRoute(card) {
 
 export default function OnboardingCardsView() {
   const navigate = useNavigate()
-  const { identity } = useIdentity()
-  const actorId = identity?.actorId ?? null
+  const { identity, identityLoading } = useIdentity()
+  const actorId = identityLoading ? null : (identity?.actorId ?? null)
 
   const { cards, loading, error, refresh } = useOnboardingCards(actorId)
 

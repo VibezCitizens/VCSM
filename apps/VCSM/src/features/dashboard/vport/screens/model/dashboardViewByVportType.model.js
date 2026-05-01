@@ -1,5 +1,4 @@
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter";
-import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 import { isDashboardCardEnabled } from "@/shared/config/releaseFlags";
 
 const DASHBOARD_VIEW_PRESETS = Object.freeze({
@@ -12,6 +11,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
       "flyer_edit",
       "menu_preview",
       "reviews",
+      "leads",
       "reviews_qr",
       "ads",
       "settings",
@@ -20,17 +20,22 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
   service: {
     id: "service",
     label: "Service",
-    cardKeys: Object.freeze(["portfolio", "qr", "services", "reviews", "reviews_qr", "ads", "settings"]),
+    cardKeys: Object.freeze(["portfolio", "qr", "services", "reviews", "leads", "reviews_qr", "ads", "settings"]),
   },
   barber: {
     id: "barber",
     label: "Barber",
-    cardKeys: Object.freeze(["portfolio", "calendar", "booking_history", "services", "reviews", "reviews_qr", "ads", "settings"]),
+    cardKeys: Object.freeze(["portfolio", "calendar", "booking_history", "services", "reviews", "leads", "reviews_qr", "ads", "settings"]),
+  },
+  barbershop: {
+    id: "barbershop",
+    label: "Barbershop",
+    cardKeys: Object.freeze(["team", "portfolio", "calendar", "booking_history", "services", "reviews", "leads", "reviews_qr", "ads", "settings"]),
   },
   locksmith: {
     id: "locksmith",
     label: "Locksmith",
-    cardKeys: Object.freeze(["locksmith", "portfolio", "calendar", "booking_history", "services", "reviews", "reviews_qr", "ads", "settings"]),
+    cardKeys: Object.freeze(["locksmith", "portfolio", "calendar", "booking_history", "services", "reviews", "leads", "reviews_qr", "ads", "settings"]),
   },
   food: {
     id: "food",
@@ -42,6 +47,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
       "menu_preview",
       "services",
       "reviews",
+      "leads",
       "reviews_qr",
       "ads",
       "settings",
@@ -50,7 +56,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
   gas: {
     id: "gas",
     label: "Gas & Fuel",
-    cardKeys: Object.freeze(["gas", "services", "reviews", "reviews_qr", "ads", "settings"]),
+    cardKeys: Object.freeze(["gas", "services", "reviews", "leads", "reviews_qr", "ads", "settings"]),
   },
   exchange: {
     id: "exchange",
@@ -59,6 +65,7 @@ const DASHBOARD_VIEW_PRESETS = Object.freeze({
       "exchange",
       "services",
       "reviews",
+      "leads",
       "reviews_qr",
       "ads",
       "settings",
@@ -84,6 +91,7 @@ const GROUP_TO_VIEW = Object.freeze({
 
 const TYPE_TO_VIEW = Object.freeze({
   barber: "barber",
+  barbershop: "barbershop",
   locksmith: "locksmith",
   "gas station": "gas",
   exchange: "exchange",
@@ -99,11 +107,12 @@ function withVisibleCardKeys(view) {
   };
 }
 
-function withCalendarCardIfVportHasBookingTab(view, type) {
+function withCalendarCardIfVportHasBookingTab(view, type, getTabsFn) {
+  if (!getTabsFn) return view;
   const baseKeys = Array.isArray(view?.cardKeys) ? view.cardKeys : [];
   if (baseKeys.includes("calendar")) return view;
 
-  const tabs = getVportTabsByType(type);
+  const tabs = getTabsFn(type);
   const hasBookTab = Array.isArray(tabs) && tabs.some((tab) => tab?.key === "book");
   if (!hasBookTab) return view;
 
@@ -130,21 +139,21 @@ export function resolveVportTypeGroup(type) {
   return "Other";
 }
 
-export function getDashboardViewByVportType(type) {
+export function getDashboardViewByVportType(type, { getTabsFn } = {}) {
   const normalized = normalizeVportType(type);
   const overrideViewId = TYPE_TO_VIEW[normalized];
   if (overrideViewId) {
     const overrideView = DASHBOARD_VIEW_PRESETS[overrideViewId];
-    return withVisibleCardKeys(withCalendarCardIfVportHasBookingTab(overrideView, normalized));
+    return withVisibleCardKeys(withCalendarCardIfVportHasBookingTab(overrideView, normalized, getTabsFn));
   }
 
   const group = resolveVportTypeGroup(normalized);
   const groupViewId = GROUP_TO_VIEW[group] ?? "default";
   const baseView = DASHBOARD_VIEW_PRESETS[groupViewId] ?? DASHBOARD_VIEW_PRESETS.default;
-  return withVisibleCardKeys(withCalendarCardIfVportHasBookingTab(baseView, normalized));
+  return withVisibleCardKeys(withCalendarCardIfVportHasBookingTab(baseView, normalized, getTabsFn));
 }
 
-export function getDashboardCardKeysByVportType(type) {
-  const view = getDashboardViewByVportType(type);
+export function getDashboardCardKeysByVportType(type, { getTabsFn } = {}) {
+  const view = getDashboardViewByVportType(type, { getTabsFn });
   return view?.cardKeys ?? DASHBOARD_VIEW_PRESETS.default.cardKeys;
 }

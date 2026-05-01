@@ -2,7 +2,9 @@
 import { useCallback, useState } from "react";
 import { useIdentity } from "@/state/identity/identityContext";
 import { uploadMedia } from "../api/uploadMedia";
-import { createPostController } from "../controllers/createPostController";
+import { createPostController } from "../controllers/createPost.controller";
+import { recordPostMediaController } from "@/features/upload/controller/recordPostMedia.controller";
+import { bugBunnyUploadStep, bugBunnyUploadError } from "@debuggers/media/bugBunnyUploadDebugger";
 
 /**
  * Hook Contract:
@@ -26,11 +28,15 @@ export function useUploadSubmit() {
         // UI -> upload adapter -> controller
         let mediaUrls = [];
         let mediaTypes = [];
+        let uploadResults = [];
 
         if (form.files && form.files.length) {
+          bugBunnyUploadStep('vibe_post', 'upload:start', { actorId: identity.actorId, mode: form.mode, fileCount: form.files.length })
           const res = await uploadMedia(form.files, identity.actorId, form.mode);
-          mediaUrls = res.mediaUrls;
-          mediaTypes = res.mediaTypes;
+          mediaUrls     = res.mediaUrls;
+          mediaTypes    = res.mediaTypes;
+          uploadResults = res.uploadResults ?? [];
+          bugBunnyUploadStep('vibe_post', 'upload:done', { count: uploadResults.length })
         }
 
         const result = await createPostController({
@@ -54,6 +60,20 @@ export function useUploadSubmit() {
             mediaType: mediaTypes[0] || null,
           },
         });
+
+        if (uploadResults.length > 0 && result?.postId) {
+          bugBunnyUploadStep('vibe_post', 'writeback:dispatch', { postId: result.postId, postMediaIds: result.postMediaIds, uploadCount: uploadResults.length })
+          recordPostMediaController({
+            actorId:       identity.actorId,
+            mode:          form.mode,
+            postId:        result.postId,
+            uploadResults,
+            postMediaIds:  result.postMediaIds ?? [],
+          }).catch((e) => {
+            bugBunnyUploadError('vibe_post', 'writeback:record-failed', e, { postId: result.postId })
+            if (import.meta.env?.DEV) console.warn('[useUploadSubmit] media_assets record failed (non-fatal):', e?.message)
+          })
+        }
 
         return result; // { actorId, tags, postId, mentions }
       } catch (e) {

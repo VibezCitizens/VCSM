@@ -3,7 +3,6 @@
 
 import supabase from "@/services/supabase/supabaseClient";
 import vportSchema from "@/services/supabase/vportClient";
-import { refreshVcActorDirectory } from "@/features/identity/dal/refreshActorDirectory.dal";
 
 function ensureString(x) {
   return typeof x === "string" ? x : "";
@@ -49,6 +48,7 @@ export async function createVport({
   bio,
   bannerUrl,
   vportType,
+  directoryVisible = true,
 } = {}) {
   await requireUser();
 
@@ -76,6 +76,7 @@ export async function createVport({
     p_bio: bio ?? null,
     p_avatar_url: avatarUrl ?? null,
     p_banner_url: bannerUrl ?? null,
+    p_directory_visible: directoryVisible ?? true,
   });
 
   if (error) {
@@ -92,10 +93,14 @@ export async function createVport({
   const row = Array.isArray(data) ? data[0] : data;
   if (!row?.profile_id) raise("create_vport returned no result");
 
-  // Refresh actor directory projection — awaited so the platform.user_app_actor_links
-  // row is committed before createVport() returns. Fire-and-forget caused a race
-  // where switchToVport was attempted before the new actor link existed.
-  if (row.actor_id) await refreshVcActorDirectory(row.actor_id).catch(() => {});
+  // Awaited — the platform.user_app_actor_links row must be committed before
+  // createVport() returns, otherwise switchToVport races against a missing link.
+  if (row.actor_id) {
+    await supabase.schema('identity').rpc('refresh_actor_directory_row', {
+      p_actor_domain: 'vc',
+      p_actor_id: row.actor_id,
+    }).catch(() => {})
+  }
 
   return {
     ok: true,
@@ -216,9 +221,11 @@ export async function updateVport(
 
   if (error) raise("Failed to update Vport", { error });
 
-  // Refresh actor directory (non-fatal)
   if (data?.actor_id) {
-    try { refreshVcActorDirectory(data.actor_id); } catch {}
+    supabase.schema('identity').rpc('refresh_actor_directory_row', {
+      p_actor_domain: 'vc',
+      p_actor_id: data.actor_id,
+    }).catch(() => {})
   }
 
   return data;

@@ -1,7 +1,14 @@
-import React, { useCallback, useMemo, useState } from "react";
-import ImageDropzone from "./ImageDropzone";
-import { uploadFlyerImage } from "../dal/flyer.upload.dal";
-import { saveFlyerPublicDetails } from "../dal/flyer.write.dal";
+import { useCallback, useMemo } from "react";
+import ImageDropzone from "@/features/dashboard/flyerBuilder/components/ImageDropzone";
+import { useFlyerEditor } from "@/features/dashboard/flyerBuilder/hooks/useFlyerEditor";
+import { FlyerHoursTable } from "@/features/dashboard/flyerBuilder/components/FlyerHoursTable";
+import {
+  card,
+  DAYS,
+  hoursRow,
+  input,
+  label,
+} from "@/features/dashboard/flyerBuilder/components/flyerEditorPanel.styles";
 
 export default function FlyerEditorPanel({
   vportId,
@@ -11,8 +18,14 @@ export default function FlyerEditorPanel({
   bucket = "vport-public",
   onSaved,
 } = {}) {
-  const [saving, setSaving] = useState(false);
-  const [uploadingKey, setUploadingKey] = useState("");
+  const { saving, uploadingKey, uploadAndSet, onSave } = useFlyerEditor({
+    vportId,
+    profileId,
+    bucket,
+    draft,
+    setDraft,
+    onSaved,
+  });
 
   const setField = useCallback(
     (key, value) => {
@@ -43,90 +56,10 @@ export default function FlyerEditorPanel({
     [setDraft]
   );
 
-  const input = useMemo(
-    () => ({
-      width: "100%",
-      padding: "10px 12px",
-      borderRadius: 12,
-      border: "1px solid rgba(255,255,255,0.14)",
-      background: "rgba(255,255,255,0.06)",
-      color: "#fff",
-      outline: "none",
-      fontWeight: 800,
-      fontSize: 16, // âœ… iOS: prevents zoom on focus
-    }),
-    []
-  );
-
-  const label = useMemo(() => ({ fontSize: 12, fontWeight: 950, opacity: 0.8 }), []);
-
-  const card = useMemo(
-    () => ({
-      borderRadius: 20,
-      border: "1px solid rgba(255,255,255,0.12)",
-      background:
-        "linear-gradient(180deg, rgba(14,18,30,0.88), rgba(9,11,20,0.82))",
-      boxShadow: "0 22px 54px rgba(0,0,0,0.42)",
-      padding: 16,
-      display: "grid",
-      gap: 14,
-    }),
-    []
-  );
-
-  const uploadAndSet = useCallback(
-    async (kind, fieldKey, file) => {
-      if (!vportId) return;
-      setUploadingKey(fieldKey);
-      try {
-        const url = await uploadFlyerImage({ bucket, vportId, file, kind });
-        if (url) setField(fieldKey, url);
-      } finally {
-        setUploadingKey("");
-      }
-    },
-    [bucket, vportId, setField]
-  );
-
-  const onSave = useCallback(async () => {
-    if (!vportId) return;
-    setSaving(true);
-    try {
-      const res = await saveFlyerPublicDetails({ profileId, patch: draft });
-      onSaved?.(res);
-    } finally {
-      setSaving(false);
-    }
-  }, [vportId, draft, onSaved]);
-
-  const days = useMemo(
-    () => [
-      { key: "mon", label: "Mon" },
-      { key: "tue", label: "Tue" },
-      { key: "wed", label: "Wed" },
-      { key: "thu", label: "Thu" },
-      { key: "fri", label: "Fri" },
-      { key: "sat", label: "Sat" },
-      { key: "sun", label: "Sun" },
-    ],
-    []
-  );
-
-  const hoursRow = useMemo(
-    () => ({
-      display: "grid",
-      gridTemplateColumns: "56px 1fr 1fr 92px",
-      gap: 10,
-      alignItems: "center",
-    }),
-    []
-  );
-
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <style>
         {`
-          /* âœ… Mobile: reduce crowding + make hours stack + bigger touch targets */
           @media (max-width: 560px) {
             .flyer-grid-hours-accent {
               grid-template-columns: 1fr !important;
@@ -153,7 +86,6 @@ export default function FlyerEditorPanel({
               height: 52px !important;
             }
 
-            /* âœ… ensure iOS won't zoom even if some inputs override */
             .flyer-scope input,
             .flyer-scope textarea,
             .flyer-scope select {
@@ -161,7 +93,6 @@ export default function FlyerEditorPanel({
             }
           }
 
-          /* âœ… Make native color well look clean across browsers */
           .flyer-color-input {
             -webkit-appearance: none;
             appearance: none;
@@ -217,83 +148,13 @@ export default function FlyerEditorPanel({
         >
           <div style={{ display: "grid", gap: 6 }}>
             <div style={label}>Hours</div>
-
-            <div
-              style={{
-                borderRadius: 15,
-                border: "1px solid rgba(255,255,255,0.10)",
-                background: "rgba(255,255,255,0.03)",
-                padding: 10,
-                display: "grid",
-                gap: 10,
-              }}
-            >
-              {days.map((d) => {
-                const day = hoursValue?.[d.key] || {};
-                const closed = !!day.closed;
-                const open = typeof day.open === "string" ? day.open : "";
-                const close = typeof day.close === "string" ? day.close : "";
-
-                return (
-                  <div key={d.key} className="flyer-hours-row" style={hoursRow}>
-                    <div
-                      className="flyer-hours-day"
-                      style={{ fontSize: 12, fontWeight: 950, opacity: 0.85 }}
-                    >
-                      {d.label}
-                    </div>
-
-                    <input
-                      className="flyer-hours-open"
-                      type="time"
-                      style={{ ...input, padding: "8px 10px", fontWeight: 900 }}
-                      value={open}
-                      disabled={closed}
-                      onChange={(e) => setHoursDay(d.key, { open: e.target.value })}
-                    />
-
-                    <input
-                      className="flyer-hours-close"
-                      type="time"
-                      style={{ ...input, padding: "8px 10px", fontWeight: 900 }}
-                      value={close}
-                      disabled={closed}
-                      onChange={(e) => setHoursDay(d.key, { close: e.target.value })}
-                    />
-
-                    <label
-                      className="flyer-hours-closed"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        fontSize: 12,
-                        fontWeight: 900,
-                        opacity: 0.9,
-                        cursor: "pointer",
-                        userSelect: "none",
-                        justifyContent: "flex-end",
-                        minHeight: 36,
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={closed}
-                        onChange={(e) => {
-                          const nextClosed = e.target.checked;
-                          setHoursDay(d.key, {
-                            closed: nextClosed,
-                            ...(nextClosed ? { open: "", close: "" } : {}),
-                          });
-                        }}
-                        style={{ width: 18, height: 18 }}
-                      />
-                      Closed
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
+            <FlyerHoursTable
+              days={DAYS}
+              hoursValue={hoursValue}
+              input={input}
+              hoursRow={hoursRow}
+              setHoursDay={setHoursDay}
+            />
           </div>
 
           <div style={{ display: "grid", gap: 6 }}>

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { ctrlSendCitizenInvite } from '../controller/invite.controller'
 
 const CODE_MESSAGES = {

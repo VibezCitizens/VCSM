@@ -9,6 +9,7 @@ const SITEMAPS = [
   '/sitemaps/vport-menu.xml',
   '/sitemaps/vport-reviews.xml',
   '/sitemaps/vport-cards.xml',
+  '/sitemaps/wanderex-profiles.xml',
 ];
 
 export async function onRequest(context) {

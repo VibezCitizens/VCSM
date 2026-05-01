@@ -11,7 +11,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()
   Cross-Origin-Opener-Policy: same-origin-allow-popups
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.vibezcitizens.com https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://onemoredays.com; object-src 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.onesignal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.vibezcitizens.com https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://onesignal.com https://*.onesignal.com wss://*.onesignal.com https://upload.vibezcitizens.com; worker-src 'self' https://cdn.onesignal.com; frame-src https://onemoredays.com; object-src 'none'; base-uri 'self'; form-action 'self'
 
 # Versioned static assets — cache aggressively, still get security headers.
 /assets/*

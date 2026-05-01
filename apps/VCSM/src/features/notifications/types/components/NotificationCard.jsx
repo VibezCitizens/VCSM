@@ -15,20 +15,14 @@ export default function NotificationCard({
 
   return (
     <div
-      className={`
-        notifications-card
-        flex items-center justify-between gap-3
-        rounded-xl px-4 py-3
-        ${unread ? 'notifications-card--unread' : ''}
-        ${isClickable ? 'cursor-pointer active:scale-[0.985] transition-transform duration-100' : ''}
-        ${className}
-      `}
+      className={`notifications-card ${unread ? 'notifications-card--unread' : ''} ${className}`}
+      style={{ padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}
       onClick={isClickable ? onClick : undefined}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={isClickable ? (e) => { if (e.key === 'Enter') onClick() } : undefined}
     >
-      <div className="flex min-w-0 items-center gap-3">
+      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
         <ActorLink
           actor={actor}
           avatarSize="w-11 h-11"
@@ -38,27 +32,30 @@ export default function NotificationCard({
           className="shrink-0"
         />
 
-        <div className="flex min-w-0 flex-col leading-tight">
-          <span className="truncate text-sm font-medium" style={{ color: 'var(--vc-text)' }}>
+        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, lineHeight: 1.35 }}>
+          <span
+            style={{ fontSize: 13, fontWeight: 600, color: "var(--vc-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+          >
             {actor?.displayName || actor?.username || 'Someone'}
           </span>
 
-          <span className="truncate text-sm" style={{ color: 'var(--vc-text-soft)' }}>
+          <span
+            style={{ fontSize: 13, color: "var(--vc-text-soft)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+          >
             {message}
           </span>
 
           {time && (
-            <span className="mt-0.5 text-[11px]" style={{ color: 'var(--vc-text-muted)' }}>
+            <span style={{ fontSize: 11, color: "var(--vc-text-muted)", marginTop: 2 }}>
               {time}
             </span>
           )}
         </div>
       </div>
 
-      {/* Only render action buttons (Accept/Decline) — no View button */}
       {actions && (
         <div
-          className="flex shrink-0 items-center gap-2"
+          style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
           {actions}

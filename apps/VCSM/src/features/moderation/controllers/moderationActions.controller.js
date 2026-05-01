@@ -17,11 +17,15 @@ import {
 } from '@/features/moderation/dal/reports.dal'
 
 import { toDomainReport } from '@/features/moderation/models/report.model'
+import { assertModerationAccessDAL } from '@/features/moderation/dal/assertModerationAccess.dal'
 
 export async function hideReportedObjectController({
   moderatorActorId,
   reportId,
 }) {
+  // 0) Authorization: verify caller holds a moderation role before any read or write.
+  await assertModerationAccessDAL(moderatorActorId)
+
   // 1) read report (raw)
   const { row: reportRow, error: readErr } = await getReportRowById({ reportId })
   if (readErr) return { ok: false, error: readErr }
@@ -106,6 +110,9 @@ export async function dismissReportController({
   reportId,
   note = null,
 }) {
+  // 0) Authorization: verify caller holds a moderation role before any read or write.
+  await assertModerationAccessDAL(moderatorActorId)
+
   const { row: reportRow, error: readErr } = await getReportRowById({ reportId })
   if (readErr) return { ok: false, error: readErr }
   if (!reportRow) return { ok: false, error: new Error('Report not found') }

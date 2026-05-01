@@ -71,7 +71,6 @@ export function toWandersMailboxItem(row) {
     cardId: row.card_id ?? row.cardId ?? null,
 
     ownerActorId: row.owner_actor_id ?? row.ownerActorId ?? null,
-    ownerAnonId: row.owner_anon_id ?? row.ownerAnonId ?? null,
     ownerUserId: row.owner_user_id ?? row.ownerUserId ?? null,
 
     ownerRole: row.owner_role ?? row.ownerRole ?? null,

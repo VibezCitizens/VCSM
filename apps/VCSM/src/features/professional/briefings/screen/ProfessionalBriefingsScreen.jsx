@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom'
 
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import ProfessionalBriefingsScreenView from '@/features/professional/briefings/view/ProfessionalBriefingsScreenView'
 
 export default function ProfessionalBriefingsScreen() {

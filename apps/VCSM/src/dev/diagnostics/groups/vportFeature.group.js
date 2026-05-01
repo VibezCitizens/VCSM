@@ -28,8 +28,8 @@ import vportModel, {
   getVportsByIds,
   listMyVports as listMyVportsModel,
   updateVport,
-} from "@/features/vport/model/vport.model";
-import { listMyVports as listMyVportsRecords } from "@/features/vport/model/vport.read.vportRecords";
+} from "@/features/vport/vport.public";
+import { listMyVports as listMyVportsRecords } from "@/features/vport/dal/vport.read.vportRecords.dal";
 
 export const GROUP_ID = "vportFeature";
 export const GROUP_LABEL = "Vport Feature";
@@ -177,7 +177,7 @@ export async function runVportFeatureGroup({ onTestUpdate, shared }) {
       name: "vport source contract checks",
       run: async () => {
         const createFormSource = getVportSource("src/features/vport/CreateVportForm.jsx");
-        const modelSource = getVportSource("src/features/vport/model/vport.model.js");
+        const modelSource = getVportSource("src/features/vport/vport.public.js");
         const readSource = getVportSource("src/features/vport/model/vport.read.vportRecords.js");
 
         return {

@@ -1,5 +1,5 @@
 import { useSearchTabsActor } from '@/features/explore/hooks/useSearchTabsActor'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import ActorSearchResultRow from './ActorSearchResultRow'
 import WanderCardSearch from '@/features/explore/ui/features/WanderCardSearch'
 import EmptyState from '@/features/explore/ui/EmptyState'

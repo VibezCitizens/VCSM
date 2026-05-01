@@ -14,6 +14,7 @@ export { confirmBooking }             from '../controller/confirmBooking.control
 export { cancelBooking }              from '../controller/cancelBooking.controller.js'
 export { completeBooking }            from '../controller/completeBooking.controller.js'
 export { markNoShow }                 from '../controller/markNoShow.controller.js'
+export { dismissBooking }             from '../controller/dismissBooking.controller.js'
 export { getResourceAvailability, invalidateBookingAvailability } from '../controller/getResourceAvailability.controller.js'
 export { getLocationAvailability }    from '../controller/getLocationAvailability.controller.js'
 export { listBookingHistory }         from '../controller/listBookingHistory.controller.js'
@@ -38,6 +39,7 @@ export { createOrganizationLocationWorkspace }   from '../controller/createOrgan
 export { listLocationsByOrganization }           from '../controller/listLocationsByOrganization.controller.js'
 
 // ── Resource controllers ──────────────────────────────────────
+export { createLocationResource }                from '../controller/createLocationResource.controller.js'
 export { listBookingResourcesByLocation }        from '../controller/listBookingResourcesByLocation.controller.js'
 export { listResourceServiceOverrides }          from '../controller/listResourceServiceOverrides.controller.js'
 export { upsertResourceServiceOverride }         from '../controller/upsertResourceServiceOverride.controller.js'

@@ -2,10 +2,10 @@ import Link from "next/link";
 
 export default function HomepageGuidesPreviewSection({ items }) {
   return (
-    <section className="card homepage-section homepage-guides-section">
+    <section className="homepage-section homepage-section--divider homepage-guides-section" id="before-you-book">
       <div className="homepage-section-heading">
-        <h2 className="section-title">TRAZE Guides & Resources</h2>
-        <p>Safety guides, emergency checklists, and booking advice from the TRAZE network.</p>
+        <h2 className="section-title">Before you book</h2>
+        <p>Quick checks before you confirm.</p>
       </div>
 
       <div className="homepage-guides-grid">
@@ -19,10 +19,10 @@ export default function HomepageGuidesPreviewSection({ items }) {
             {item.meta ? <p className="text-xs text-muted">{item.meta}</p> : null}
             {item.href ? (
               <Link className="pill fit-width" href={item.href}>
-                Read on TRAZE
+                Read guide
               </Link>
             ) : (
-              <span className="pill fit-width">Coming to TRAZE soon</span>
+              <span className="pill fit-width">Guide coming soon</span>
             )}
           </article>
         ))}

@@ -9,7 +9,7 @@ import { useIdentity } from "@/state/identity/identityContext";
 import VportServicesView from "@/features/profiles/adapters/kinds/vport/screens/services/view/VportServicesView.adapter";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 
 export function VportDashboardServicesScreen() {
   const navigate = useNavigate();

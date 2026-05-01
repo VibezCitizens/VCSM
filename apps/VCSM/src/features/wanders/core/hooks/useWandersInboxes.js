@@ -10,7 +10,7 @@ import {
   readWandersInboxById,
   readWandersInboxByPublicId,
   updateMyWandersInbox,
-} from "@/features/wanders/core/controllers/wandersInboxescontroller";
+} from "@/features/wanders/core/controllers/wandersInboxes.controller";
 
 
 export function useWandersInboxes(input = {}) {

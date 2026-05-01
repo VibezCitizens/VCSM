@@ -1,15 +1,17 @@
 // src/features/notifications/inbox/hooks/useNotificationsInternal.js
 import { useEffect, useState, useCallback } from 'react'
 import { getNotifications } from '../controller/Notifications.controller'
+import { useSocialFollowRequestOps } from '@/features/social/adapters/social.adapter'
 
 export default function useNotificationsInternal(identity) {
+  const { listIncomingRequests } = useSocialFollowRequestOps()
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const notifications = await getNotifications(identity)
+      const notifications = await getNotifications(identity, { listIncomingRequests })
       setRows(notifications)
     } finally {
       setLoading(false)

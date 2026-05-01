@@ -1,11 +1,11 @@
 // src/features/profiles/kinds/vport/controller/services/getVportServices.controller.js
 
 import { createTTLCache } from '@/shared/lib/ttlCache'
-import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.js";
+import readVportTypeByActorId from "@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.dal.js";
 
-import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.js";
-import readVportServicesByActor from "@/features/profiles/kinds/vport/dal/services/readVportServicesByActor.js";
-import readVportServiceAddonsByActor from "@/features/profiles/kinds/vport/dal/services/readVportServiceAddonsByActor.js";
+import readVportServiceCatalogByType from "@/features/profiles/kinds/vport/dal/services/readVportServiceCatalogByType.dal.js";
+import readVportServicesByActor from "@/features/profiles/kinds/vport/dal/services/readVportServicesByActor.dal.js";
+import readVportServiceAddonsByActor from "@/features/profiles/kinds/vport/dal/services/readVportServiceAddonsByActor.dal.js";
 import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportServiceCatalogFallback.model";
 
 import {

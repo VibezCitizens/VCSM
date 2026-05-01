@@ -2,9 +2,10 @@ import React, { useEffect, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide-react'
 
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { useBootstrapHydration } from '@/bootstrap/bootstrap.hydrate.controller'
 import { useNotificationUnread, useChatUnread } from '@/bootstrap/bootstrap.selectors'
+import { useOneSignalPush } from '@/hooks/useOneSignalPush'
 
 export default function BottomNavBar() {
   const navigate = useNavigate()
@@ -24,6 +25,10 @@ export default function BottomNavBar() {
   // Bootstrap owns all session-level polling and realtime subscriptions.
   // Single hydration point — replaces the two independent polling hooks.
   useBootstrapHydration(personaActorId)
+
+  // Initialize OneSignal once after identity is hydrated. Permission is never
+  // prompted automatically — only on explicit user action in notification settings.
+  useOneSignalPush()
 
   const notiCount = useNotificationUnread()
   const chatUnread = useChatUnread()

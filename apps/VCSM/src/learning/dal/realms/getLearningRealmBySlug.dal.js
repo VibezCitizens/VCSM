@@ -1,11 +1,8 @@
+import { supabase } from "@/services/supabase/supabaseClient";
 import { REALM_COLUMNS } from "@/learning/dal/realms/getLearningRealmById.dal";
 import { logRealmDebug } from "@/learning/utils/realmDebug";
 
-export async function getLearningRealmBySlugDal({ supabase, slug }) {
-  if (!supabase) {
-    throw new Error("getLearningRealmBySlugDal requires supabase");
-  }
-
+export async function getLearningRealmBySlugDal({ slug }) {
   if (!slug) {
     throw new Error("getLearningRealmBySlugDal requires slug");
   }

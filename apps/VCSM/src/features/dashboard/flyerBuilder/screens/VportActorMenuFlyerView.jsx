@@ -12,7 +12,7 @@ import {
   buildFlyerProfile,
   createFlyerViewStyles,
 } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerView.model";
-import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
+import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
 
 const PRINTABLE_VARIANTS = Object.freeze(["table", "half", "full", "sticker"]);
 

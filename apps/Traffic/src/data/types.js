@@ -70,7 +70,7 @@
  * @property {string} displayName
  * @property {string} primaryCountryCode
  * @property {string|null} primaryRegionCode
- * @property {string} primaryCityId
+ * @property {string|null} primaryCityId
  * @property {string|null} primaryLocalityId
  * @property {string|null} addressLine1
  * @property {string|null} postalCode
@@ -88,6 +88,13 @@
  * @property {string|null} avatarUrl — VPORT avatar image URL from Supabase storage
  * @property {string|null} bannerUrl — VPORT banner image URL from Supabase storage
  * @property {string|null} locationText — human-readable location string, e.g. "Laredo, TX"
+ * @property {string|null} cityId — source city UUID from vport.public_traze_profiles_v
+ * @property {string|null} primaryCityName — structured city name from vport.cities
+ * @property {string|null} primaryCitySlug — structured city slug from vport.cities
+ * @property {string|null} categoryKey — primary category key from vport.profile_categories/categories
+ * @property {string|null} timezone — provider timezone from public_traze_profiles_v
+ * @property {boolean|null} directoryVisible — public directory visibility flag from VPORT
+ * @property {string|null} directoryStatus — public directory publish status from VPORT
  */
 
 /**

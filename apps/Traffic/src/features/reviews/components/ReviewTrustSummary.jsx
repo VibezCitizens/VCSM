@@ -10,10 +10,12 @@ function formatRating(value) {
 function formatReviewCount(value) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) {
-    return "0";
+    return "0 reviews";
   }
 
-  return new Intl.NumberFormat("en-US").format(Math.round(numeric));
+  const count = Math.round(numeric);
+  const formatted = new Intl.NumberFormat("en-US").format(count);
+  return `${formatted} ${count === 1 ? "review" : "reviews"}`;
 }
 
 function buildBreakdownLabel(summary) {
@@ -47,7 +49,7 @@ export function ReviewTrustSummary({ summary, compact = false }) {
   const chips = (
     <>
       <span className="pill">★ {formatRating(summary.averageRating)}</span>
-      <span className="pill">{formatReviewCount(summary.reviewCount)} reviews</span>
+      <span className="pill">{formatReviewCount(summary.reviewCount)}</span>
       {summary.trustBadge ? <span className="pill pill--ok">{summary.trustBadge}</span> : null}
     </>
   );

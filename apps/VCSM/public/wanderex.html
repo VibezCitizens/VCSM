@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderEx — Vibez Citizens</title>
+  <meta name="description" content="WanderEx is the public profile layer for Vibez Citizens. Every VPORT gets a shareable link page — services, availability, and booking in one place." />
+  <link rel="canonical" href="https://vibezcitizens.com/wanderex.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Vibez Citizens" />
+  <meta property="og:title" content="WanderEx — Vibez Citizens" />
+  <meta property="og:description" content="Every VPORT gets a shareable link page — services, availability, and booking in one place." />
+  <meta property="og:url" content="https://vibezcitizens.com/wanderex.html" />
+  <meta property="og:image" content="https://vibezcitizens.com/VportBusinnesCard.jpeg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="WanderEx — Vibez Citizens" />
+  <meta name="twitter:description" content="Every VPORT gets a shareable link page — services, availability, and booking in one place." />
+  <meta name="twitter:image" content="https://vibezcitizens.com/VportBusinnesCard.jpeg" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #09090b;
+      --surface: #111113;
+      --border: rgba(255,255,255,0.08);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --dim: #71717a;
+      --accent: #14b8a6;
+      --accent-soft: rgba(20,184,166,0.12);
+      --accent-ring: rgba(20,184,166,0.30);
+      --cta: #f59e0b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Nav ─────────────────── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      background: rgba(9,9,11,0.94);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .brand { font-size: 1rem; font-weight: 700; }
+    .brand span { color: var(--accent); }
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .nav-link:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+
+    /* ── Hero ───────────────── */
+    .hero {
+      padding: 88px 0 72px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-ring);
+      border-radius: 99px;
+      padding: 4px 14px;
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.12;
+      margin-bottom: 18px;
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: var(--accent);
+      color: #051a18;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 12px 28px;
+      border-radius: 99px;
+      transition: opacity 0.15s;
+    }
+    .hero-cta:hover { opacity: 0.85; color: #051a18; }
+
+    /* ── Divider ────────────── */
+    hr { border: none; border-top: 1px solid var(--border); }
+
+    /* ── Section ────────────── */
+    .section { padding: 64px 0; }
+    .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .body-text {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 560px;
+    }
+
+    /* ── Phone + copy ───────── */
+    .split {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      margin-top: 36px;
+      align-items: center;
+    }
+    @media (min-width: 620px) {
+      .split { flex-direction: row; align-items: flex-start; }
+    }
+
+    .phone {
+      flex-shrink: 0;
+      width: 210px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 26px;
+      padding: 20px 16px 16px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5), 0 0 40px rgba(20,184,166,0.08);
+    }
+    .ph-banner {
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(20,184,166,0.28), rgba(245,158,11,0.22));
+      margin-bottom: 10px;
+    }
+    .ph-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .ph-avi {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0d9488, #f59e0b);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .ph-name { font-size: 0.82rem; font-weight: 800; }
+    .ph-sub { font-size: 0.66rem; color: var(--dim); }
+    .ph-book {
+      display: block;
+      background: linear-gradient(135deg, var(--cta), #f97316);
+      color: #150c00;
+      font-weight: 800;
+      font-size: 0.76rem;
+      text-align: center;
+      padding: 9px;
+      border-radius: 9px;
+      margin-bottom: 8px;
+    }
+    .ph-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin-bottom: 8px; }
+    .ph-act {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 6px 2px;
+      text-align: center;
+      font-size: 0.58rem;
+      color: var(--muted);
+    }
+    .ph-act .i { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+    .ph-svc {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 7px 8px;
+      margin-bottom: 4px;
+      font-size: 0.68rem;
+    }
+    .ph-svc-row { display: flex; justify-content: space-between; }
+    .ph-price { color: #fde68a; font-weight: 700; }
+    .ph-meta { color: var(--dim); font-size: 0.62rem; margin-top: 1px; }
+    .ph-url {
+      text-align: center;
+      font-family: monospace;
+      font-size: 0.6rem;
+      color: var(--dim);
+      margin-top: 10px;
+    }
+    .ph-url span { color: var(--accent); }
+
+    .split-copy { flex: 1; }
+    .split-copy p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .slug {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .slug span { color: var(--accent); }
+
+    /* ── What's on the page ──── */
+    .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 12px; margin-top: 28px; }
+    .item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 16px;
+    }
+    .item h3 { font-size: 0.86rem; font-weight: 700; margin-bottom: 4px; }
+    .item p { font-size: 0.78rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── Footer ─────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+      text-align: center;
+      color: var(--dim);
+      font-size: 0.78rem;
+    }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      .hero { padding: 56px 0 48px; }
+      .section { padding: 44px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <span class="brand">Vibez <span>Citizens</span></span>
+      <a class="nav-link" href="/us">Browse providers</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">WanderEx</span>
+      <h1>Your public profile,<br>ready to share.</h1>
+      <p class="hero-desc">
+        Every VPORT on Vibez Citizens gets a permanent, shareable link page —
+        your services, availability, and booking form in one place.
+      </p>
+      <a class="hero-cta" href="/">Get started on Vibez Citizens</a>
+    </div>
+  </section>
+
+  <hr />
+
+  <section class="section">
+    <div class="container">
+      <div class="split">
+        <div class="phone">
+          <div class="ph-banner"></div>
+          <div class="ph-row">
+            <div class="ph-avi">✂️</div>
+            <div>
+              <div class="ph-name">Premier Cuts</div>
+              <div class="ph-sub">Houston, TX · ★ 4.9</div>
+            </div>
+          </div>
+          <a class="ph-book" href="/">Book Now</a>
+          <div class="ph-actions">
+            <div class="ph-act"><span class="i">📞</span>Call</div>
+            <div class="ph-act"><span class="i">📍</span>Directions</div>
+            <div class="ph-act"><span class="i">🌐</span>Website</div>
+            <div class="ph-act"><span class="i">🔗</span>Share</div>
+          </div>
+          <div class="ph-svc">
+            <div class="ph-svc-row"><span>Haircut</span><span class="ph-price">$35</span></div>
+            <div class="ph-meta">30 min</div>
+          </div>
+          <div class="ph-svc">
+            <div class="ph-svc-row"><span>Fade + Lineup</span><span class="ph-price">$45</span></div>
+            <div class="ph-meta">45 min</div>
+          </div>
+          <div class="ph-url">vibezcitizens.com/p/<span>premier-cuts</span></div>
+        </div>
+
+        <div class="split-copy">
+          <p class="label">What it is</p>
+          <p>
+            WanderEx is the public-facing layer of Vibez Citizens. When you create a VPORT,
+            you get a clean, mobile-ready profile page at a permanent URL — no setup required.
+          </p>
+          <p>
+            Anyone who visits that link sees your full profile: who you are, what you offer,
+            when you're available, and how to book — all without needing an account.
+          </p>
+          <div class="slug">vibezcitizens.com/p/<span>your-business</span></div>
+          <p>
+            Your link is yours. It updates automatically whenever you change your services,
+            hours, or team on Vibez Citizens.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <section class="section">
+    <div class="container">
+      <p class="label">What your visitors see</p>
+      <h2>One page. Everything they need.</h2>
+      <div class="items">
+        <div class="item">
+          <h3>Profile</h3>
+          <p>Your name, photo, bio, location, and rating from verified reviews.</p>
+        </div>
+        <div class="item">
+          <h3>Book Now</h3>
+          <p>A prominent booking button at the top — no scrolling required to act.</p>
+        </div>
+        <div class="item">
+          <h3>Quick actions</h3>
+          <p>Call, directions, website, and share — direct, one tap each.</p>
+        </div>
+        <div class="item">
+          <h3>Services</h3>
+          <p>Your full menu with pricing and duration. Each service links directly to booking.</p>
+        </div>
+        <div class="item">
+          <h3>Availability</h3>
+          <p>Next open slots per team member, pulled live from your schedule.</p>
+        </div>
+        <div class="item">
+          <h3>Reviews</h3>
+          <p>Verified reviews from real customers on Vibez Citizens.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <section class="section" style="text-align:center; padding-bottom:80px;">
+    <div class="container">
+      <p class="label">Get started</p>
+      <h2>Create your VPORT on Vibez Citizens.</h2>
+      <p class="body-text" style="margin:12px auto 32px;">
+        Your WanderEx link is created automatically when you set up your VPORT.
+      </p>
+      <a class="hero-cta" href="/">Open Vibez Citizens</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>WanderEx is part of <a href="/">Vibez Citizens</a>. &nbsp;·&nbsp; <a href="/us">Browse providers</a></p>
+      <p style="margin-top:6px;">© 2026 Vibez Citizens.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

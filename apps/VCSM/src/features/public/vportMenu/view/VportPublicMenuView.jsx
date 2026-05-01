@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useDesktopBreakpoint from "@/features/public/vportMenu/hooks/useDesktopBreakpoint";
@@ -7,47 +7,12 @@ import { useVportPublicDetails } from "@/features/public/vportMenu/hooks/useVpor
 import { useVportPublicReviews } from "@/features/public/vportMenu/hooks/useVportPublicReviews";
 import VportPublicMenuPanel from "@/features/public/vportMenu/components/VportPublicMenuPanel";
 import VportPublicReviewsPanel from "@/features/public/vportMenu/components/VportPublicReviewsPanel";
-import { hasDirectionsAddress, openDirections } from "@/features/vport/utils/openDirections";
-
-function actionButtonStyle(enabled) {
-  return {
-    borderRadius: 14,
-    padding: "10px 12px",
-    border: enabled ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(255,255,255,0.08)",
-    background: enabled
-      ? "linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03))"
-      : "rgba(255,255,255,0.03)",
-    color: enabled ? "#fff" : "rgba(255,255,255,0.45)",
-    fontWeight: 900,
-    fontSize: 12,
-    letterSpacing: 0.3,
-    cursor: enabled ? "pointer" : "not-allowed",
-    userSelect: "none",
-    whiteSpace: "nowrap",
-  };
-}
-
-const TABS = [
-  { id: "menu", label: "Menu" },
-  { id: "reviews", label: "Reviews" },
-];
-
-function tabStyle(active) {
-  return {
-    flex: 1,
-    textAlign: "center",
-    padding: "8px 0",
-    fontSize: 13,
-    fontWeight: active ? 700 : 500,
-    color: active ? "#fff" : "rgba(255,255,255,0.45)",
-    cursor: "pointer",
-    background: "none",
-    border: "none",
-    borderBottom: active ? "2px solid rgba(139,92,246,0.85)" : "2px solid transparent",
-    transition: "color 0.15s",
-    letterSpacing: 0.3,
-  };
-}
+import { hasDirectionsAddress, openDirections } from "@/features/vport/adapters/vport.public.adapter";
+import {
+  actionButtonStyle,
+  tabStyle,
+  TABS,
+} from "@/features/public/vportMenu/view/vportPublicMenuView.styles";
 
 export function VportPublicMenuView({ actorId }) {
   const navigate = useNavigate();
@@ -112,9 +77,7 @@ export function VportPublicMenuView({ actorId }) {
       }}
     >
       <div style={{ width: "100%", maxWidth: 900, margin: "0 auto", padding: 18, paddingBottom: 56 }}>
-        {/* Banner + card stacking layout */}
         <div style={{ position: 'relative' }}>
-          {/* Banner image */}
           {profile.bannerUrl ? (
             <div
               style={{
@@ -134,7 +97,6 @@ export function VportPublicMenuView({ actorId }) {
             />
           )}
 
-          {/* Content card — overlaps banner */}
           <div
             style={{
               position: 'relative',
@@ -146,7 +108,6 @@ export function VportPublicMenuView({ actorId }) {
               zIndex: 2,
             }}
           >
-            {/* Top bar */}
             <div
               style={{
                 display: 'flex',
@@ -182,7 +143,6 @@ export function VportPublicMenuView({ actorId }) {
               <div style={{ width: isDesktop ? 80 : 36 }} />
             </div>
 
-            {/* Profile info */}
             <div style={{ padding: '0 16px 16px' }}>
               <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
                 <div
@@ -215,7 +175,6 @@ export function VportPublicMenuView({ actorId }) {
                       @{profile.username}
                     </div>
                   ) : null}
-                  {/* Compact review summary */}
                   <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
                     {reviewSummary.reviewCount > 0 && reviewSummary.averageRating != null ? (
                       <>
@@ -228,10 +187,7 @@ export function VportPublicMenuView({ actorId }) {
                             return (
                               <span
                                 key={i}
-                                style={{
-                                  fontSize: 11,
-                                  color: filled ? '#f59e0b' : 'rgba(255,255,255,0.2)',
-                                }}
+                                style={{ fontSize: 11, color: filled ? '#f59e0b' : 'rgba(255,255,255,0.2)' }}
                               >
                                 ★
                               </span>
@@ -249,7 +205,6 @@ export function VportPublicMenuView({ actorId }) {
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button type="button" style={actionButtonStyle(canOpenDirections)} disabled={!canOpenDirections}
                   onClick={() => openDirections(profile)}>
@@ -261,7 +216,6 @@ export function VportPublicMenuView({ actorId }) {
                 </button>
               </div>
 
-              {/* Tab bar */}
               <div
                 style={{
                   marginTop: 14,
@@ -281,7 +235,6 @@ export function VportPublicMenuView({ actorId }) {
                 ))}
               </div>
 
-              {/* Search — only visible on menu tab */}
               {activeTab === "menu" ? (
                 <div style={{ marginTop: 14 }}>
                   <input

@@ -6,7 +6,7 @@ export const metadata = {
   title: "TRAZE",
   description:
     "TRAZE public discovery layer for country, city, locality, service, provider, guide, and review SEO pages.",
-  metadataBase: new URL("https://traffic.vibezcitizens.com")
+  metadataBase: new URL("https://traze.vibezcitizens.com")
 };
 
 export default function RootLayout({ children }) {

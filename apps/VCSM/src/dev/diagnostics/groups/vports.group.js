@@ -1,9 +1,7 @@
 import { supabase } from "@/services/supabase/supabaseClient";
-import vportSchema from "@/services/supabase/vportClient";
 import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { runDiagnosticsTests } from "@/dev/diagnostics/helpers/timedTest";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
-import { ensureBasicVport } from "@/dev/diagnostics/helpers/ensureSeedData";
 import {
   isMissingColumn,
   isMissingRelation,
@@ -11,44 +9,15 @@ import {
   isPermissionDenied,
   makeSkipped,
 } from "@/dev/diagnostics/helpers/supabaseAssert";
+import {
+  getVportsState,
+  getOrEnsureVport,
+  verifyVportRowTest,
+} from "@/dev/diagnostics/groups/vports.group.helpers";
+export { getVportsTests } from "@/dev/diagnostics/groups/vports.group.helpers";
 
 export const GROUP_ID = "vports";
 export const GROUP_LABEL = "Vports";
-
-const TESTS = [
-  { key: "create_vport_rpc", name: "call create_vport RPC if present" },
-  { key: "verify_vport_row", name: "verify vport row exists" },
-  { key: "verify_vport_actor", name: "verify vport actor linkage" },
-  { key: "verify_vport_ownership", name: "verify actor ownership linkage" },
-  { key: "vport_public_details_rw", name: "verify vport public details read/write" },
-  { key: "vport_access_probes", name: "verify station/services/rates access where applicable" },
-];
-
-export function getVportsTests() {
-  return TESTS.map((row) => ({
-    id: buildTestId(GROUP_ID, row.key),
-    group: GROUP_ID,
-    name: row.name,
-  }));
-}
-
-function getState(shared) {
-  if (!shared.cache.vportsState) {
-    shared.cache.vportsState = {};
-  }
-  return shared.cache.vportsState;
-}
-
-async function getOrEnsureVport(shared) {
-  const state = getState(shared);
-  if (state.vport?.actorId && state.vport?.vportId) {
-    return state.vport;
-  }
-
-  const ensured = await ensureBasicVport(shared);
-  state.vport = ensured;
-  return ensured;
-}
 
 export async function runVportsGroup({ onTestUpdate, shared }) {
   const tests = [
@@ -57,7 +26,7 @@ export async function runVportsGroup({ onTestUpdate, shared }) {
       name: "call create_vport RPC if present",
       run: async ({ shared: localShared }) => {
         const { userId } = await ensureActorContext(localShared);
-        const state = getState(localShared);
+        const state = getVportsState(localShared);
 
         const name = `Diagnostics Vport ${Date.now()}`;
         const slugBase = `diag-${String(userId).replace(/-/g, "").slice(0, 10)}-${Date.now()}`.slice(0, 28);
@@ -106,26 +75,7 @@ export async function runVportsGroup({ onTestUpdate, shared }) {
         };
       },
     },
-    {
-      id: buildTestId(GROUP_ID, "verify_vport_row"),
-      name: "verify vport row exists",
-      run: async ({ shared: localShared }) => {
-        const vport = await getOrEnsureVport(localShared);
-
-        const { data, error } = await vportSchema
-          .from("profiles")
-          .select("id,owner_user_id,name,slug,avatar_url,bio,is_active,created_at,updated_at")
-          .eq("id", vport.vportId)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        return {
-          vportId: vport.vportId,
-          row: data,
-        };
-      },
-    },
+    verifyVportRowTest,
     {
       id: buildTestId(GROUP_ID, "verify_vport_actor"),
       name: "verify vport actor linkage",

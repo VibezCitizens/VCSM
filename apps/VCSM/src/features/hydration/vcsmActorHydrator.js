@@ -9,6 +9,8 @@ import {
 import {
   mapProfileActor,
   mapVportActor,
+} from "@/state/identity/identity.model";
+import {
   resolveRealmId,
 } from "@/state/identity/identity.controller";
 import { supabase as supabaseClient } from "@/services/supabase/supabaseClient";

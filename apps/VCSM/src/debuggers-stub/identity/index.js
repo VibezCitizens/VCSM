@@ -9,3 +9,4 @@ export function getIdentityDebugState() { return { events: [], snapshots: [] } }
 export function clearIdentityDebugEvents() {}
 export function subscribeIdentityDebug() { return () => {} }
 export function isIdentityDebugEnabled() { return false }
+export function debugFeedViewer() {}

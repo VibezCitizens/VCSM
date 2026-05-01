@@ -11,7 +11,7 @@ import { useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { MyBlocksProvider, useMyBlocks } from '@/features/settings/adapters/privacy/hooks/useMyBlocks.adapter'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import BlockConfirmModal from '@/features/block/adapters/ui/BlockConfirmModal.adapter'

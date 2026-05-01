@@ -1,7 +1,7 @@
 // Template picker step shown before the create form.
 // User selects a template or starts from blank.
 
-import { getTemplatesForVportType } from "@/features/profiles/kinds/vport/screens/content/model/contentPageTemplates";
+import { getTemplatesForVportType } from "@/features/profiles/kinds/vport/screens/content/model/contentPageTemplates.model";
 
 const CATEGORY_LABELS = {
   guide: "Guide",

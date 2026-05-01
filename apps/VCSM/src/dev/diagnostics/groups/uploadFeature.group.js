@@ -30,31 +30,25 @@ import { useMentionAutocomplete } from "@/features/upload/hooks/useMentionAutoco
 import { useMediaSelection, MAX_VIBES_PHOTOS } from "@/features/upload/hooks/useMediaSelection";
 import { useResolvedActor } from "@/features/upload/hooks/useResolvedActor";
 import { ctrlSearchMentionSuggestions } from "@/features/upload/controller/searchMentionSuggestions.controller";
-import { createPostController } from "@/features/upload/controllers/createPostController";
-import { searchMentionSuggestions } from "@/features/upload/dal/searchMentionSuggestions";
-import { findActorsByHandles } from "@/features/upload/dal/findActorsByHandles";
-import { findPostMentionsByPostIds } from "@/features/upload/dal/findPostMentionsByPostIds";
-import { insertPost } from "@/features/upload/dal/insertPost";
-import { insertPostMedia } from "@/features/upload/dal/insertPostMedia";
-import { insertPostMentions } from "@/features/upload/dal/insertPostMentions";
+import { createPostController } from "@/features/upload/controllers/createPost.controller";
+import { searchMentionSuggestions } from "@/features/upload/dal/searchMentionSuggestions.dal";
+import { findActorsByHandles } from "@/features/upload/dal/findActorsByHandles.dal";
+import { findPostMentionsByPostIds } from "@/features/upload/dal/findPostMentionsByPostIds.dal";
+import { insertPost } from "@/features/upload/dal/insertPost.dal";
+import { insertPostMedia } from "@/features/upload/dal/insertPostMedia.dal";
+import { insertPostMentions } from "@/features/upload/dal/insertPostMentions.dal";
 import { uploadMedia } from "@/features/upload/api/uploadMedia";
 import { resolveRealm } from "@/shared/utils/resolveRealm";
-import { createInitialPostPayload, MediaType, Visibility } from "@/features/upload/model/uploadTypes";
+import { createInitialPostPayload, MediaType, Visibility } from "@/features/upload/model/uploadTypes.model";
 import { extractHashtags } from "@/features/upload/lib/extractHashtags";
 import { extractMentions } from "@/features/upload/lib/extractMentions";
 import { classifyFile } from "@/features/upload/lib/classifyFile";
 import { compressIfNeeded } from "@/features/upload/lib/compressIfNeeded";
 
+export { getUploadFeatureTests } from "@/dev/diagnostics/groups/uploadFeature.group.helpers";
+
 export const GROUP_ID = "uploadFeature";
 export const GROUP_LABEL = "Upload Feature";
-
-export function getUploadFeatureTests() {
-  return UPLOAD_TEST_CATALOG.map((row) => ({
-    id: buildTestId(GROUP_ID, row.key),
-    group: GROUP_ID,
-    name: row.name,
-  }));
-}
 
 export async function runUploadFeatureGroup({ onTestUpdate, shared }) {
   const tests = [

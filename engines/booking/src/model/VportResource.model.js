@@ -3,6 +3,7 @@ export function mapVportResourceRow(row) {
   return {
     id:             row.id ?? null,
     ownerActorId:   row.owner_actor_id ?? null,
+    profileId:      row.profile_id ?? null,
     organizationId: row.organization_id ?? null,
     locationId:     row.location_id ?? null,
     memberActorId:  row.member_actor_id ?? null,

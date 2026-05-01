@@ -38,6 +38,10 @@ export default defineConfig(({ mode }) => ({
         replacement: fileURLToPath(new URL('../../engines/booking/index.js', import.meta.url)),
       },
       {
+        find: '@media',
+        replacement: fileURLToPath(new URL('../../engines/media/index.js', import.meta.url)),
+      },
+      {
         find: '@notifications',
         replacement: fileURLToPath(new URL('./src/features/notifications/runtime/index.js', import.meta.url)),
       },

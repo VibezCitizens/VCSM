@@ -4,7 +4,7 @@ export function mapPublicDetailsToDraft(details) {
   const src = normalizeDashboardVportDetails(details);
 
   return {
-    locationText: src.locationText,
+    cityId: src.cityId ?? null,
     websiteUrl: src.websiteUrl,
     bookingUrl: src.bookingUrl,
     emailPublic: src.emailPublic,

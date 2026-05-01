@@ -4,6 +4,9 @@ import createVportActorMenuItemDAL from "@/features/profiles/kinds/vport/dal/men
 import updateVportActorMenuItemDAL from "@/features/profiles/kinds/vport/dal/menu/updateVportActorMenuItem.dal";
 import readVportActorMenuItemsDAL from "@/features/profiles/kinds/vport/dal/menu/readVportActorMenuItems.dal";
 import readVportActorMenuCategoriesDAL from "@/features/profiles/kinds/vport/dal/menu/readVportActorMenuCategories.dal";
+import { createVportMenuItemMediaDAL } from "@/features/profiles/kinds/vport/dal/menu/createVportMenuItemMedia.dal";
+import { createMediaAssetController } from "@/features/media/controller/createMediaAsset.controller";
+import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
 
 import { VportActorMenuItemModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenuItem.model";
 
@@ -24,6 +27,7 @@ export async function saveVportActorMenuItemController({
   priceCents,
   currencyCode,
   imageUrl,
+  mediaUploadResult,
 } = {}) {
   if (!actorId) {
     throw new Error("saveVportActorMenuItemController: actorId is required");
@@ -77,6 +81,10 @@ export async function saveVportActorMenuItemController({
       },
     });
 
+    if (mediaUploadResult && imageUrl && updated?.id) {
+      recordMenuItemMedia({ actorId, itemId: updated.id, url: imageUrl, mediaUploadResult })
+    }
+
     return VportActorMenuItemModel.fromRow(updated);
   }
 
@@ -96,7 +104,37 @@ export async function saveVportActorMenuItemController({
     imageUrl: typeof imageUrl === "string" ? imageUrl : null,
   });
 
+  if (mediaUploadResult && imageUrl && created?.id) {
+    recordMenuItemMedia({ actorId, itemId: created.id, url: imageUrl, mediaUploadResult })
+  }
+
   return VportActorMenuItemModel.fromRow(created);
+}
+
+function recordMenuItemMedia({ actorId, itemId, url, mediaUploadResult }) {
+  ;(async () => {
+    try {
+      const appId = await resolveVcsmAppIdDAL()
+      const mediaAssetRecord = await createMediaAssetController({
+        mediaUploadResult,
+        ownerActorId:     actorId,
+        createdByActorId: actorId,
+        scope:            'menu_item_photo',
+        scopeId:          itemId,
+        appId,
+      })
+      await createVportMenuItemMediaDAL({
+        actorId,
+        itemId,
+        url,
+        kind:         'image',
+        sortOrder:    0,
+        mediaAssetId: mediaAssetRecord.id,
+      })
+    } catch (e) {
+      if (import.meta.env?.DEV) console.warn('[saveVportActorMenuItemController] media_assets record failed (non-fatal):', e?.message)
+    }
+  })()
 }
 
 export default saveVportActorMenuItemController;

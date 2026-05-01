@@ -12,7 +12,7 @@ import { useProfileController } from "@/features/settings/profile/hooks/useProfi
 import { useProfileUploads } from "@/features/settings/profile/hooks/useProfileUploads";
 import { ctrlGetCurrentAuthUserId } from "@/features/settings/profile/controller/authSession.controller";
 import { ctrlResolveVportIdByActorId } from "@/features/settings/profile/controller/resolveVportIdByActorId.controller";
-import { loadProfileCore, saveProfileCore } from "@/features/settings/profile/controller/Profile.controller.core";
+import { loadProfileCore, saveProfileCore } from "@/features/settings/profile/controller/profile.controller.core";
 import { saveProfile } from "@/features/settings/profile/controller/saveProfile.controller";
 import { dalGetCurrentAuthUserId } from "@/features/settings/profile/dal/auth.read.dal";
 import { dalReadVportIdByActorId } from "@/features/settings/profile/dal/actors.read.dal";
@@ -20,11 +20,11 @@ import { fetchProfile } from "@/features/settings/profile/dal/profile.read.dal";
 import { updateProfile } from "@/features/settings/profile/dal/profile.write.dal";
 import { fetchVportPublicDetails } from "@/features/settings/profile/dal/vportPublicDetails.read.dal";
 import { upsertVportPublicDetails } from "@/features/settings/profile/dal/vportPublicDetails.write.dal";
-import { mapProfileToView, mapProfileUpdate } from "@/features/settings/profile/model/profile.mapper";
+import { mapProfileToView, mapProfileUpdate } from "@/features/settings/profile/model/profile.model";
 import {
   mapVportPublicDetailsToView,
   mapVportPublicDetailsUpdate,
-} from "@/features/settings/profile/model/vportPublicDetails.mapper";
+} from "@/features/settings/profile/model/vportPublicDetails.model";
 import {
   failWithData,
   getSettingsProfileEntries,

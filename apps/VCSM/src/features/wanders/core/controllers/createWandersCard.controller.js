@@ -6,7 +6,7 @@
 
 import { nanoid } from "nanoid";
 
-import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGuestUser";
+import { ensureGuestUser } from "@/features/wanders/core/controllers/ensureGuestUser.controller";
 import { createWandersCard as createWandersCardDAL } from "@/features/wanders/core/dal/write/cards.write.dal";
 import { createWandersMailboxItem } from "@/features/wanders/core/dal/write/mailbox.write.dal";
 

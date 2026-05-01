@@ -1,8 +1,7 @@
 // src/features/profiles/kinds/vport/screens/content/components/VportContentPageViewer.jsx
 // Modal viewer — loads full page body and renders it when a public card is clicked.
 
-import { useState, useEffect } from "react";
-import readVportPublicContentPageController from "@/features/profiles/kinds/vport/controller/content/readVportPublicContentPage.controller";
+import { useVportPublicContentPage } from "@/features/profiles/kinds/vport/hooks/content/useVportPublicContentPage";
 
 const CATEGORY_META = {
   guide:       { label: "Guide",       color: "text-purple-300",  border: "border-purple-400/40" },
@@ -87,28 +86,7 @@ function BodyText({ text }) {
 }
 
 export function VportContentPageViewer({ pageId, onClose, onPrev, onNext, position, total }) {
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (!pageId) return;
-
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setPage(null);
-
-    readVportPublicContentPageController({ id: pageId })
-      .then((result) => {
-        if (!cancelled) { setPage(result); setLoading(false); }
-      })
-      .catch((err) => {
-        if (!cancelled) { setError(err?.message ?? "Failed to load content."); setLoading(false); }
-      });
-
-    return () => { cancelled = true; };
-  }, [pageId]);
+  const { page, loading, error } = useVportPublicContentPage(pageId);
 
   if (!pageId) return null;
 

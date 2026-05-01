@@ -1,4 +1,21 @@
 import { supabase } from "@/services/supabase/supabaseClient";
+import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
+
+const GROUP_ID = "bookings";
+
+export const TESTS = [
+  { key: "create_resource", name: "create booking resource" },
+  { key: "create_rule", name: "create booking availability rule" },
+  { key: "create_exception", name: "create booking exception" },
+  { key: "create_service_profile", name: "create booking service profile (if applicable)" },
+  { key: "create_booking", name: "create booking" },
+  { key: "read_booking", name: "verify booking readback" },
+  { key: "verify_owner_access", name: "verify actor ownership access" },
+];
+
+export function getBookingsTests() {
+  return TESTS.map((row) => ({ id: buildTestId(GROUP_ID, row.key), group: GROUP_ID, name: row.name }));
+}
 
 export function getBookingsState(shared) {
   if (!shared.cache.bookingsState) {

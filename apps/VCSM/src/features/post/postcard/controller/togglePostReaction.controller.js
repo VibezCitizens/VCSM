@@ -20,7 +20,7 @@ import {
 } from "../dal/postReactions.write.dal";
 
 import { fetchPostByIdDAL } from "../dal/post.read.dal";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 const VALID_REACTIONS = ["like", "dislike"];
 

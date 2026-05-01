@@ -1,10 +1,9 @@
 import {
-  buildPlatformBookingLink,
   buildPlatformClaimLink,
   buildPlatformExploreLink,
-  buildPlatformFollowLink,
   buildPlatformProviderLink
 } from "@/features/conversion/lib/deepLinkBuilder";
+import ProviderLeadCaptureCard from "@/features/conversion/components/ProviderLeadCaptureCard";
 
 export function DirectoryCtaModules({ context }) {
   return (
@@ -27,55 +26,32 @@ export function DirectoryCtaModules({ context }) {
   );
 }
 
-export function ProviderCtaModules({ providerSlug, context, claimStatus, vcsmActorId, vcsmSlug }) {
-  const isLinked = Boolean(vcsmActorId);
+export function ProviderCtaModules({
+  providerSlug,
+  providerProfileId,
+  providerPhone,
+  providerName,
+  claimStatus,
+  vcsmActorId,
+  vcsmSlug
+}) {
   const claimLink = buildPlatformClaimLink(providerSlug, vcsmActorId, "provider");
+  const profileHref = buildPlatformProviderLink(providerSlug, vcsmSlug, "provider");
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL ?? "";
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";
 
   return (
-    <div className="card card--cta pro-cta">
-      <div className="pro-cta-brand">
-        <span className="pro-cta-tagline">Vibez Citizens</span>
-      </div>
-
-      <h2 className="pro-cta-title">Continue on Vibez Citizens</h2>
-
-      <p className="pro-cta-desc">
-        {isLinked
-          ? "View this provider's live profile, book a service, or follow their updates."
-          : "Explore this provider's full profile and book directly on the platform."}
-      </p>
-
-      <div className="pro-cta-actions">
-        <a
-          className="btn btn--primary"
-          href={buildPlatformProviderLink(providerSlug, vcsmSlug, "provider")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          View Live Profile
-        </a>
-        <a
-          className="btn btn--ghost"
-          href={buildPlatformBookingLink(providerSlug, context, vcsmSlug, "provider")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Book a Service
-        </a>
-        <a
-          className="btn btn--ghost"
-          href={buildPlatformFollowLink(providerSlug, vcsmSlug, "provider")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Follow
-        </a>
-        {claimStatus !== "claimed" && claimLink ? (
-          <a className="btn btn--claim" href={claimLink} target="_blank" rel="noreferrer">
-            Claim This Profile
-          </a>
-        ) : null}
-      </div>
-    </div>
+    <ProviderLeadCaptureCard
+      providerSlug={providerSlug}
+      providerProfileId={providerProfileId}
+      providerPhone={providerPhone}
+      providerName={providerName}
+      profileHref={profileHref}
+      claimStatus={claimStatus}
+      claimLink={claimLink}
+      supabaseUrl={supabaseUrl}
+      supabaseAnonKey={supabaseAnonKey}
+    />
   );
 }

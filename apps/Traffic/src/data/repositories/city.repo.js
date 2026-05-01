@@ -1,8 +1,8 @@
-import { MOCK_CITIES, MOCK_NEIGHBORHOODS } from "@/data/connectors/mockDataset";
+import { CITIES, NEIGHBORHOODS } from "@/data/connectors/taxonomyDataset";
 import { slugEquals } from "@/lib/slugs";
 
 export function listCities(filters = {}) {
-  return MOCK_CITIES.filter((city) => {
+  return CITIES.filter((city) => {
     if (!city.isActive) {
       return false;
     }
@@ -28,13 +28,13 @@ export function getCityBySlug(citySlug, options = {}) {
 }
 
 export function listLocalitiesByCity(cityId) {
-  return MOCK_NEIGHBORHOODS.filter(
+  return NEIGHBORHOODS.filter(
     (locality) => locality.cityId === cityId && locality.isActive
   );
 }
 
 export function getLocalityById(localityId) {
-  return MOCK_NEIGHBORHOODS.find((locality) => locality.id === localityId && locality.isActive) ?? null;
+  return NEIGHBORHOODS.find((locality) => locality.id === localityId && locality.isActive) ?? null;
 }
 
 export function getLocalityBySlug(cityId, localitySlug) {

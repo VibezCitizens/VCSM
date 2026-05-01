@@ -1,8 +1,8 @@
-import { MOCK_COUNTRIES, MOCK_REGIONS } from "@/data/connectors/mockDataset";
+import { COUNTRIES, REGIONS } from "@/data/connectors/taxonomyDataset";
 import { slugEquals } from "@/lib/slugs";
 
 export function listCountries() {
-  return MOCK_COUNTRIES.filter((country) => country.isActive);
+  return COUNTRIES.filter((country) => country.isActive);
 }
 
 export function getCountryBySlug(countrySlug) {
@@ -18,11 +18,11 @@ export function getCountryById(countryId) {
 }
 
 export function listRegionsByCountry(countryId) {
-  return MOCK_REGIONS.filter((region) => region.countryId === countryId && region.isActive);
+  return REGIONS.filter((region) => region.countryId === countryId && region.isActive);
 }
 
 export function getRegionById(regionId) {
-  return MOCK_REGIONS.find((region) => region.id === regionId && region.isActive) ?? null;
+  return REGIONS.find((region) => region.id === regionId && region.isActive) ?? null;
 }
 
 export function getRegionByCode(countryId, regionCode) {

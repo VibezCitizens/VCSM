@@ -3,7 +3,7 @@ import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResource
 import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 export async function cancelBookingController({
   bookingId,
@@ -68,7 +68,7 @@ export async function cancelBookingController({
       objectType: "booking",
       objectId: bookingId,
       linkPath: isCustomer
-        ? `/profile/${resource.owner_actor_id}?tab=book`
+        ? `/actor/${resource.owner_actor_id}/dashboard/booking-history`
         : `/profile/${resource?.owner_actor_id ?? ""}?tab=book`,
       context: {
         serviceLabelSnapshot: booking.service_label_snapshot ?? null,

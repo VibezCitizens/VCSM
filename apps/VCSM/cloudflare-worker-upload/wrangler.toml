@@ -1,13 +1,16 @@
 name = "upload-worker"
+
 main = "worker.js"
+
 compatibility_date = "2025-09-29"
 
-routes = [
-  { pattern = "upload.vibezcitizens.com", custom_domain = true }
-]
 
 
-# 👇 Bind your R2 bucket
 [[r2_buckets]]
-binding = "R2_BUCKET"          # must match env.R2_BUCKET in worker.js
-bucket_name = "post-media"  # ⚠️ replace with your actual R2 bucket name
+
+binding = "R2_BUCKET"
+
+bucket_name = "post-media"
+[vars]
+SUPABASE_URL = "https://nkdrjlmbtqbywhcthppn.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rZHJqbG1idHFieXdoY3RocHBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDA5NjMsImV4cCI6MjA2NTUxNjk2M30.FjHnYHK4XeezByLb2NyQ2wRwNY1yt_GnW8SgX2qg8xA"

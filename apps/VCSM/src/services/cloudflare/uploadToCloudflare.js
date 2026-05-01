@@ -6,10 +6,10 @@
 
 // src/lib/uploadToCloudflare.js
 import { supabase } from '@/services/supabase/supabaseClient';
+import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger';
 
-// If you add auth later, you can inject a Bearer token here (or via headers in getBackgroundJob)
 export const UPLOAD_ENDPOINT = 'https://upload.vibezcitizens.com';
-export const R2_PUBLIC = 'https://cdn.vibezcitizens.com'; // Your public R2 domain
+export const R2_PUBLIC = 'https://cdn.vibezcitizens.com';
 
 async function getUploadAuthHeaders() {
   try {
@@ -26,13 +26,8 @@ async function getUploadAuthHeaders() {
       }
     }
 
-    if (!token) {
-      return {};
-    }
-
-    return {
-      Authorization: `Bearer ${token}`,
-    };
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
   } catch {
     return {};
   }
@@ -40,16 +35,17 @@ async function getUploadAuthHeaders() {
 
 /** Build a deterministic public URL from a storage key. */
 export function publicUrlForKey(key) {
-  // Ensure no leading slash
   const clean = String(key || '').replace(/^\/+/, '');
   return `${R2_PUBLIC}/${clean}`;
 }
 
 /**
- * Uploads a file to Cloudflare R2 via your Worker (direct / foreground path).
+ * Uploads a file to Cloudflare R2 via the Worker (direct / foreground path).
+ * Always sends an Authorization header — the Worker enforces JWT verification
+ * and actor ownership before accepting the upload.
  *
- * @param {File|Blob} file - The file to upload.
- * @param {string} key - Full key (e.g., 'posts/userId/timestamp.mp4').
+ * @param {File|Blob} file
+ * @param {string} key - Full R2 object key (e.g. 'vibes/{actorId}/2026/05/01/{uuid}.jpg')
  * @returns {Promise<{url: string | null, error: string | null}>}
  */
 export async function uploadToCloudflare(file, key) {
@@ -58,37 +54,35 @@ export async function uploadToCloudflare(file, key) {
     const filename = (key.split('/').pop()) || 'upload.bin';
     const path = key.split('/').slice(0, -1).join('/');
 
-    form.append('file', file, filename); // Worker expects "file"
-    form.append('key', key);             // Full object key
-    form.append('path', path);           // Folder prefix (if your Worker uses it)
+    form.append('file', file, filename);
+    form.append('key', key);
+    form.append('path', path);
 
     const authHeaders = await getUploadAuthHeaders();
-    const doUpload = (headers = null) =>
-      fetch(UPLOAD_ENDPOINT, {
-        method: 'POST',
-        body: form,
-        ...(headers && Object.keys(headers).length ? { headers } : {}),
-      });
+    bugBunnyUploadStep('cloudflare', 'upload:preflight', {
+      key,
+      hasAuth: !!authHeaders?.Authorization,
+      endpoint: UPLOAD_ENDPOINT,
+    });
 
-    let res;
-    try {
-      res = await doUpload(authHeaders);
-    } catch (firstErr) {
-      // CORS-safe fallback: retry once without custom headers if preflight/network fails.
-      if (!Object.keys(authHeaders || {}).length) throw firstErr;
-      res = await doUpload();
-    }
+    const res = await fetch(UPLOAD_ENDPOINT, {
+      method: 'POST',
+      body: form,
+      headers: authHeaders,
+    });
 
     if (!res.ok) {
       const errorText = await res.text();
+      bugBunnyUploadError('cloudflare', 'upload:http-error', new Error(errorText), { key, status: res.status });
       return { url: null, error: errorText || 'Upload failed.' };
     }
 
     const result = await res.json().catch(() => ({}));
-    // Prefer Worker-returned URL; fall back to deterministic public URL
     const url = result.url || publicUrlForKey(key);
+    bugBunnyUploadStep('cloudflare', 'upload:success', { key, url });
     return { url, error: null };
   } catch (err) {
+    bugBunnyUploadError('cloudflare', 'upload:fatal', err, { key });
     console.error('Error uploading to Cloudflare:', err);
     return { url: null, error: err?.message || 'Unexpected upload error.' };
   }
@@ -96,8 +90,7 @@ export async function uploadToCloudflare(file, key) {
 
 /**
  * Background-upload adapter for the Service Worker.
- * The SW expects a "job" payload with: { url, method, headers, fields, filename, contentType, publicUrl }
- * We DO NOT include the file blob here; the caller (uploadFlow) passes the actual File/Blob to enqueueUpload().
+ * Caller must pass the current Supabase access token via options.authToken.
  *
  * @param {File|Blob} file
  * @param {string} key
@@ -112,20 +105,12 @@ export function getBackgroundJob(file, key, options = {}) {
   return {
     url: UPLOAD_ENDPOINT,
     method: 'POST',
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      // Let the browser set multipart boundary — don't set Content-Type
-    },
-    fields: {
-      key,
-      path,
-      // Any other form fields your Worker supports can go here
-    },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    fields: { key, path },
     filename,
     contentType: (file && file.type) || 'application/octet-stream',
     publicUrl: publicUrlForKey(key),
   };
 }
 
-// allow default imports too
 export default uploadToCloudflare;

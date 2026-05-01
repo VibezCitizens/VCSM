@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
-import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/model/vportDashboardShellStyles";
+import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import Toast from "@/shared/components/components/Toast";
 
 import VportRatesView from "@/features/profiles/adapters/kinds/vport/screens/rates/view/VportRatesView.jsx.adapter";

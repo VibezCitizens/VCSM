@@ -11,6 +11,7 @@ export async function fetchVportPublicDetails(profileId) {
     .select(
       `
       profile_id,
+      city_id,
       website_url,
       email_public,
       phone_public,
@@ -36,6 +37,7 @@ export async function fetchVportPublicDetails(profileId) {
   const row =
     data || {
       profile_id: profileId,
+      city_id: null,
       website_url: "",
       email_public: "",
       phone_public: "",
@@ -57,6 +59,7 @@ export async function fetchVportPublicDetails(profileId) {
     ...row,
 
     // camelCase aliases
+    cityId: row.city_id ?? null,
     websiteUrl: row.website_url || "",
     bookingUrl: row.booking_url || "",
     emailPublic: row.email_public || "",

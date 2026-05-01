@@ -8,7 +8,7 @@ import {
 } from '../dal/followRequests.dal'
 
 import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
-import { publishVcsmNotification } from '@/features/notifications/publish'
+import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 
 /**
  * ============================================================

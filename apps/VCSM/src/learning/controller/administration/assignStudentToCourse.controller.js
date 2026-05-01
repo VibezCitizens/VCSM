@@ -11,7 +11,7 @@ import {
   isPlatformAdmin,
   normalizeMembershipStatus,
   saveCourseMembership,
-} from "@/learning/controller/administration/adminAccess";
+} from "@/learning/controller/administration/adminAccess.controller";
 
 export async function assignStudentToCourseController({
   supabase,

@@ -30,6 +30,9 @@ export async function markConversationRead({ conversationId, actorId }) {
   }
 
   if (member.last_read_message_id === lastMessage.id) {
+    // Read pointer is current, but unread_count may still be > 0 due to data
+    // inconsistency or RPC fan-out timing. Always reset to guarantee badge clears.
+    await dalResetInboxUnreadCount({ conversationId, actorId })
     return {
       success: true,
       lastReadMessageId: lastMessage.id,

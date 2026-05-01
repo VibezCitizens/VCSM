@@ -1,10 +1,9 @@
 import { useParams, useSearchParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { authTheme } from '@/features/auth/styles/authTheme'
-import { dalGetLegalDocument } from '../dal/legalDocuments.read.dal'
+import { authTheme } from '@/features/auth/adapters/auth.adapter'
+import { useLegalDocument } from '../hooks/useLegalDocument'
 import PrivacyPolicyContent from '../docs/PrivacyPolicyContent'
 import TermsOfServiceContent from '../docs/TermsOfServiceContent'
-import PublicTopNav from '../components/PublicTopNav'
+import PublicNavbar, { PUBLIC_NAV_HEIGHT } from '@/shared/components/PublicNavbar'
 import '@/features/legal/styles/legalDocument.css'
 
 const DOCUMENT_MAP = {
@@ -27,43 +26,20 @@ export default function LegalDocumentScreen() {
 
   const requestedVersion = searchParams.get('v') || null
 
-  const [docMeta, setDocMeta] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!entry) {
-      setLoading(false)
-      return
-    }
-
-    let cancelled = false
-
-    async function resolve() {
-      try {
-        const doc = await dalGetLegalDocument({
-          appKey: 'vcsm',
-          documentType: entry.documentType,
-          version: requestedVersion,
-        })
-        if (!cancelled) setDocMeta(doc)
-      } catch (err) {
-        console.error('[LegalDocumentScreen] Failed to resolve document:', err)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    resolve()
-    return () => { cancelled = true }
-  }, [entry, requestedVersion])
+  const { docMeta, loading } = useLegalDocument({
+    appKey: 'vcsm',
+    documentType: entry?.documentType,
+    version: requestedVersion,
+    enabled: !!entry,
+  })
 
   if (!entry) {
     return (
       <div
         className="min-h-screen flex items-center justify-center p-6 text-white"
-        style={{ background: authTheme.pageBackground, paddingTop: 60 }}
+        style={{ background: authTheme.pageBackground, paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top))` }}
       >
-        <PublicTopNav />
+        <PublicNavbar />
         <p style={{ color: 'var(--vc-text-muted)' }}>Document not found.</p>
       </div>
     )
@@ -79,9 +55,9 @@ export default function LegalDocumentScreen() {
   return (
     <div
       className="min-h-screen px-4 text-white"
-      style={{ background: authTheme.pageBackground, paddingTop: 60 + 32 }}
+      style={{ background: authTheme.pageBackground, paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top) + 32px)` }}
     >
-      <PublicTopNav />
+      <PublicNavbar />
       <div className="mx-auto w-full max-w-2xl">
         <div
           className="rounded-2xl border border-white/10 p-6 sm:p-8"

@@ -11,8 +11,8 @@ import {
   listProvidersByLocalityServiceAndSpecialty
 } from "@/data/repositories/provider.repo";
 import { getPriceAggregate } from "@/data/repositories/aggregate.repo";
-import { listCountryLocalityServiceSpecialtyStaticParams } from "@/data/repositories/pageCandidate.repo";
-import { buildDirectoryPageModel } from "@/data/mappers/pageModel.mapper";
+import { listCountryLocalityServiceSpecialtyStaticParams } from "@/data/repositories/staticParams.repo";
+import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
@@ -27,6 +27,7 @@ import {
   neighborhoodServiceSpecialtyPath
 } from "@/lib/paths";
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
+import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 
 export const revalidate = 900;
 
@@ -248,6 +249,7 @@ export default function CountryCityLocalityServiceSpecialtyPage({ params }) {
       }}
       relatedLinks={relatedLinks}
       schema={schema}
+      liveDataStatus={LIVE_DATA_STATUS}
     />
   );
 }

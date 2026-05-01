@@ -8,10 +8,8 @@ import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
-import { useLegalConsent } from '@/features/legal/hooks/useLegalConsent'
-import ConsentGateScreen from '@/features/legal/screens/ConsentGateScreen'
-import { isEmailVerifiedModel } from '@/features/auth/model/emailVerification.model'
-import VerifyEmailRequiredScreen from '@/features/auth/screens/VerifyEmailRequiredScreen'
+import { useLegalConsent, ConsentGateScreen } from '@/features/legal/adapters/legal.adapter'
+import { isEmailVerifiedModel, VerifyEmailRequiredScreen } from '@/features/auth/adapters/auth.adapter'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 export default function ProtectedRoute() {

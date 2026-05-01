@@ -13,12 +13,66 @@
 //   vport.profile_categories     — primary category key
 //   vport.categories             — category label
 //
+// Reverse slug resolution (slug/username → actorId) lives in resolveActorSlug.dal.js
+//
 // Layer: DAL — raw Supabase queries only, no business logic.
 // ─────────────────────────────────────────────────────────────
 
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createTTLCache } from '@/shared/lib/ttlCache'
-import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
+
+// ─────────────────────────────────────────────────────────────
+// 0. vport.public_actor_seo_v — single-query replacement for
+//    the four individual functions below. Used by the redirect
+//    screen (/m/:actorId) and canonical slug controller.
+// ─────────────────────────────────────────────────────────────
+
+const seoViewCache = createTTLCache(10 * 60 * 1000)
+
+const SEO_VIEW_COLS = [
+  'actor_id',
+  'actor_kind',
+  'profile_id',
+  'profile_display_name',
+  'profile_username',
+  'vport_profile_id',
+  'vport_name',
+  'vport_slug',
+  'vport_bio',
+  'vport_avatar_url',
+  'vport_banner_url',
+  'location_text',
+  'address',
+  'primary_category_key',
+  'primary_category_label',
+].join(', ')
+
+export async function readActorSeoViewDAL(actorId) {
+  if (!actorId) return null
+
+  const cached = seoViewCache.get(actorId)
+  if (cached) return cached
+
+  const { data, error } = await supabase
+    .schema('vport')
+    .from('public_actor_seo_v')
+    .select(SEO_VIEW_COLS)
+    .eq('actor_id', actorId)
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    if (import.meta.env?.DEV) console.warn('[readActorSeoViewDAL]', error.message)
+    return null
+  }
+
+  if (data) seoViewCache.set(actorId, data)
+  return data ?? null
+}
+
+export function invalidateActorSeoViewCache(actorId) {
+  actorId ? seoViewCache.invalidate(actorId) : seoViewCache.invalidateAll()
+}
 
 // SEO slug data changes rarely — 10-minute cache is safe.
 const SEO_TTL = 10 * 60 * 1000
@@ -32,25 +86,12 @@ const categoryCache       = createTTLCache(SEO_TTL)
 // 1. vc.actors + public.profiles — actor_kind + display_name + username
 // ─────────────────────────────────────────────────────────────
 
-/**
- * Read actor kind and user display name for a given actorId.
- *
- * Two-step:
- *   1. vc.actors → id, kind, profile_id
- *   2. public.profiles → display_name, username  (user actors only; null for vports)
- *
- * Vport name/slug comes from readVportProfileByActorDAL, not here.
- *
- * @param {string} actorId
- * @returns {Promise<Object|null>} — { actor_id, actor_kind, display_name, username }
- */
 export async function readActorDirectoryRowDAL(actorId) {
   if (!actorId) return null
 
   const cached = actorDirectoryCache.get(actorId)
   if (cached) return cached
 
-  // Step 1: resolve actor kind and profile linkage
   const { data: actorRow, error: actorErr } = await supabase
     .schema('vc')
     .from('actors')
@@ -65,7 +106,6 @@ export async function readActorDirectoryRowDAL(actorId) {
 
   if (!actorRow) return null
 
-  // Step 2: user actors have a profile_id → fetch display name + username
   let display_name = null
   let username = null
 
@@ -101,14 +141,6 @@ export function invalidateActorDirectoryCache(actorId) {
 // 2. vport.profiles — business name + existing slug
 // ─────────────────────────────────────────────────────────────
 
-/**
- * Read the vport profile row by actor_id.
- * Returns the stored slug (already human-readable) and raw business name.
- * Only populated when actor.kind === 'vport'.
- *
- * @param {string} actorId
- * @returns {Promise<Object|null>} — { id, actor_id, name, slug }
- */
 export async function readVportProfileByActorDAL(actorId) {
   if (!actorId) return null
 
@@ -139,14 +171,6 @@ export function invalidateVportProfileSeoCache(actorId) {
 // 3. vport.profile_public_details — location_text + address
 // ─────────────────────────────────────────────────────────────
 
-/**
- * Read public location details for a vport profile.
- * location_text is a free-text string (e.g., "Laredo, TX").
- * address is a jsonb object that may have { city, state, ... }.
- *
- * @param {string} profileId — vport.profiles.id (NOT actor_id)
- * @returns {Promise<Object|null>} — { location_text, address }
- */
 export async function readVportPublicDetailsForSeoDAL(profileId) {
   if (!profileId) return null
 
@@ -177,13 +201,6 @@ export function invalidateVportPublicDetailsSeoCache(profileId) {
 // 4. vport.profile_categories + vport.categories — primary category label
 // ─────────────────────────────────────────────────────────────
 
-/**
- * Read the primary category for a vport profile.
- * Joins profile_categories → categories to get the human-readable label.
- *
- * @param {string} profileId — vport.profiles.id
- * @returns {Promise<Object|null>} — { key, label }
- */
 export async function readVportPrimaryCategoryDAL(profileId) {
   if (!profileId) return null
 
@@ -203,7 +220,6 @@ export async function readVportPrimaryCategoryDAL(profileId) {
     return null
   }
 
-  // Flatten the nested join result into { key, label }
   const result = data?.categories
     ? { key: data.categories.key, label: data.categories.label }
     : null
@@ -214,193 +230,4 @@ export async function readVportPrimaryCategoryDAL(profileId) {
 
 export function invalidateVportCategoryCache(profileId) {
   profileId ? categoryCache.invalidate(profileId) : categoryCache.invalidateAll()
-}
-
-// ─────────────────────────────────────────────────────────────
-// 5. Reverse lookup — slug or username → actorId
-// ─────────────────────────────────────────────────────────────
-
-const slugResolutionCache = createTTLCache(SEO_TTL)
-
-/**
- * Resolve a UUID-free route param to an actorId.
- *
- * Tries in order:
- *   1. vport.profiles.slug  — vport actors (actor_id column)
- *   2. identity.actor_directory.username — canonical username map (vc domain)
- *   3. public.profiles.username → vc.actors.profile_id — legacy fallback
- *
- * @param {string} slugOrUsername — raw :actorId param that contains no UUID
- * @returns {Promise<{ actorId: string, kind: 'vport'|'user' }|null>}
- */
-export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
-  if (!slugOrUsername || typeof slugOrUsername !== 'string') return null
-
-  const key = slugOrUsername.toLowerCase()
-
-  const cached = slugResolutionCache.get(key)
-  if (cached) {
-    appendIOSProdDebugLog('profile_slug_dal_cache_hit', {
-      slug: key,
-      actorId: cached.actorId,
-      kind: cached.kind,
-    })
-    return cached
-  }
-
-  appendIOSProdDebugLog('profile_slug_dal_start', { slug: key })
-
-  let hadQueryError = false
-
-  // 1. Try vport slug
-  const { data: vportData, error: vportErr } = await supabase
-    .schema('vport')
-    .from('profiles')
-    .select('actor_id')
-    .eq('slug', key)
-    .maybeSingle()
-
-  if (vportErr) {
-    hadQueryError = true
-    appendIOSProdDebugLog('profile_slug_dal_vport_query_error', {
-      slug: key,
-      message: vportErr.message,
-    })
-    console.error('[resolveActorBySlugOrUsernameDAL] vport.profiles query failed:', vportErr.message, { slug: key })
-  }
-
-  if (!vportErr && vportData?.actor_id) {
-    const result = { actorId: vportData.actor_id, kind: 'vport' }
-    slugResolutionCache.set(key, result)
-    appendIOSProdDebugLog('profile_slug_dal_vport_hit', {
-      slug: key,
-      actorId: result.actorId,
-    })
-    return result
-  }
-
-  // 2. Try username via identity.actor_directory (source-of-truth lookup)
-  // Compatibility: canonical slug for user actors normalizes underscores to
-  // hyphens. Try both raw and hyphen/underscore-swapped candidates.
-  const usernameCandidates = Array.from(new Set([
-    key,
-    key.replace(/-/g, '_'),
-    key.replace(/_/g, '-'),
-  ]))
-
-  for (const candidate of usernameCandidates) {
-    const { data: actorDirectoryRow, error: actorDirectoryErr } = await supabase
-      .schema('identity')
-      .from('actor_directory')
-      .select('actor_id, actor_kind')
-      .eq('actor_domain', 'vc')
-      .ilike('username', candidate)
-      .maybeSingle()
-
-    if (actorDirectoryErr) {
-      hadQueryError = true
-      appendIOSProdDebugLog('profile_slug_dal_identity_query_error', {
-        slug: key,
-        username: candidate,
-        message: actorDirectoryErr.message,
-      })
-      console.error('[resolveActorBySlugOrUsernameDAL] identity.actor_directory query failed:', actorDirectoryErr.message, { username: candidate })
-      continue
-    }
-
-    if (actorDirectoryRow?.actor_id) {
-      const kind = actorDirectoryRow.actor_kind === 'vport' ? 'vport' : 'user'
-      const result = { actorId: actorDirectoryRow.actor_id, kind }
-      slugResolutionCache.set(key, result)
-      appendIOSProdDebugLog('profile_slug_dal_identity_hit', {
-        slug: key,
-        username: candidate,
-        actorId: result.actorId,
-        kind: result.kind,
-      })
-      return result
-    }
-  }
-
-  // 3. Legacy fallback: public.profiles.username → vc.actors.profile_id
-  let profileData = null
-  let matchedUsername = null
-
-  for (const candidate of usernameCandidates) {
-    const { data, error: profileErr } = await supabase
-      .from('profiles')
-      .select('id')
-      .ilike('username', candidate)
-      .maybeSingle()
-
-    if (profileErr) {
-      hadQueryError = true
-      appendIOSProdDebugLog('profile_slug_dal_profile_query_error', {
-        slug: key,
-        username: candidate,
-        message: profileErr.message,
-      })
-      console.error('[resolveActorBySlugOrUsernameDAL] public.profiles query failed:', profileErr.message, { username: candidate })
-      continue
-    }
-
-    if (data?.id) {
-      profileData = data
-      matchedUsername = candidate
-      break
-    }
-  }
-
-  if (profileData?.id) {
-    const { data: actorData, error: actorErr } = await supabase
-      .schema('vc')
-      .from('actors')
-      .select('id')
-      .eq('profile_id', profileData.id)
-      .eq('kind', 'user')
-      .maybeSingle()
-
-    if (actorErr) {
-      hadQueryError = true
-      appendIOSProdDebugLog('profile_slug_dal_actor_query_error', {
-        slug: key,
-        username: matchedUsername,
-        message: actorErr.message,
-      })
-      console.error('[resolveActorBySlugOrUsernameDAL] vc.actors query failed:', actorErr.message, { username: matchedUsername })
-    }
-
-    if (!actorErr && actorData?.id) {
-      const result = { actorId: actorData.id, kind: 'user' }
-      slugResolutionCache.set(key, result)
-      appendIOSProdDebugLog('profile_slug_dal_legacy_hit', {
-        slug: key,
-        username: matchedUsername,
-        actorId: result.actorId,
-      })
-      return result
-    }
-  }
-
-  // Do not silently convert infrastructure/permission failures into "not found".
-  if (hadQueryError) {
-    const error = new Error(`Slug resolution query failed for ${slugOrUsername}`)
-    error.code = 'SLUG_RESOLUTION_QUERY_FAILED'
-    appendIOSProdDebugLog('profile_slug_dal_throw_query_error', {
-      slug: key,
-      code: error.code,
-      message: error.message,
-    })
-    throw error
-  }
-
-  appendIOSProdDebugLog('profile_slug_dal_not_found', { slug: key })
-  console.warn('[resolveActorBySlugOrUsernameDAL] not found:', slugOrUsername)
-  return null
-}
-
-export function invalidateSlugResolutionCache(slugOrUsername) {
-  slugOrUsername
-    ? slugResolutionCache.invalidate(slugOrUsername.toLowerCase())
-    : slugResolutionCache.invalidateAll()
 }

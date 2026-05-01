@@ -1,23 +1,14 @@
-// C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\screens\PostDetail.view.jsx
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 
-import { useIdentity } from "@/state/identity/identityContext";
-
-import ReportModal from "@/features/moderation/adapters/components/ReportModal.adapter";
-import PostActionsMenu from "@/features/post/postcard/components/PostActionsMenu";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 import PostHeader from "@/features/post/postcard/components/PostHeader";
 import PostBody from "@/features/post/postcard/components/PostBody";
 import MediaCarousel from "@/features/post/postcard/components/MediaCarousel";
 import ReactionBar from "@/features/post/postcard/components/ReactionBar";
-import PostConfirmModal from "@/features/post/postcard/components/PostConfirmModal";
 
 import { usePostCommentCount } from "@/features/post/commentcard/hooks/usePostCommentCount";
-import CommentList from "@/features/post/commentcard/components/CommentList";
-import CommentInputView from "@/features/post/commentcard/ui/CommentInput.view";
-
 import useCommentThread from "@/features/post/commentcard/hooks/useCommentThread";
 import useCommentCovers from "@/features/post/postcard/hooks/useCommentCovers";
 
@@ -26,54 +17,15 @@ import usePostDetailMenus from "@/features/post/postcard/hooks/usePostDetailMenu
 import usePostDetailEditing from "@/features/post/postcard/hooks/usePostDetailEditing";
 import usePostDetailReplying from "@/features/post/postcard/hooks/usePostDetailReplying";
 import usePostDetailReporting from "@/features/post/postcard/hooks/usePostDetailReporting";
-
 import { useDeletePostAction } from "@/features/post/postcard/hooks/useDeletePostAction";
-import ReportedObjectCover from "@/features/moderation/adapters/components/ReportedObjectCover.adapter";
 
-import CommentReplyModal from "@/features/post/commentcard/components/CommentReplyModal";
-import CommentComposeModal from "@/features/post/commentcard/components/CommentComposeModal";
 import Spinner from "@/shared/components/Spinner";
 import "@/features/post/styles/post-modern.css";
 import "@/features/profiles/styles/profiles-modern.css";
 
-function detectIOS() {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  const isIPhoneIPadIPod = /iPad|iPhone|iPod/.test(ua);
-
-  const isIPadOS13Plus =
-    /Macintosh/.test(ua) &&
-    typeof document !== "undefined" &&
-    "ontouchend" in document;
-
-  return isIPhoneIPadIPod || isIPadOS13Plus;
-}
-
-function CommentsSkeletonList({ count = 4 }) {
-  return (
-    <div className="space-y-3 px-2 py-3">
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={`comment-skeleton:${i}`}
-          className="rounded-2xl border border-white/6 px-3 py-3"
-          style={{ background: 'var(--vc-card-bg)' }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.08)' }} />
-            <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3 w-28 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.1)' }} />
-              <div className="h-2 w-20 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.07)' }} />
-            </div>
-          </div>
-          <div className="mt-3 space-y-2 pl-[52px]">
-            <div className="h-3 w-11/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.08)' }} />
-            <div className="h-3 w-8/12 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.06)' }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+import { detectIOS } from "@/features/post/screens/utils/detectIOS";
+import { PostDetailSparksSection } from "@/features/post/screens/components/PostDetailSparksSection";
+import { PostDetailModals } from "@/features/post/screens/components/PostDetailModals";
 
 export default function PostDetailView() {
   const { postId } = useParams();
@@ -115,7 +67,6 @@ export default function PostDetailView() {
 
   const commentCount = usePostCommentCount(postId);
   const thread = useCommentThread(postId);
-
   const { post, loadingPost } = usePostDetailPost(postId);
 
   const commentCovers = useCommentCovers({
@@ -142,14 +93,10 @@ export default function PostDetailView() {
     commentCovers,
   });
 
-  // ============================================================
-  // ✅ STABLE HANDLERS
-  // ============================================================
   const handleEditPost = useCallback(
     (payload) => {
       const pid = payload?.postId ?? null;
       if (!pid) return;
-
       const initialText = post?.text ?? "";
       navigate(`/posts/${pid}/edit`, { state: { initialText } });
     },
@@ -161,7 +108,6 @@ export default function PostDetailView() {
       const pid = payload?.postId ?? null;
       if (!actorId) return;
       if (!pid) return;
-
       const okConfirm = await requestConfirm({
         title: "Delete Vibe",
         message: "Delete this Vibe?",
@@ -169,16 +115,11 @@ export default function PostDetailView() {
         tone: "danger",
       });
       if (!okConfirm) return;
-
-      const res = await deletePost({
-        postId: pid,
-      });
-
+      const res = await deletePost({ postId: pid });
       if (!res.ok) {
         window.alert(res.error?.message ?? "Failed to delete Vibe");
         return;
       }
-
       navigate(-1);
     },
     [actorId, navigate, deletePost, requestConfirm]
@@ -196,9 +137,6 @@ export default function PostDetailView() {
     onDeleteComment: editing.deleteCommentById,
   });
 
-  // ============================================================
-  // ✅ iOS detection + modal state (ABOVE early returns)
-  // ============================================================
   const isIOS = useMemo(() => detectIOS(), []);
   const [replyModalOpen, setReplyModalOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
@@ -211,23 +149,14 @@ export default function PostDetailView() {
     };
   }, []);
 
-  // ✅ refs for focus DURING tap gesture
   const replyRef = useRef(null);
   const composeRef = useRef(null);
 
-  // ============================================================
-  // ✅ Reply modal (iOS: open + keyboard immediately)
-  // ============================================================
   const openReply = useCallback(
     (commentId) => {
       replying.startReply(commentId);
-
       if (!isIOS) return;
-
-      // open modal
       setReplyModalOpen(true);
-
-      // focus during same gesture (best effort for iOS keyboard)
       replyRef.current?.focus?.();
       queueMicrotask(() => replyRef.current?.focus?.());
       setTimeout(() => replyRef.current?.focus?.(), 0);
@@ -248,14 +177,9 @@ export default function PostDetailView() {
     [replying]
   );
 
-  // ============================================================
-  // ✅ Top-level compose modal (iOS: open + keyboard immediately)
-  // ============================================================
   const openCompose = useCallback(() => {
     if (!isIOS) return;
-
     setComposeOpen(true);
-
     composeRef.current?.focus?.();
     queueMicrotask(() => composeRef.current?.focus?.());
     setTimeout(() => composeRef.current?.focus?.(), 0);
@@ -273,9 +197,6 @@ export default function PostDetailView() {
     [thread]
   );
 
-  // ============================================================
-  // ✅ Early returns AFTER all hooks
-  // ============================================================
   if (loadingPost) {
     return (
       <div className="p-6">
@@ -288,14 +209,10 @@ export default function PostDetailView() {
     return <div className="p-6 text-center text-white/40">Vibes not found</div>;
   }
 
-  const isCovered =
-    String(reporting.reportedPostId ?? "") === String(postId ?? "");
+  const isCovered = String(reporting.reportedPostId ?? "") === String(postId ?? "");
   const coveredCommentIds = commentCovers.coveredIds;
-
   const locationText = String(post.location_text ?? post.locationText ?? "").trim();
-
-  const postActorId =
-    post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
+  const postActorId = post.actorId ?? post.actor?.actorId ?? post.actor?.id ?? post.actor_id ?? null;
   const postActorRef = post.actor ?? postActorId;
 
   return (
@@ -309,164 +226,49 @@ export default function PostDetailView() {
             postId={post.id}
             onOpenMenu={menus.openPostMenu}
           />
-
           <div className="px-4 pb-3">
             <PostBody text={post.text} mentionMap={post.mentionMap || {}} />
           </div>
-
           {post.media?.length > 0 && (
             <div className="px-0 pb-3">
               <MediaCarousel media={post.media} />
             </div>
           )}
-
           <div className="px-4 pb-3">
             <ReactionBar postId={post.id} commentCount={commentCount} />
           </div>
         </div>
 
-        <div className="post-subcard profiles-card sparks-shell rounded-2xl border">
-          <div className="sparks-header px-4 py-3 border-b border-white/8 text-sm" style={{ color: 'var(--vc-text-soft)' }}>
-            Sparks
-          </div>
-
-          <div className="px-2">
-            {thread.loading && (
-              <CommentsSkeletonList count={4} />
-            )}
-
-            {!thread.loading && thread.comments.length === 0 && (
-              <div className="py-6 text-center text-white/40 text-sm">
-                No sparks yet. Be the first.
-              </div>
-            )}
-
-            <CommentList
-              comments={thread.comments}
-              viewerActorId={actorId}
-              onOpenMenu={menus.openCommentMenu}
-              coveredCommentIds={coveredCommentIds}
-              editingCommentId={editing.editingCommentId}
-              editingInitialText={editing.editingInitialText}
-              onCancelInlineEdit={editing.cancelInlineEdit}
-              onEditedSaved={editing.onEditedSaved}
-
-              // ✅ desktop keeps inline reply; iOS uses modal
-              replyingToCommentId={isIOS ? null : replying.replyingToCommentId}
-              onReplyStart={openReply}
-              onReplyCancel={isIOS ? undefined : replying.cancelReply}
-              onReplySubmit={isIOS ? undefined : replying.submitReply}
-              postingReply={thread.posting}
-            />
-          </div>
-
-          {/* ✅ Bottom composer */}
-          {thread.actorId && identity && (
-            <>
-              {!isIOS && (
-                <CommentInputView
-                  key={thread.actorId}
-                  actorId={thread.actorId}
-                  identity={identity}
-                  onSubmit={thread.addComment}
-                  disabled={thread.posting}
-                />
-              )}
-
-              {isIOS && (
-                <div className="px-3 py-3 border-t border-white/8 flex justify-end" style={{ background: 'var(--vc-surface)' }}>
-                  <button
-                    type="button"
-                    onClick={openCompose}
-                    disabled={thread.posting}
-                    className={
-                      thread.posting
-                        ? "bg-white/10 text-white/40 px-4 py-1.5 rounded-full text-sm cursor-not-allowed"
-                        : "bg-[#8b5cf6] hover:bg-[#a78bfa] text-white px-4 py-1.5 rounded-full text-sm shadow-[0_0_14px_rgba(139,92,246,0.45)]"
-                    }
-                  >
-                    Spark
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <PostDetailSparksSection
+          thread={thread}
+          isIOS={isIOS}
+          editing={editing}
+          replying={replying}
+          menus={menus}
+          coveredCommentIds={coveredCommentIds}
+          identity={identity}
+          actorId={actorId}
+          openCompose={openCompose}
+          openReply={openReply}
+        />
       </div>
 
-      {/* ✅ iOS reply modal (with ref for focus) */}
-      <CommentReplyModal
-        ref={replyRef}
-        open={replyModalOpen}
+      <PostDetailModals
+        replyRef={replyRef}
+        replyModalOpen={replyModalOpen}
         submitting={!!thread.posting}
-        onClose={closeReplyModal}
-        onSubmit={submitReplyFromModal}
-      />
-
-      {/* ✅ iOS top-level compose modal (with ref for focus) */}
-      <CommentComposeModal
-        ref={composeRef}
-        open={composeOpen}
-        submitting={!!thread.posting}
-        onClose={closeCompose}
-        onSubmit={submitCompose}
-      />
-
-      <PostActionsMenu
-        open={!!menus.postMenu}
-        anchorRect={menus.postMenu?.anchorRect}
-        isOwn={!!menus.postMenu?.isOwn}
-        onClose={menus.closePostMenu}
-        onReport={menus.handleReportPostClick}
-        onEdit={menus.handleEditPostClick}
-        onDelete={menus.handleDeletePostClick}
-      />
-
-      <PostActionsMenu
-        open={!!menus.commentMenu}
-        anchorRect={menus.commentMenu?.anchorRect}
-        isOwn={!!menus.commentMenu?.isOwn}
-        onClose={menus.closeCommentMenu}
-        onEdit={menus.handleEditCommentClick}
-        onDelete={menus.handleDeleteCommentClick}
-        onReport={menus.handleReportCommentClick}
-      />
-
-      <ReportModal
-  open={reporting.reportFlow.open}
-  title={reporting.reportFlow.context?.title ?? "Report"}
-  subtitle={reporting.reportFlow.context?.subtitle ?? null}
-  loading={reporting.reportFlow.loading}
-  onClose={reporting.reportFlow.close}
-  onSubmit={async (payload) => {
-    try {
-      await reporting.handleReportSubmit(payload);
-    } catch {
-      reporting.clearReportedPost?.();
-    }
-  }}
-/>
-
-      <PostConfirmModal
-        open={confirmState.open}
-        title={confirmState.title}
-        message={confirmState.message}
-        confirmLabel={confirmState.confirmLabel}
-        cancelLabel={confirmState.cancelLabel}
-        tone={confirmState.tone}
-        onCancel={() => closeConfirm(false)}
-        onConfirm={() => closeConfirm(true)}
-      />
-
-
-      <ReportedObjectCover
-        open={isCovered}
-        title="Report sent"
-        subtitle="You reported this Vibe. It’s now hidden for you while we review it."
-        primaryLabel="Back To Central Citizen"
-        onPrimary={() => navigate(-1)}
-        secondaryLabel="Close"
-        onSecondary={reporting.clearReportedPost}
+        closeReplyModal={closeReplyModal}
+        submitReplyFromModal={submitReplyFromModal}
+        composeRef={composeRef}
+        composeOpen={composeOpen}
+        closeCompose={closeCompose}
+        submitCompose={submitCompose}
+        menus={menus}
+        reporting={reporting}
+        confirmState={confirmState}
+        closeConfirm={closeConfirm}
+        isCovered={isCovered}
+        navigate={navigate}
       />
     </div>
   );

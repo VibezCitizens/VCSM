@@ -3,7 +3,7 @@ import getActorByIdDAL from "@/features/booking/dal/getActorById.dal";
 import insertBookingDAL from "@/features/booking/dal/insertBooking.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 const MANAGEMENT_SOURCES = new Set(["owner", "admin", "import", "sync"]);
 const CITIZEN_ONLY_SOURCES = new Set(["public"]);
@@ -114,7 +114,7 @@ export async function createBookingController({
         kind: "booking_created",
         objectType: "booking",
         objectId: mapped.id,
-        linkPath: `/profile/${resource.owner_actor_id}?tab=book`,
+        linkPath: `/actor/${resource.owner_actor_id}/dashboard/booking-history`,
         context: {
           serviceLabelSnapshot: serviceLabelSnapshot ?? null,
           startsAt: startsAt ?? null,

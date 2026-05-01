@@ -12,7 +12,7 @@ import {
   HEADER_STYLE,
   MODAL_STYLE,
   OVERLAY_STYLE,
-} from "@/features/profiles/kinds/vport/screens/menu/model/vportActorMenuConfirmDeleteModal.styles";
+} from "@/features/profiles/kinds/vport/screens/menu/styles/vportActorMenuConfirmDeleteModal.styles";
 
 /**
  * UI Modal: Confirm delete (category or item)

@@ -1,105 +1,24 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import React from "react";
-import { Navigate, Outlet, useParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { releaseFlags } from "@/shared/config/releaseFlags";
 import { learningProtectedRoutes } from "@/app/routes/learning/learning.routes";
-import { useIdentity } from "@/state/identity/identityContext";
+import {
+  BlockedVportGuard,
+  VportToActorDashboardRedirect,
+  VportToActorSettingsRedirect,
+  VportToActorAdsRedirect,
+  VportToActorFlyerEditRedirect,
+  VportToActorMenuQrRedirect,
+  VportToActorMenuFlyerRedirect,
+  VportToActorDashboardReviewsRedirect,
+  VportToActorDashboardLeadsRedirect,
+  VportToActorDashboardExchangeRedirect,
+  VportToActorDashboardCalendarRedirect,
+} from "@/app/routes/protected/appRoutes.redirects";
 
-function BlockedVportGuard() {
-  const { identity, loading, blockedVport } = useIdentity()
-  if (loading) return null
-  if (!identity) return <Navigate to="/feed" replace />
-  if (blockedVport) return <Navigate to="/vport/restore" replace />
-  return <Outlet />
-}
-
-const devDiagnosticsEnabled =
-  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
-
-function VportToActorDashboardRedirect() {
-  const { actorId } = useParams();
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/dashboard`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorSettingsRedirect() {
-  const { actorId } = useParams();
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/settings`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorAdsRedirect() {
-  const { actorId } = useParams();
-  if (!releaseFlags.vportAdsPipeline) return <Navigate to="/feed" replace />;
-  return actorId ? (
-    <Navigate to={`/ads/vport/${actorId}`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorFlyerEditRedirect() {
-  const { actorId } = useParams();
-  if (!releaseFlags.vportFlyerEditor) return <Navigate to="/feed" replace />;
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/menu/flyer/edit`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorMenuQrRedirect() {
-  const { actorId } = useParams();
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/menu/qr`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorMenuFlyerRedirect() {
-  const { actorId } = useParams();
-  if (!releaseFlags.vportPrintableFlyer) return <Navigate to="/feed" replace />;
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/menu/flyer`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorDashboardReviewsRedirect() {
-  const { actorId } = useParams();
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/dashboard/reviews`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorDashboardExchangeRedirect() {
-  const { actorId } = useParams();
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/dashboard/exchange`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
-
-function VportToActorDashboardCalendarRedirect() {
-  const { actorId } = useParams();
-  return actorId ? (
-    <Navigate to={`/actor/${actorId}/dashboard/calendar`} replace />
-  ) : (
-    <Navigate to="/feed" replace />
-  );
-}
+const devDiagnosticsEnabled = import.meta.env.DEV;
 
 export function protectedAppRoutes({
   CentralFeed,
@@ -145,12 +64,16 @@ export function protectedAppRoutes({
   VportDashboardScreen,
   VportDashboardGasScreen,
   VportDashboardReviewScreen,
+  VportDashboardLeadsScreen,
   VportDashboardServicesScreen,
   VportDashboardExchangeScreen,
   VportDashboardCalendarScreen,
   VportDashboardPortfolioScreen,
   VportDashboardLocksmithScreen,
   VportDashboardBookingHistoryScreen,
+  VportDashboardTeamScreen,
+  BarberTeamRequestsScreen,
+  VportDashboardScheduleScreen,
   VportSettingsScreen,
 
   LearningHomeScreen,
@@ -278,12 +201,16 @@ export function protectedAppRoutes({
         { path: "/actor/:actorId/dashboard", element: <VportDashboardScreen /> },
         { path: "/actor/:actorId/dashboard/gas", element: <VportDashboardGasScreen /> },
         { path: "/actor/:actorId/dashboard/reviews", element: <VportDashboardReviewScreen /> },
+        { path: "/actor/:actorId/dashboard/leads", element: <VportDashboardLeadsScreen /> },
         { path: "/actor/:actorId/dashboard/services", element: <VportDashboardServicesScreen /> },
         { path: "/actor/:actorId/dashboard/exchange", element: <VportDashboardExchangeScreen /> },
         { path: "/actor/:actorId/dashboard/calendar", element: <VportDashboardCalendarScreen /> },
         { path: "/actor/:actorId/dashboard/portfolio", element: <VportDashboardPortfolioScreen /> },
         { path: "/actor/:actorId/dashboard/locksmith", element: <VportDashboardLocksmithScreen /> },
         { path: "/actor/:actorId/dashboard/booking-history", element: <VportDashboardBookingHistoryScreen /> },
+        { path: "/actor/:actorId/dashboard/team", element: <VportDashboardTeamScreen /> },
+        { path: "/actor/:actorId/dashboard/team-requests", element: <BarberTeamRequestsScreen /> },
+        { path: "/actor/:actorId/dashboard/schedule", element: <VportDashboardScheduleScreen /> },
         { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
       ],
     },
@@ -307,6 +234,10 @@ export function protectedAppRoutes({
     {
       path: "/vport/:actorId/dashboard/reviews",
       element: <VportToActorDashboardReviewsRedirect />,
+    },
+    {
+      path: "/vport/:actorId/dashboard/leads",
+      element: <VportToActorDashboardLeadsRedirect />,
     },
     {
       path: "/vport/:actorId/dashboard/exchange",

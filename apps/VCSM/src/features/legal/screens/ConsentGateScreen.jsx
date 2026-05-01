@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { authTheme } from '@/features/auth/styles/authTheme'
-import ConsentCheckbox from '@/features/auth/components/ConsentCheckbox'
+import { authTheme, ConsentCheckbox } from '@/features/auth/adapters/auth.adapter'
 
 /**
  * Consent gate screen shown when compliance engine detects outdated or missing consent.

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 
 function formatSlotTime(iso) {
@@ -10,11 +11,20 @@ function formatSlotTime(iso) {
 
 export default function BookingCancelledNotificationItem({ notification }) {
   const navigate = useNavigate()
+  const { identity } = useIdentity()
   if (!notification) return null
 
   const service = notification.context?.serviceLabelSnapshot ?? 'a booking'
   const time = formatSlotTime(notification.context?.startsAt)
   const timeLabel = time ? ` at ${time}` : ''
+
+  // When customer cancelled → owner is the recipient → send to dashboard
+  // When owner cancelled → customer is the recipient → keep stored linkPath (profile)
+  const cancelledBy = notification.context?.cancelledBy
+  const destination =
+    cancelledBy === 'customer' && identity?.actorId
+      ? `/actor/${identity.actorId}/dashboard/booking-history`
+      : notification.linkPath
 
   return (
     <NotificationCard
@@ -22,7 +32,7 @@ export default function BookingCancelledNotificationItem({ notification }) {
       message={`cancelled ${service}${timeLabel}`}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
-      onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}
+      onClick={destination ? () => navigate(destination) : undefined}
     />
   )
 }

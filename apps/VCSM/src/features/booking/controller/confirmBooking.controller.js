@@ -3,7 +3,7 @@ import getBookingByIdDAL from "@/features/booking/dal/getBookingById.dal";
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.dal";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 export async function confirmBookingController({
   bookingId,

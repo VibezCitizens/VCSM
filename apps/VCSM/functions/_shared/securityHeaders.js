@@ -15,8 +15,8 @@ const CSP =
   "script-src 'self' 'unsafe-inline'; " +
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
   "font-src 'self' https://fonts.gstatic.com; " +
-  "img-src 'self' data: https://cdn.vibezcitizens.com https://*.supabase.co; " +
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co; " +
+  "img-src 'self' data: blob: https://cdn.vibezcitizens.com https://*.supabase.co; " +
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://upload.vibezcitizens.com; " +
   "frame-src https://onemoredays.com; " +
   "object-src 'none'; " +
   "base-uri 'self'; " +

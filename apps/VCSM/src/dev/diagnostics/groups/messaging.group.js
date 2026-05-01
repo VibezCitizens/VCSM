@@ -2,61 +2,21 @@ import { supabase } from "@/services/supabase/supabaseClient";
 import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { runDiagnosticsTests } from "@/dev/diagnostics/helpers/timedTest";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
-import { ensureBasicVport } from "@/dev/diagnostics/helpers/ensureSeedData";
 import { ensureRealm } from "@/dev/diagnostics/helpers/ensureRealm";
 import {
   isPermissionDenied,
   isSeedMissingError,
   makeSkipped,
 } from "@/dev/diagnostics/helpers/supabaseAssert";
+import {
+  getMessagingState,
+  readInboxEntriesTest,
+  resolveSecondActorId,
+} from "@/dev/diagnostics/groups/messaging.group.helpers";
+export { getMessagingTests } from "@/dev/diagnostics/groups/messaging.group.helpers";
 
 export const GROUP_ID = "messaging";
 export const GROUP_LABEL = "Messaging";
-
-const TESTS = [
-  { key: "create_conversation", name: "create conversation" },
-  { key: "add_members", name: "add conversation members" },
-  { key: "create_message", name: "create message" },
-  { key: "create_receipt", name: "create message receipt" },
-  { key: "read_inbox_entries", name: "read inbox entries" },
-  { key: "participant_scoping", name: "verify participant scoping" },
-];
-
-export function getMessagingTests() {
-  return TESTS.map((row) => ({
-    id: buildTestId(GROUP_ID, row.key),
-    group: GROUP_ID,
-    name: row.name,
-  }));
-}
-
-function getState(shared) {
-  if (!shared.cache.messagingState) {
-    shared.cache.messagingState = {};
-  }
-  return shared.cache.messagingState;
-}
-
-async function resolveSecondActorId({ actorId, shared }) {
-  try {
-    const vport = await ensureBasicVport(shared);
-    if (vport?.actorId && vport.actorId !== actorId) {
-      return vport.actorId;
-    }
-  } catch {
-    // best effort
-  }
-
-  const { data, error } = await supabase
-    .schema("identity")
-    .from("actor_directory")
-    .select("actor_id")
-    .neq("actor_id", actorId)
-    .limit(1);
-
-  if (error) throw error;
-  return data?.[0]?.actor_id ?? null;
-}
 
 export async function runMessagingGroup({ onTestUpdate, shared }) {
   function skipIfSeedMissing(error, reason, extra = null) {
@@ -87,7 +47,7 @@ export async function runMessagingGroup({ onTestUpdate, shared }) {
         } catch (error) {
           return skipIfSeedMissing(error, "create conversation blocked: required realm seed is missing");
         }
-        const state = getState(localShared);
+        const state = getMessagingState(localShared);
 
         const title = `diag-chat-${String(userId).replace(/-/g, "").slice(0, 10)}-${Date.now()}`;
 
@@ -117,7 +77,7 @@ export async function runMessagingGroup({ onTestUpdate, shared }) {
       name: "add conversation members",
       run: async ({ shared: localShared }) => {
         const { actorId } = await ensureActorContext(localShared);
-        const state = getState(localShared);
+        const state = getMessagingState(localShared);
         const conversationId = state.conversation?.id;
 
         if (!conversationId) {
@@ -175,7 +135,7 @@ export async function runMessagingGroup({ onTestUpdate, shared }) {
       name: "create message",
       run: async ({ shared: localShared }) => {
         const { actorId } = await ensureActorContext(localShared);
-        const state = getState(localShared);
+        const state = getMessagingState(localShared);
         const conversationId = state.conversation?.id;
 
         if (!conversationId) {
@@ -231,7 +191,7 @@ export async function runMessagingGroup({ onTestUpdate, shared }) {
       name: "create message receipt",
       run: async ({ shared: localShared }) => {
         const { actorId } = await ensureActorContext(localShared);
-        const state = getState(localShared);
+        const state = getMessagingState(localShared);
         const messageId = state.message?.id;
 
         if (!messageId) {
@@ -268,35 +228,13 @@ export async function runMessagingGroup({ onTestUpdate, shared }) {
         };
       },
     },
-    {
-      id: buildTestId(GROUP_ID, "read_inbox_entries"),
-      name: "read inbox entries",
-      run: async ({ shared: localShared }) => {
-        const { actorId } = await ensureActorContext(localShared);
-
-        const { data, error } = await supabase
-          .schema("chat")
-          .from("inbox_entries")
-          .select("conversation_id,actor_id,folder,last_message_id,last_message_at,unread_count")
-          .eq("actor_id", actorId)
-          .order("last_message_at", { ascending: false })
-          .limit(20);
-
-        if (error) throw error;
-
-        return {
-          actorId,
-          count: Array.isArray(data) ? data.length : 0,
-          entries: data ?? [],
-        };
-      },
-    },
+    readInboxEntriesTest,
     {
       id: buildTestId(GROUP_ID, "participant_scoping"),
       name: "verify participant scoping",
       run: async ({ shared: localShared }) => {
         const { actorId } = await ensureActorContext(localShared);
-        const state = getState(localShared);
+        const state = getMessagingState(localShared);
         const conversationId = state.conversation?.id;
 
         if (!conversationId) {

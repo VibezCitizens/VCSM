@@ -1,27 +1,7 @@
-// src/features/settings/vports/hooks/useVportsList.js
-import { useEffect, useState } from "react";
-import { listMyVportsDAL } from "@/features/settings/vports/dal/vports.read.dal";
+import { useAuth } from '@/app/providers/AuthProvider'
+import { useUserVports } from '@/features/settings/queries/useUserVports'
 
 export function useVportsList() {
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    let alive = true;
-
-    (async () => {
-      try {
-        const list = await listMyVportsDAL();
-        if (alive) setItems(list ?? []);
-      } catch (e) {
-        console.error("[useVportsList] failed", e);
-        if (alive) setItems([]);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  return { items, setItems };
+  const { user } = useAuth() || {}
+  return useUserVports(user?.id)
 }

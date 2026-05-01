@@ -23,6 +23,7 @@ export function mapBookingRow(row) {
     internalNote: row.internal_note ?? null,
     cancelledAt: row.cancelled_at ?? null,
     completedAt: row.completed_at ?? null,
+    ownerActorId: row.booking_resources?.owner_actor_id ?? row.resources?.owner_actor_id ?? null,
     createdByActorId: row.created_by_actor_id ?? null,
     createdAt: row.created_at ?? null,
     updatedAt: row.updated_at ?? null,

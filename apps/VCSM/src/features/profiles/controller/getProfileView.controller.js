@@ -2,15 +2,15 @@
 // getProfileView.controller
 // ============================================================
 
-import { ProfileModel } from '@/features/profiles/model/ProfileModel'
-import { PostModel } from '@/features/profiles/model/PostModel'
+import { ProfileModel } from '@/features/profiles/model/profile.model'
+import { PostModel } from '@/features/profiles/model/post.model'
 
 import { readActorProfileDAL } from '@/features/profiles/dal/readActorProfile.dal'
 import { useActorStore } from '@hydration'
 import { readFollowStateDAL } from '@/features/profiles/dal/readFollowState.dal'
 import { readActorPostsDAL } from '@/features/profiles/dal/readActorPosts.dal'
-import { readPostReactionsDAL } from '@/features/profiles/dal/readPostReactionsDAL'
-import { readPostRoseCountsDAL } from '@/features/profiles/dal/readPostRoseCountsDAL'
+import { readPostReactionsDAL } from '@/features/profiles/dal/readPostReactions.dal'
+import { readPostRoseCountsDAL } from '@/features/profiles/dal/readPostRoseCounts.dal'
 
 export async function getProfileView({
   viewerActorId,

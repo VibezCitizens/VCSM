@@ -1,3 +1,4 @@
+import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
 import {
   isMissingRpc,
@@ -21,6 +22,16 @@ export const UPLOAD_TEST_CATALOG = [
   { key: "create_post_source_contract", name: "upload create post source contract checks" },
   { key: "destructive_write_skipped", name: "upload create post write path intentionally skipped" },
 ];
+
+const GROUP_ID = "uploadFeature";
+
+export function getUploadFeatureTests() {
+  return UPLOAD_TEST_CATALOG.map((row) => ({
+    id: buildTestId(GROUP_ID, row.key),
+    group: GROUP_ID,
+    name: row.name,
+  }));
+}
 
 export function failWithData(message, data) {
   return {

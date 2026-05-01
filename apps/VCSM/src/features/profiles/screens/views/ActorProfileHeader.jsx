@@ -7,7 +7,7 @@ import ProfileHeaderQRCodeModal from '@/features/profiles/screens/views/profileh
 import MessageButton from '@/features/profiles/ui/header/Messagebutton'
 import SubscribeButton from '@/features/profiles/ui/header/Subscribebutton'
 import { useProfileHeaderMessaging } from '@/features/profiles/hooks/header/useProfileHeaderMessaging'
-import ActorActionsMenu from '@/shared/components/components/ActorActionsMenu'
+import ActorActionsMenu from '@/features/block/adapters/ui/ActorActionsMenu'
 
 import { useSubscribeAction } from '@/features/social/adapters/friend/request/hooks/useSubscribeAction.adapter'
 import { useFollowerCount } from '@/features/social/adapters/friend/subscribe/hooks/useFollowerCount.adapter'

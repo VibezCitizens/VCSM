@@ -5,6 +5,7 @@ import { listLessonProgressByCourseAndActorDal } from "@/learning/dal/lessonProg
 import { listAssignmentsByCourseIdDal } from "@/learning/dal/assignments/listAssignmentsByCourseId.dal";
 import { getSubmissionAttemptDal } from "@/learning/dal/submissions/getSubmissionAttempt.dal";
 import { getGradeBySubmissionIdDal } from "@/learning/dal/grades/getGradeBySubmissionId.dal";
+import { listObservedStudentLinksDAL } from "@/learning/dal/observerStudentLinks/observerStudentLinks.dal";
 
 import { mapCourse } from "@/learning/model/course.model";
 import { mapMembership } from "@/learning/model/membership.model";
@@ -125,32 +126,6 @@ function buildDashboardSummary(observedStudents = []) {
   return summary;
 }
 
-async function listObservedStudentLinks({ supabase, observerActorId, courseIds }) {
-  if (!Array.isArray(courseIds) || courseIds.length === 0) {
-    return [];
-  }
-
-  const { data, error } = await supabase
-    .schema("learning")
-    .from("observer_student_links")
-    .select(`
-      id,
-      course_id,
-      observer_actor_id,
-      student_actor_id,
-      created_at
-    `)
-    .eq("observer_actor_id", observerActorId)
-    .in("course_id", courseIds)
-    .order("created_at", { ascending: true });
-
-  if (error) {
-    throw error;
-  }
-
-  return data ?? [];
-}
-
 export async function getParentDashboardController({
   supabase,
   actorId,
@@ -194,7 +169,7 @@ export async function getParentDashboardController({
     };
   }
 
-  const linkRows = await listObservedStudentLinks({
+  const linkRows = await listObservedStudentLinksDAL({
     supabase,
     observerActorId: actorId,
     courseIds: observerEntries.map(({ courseRow }) => courseRow.id),

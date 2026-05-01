@@ -1,12 +1,9 @@
 // src/features/post/commentcard/controller/postComments.controller.js
 
-import { listPostComments } from "../dal/postComments.read.dal";
-
-// ✅ use the real DAL writer that supports parentId
+import { listPostComments, readPostCommentActorIdDAL } from "../dal/postComments.read.dal";
 import { createComment } from "../dal/comments.dal";
-
 import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 /**
  * Build a nested comment tree from flat rows
@@ -97,21 +94,11 @@ export async function createReplyComment({
     parentId: parentCommentId,
   });
 
-  // Notify parent comment author about the reply
-  // Fetch parent comment to resolve author
-  const { data: parentComment } = await import('@/services/supabase/supabaseClient')
-    .then(({ supabase }) =>
-      supabase
-        .schema('vc')
-        .from('post_comments')
-        .select('actor_id')
-        .eq('id', parentCommentId)
-        .maybeSingle()
-    );
+  const parentActorId = await readPostCommentActorIdDAL(parentCommentId);
 
-  if (parentComment?.actor_id) {
+  if (parentActorId) {
     publishVcsmNotification({
-      recipientActorId: parentComment.actor_id,
+      recipientActorId: parentActorId,
       actorId,
       kind: 'social.post.comment_reply',
       objectType: 'comment',

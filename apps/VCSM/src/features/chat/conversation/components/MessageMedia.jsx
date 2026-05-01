@@ -87,7 +87,7 @@ export default function MessageMedia({
           <img
             src={url}
             alt=""
-            className="block w-full object-cover max-h-[520px]"
+            className="block w-full object-cover max-h-[520px] min-h-[200px]"
             loading="lazy"
             draggable={false}
           />

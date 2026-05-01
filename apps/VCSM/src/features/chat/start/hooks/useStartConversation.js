@@ -16,7 +16,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { startDirectConversation } from '@chat'
 import { resolveRealm } from '@/shared/utils/resolveRealm'
 

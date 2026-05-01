@@ -1,6 +1,9 @@
 import { dalGetBookingResourceById, dalListBookingResourceServicesByResourceId } from '../dal/resource.read.dal.js'
+import { dalGetVportResourceById } from '../dal/vportResource.read.dal.js'
 import { dalListAvailabilityRulesByResourceId, dalListAvailabilityExceptionsInRange } from '../dal/availability.read.dal.js'
+import { dalListVportAvailabilityRulesByResourceId, dalListVportAvailabilityExceptionsInRange } from '../dal/vportAvailability.read.dal.js'
 import { dalListBookingsInRange } from '../dal/booking.read.dal.js'
+import { dalListVportBookingsInRange } from '../dal/vportBooking.read.dal.js'
 import { dalListBookingServiceProfilesByServiceIds } from '../dal/serviceProfile.read.dal.js'
 import { mapResourceAvailabilityModel } from '../model/BookingAvailability.model.js'
 
@@ -34,6 +37,30 @@ export async function getResourceAvailability({
   const cached = cacheGet(cacheKey)
   if (cached) return cached
 
+  // ── Detect resource source ─────────────────────────────────────────────────
+  const vportResource = await dalGetVportResourceById({ resourceId }).catch(() => null)
+
+  if (vportResource) {
+    // ── VPORT FLOW: read from vport.availability_rules/exceptions + vport.bookings ──
+    const [rules, exceptions, bookings] = await Promise.all([
+      dalListVportAvailabilityRulesByResourceId({ resourceId }),
+      dalListVportAvailabilityExceptionsInRange({ resourceId, rangeStart, rangeEnd, exceptionTypes }),
+      dalListVportBookingsInRange({ resourceId, rangeStart, rangeEnd, statuses, publicMode }),
+    ])
+
+    const result = mapResourceAvailabilityModel({
+      resource:        vportResource,
+      rules,
+      exceptions,
+      bookings,
+      serviceProfiles: [],
+      isVportResource: true,
+    })
+    cacheSet(cacheKey, result)
+    return result
+  }
+
+  // ── LEGACY VC FLOW: read from vc.booking_availability_rules/exceptions + vc.bookings ──
   const resource = await dalGetBookingResourceById({ resourceId })
   if (!resource) throw new Error('Booking resource not found.')
 

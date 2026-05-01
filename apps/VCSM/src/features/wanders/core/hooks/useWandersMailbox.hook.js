@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ensureGuestUser } from "@/features/wanders/core/controllers/_ensureGuestUser";
+import { ensureGuestUser } from "@/features/wanders/core/controllers/ensureGuestUser.controller";
 import {
   listMailboxForViewer,
   markMailboxItemRead,

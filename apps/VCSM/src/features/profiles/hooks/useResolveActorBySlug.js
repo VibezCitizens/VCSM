@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from 'react'
-import { resolveActorBySlugOrUsernameDAL } from '@/features/profiles/dal/readActorSeoData.dal'
+import { resolveActorBySlugController } from '@/features/profiles/controller/resolveActorBySlug.controller'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 /**
@@ -57,7 +57,7 @@ export function useResolveActorBySlug(slug) {
       setError(null)
 
       try {
-        const result = await resolveActorBySlugOrUsernameDAL(slug)
+        const result = await resolveActorBySlugController(slug)
 
         if (!alive) return
 

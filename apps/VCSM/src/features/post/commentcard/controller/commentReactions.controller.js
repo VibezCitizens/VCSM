@@ -4,8 +4,8 @@ import {
   isCommentLiked,
   getCommentLikeCount,
 } from "../dal/commentLikes.dal";
-
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { readCommentActorAndPostIdDAL } from "../dal/comments.dal";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 export async function toggleCommentLike({
   commentId,
@@ -22,14 +22,7 @@ export async function toggleCommentLike({
     // New like — created
     await likeComment({ commentId, actorId });
 
-    // Resolve comment author for notification
-    const { supabase } = await import('@/services/supabase/supabaseClient');
-    const { data: comment } = await supabase
-      .schema('vc')
-      .from('post_comments')
-      .select('actor_id, post_id')
-      .eq('id', commentId)
-      .maybeSingle();
+    const comment = await readCommentActorAndPostIdDAL(commentId);
 
     if (comment?.actor_id) {
       publishVcsmNotification({

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import VibeTagPicker from '@/features/onboarding/components/VibeTagPicker'
 import useOnboardingVibeTags from '@/features/onboarding/hooks/useOnboardingVibeTags'
-import { authTheme } from '@/features/auth/styles/authTheme'
+import { authTheme } from '@/features/auth/adapters/auth.adapter'
 
 const S = {
   page: {

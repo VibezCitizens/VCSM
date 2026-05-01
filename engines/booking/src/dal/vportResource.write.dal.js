@@ -2,12 +2,12 @@ import { getVportClient } from '../config.js'
 
 const VPORT_RESOURCE_SELECT = [
   'id', 'owner_actor_id', 'organization_id', 'location_id', 'member_actor_id',
-  'resource_type', 'name', 'is_active', 'timezone', 'sort_order', 'created_at', 'updated_at',
+  'profile_id', 'resource_type', 'name', 'is_active', 'timezone', 'sort_order', 'created_at', 'updated_at',
 ].join(',')
 
 const WRITE_COLUMNS = Object.freeze([
   'owner_actor_id', 'organization_id', 'location_id', 'member_actor_id',
-  'resource_type', 'name', 'is_active', 'timezone', 'sort_order',
+  'profile_id', 'resource_type', 'name', 'is_active', 'timezone', 'sort_order',
 ])
 
 function pickDefined(input, columns) {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/services/supabase/supabaseClient";
+import React from "react";
+import { useAuth } from "@/app/providers/AuthProvider";
 import { useVportPublicReviews } from "@/features/public/vportMenu/hooks/useVportPublicReviews";
 import VportPublicReviewSummary from "@/features/public/vportMenu/components/VportPublicReviewSummary";
 import VportPublicReviewDimensions from "@/features/public/vportMenu/components/VportPublicReviewDimensions";
@@ -46,13 +46,8 @@ const writeBtnStyle = {
 export function VportPublicReviewsPanel({ actorId }) {
   const { summary, reviews, dimensions, hasMore, loading, loadingMore, error, loadMore } =
     useVportPublicReviews({ actorId });
-  const [isAuthed, setIsAuthed] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setIsAuthed(!!data?.session?.user);
-    });
-  }, []);
+  const { user } = useAuth();
+  const isAuthed = !!user;
 
   const handleWriteReview = () => {
     if (!isAuthed) {

@@ -4,6 +4,8 @@
 // Do NOT add login/register/settings or any protected routes here.
 
 const STATIC_URLS = [
+  { loc: 'https://vibezcitizens.com/',                         changefreq: 'weekly',  priority: '1.0' },
+  { loc: 'https://vibezcitizens.com/us',                       changefreq: 'weekly',  priority: '0.9' },
   { loc: 'https://vibezcitizens.com/about',                    changefreq: 'monthly', priority: '0.7' },
   { loc: 'https://vibezcitizens.com/contact',                  changefreq: 'monthly', priority: '0.5' },
   { loc: 'https://vibezcitizens.com/how-to/create-profile',    changefreq: 'monthly', priority: '0.8' },

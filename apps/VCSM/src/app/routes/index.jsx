@@ -1,9 +1,4 @@
-﻿// src/app/routes/index.jsx
-// ============================================================================
-// APP ROUTES — ACTOR-BASED (LOCKED, NO BLOCKGATE, NO MeScreen)
-// ============================================================================
-
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
 import ProtectedRoute from "@/app/guards/ProtectedRoute";
@@ -20,421 +15,104 @@ import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
 import { protectedAppRoutes } from "@/app/routes/protected/app.routes";
 
-const devDiagnosticsEnabled =
-  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
+import {
+  LegalDocumentScreen,
+  AboutScreen,
+  ContactScreen,
+  HowToCreateProfileScreen,
+  HowToCreateVportScreen,
+  VportCategoryLandingScreen,
+  LoginScreen,
+  RegisterScreen,
+  ForgotPasswordScreen,
+  ResetPasswordScreen,
+  OnboardingScreen,
+  WelcomeScreen,
+  AuthCallbackScreen,
+  VerifyEmailRequiredScreen,
+  WandersHomeScreen,
+  WandersInboxPublicScreen,
+  WandersCardPublicScreen,
+  WandersSentScreen,
+  WandersIntegrateActorScreen,
+  WandersMailboxScreen,
+  WandersOutboxScreen,
+  WandersCreateScreen,
+  VportBusinessCardPublicScreen,
+  VportMenuRedirectScreen,
+  VportActorMenuPublicScreen,
+  VportActorMenuQrScreen,
+  VportActorMenuFlyerScreen,
+  VportMenuBySlugScreen,
+  VportMenuQrBySlugScreen,
+  VportReviewsBySlugScreen,
+  VportReviewsQrBySlugScreen,
+} from "@/app/routes/lazyPublic";
 
-// ----------------------------------------------------------------------------
-// Lazy helper with debugging
-// ----------------------------------------------------------------------------
-function lazyWithLog(label, importer) {
-  return lazy(() =>
-    importer().catch((e) => {
-      console.error(`[lazy import] ${label} failed`, e);
-      throw e;
-    }),
-  );
-}
+import {
+  CentralFeed,
+  ExploreScreen,
+  CitizenVibesScreen,
+  NotificationsScreen,
+  NotiViewPostScreen,
+  UploadScreen,
+  ProfessionalAccessScreen,
+  ProfessionalBriefingsScreen,
+  InviteScreen,
+  SettingsScreen,
+  VportAdsSettingsScreen,
+  VoidScreen,
+  DevDiagnosticsScreen,
+  PerfDashboardScreen,
+  UsernameProfileRedirect,
+  ActorProfileScreen,
+  TopFriendsRankEditor,
+  VportActorMenuFlyerEditorScreen,
+  RestoreVportScreen,
+  VportDashboardScreen,
+  VportDashboardGasScreen,
+  VportDashboardReviewScreen,
+  VportDashboardLeadsScreen,
+  VportDashboardServicesScreen,
+  VportDashboardExchangeScreen,
+  VportDashboardCalendarScreen,
+  VportDashboardPortfolioScreen,
+  VportDashboardLocksmithScreen,
+  VportDashboardBookingHistoryScreen,
+  VportDashboardTeamScreen,
+  BarberTeamRequestsScreen,
+  VportDashboardScheduleScreen,
+  VportSettingsScreen,
+  VportGasPricesScreen,
+  PostFeedScreen,
+  PostDetailScreen,
+  EditPostScreen,
+  ChatInboxScreen,
+  ChatConversationScreen,
+  NewChatScreen,
+  InboxChatSettingsScreen,
+  InboxSettingsScreen,
+  MessagePrivacyScreen,
+  SpamInboxScreen,
+  RequestsInboxScreen,
+  ArchivedInboxScreen,
+  BlockedUsersScreen,
+  LearningHomeScreen,
+  LearningCourseScreen,
+  LearningLessonScreen,
+  LearningAssignmentScreen,
+  LearningStudentDashboardScreen,
+  LearningStudentCourseScreen,
+  LearningTeacherDashboardScreen,
+  LearningTeacherCourseScreen,
+  LearningSubmissionReviewScreen,
+  LearningParentDashboardScreen,
+  LearningObservedStudentScreen,
+  LearningAdminDashboardScreen,
+  LearningOrganizationScreen,
+  LearningCourseRosterScreen,
+} from "@/app/routes/lazyApp";
 
-// ============================================================================
-// LAZY SCREENS (KEEP THESE DEFINED IN THIS FILE SCOPE)
-// ============================================================================
-
-/* ================= LEGAL (static — no lazy flash on navigation) ================= */
-import LegalDocumentScreen from "@/features/legal/screens/LegalDocumentScreen";
-
-/* ================= ABOUT / CONTACT (static public pages — no auth) ================= */
-const AboutScreen = lazyWithLog("AboutScreen", () =>
-  import("@/features/legal/screens/AboutScreen"),
-);
-const ContactScreen = lazyWithLog("ContactScreen", () =>
-  import("@/features/legal/screens/ContactScreen"),
-);
-
-/* ================= HOW-TO GUIDES (public, no auth) ================= */
-const HowToCreateProfileScreen = lazyWithLog("HowToCreateProfileScreen", () =>
-  import("@/features/legal/screens/HowToCreateProfileScreen"),
-);
-const HowToCreateVportScreen = lazyWithLog("HowToCreateVportScreen", () =>
-  import("@/features/legal/screens/HowToCreateVportScreen"),
-);
-
-/* ================= AUTH ================= */
-const LoginScreen = lazyWithLog("LoginScreen", () =>
-  import("@/features/auth/screens/LoginScreen"),
-);
-const RegisterScreen = lazyWithLog("RegisterScreen", () =>
-  import("@/features/auth/screens/RegisterScreen"),
-);
-const ForgotPasswordScreen = lazyWithLog("ForgotPasswordScreen", () =>
-  import("@/features/auth/screens/ForgotPasswordScreen"),
-);
-const ResetPasswordScreen = lazyWithLog("ResetPasswordScreen", () =>
-  import("@/features/auth/screens/ResetPasswordScreen"),
-);
-const OnboardingScreen = lazyWithLog("OnboardingScreen", () =>
-  import("@/features/auth/screens/Onboarding"),
-);
-const WelcomeScreen = lazyWithLog("WelcomeScreen", () =>
-  import("@/features/auth/screens/WelcomeScreen"),
-);
-const AuthCallbackScreen = lazyWithLog("AuthCallbackScreen", () =>
-  import("@/features/auth/screens/AuthCallbackScreen"),
-);
-const VerifyEmailRequiredScreen = lazyWithLog("VerifyEmailRequiredScreen", () =>
-  import("@/features/auth/screens/VerifyEmailRequiredScreen"),
-);
-
-/* ================= MAIN APP ================= */
-const CentralFeed = lazyWithLog("CentralFeed", () =>
-  import("@/features/feed/screens/CentralFeedScreen"),
-);
-const ExploreScreen = lazyWithLog("Explore", () =>
-  import("@/features/explore/screens/ExploreScreen"),
-);
-const CitizenVibesScreen = lazyWithLog("CitizenVibesScreen", () =>
-  import("@/features/onboarding/adapters/onboarding.adapter").then((m) => ({
-    default: m.CitizenVibesScreen,
-  })),
-);
-
-/* ================= NOTIFICATIONS ================= */
-const NotificationsScreen = lazyWithLog("Notifications", () =>
-  import("@/features/notifications/screen/NotificationsScreen"),
-);
-const NotiViewPostScreen = lazyWithLog("NotiViewPost", () =>
-  import("@/features/notifications/screen/NotiViewPostScreen"),
-);
-
-/* ================= UPLOAD ================= */
-const UploadScreen = lazyWithLog("UploadScreen", () =>
-  import("@/features/upload/screens/UploadScreen"),
-);
-const ProfessionalAccessScreen = lazyWithLog("ProfessionalAccessScreen", () =>
-  import("@/features/professional/screens/ProfessionalAccessScreen"),
-);
-const ProfessionalBriefingsScreen = lazyWithLog(
-  "ProfessionalBriefingsScreen",
-  () =>
-    import(
-      "@/features/professional/briefings/screen/ProfessionalBriefingsScreen"
-    ),
-);
-
-/* ================= ACCOUNT / MISC ================= */
-const InviteScreen = lazyWithLog("InviteScreen", () =>
-  import("@/features/invite/screens/InviteScreen"),
-);
-const SettingsScreen = lazyWithLog("Settings", () =>
-  import("@/features/settings/screen/SettingsScreen"),
-);
-const VportAdsSettingsScreen = lazyWithLog("VportAdsSettingsScreen", () =>
-  import("@/features/ads/screens/VportAdsSettingsScreen"),
-);
-const VoidScreen = lazyWithLog("VoidScreen", () =>
-  import("@/features/void/VoidScreen"),
-);
-const DevDiagnosticsScreen = devDiagnosticsEnabled
-  ? lazyWithLog("DevDiagnosticsScreen", () =>
-      import("@/screens/DevDiagnosticsScreen"),
-    )
-  : () => null;
-
-const PerfDashboardScreen = devDiagnosticsEnabled
-  ? lazyWithLog("PerfDashboardScreen", () =>
-      import("@debuggers/performance").then((m) => ({
-        default: m.PerfDashboardScreen,
-      })),
-    )
-  : () => null;
-
-/* ================= PROFILES ================= */
-const UsernameProfileRedirect = lazyWithLog("UsernameProfileRedirect", () =>
-  import("@/features/profiles/screens/UsernameProfileRedirect"),
-);
-const ActorProfileScreen = lazyWithLog("ActorProfileScreen", () =>
-  import("@/features/profiles/screens/ActorProfileScreen"),
-);
-const TopFriendsRankEditor = lazyWithLog("TopFriendsRankEditor", () =>
-  import(
-    "@/features/profiles/screens/views/tabs/friends/components/TopFriendsRankEditor"
-  ),
-);
-
-/* ================= OWNER / DASHBOARD (PROTECTED for now) ================= */
-const VportActorMenuFlyerEditorScreen = lazyWithLog(
-  "VportActorMenuFlyerEditorScreen",
-  () =>
-    import(
-      "@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerEditorScreen"
-    ),
-);
-
-const RestoreVportScreen = lazyWithLog("RestoreVportScreen", () =>
-  import("@/features/vport/screens/RestoreVportScreen"),
-);
-
-const VportDashboardScreen = lazyWithLog("VportDashboardScreen", () =>
-  import("@/features/dashboard/vport/screens/VportDashboardScreen"),
-);
-
-const VportDashboardGasScreen = lazyWithLog("VportDashboardGasScreen", () =>
-  import("@/features/dashboard/vport/screens/VportDashboardGasScreen"),
-);
-
-const VportDashboardReviewScreen = lazyWithLog(
-  "VportDashboardReviewScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardReviewScreen"),
-);
-
-const VportDashboardServicesScreen = lazyWithLog(
-  "VportDashboardServicesScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardServicesScreen"),
-);
-
-const VportDashboardExchangeScreen = lazyWithLog(
-  "VportDashboardExchangeScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardExchangeScreen"),
-);
-const VportDashboardCalendarScreen = lazyWithLog(
-  "VportDashboardCalendarScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardCalendarScreen"),
-);
-
-const VportDashboardPortfolioScreen = lazyWithLog(
-  "VportDashboardPortfolioScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardPortfolioScreen"),
-);
-
-const VportDashboardLocksmithScreen = lazyWithLog(
-  "VportDashboardLocksmithScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardLocksmithScreen"),
-);
-
-const VportDashboardBookingHistoryScreen = lazyWithLog(
-  "VportDashboardBookingHistoryScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardBookingHistoryScreen"),
-);
-
-const VportSettingsScreen = lazyWithLog("VportSettingsScreen", () =>
-  import("@/features/dashboard/vport/screens/VportSettingsScreen"),
-);
-
-/* ================= GAS (PROTECTED) ================= */
-const VportGasPricesScreen = lazyWithLog("VportGasPricesScreen", () =>
-  import(
-    "@/features/profiles/kinds/vport/screens/gas/screens/VportGasPricesScreen"
-  ),
-);
-
-/* ================= PUBLIC MENU (ACTOR-FIRST) ================= */
-const VportMenuRedirectScreen = lazyWithLog("VportMenuRedirectScreen", () =>
-  import("@/features/public/vportMenu/screen/VportPublicMenuRedirectScreen"),
-);
-
-const VportActorMenuPublicScreen = lazyWithLog(
-  "VportActorMenuPublicScreen",
-  () => import("@/features/public/vportMenu/screen/VportPublicMenuScreen"),
-);
-
-const VportActorMenuQrScreen = lazyWithLog("VportActorMenuQrScreen", () =>
-  import("@/features/public/vportMenu/screen/VportPublicMenuQrScreen"),
-);
-
-const VportActorMenuFlyerScreen = lazyWithLog(
-  "VportActorMenuFlyerScreen",
-  () =>
-    import("@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerScreen"),
-);
-
-const VportMenuBySlugScreen = lazyWithLog("VportMenuBySlugScreen", () =>
-  import("@/features/public/vportMenu/screen/VportPublicMenuBySlugScreen"),
-);
-
-const VportMenuQrBySlugScreen = lazyWithLog("VportMenuQrBySlugScreen", () =>
-  import("@/features/public/vportMenu/screen/VportPublicMenuQrBySlugScreen"),
-);
-
-const VportReviewsBySlugScreen = lazyWithLog("VportReviewsBySlugScreen", () =>
-  import("@/features/public/vportMenu/screen/VportPublicReviewsBySlugScreen"),
-);
-const VportReviewsQrBySlugScreen = lazyWithLog("VportReviewsQrBySlugScreen", () =>
-  import("@/features/public/vportMenu/screen/VportPublicReviewsQrBySlugScreen"),
-);
-
-/* ================= POSTS ================= */
-const PostFeedScreen = lazyWithLog("PostFeedScreen", () =>
-  import("@/features/post/screens/PostFeed.screen"),
-);
-const PostDetailScreen = lazyWithLog("PostDetailScreen", () =>
-  import("@/features/post/screens/PostDetail.screen"),
-);
-const EditPostScreen = lazyWithLog("EditPostScreen", () =>
-  import("@/features/post/postcard/ui/EditPost"),
-);
-
-/* ================= CHAT ================= */
-const ChatInboxScreen = lazyWithLog("ChatInbox", () =>
-  import("@/features/chat").then((m) => ({ default: m.InboxScreen })),
-);
-const ChatConversationScreen = lazyWithLog("ChatConversation", () =>
-  import("@/features/chat").then((m) => ({ default: m.ConversationScreen })),
-);
-const NewChatScreen = lazyWithLog("NewChat", () =>
-  import("@/features/chat").then((m) => ({ default: m.NewConversationScreen })),
-);
-
-const InboxChatSettingsScreen = lazyWithLog("InboxChatSettingsScreen", () =>
-  import("@/features/chat/inbox/screens/InboxChatSettingsScreen"),
-);
-const InboxSettingsScreen = lazyWithLog("InboxSettingsScreen", () =>
-  import("@/features/chat/inbox/screens/InboxSettingsScreen"),
-);
-const MessagePrivacyScreen = lazyWithLog("MessagePrivacyScreen", () =>
-  import("@/features/chat/inbox/screens/settings/MessagePrivacyScreen"),
-);
-const SpamInboxScreen = lazyWithLog("SpamInboxScreen", () =>
-  import("@/features/chat/inbox/screens/SpamInboxScreen"),
-);
-const RequestsInboxScreen = lazyWithLog("RequestsInboxScreen", () =>
-  import("@/features/chat/inbox/screens/RequestsInboxScreen"),
-);
-const ArchivedInboxScreen = lazyWithLog("ArchivedInboxScreen", () =>
-  import("@/features/chat/inbox/screens/ArchivedInboxScreen"),
-);
-const BlockedUsersScreen = lazyWithLog("BlockedUsersScreen", () =>
-  import("@/features/chat/inbox/screens/settings/BlockedUsersScreen"),
-);
-
-/* ================= WANDERS (PUBLIC + APP) ================= */
-const WandersHomeScreen = lazyWithLog("WandersHomeScreen", () =>
-  import("@/features/wanders/screens/WandersHome.screen"),
-);
-const WandersInboxPublicScreen = lazyWithLog("WandersInboxPublicScreen", () =>
-  import("@/features/wanders/screens/WandersInboxPublic.screen"),
-);
-const WandersCardPublicScreen = lazyWithLog("WandersCardPublicScreen", () =>
-  import("@/features/wanders/screens/WandersCardPublic.screen"),
-);
-const WandersSentScreen = lazyWithLog("WandersSentScreen", () =>
-  import("@/features/wanders/screens/WandersSent.screen"),
-);
-const WandersIntegrateActorScreen = lazyWithLog(
-  "WandersIntegrateActorScreen",
-  () => import("@/features/wanders/screens/WandersIntegrateActor.screen"),
-);
-const WandersMailboxScreen = lazyWithLog("WandersMailboxScreen", () =>
-  import("@/features/wanders/screens/WandersMailbox.screen"),
-);
-const WandersOutboxScreen = lazyWithLog("WandersOutboxScreen", () =>
-  import("@/features/wanders/screens/WandersOutbox.screen"),
-);
-const WandersCreateScreen = lazyWithLog("WandersCreateScreen", () =>
-  import("@/features/wanders/screens/WandersCreate.screen"),
-);
-const VportBusinessCardPublicScreen = lazyWithLog(
-  "VportBusinessCardPublicScreen",
-  () => import("@/features/wanders/screens/VportBusinessCardPublic.screen"),
-);
-
-/* ================= LEARNING ================= */
-const LearningHomeScreen = lazyWithLog("LearningHomeScreen", () =>
-  import("@/learning/adapters/learning.adapter").then((m) => ({
-    default: m.LearningHomeScreen,
-  })),
-);
-const LearningCourseScreen = lazyWithLog("LearningCourseScreen", () =>
-  import("@/learning/adapters/learning.adapter").then((m) => ({
-    default: m.LearningCourseScreen,
-  })),
-);
-const LearningLessonScreen = lazyWithLog("LearningLessonScreen", () =>
-  import("@/learning/adapters/learning.adapter").then((m) => ({
-    default: m.LearningLessonScreen,
-  })),
-);
-const LearningAssignmentScreen = lazyWithLog("LearningAssignmentScreen", () =>
-  import("@/learning/adapters/learning.adapter").then((m) => ({
-    default: m.LearningAssignmentScreen,
-  })),
-);
-
-const LearningStudentDashboardScreen = lazyWithLog(
-  "LearningStudentDashboardScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningStudentDashboardScreen,
-    })),
-);
-const LearningStudentCourseScreen = lazyWithLog(
-  "LearningStudentCourseScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningStudentCourseScreen,
-    })),
-);
-
-const LearningTeacherDashboardScreen = lazyWithLog(
-  "LearningTeacherDashboardScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningTeacherDashboardScreen,
-    })),
-);
-const LearningTeacherCourseScreen = lazyWithLog(
-  "LearningTeacherCourseScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningTeacherCourseScreen,
-    })),
-);
-const LearningSubmissionReviewScreen = lazyWithLog(
-  "LearningSubmissionReviewScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningSubmissionReviewScreen,
-    })),
-);
-
-const LearningParentDashboardScreen = lazyWithLog(
-  "LearningParentDashboardScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningParentDashboardScreen,
-    })),
-);
-const LearningObservedStudentScreen = lazyWithLog(
-  "LearningObservedStudentScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningObservedStudentScreen,
-    })),
-);
-
-const LearningAdminDashboardScreen = lazyWithLog(
-  "LearningAdminDashboardScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningAdminDashboardScreen,
-    })),
-);
-const LearningOrganizationScreen = lazyWithLog(
-  "LearningOrganizationScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningOrganizationScreen,
-    })),
-);
-const LearningCourseRosterScreen = lazyWithLog(
-  "LearningCourseRosterScreen",
-  () =>
-    import("@/learning/adapters/learning.adapter").then((m) => ({
-      default: m.LearningCourseRosterScreen,
-    })),
-);
-
-// ============================================================================
-// ROUTES (useRoutes)
-// ============================================================================
 export default function AppRoutes() {
   const baseUrl = window.location.origin;
   const wandersRealmId = resolveRealm(false);
@@ -452,11 +130,13 @@ export default function AppRoutes() {
     ...aboutPublicRoutes({ AboutScreen }),
     ...contactPublicRoutes({ ContactScreen }),
 
-    ...howToPublicRoutes({ HowToCreateProfileScreen, HowToCreateVportScreen }),
-
-    ...legalPublicRoutes({
-      LegalDocumentScreen,
+    ...howToPublicRoutes({
+      HowToCreateProfileScreen,
+      HowToCreateVportScreen,
+      VportCategoryLandingScreen,
     }),
+
+    ...legalPublicRoutes({ LegalDocumentScreen }),
 
     ...wandersPublicRoutes({
       baseUrl,
@@ -486,90 +166,84 @@ export default function AppRoutes() {
     {
       element: <ProtectedRoute />,
       children: [
-        {
-          path: '/onboarding',
-          element: <OnboardingScreen />,
-        },
-        {
-          path: '/welcome',
-          element: <WelcomeScreen />,
-        },
+        { path: "/onboarding", element: <OnboardingScreen /> },
+        { path: "/welcome", element: <WelcomeScreen /> },
         {
           element: <ProfileGatedOutlet />,
           children: [
             {
               element: <RootLayout />,
               children: protectedAppRoutes({
-            CentralFeed,
-            ExploreScreen,
-            CitizenVibesScreen,
+                CentralFeed,
+                ExploreScreen,
+                CitizenVibesScreen,
 
-            PostFeedScreen,
-            PostDetailScreen,
-            EditPostScreen,
+                PostFeedScreen,
+                PostDetailScreen,
+                EditPostScreen,
 
-            ChatInboxScreen,
-            NewChatScreen,
-            SpamInboxScreen,
-            RequestsInboxScreen,
-            ArchivedInboxScreen,
-            InboxChatSettingsScreen,
-            InboxSettingsScreen,
-            MessagePrivacyScreen,
-            BlockedUsersScreen,
-            ChatConversationScreen,
+                ChatInboxScreen,
+                NewChatScreen,
+                SpamInboxScreen,
+                RequestsInboxScreen,
+                ArchivedInboxScreen,
+                InboxChatSettingsScreen,
+                InboxSettingsScreen,
+                MessagePrivacyScreen,
+                BlockedUsersScreen,
+                ChatConversationScreen,
 
-            NotificationsScreen,
-            NotiViewPostScreen,
+                NotificationsScreen,
+                NotiViewPostScreen,
 
-            UploadScreen,
-            InviteScreen,
-            ProfessionalAccessScreen,
-            ProfessionalBriefingsScreen,
-            SettingsScreen,
-            VportAdsSettingsScreen,
-            VoidScreen,
-            DevDiagnosticsScreen,
-            PerfDashboardScreen,
+                UploadScreen,
+                InviteScreen,
+                ProfessionalAccessScreen,
+                ProfessionalBriefingsScreen,
+                SettingsScreen,
+                VportAdsSettingsScreen,
+                VoidScreen,
+                DevDiagnosticsScreen,
+                PerfDashboardScreen,
 
-            UsernameProfileRedirect,
-            ActorProfileScreen,
-            TopFriendsRankEditor,
+                UsernameProfileRedirect,
+                ActorProfileScreen,
+                TopFriendsRankEditor,
 
-            VportGasPricesScreen,
+                VportGasPricesScreen,
 
-            VportActorMenuFlyerEditorScreen,
-            RestoreVportScreen,
-            VportDashboardScreen,
-            VportDashboardGasScreen,
-            VportDashboardReviewScreen,
-            VportDashboardServicesScreen,
-            VportDashboardExchangeScreen,
-            VportDashboardCalendarScreen,
-            VportDashboardPortfolioScreen,
-            VportDashboardLocksmithScreen,
-            VportDashboardBookingHistoryScreen,
-            VportSettingsScreen,
+                VportActorMenuFlyerEditorScreen,
+                RestoreVportScreen,
+                VportDashboardScreen,
+                VportDashboardGasScreen,
+                VportDashboardReviewScreen,
+                VportDashboardLeadsScreen,
+                VportDashboardServicesScreen,
+                VportDashboardExchangeScreen,
+                VportDashboardCalendarScreen,
+                VportDashboardPortfolioScreen,
+                VportDashboardLocksmithScreen,
+                VportDashboardBookingHistoryScreen,
+                VportDashboardTeamScreen,
+                BarberTeamRequestsScreen,
+                VportDashboardScheduleScreen,
+                VportSettingsScreen,
 
-            LearningHomeScreen,
-            LearningCourseScreen,
-            LearningLessonScreen,
-            LearningAssignmentScreen,
-
-            LearningStudentDashboardScreen,
-            LearningStudentCourseScreen,
-
-            LearningTeacherDashboardScreen,
-            LearningTeacherCourseScreen,
-            LearningSubmissionReviewScreen,
-
-            LearningParentDashboardScreen,
-            LearningObservedStudentScreen,
-
-            LearningAdminDashboardScreen,
-            LearningOrganizationScreen,
-            LearningCourseRosterScreen,
-          }),
+                LearningHomeScreen,
+                LearningCourseScreen,
+                LearningLessonScreen,
+                LearningAssignmentScreen,
+                LearningStudentDashboardScreen,
+                LearningStudentCourseScreen,
+                LearningTeacherDashboardScreen,
+                LearningTeacherCourseScreen,
+                LearningSubmissionReviewScreen,
+                LearningParentDashboardScreen,
+                LearningObservedStudentScreen,
+                LearningAdminDashboardScreen,
+                LearningOrganizationScreen,
+                LearningCourseRosterScreen,
+              }),
             },
           ],
         },

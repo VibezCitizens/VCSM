@@ -1,5 +1,13 @@
 // src/features/moderation/dal/reports.dal.js
 import { supabase } from '@/services/supabase/supabaseClient'
+import {
+  REPORT_COLUMNS,
+  MOD_ACTION_COLUMNS,
+  POST_HIDE_COLUMNS,
+  MESSAGE_HIDE_COLUMNS,
+  INBOX_ENTRY_FOLDER_COLUMNS,
+} from '@/features/moderation/dal/reports.dal.columns'
+export { getReportRowById, getReportRowByDedupeKey } from '@/features/moderation/dal/reports.read.dal'
 
 // ============================================================
 // REPORTS (DAL)
@@ -10,24 +18,6 @@ import { supabase } from '@/services/supabase/supabaseClient'
 // - explicit select lists only
 // - returns raw rows
 // ============================================================
-
-const REPORT_COLUMNS =
-  'id,reporter_domain,reporter_actor_id,target_domain,target_type,target_id,parent_target_domain,parent_target_type,parent_target_id,reason_code,reason_text,status,priority,assigned_domain,assigned_actor_id,reviewed_at,resolved_at,resolution,internal_note,dedupe_key,meta,created_at,updated_at'
-
-const REPORT_EVENT_COLUMNS =
-  'id,report_id,actor_domain,actor_id,event_type,data,created_at'
-
-const MOD_ACTION_COLUMNS =
-  'id,report_id,actor_domain,actor_id,target_domain,target_type,target_id,action_type,reason,expires_at,meta,created_at'
-
-const POST_HIDE_COLUMNS =
-  'id,is_hidden,hidden_at,hidden_by_actor_id'
-
-const MESSAGE_HIDE_COLUMNS =
-  'id,is_hidden,hidden_at,hidden_by_actor_id'
-
-const INBOX_ENTRY_FOLDER_COLUMNS =
-  'conversation_id,actor_id,folder,last_message_id,last_message_at,unread_count,pinned,archived,muted,history_cutoff_at,archived_until_new,partner_display_name,partner_username,partner_photo_url'
 
 function isRlsDenied(error) {
   if (!error) return false
@@ -136,38 +126,6 @@ export async function insertReportRow({
   }
 
   return { row: data ?? null, error: null }
-}
-
-/**
- * getReportRowById (DAL)
- */
-export async function getReportRowById({ reportId }) {
-  const { data, error } = await supabase
-    .schema('moderation')
-    .from('reports')
-    .select(REPORT_COLUMNS)
-    .eq('id', reportId)
-    .maybeSingle()
-
-  if (error) console.error('[DAL][moderation.reports.getById] error', { reportId, error })
-  return { row: data ?? null, error }
-}
-
-/**
- * getReportRowByDedupeKey (DAL)
- * - idempotency helper
- */
-export async function getReportRowByDedupeKey({ reporterActorId, dedupeKey }) {
-  const { data, error } = await supabase
-    .schema('moderation')
-    .from('reports')
-    .select(REPORT_COLUMNS)
-    .eq('reporter_actor_id', reporterActorId)
-    .eq('dedupe_key', dedupeKey)
-    .maybeSingle()
-
-  if (error) console.error('[DAL][moderation.reports.getByDedupeKey] error', { reporterActorId, dedupeKey, error })
-  return { row: data ?? null, error }
 }
 
 /**

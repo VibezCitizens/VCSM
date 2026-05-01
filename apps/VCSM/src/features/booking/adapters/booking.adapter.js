@@ -11,3 +11,6 @@ export { default as useLocationResources }         from "@/features/booking/hook
 export { default as useResourceServiceOverrides }  from "@/features/booking/hooks/useResourceServiceOverrides";
 export { default as useBookingContextResolver }    from "@/features/booking/hooks/useBookingContextResolver";
 export { default as useQrLinks }                   from "@/features/booking/hooks/useQrLinks";
+
+export { useBookingOps }     from "@/features/booking/hooks/useBookingOps";
+export { useBookingServices } from "@/features/booking/hooks/useBookingServices";

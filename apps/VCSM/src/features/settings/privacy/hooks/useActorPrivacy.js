@@ -1,67 +1,25 @@
-import { useCallback, useEffect, useState } from 'react'
-import {
-  ctrlGetActorPrivacy,
-  ctrlSetActorPrivacy,
-} from '@/features/settings/privacy/controller/actorPrivacy.controller'
+import { useCallback } from 'react'
+import { useAuth } from '@/app/providers/AuthProvider'
+import { usePrivacySettings } from '@/features/settings/queries/usePrivacySettings'
+import { useUpdateVportVisibility } from '@/features/settings/queries/useUpdateVportVisibility'
 
 export function useActorPrivacy(actorId) {
-  const [loading, setLoading] = useState(true)
-  const [isPrivate, setIsPrivate] = useState(false)
-  const [error, setError] = useState(null)
+  const { user } = useAuth() || {}
+  const userId = user?.id
 
-  useEffect(() => {
-    let alive = true
+  const { data: isPrivate = false, isLoading, error: queryError } = usePrivacySettings(actorId)
 
-    async function load() {
-      if (!actorId) {
-        setLoading(false)
-        setIsPrivate(false)
-        setError(null)
-        return
-      }
+  const mutation = useUpdateVportVisibility({ actorId, userId })
 
-      setLoading(true)
-      setError(null)
-
-      try {
-        const value = await ctrlGetActorPrivacy(actorId)
-        if (!alive) return
-        setIsPrivate(Boolean(value))
-      } catch (e) {
-        if (!alive) return
-        setError(e?.message || String(e))
-      } finally {
-        if (alive) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      alive = false
-    }
-  }, [actorId])
-
-  const togglePrivacy = useCallback(async () => {
-    if (loading || !actorId) return
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const next = !isPrivate
-      await ctrlSetActorPrivacy({ actorId, isPrivate: next })
-      setIsPrivate(next)
-    } catch (e) {
-      setError(e?.message || String(e))
-    } finally {
-      setLoading(false)
-    }
-  }, [actorId, isPrivate, loading])
+  const togglePrivacy = useCallback(() => {
+    if (!actorId || mutation.isPending) return
+    mutation.mutate(!isPrivate)
+  }, [actorId, isPrivate, mutation])
 
   return {
-    loading,
+    loading: isLoading || mutation.isPending,
     isPrivate,
-    error,
+    error: queryError?.message ?? mutation.error?.message ?? null,
     togglePrivacy,
   }
 }

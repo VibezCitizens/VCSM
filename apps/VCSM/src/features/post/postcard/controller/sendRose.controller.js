@@ -17,7 +17,7 @@ import {
 } from "@/features/post/postcard/dal/postReactions.read.dal";
 
 import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
-import { publishVcsmNotification } from "@/features/notifications/publish";
+import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 /**
  * Send roses to a post

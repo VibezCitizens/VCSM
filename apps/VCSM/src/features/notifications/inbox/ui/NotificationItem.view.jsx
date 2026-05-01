@@ -3,6 +3,7 @@
 import FollowRequestItem from '@/features/notifications/types/follow/FollowRequestItem.view'
 import AcceptFriendRequestItem from '@/features/notifications/types/follow/AcceptFriendRequestItem'
 import FollowNotificationItem from '@/features/notifications/types/follow/FollowNotificationItem.view'
+import TeamInviteNotificationItem from '@/features/notifications/types/team/TeamInviteNotificationItem.view'
 
 import CommentNotificationItem from '@/features/notifications/types/comment/CommentNotificationItem.view'
 import CommentLikeNotificationItem from '@/features/notifications/types/comment/CommentLikeNotificationItem.view'
@@ -73,6 +74,10 @@ export default function NotificationItem({ notification }) {
     // ⭐ REVIEWS
     case 'review_created':
       return <ReviewCreatedNotificationItem notification={notification} />
+
+    // 👥 TEAM
+    case 'team_invite':
+      return <TeamInviteNotificationItem notification={notification} />
 
     default:
       return <DefaultNotification notification={notification} />

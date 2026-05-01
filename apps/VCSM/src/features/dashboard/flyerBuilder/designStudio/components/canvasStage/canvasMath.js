@@ -1,5 +1,18 @@
 export const HANDLE_SIZE = 12;
 
+export function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+export function buildRulerTicks(size) {
+  const ticks = [];
+  const max = Math.max(0, Number(size) || 0);
+  for (let value = 0; value <= max; value += 20) {
+    ticks.push({ value, major: value % 100 === 0 });
+  }
+  return ticks;
+}
+
 export const RESIZE_CORNERS = [
   { key: "nw", cursor: "nwse-resize", position: { left: -6, top: -6 } },
   { key: "ne", cursor: "nesw-resize", position: { right: -6, top: -6 } },

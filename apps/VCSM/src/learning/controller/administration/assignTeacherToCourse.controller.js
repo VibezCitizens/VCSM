@@ -13,7 +13,7 @@ import {
   normalizeTeacherRole,
   saveCourseMembership,
   TEACHING_ROLES,
-} from "@/learning/controller/administration/adminAccess";
+} from "@/learning/controller/administration/adminAccess.controller";
 
 export async function assignTeacherToCourseController({
   supabase,

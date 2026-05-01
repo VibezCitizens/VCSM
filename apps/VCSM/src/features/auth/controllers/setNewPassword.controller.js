@@ -2,6 +2,7 @@ import {
   dalExchangeRecoveryCode,
   dalGetRecoverySession,
   dalSignOutRecoverySession,
+  dalSubscribeToAuthStateChange,
   dalUpdateUserPassword,
 } from '@/features/auth/dal/resetPassword.dal'
 import { evaluateRegisterPasswordRules } from '@/features/auth/model/registerPasswordRules.model'
@@ -48,6 +49,16 @@ export async function resolveRecoverySessionController() {
     return { ok: false, session: null, error: null }
   }
   return { ok: true, session }
+}
+
+/**
+ * Subscribe to auth state changes and notify the caller on PASSWORD_RECOVERY events.
+ * Returns an unsubscribe function — the caller must invoke it on cleanup.
+ */
+export function watchPasswordRecoveryController(onRecovery) {
+  return dalSubscribeToAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') onRecovery(!!session)
+  })
 }
 
 /**

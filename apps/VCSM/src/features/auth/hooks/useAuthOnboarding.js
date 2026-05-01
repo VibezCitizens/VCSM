@@ -4,6 +4,7 @@ import {
   completeOnboardingController,
   getOnboardingBootstrapController,
 } from '@/features/auth/controllers/onboarding.controller'
+import { useIdentityOps } from '@/features/identity/adapters/identity.adapter'
 
 const EMPTY_FORM = Object.freeze({
   display_name: '',
@@ -23,6 +24,7 @@ function getLocalTodayISODate() {
 export function useAuthOnboarding() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { refreshVcActorDirectory, ensureVcsmPlatformBootstrap } = useIdentityOps()
 
   const navState = useMemo(() => {
     const state = location?.state || {}
@@ -128,6 +130,8 @@ export function useAuthOnboarding() {
       const result = await completeOnboardingController({
         userId,
         form,
+        ensureVcsmPlatformBootstrap,
+        refreshActorFn: refreshVcActorDirectory,
       })
 
       if (!result?.ok) {

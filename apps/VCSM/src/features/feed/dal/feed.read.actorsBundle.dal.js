@@ -76,8 +76,8 @@ export async function readActorsBundle(actorIds) {
 
       actorIdsForVports.length
         ? vportSchema
-            .from("profiles")
-            .select("actor_id, name, slug, avatar_url, is_active")
+            .from("public_traze_profiles_v")
+            .select("actor_id, name, slug, avatar_url")
             .in("actor_id", actorIdsForVports)
         : Promise.resolve({ data: [] }),
     ]);

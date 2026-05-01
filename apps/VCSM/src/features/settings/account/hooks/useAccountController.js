@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { useAuth } from '@/app/providers/AuthProvider'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useAccountSettings } from '@/features/settings/queries/useAccountSettings'
 import {
   ctrlDeleteAccount,
   ctrlSoftDeleteVport,
   ctrlHardDeleteVport,
   ctrlRestoreVport,
-  ctrlResolveVportIdByActorId,
 } from '@/features/settings/account/controller/account.controller'
 
 export function useAccountController() {
@@ -17,28 +17,8 @@ export function useAccountController() {
   const isVport = identity?.kind === 'vport'
   const actorId = identity?.actorId ?? null
 
-  const [vportId, setVportId] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function run() {
-      if (!isVport || !actorId) {
-        if (!cancelled) setVportId(null)
-        return
-      }
-      try {
-        const nextVportId = await ctrlResolveVportIdByActorId(actorId)
-        if (!cancelled) setVportId(nextVportId)
-      } catch (error) {
-        console.error('[Account] failed to resolve vport_id from actor', error)
-        if (!cancelled) setVportId(null)
-      }
-    }
-
-    run()
-    return () => { cancelled = true }
-  }, [isVport, actorId])
+  // React Query replaces the useEffect vportId resolution
+  const { data: vportId = null } = useAccountSettings({ actorId, isVport })
 
   const [showConfirmAccount, setShowConfirmAccount] = useState(false)
   const [busyAccount, setBusyAccount] = useState(false)
@@ -62,8 +42,6 @@ export function useAccountController() {
     setErrAccount('')
     try {
       await ctrlDeleteAccount()
-      // Clear cached actor state so the identity engine doesn't try to
-      // resume a void actor on the next session
       localStorage.removeItem('actor_kind')
       localStorage.removeItem('actor_vport_id')
       localStorage.removeItem('actor_touch')
@@ -89,11 +67,8 @@ export function useAccountController() {
       if (!targetVportId) throw new Error('No VPORT selected.')
       await ctrlSoftDeleteVport({ vportId: targetVportId })
       if (isVport) {
-        const citizenActor = availableActors.find(a => a.actorKind === 'user')
+        const citizenActor = availableActors.find((a) => a.actorKind === 'user')
         if (citizenActor?.actorId) {
-          // switchActor returns { success } — it never throws. Check the result
-          // and fall back to a hard reload if the switch fails, otherwise the
-          // in-memory identity stays as the VPORT and navigation stays open.
           const result = await switchActor(citizenActor.actorId, 'soft_delete_vport')
           if (!result?.success) {
             _switchToProfile()
