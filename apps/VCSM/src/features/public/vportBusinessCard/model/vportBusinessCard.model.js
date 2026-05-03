@@ -83,6 +83,7 @@ export function mapVportBusinessCardPublicRow(raw) {
     averageRating: Number.isFinite(averageRating) ? averageRating : null,
     categoryKey: toText(raw.category_key).toLowerCase() || null,
     hours: raw.hours && typeof raw.hours === "object" ? raw.hours : null,
+    isTrazeListingActive: raw.directory_visible === true && raw.directory_status === "listed",
   };
 }
 
