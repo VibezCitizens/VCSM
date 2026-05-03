@@ -250,6 +250,10 @@ export default function AppRoutes() {
       ],
     },
 
+    { path: "sitemap.xml", element: <Navigate to="/" replace /> },
+    { path: "robots.txt", element: <Navigate to="/" replace /> },
+    { path: "sitemaps/*", element: <Navigate to="/" replace /> },
+
     { path: "*", element: <Navigate to="/login" replace /> },
   ];
 

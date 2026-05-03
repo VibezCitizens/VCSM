@@ -1,12 +1,4 @@
-# SPA fallback for client routes.
-# Keep scope narrow to avoid interfering with Cloudflare Functions endpoints.
-/profile/* /index.html 200
-/us/* /index.html 200
-/p/* /index.html 200
-/u/* /index.html 200
-/me /index.html 200
-/how-to/* /index.html 200
-/about /index.html 200
-/contact /index.html 200
-/legal/* /index.html 200
-/vport/* /index.html 200
+# SPA fallback — single safe catch-all for Cloudflare Pages.
+# Cloudflare Functions take priority over this rule automatically,
+# so /how-to/*, /vport/*/card, /p/* and any other function routes are unaffected.
+/* /index.html 200

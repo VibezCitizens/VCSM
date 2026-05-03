@@ -111,6 +111,16 @@ export function getProviderBySlug(providerSlug, options = {}) {
   ) ?? null;
 }
 
+export function getProviderBySlugAny(providerSlug) {
+  return MOCK_PROVIDERS.find(
+    (provider) => provider.isActive && slugEquals(provider.slug, providerSlug)
+  ) ?? null;
+}
+
+export function listAllActiveProviders() {
+  return MOCK_PROVIDERS.filter((provider) => provider.isActive && provider.slug);
+}
+
 export function listServicesForProvider(providerId) {
   return MOCK_PROVIDER_SERVICES.filter(
     (providerService) => providerService.providerId === providerId && providerService.isActive

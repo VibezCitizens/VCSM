@@ -33,8 +33,6 @@ export async function readVportPublicTrazeProfileRows() {
     .schema("vport")
     .from("public_traze_profiles_v")
     .select(VPORT_PUBLIC_TRAZE_PROFILE_PROJECTION)
-    .eq("directory_visible", true)
-    .eq("directory_status", "listed")
     .order("created_at", { ascending: false });
 
   if (error) {

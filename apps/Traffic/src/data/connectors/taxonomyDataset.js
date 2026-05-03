@@ -144,6 +144,8 @@ export const CITIES = [
     stateCode: "CA",
     countryCode: "US",
     timezone: "America/Los_Angeles",
+    lat: 37.7749,
+    lon: -122.4194,
     isActive: true
   },
   {
@@ -155,6 +157,8 @@ export const CITIES = [
     stateCode: "FL",
     countryCode: "US",
     timezone: "America/New_York",
+    lat: 25.7617,
+    lon: -80.1918,
     isActive: true
   },
   {
@@ -166,6 +170,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "CA",
     timezone: "America/Toronto",
+    lat: 43.6532,
+    lon: -79.3832,
     isActive: true
   },
   {
@@ -177,6 +183,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "MX",
     timezone: "America/Mexico_City",
+    lat: 19.4326,
+    lon: -99.1332,
     isActive: true
   },
   {
@@ -188,6 +196,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "GB",
     timezone: "Europe/London",
+    lat: 51.5074,
+    lon: -0.1278,
     isActive: true
   },
   {
@@ -199,6 +209,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "ES",
     timezone: "Europe/Madrid",
+    lat: 40.4168,
+    lon: -3.7038,
     isActive: true
   },
   {
@@ -210,6 +222,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "FR",
     timezone: "Europe/Paris",
+    lat: 48.8566,
+    lon: 2.3522,
     isActive: true
   },
   {
@@ -221,6 +235,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "DE",
     timezone: "Europe/Berlin",
+    lat: 52.5200,
+    lon: 13.4050,
     isActive: true
   },
   {
@@ -232,6 +248,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "AE",
     timezone: "Asia/Dubai",
+    lat: 25.2048,
+    lon: 55.2708,
     isActive: true
   },
   {
@@ -243,6 +261,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "BR",
     timezone: "America/Sao_Paulo",
+    lat: -23.5505,
+    lon: -46.6333,
     isActive: true
   },
   {
@@ -254,6 +274,8 @@ export const CITIES = [
     stateCode: null,
     countryCode: "IN",
     timezone: "Asia/Kolkata",
+    lat: 19.0760,
+    lon: 72.8777,
     isActive: true
   },
   {
@@ -265,6 +287,8 @@ export const CITIES = [
     stateCode: "TX",
     countryCode: "US",
     timezone: "America/Chicago",
+    lat: 27.5306,
+    lon: -99.4803,
     isActive: true
   }
 ];

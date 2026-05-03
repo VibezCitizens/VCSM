@@ -13,7 +13,7 @@ export default function ResourceDropdown({ resources, selectedId, onSelect }) {
           border: "1px solid rgba(148,163,184,.22)",
           background: "rgba(15,23,42,.85)",
           color: "rgba(203,213,225,.92)",
-          fontSize: 12, fontWeight: 600,
+          fontSize: 16, fontWeight: 600,
           padding: "5px 10px",
           cursor: "pointer", outline: "none",
         }}

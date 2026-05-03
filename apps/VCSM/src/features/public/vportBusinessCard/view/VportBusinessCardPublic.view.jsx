@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 import { useVportBusinessCardExperience } from "@/features/public/vportBusinessCard/hooks/useVportBusinessCardExperience";
 import { useVportBusinessCardLeadForm } from "@/features/public/vportBusinessCard/hooks/useVportBusinessCardLeadForm";
@@ -19,7 +21,8 @@ import { upsertMetaTag, composeAddressLabel, UnavailableState } from "@/features
 import BusinessCardMainCard from "@/features/public/vportBusinessCard/view/BusinessCardMainCard";
 import BusinessCardLeadForm from "@/features/public/vportBusinessCard/view/BusinessCardLeadForm";
 
-export default function VportBusinessCardPublicView({ slug }) {
+export default function VportBusinessCardPublicView({ slug, fromSettings = false }) {
+  const navigate = useNavigate();
   const leadFormRef = useRef(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -63,7 +66,7 @@ export default function VportBusinessCardPublicView({ slug }) {
   const profileHref = useMemo(() => {
     const key = card?.slug;
     if (!key) return "";
-    return `https://traze.vibezcitizens.com/us/pro/${key}`;
+    return `https://traze.vibezcitizens.com/pro/${key}`;
   }, [card?.slug]);
 
   const callHref = useMemo(() => {
@@ -203,7 +206,13 @@ export default function VportBusinessCardPublicView({ slug }) {
   const hasCta = visibleCallBtn || visibleTextBtn || visibleProfileBtn;
 
   return (
-    <div style={FS.page}>
+    <div style={{ ...FS.page, paddingTop: fromSettings ? 'calc(72px + env(safe-area-inset-top, 0px))' : '28px' }}>
+      {fromSettings && (
+        <button onClick={() => navigate(-1)} style={BACK_BTN}>
+          <ArrowLeft size={15} />
+          Back
+        </button>
+      )}
       <div style={FS.container}>
 
         <BusinessCardMainCard
@@ -252,3 +261,25 @@ export default function VportBusinessCardPublicView({ slug }) {
     </div>
   );
 }
+
+const BACK_BTN = {
+  position: 'fixed',
+  top: 'calc(12px + env(safe-area-inset-top, 0px))',
+  left: 16,
+  zIndex: 100,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  padding: '10px 14px',
+  minHeight: 44,
+  borderRadius: 99,
+  border: '1px solid rgba(255,255,255,0.14)',
+  background: 'rgba(14,12,24,0.88)',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  color: 'rgba(255,255,255,0.85)',
+  fontSize: 13,
+  fontWeight: 700,
+  cursor: 'pointer',
+  boxSizing: 'border-box',
+};

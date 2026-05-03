@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import {
-  getProviderBySlug,
+  getProviderBySlugAny,
   getStructuredCityBySlug,
   listServicesForProvider
 } from "@/data/repositories/provider.repo";
@@ -12,7 +12,7 @@ import {
   getRegionByCode
 } from "@/data/repositories/geo.repo";
 import { getServiceById, listSpecialtiesByService } from "@/data/repositories/service.repo";
-import { listProviderStaticParams } from "@/data/repositories/staticParams.repo";
+import { listAllActiveProviderStaticParams } from "@/data/repositories/staticParams.repo";
 import { listMockProviderSlugParams } from "@/data/repositories/taxonomyParams.repo";
 import {
   getPublicReviewSummaryForProvider,
@@ -54,7 +54,7 @@ const CATEGORY_KEY_TO_SLUG = {
 };
 
 export function generateStaticParams() {
-  const live = listProviderStaticParams();
+  const live = listAllActiveProviderStaticParams();
   if (live.length > 0) return live;
   // Fallback: use mock provider slugs when Supabase is unavailable at build time.
   return listMockProviderSlugParams();
@@ -70,7 +70,7 @@ function resolveCategorySlug(provider, services) {
 }
 
 function buildProviderGraph(providerSlug) {
-  const provider = getProviderBySlug(providerSlug);
+  const provider = getProviderBySlugAny(providerSlug);
   if (!provider) {
     return null;
   }

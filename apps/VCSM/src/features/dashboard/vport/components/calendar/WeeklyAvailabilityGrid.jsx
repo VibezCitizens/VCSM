@@ -173,13 +173,33 @@ export default function WeeklyAvailabilityGrid({
   if (isMobile) {
     const dbs    = blocks.filter(b => b.weekday === activeDay);
     const isOpen = !closedDays.has(activeDay);
+    const mobileToolbar = (
+      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+        <button type="button" onClick={applyMonToWeekdays} disabled={saving} style={tBtn({ minHeight: 44, padding: "10px 10px" })}>Apply Mon → Weekdays</button>
+        <button type="button" onClick={set9to5} disabled={saving} style={tBtn({ minHeight: 44, padding: "10px 10px" })}>Set 9–5 Weekdays</button>
+        <button type="button" onClick={clearAll} disabled={saving} style={tBtn({ minHeight: 44, padding: "10px 10px", borderColor: "rgba(239,68,68,.28)", color: "rgba(252,165,165,.75)" })}>Clear All</button>
+        {applyMsg && <span style={{ fontSize: 11, fontWeight: 600, color: applyMsg.ok ? "rgba(134,239,172,.85)" : "rgba(252,165,165,.8)" }}>{applyMsg.text}</span>}
+      </div>
+    );
+    const mobileSaveRow = (
+      <div style={{ display: "grid", gap: 6 }}>
+        <button type="button" disabled={saving} onClick={save} style={{ width: "100%", borderRadius: 9, border: "1px solid rgba(139,92,246,.5)", background: saving ? "rgba(109,40,217,.2)" : "rgba(109,40,217,.42)", color: "#f8fafc", fontSize: 14, fontWeight: 700, padding: "13px 18px", cursor: saving ? "wait" : "pointer", transition: "background .15s" }}>
+          {saving ? "Saving…" : "Save Working Hours"}
+        </button>
+        {saveMsg && <span style={{ fontSize: 12, fontWeight: 600, color: saveMsg.ok ? "#86efac" : "#fca5a5", textAlign: "center" }}>{saveMsg.text}</span>}
+      </div>
+    );
     return (
       <div style={{ display: "grid", gap: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
-          {weekNav}
-          <RangeToggle mode={mode} onChange={setMode} />
+        <div style={{ display: "grid", gap: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <button type="button" onClick={() => setWeekStart(d => addDays(d, -7))} style={tBtn({ padding: "5px 7px" })}>‹</button>
+            <button type="button" onClick={() => setWeekStart(getWeekStart(new Date()))} disabled={isThisWeek} style={tBtn({ opacity: isThisWeek ? 0.4 : 1, cursor: isThisWeek ? "default" : "pointer" })}>This week</button>
+            <button type="button" onClick={() => setWeekStart(d => addDays(d, 7))} style={tBtn({ padding: "5px 7px" })}>›</button>
+            <RangeToggle mode={mode} onChange={setMode} />
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(148,163,184,.5)" }}>{weekLabel} · {tz}</div>
         </div>
-        <div style={{ fontSize: 10, color: "rgba(148,163,184,.45)", fontWeight: 600 }}>{tz}</div>
         <DayPills active={activeDay} closedDays={closedDays} blocks={blocks} onChange={setActiveDay} />
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: weekDates[activeDay].toDateString() === todayDate.toDateString() ? "rgba(167,139,250,.9)" : "rgba(255,255,255,.85)" }}>{DAY_LABELS[activeDay]}</div>
@@ -192,7 +212,7 @@ export default function WeeklyAvailabilityGrid({
           <div style={{ padding: "16px 0", textAlign: "center", fontSize: 12, color: "rgba(255,255,255,.28)" }}>Tap CLOSED to open this day</div>
         ) : (
           <>
-            {dbs.length === 0 && <div style={{ borderRadius: 8, border: "1px dashed rgba(139,92,246,.2)", padding: "8px 12px", fontSize: 11, color: "rgba(203,213,225,.4)", textAlign: "center" }}>Drag to set hours for {DAY_LABELS[activeDay]}</div>}
+            {dbs.length === 0 && <div style={{ borderRadius: 8, border: "1px dashed rgba(139,92,246,.2)", padding: "8px 12px", fontSize: 11, color: "rgba(203,213,225,.4)", textAlign: "center" }}>Tap to set hours for {DAY_LABELS[activeDay]}</div>}
             <div style={{ borderRadius: 10, border: "1px solid rgba(148,163,184,.12)", background: "rgba(2,6,23,.72)", overflow: "hidden" }}>
               <div style={{ display: "flex", maxHeight: "min(420px,calc(100vh - 380px))", overflowY: "auto" }}>
                 <div style={{ position: "sticky", left: 0, flexShrink: 0, zIndex: 3, background: "rgba(2,6,23,.9)" }}>
@@ -203,8 +223,8 @@ export default function WeeklyAvailabilityGrid({
             </div>
           </>
         )}
-        {toolbar}
-        {saveRow}
+        {mobileToolbar}
+        {mobileSaveRow}
       </div>
     );
   }

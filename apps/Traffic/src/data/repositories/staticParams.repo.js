@@ -2,6 +2,7 @@ import { listCities, listLocalitiesByCity, listNeighborhoodsByCity } from "@/dat
 import { getCountryByCode, listCountries } from "@/data/repositories/geo.repo";
 import { getServiceBySlug, listServices, listSpecialtiesByService } from "@/data/repositories/service.repo";
 import {
+  listAllActiveProviders,
   listProviders,
   listProvidersByCityAndService,
   listProvidersByCountry,
@@ -216,6 +217,10 @@ export function listProviderStaticParams() {
   return listProviders()
     .filter((provider) => isProviderIndexable(provider))
     .map((provider) => ({ providerSlug: provider.slug }));
+}
+
+export function listAllActiveProviderStaticParams() {
+  return listAllActiveProviders().map((provider) => ({ providerSlug: provider.slug }));
 }
 
 export function getServiceNameBySlug(serviceSlug) {

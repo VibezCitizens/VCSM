@@ -209,7 +209,7 @@ export function mapVportRowToProvider(row) {
     serviceAreaSummary: null,
     shortBio: rawBio,
     isActive: Boolean(row.is_active),
-    isIndexable: Boolean(row.is_active) && directoryVisible && isDirectoryActive && slug.length > 0,
+    isIndexable: Boolean(row.is_active) && directoryVisible && slug.length > 0,
     claimStatus: isUuid(row.actor_id) ? "claimed" : "unclaimed",
     vcsmActorId: isUuid(row.actor_id) ? String(row.actor_id) : null,
     vcsmSlug: slug,

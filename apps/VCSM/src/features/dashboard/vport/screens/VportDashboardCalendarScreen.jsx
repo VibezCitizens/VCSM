@@ -90,13 +90,15 @@ export function VportDashboardCalendarScreen() {
             <div style={shell.rightSpacer} />
           </div>
 
-          <div style={{ padding: 16, display: "grid", gap: 12 }}>
+          <div style={{ padding: 16, paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 120px)", display: "grid", gap: 12 }}>
             <section style={{ borderRadius: 16, border: "1px solid rgba(148,163,184,.22)", background: "rgba(2,6,23,.65)", padding: 16, display: "grid", gap: 14 }}>
 
               <div>
                 <div style={{ color: "#f8fafc", fontSize: 18, fontWeight: 700 }}>Working Hours</div>
                 <div style={{ color: "rgba(203,213,225,.5)", fontSize: 12, marginTop: 2 }}>
-                  Drag to create · Click to select and delete · Drag bottom edge to resize
+                  {isDesktop
+                    ? "Drag to create · Click to select and delete · Drag bottom edge to resize"
+                    : "Tap to add hours · Tap selected hours to delete"}
                 </div>
               </div>
 
@@ -107,7 +109,9 @@ export function VportDashboardCalendarScreen() {
               )}
               {(resources.error || ensureError || availability.error) && (
                 <div style={{ color: "#fca5a5", fontSize: 13 }}>
-                  {String(resources.error?.message ?? ensureError?.message ?? availability.error?.message ?? "Error loading.")}
+                  {import.meta.env.DEV
+                    ? String(resources.error?.message ?? ensureError?.message ?? availability.error?.message ?? "Error loading.")
+                    : "Calendar settings are unavailable right now."}
                 </div>
               )}
 

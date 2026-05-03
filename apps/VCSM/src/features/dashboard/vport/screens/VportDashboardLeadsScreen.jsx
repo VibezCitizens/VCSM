@@ -103,7 +103,7 @@ export default function VportDashboardLeadsScreen() {
                   fontSize: 13,
                 }}
               >
-                {error}
+                {import.meta.env.DEV ? error : "Unable to load leads right now."}
               </div>
             ) : null}
 

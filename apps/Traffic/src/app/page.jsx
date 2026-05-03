@@ -108,7 +108,9 @@ function getHomepageLocationOptions(cities) {
         citySlug: city.slug,
         countrySlug: country.slug,
         label: `${city.name}, ${country.code}`,
-        href: countryCityPath(country.slug, city.slug)
+        href: countryCityPath(country.slug, city.slug),
+        lat: city.lat ?? null,
+        lon: city.lon ?? null,
       };
     })
     .filter(Boolean);

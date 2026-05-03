@@ -73,7 +73,7 @@ const RS = {
 
 export function MenuSection({ slug }) {
   if (!slug) return null;
-  const href = `https://vibezcitizens.com/vport/${slug}/menu`;
+  const href = `https://vibezcitizens.com/profile/${slug}/menu`;
   return (
     <SectionCard icon={Briefcase} title="Menu">
       <div style={{ padding: "14px 18px 18px" }}>

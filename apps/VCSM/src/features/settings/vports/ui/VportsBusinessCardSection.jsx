@@ -1,4 +1,5 @@
 import { Check, Copy, ExternalLink, QrCode as QrIcon } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import Card from '@/features/settings/ui/Card'
 
 function handleCopyLink(v, setCopiedId) {
@@ -25,6 +26,8 @@ export function VportsBusinessCardSection({
   setQrTarget,
   setQrCopied,
 }) {
+  const navigate = useNavigate()
+
   if (activeActor === 'profile') return null
 
   const activeVportCards = items.filter(v => v.slug && activeActor === `vport:${resolveVportActorId(v)}`)
@@ -128,7 +131,7 @@ export function VportsBusinessCardSection({
                 </button>
 
                 <button
-                  onClick={() => window.open(cardUrl, '_blank')}
+                  onClick={() => navigate(`/vport/${v.slug}/card`, { state: { fromSettings: true } })}
                   disabled={!isPublished || isDisabled}
                   className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 >

@@ -53,7 +53,7 @@ export function countryCityLocalityServiceSpecialtyPath(
 }
 
 export function countryProviderPath(countrySlug, providerSlug) {
-  return `/${safe(countrySlug)}/pro/${safe(providerSlug)}`;
+  return `/pro/${safe(providerSlug)}`;
 }
 
 export function contentGuidePath(slug) {

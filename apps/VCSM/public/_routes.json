@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "include": [
+    "/sitemap.xml",
+    "/sitemaps/*",
+    "/how-to/*",
+    "/lovedrop/*",
+    "/m/*",
+    "/p/*",
+    "/profile/*",
+    "/vport/*",
+    "/wanders/*"
+  ],
+  "exclude": []
+}
