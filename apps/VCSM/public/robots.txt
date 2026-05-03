@@ -9,5 +9,9 @@ Disallow: /reset
 Disallow: /auth
 Disallow: /settings
 Disallow: /dashboard
+Disallow: /me
+Disallow: /u/
+Disallow: /m/
+Disallow: /wanders/
 
 Sitemap: https://vibezcitizens.com/sitemap.xml

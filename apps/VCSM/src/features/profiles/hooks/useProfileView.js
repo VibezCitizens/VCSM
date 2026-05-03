@@ -1,62 +1,29 @@
-import { useEffect, useState } from "react";
-import { getProfileView } from "@/features/profiles/controller/getProfileView.controller";
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { queryKeys } from '@/queries/queryKeys'
+import { getProfileView } from '@/features/profiles/controller/getProfileView.controller'
 
 export function useProfileView({
   viewerActorId,
   profileActorId,
   canViewContent,
-  version = 0, // ✅ ADD (force reload)
 }) {
-  const [loading, setLoading] = useState(true);
-  const [loadingPosts, setLoadingPosts] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: queryKeys.profileView(viewerActorId, profileActorId, canViewContent),
+    queryFn: () => getProfileView({ viewerActorId, profileActorId, canViewContent }),
+    enabled: canViewContent !== undefined && !!profileActorId && !!viewerActorId,
+    staleTime: 60_000,
+    gcTime: 300_000,
+    placeholderData: keepPreviousData,
+  })
 
-  const [profile, setProfile] = useState(null);
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    // Gate still resolving — don't fetch yet. This prevents the double-fetch
-    // caused by canViewContent transitioning from undefined → true/false.
-    if (canViewContent === undefined) return;
-
-    let alive = true;
-
-    async function load() {
-      try {
-        setLoading(true);
-        setLoadingPosts(true);
-        setError(null);
-
-        const result = await getProfileView({
-          viewerActorId,
-          profileActorId,
-          canViewContent,
-        });
-
-        if (!alive) return;
-        setProfile(result.profile);
-        setPosts(Array.isArray(result.posts) ? result.posts : []);
-      } catch (e) {
-        if (alive) setError(e);
-      } finally {
-        if (alive) {
-          setLoading(false);
-          setLoadingPosts(false);
-        }
-      }
-    }
-
-    load();
-    return () => {
-      alive = false;
-    };
-  }, [viewerActorId, profileActorId, canViewContent, version]);
+  if (import.meta.env.DEV && isFetching && data) {
+    performance.mark('profile:server-reconciled')
+  }
 
   return {
-    loading,
-    loadingPosts,
-    error,
-    profile,
-    posts,
-  };
+    loading: isLoading,
+    isFetching,
+    error: error ?? null,
+    profile: data?.profile ?? null,
+  }
 }

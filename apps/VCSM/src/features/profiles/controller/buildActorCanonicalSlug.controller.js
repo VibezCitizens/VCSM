@@ -114,3 +114,16 @@ export function invalidateActorCanonicalSlugCache(actorId) {
     ? controllerCache.invalidate(actorId)
     : controllerCache.invalidateAll()
 }
+
+/**
+ * Synchronous read of the cached canonical slug — no fetch.
+ * Returns null on cache miss (first visit or TTL expired).
+ * Used by BottomNavBar to navigate directly without triggering a redirect.
+ *
+ * @param {string|null} actorId
+ * @returns {string|null}
+ */
+export function getCachedActorCanonicalSlug(actorId) {
+  if (!actorId) return null
+  return controllerCache.get(actorId)?.canonicalSlug ?? null
+}

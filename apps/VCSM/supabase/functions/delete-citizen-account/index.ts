@@ -4,11 +4,13 @@
 // Ordering guarantee:
 //   1. Verify caller via JWT (anon client — enforces auth.uid() inside RPC)
 //   2. Delete app/domain data via soft_delete_citizen_account() RPC
-//      → marks public.profiles + vc.actors as is_deleted = true
+//      → marks public.profiles.is_deleted = true, username = NULL
+//      → marks vc.actors.is_deleted = true
 //   3. Delete Supabase Auth user via admin client (service role key)
 //
 // If step 2 fails → abort, return error, auth user is NOT deleted.
-// If step 3 fails → app data already deleted; userId logged server-side for admin recovery.
+// If step 3 fails → app data already deleted; row inserted into
+//   platform.failed_account_deletions for admin recovery; returns AUTH_DELETE_FAILED.
 //
 // Security:
 //   - Deletes only the user identified by the verified JWT. No userId accepted from client.
@@ -61,8 +63,13 @@ serve(async (req: Request) => {
     return json({ error: "Unauthorized" }, 401)
   }
 
+  const adminClient = createClient(supabaseUrl, serviceKey, {
+    auth: { persistSession: false },
+  })
+
   // ── 2. Delete app/domain data via existing RPC ────────────────
   // SECURITY DEFINER function — only touches the calling user's own rows via auth.uid().
+  // Also releases public.profiles.username (sets to NULL) so the unique slot is freed.
   const { error: appError } = await userClient.rpc("soft_delete_citizen_account")
   if (appError) {
     const msg    = appError.message ?? String(appError)
@@ -72,17 +79,33 @@ serve(async (req: Request) => {
 
   // ── 3. Delete Supabase Auth user ──────────────────────────────
   // Only reached after app data deletion succeeds.
-  const adminClient = createClient(supabaseUrl, serviceKey, {
-    auth: { persistSession: false },
-  })
-
   const { error: authError } = await adminClient.auth.admin.deleteUser(user.id)
   if (authError) {
-    // App data is gone but auth row survived. Log for admin recovery — do not expose userId to client.
+    // App data is gone but auth row survived.
+    // Log to platform.failed_account_deletions for admin recovery.
     console.error("[delete-citizen-account] auth.admin.deleteUser failed after app data deleted", {
       userId: user.id,
       error:  authError.message,
     })
+
+    const { error: logError } = await adminClient
+      .schema("platform")
+      .from("failed_account_deletions")
+      .insert({
+        user_id:       user.id,
+        email:         user.email ?? null,
+        failure_stage: "auth_delete_failed",
+        error_code:    authError.status ? String(authError.status) : null,
+        error_message: authError.message ?? null,
+      })
+
+    if (logError) {
+      // Non-fatal — the auth deletion failure is already logged to console above.
+      console.error("[delete-citizen-account] failed to write to failed_account_deletions", {
+        logError: logError.message,
+      })
+    }
+
     return json({
       error: "Account data was deleted but the authentication record could not be removed. Contact support.",
       code:  "AUTH_DELETE_FAILED",

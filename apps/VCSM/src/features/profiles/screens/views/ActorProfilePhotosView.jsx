@@ -1,37 +1,15 @@
-/**
- * ============================================================
- * ActorProfilePhotosView
- * ------------------------------------------------------------
- * Profile -> Photos domain view (ACTOR-BASED)
- *
- * View Screen rules:
- * - Composes hooks + UI only
- * - No DAL / Supabase
- * - No controllers
- * - No business meaning
- * ============================================================
- */
-
 import PhotoGrid from "./tabs/photos/components/PhotoGrid";
+import { useActorPosts } from "@/features/profiles/screens/views/tabs/post/hooks/useActorPosts";
 
-/**
- * @param {Object} props
- * @param {string} props.actorId Target profile actor (profile owner)
- * @param {string} props.viewerActorId Viewer actor (me)
- * @param {Array} props.posts Aggregated post rows (raw)
- * @param {boolean} props.loadingPosts Loading state from parent
- * @param {boolean} props.canViewContent Privacy gate (resolved upstream)
- * @param {Function} props.handleShare Optional share handler
- */
 export default function ActorProfilePhotosView({
   actorId,
   viewerActorId,
-  posts = [],
-  loadingPosts,
   canViewContent,
   handleShare,
 }) {
-  if (loadingPosts) {
+  const { posts, loading } = useActorPosts(actorId);
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-10 text-white/50">
         Loading photos...

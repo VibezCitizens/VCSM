@@ -49,7 +49,7 @@ function uniq(arr) {
  *
  * Sources:
  *  - kind='user'  -> vc.actors.profile_id -> public.profiles(display_name, username, photo_url)
- *  - kind='vport' -> vc.actors.vport_id   -> vc.vports(name, slug, avatar_url)
+ *  - kind='vport' -> vc.actors.vport_id   -> vport.profiles(name, slug, avatar_url)
  *
  * NOTE:
  *  - This does NOT use vc.void_profiles.

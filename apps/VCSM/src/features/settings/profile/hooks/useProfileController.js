@@ -81,12 +81,30 @@ export function useProfileController() {
     onSuccess: (updatedUi) => {
       qc.setQueryData(profileKey, (prev) => ({ ...(prev || {}), ...updatedUi }))
 
-      if (updatedUi.actorId && identity?.actorId === updatedUi.actorId) {
-        setIdentity((prev) =>
-          prev
-            ? { ...prev, avatar: updatedUi.photoUrl, banner: updatedUi.bannerUrl }
-            : prev
-        )
+      // Always patch identity with confirmed URLs — don't rely on draft.actorId
+      // being populated (it's not a form field, can be null on first save).
+      setIdentity((prev) =>
+        prev
+          ? { ...prev, avatar: updatedUi.photoUrl, banner: updatedUi.bannerUrl }
+          : prev
+      )
+
+      // Invalidate the public profile React Query cache so the profile view
+      // reflects the save without waiting for the 60s staleTime to expire.
+      // Uses a predicate to match all canViewContent variants for this actor.
+      const savedActorId = identity?.actorId ?? null
+      if (savedActorId) {
+        qc.invalidateQueries({
+          predicate: (query) => {
+            const k = query.queryKey
+            return (
+              Array.isArray(k) &&
+              k[0] === 'profile' &&
+              k[1] === 'view' &&
+              k[3] === savedActorId
+            )
+          },
+        })
       }
     },
   })

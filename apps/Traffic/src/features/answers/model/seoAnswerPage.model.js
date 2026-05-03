@@ -1,8 +1,7 @@
 import { mapAnswerRowToAnswer } from "@/features/answers/model/answer.model";
 import { mapQuestionRowToQuestion } from "@/features/answers/model/question.model";
 import { mapTopicRowToTopic } from "@/features/answers/model/topic.model";
-
-const PUBLIC_ORIGIN = "https://traze.vibezcitizens.com";
+import { getSiteOrigin } from "@/lib/env";
 
 function buildDescription(question, answer) {
   if (answer?.body) {
@@ -41,7 +40,7 @@ export function mapAnswerPageRowsToSeoAnswerPage({
       title,
       description: buildDescription(question, answer),
       canonicalPath,
-      canonicalUrl: `${PUBLIC_ORIGIN}${canonicalPath}`,
+      canonicalUrl: `${getSiteOrigin()}${canonicalPath}`,
       isIndexable: Boolean(isIndexable),
       robotsContent: isIndexable ? "index,follow" : "noindex,nofollow",
       askedAt: question?.askedAt ?? null,

@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_SELECT = [
   "id",
@@ -30,8 +30,7 @@ export async function getBookingByIdDAL({ bookingId } = {}) {
     throw new Error("getBookingByIdDAL: bookingId is required");
   }
 
-  const { data, error } = await supabase
-    .schema("vc")
+  const { data, error } = await vportClient
     .from("bookings")
     .select(BOOKING_SELECT)
     .eq("id", bookingId)

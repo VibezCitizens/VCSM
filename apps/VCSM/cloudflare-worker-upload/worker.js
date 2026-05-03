@@ -30,6 +30,11 @@
 const ALLOWED_ORIGINS = new Set([
   'https://vibezcitizens.com',
   'https://www.vibezcitizens.com',
+  // Dev origins — auth is still enforced so adding these doesn't open a security hole
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:4173',
 ])
 
 function buildCorsHeaders(requestOrigin) {

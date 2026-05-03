@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_SERVICE_PROFILE_SELECT = [
   "service_id",
@@ -37,7 +37,7 @@ export async function saveBookingServiceProfileDurationsByServiceIdsDAL({
 
   const { data: existingRows, error: existingError } = await supabase
     .schema("vc")
-    .from("booking_service_profiles")
+    .from("service_booking_profiles")
     .select("service_id")
     .in("service_id", ids);
   if (existingError) throw existingError;
@@ -52,7 +52,7 @@ export async function saveBookingServiceProfileDurationsByServiceIdsDAL({
   if (existingIds.length > 0) {
     const { data, error } = await supabase
       .schema("vc")
-      .from("booking_service_profiles")
+      .from("service_booking_profiles")
       .update({
         duration_minutes: normalizedDuration,
       })
@@ -77,7 +77,7 @@ export async function saveBookingServiceProfileDurationsByServiceIdsDAL({
 
     const { data, error } = await supabase
       .schema("vc")
-      .from("booking_service_profiles")
+      .from("service_booking_profiles")
       .insert(rows)
       .select(BOOKING_SERVICE_PROFILE_SELECT);
     if (error) throw error;

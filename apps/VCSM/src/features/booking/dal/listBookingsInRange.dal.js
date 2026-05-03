@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 // Full owner columns — includes customer PII
 const BOOKING_SELECT = [
@@ -66,8 +66,7 @@ export async function listBookingsInRangeDAL({
   const startIso = asTimestampInput(rangeStart, "rangeStart");
   const endIso = asTimestampInput(rangeEnd, "rangeEnd");
 
-  let query = supabase
-    .schema("vc")
+  let query = vportClient
     .from("bookings")
     .select(publicMode ? BOOKING_SELECT_PUBLIC : BOOKING_SELECT)
     .eq("resource_id", resourceId)

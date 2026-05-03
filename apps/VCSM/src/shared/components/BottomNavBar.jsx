@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide-react'
 
@@ -6,6 +6,7 @@ import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { useBootstrapHydration } from '@/bootstrap/bootstrap.hydrate.controller'
 import { useNotificationUnread, useChatUnread } from '@/bootstrap/bootstrap.selectors'
 import { useOneSignalPush } from '@/hooks/useOneSignalPush'
+import { getCachedActorCanonicalSlug } from '@/features/profiles/controller/buildActorCanonicalSlug.controller'
 
 export default function BottomNavBar() {
   const navigate = useNavigate()
@@ -32,10 +33,6 @@ export default function BottomNavBar() {
 
   const notiCount = useNotificationUnread()
   const chatUnread = useChatUnread()
-
-  // /profile/self renders the viewer's own profile directly without UUID in URL.
-  // Falls back to /feed only when identity isn't loaded yet.
-  const profilePath = personaActorId ? '/profile/self' : '/feed'
 
   useEffect(() => {
     if (!personaActorId) return
@@ -87,10 +84,50 @@ export default function BottomNavBar() {
           badgeCount={notiCount}
         />
 
-        <Tab to={profilePath} label="Citizen" icon={<User size={18} />} />
+        <ProfileNavTab personaActorId={personaActorId} navigate={navigate} location={location} />
         <Tab to="/settings" label="Settings" icon={<Settings size={18} />} />
       </nav>
     </div>
+  )
+}
+
+// Navigates directly to the canonical profile slug when cached (10-min TTL),
+// falling back to /profile/self only on the very first session visit.
+// This eliminates the mandatory double-mount that /profile/self causes on every tap.
+function ProfileNavTab({ personaActorId, navigate, location }) {
+  const isActive = location.pathname.startsWith('/profile')
+
+  const handleClick = useCallback(() => {
+    if (import.meta.env.DEV) performance.mark('profile:navigate:start')
+
+    if (!personaActorId) {
+      navigate('/feed')
+      return
+    }
+
+    const cached = getCachedActorCanonicalSlug(personaActorId)
+    if (cached) {
+      if (import.meta.env.DEV) performance.mark('profile:direct-slug-route')
+      navigate(`/profile/${cached}`)
+    } else {
+      if (import.meta.env.DEV) performance.mark('profile:self-fallback-route')
+      navigate('/profile/self')
+    }
+  }, [personaActorId, navigate])
+
+  return (
+    <button
+      type="button"
+      aria-label="Citizen"
+      onClick={handleClick}
+      className={`relative flex h-10 min-w-[40px] items-center justify-center rounded-full px-1 transition-all duration-150 ${
+        isActive
+          ? 'border border-purple-200/20 bg-purple-400/14 text-purple-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_0_16px_rgba(87,138,255,0.32)]'
+          : 'text-white/70 hover:bg-white/10 hover:text-purple-200'
+      }`}
+    >
+      <span className="inline-flex items-center justify-center"><User size={18} /></span>
+    </button>
   )
 }
 

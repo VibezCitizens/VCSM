@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_AVAILABILITY_RULE_SELECT = [
   "id",
@@ -22,9 +22,8 @@ export async function listAvailabilityRulesByResourceIdDAL({
     throw new Error("listAvailabilityRulesByResourceIdDAL: resourceId is required");
   }
 
-  let query = supabase
-    .schema("vc")
-    .from("booking_availability_rules")
+  let query = vportClient
+    .from("availability_rules")
     .select(BOOKING_AVAILABILITY_RULE_SELECT)
     .eq("resource_id", resourceId)
     .order("weekday", { ascending: true })

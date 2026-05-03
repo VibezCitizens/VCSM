@@ -31,8 +31,9 @@ export function useProfileUploads({ mode, subjectId }) {
     if (mode === 'user') {
       const userId = await ctrlGetCurrentAuthUserId()
       if (!userId) throw new Error('Not authenticated')
+      if (!actorId) throw new Error('Actor identity not loaded — cannot upload')
 
-      const result = await uploadMediaController({ file, scope: 'user_avatar', ownerActorId: userId })
+      const result = await uploadMediaController({ file, scope: 'user_avatar', ownerActorId: actorId })
       if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'user_avatar', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
       ;(async () => {
@@ -63,7 +64,7 @@ export function useProfileUploads({ mode, subjectId }) {
     }
 
     // ── vport avatar ─────────────────────────────────────────────
-    const result = await uploadMediaController({ file, scope: 'vport_avatar', ownerActorId: subjectId })
+    const result = await uploadMediaController({ file, scope: 'vport_avatar', ownerActorId: actorId })
     if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'vport_avatar', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
     ;(async () => {
@@ -101,7 +102,7 @@ export function useProfileUploads({ mode, subjectId }) {
     const actorId = identity?.actorId ?? null
 
     if (mode === 'vport') {
-      const result = await uploadMediaController({ file, scope: 'vport_banner', ownerActorId: subjectId })
+      const result = await uploadMediaController({ file, scope: 'vport_banner', ownerActorId: actorId })
       if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'vport_banner', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
       ;(async () => {
@@ -133,8 +134,9 @@ export function useProfileUploads({ mode, subjectId }) {
     // ── user banner ───────────────────────────────────────────────
     const userId = await ctrlGetCurrentAuthUserId()
     if (!userId) throw new Error('Not authenticated')
+    if (!actorId) throw new Error('Actor identity not loaded — cannot upload')
 
-    const result = await uploadMediaController({ file, scope: 'user_banner', ownerActorId: userId })
+    const result = await uploadMediaController({ file, scope: 'user_banner', ownerActorId: actorId })
     if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'user_banner', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
 
     ;(async () => {

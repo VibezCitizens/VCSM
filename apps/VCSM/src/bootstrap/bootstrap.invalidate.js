@@ -29,3 +29,22 @@ export function invalidateChatUnread() {
 export function invalidateBootstrap() {
   useBootstrapStore.getState().reset()
 }
+
+/**
+ * Evict all cached chat message pages from the React Query cache.
+ * Use removeQueries (hard evict) rather than invalidateQueries so that
+ * actor A's messages are gone immediately — not just marked stale.
+ * Must be called on both actor switch and logout.
+ */
+export function purgeChatMessageCache() {
+  queryClient.removeQueries({ queryKey: ['chat', 'messages'] })
+}
+
+/**
+ * Evict all notification cache entries (inbox + badge) from the React Query cache.
+ * Hard evict so actor A's notifications never bleed into actor B's session.
+ * Must be called on both actor switch and logout.
+ */
+export function purgeNotificationCache() {
+  queryClient.removeQueries({ queryKey: ['notifications'] })
+}

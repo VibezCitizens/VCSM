@@ -8,7 +8,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useBootstrapStore } from './bootstrap.store'
 import { queryKeys } from '@/queries/queryKeys'
-import { getUnreadNotificationCount } from '@/features/notifications/inbox/controller/notificationsCount.controller'
+import { getUnreadNotificationCount } from '@/features/notifications/adapters/notifications.adapter'
 import { useChatUnreadOps } from '@/features/chat/adapters/chat.adapter'
 
 const NOTIFICATION_POLL_MS = 60_000

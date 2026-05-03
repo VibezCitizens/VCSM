@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createTTLCache } from '@/shared/lib/ttlCache'
+import { dalGetActorPrivacy } from '@/features/social/privacy/dal/actorPrivacy.dal'
 
 const profileCache = createTTLCache(30_000) // 30 seconds
 
@@ -9,7 +10,7 @@ export async function readActorProfileDAL(actorId) {
   const cached = profileCache.get(actorId)
   if (cached) return cached
 
-  const [{ data, error }, { data: privacyData, error: privacyError }] =
+  const [{ data, error }, privacyResult] =
     await Promise.all([
       supabase
         .schema('vc')
@@ -17,12 +18,7 @@ export async function readActorProfileDAL(actorId) {
           p_actor_id: actorId,
         })
         .maybeSingle(),
-      supabase
-        .schema('vc')
-        .from('actor_privacy_settings')
-        .select('is_private')
-        .eq('actor_id', actorId)
-        .maybeSingle(),
+      dalGetActorPrivacy({ actorId }),
     ])
 
   if (error) {
@@ -34,13 +30,7 @@ export async function readActorProfileDAL(actorId) {
     return null
   }
 
-  if (privacyError) {
-    console.error('[readActorProfileDAL] actor privacy error', privacyError)
-  }
-
-  const isPrivate = privacyError
-    ? true
-    : (privacyData?.is_private ?? true)
+  const isPrivate = privacyResult.isPrivate
 
   const result = {
     actor: {

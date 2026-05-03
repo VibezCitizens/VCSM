@@ -1,3 +1,5 @@
+import { getSiteOrigin } from "@/lib/env";
+
 function safeJson(value) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
@@ -24,7 +26,7 @@ export function AnswerSeoJsonLd({ page }) {
           "@type": "Person",
           name: page.answer.expert.displayName,
           url: page.answer.expert.profileSlug
-            ? `https://traze.vibezcitizens.com/pro/${page.answer.expert.profileSlug}`
+            ? `${getSiteOrigin()}/pro/${page.answer.expert.profileSlug}`
             : undefined
         }
       }

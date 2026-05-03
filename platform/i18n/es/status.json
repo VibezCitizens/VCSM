@@ -1,0 +1,20 @@
+{
+  "active": "Active",
+  "inactive": "Inactive",
+  "draft": "Draft",
+  "published": "Published",
+  "live": "Live",
+  "pending": "Pending",
+  "confirmed": "Confirmed",
+  "cancelled": "Cancelled",
+  "completed": "Completed",
+  "failed": "Failed",
+  "paused": "Paused",
+  "archived": "Archived",
+  "private": "Private",
+  "public": "Public",
+  "open": "Open",
+  "closed": "Closed",
+  "expired": "Expired",
+  "scheduled": "Scheduled"
+}

@@ -1,27 +1,19 @@
-// ============================================================
-// getProfileView.controller
-// ============================================================
-
 import { ProfileModel } from '@/features/profiles/model/profile.model'
-import { PostModel } from '@/features/profiles/model/post.model'
 
 import { readActorProfileDAL } from '@/features/profiles/dal/readActorProfile.dal'
 import { useActorStore } from '@hydration'
 import { readFollowStateDAL } from '@/features/profiles/dal/readFollowState.dal'
-import { readActorPostsDAL } from '@/features/profiles/dal/readActorPosts.dal'
-import { readPostReactionsDAL } from '@/features/profiles/dal/readPostReactions.dal'
-import { readPostRoseCountsDAL } from '@/features/profiles/dal/readPostRoseCounts.dal'
 
 export async function getProfileView({
   viewerActorId,
   profileActorId,
-  canViewContent,
 }) {
-  /* ============================================================
-     BLOCK 1 — ACTOR IDENTITY
-     ============================================================ */
-
-  const actorRow = await readActorProfileDAL(profileActorId)
+  const [actorRow, followRow] = await Promise.all([
+    readActorProfileDAL(profileActorId),
+    viewerActorId
+      ? readFollowStateDAL({ viewerActorId, targetActorId: profileActorId }).catch(() => null)
+      : Promise.resolve(null),
+  ])
 
   if (!actorRow || !actorRow.actor) {
     throw new Error('Actor not found')
@@ -33,8 +25,6 @@ export async function getProfileView({
     vport,
   } = actorRow
 
-  // Upsert actor summary into shared hydration store so other surfaces
-  // (feed, notifications, inbox) can reuse it without re-fetching.
   try {
     const summary = {
       actor_id: profileActorId,
@@ -53,23 +43,7 @@ export async function getProfileView({
     // Non-critical — don't block profile load
   }
 
-  let isFollowing = false
-
-  if (viewerActorId) {
-    try {
-      const followRow = await readFollowStateDAL({
-        viewerActorId,
-        targetActorId: profileActorId,
-      })
-      isFollowing = !!followRow?.is_active
-    } catch {
-      isFollowing = false
-    }
-  }
-
-  /* ============================================================
-     BLOCK 1A — PROFILE PRESENTATION
-     ============================================================ */
+  const isFollowing = !!followRow?.is_active
 
   let profile
 
@@ -78,11 +52,9 @@ export async function getProfileView({
       actorId: profileActorId,
       kind: 'vport',
 
-      // ✅ expose vport id at root for UI (vc.vports.id)
       vportId: vport?.id ?? null,
       vport_id: vport?.id ?? null,
 
-      // (optional) if you later include vport_type in rpc
       vportType: vport?.vport_type ?? null,
       vport_type: vport?.vport_type ?? null,
 
@@ -114,49 +86,5 @@ export async function getProfileView({
     }
   }
 
-  /* ============================================================
-     BLOCK 2 — POSTS (UNCHANGED)
-     ============================================================ */
-
-  let posts = []
-
-  if (canViewContent === true) {
-    try {
-      const rows = await readActorPostsDAL(profileActorId)
-
-      if (rows?.length) {
-        const postIds = rows.map(p => p.id)
-
-        const reactions = await readPostReactionsDAL(postIds)
-        const roses = await readPostRoseCountsDAL(postIds)
-
-        const reactionMap = {}
-        const roseMap = {}
-
-        for (const r of reactions ?? []) {
-          reactionMap[r.post_id] ??= {}
-          reactionMap[r.post_id][r.reaction] =
-            (reactionMap[r.post_id][r.reaction] || 0) + 1
-        }
-
-        for (const r of roses ?? []) {
-          roseMap[r.post_id] =
-            (roseMap[r.post_id] || 0) + r.qty
-        }
-
-        posts = rows.map(p =>
-          PostModel(
-            p,
-            reactionMap[p.id] ?? {},
-            roseMap[p.id] ?? 0
-          )
-        )
-      }
-    } catch (err) {
-      console.warn('[getProfileView] posts failed', err)
-      posts = []
-    }
-  }
-
-  return { profile, posts }
+  return { profile }
 }

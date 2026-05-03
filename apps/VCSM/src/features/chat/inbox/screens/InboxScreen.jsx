@@ -17,6 +17,7 @@ import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.mo
 import StartConversationModal from '@/features/chat/start/screens/StartConversationModal'
 import { inboxOnSearch } from '@/features/chat/inbox/constants/inboxSearchAdapter'
 import { useStartConversation } from '@/features/chat/start/hooks/useStartConversation'
+import { useChatMessagePrefetch } from '@/features/chat/inbox/hooks/useChatMessagePrefetch'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
@@ -77,6 +78,14 @@ export default function InboxScreen() {
   const previews = visibleEntries
     .map((entry) => buildInboxPreview({ entry, currentActorId: actorId }))
     .filter(Boolean)
+
+  // Prefetch messages for the top 10 visible conversations after inbox loads.
+  // Runs in background — does not block rendering or delay inbox display.
+  const prefetchIds = useMemo(
+    () => previews.slice(0, 10).map((p) => p.conversationId).filter(Boolean),
+    [previews]
+  )
+  useChatMessagePrefetch({ actorId, conversationIds: prefetchIds })
 
   if (identityLoading || !actorId) return null
   if (error) return (
@@ -177,8 +186,9 @@ export default function InboxScreen() {
               entries={previews}
               showThreadPreview={showThreadPreview}
               onSelect={(id) => {
+                const preview = previews.find((p) => p.conversationId === id) ?? null
                 markRead.mutate(id)
-                navigate(`/chat/${id}`)
+                navigate(`/chat/${id}`, { state: { inboxPreview: preview } })
               }}
               onDelete={(conversationId) => {
                 hideConversation(conversationId)

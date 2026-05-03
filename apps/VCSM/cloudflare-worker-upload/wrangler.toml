@@ -12,5 +12,5 @@ binding = "R2_BUCKET"
 
 bucket_name = "post-media"
 [vars]
-SUPABASE_URL = "https://nkdrjlmbtqbywhcthppn.supabase.co"
+SUPABASE_URL = "https://nkdrjlmbtqbywhcthppm.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rZHJqbG1idHFieXdoY3RocHBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDA5NjMsImV4cCI6MjA2NTUxNjk2M30.FjHnYHK4XeezByLb2NyQ2wRwNY1yt_GnW8SgX2qg8xA"

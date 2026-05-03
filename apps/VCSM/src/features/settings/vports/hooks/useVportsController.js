@@ -73,17 +73,22 @@ export function useVportsController() {
   const restoreVport = useCallback(async (targetVportId) => {
     setBusyRestore(true);
     setErrRestore('');
+    if (import.meta.env.DEV) console.log('[restore:start]', { surface: 'vports_tab', vportId: targetVportId });
     try {
       if (!targetVportId) throw new Error('No VPORT selected.');
       await ctrlRestoreVport({ vportId: targetVportId });
+      setItems(prev => prev.map(v => v.id === targetVportId ? { ...v, is_deleted: false, is_active: true } : v));
+      refreshAvailableActors();
+      if (import.meta.env.DEV) console.log('[restore:success]', { surface: 'vports_tab', vportId: targetVportId });
       return true;
     } catch (error) {
+      if (import.meta.env.DEV) console.log('[restore:error]', { surface: 'vports_tab', vportId: targetVportId, error: error?.message });
       setErrRestore(error?.message || 'Could not restore the VPORT.');
       return false;
     } finally {
       setBusyRestore(false);
     }
-  }, []);
+  }, [setItems, refreshAvailableActors]);
 
   const hardDeleteVport = useCallback(async (targetVportId) => {
     setBusyHardDelete(true);

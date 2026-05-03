@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_RESOURCE_SERVICE_SELECT = [
   "resource_id",
@@ -17,7 +17,7 @@ export async function listBookingResourceServicesByResourceIdDAL({
 
   let query = supabase
     .schema("vc")
-    .from("booking_resource_services")
+    .from("resource_services")
     .select(BOOKING_RESOURCE_SERVICE_SELECT)
     .eq("resource_id", resourceId)
     .order("created_at", { ascending: true });

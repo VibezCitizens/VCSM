@@ -73,7 +73,16 @@ export default function ActorProfileScreen() {
 
   useActorSlugRedirect(routeParam, canonicalSlug, resolvedActorId);
 
-  const { loading: kindLoading, kind } = useActorKind(resolvedActorId);
+  // For own profile, identity.kind is already known — skip the DB round-trip.
+  // useActorKind returns { loading: false, kind: null } for null actorId,
+  // so passing null is safe and avoids a fetch.
+  const identityKind = isSelf ? (identity?.kind ?? null) : null;
+  const { loading: kindLoading, kind: fetchedKind } = useActorKind(
+    identityKind ? null : resolvedActorId
+  );
+  const kind = identityKind ?? fetchedKind;
+  const effectiveKindLoading = identityKind ? false : kindLoading;
+
   const { loading: vportTypeLoading, vportType: prefetchedVportType } = useVportType(resolvedActorId);
 
   const vportProfile = useVportProfileBySlug(!isSelf ? routeParam : null);
@@ -98,7 +107,7 @@ export default function ActorProfileScreen() {
     resolvedActorId,
     canonicalSlug,
     slugLoading,
-    kindLoading,
+    kindLoading: effectiveKindLoading,
     kind,
     identityLoading,
     identityActorId: identity?.actorId ?? null,
@@ -118,7 +127,7 @@ export default function ActorProfileScreen() {
       slugLoading={slugLoading}
       slugResolveLoading={slugResolveLoading}
       slugNotFound={slugNotFound}
-      kindLoading={kindLoading}
+      kindLoading={effectiveKindLoading}
       kind={kind}
       rqIsLoading={vportProfile.isLoading}
       rqActorId={vportProfile.actorId}
@@ -192,7 +201,7 @@ export default function ActorProfileScreen() {
     return <>{probe}{SKELETON}</>;
   }
 
-  if (kindLoading) return <>{probe}{SKELETON}</>;
+  if (effectiveKindLoading) return <>{probe}{SKELETON}</>;
 
   const Screen = PROFILE_KIND_REGISTRY[kind] ?? PROFILE_KIND_REGISTRY.user;
   if (!hasLoggedRenderRef.current) {

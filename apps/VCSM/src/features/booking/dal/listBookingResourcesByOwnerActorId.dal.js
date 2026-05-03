@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_RESOURCE_SELECT = [
   "id",
@@ -20,9 +20,8 @@ export async function listBookingResourcesByOwnerActorIdDAL({
     throw new Error("listBookingResourcesByOwnerActorIdDAL: ownerActorId is required");
   }
 
-  let query = supabase
-    .schema("vc")
-    .from("booking_resources")
+  let query = vportClient
+    .from("resources")
     .select(BOOKING_RESOURCE_SELECT)
     .eq("owner_actor_id", ownerActorId)
     .order("sort_order", { ascending: true })

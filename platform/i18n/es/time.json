@@ -1,0 +1,15 @@
+{
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "tomorrow": "Tomorrow",
+  "thisWeek": "This week",
+  "lastWeek": "Last week",
+  "thisMonth": "This month",
+  "justNow": "Just now",
+  "minutesAgo": "{{count}}m ago",
+  "hoursAgo": "{{count}}h ago",
+  "daysAgo": "{{count}}d ago",
+  "at": "at {{time}}",
+  "on": "on {{date}}",
+  "postedAt": "Posted {{time}}"
+}

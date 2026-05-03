@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_RESOURCE_SELECT = [
   "id",
@@ -20,9 +20,8 @@ export async function getBookingResourceByIdDAL({
     throw new Error("getBookingResourceByIdDAL: resourceId is required");
   }
 
-  let query = supabase
-    .schema("vc")
-    .from("booking_resources")
+  let query = vportClient
+    .from("resources")
     .select(BOOKING_RESOURCE_SELECT)
     .eq("id", resourceId);
 

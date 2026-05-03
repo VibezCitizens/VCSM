@@ -9,6 +9,9 @@ export default function AccountTabView() {
     isVport,
     vportId,
     identity,
+    displayName,
+    avatarUrl,
+    handle,
     user,
     showConfirmAccount,
     busyAccount,
@@ -32,8 +35,8 @@ export default function AccountTabView() {
   const [hardTarget, setHardTarget] = useState(null)
   const [restoreTarget, setRestoreTarget] = useState(null)
 
-  const citizenName = identity?.displayName ?? 'Your account'
-  const citizenAvatar = identity?.photoUrl || '/avatar.jpg'
+  const citizenName = displayName ?? 'Your account'
+  const citizenAvatar = avatarUrl || '/avatar.jpg'
 
   async function handleSoftConfirm() {
     const ok = await softDeleteVport(softTarget.id)
@@ -59,9 +62,9 @@ export default function AccountTabView() {
   // ── VPORT mode: only show the active VPORT ──────────────
   if (isVport) {
     const activeVport = vports.find(v => v.id === vportId) ?? null
-    const displayName = identity?.displayName ?? activeVport?.name ?? 'VPORT'
-    const avatarSrc = identity?.photoUrl || activeVport?.avatar_url || '/avatar.jpg'
-    const slug = identity?.username ?? activeVport?.slug ?? ''
+    const actorDisplayName = displayName ?? activeVport?.name ?? 'VPORT'
+    const avatarSrc = avatarUrl || activeVport?.avatar_url || '/avatar.jpg'
+    const slug = handle ?? activeVport?.slug ?? ''
 
     return (
       <div className="space-y-5">
@@ -71,12 +74,12 @@ export default function AccountTabView() {
           <div className="flex items-center gap-3">
             <img
               src={avatarSrc}
-              alt={displayName}
+              alt={actorDisplayName}
               className="h-14 w-14 shrink-0 rounded-lg border border-white/12 object-cover"
               onError={e => { e.currentTarget.src = '/avatar.jpg' }}
             />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-base font-semibold text-white">{displayName}</div>
+              <div className="truncate text-base font-semibold text-white">{actorDisplayName}</div>
               {slug ? <div className="truncate text-sm text-white/50">@{slug}</div> : null}
             </div>
             <button onClick={logout} className="settings-btn settings-btn--ghost shrink-0 px-3 py-1.5 text-sm">

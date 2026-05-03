@@ -30,8 +30,18 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/queries/queryClient'
 import { AuthProvider } from '@/app/providers/AuthProvider'
 import { IdentityProvider } from '@/features/identity/adapters/identity.adapter'
-import { I18nProvider } from '@i18n'
-import { vcsmDictionary } from '@/i18n/setup'
+import { LocaleProvider, useLocale } from '@/platform/i18n/useLocale.jsx'
+import { VcsmI18nProvider } from '@/platform/i18n/VcsmI18nProvider'
+import { dictionaries } from '@/i18n/setup'
+
+function LocaleRoot({ children }) {
+  const { locale } = useLocale()
+  return (
+    <VcsmI18nProvider locale={locale} dictionary={dictionaries[locale]}>
+      {children}
+    </VcsmI18nProvider>
+  )
+}
 
 import { registerSW } from 'virtual:pwa-register'
 import {
@@ -97,13 +107,15 @@ createRoot(document.getElementById('root')).render(
   <RootMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <I18nProvider dictionary={vcsmDictionary}>
-          <AuthProvider>
-            <IdentityProvider>
-              <App />
-            </IdentityProvider>
-          </AuthProvider>
-        </I18nProvider>
+        <LocaleProvider>
+          <LocaleRoot>
+            <AuthProvider>
+              <IdentityProvider>
+                <App />
+              </IdentityProvider>
+            </AuthProvider>
+          </LocaleRoot>
+        </LocaleProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </RootMode>

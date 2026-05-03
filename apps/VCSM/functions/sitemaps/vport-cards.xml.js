@@ -19,30 +19,7 @@ export async function onRequest(context) {
 
   if (env.SUPABASE_URL && env.SUPABASE_ANON_KEY) {
     try {
-      const res = await fetch(
-        `${env.SUPABASE_URL}/rest/v1/profiles` +
-          `?slug=not.is.null` +
-          `&business_card_published=eq.true` +
-          `&is_active=eq.true` +
-          `&is_deleted=eq.false` +
-          `&select=slug,updated_at` +
-          `&limit=1000`,
-        {
-          method: 'GET',
-          headers: {
-            apikey: env.SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${env.SUPABASE_ANON_KEY}`,
-            'Accept-Profile': 'vport',
-            Accept: 'application/json',
-          },
-          signal: AbortSignal.timeout(5000),
-        }
-      );
-
-      if (res.ok) {
-        const data = await res.json();
-        rows = Array.isArray(data) ? data : [];
-      }
+      rows = await fetchAllPages(env, 'profiles', 'slug=not.is.null&business_card_published=eq.true&is_active=eq.true&is_deleted=eq.false&select=slug,updated_at');
     } catch {
       // Network timeout or Supabase error — return empty sitemap
     }
@@ -75,6 +52,37 @@ export async function onRequest(context) {
       'cache-control': 'public, max-age=3600',
     },
   });
+}
+
+async function fetchAllPages(env, table, query) {
+  const PAGE_SIZE = 1000;
+  const all = [];
+  let offset = 0;
+
+  while (true) {
+    const res = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/${table}?${query}&limit=${PAGE_SIZE}&offset=${offset}`,
+      {
+        method: 'GET',
+        headers: {
+          apikey: env.SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${env.SUPABASE_ANON_KEY}`,
+          'Accept-Profile': 'vport',
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      }
+    );
+
+    if (!res.ok) break;
+    const page = await res.json();
+    if (!Array.isArray(page) || page.length === 0) break;
+    all.push(...page);
+    if (page.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+
+  return all;
 }
 
 function escapeXml(str) {

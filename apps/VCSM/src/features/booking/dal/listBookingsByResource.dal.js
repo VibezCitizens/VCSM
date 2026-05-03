@@ -2,7 +2,7 @@
 // Booking — List All Bookings by Resource DAL
 // ============================================================
 
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_SELECT = [
   "id",
@@ -43,8 +43,7 @@ export async function listBookingsByResourceDAL({
     throw new Error("listBookingsByResourceDAL: resourceId is required");
   }
 
-  let query = supabase
-    .schema("vc")
+  let query = vportClient
     .from("bookings")
     .select(BOOKING_SELECT)
     .eq("resource_id", resourceId)

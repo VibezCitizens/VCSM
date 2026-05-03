@@ -4,6 +4,7 @@ import { AlertTriangle, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import Card from '@/features/settings/ui/Card'
 import OnemoredaysAd from '@/features/ads/adapters/widgets/OnemoredaysAd.adapter'
 import { useVportsController } from '@/features/settings/vports/hooks/useVportsController'
+import { useVportNotificationBadges } from '@/features/settings/vports/hooks/useVportNotificationBadges'
 
 import { VportsBusinessCardSection } from '@/features/settings/vports/ui/VportsBusinessCardSection'
 import { VportsCreateModal } from '@/features/settings/vports/ui/VportsCreateModal'
@@ -51,6 +52,8 @@ export default function VportsTabView() {
 
   const activeVports = items.filter(v => !v.is_deleted)
   const deactivatedVports = items.filter(v => v.is_deleted)
+
+  const getVportCount = useVportNotificationBadges(activeVports)
 
   async function handleRecoverConfirm() {
     const ok = await restoreVport(restoreTarget.id)
@@ -113,7 +116,9 @@ export default function VportsTabView() {
         ) : (
           <ul className="m-0 grid list-none grid-cols-1 gap-2.5 p-0">
             {activeVports.map((v) => {
-              const isActive = activeActor === `vport:${resolveVportActorId(v)}`
+              const vportActorId = resolveVportActorId(v)
+              const isActive = activeActor === `vport:${vportActorId}`
+              const unreadCount = getVportCount(vportActorId)
               return (
                 <li
                   key={v.id}
@@ -131,16 +136,23 @@ export default function VportsTabView() {
                     />
                     <div className="min-w-0 text-[1rem] font-medium text-white truncate">{v.name}</div>
                   </div>
-                  <button
-                    onClick={() => switchToVport(v, setBusy)}
-                    disabled={busy || isActive}
-                    className={[
-                      'settings-btn settings-btn--ghost border px-3 py-1.5 text-xs',
-                      isActive ? 'opacity-90' : '',
-                    ].join(' ')}
-                  >
-                    {isActive ? 'Current' : 'Switch'}
-                  </button>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {unreadCount > 0 && (
+                      <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-purple-500/90 px-1.5 text-[11px] font-bold leading-none text-white">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => switchToVport(v, setBusy)}
+                      disabled={busy || isActive}
+                      className={[
+                        'settings-btn settings-btn--ghost border px-3 py-1.5 text-xs',
+                        isActive ? 'opacity-90' : '',
+                      ].join(' ')}
+                    >
+                      {isActive ? 'Current' : 'Switch'}
+                    </button>
+                  </div>
                 </li>
               )
             })}

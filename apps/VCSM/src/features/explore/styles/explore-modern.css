@@ -187,6 +187,59 @@
   text-transform: uppercase;
 }
 
+.explore-modern .explore-section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--explore-muted);
+  padding: 0.35rem 0.1rem 0.1rem;
+}
+
+.explore-modern .explore-post-card {
+  width: 100%;
+  text-align: left;
+  border-radius: 0.95rem;
+  border: 1px solid var(--vc-border-subtle);
+  background: var(--vc-card-bg);
+  box-shadow: var(--vc-shadow-card);
+  padding: 0.85rem 0.9rem;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+.explore-modern .explore-post-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--vc-border-strong);
+}
+
+.explore-modern .explore-post-card-text {
+  font-size: 0.875rem;
+  color: var(--explore-text);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+}
+
+.explore-modern .explore-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.explore-modern .explore-post-tag {
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--explore-accent-a);
+  background: rgba(139, 92, 246, 0.12);
+  border-radius: 9999px;
+  padding: 0.18rem 0.5rem;
+}
+
 .explore-modern .explore-empty-state {
   border: 1px solid var(--vc-border-subtle);
   border-radius: 1rem;

@@ -6,8 +6,6 @@ import {
 import { resolvePage, buildCountryMetadata, buildLegacyCityMetadata } from "./_graph";
 import { renderCountryPage, renderLegacyCityPage } from "./_renderers";
 
-export const revalidate = 900;
-
 function dedupeCityParams(entries) {
   const seen = new Set();
   const output = [];

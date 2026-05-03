@@ -1,9 +1,14 @@
-import { getSitemapChunk, listSitemapChunks } from "@/data/repositories/pageCandidate.repo";
+import { getSitemapChunk, listSitemapChunks, listPageCandidates } from "@/data/repositories/pageCandidate.repo";
 import { buildCanonical } from "@/seo/canonical";
 
-export async function generateStaticParams() {
-  const chunks = await listSitemapChunks();
-  return chunks.map((entry) => ({ chunk: entry.chunk }));
+const CHUNK_SIZE = 5000;
+
+// Sync — uses only static in-memory data so the build never depends on Supabase availability.
+// The GET handler still includes content pages when they are available at render time.
+export function generateStaticParams() {
+  const pages = listPageCandidates({ includeLegacy: false });
+  const chunkCount = Math.max(1, Math.ceil(pages.length / CHUNK_SIZE));
+  return Array.from({ length: chunkCount }, (_, i) => ({ chunk: `chunk-${i + 1}.xml` }));
 }
 
 export async function GET(request, { params }) {

@@ -1,126 +1,46 @@
-import { useState, useCallback, useRef } from "react";
-import { getActorPostsController } from "@/features/profiles/controller/post/getActorPosts.controller";
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { getActorPostsController } from '@/features/profiles/controller/post/getActorPosts.controller'
+import { queryKeys } from '@/queries/queryKeys'
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 20
 
-export function useActorPosts() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [hasMore, setHasMore] = useState(true);
+/**
+ * Paginated posts for the Vibes tab.
+ *
+ * React Query (useInfiniteQuery) replaces the previous manual useState/useRef
+ * pagination so that:
+ * - staleTime 60s: switching tabs and returning renders cached posts instantly
+ * - gcTime 300s: cache survives route switches
+ * - Concurrent callers for the same actorId share one in-flight request
+ *
+ * Accepts actorId directly (no reset/loadInitial calls needed in the consumer).
+ * Invalidate via queryKeys.actorPosts(actorId) on post delete.
+ */
+export function useActorPosts(actorId) {
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: queryKeys.actorPosts(actorId),
+    queryFn: ({ pageParam = 0 }) =>
+      getActorPostsController({ actorId, page: pageParam, pageSize: PAGE_SIZE }),
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.done ? undefined : pages.length,
+    enabled: !!actorId,
+    staleTime: 60_000,
+    gcTime: 300_000,
+  })
 
-  const pageRef = useRef(0);
-  const actorRef = useRef(null);
-
-  // ============================================================
-  // DEBUG — STATE SNAPSHOT
-  // ============================================================
-  // console.log("[useActorPosts][STATE]", {
-  //   actorRef: actorRef.current,
-  //   page: pageRef.current,
-  //   postsCount: posts.length,
-  //   loading,
-  //   hasMore,
-  // });
-
-  // ============================================================
-  // RESET
-  // ============================================================
-  const reset = useCallback((actorId) => {
-    // console.log("[useActorPosts][RESET]", {
-    //   actorId,
-    //   prevActor: actorRef.current,
-    // });
-
-    actorRef.current = actorId;
-    pageRef.current = 0;
-    setPosts([]);
-    setHasMore(true);
-    setError("");
-  }, []);
-
-  // ============================================================
-  // LOAD INITIAL
-  // ============================================================
-  const loadInitial = useCallback(async () => {
-    if (!actorRef.current) return;
-
-    // console.log("[useActorPosts][LOAD_INITIAL:START]", {
-    //   actorId: actorRef.current,
-    //   page: 0,
-    // });
-
-    setLoading(true);
-
-    try {
-      const result = await getActorPostsController({
-        actorId: actorRef.current,
-        page: 0,
-        pageSize: PAGE_SIZE,
-      });
-
-      // console.log("[useActorPosts][LOAD_INITIAL:RESULT]", {
-      //   count: result.posts?.length,
-      //   done: result.done,
-      //   sample: result.posts?.[0],
-      // });
-
-      setPosts(result.posts);
-      setHasMore(!result.done);
-    } catch (err) {
-      // console.error("[useActorPosts][LOAD_INITIAL:ERROR]", err);
-      setError(err?.message || "Failed to load posts");
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // ============================================================
-  // LOAD MORE
-  // ============================================================
-  const loadMore = useCallback(async () => {
-    if (loading || !hasMore || !actorRef.current) return;
-
-    const nextPage = pageRef.current + 1;
-
-    // console.log("[useActorPosts][LOAD_MORE:START]", {
-    //   actorId: actorRef.current,
-    //   nextPage,
-    // });
-
-    setLoading(true);
-
-    try {
-      const result = await getActorPostsController({
-        actorId: actorRef.current,
-        page: nextPage,
-        pageSize: PAGE_SIZE,
-      });
-
-      // console.log("[useActorPosts][LOAD_MORE:RESULT]", {
-      //   added: result.posts?.length,
-      //   done: result.done,
-      // });
-
-      pageRef.current = nextPage;
-      setPosts((prev) => [...prev, ...result.posts]);
-      setHasMore(!result.done);
-    } catch (err) {
-      // console.error("[useActorPosts][LOAD_MORE:ERROR]", err);
-      setError(err?.message || "Failed to load more posts");
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, hasMore]);
+  const posts = data?.pages.flatMap((p) => p.posts) ?? []
 
   return {
     posts,
-    loading,
-    error,
-    hasMore,
-    reset,
-    loadInitial,
-    loadMore,
-  };
+    loading: isLoading,
+    hasMore: hasNextPage ?? false,
+    loadMore: fetchNextPage,
+    loadingMore: isFetchingNextPage,
+  }
 }

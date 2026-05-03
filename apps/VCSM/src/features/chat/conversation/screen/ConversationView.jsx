@@ -1,6 +1,6 @@
 // src/features/chat/conversation/screen/ConversationView.jsx
 import { useMemo, useRef, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { ios } from '@/app/platform'
 
@@ -16,8 +16,6 @@ import useConversationCover from '@/features/moderation/adapters/hooks/useConver
 import useInboxActions from '@/features/chat/inbox/hooks/useInboxActions'
 import useInboxEntryForConversation from '@/features/chat/inbox/hooks/useInboxEntryForConversation'
 import { useMarkChatRead } from '@/features/chat/inbox/hooks/useMarkChatRead'
-
-// ✅ add this import
 import useSendMessageActions from '@/features/chat/conversation/hooks/conversation/useSendMessageActions'
 
 import ChatHeader from '@/features/chat/conversation/components/ChatHeader'
@@ -33,18 +31,53 @@ import Spinner from '@/shared/components/Spinner'
 import { useConversationScroll } from '@/features/chat/conversation/hooks/conversation/useConversationScroll'
 import resolvePartnerActor from '@/features/chat/conversation/lib/resolvePartnerActor'
 import canReadConversation from '@/features/chat/conversation/permissions/canReadConversation'
+import { chatNavDbg } from '@/features/chat/debug/chatNavDebugger'
 
-// ✅ Toast
 import Toast from '@/shared/components/components/Toast'
 import '@/features/ui/modern/module-modern.css'
 
+const DEV = import.meta.env?.DEV
+
 export default function ConversationView({ conversationId }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { identity } = useIdentity()
   const actorId = identity?.actorId ?? null
   const messagesRef = useRef(null)
+  const dbgRunRef = useRef(null)
 
-  // ✅ toast state
+  // ── Inbox seed (passed from InboxScreen via navigate state) ──────────
+  // Gives us enough data to render the shell instantly without waiting
+  // for openConversation or readConversationMembers to complete.
+  const inboxSeed = location.state?.inboxPreview ?? null
+
+  const seedConversation = useMemo(() => {
+    if (!inboxSeed) return null
+    return {
+      id: inboxSeed.conversationId,
+      conversationKind: inboxSeed.conversationKind ?? 'direct',
+      isGroup: inboxSeed.conversationKind === 'group',
+      title: inboxSeed.partnerDisplayName ?? null,
+      accessMode: 'standard',
+      visibility: 'members',
+      scopeKind: null,
+      scopeId: null,
+      lastMessageAt: inboxSeed.lastMessageAt ?? null,
+    }
+  }, [inboxSeed])
+
+  const seedPartnerActor = useMemo(() => {
+    if (!inboxSeed || inboxSeed.conversationKind === 'group') return null
+    return {
+      actorId: inboxSeed.partnerActorId,
+      kind: inboxSeed.partnerKind ?? 'user',
+      displayName: inboxSeed.partnerDisplayName ?? null,
+      username: inboxSeed.partnerUsername ?? null,
+      photoUrl: inboxSeed.partnerPhotoUrl ?? '/avatar.jpg',
+    }
+  }, [inboxSeed])
+
+  // ── Toast ──────────────────────────────────────────────────────────
   const [toast, setToast] = useState('')
 
   ios.useIOSPlatform({ enableKeyboard: true })
@@ -57,9 +90,10 @@ export default function ConversationView({ conversationId }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, actorId])
 
+  // ── Server hooks — run in background, reconcile with seed ───────────
   const { conversation, loading, error } = useConversation({ conversationId, actorId })
   const { members } = useConversationMembers({ conversationId, actorId })
-  const { messages, onEditMessage, onDeleteMessage, onSendMessage, addOptimistic, updateOptimistic, markFailed, retryMessage } =
+  const { messages, loading: messagesLoading, onEditMessage, onDeleteMessage, onSendMessage, addOptimistic, updateOptimistic, markFailed, retryMessage } =
     useConversationMessages({ conversationId, actorId })
   const { notifyTyping } = useTypingChannel({ conversationId, actorId })
 
@@ -69,10 +103,14 @@ export default function ConversationView({ conversationId }) {
   const isArchived = inboxEntry?.folder === 'archived' || inboxEntry?.archived === true
   const isSpamThread = inboxEntry?.folder === 'spam'
 
-  const partnerActor = useMemo(
-    () => resolvePartnerActor({ actorId, conversation, members }),
-    [actorId, conversation, members]
+  // ── Effective values: server truth when available, seed otherwise ────
+  const effectiveConversation = conversation ?? seedConversation
+
+  const resolvedPartnerActor = useMemo(
+    () => resolvePartnerActor({ actorId, conversation: conversation ?? seedConversation, members }),
+    [actorId, conversation, seedConversation, members]
   )
+  const effectivePartnerActor = resolvedPartnerActor ?? seedPartnerActor
 
   const { viewer, openViewer, closeViewer } = useMediaViewer()
   const { conversationCovered, setConversationCovered, undoConversationCover } =
@@ -82,17 +120,11 @@ export default function ConversationView({ conversationId }) {
     menu,
     openMenu,
     closeMenu,
-
-    // ✅ copy
     handleCopy,
-
-    // ✅ editing state + handlers
     editing,
     handleEdit,
     handleSaveEdit,
     handleCancelEdit,
-
-    // actions
     handleDeleteForMe,
     handleUnsend,
     handleReportMessage,
@@ -131,7 +163,6 @@ export default function ConversationView({ conversationId }) {
     messagesLength: messages?.length,
   })
 
-  // ✅ This is your real send+attach pipeline (uploads media -> sends message)
   const { handleSend, handleAttach } = useSendMessageActions({
     conversationId,
     actorId,
@@ -141,18 +172,70 @@ export default function ConversationView({ conversationId }) {
     markFailed,
   })
 
-  // ✅ Now it’s safe to early-return
+  // ── DEV instrumentation ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!DEV) return
+    const id = chatNavDbg.startRun('Inbox → ConversationView', {
+      conversationId,
+      hasSeed: !!inboxSeed,
+    })
+    dbgRunRef.current = id
+    chatNavDbg.mark(id, 'chat:shell:rendered', { hasSeed: !!inboxSeed })
+    return () => {
+      if (dbgRunRef.current) {
+        chatNavDbg.endRun(dbgRunRef.current, 'chat:unmounted')
+        dbgRunRef.current = null
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId])
+
+  useEffect(() => {
+    if (!DEV || !conversation || !dbgRunRef.current) return
+    chatNavDbg.mark(dbgRunRef.current, 'chat:openConversation:end', { conversationId })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation])
+
+  useEffect(() => {
+    if (!DEV || !members?.length || !dbgRunRef.current) return
+    chatNavDbg.mark(dbgRunRef.current, 'chat:participants:end', { count: members.length })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [members?.length])
+
+  useEffect(() => {
+    if (!DEV || !messages?.length || !dbgRunRef.current) return
+    chatNavDbg.mark(dbgRunRef.current, 'chat:messages:end', { count: messages.length })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages?.length])
+
+  useEffect(() => {
+    if (!DEV || !conversation || !members?.length || !messages?.length || !dbgRunRef.current) return
+    chatNavDbg.endRun(dbgRunRef.current, 'chat:usable', {
+      conversationId,
+      messageCount: messages.length,
+      memberCount: members.length,
+    })
+    dbgRunRef.current = null
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation, members?.length, messages?.length])
+
+  // ── Guards ──────────────────────────────────────────────────────────
   if (error) return <div className="p-4 text-rose-300">Failed to load</div>
-  if (loading || !conversation || !members?.length) {
+
+  // Full-page spinner only when there is truly no data — no seed, still loading
+  if (!effectiveConversation) {
     return (
       <div className="p-6">
         <Spinner label="Loading conversation..." />
       </div>
     )
   }
-  if (!canReadConversation({ actorId, members })) return <div className="p-4 text-white/50">Access denied</div>
 
-  // ✅ EDITING IS DRIVEN BY `editing` (not `menu`)
+  // Enforce access control only after server members have arrived
+  if (members?.length > 0 && !canReadConversation({ actorId, members })) {
+    return <div className="p-4 text-white/50">Access denied</div>
+  }
+
   const isEditing = !!editing
   const editingInitialText = editing?.initialBody ?? ''
 
@@ -162,21 +245,31 @@ export default function ConversationView({ conversationId }) {
         messagesRef={messagesRef}
         header={
           <ChatHeader
-            conversation={conversation}
-            partnerActor={partnerActor}
+            conversation={effectiveConversation}
+            partnerActor={effectivePartnerActor}
             onBack={() => navigate(-1)}
             onOpenMenu={conversationCovered ? undefined : openConvMenu}
           />
         }
         messages={
-          <MessageList
-            messages={messages}
-            currentActorId={actorId}
-            isGroupChat={conversation.isGroup}
-            onOpenActions={conversationCovered ? undefined : openMenu}
-            onOpenMedia={conversationCovered ? undefined : openViewer}
-            retryMessage={retryMessage}
-          />
+          messagesLoading && messages.length === 0 ? (
+            <div className="flex flex-col gap-3 px-4 py-6 animate-pulse">
+              <div className="ml-auto h-8 w-44 rounded-2xl bg-white/8" />
+              <div className="h-10 w-56 rounded-2xl bg-white/8" />
+              <div className="ml-auto h-8 w-36 rounded-2xl bg-white/8" />
+              <div className="h-8 w-48 rounded-2xl bg-white/8" />
+              <div className="ml-auto h-10 w-52 rounded-2xl bg-white/8" />
+            </div>
+          ) : (
+            <MessageList
+              messages={messages}
+              currentActorId={actorId}
+              isGroupChat={effectiveConversation.isGroup}
+              onOpenActions={conversationCovered ? undefined : openMenu}
+              onOpenMedia={conversationCovered ? undefined : openViewer}
+              retryMessage={retryMessage}
+            />
+          )
         }
         footer={null}
       />
@@ -202,16 +295,10 @@ export default function ConversationView({ conversationId }) {
           onAttach={handleAttach}
           onAttachError={(msg) => setToast(msg || 'Image failed to send.')}
           onTyping={notifyTyping}
-
-          // ✅ edit wiring
           editing={isEditing}
           initialValue={editingInitialText}
-          onSaveEdit={(text) => {
-            handleSaveEdit(text)
-          }}
-          onCancelEdit={() => {
-            handleCancelEdit()
-          }}
+          onSaveEdit={(text) => { handleSaveEdit(text) }}
+          onCancelEdit={() => { handleCancelEdit() }}
         />
       )}
 
@@ -231,7 +318,7 @@ export default function ConversationView({ conversationId }) {
         isOwn={menu?.isOwn}
         onClose={closeMenu}
         onCopy={handleCopy}
-        onEdit={handleEdit} // ✅ starts edit (sets `editing`)
+        onEdit={handleEdit}
         onDeleteForMe={handleDeleteForMe}
         onUnsend={handleUnsend}
         onReport={handleReportMessage}
@@ -284,4 +371,3 @@ export default function ConversationView({ conversationId }) {
     </div>
   )
 }
-

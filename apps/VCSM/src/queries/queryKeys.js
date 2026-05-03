@@ -18,6 +18,15 @@ export const queryKeys = {
   chatMessages: (conversationId) => ['chat', 'messages', conversationId],
   chatParticipants: (conversationId) => ['chat', 'participants', conversationId],
 
+  // Public profile view
+  // canViewContent is included so cache entries for private vs open profiles are distinct.
+  profileView: (viewerActorId, profileActorId, canViewContent) =>
+    ['profile', 'view', viewerActorId, profileActorId, canViewContent ?? 'pending'],
+
+  // Paginated posts for the Vibes tab — keyed by actorId only.
+  // Invalidate this when a post is deleted to bust the React Query page cache.
+  actorPosts: (actorId) => ['profile', 'posts', actorId],
+
   // Settings
   settingsAccount: (actorId) => ['settings', 'account', actorId],
   settingsProfile: (userId) => ['settings', 'profile', userId],

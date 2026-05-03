@@ -22,6 +22,51 @@ This workspace contains three completely separate products. They share engines a
 - **Never move features between apps.** If both apps need something similar, it belongs in `engines/` or `shared/`, not copied between apps.
 - **Both apps have LMS features — they are not the same LMS.** VCSM has an embedded `/learning` route. Wentrex IS a standalone LMS SaaS. Do not conflate them.
 
+## VCSM Architecture Contract — Mandatory Pre-Work Gate
+
+> **Before working on anything inside `apps/VCSM/`, read this file in full:**
+> `/Users/vcsm/Desktop/VCSM/zNOTFORPRODUCTION/_CANONICAL/zcontract/ARCHITECTURE.md`
+>
+> This contract is locked. It overrides any local assumptions, prior patterns, or inferred conventions.
+
+### Identity — Actor-Based Only
+
+- VCSM is actor-based. The canonical identity fields are `actorId` and `kind` (`'user'` | `'vport'`).
+- **Never** scope behavior by `profileId`, `vportId`, or raw `userId`.
+- **Never** expose `profileId` or `vportId` through `useIdentity()` or any public hook/controller surface.
+- "Owner" always means Actor Owner — verified through `actor_owners`. There is no other ownership model.
+
+### Screen Role Boundaries
+
+Every file in `apps/VCSM/src/features/` must belong to exactly one layer and respect its role:
+
+| Layer | Role | What it must NOT do |
+|---|---|---|
+| **Final Screen** | Route entry + identity gate only | No hooks, no computation, no data fetching |
+| **View Screen** | Hooks + component composition | No business logic, no DB access |
+| **Components** | Presentational only | No hooks, no data fetching, no side effects |
+| **Hooks** | Lifecycle / timing / state wiring | No business rules, no direct DB access |
+| **Controllers** | Business rules, ownership, permissions | No React, no UI concerns |
+| **Models** | Domain shape translation, pure transforms | No side effects, no DB access |
+| **DAL** | Raw Supabase access only | No business logic, no UI concerns |
+
+### Mandatory Build Order
+
+Always build in this order. Do not skip layers or work backwards.
+
+```
+DAL → Model → Controller → Hook → Components → View Screen → Final Screen
+```
+
+### Additional Hard Rules
+
+- **Imports:** All new cross-folder imports must use `@/...` path aliases — never relative `../../` chains.
+- **DAL selects:** Always use explicit column lists. `select('*')` is banned.
+- **File length:** Keep files under 300 lines. If a file exceeds this, split it before continuing.
+- **Cross-feature access:** One feature must never import directly from another feature's internals. All cross-feature access must go through adapters only.
+
+---
+
 ## Shared Infrastructure (Safe to Consume from Both Apps)
 
 - `engines/` — reusable domain engines (chat, identity, hydration, portfolio, reviews, booking, notifications)
@@ -194,6 +239,7 @@ Always render modals as **fragment siblings**, not children of styled card conta
 
 ## Contract References
 
+- `/Users/vcsm/Desktop/VCSM/zNOTFORPRODUCTION/_CANONICAL/zcontract/ARCHITECTURE.md` — **locked architecture contract for apps/VCSM/ — read before every session**
 - `SECURITY_ENGINEERING_CONTRACT.md` — auth, database, infrastructure security
 - `SENIOR_DEVELOPER_CONTRACT.md` — execution quality standards
 - `ANTI_HALLUCINATION_ENGINEERING_CONTRACT.md` — claim verification rules

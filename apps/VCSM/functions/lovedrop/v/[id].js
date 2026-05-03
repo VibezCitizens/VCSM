@@ -26,14 +26,16 @@ export async function onRequest(context) {
 
   let html = await indexRes.text();
 
-  // Clean existing OG/Twitter (avoid duplicates)
-  html = html
-    .replace(/<meta\s+property="og:[^"]+"\s+content="[^"]*"\s*\/?>\s*/g, "")
-    .replace(/<meta\s+name="twitter:[^"]+"\s+content="[^"]*"\s*\/?>\s*/g, "")
-    .replace(/<meta\s+property="og:image:width"\s+content="[^"]*"\s*\/?>\s*/g, "")
-    .replace(/<meta\s+property="og:image:height"\s+content="[^"]*"\s*\/?>\s*/g, "");
+  const stripMeta = (s) =>
+    s
+      .replace(/<meta\s+property=["']og:[^"']+["']\s+content=["'][^"']*["']\s*\/?>\s*/gi, "")
+      .replace(/<meta\s+name=["']twitter:[^"']+["']\s+content=["'][^"']*["']\s*\/?>\s*/gi, "")
+      .replace(/<link\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*\/?>\s*/gi, "");
+
+  html = stripMeta(html);
 
   const metaTags = `
+    <meta name="robots" content="noindex, follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Vibez Citizens" />
     <meta property="og:title" content="${escapeHtml(title)}" />
@@ -49,9 +51,7 @@ export async function onRequest(context) {
     <meta name="twitter:image" content="${escapeHtml(image)}" />
   `.trim();
 
-  html = html.includes("<head>")
-    ? html.replace("<head>", `<head>\n${metaTags}\n`)
-    : `${metaTags}\n${html}`;
+  html = html.replace(/<\/head>/i, `${metaTags}\n</head>`);
 
   return new Response(html, {
     headers: {

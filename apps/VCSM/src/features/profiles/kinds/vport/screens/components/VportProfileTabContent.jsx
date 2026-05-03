@@ -19,15 +19,12 @@ export default function VportProfileTabContent({
   profile,
   publicDetails,
   publicDetailsLoading,
-  visibleProfilePosts,
-  loadingPosts,
   viewerActorId,
   profileActorId,
   identity,
   isOwner,
   vportType,
   effectiveTabs,
-  postsVersion,
   reviewsDefaultTab,
   onSetTab,
   onConsumedReviewsTab,
@@ -36,21 +33,21 @@ export default function VportProfileTabContent({
 }) {
   return (
     <div className="profiles-shell px-4 pb-24">
-      {tab === "vibes" && (
+      <div
+        style={{ display: tab === "vibes" ? undefined : "none" }}
+        aria-hidden={tab !== "vibes"}
+      >
         <ActorProfilePostsView
           profileActorId={profile.actorId}
           onShare={onShare}
           onOpenMenu={onOpenMenu}
-          version={postsVersion}
         />
-      )}
+      </div>
 
       {tab === "photos" && (
         <ActorProfilePhotosView
           actorId={profile.actorId}
           viewerActorId={viewerActorId}
-          posts={visibleProfilePosts}
-          loadingPosts={loadingPosts}
           canViewContent
           handleShare={onShare}
         />
@@ -59,8 +56,6 @@ export default function VportProfileTabContent({
       {tab === "portfolio" && (
         <VportPortfolioView
           profile={profile}
-          posts={visibleProfilePosts}
-          loadingPosts={loadingPosts}
           availableTabs={effectiveTabs}
           onSelectTab={onSetTab}
         />

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PostCard from "@/features/post/adapters/postCard.adapter";
 import { useActorPosts } from "@/features/profiles/screens/views/tabs/post/hooks/useActorPosts";
@@ -58,18 +57,9 @@ export default function ActorProfilePostsView({
   profileActorId,
   onShare,
   onOpenMenu,
-  version = 0,
 }) {
   const navigate = useNavigate();
-
-  const { posts, loading, hasMore, reset, loadInitial, loadMore } = useActorPosts();
-
-  useEffect(() => {
-    if (!profileActorId) return;
-    reset(profileActorId);
-    loadInitial();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileActorId, version]);
+  const { posts, loading, hasMore, loadMore, loadingMore } = useActorPosts(profileActorId);
 
   const openPost = (postId) => {
     if (!postId) return;
@@ -109,10 +99,10 @@ export default function ActorProfilePostsView({
         <div className="flex justify-center">
           <button
             onClick={loadMore}
-            disabled={loading}
+            disabled={loadingMore}
             className="profiles-pill-btn px-4 py-2 text-sm disabled:opacity-50"
           >
-            {loading ? "Loading..." : "Load more"}
+            {loadingMore ? "Loading..." : "Load more"}
           </button>
         </div>
       )}

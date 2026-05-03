@@ -1,5 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { useActorStore } from "@hydration";
+import { queryKeys } from "@/queries/queryKeys";
 
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
@@ -21,13 +25,46 @@ import ActorProfilePhotosView from "@/features/profiles/screens/views/ActorProfi
 import ActorProfileTagsView from "@/features/profiles/screens/views/ActorProfileTagsView";
 import "@/features/profiles/styles/profiles-modern.css";
 
-export default function ActorProfileViewScreen({ viewerActorId, profileActorId }) {
+export default function ActorProfileViewScreen({ viewerActorId, profileActorId, identity }) {
   const [tab, setTab] = useState("posts");
   const [gateVersion, setGateVersion] = useState(0);
-  const [postsVersion, setPostsVersion] = useState(0);
 
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
+  // ── Seed profile from hydration store ─────────────────────────────────────
+  // Renders the header immediately before the profile RPC resolves.
+  // For own profile: identity prop provides the most current data.
+  // For other profiles: actor store has data if they appeared in feed/chat.
+  const storeActor = useActorStore((s) => s.actors[profileActorId] ?? null);
+  const isSelf = viewerActorId === profileActorId;
+
+  const seedProfile = useMemo(() => {
+    // Prefer hydration store (complete); fall back to identity for own profile
+    const src = storeActor ?? (isSelf ? identity : null);
+    if (!src) return null;
+
+    const isVport = (src.kind ?? src.actor_kind) === "vport";
+    return {
+      actorId: profileActorId,
+      kind: src.kind ?? "user",
+      displayName: isVport
+        ? (src.vportName ?? src.vport_name ?? src.displayName ?? src.display_name ?? null)
+        : (src.displayName ?? src.display_name ?? null),
+      username: isVport
+        ? (src.vportSlug ?? src.vport_slug ?? src.username ?? null)
+        : (src.username ?? null),
+      avatarUrl: isVport
+        ? (src.vportAvatarUrl ?? src.vport_avatar_url ?? src.photoUrl ?? src.photo_url ?? "/avatar.jpg")
+        : (src.photoUrl ?? src.photo_url ?? src.avatar ?? "/avatar.jpg"),
+      bannerUrl: src.bannerUrl ?? src.banner_url ?? src.banner ?? "/default-banner.jpg",
+      bio: src.bio ?? null,
+      isFollowing: false,
+      _isSeed: true,
+    };
+  }, [storeActor, isSelf, identity, profileActorId]);
+
+  // ── Gate + block ───────────────────────────────────────────────────────────
   const gate = useProfileGate({
     viewerActorId,
     targetActorId: profileActorId,
@@ -35,16 +72,6 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
   });
 
   const canViewContent = gate.loading ? undefined : gate.canView;
-
-  const { loading, error, profile, posts, loadingPosts } = useProfileView({
-    viewerActorId,
-    profileActorId,
-    canViewContent,
-  });
-
-  // Sets document.title, meta description, and (for vports) JSON-LD.
-  // Fires after profile resolves; cleans up on unmount.
-  useActorSeoMeta(profile ?? null);
 
   const { loading: blockLoading, canViewProfile } = useBlockStatus(
     viewerActorId,
@@ -57,15 +84,34 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     }
   }, [blockLoading, canViewProfile, navigate]);
 
-  const visibleProfilePosts = useMemo(() => {
-    const list = Array.isArray(posts) ? posts : [];
-    return list.filter((post) => !post?.deleted_at);
-  }, [posts]);
+  // ── Profile data (React Query) ─────────────────────────────────────────────
+  const { loading, error, profile } = useProfileView({
+    viewerActorId,
+    profileActorId,
+    canViewContent,
+  });
 
+  useActorSeoMeta(profile ?? null);
+
+  // Use server profile when available; seed while loading for instant header.
+  const displayProfile = profile ?? seedProfile;
+
+  if (import.meta.env.DEV && seedProfile && !profile) {
+    performance.mark("profile:seed-rendered");
+  }
+  if (import.meta.env.DEV && profile) {
+    performance.mark("profile:fetch:end");
+    performance.mark("profile:usable");
+  }
+
+  // ── Post actions ──────────────────────────────────────────────────────────
   const handlePostDeleted = useCallback(() => {
-    setPostsVersion((value) => value + 1);
-    setGateVersion((value) => value + 1);
-  }, []);
+    qc.invalidateQueries({
+      queryKey: queryKeys.profileView(viewerActorId, profileActorId, canViewContent),
+    });
+    qc.invalidateQueries({ queryKey: queryKeys.actorPosts(profileActorId) });
+    setGateVersion((v) => v + 1);
+  }, [qc, viewerActorId, profileActorId, canViewContent]);
 
   const {
     reportFlow,
@@ -84,7 +130,9 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     onPostDeleted: handlePostDeleted,
   });
 
-  if (loading || blockLoading || gate.loading) {
+  // ── Render gates ──────────────────────────────────────────────────────────
+  // No seed data at all — full skeleton
+  if (!displayProfile && (loading || blockLoading || gate.loading)) {
     return (
       <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
         <ActorProfileHeader loading />
@@ -92,7 +140,8 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     );
   }
 
-  if (error || !profile) {
+  // RPC failed and no seed to fall back on
+  if (error && !displayProfile) {
     return (
       <div className="profiles-modern flex justify-center py-20 text-rose-300">
         Failed to load profile.
@@ -100,78 +149,87 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId }
     );
   }
 
-  const isCitizenProfile = profile?.kind === "user";
+  const resolvedProfile = displayProfile;
+  const isCitizenProfile = resolvedProfile?.kind === "user";
   const isProfileOwner =
     Boolean(viewerActorId) &&
-    Boolean(profile?.actorId) &&
-    viewerActorId === profile.actorId;
+    Boolean(resolvedProfile?.actorId) &&
+    viewerActorId === resolvedProfile.actorId;
+
+  // Content area waits for security checks regardless of seed availability.
+  const contentReady = !blockLoading && !gate.loading;
 
   return (
     <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
+      {/* Header renders immediately from seed or confirmed profile */}
       <ActorProfileHeader
-        profile={profile}
+        profile={resolvedProfile}
         viewerActorId={viewerActorId}
         profileIsPrivate={gate.isPrivate}
-        onSubscriptionChanged={() => setGateVersion((value) => value + 1)}
+        onSubscriptionChanged={() => setGateVersion((v) => v + 1)}
       />
 
-      <ActorProfileTabs tab={tab} setTab={setTab} includeTags={isCitizenProfile} />
+      {contentReady && (
+        <>
+          <ActorProfileTabs tab={tab} setTab={setTab} includeTags={isCitizenProfile} />
 
-      {!gate.canView && (
-        <PrivateProfileNotice
-          actor={{
-            id: profile?.actorId ?? profileActorId ?? null,
-            kind: profile?.kind ?? "user",
-            displayName: profile?.displayName ?? "Citizen",
-            username: profile?.username ?? "",
-            avatar: profile?.avatarUrl ?? "/avatar.jpg",
-            route: `/profile/${profile?.actorId ?? profileActorId}`,
-          }}
-          onRequestFollow={gate.requestFollow}
-          canMessage={false}
-        />
-      )}
-
-      {gate.canView && (
-        <div className="profiles-shell px-4 pb-24">
-          {tab === "posts" && (
-            <ActorProfilePostsView
-              profileActorId={profile.actorId}
-              onShare={handleShare}
-              onOpenMenu={openPostMenu}
-              version={postsVersion}
+          {!gate.canView && (
+            <PrivateProfileNotice
+              actor={{
+                id: resolvedProfile?.actorId ?? profileActorId ?? null,
+                kind: resolvedProfile?.kind ?? "user",
+                displayName: resolvedProfile?.displayName ?? "Citizen",
+                username: resolvedProfile?.username ?? "",
+                avatar: resolvedProfile?.avatarUrl ?? "/avatar.jpg",
+                route: `/profile/${resolvedProfile?.actorId ?? profileActorId}`,
+              }}
+              onRequestFollow={gate.requestFollow}
+              canMessage={false}
             />
           )}
 
-          {tab === "photos" && (
-            <ActorProfilePhotosView
-              actorId={profile.actorId}
-              viewerActorId={viewerActorId}
-              posts={visibleProfilePosts}
-              loadingPosts={loadingPosts}
-              canViewContent={gate.canView}
-              handleShare={handleShare}
-            />
-          )}
+          {gate.canView && (
+            <div className="profiles-shell px-4 pb-24">
+              <div
+                style={{ display: tab === "posts" ? undefined : "none" }}
+                aria-hidden={tab !== "posts"}
+              >
+                <ActorProfilePostsView
+                  profileActorId={resolvedProfile.actorId}
+                  onShare={handleShare}
+                  onOpenMenu={openPostMenu}
+                />
+              </div>
 
-          {tab === "videos" && (
-            <div className="flex items-center justify-center py-10 text-white/40">
-              Videos - coming soon
+              {tab === "photos" && (
+                <ActorProfilePhotosView
+                  actorId={resolvedProfile.actorId}
+                  viewerActorId={viewerActorId}
+                  canViewContent={gate.canView}
+                  handleShare={handleShare}
+                />
+              )}
+
+              {tab === "videos" && (
+                <div className="flex items-center justify-center py-10 text-white/40">
+                  Videos - coming soon
+                </div>
+              )}
+
+              {isCitizenProfile && tab === "tags" && (
+                <ActorProfileTagsView actorId={resolvedProfile.actorId} canAddTag={isProfileOwner} />
+              )}
+
+              {tab === "friends" && (
+                <ActorProfileFriendsView
+                  profileActorId={resolvedProfile.actorId}
+                  canViewContent={gate.canView}
+                  version={gateVersion}
+                />
+              )}
             </div>
           )}
-
-          {isCitizenProfile && tab === "tags" && (
-            <ActorProfileTagsView actorId={profile.actorId} canAddTag={isProfileOwner} />
-          )}
-
-          {tab === "friends" && (
-            <ActorProfileFriendsView
-              profileActorId={profile.actorId}
-              canViewContent={gate.canView}
-              version={gateVersion}
-            />
-          )}
-        </div>
+        </>
       )}
 
       <PostActionsMenu

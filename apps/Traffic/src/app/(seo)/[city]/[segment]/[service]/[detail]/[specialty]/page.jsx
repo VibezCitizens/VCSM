@@ -11,7 +11,7 @@ import {
   listProvidersByLocalityServiceAndSpecialty
 } from "@/data/repositories/provider.repo";
 import { getPriceAggregate } from "@/data/repositories/aggregate.repo";
-import { listCountryLocalityServiceSpecialtyStaticParams } from "@/data/repositories/staticParams.repo";
+import { listLocalityServiceSpecialtyTaxonomyParams } from "@/data/repositories/taxonomyParams.repo";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
@@ -27,17 +27,17 @@ import {
   neighborhoodServiceSpecialtyPath
 } from "@/lib/paths";
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
-import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
-
-export const revalidate = 900;
+// Static pages never have live VPORT data — unifiedDataset uses top-level await
+// which makes it an async module incompatible with generateStaticParams detection.
+const LIVE_DATA_STATUS = "unavailable";
 
 export function generateStaticParams() {
-  return listCountryLocalityServiceSpecialtyStaticParams().map((entry) => ({
+  return listLocalityServiceSpecialtyTaxonomyParams().map((entry) => ({
     city: entry.country,
     segment: entry.city,
     service: entry.locality,
     detail: entry.service,
-    specialty: entry.specialty
+    specialty: entry.specialty,
   }));
 }
 

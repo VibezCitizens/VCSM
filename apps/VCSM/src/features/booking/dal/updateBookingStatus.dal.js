@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_SELECT = [
   "id",
@@ -44,8 +44,7 @@ export async function updateBookingStatusDAL({
   if (completedAt !== undefined) patch.completed_at = completedAt;
   if (internalNote !== undefined) patch.internal_note = internalNote;
 
-  const { data, error } = await supabase
-    .schema("vc")
+  const { data, error } = await vportClient
     .from("bookings")
     .update(patch)
     .eq("id", bookingId)

@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { saveIdentity } from "@/state/identity/identityStorage";
 import { invalidateIdentityResultCache } from "@identity";
+import { purgeChatMessageCache, purgeNotificationCache } from "@/bootstrap/bootstrap.invalidate";
 import { debugLoginEvent } from "@debuggers/identity";
 import { debugFeedViewer } from "@debuggers/feed";
 import {
@@ -16,6 +17,7 @@ import {
   toPublicIdentity,
 } from "@/state/identity/identity.model";
 import { useIdentityResolutionEffect } from "@/state/identity/useIdentityResolutionEffect.hook";
+import { useActorStore } from "@hydration";
 
 const IdentityContext = createContext(null);
 const IdentityDetailsContext = createContext(null);
@@ -38,6 +40,24 @@ export function IdentityProvider({ children }) {
   function commitIdentity(nextDetails) {
     setIdentityDetails(nextDetails ?? null);
     setPublicIdentity(toPublicIdentity(nextDetails));
+
+    if (nextDetails?.actorId) {
+      try {
+        useActorStore.getState().upsertActors([{
+          actor_id: nextDetails.actorId,
+          kind: nextDetails.kind ?? null,
+          display_name: nextDetails.displayName ?? null,
+          username: nextDetails.username ?? null,
+          photo_url: nextDetails.avatar ?? null,
+          banner_url: nextDetails.banner ?? null,
+          ...(nextDetails.kind === 'vport' && {
+            vport_name: nextDetails.displayName ?? null,
+            vport_slug: nextDetails.username ?? null,
+            vport_avatar_url: nextDetails.avatar ?? null,
+          }),
+        }])
+      } catch (_) {}
+    }
   }
 
   function setIdentityCompat(next) {
@@ -70,6 +90,8 @@ export function IdentityProvider({ children }) {
       saveIdentity(actorId, user?.id);
       commitIdentity(result.nextIdentity);
       invalidateIdentityEngineQuery(queryClient, user?.id);
+      purgeChatMessageCache();
+      purgeNotificationCache();
     }
 
     return {
@@ -80,7 +102,7 @@ export function IdentityProvider({ children }) {
     };
   }
 
-  // Immediately clear stale identity when auth user changes.
+  // Immediately clear stale identity when auth user changes (includes logout).
   useEffect(() => {
     debugLoginEvent("IDENTITY_CLEAR_ON_USER_CHANGE", {
       phase: "identity", status: "info",
@@ -89,6 +111,8 @@ export function IdentityProvider({ children }) {
     });
     commitIdentity(null);
     setLoading(true);
+    purgeChatMessageCache();
+    purgeNotificationCache();
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Main identity resolution — extracted to hook for size compliance.

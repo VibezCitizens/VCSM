@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_AVAILABILITY_EXCEPTION_SELECT = [
   "id",
@@ -48,9 +48,8 @@ export async function upsertAvailabilityExceptionDAL({ row } = {}) {
 
   const payload = pickDefined(row, EXCEPTION_WRITE_COLUMNS);
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("booking_availability_exceptions")
+  const { data, error } = await vportClient
+    .from("availability_exceptions")
     .upsert(payload, { onConflict: "id" })
     .select(BOOKING_AVAILABILITY_EXCEPTION_SELECT)
     .single();

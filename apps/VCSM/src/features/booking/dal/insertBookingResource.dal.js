@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_RESOURCE_SELECT = [
   "id",
@@ -41,9 +41,8 @@ export async function insertBookingResourceDAL({ row } = {}) {
 
   const payload = pickDefined(row, WRITE_COLUMNS);
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("booking_resources")
+  const { data, error } = await vportClient
+    .from("resources")
     .insert(payload)
     .select(BOOKING_RESOURCE_SELECT)
     .single();

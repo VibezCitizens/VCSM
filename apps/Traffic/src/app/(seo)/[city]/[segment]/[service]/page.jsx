@@ -6,6 +6,12 @@ import {
   listNeighborhoodServiceStaticParams
 } from "@/data/repositories/staticParams.repo";
 import {
+  listCountryCityServiceTaxonomyParams,
+  listCountryServiceHubTaxonomyParams,
+  listNeighborhoodServiceTaxonomyParams,
+  listMockProviderSlugParams,
+} from "@/data/repositories/taxonomyParams.repo";
+import {
   resolvePage,
   buildCountryProviderMetadata,
   buildCountryServiceHubMetadata,
@@ -18,8 +24,6 @@ import {
   renderCountryCityServicePage,
   renderLegacyLocalityServicePage
 } from "./_directoryRenderers";
-
-export const revalidate = 900;
 
 function dedupeParamTriples(entries) {
   const seen = new Set();
@@ -42,32 +46,65 @@ export function generateStaticParams() {
   const globalCountryCityService = listCountryCityServiceStaticParams().map((entry) => ({
     city: entry.country,
     segment: entry.city,
-    service: entry.service
+    service: entry.service,
   }));
 
   const countryServiceHubs = listCountryServiceHubStaticParams().map((entry) => ({
     city: entry.country,
     segment: "services",
-    service: entry.service
+    service: entry.service,
   }));
 
   const legacyLocalityService = listNeighborhoodServiceStaticParams().map((entry) => ({
     city: entry.city,
     segment: entry.neighborhood,
-    service: entry.service
+    service: entry.service,
   }));
 
   const countryProvider = listCountryProviderStaticParams().map((entry) => ({
     city: entry.country,
     segment: "pro",
-    service: entry.providerSlug
+    service: entry.providerSlug,
   }));
 
-  return dedupeParamTriples([
+  const combined = dedupeParamTriples([
     ...globalCountryCityService,
     ...countryServiceHubs,
     ...legacyLocalityService,
-    ...countryProvider
+    ...countryProvider,
+  ]);
+
+  // Taxonomy fallback: when Supabase is unavailable at build time, all provider-based
+  // functions return empty. Enumerate taxonomy-based params so the route always
+  // generates pages. Pages with no live data call notFound() at render time.
+  if (combined.length > 0) return combined;
+
+  const fallbackCityService = listCountryCityServiceTaxonomyParams().map((entry) => ({
+    city: entry.country,
+    segment: entry.city,
+    service: entry.service,
+  }));
+  const fallbackServiceHubs = listCountryServiceHubTaxonomyParams().map((entry) => ({
+    city: entry.country,
+    segment: "services",
+    service: entry.service,
+  }));
+  const fallbackNeighborhood = listNeighborhoodServiceTaxonomyParams().map((entry) => ({
+    city: entry.city,
+    segment: entry.neighborhood,
+    service: entry.service,
+  }));
+  const fallbackProviders = listMockProviderSlugParams().map((entry) => ({
+    city: "united-states",
+    segment: "pro",
+    service: entry.providerSlug,
+  }));
+
+  return dedupeParamTriples([
+    ...fallbackCityService,
+    ...fallbackServiceHubs,
+    ...fallbackNeighborhood,
+    ...fallbackProviders,
   ]);
 }
 

@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_AVAILABILITY_RULE_SELECT = [
   "id",
@@ -52,9 +52,8 @@ export async function upsertAvailabilityRuleDAL({ row } = {}) {
 
   const payload = pickDefined(row, RULE_WRITE_COLUMNS);
 
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("booking_availability_rules")
+  const { data, error } = await vportClient
+    .from("availability_rules")
     .upsert(payload, { onConflict: "id" })
     .select(BOOKING_AVAILABILITY_RULE_SELECT)
     .single();

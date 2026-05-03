@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useIdentityDisplayDeprecated } from '@/state/identity/identityContext'
 import { useAccountSettings } from '@/features/settings/queries/useAccountSettings'
 import {
   ctrlDeleteAccount,
@@ -12,7 +13,8 @@ import {
 
 export function useAccountController() {
   const { user, logout: logoutFromAuth } = useAuth()
-  const { identity, availableActors, switchActor } = useIdentity()
+  const { identity, availableActors, switchActor, refreshAvailableActors } = useIdentity()
+  const { displayName, username: handle, avatar: avatarUrl } = useIdentityDisplayDeprecated() ?? {}
 
   const isVport = identity?.kind === 'vport'
   const actorId = identity?.actorId ?? null
@@ -47,7 +49,16 @@ export function useAccountController() {
       localStorage.removeItem('actor_touch')
       await logoutFromAuth()
     } catch (error) {
-      setErrAccount(error?.message || 'Could not delete your account.')
+      // AUTH_DELETE_FAILED: app data was deleted but auth user cleanup failed.
+      // Still force logout — user has no valid app state to return to.
+      if (error?.code === 'AUTH_DELETE_FAILED') {
+        localStorage.removeItem('actor_kind')
+        localStorage.removeItem('actor_vport_id')
+        localStorage.removeItem('actor_touch')
+        try { await logoutFromAuth() } catch (_) {}
+      } else {
+        setErrAccount(error?.message || 'Could not delete your account.')
+      }
     } finally {
       setBusyAccount(false)
     }
@@ -106,11 +117,15 @@ export function useAccountController() {
   async function restoreVport(targetVportId) {
     setBusyRestore(true)
     setErrRestore('')
+    if (import.meta.env.DEV) console.log('[restore:start]', { surface: 'account_tab', vportId: targetVportId })
     try {
       if (!targetVportId) throw new Error('No VPORT selected.')
       await ctrlRestoreVport({ vportId: targetVportId })
+      refreshAvailableActors?.()
+      if (import.meta.env.DEV) console.log('[restore:success]', { surface: 'account_tab', vportId: targetVportId })
       return true
     } catch (error) {
+      if (import.meta.env.DEV) console.log('[restore:error]', { surface: 'account_tab', vportId: targetVportId, error: error?.message })
       setErrRestore(error?.message || 'Could not restore the VPORT.')
       return false
     } finally {
@@ -122,6 +137,9 @@ export function useAccountController() {
     isVport,
     vportId,
     identity,
+    displayName,
+    avatarUrl,
+    handle,
     user,
     showConfirmAccount,
     busyAccount,

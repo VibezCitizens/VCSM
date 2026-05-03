@@ -9,8 +9,6 @@ export async function AnswerDetailView({ slug }) {
 
   return (
     <article className="answers-detail" data-answer-status={result.status}>
-      <meta name="robots" content={page.seo.robotsContent} />
-      <link rel="canonical" href={page.seo.canonicalUrl} />
       <AnswerSeoJsonLd page={page} />
       <QuestionHeader question={page.question} topic={page.topic} seo={page.seo} />
       {result.status === "not_found" ? (

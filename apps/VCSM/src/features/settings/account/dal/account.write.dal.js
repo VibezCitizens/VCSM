@@ -30,7 +30,9 @@ export async function dalDeleteCitizenAccountFull() {
   }
 
   if (data?.code === 'AUTH_DELETE_FAILED') {
-    throw new Error(data.error || 'Auth deletion failed after account data was removed. Contact support.')
+    const err = new Error(data.error || 'Auth deletion failed after account data was removed. Contact support.')
+    err.code = 'AUTH_DELETE_FAILED'
+    throw err
   }
 
   return data

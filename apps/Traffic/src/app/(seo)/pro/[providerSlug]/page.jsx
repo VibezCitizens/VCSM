@@ -13,6 +13,7 @@ import {
 } from "@/data/repositories/geo.repo";
 import { getServiceById, listSpecialtiesByService } from "@/data/repositories/service.repo";
 import { listProviderStaticParams } from "@/data/repositories/staticParams.repo";
+import { listMockProviderSlugParams } from "@/data/repositories/taxonomyParams.repo";
 import {
   getPublicReviewSummaryForProvider,
   listVisibleReviewsForProvider
@@ -34,8 +35,6 @@ import {
 } from "@/lib/paths";
 import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPageTemplate";
 
-export const revalidate = 900;
-
 const PROVIDER_ROBOTS = {
   index: true,
   follow: true,
@@ -55,7 +54,10 @@ const CATEGORY_KEY_TO_SLUG = {
 };
 
 export function generateStaticParams() {
-  return listProviderStaticParams();
+  const live = listProviderStaticParams();
+  if (live.length > 0) return live;
+  // Fallback: use mock provider slugs when Supabase is unavailable at build time.
+  return listMockProviderSlugParams();
 }
 
 function resolveCategorySlug(provider, services) {

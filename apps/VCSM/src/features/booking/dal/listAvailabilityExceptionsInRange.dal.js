@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_AVAILABILITY_EXCEPTION_SELECT = [
   "id",
@@ -40,9 +40,8 @@ export async function listAvailabilityExceptionsInRangeDAL({
   const startIso = asTimestampInput(rangeStart, "rangeStart");
   const endIso = asTimestampInput(rangeEnd, "rangeEnd");
 
-  let query = supabase
-    .schema("vc")
-    .from("booking_availability_exceptions")
+  let query = vportClient
+    .from("availability_exceptions")
     .select(BOOKING_AVAILABILITY_EXCEPTION_SELECT)
     .eq("resource_id", resourceId)
     .lt("starts_at", endIso)

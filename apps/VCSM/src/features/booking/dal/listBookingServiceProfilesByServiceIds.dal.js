@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_SERVICE_PROFILE_SELECT = [
   "service_id",
@@ -27,7 +27,7 @@ export async function listBookingServiceProfilesByServiceIdsDAL({
 
   let query = supabase
     .schema("vc")
-    .from("booking_service_profiles")
+    .from("service_booking_profiles")
     .select(BOOKING_SERVICE_PROFILE_SELECT)
     .in("service_id", ids)
     .order("created_at", { ascending: true });

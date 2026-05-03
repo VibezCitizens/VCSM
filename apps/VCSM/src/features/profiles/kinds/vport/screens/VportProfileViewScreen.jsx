@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
@@ -17,6 +18,8 @@ import ShareModal from "@/features/post/adapters/postcard/components/ShareModal.
 import VportBarberShopOwnerBand from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopOwnerBand";
 import VportBarberShopBookingView from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopBookingView";
 
+import { useActorStore } from "@hydration";
+import { queryKeys } from "@/queries/queryKeys";
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
 import { useVportProfileBySlug } from "@/features/profiles/kinds/vport/hooks/useVportProfileBySlug";
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
@@ -35,8 +38,9 @@ export default function VportProfileViewScreen({
 }) {
   const [tab, setTab] = useState("vibes");
   const [gateVersion, setGateVersion] = useState(0);
-  const [postsVersion, setPostsVersion] = useState(0);
   const [reviewsDefaultTab, setReviewsDefaultTab] = useState(null);
+
+  const qc = useQueryClient();
 
   const autoAppliedFirstKeyRef = useRef(null);
   const userHasSelectedTabRef = useRef(false);
@@ -48,8 +52,24 @@ export default function VportProfileViewScreen({
   const gate = useProfileGate({ viewerActorId, targetActorId: profileActorId, version: gateVersion });
   const canViewContent = gate.loading ? undefined : gate.canView;
 
-  const { loading, error, profile, posts, loadingPosts } = useProfileView({ viewerActorId, profileActorId, canViewContent });
+  const { loading, error, profile } = useProfileView({ viewerActorId, profileActorId, canViewContent });
   const { loading: blockLoading, canViewProfile } = useBlockStatus(viewerActorId, profileActorId);
+
+  const storeActor = useActorStore((s) => s.actors[profileActorId] ?? null);
+  const seedProfile = useMemo(() => {
+    if (!storeActor) return null;
+    return {
+      actorId: profileActorId,
+      kind: "vport",
+      displayName: storeActor.vportName ?? storeActor.vport_name ?? storeActor.displayName ?? null,
+      username: storeActor.vportSlug ?? storeActor.vport_slug ?? storeActor.username ?? null,
+      avatarUrl: storeActor.vportAvatarUrl ?? storeActor.vport_avatar_url ?? storeActor.photoUrl ?? "/avatar.jpg",
+      bannerUrl: storeActor.bannerUrl ?? storeActor.banner_url ?? "/default-banner.jpg",
+      bio: storeActor.bio ?? null,
+      _isSeed: true,
+    };
+  }, [storeActor, profileActorId]);
+  const displayProfile = profile ?? seedProfile;
 
   const { actorId: routeSlug } = useParams();
   const { publicDetails, isLoading: publicDetailsLoading } = useVportProfileBySlug(routeSlug);
@@ -77,11 +97,6 @@ export default function VportProfileViewScreen({
   useEffect(() => {
     if (!blockLoading && canViewProfile === false) navigate("/feed", { replace: true });
   }, [blockLoading, canViewProfile, navigate]);
-
-  const visibleProfilePosts = useMemo(() => {
-    const list = Array.isArray(posts) ? posts : [];
-    return list.filter((p) => !p?.deleted_at);
-  }, [posts]);
 
   const effectiveTabs = useMemo(() => {
     const fallbackTabs = Array.isArray(tabs) && tabs.length ? tabs : VPORT_TABS;
@@ -121,10 +136,13 @@ export default function VportProfileViewScreen({
 
   const actions = useVportProfileActions({
     viewerActorId,
-    onPostDeleted: () => { setPostsVersion((v) => v + 1); setGateVersion((v) => v + 1); },
+    onPostDeleted: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.actorPosts(profile?.actorId ?? profileActorId) });
+      setGateVersion((v) => v + 1);
+    },
   });
 
-  if (loading || blockLoading || gate.loading) {
+  if (!displayProfile && (loading || blockLoading || gate.loading)) {
     return (
       <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
         <VportProfileHeader loading />
@@ -132,12 +150,8 @@ export default function VportProfileViewScreen({
     );
   }
 
-  if (error || !profile) {
+  if (error && !displayProfile) {
     return <div className="profiles-modern flex justify-center py-20 text-rose-300">Failed to load profile.</div>;
-  }
-
-  if (profile.kind !== "vport") {
-    return <div className="profiles-modern flex justify-center py-20 profiles-muted">Profile kind mismatch.</div>;
   }
 
   const isBarbershopOwner = isOwner && vportType === "barbershop";
@@ -152,7 +166,7 @@ export default function VportProfileViewScreen({
   return (
     <div className={rootClass}>
       <VportProfileHeader
-        profile={profile}
+        profile={displayProfile}
         viewerActorId={viewerActorId}
         profileIsPrivate={gate.isPrivate}
         onSubscriptionChanged={() => setGateVersion((v) => v + 1)}
@@ -187,21 +201,18 @@ export default function VportProfileViewScreen({
         <VportBarberShopBookingView profile={profile} isOwner={isOwner} />
       )}
 
-      {gate.canView && !isCalendarActive && (
+      {gate.canView && !isCalendarActive && !!profile && (
         <VportProfileTabContent
           tab={tab}
           profile={profile}
           publicDetails={publicDetails}
           publicDetailsLoading={publicDetailsLoading}
-          visibleProfilePosts={visibleProfilePosts}
-          loadingPosts={loadingPosts}
           viewerActorId={viewerActorId}
           profileActorId={profileActorId}
           identity={identity}
           isOwner={isOwner}
           vportType={vportType}
           effectiveTabs={effectiveTabs}
-          postsVersion={postsVersion}
           reviewsDefaultTab={reviewsDefaultTab}
           onSetTab={handleTabSelect}
           onConsumedReviewsTab={(defaultTab) => {

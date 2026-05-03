@@ -1,4 +1,4 @@
-import { supabase } from "@/services/supabase/supabaseClient";
+import { vport as vportClient } from "@/services/supabase/vportClient";
 
 const BOOKING_RESOURCE_SERVICE_SELECT = [
   "resource_id",
@@ -23,7 +23,7 @@ export async function upsertBookingResourceServicesDAL({ rows } = {}) {
 
   const { data, error } = await supabase
     .schema("vc")
-    .from("booking_resource_services")
+    .from("resource_services")
     .upsert(payload, { onConflict: "resource_id,service_id" })
     .select(BOOKING_RESOURCE_SERVICE_SELECT);
   if (error) throw error;

@@ -1,0 +1,16 @@
+{
+  "follow": "Follow",
+  "unfollow": "Unfollow",
+  "followers": "Followers",
+  "following": "Following",
+  "friends": "Friends",
+  "message": "Message",
+  "rose": "Rose",
+  "sendRose": "Send a rose",
+  "block": "Block",
+  "unblock": "Unblock",
+  "report": "Report",
+  "mutualFollowers": "{{count}} mutual",
+  "noFollowersYet": "No followers yet.",
+  "notFollowingAnyone": "Not following anyone yet."
+}
