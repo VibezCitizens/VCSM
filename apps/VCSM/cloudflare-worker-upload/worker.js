@@ -10,15 +10,38 @@
 //         upload key is owned by this user.
 //         Client-supplied actorId/userId is never trusted.
 //
+// CORS:   Dynamic — reads request Origin, echoes it if allowed.
+//         Includes Vary: Origin on every response.
+//         No wildcard. No unauthenticated fallback.
+//
 // Upload: MIME deny list, MIME allow list, 100MB cap,
 //         R2 key prefix validation, safe Content-Type storage.
 // ============================================================
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': 'https://vibezcitizens.com',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, content-type',
-  'Access-Control-Max-Age': '86400',
+// ============================================================
+// CORS — allowed origins
+//
+// Add origins here. Never use '*'.
+// Every response — success, error, and preflight — uses
+// buildCorsHeaders() so the browser always gets a valid
+// Access-Control-Allow-Origin that matches its own origin.
+// ============================================================
+
+const ALLOWED_ORIGINS = new Set([
+  'https://vibezcitizens.com',
+  'https://www.vibezcitizens.com',
+])
+
+function buildCorsHeaders(requestOrigin) {
+  const origin = ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : null
+  const headers = {
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, content-type',
+    'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
+  }
+  if (origin) headers['Access-Control-Allow-Origin'] = origin
+  return headers
 }
 
 // ============================================================
@@ -132,10 +155,10 @@ async function verifyActorOwnership(userId, actorId, supabaseUrl, supabaseAnonKe
 // Upload validation helpers
 // ============================================================
 
-function jsonResponse(body, status = 200) {
+function jsonResponse(body, status, corsHeaders) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 }
 
@@ -165,16 +188,19 @@ function validateMime(rawMime) {
 
 export default {
   async fetch(request, env) {
+    const requestOrigin = request.headers.get('Origin') ?? ''
+    const cors = buildCorsHeaders(requestOrigin)
+
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: CORS_HEADERS })
+      return new Response(null, { status: 204, headers: cors })
     }
 
     if (request.method !== 'POST') {
-      return new Response('Method Not Allowed', { status: 405, headers: CORS_HEADERS })
+      return new Response('Method Not Allowed', { status: 405, headers: cors })
     }
 
     if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
-      return jsonResponse({ error: 'Worker misconfigured.' }, 500)
+      return jsonResponse({ error: 'Worker misconfigured.' }, 500, cors)
     }
 
     // ── Authentication ─────────────────────────────────────────
@@ -182,12 +208,12 @@ export default {
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null
 
     if (!token) {
-      return jsonResponse({ error: 'Unauthorized.' }, 401)
+      return jsonResponse({ error: 'Unauthorized.' }, 401, cors)
     }
 
     const authResult = await verifyToken(token, env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
     if (!authResult.ok) {
-      return jsonResponse({ error: 'Unauthorized.' }, 401)
+      return jsonResponse({ error: 'Unauthorized.' }, 401, cors)
     }
 
     const userId = authResult.userId
@@ -196,7 +222,7 @@ export default {
     try {
       const contentLength = parseInt(request.headers.get('content-length') || '0', 10)
       if (contentLength > MAX_FILE_BYTES) {
-        return jsonResponse({ error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024}MB.` }, 413)
+        return jsonResponse({ error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024}MB.` }, 413, cors)
       }
 
       const form = await request.formData()
@@ -204,7 +230,7 @@ export default {
       const key = String(form.get('key') || '').trim()
       const folder = normalizeFolder(form.get('folder'))
 
-      if (!file) return jsonResponse({ error: 'Missing file.' }, 400)
+      if (!file) return jsonResponse({ error: 'Missing file.' }, 400, cors)
 
       // Build and validate the object key
       const safeFallback = `upload-${Date.now()}.bin`
@@ -214,7 +240,7 @@ export default {
       const objectKey = key || [folder, safeName].filter(Boolean).join('/')
 
       const keyResult = validateKey(objectKey)
-      if (!keyResult.ok) return jsonResponse({ error: keyResult.error }, 400)
+      if (!keyResult.ok) return jsonResponse({ error: keyResult.error }, 400, cors)
 
       // ── Authorization: verify actorId in key is owned by this user ──
       // Key format: {prefix}/{actorId}/{date/…}/{uuid}.{ext}
@@ -222,24 +248,24 @@ export default {
       const keyActorId = objectKey.split('/')[1] ?? ''
       const owned = await verifyActorOwnership(userId, keyActorId, env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token)
       if (!owned) {
-        return jsonResponse({ error: 'Forbidden.' }, 403)
+        return jsonResponse({ error: 'Forbidden.' }, 403, cors)
       }
 
       // Second size check catches chunked transfers that omit content-length.
       if (file.size > MAX_FILE_BYTES) {
-        return jsonResponse({ error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024}MB.` }, 413)
+        return jsonResponse({ error: `File too large. Maximum is ${MAX_FILE_BYTES / 1024 / 1024}MB.` }, 413, cors)
       }
 
       const mimeResult = validateMime(file.type)
-      if (!mimeResult.ok) return jsonResponse({ error: mimeResult.error }, 415)
+      if (!mimeResult.ok) return jsonResponse({ error: mimeResult.error }, 415, cors)
 
       await env.R2_BUCKET.put(objectKey, file.stream(), {
         httpMetadata: { contentType: mimeResult.safeMime },
       })
 
-      return jsonResponse({ url: `https://cdn.vibezcitizens.com/${objectKey}` }, 200)
+      return jsonResponse({ url: `https://cdn.vibezcitizens.com/${objectKey}` }, 200, cors)
     } catch (err) {
-      return jsonResponse({ error: err?.message || 'Upload failed.' }, 500)
+      return jsonResponse({ error: err?.message || 'Upload failed.' }, 500, cors)
     }
   },
 }
