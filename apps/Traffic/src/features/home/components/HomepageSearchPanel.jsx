@@ -7,6 +7,8 @@ import { Search, MapPin, LocateFixed } from "lucide-react";
 import { countryCityPath, countryCityServicePath } from "@/lib/paths";
 import { normalizeSlug } from "@/lib/slugs";
 import { trackSearch } from "@/lib/analytics";
+import { useTrafficLanguage } from "@/lib/language";
+import { SERVICES } from "@/data/connectors/taxonomyDataset";
 
 function mapServiceQuery(rawQuery) {
   const normalized = normalizeSlug(rawQuery);
@@ -27,11 +29,22 @@ function toTitleCase(value) {
     .join(" ");
 }
 
-function labelForServiceSlug(slug) {
+// Build a slug→service lookup once at module level
+const SERVICE_BY_SLUG = new Map(SERVICES.map((s) => [s.slug, s]));
+
+function labelForServiceSlug(slug, lang) {
   const normalized = normalizeSlug(slug);
-  if (!normalized) return "Service";
-  if (normalized === "barber") return "Barbers";
-  if (normalized === "locksmith") return "Locksmiths";
+  if (!normalized) return lang === "es" ? "Servicio" : "Service";
+
+  const svc = SERVICE_BY_SLUG.get(normalized);
+  if (svc) {
+    if (lang === "es" && svc.nameEs) return svc.nameEs;
+    return svc.name;
+  }
+
+  // Fallback for slugs not in taxonomy
+  if (normalized === "barber") return lang === "es" ? "Barbería" : "Barbers";
+  if (normalized === "locksmith") return lang === "es" ? "Cerrajero" : "Locksmiths";
   return toTitleCase(normalized);
 }
 
@@ -54,6 +67,7 @@ export default function HomepageSearchPanel({
   popularLinks = []
 }) {
   const router = useRouter();
+  const { lang } = useTrafficLanguage();
   const [query, setQuery] = useState("");
   const [locationSlug, setLocationSlug] = useState(defaultLocation?.citySlug ?? "miami");
   const [locating, setLocating] = useState(false);
@@ -106,10 +120,10 @@ export default function HomepageSearchPanel({
       .map((serviceSlug) => normalizeSlug(serviceSlug))
       .filter(Boolean)
       .map((serviceSlug) => ({
-        label: labelForServiceSlug(serviceSlug),
+        label: labelForServiceSlug(serviceSlug, lang),
         href: countryCityServicePath(location.countrySlug, location.citySlug, serviceSlug)
       }));
-  }, [liveServiceSlugs, location]);
+  }, [liveServiceSlugs, location, lang]);
 
   const quickLocationLinks = useMemo(
     () => locationOptions.slice(0, 6).map((option) => ({ label: option.label, href: option.href })),
@@ -177,16 +191,16 @@ export default function HomepageSearchPanel({
           <div className="hp-search-input-wrap">
             <Search size={17} className="hp-search-icon" />
             <input
-              aria-label="Search services, providers, or locations"
+              aria-label={lang === "es" ? "Busca servicios, proveedores o ubicaciones" : "Search services, providers, or locations"}
               className="hp-search-input"
-              placeholder="Search services or businesses"
+              placeholder={lang === "es" ? "Busca servicios o negocios" : "Search services or businesses"}
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </div>
           <button className="hp-search-btn" type="submit">
-            Search
+            {lang === "es" ? "Buscar" : "Search"}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -201,7 +215,7 @@ export default function HomepageSearchPanel({
               className="hp-location-select"
               value={locationSlug}
               onChange={(event) => setLocationSlug(event.target.value)}
-              aria-label="Select city"
+              aria-label={lang === "es" ? "Seleccionar ciudad" : "Select city"}
             >
               {locationOptions.map((option) => (
                 <option key={option.citySlug} value={option.citySlug}>
@@ -218,26 +232,32 @@ export default function HomepageSearchPanel({
             className="hp-use-location-btn"
             onClick={handleUseMyLocation}
             disabled={locating}
-            aria-label="Detect my current location"
+            aria-label={lang === "es" ? "Detectar mi ubicación actual" : "Detect my current location"}
           >
             <LocateFixed size={13} />
-            {locating ? "Detecting..." : locationDetected ? "Located" : "Use my location"}
+            {lang === "es"
+              ? (locating ? "Detectando..." : locationDetected ? "Ubicado" : "Usar mi ubicación")
+              : (locating ? "Detecting..." : locationDetected ? "Located" : "Use my location")
+            }
           </button>
         </div>
 
         {!locationDetected && !locating && location && (
           <p className="hp-location-hint">
-            Showing results for {location.label}.{" "}
+            {lang === "es"
+              ? `Mostrando resultados para ${location.label}.`
+              : `Showing results for ${location.label}.`
+            }{" "}
             <button type="button" className="hp-location-hint-btn" onClick={handleUseMyLocation}>
-              Not your location?
+              {lang === "es" ? "¿No es tu ubicación?" : "Not your location?"}
             </button>
           </p>
         )}
       </form>
 
       {popularLinks.length > 0 && (
-        <div className="hp-popular-links" aria-label="Popular searches">
-          <span className="hp-popular-label">Popular searches</span>
+        <div className="hp-popular-links" aria-label={lang === "es" ? "Búsquedas populares" : "Popular searches"}>
+          <span className="hp-popular-label">{lang === "es" ? "Búsquedas populares" : "Popular searches"}</span>
           <div className="hp-popular-list">
             {popularLinks.map((link) => (
               <Link key={link.label} className="hp-popular-link" href={link.href}>
@@ -248,10 +268,10 @@ export default function HomepageSearchPanel({
         </div>
       )}
 
-      <div className="hp-quick-filters" aria-label="Quick filters">
+      <div className="hp-quick-filters" aria-label={lang === "es" ? "Filtros rápidos" : "Quick filters"}>
         {quickServiceLinks.length > 0 && (
           <div className="hp-quick-filter-group">
-            <p className="hp-quick-filter-label">Categories</p>
+            <p className="hp-quick-filter-label">{lang === "es" ? "Categorías" : "Categories"}</p>
             <div className="hp-quick-filter-links">
               {quickServiceLinks.map((entry) => (
                 <Link key={`service-${entry.label}`} className="hp-quick-filter-link" href={entry.href}>
@@ -264,7 +284,7 @@ export default function HomepageSearchPanel({
 
         {quickLocationLinks.length > 0 && (
           <div className="hp-quick-filter-group">
-            <p className="hp-quick-filter-label">Locations</p>
+            <p className="hp-quick-filter-label">{lang === "es" ? "Ubicaciones" : "Locations"}</p>
             <div className="hp-quick-filter-links">
               {quickLocationLinks.map((entry) => (
                 <Link key={`location-${entry.label}`} className="hp-quick-filter-link hp-quick-filter-link--muted" href={entry.href}>

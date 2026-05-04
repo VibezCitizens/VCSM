@@ -4,6 +4,7 @@
  * @property {string} code
  * @property {string} slug
  * @property {string} name
+ * @property {string} [nameEs] - Spanish name. Use when country.defaultLocale.startsWith("es").
  * @property {string} defaultLocale
  * @property {string} defaultCurrencyCode
  * @property {boolean} isActive
@@ -27,6 +28,7 @@
  * @property {string|null} regionId
  * @property {string} slug
  * @property {string} name
+ * @property {string} [nameEs] - Spanish name. Use when country.defaultLocale.startsWith("es").
  * @property {string|null} stateCode
  * @property {string} countryCode
  * @property {string} timezone
@@ -50,7 +52,10 @@
  * @property {string} id
  * @property {string} slug
  * @property {string} name
+ * @property {string} [nameEs] - Spanish name. Use when country.defaultLocale.startsWith("es").
  * @property {string} category
+ * @property {string[]} [searchTerms]
+ * @property {string[]} [searchTermsEs] - Spanish search terms for bilingual SEO.
  * @property {boolean} isActive
  */
 
@@ -87,6 +92,7 @@
  * @property {string|null} claimedAt — ISO 8601 timestamp of when the claim was approved
  * @property {string|null} avatarUrl — VPORT avatar image URL from Supabase storage
  * @property {string|null} bannerUrl — VPORT banner image URL from Supabase storage
+ * @property {string|null} logoUrl — VPORT logo image URL from ppd.logo_url
  * @property {string|null} locationText — human-readable location string, e.g. "Laredo, TX"
  * @property {string|null} cityId — source city UUID from vport.public_traze_profiles_v
  * @property {string|null} primaryCityName — structured city name from vport.cities
@@ -95,6 +101,12 @@
  * @property {string|null} timezone — provider timezone from public_traze_profiles_v
  * @property {boolean|null} directoryVisible — public directory visibility flag from VPORT
  * @property {string|null} directoryStatus — public directory publish status from VPORT
+ * @property {string|null} email — public email from ppd.email_public
+ * @property {string|null} websiteUrl — public website URL from ppd.website_url
+ * @property {string|null} bookingUrl — external booking URL from ppd.booking_url
+ * @property {object|null} hours — hours jsonb: { monday: { open, close } | { closed: true } | null, ... }
+ * @property {number|null} lat — latitude from ppd.lat
+ * @property {number|null} lng — longitude from ppd.lng
  */
 
 /**

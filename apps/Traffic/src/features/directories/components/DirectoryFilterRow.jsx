@@ -2,18 +2,28 @@
 
 import { useState } from "react";
 import { Search, MapPin } from "lucide-react";
+import { useTrafficLanguage } from "@/lib/language";
 
-const FILTER_CHIPS = ["Open now", "Top rated", "Bookable", "Near me"];
+const FILTER_CHIPS_EN = ["Open now", "Top rated", "Bookable", "Near me"];
+const FILTER_CHIPS_ES = ["Abierto ahora", "Mejor calificados", "Con reserva", "Cerca de mí"];
 
 export function DirectoryFilterRow({ serviceLabel = "services", locationLabel = "Miami, US" }) {
+  const { lang } = useTrafficLanguage();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(null);
 
+  const chips = lang === "es" ? FILTER_CHIPS_ES : FILTER_CHIPS_EN;
   const normalizedServiceLabel = String(serviceLabel ?? "").trim().toLowerCase();
+  const isGeneric = normalizedServiceLabel === "services";
+
   const placeholder =
-    normalizedServiceLabel === "services"
-      ? "Search providers, categories, or services…"
-      : `Search ${normalizedServiceLabel}, providers, or keywords…`;
+    lang === "es"
+      ? isGeneric
+        ? "Busca proveedores, categorías o servicios…"
+        : `Busca ${normalizedServiceLabel}, proveedores o palabras clave…`
+      : isGeneric
+        ? "Search providers, categories, or services…"
+        : `Search ${normalizedServiceLabel}, providers, or keywords…`;
 
   return (
     <div className="dir-filter-wrap">
@@ -35,7 +45,7 @@ export function DirectoryFilterRow({ serviceLabel = "services", locationLabel = 
         </div>
       </div>
       <div className="dir-filter-chips">
-        {FILTER_CHIPS.map((chip) => (
+        {chips.map((chip) => (
           <button
             key={chip}
             type="button"

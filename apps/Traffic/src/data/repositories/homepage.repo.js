@@ -266,6 +266,7 @@ function buildHomepageStats({ liveProfiles, liveProviderCards, status }) {
 
   stats.push({
     label: "Active Vports",
+    labelEs: "Vports activos",
     value: String(activeVports)
   });
 
@@ -279,6 +280,7 @@ function buildHomepageStats({ liveProfiles, liveProviderCards, status }) {
     if (categoryCount > 0) {
       stats.push({
         label: "Active categories",
+        labelEs: "Categorías activas",
         value: String(categoryCount)
       });
     }
@@ -294,6 +296,7 @@ function buildHomepageStats({ liveProfiles, liveProviderCards, status }) {
     if (citiesCount > 0) {
       stats.push({
         label: "Active cities",
+        labelEs: "Ciudades activas",
         value: String(citiesCount)
       });
     }

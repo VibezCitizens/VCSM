@@ -1,28 +1,43 @@
 // functions/sitemaps/vport-menu.xml.js
 // Cloudflare Pages Function — serves /sitemaps/vport-menu.xml
 // Lists public menu pages for all active VPORTs with a slug.
-// Follows the same Supabase query pattern as functions/profile/[slug]/menu.js.
 //
 // Required Cloudflare Pages env vars:
 //   SUPABASE_URL       — e.g. https://xyzxyz.supabase.co
-//   SUPABASE_ANON_KEY  — public anon key
+//   SUPABASE_ANON_KEY  — public anon key (vport schema must be in PostgREST exposed schemas)
 //
-// Falls back to an empty but valid sitemap if the Supabase call fails.
-// RLS note: the anon role must have SELECT on vport.profiles for this query
-// to return rows. If RLS blocks it, the sitemap will be empty but still valid.
+// RLS note: profiles_select_public allows anon SELECT on is_active+not-deleted rows.
 
 const SITE_ORIGIN = 'https://vibezcitizens.com';
+const LOG = '[sitemap:vport-menu]';
 
 export async function onRequest(context) {
-  const { env } = context;
+  try {
+    return await buildSitemap(context.env);
+  } catch (err) {
+    console.error(LOG, 'fatal:', String(err));
+    return xmlFallback();
+  }
+}
+
+async function buildSitemap(env) {
+  const hasConfig = !!(env?.SUPABASE_URL && env?.SUPABASE_ANON_KEY);
+  console.log(LOG, 'config present:', hasConfig);
 
   let rows = [];
+  let fetchError = null;
 
-  if (env.SUPABASE_URL && env.SUPABASE_ANON_KEY) {
+  if (hasConfig) {
     try {
-      rows = await fetchAllPages(env, 'profiles', 'slug=not.is.null&is_active=eq.true&is_deleted=eq.false&select=slug,updated_at');
+      rows = await fetchAllPages(
+        env,
+        'profiles',
+        'slug=not.is.null&is_active=eq.true&is_deleted=eq.false&select=slug,updated_at'
+      );
+      console.log(LOG, 'rows fetched:', rows.length);
     } catch (err) {
-      console.error('[sitemap:vport-menu] Supabase error:', err?.message ?? String(err));
+      fetchError = err?.message ?? String(err);
+      console.error(LOG, 'Supabase error:', fetchError);
     }
   }
 
@@ -40,17 +55,22 @@ export async function onRequest(context) {
       ].filter(Boolean).join('\n');
     });
 
-  const xml = [
+  console.log(LOG, 'urls emitted:', entries.length);
+
+  const lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
+    !hasConfig ? '<!-- config-missing: SUPABASE_URL or SUPABASE_ANON_KEY not set -->' : null,
+    fetchError ? '<!-- fetch-error: data-unavailable -->' : null,
+    entries.length === 0 && hasConfig && !fetchError ? '<!-- zero-results: no active VPORTs with a slug found -->' : null,
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...entries,
     '</urlset>',
-  ].join('\n');
+  ].filter(Boolean);
 
-  return new Response(xml, {
+  return new Response(lines.join('\n'), {
     headers: {
       'content-type': 'application/xml; charset=utf-8',
-      'cache-control': 'public, max-age=3600',
+      'cache-control': entries.length > 0 ? 'public, max-age=3600' : 'no-store',
     },
   });
 }
@@ -87,6 +107,19 @@ async function fetchAllPages(env, table, query) {
   }
 
   return all;
+}
+
+function xmlFallback() {
+  return new Response(
+    '<?xml version="1.0" encoding="UTF-8"?>\n<!-- sitemap error: internal-error -->\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
+    {
+      status: 500,
+      headers: {
+        'content-type': 'application/xml; charset=utf-8',
+        'cache-control': 'no-store',
+      },
+    }
+  );
 }
 
 function escapeXml(str) {

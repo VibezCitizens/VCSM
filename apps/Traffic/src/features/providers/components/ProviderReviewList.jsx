@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTrafficLanguage } from "@/lib/language";
 
 const REVIEW_BATCH_SIZE = 5;
 
@@ -14,6 +15,7 @@ function formatReviewRating(value) {
 }
 
 export default function ProviderReviewList({ reviews = [] }) {
+  const { lang } = useTrafficLanguage();
   const safeReviews = Array.isArray(reviews) ? reviews : [];
   const [visibleCount, setVisibleCount] = useState(
     Math.min(REVIEW_BATCH_SIZE, safeReviews.length)
@@ -52,7 +54,7 @@ export default function ProviderReviewList({ reviews = [] }) {
           className="btn btn--ghost pro-review-load-btn"
           onClick={() => setVisibleCount(nextVisibleCount)}
         >
-          Load {nextBatchCount} more
+          {lang === "es" ? `Cargar ${nextBatchCount} más` : `Load ${nextBatchCount} more`}
         </button>
       ) : null}
     </>

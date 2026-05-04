@@ -10,9 +10,18 @@
  */
 
 const COUNTRY_TO_CURRENCY = {
+  // Active markets
   US: "USD",
-  CA: "CAD",
   MX: "MXN",
+  GT: "GTQ",
+  BZ: "BZD",
+  HN: "HNL",
+  SV: "USD",
+  NI: "NIO",
+  CR: "CRC",
+  PA: "USD",
+  // Inactive markets kept for FK compatibility
+  CA: "CAD",
   GB: "GBP",
   ES: "EUR",
   FR: "EUR",
@@ -65,18 +74,54 @@ const VPORT_TYPE_TO_SERVICE_ID = {
 
 // Keep compatibility with legacy city lookups while routing now keys off primaryCitySlug.
 const CITY_SLUG_TO_ID = {
-  "san-francisco": "city-sf",
-  "miami": "city-miami",
-  "toronto": "city-toronto",
-  "mexico-city": "city-mexico-city",
-  "london": "city-london",
-  "madrid": "city-madrid",
-  "paris": "city-paris",
-  "berlin": "city-berlin",
-  "dubai": "city-dubai",
-  "sao-paulo": "city-sao-paulo",
-  "mumbai": "city-mumbai",
-  "laredo": "city-laredo"
+  // US — active
+  "san-francisco":  "city-sf",
+  "los-angeles":    "city-los-angeles",
+  "san-diego":      "city-san-diego",
+  "miami":          "city-miami",
+  "orlando":        "city-orlando",
+  "tampa":          "city-tampa",
+  "houston":        "city-houston",
+  "san-antonio":    "city-san-antonio",
+  "dallas":         "city-dallas",
+  "el-paso":        "city-el-paso",
+  "mcallen":        "city-mcallen",
+  "brownsville":    "city-brownsville",
+  "laredo":         "city-laredo",
+  "phoenix":        "city-phoenix",
+  "las-vegas":      "city-las-vegas",
+  "new-york":       "city-new-york",
+  "chicago":        "city-chicago",
+  // Mexico — active
+  "mexico-city":    "city-mexico-city",
+  "monterrey":      "city-monterrey",
+  "tijuana":        "city-tijuana",
+  "ciudad-juarez":  "city-ciudad-juarez",
+  "guadalajara":    "city-guadalajara",
+  "cancun":         "city-cancun",
+  "puebla":         "city-puebla",
+  "mexicali":       "city-mexicali",
+  "matamoros":      "city-matamoros",
+  "reynosa":        "city-reynosa",
+  "nuevo-laredo":   "city-nuevo-laredo",
+  "hermosillo":     "city-hermosillo",
+  // Central America — active
+  "guatemala-city": "city-guatemala-city",
+  "belize-city":    "city-belize-city",
+  "tegucigalpa":    "city-tegucigalpa",
+  "san-salvador":   "city-san-salvador",
+  "managua":        "city-managua",
+  "san-jose":       "city-san-jose-cr",
+  "panama-city":    "city-panama-city",
+  // Inactive — kept for FK compatibility
+  "toronto":        "city-toronto",
+  "london":         "city-london",
+  "madrid":         "city-madrid",
+  "paris":          "city-paris",
+  "berlin":         "city-berlin",
+  "dubai":          "city-dubai",
+  "sao-paulo":      "city-sao-paulo",
+  "mumbai":         "city-mumbai"
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -228,6 +273,7 @@ export function mapVportRowToProvider(row) {
     claimedAt,
     avatarUrl: safeStr(row.avatar_url) || null,
     bannerUrl: safeStr(row.banner_url) || null,
+    logoUrl: safeStr(row.logo_url) || null,
     locationText: locationText || null,
     cityId,
     primaryCityName,
@@ -235,7 +281,13 @@ export function mapVportRowToProvider(row) {
     categoryKey,
     timezone: safeStr(row.timezone) || null,
     directoryVisible,
-    directoryStatus
+    directoryStatus,
+    email: safeStr(row.email_public) || null,
+    websiteUrl: safeStr(row.website_url) || null,
+    bookingUrl: safeStr(row.booking_url) || null,
+    hours: (row.hours && typeof row.hours === "object") ? row.hours : null,
+    lat: typeof row.lat === "number" ? row.lat : null,
+    lng: typeof row.lng === "number" ? row.lng : null
   };
 
   /** @type {ProviderService | null} */

@@ -18,6 +18,11 @@ import {
   getPublicReviewSummaryForProvider,
   listVisibleReviewsForProvider
 } from "@/data/repositories/reviewSummary.repo";
+import {
+  fetchProviderServices,
+  fetchProviderMenu,
+  fetchProviderPortfolio
+} from "@/data/dal/providerProfile.read.dal";
 import { buildProviderPageModel } from "@/data/mappers/pageModel.model";
 import { buildProviderMetadata } from "@/seo/metadata";
 import { buildBreadcrumbSchema, buildProviderSchema } from "@/seo/schemaOrg";
@@ -159,9 +164,12 @@ export default async function ProviderPage({ params }) {
     stats
   } = graph;
 
-  const [reviewSummary, visibleReviews] = await Promise.all([
+  const [reviewSummary, visibleReviews, liveServices, menuCategories, portfolio] = await Promise.all([
     getPublicReviewSummaryForProvider(provider, stats, { allowReviewsTableFallback: true }),
-    listVisibleReviewsForProvider(provider, { limit: 50 })
+    listVisibleReviewsForProvider(provider, { limit: 50 }),
+    fetchProviderServices(provider.id),
+    fetchProviderMenu(provider.id),
+    fetchProviderPortfolio(provider.id)
   ]);
 
   const model = buildProviderPageModel({
@@ -296,6 +304,9 @@ export default async function ProviderPage({ params }) {
       visibleReviews={visibleReviews}
       relatedLinks={relatedLinks}
       schema={schema}
+      liveServices={liveServices}
+      menuCategories={menuCategories}
+      portfolio={portfolio}
     />
   );
 }

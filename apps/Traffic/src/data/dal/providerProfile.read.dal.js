@@ -104,6 +104,106 @@ export async function fetchProviderPublicDetails(profileId) {
   }
 }
 
+// ─── Menu ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Fetches the public menu for a provider, grouped by category.
+ * @param {string} profileId - vport.profiles UUID
+ * @returns {Promise<Array<{key:string,name:string,items:Array}>>}
+ */
+export async function fetchProviderMenu(profileId) {
+  if (!profileId) return [];
+  const db = client();
+  if (!db) return [];
+
+  try {
+    const { data, error } = await db
+      .schema("vport")
+      .from("public_menu_read_model_v")
+      .select(
+        "category_key, category_name, category_sort_order, " +
+        "item_key, item_name, item_description, price_cents, currency_code, image_url"
+      )
+      .eq("profile_id", profileId)
+      .order("category_sort_order", { ascending: true });
+
+    if (error) { devWarn("public_menu_read_model_v", error); return []; }
+    if (!data?.length) return [];
+
+    const categoryMap = new Map();
+    for (const row of data) {
+      if (!row.category_key) continue;
+      if (!categoryMap.has(row.category_key)) {
+        categoryMap.set(row.category_key, {
+          key: row.category_key,
+          name: row.category_name ?? row.category_key,
+          items: []
+        });
+      }
+      if (row.item_key) {
+        categoryMap.get(row.category_key).items.push({
+          key: row.item_key,
+          name: row.item_name ?? row.item_key,
+          description: row.item_description ?? null,
+          priceCents: row.price_cents ?? null,
+          currencyCode: row.currency_code ?? null,
+          imageUrl: row.image_url ?? null
+        });
+      }
+    }
+
+    return [...categoryMap.values()];
+  } catch (err) {
+    devWarn("fetchProviderMenu", err);
+    return [];
+  }
+}
+
+// ─── Portfolio ────────────────────────────────────────────────────────────────
+
+/**
+ * Fetches public portfolio media items for a provider.
+ * @param {string} profileId - vport.profiles UUID
+ * @returns {Promise<Array<{portfolioItemId:string,title:string|null,isFeatured:boolean,mediaUrl:string,mediaRole:string|null,altText:string|null}>>}
+ */
+export async function fetchProviderPortfolio(profileId) {
+  if (!profileId) return [];
+  const db = client();
+  if (!db) return [];
+
+  try {
+    const { data, error } = await db
+      .schema("vport")
+      .from("public_traze_portfolio_v")
+      .select(
+        "portfolio_item_id, title, portfolio_kind, is_featured, " +
+        "media_url, media_role, alt_text, sort_order"
+      )
+      .eq("profile_id", profileId)
+      .order("is_featured", { ascending: false })
+      .order("sort_order", { ascending: true })
+      .limit(9);
+
+    if (error) { devWarn("public_traze_portfolio_v", error); return []; }
+    if (!data?.length) return [];
+
+    return data
+      .filter((row) => Boolean(row.media_url))
+      .map((row) => ({
+        portfolioItemId: row.portfolio_item_id,
+        title: row.title ?? null,
+        portfolioKind: row.portfolio_kind ?? null,
+        isFeatured: Boolean(row.is_featured),
+        mediaUrl: row.media_url,
+        mediaRole: row.media_role ?? null,
+        altText: row.alt_text ?? null
+      }));
+  } catch (err) {
+    devWarn("fetchProviderPortfolio", err);
+    return [];
+  }
+}
+
 // ─── Reviews ──────────────────────────────────────────────────────────────────
 
 /**

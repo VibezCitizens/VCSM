@@ -1,3 +1,7 @@
+"use client";
+
+import { useTrafficLanguage } from "@/lib/language";
+
 function formatPhone(raw) {
   const digits = String(raw ?? "").replace(/\D/g, "");
   if (digits.length === 11 && digits.startsWith("1")) {
@@ -30,36 +34,126 @@ function buildAddressLines(address, locationText, cityName, regionCode, postalCo
   return lines;
 }
 
-export function ContactSection({ phone, address, locationText, cityName, regionCode, postalCode }) {
+function buildDirectionsUrl(lat, lng, address, locationText) {
+  const query = (lat != null && lng != null)
+    ? `${lat},${lng}`
+    : encodeURIComponent(
+        [address?.street, address?.city, address?.state]
+          .filter(Boolean)
+          .join(", ") || locationText || ""
+      );
+  if (!query) return null;
+  return `https://maps.google.com/?q=${query}`;
+}
+
+export function ContactSection({
+  phone,
+  address,
+  locationText,
+  cityName,
+  regionCode,
+  postalCode,
+  email,
+  websiteUrl,
+  bookingUrl,
+  lat,
+  lng
+}) {
+  const { lang } = useTrafficLanguage();
+
   const addressLines = buildAddressLines(address, locationText, cityName, regionCode, postalCode);
   const hasPhone = Boolean(phone);
   const hasAddress = addressLines.length > 0;
+  const hasEmail = Boolean(email);
+  const hasWebsite = Boolean(websiteUrl);
+  const hasBooking = Boolean(bookingUrl);
+  const directionsUrl = buildDirectionsUrl(lat, lng, address, locationText);
+  const hasDirections = Boolean(directionsUrl) && hasAddress;
 
-  if (!hasPhone && !hasAddress) return null;
+  if (!hasPhone && !hasAddress && !hasEmail && !hasWebsite && !hasBooking) return null;
 
   return (
-    <section className="card card--subtle pro-contact" aria-label="Contact information">
-      <h2 className="pro-section-title">Contact</h2>
+    <section
+      className="card card--subtle pro-contact"
+      aria-label={lang === "es" ? "Información de contacto" : "Contact information"}
+    >
+      <h2 className="pro-section-title">
+        {lang === "es" ? "Contacto" : "Contact"}
+      </h2>
       <ul className="pro-contact-list">
         {hasPhone ? (
           <li className="pro-contact-row">
-            <span className="pro-contact-label">Phone</span>
-            <a
-              href={`tel:${phone}`}
-              className="pro-contact-value pro-contact-link"
-            >
+            <span className="pro-contact-label">
+              {lang === "es" ? "Teléfono" : "Phone"}
+            </span>
+            <a href={`tel:${phone}`} className="pro-contact-value pro-contact-link">
               {formatPhone(phone)}
+            </a>
+          </li>
+        ) : null}
+        {hasEmail ? (
+          <li className="pro-contact-row">
+            <span className="pro-contact-label">
+              {lang === "es" ? "Correo" : "Email"}
+            </span>
+            <a href={`mailto:${email}`} className="pro-contact-value pro-contact-link">
+              {email}
+            </a>
+          </li>
+        ) : null}
+        {hasWebsite ? (
+          <li className="pro-contact-row">
+            <span className="pro-contact-label">
+              {lang === "es" ? "Sitio web" : "Website"}
+            </span>
+            <a
+              href={websiteUrl}
+              className="pro-contact-value pro-contact-link"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+            </a>
+          </li>
+        ) : null}
+        {hasBooking ? (
+          <li className="pro-contact-row">
+            <span className="pro-contact-label">
+              {lang === "es" ? "Reserva" : "Booking"}
+            </span>
+            <a
+              href={bookingUrl}
+              className="pro-contact-value pro-contact-link"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {lang === "es" ? "Reservar en línea" : "Book online"}
             </a>
           </li>
         ) : null}
         {hasAddress ? (
           <li className="pro-contact-row">
-            <span className="pro-contact-label">Address</span>
+            <span className="pro-contact-label">
+              {lang === "es" ? "Dirección" : "Address"}
+            </span>
             <address className="pro-contact-value pro-contact-address">
               {addressLines.map((line) => (
                 <span key={line}>{line}</span>
               ))}
             </address>
+          </li>
+        ) : null}
+        {hasDirections ? (
+          <li className="pro-contact-row">
+            <span className="pro-contact-label" />
+            <a
+              href={directionsUrl}
+              className="pro-contact-value pro-contact-link pro-contact-directions"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {lang === "es" ? "Cómo llegar ↗" : "Get directions ↗"}
+            </a>
           </li>
         ) : null}
       </ul>

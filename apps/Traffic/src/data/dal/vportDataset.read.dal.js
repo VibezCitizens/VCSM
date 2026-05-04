@@ -20,7 +20,14 @@ const VPORT_PUBLIC_TRAZE_PROFILE_PROJECTION = [
   "category_key",
   "directory_visible",
   "directory_status",
-  "created_at"
+  "created_at",
+  "logo_url",
+  "email_public",
+  "website_url",
+  "booking_url",
+  "hours",
+  "lat",
+  "lng"
 ].join(", ");
 
 let loggedVportDatasetError = false;

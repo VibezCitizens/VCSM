@@ -45,6 +45,118 @@ function isDefaultBio(bio, displayName) {
   return !bio || bio === `Visit ${displayName} on Vibez Citizens.`;
 }
 
+const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const DAY_LABELS = { monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thu", friday: "Fri", saturday: "Sat", sunday: "Sun" };
+
+function HoursSection({ hours }) {
+  if (!hours || typeof hours !== "object") return null;
+  const rows = DAYS.map((day) => ({ day, schedule: hours[day] ?? null }));
+  const hasAny = rows.some(({ schedule }) => schedule != null);
+  if (!hasAny) return null;
+  return (
+    <section className="card card--subtle pro-hours" aria-label="Business hours">
+      <h2 className="pro-section-title">Hours</h2>
+      <ul className="pro-hours-list">
+        {rows.map(({ day, schedule }) => (
+          <li key={day} className="pro-hours-row">
+            <span className="pro-hours-day">{DAY_LABELS[day]}</span>
+            <span className="pro-hours-time">
+              {!schedule ? "—" : schedule.closed ? "Closed" : `${schedule.open} – ${schedule.close}`}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function formatCents(cents, currencyCode) {
+  if (cents == null) return null;
+  try {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: currencyCode ?? "USD", maximumFractionDigits: 0 }).format(cents / 100);
+  } catch {
+    return `$${Math.round(cents / 100)}`;
+  }
+}
+
+function ServicesSection({ liveServices }) {
+  if (!liveServices?.length) return null;
+  return (
+    <section className="card card--subtle pro-services" aria-label="Services offered">
+      <h2 className="pro-section-title">Services</h2>
+      <ul className="pro-services-list">
+        {liveServices.map((svc) => (
+          <li key={svc.key ?? svc.id} className="pro-service-row">
+            <span className="pro-service-name">{svc.label}</span>
+            {svc.booking ? (
+              <span className="pro-service-meta">
+                {svc.booking.price_cents != null
+                  ? <span className="pro-service-price">{formatCents(svc.booking.price_cents, svc.booking.currency_code)}</span>
+                  : null}
+                {svc.booking.duration_minutes != null
+                  ? <span className="pro-service-duration">{svc.booking.duration_minutes} min</span>
+                  : null}
+              </span>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function MenuSection({ menuCategories }) {
+  if (!menuCategories?.length) return null;
+  const preview = menuCategories.slice(0, 2);
+  return (
+    <section className="card card--subtle pro-menu" aria-label="Menu">
+      <h2 className="pro-section-title">Menu</h2>
+      {preview.map((cat) => (
+        <div key={cat.key} className="pro-menu-category">
+          <p className="pro-menu-category-name">{cat.name}</p>
+          <ul className="pro-menu-items">
+            {cat.items.slice(0, 4).map((item) => (
+              <li key={item.key ?? item.name} className="pro-menu-item">
+                {item.imageUrl ? (
+                  <img className="pro-menu-item-img" src={item.imageUrl} alt={item.name} loading="lazy" />
+                ) : null}
+                <div className="pro-menu-item-info">
+                  <span className="pro-menu-item-name">{item.name}</span>
+                  {item.description ? <span className="pro-menu-item-desc">{item.description}</span> : null}
+                  {item.priceCents != null ? (
+                    <span className="pro-menu-item-price">{formatCents(item.priceCents, item.currencyCode)}</span>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function GallerySection({ portfolio }) {
+  if (!portfolio?.length) return null;
+  return (
+    <section className="card card--subtle pro-gallery" aria-label="Portfolio gallery">
+      <h2 className="pro-section-title">Gallery</h2>
+      <div className="pro-gallery-grid">
+        {portfolio.slice(0, 9).map((item) => (
+          <div key={item.portfolioItemId} className="pro-gallery-item">
+            <img
+              className="pro-gallery-img"
+              src={item.mediaUrl}
+              alt={item.altText ?? item.title ?? "Portfolio image"}
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export async function ProviderPageTemplate({
   model,
   stats,
@@ -53,7 +165,10 @@ export async function ProviderPageTemplate({
   visibleReviews = [],
   guideLinks = [],
   relatedLinks,
-  schema
+  schema,
+  liveServices = [],
+  menuCategories = [],
+  portfolio = []
 }) {
   const providerGuideLinks = guideLinks.length
     ? guideLinks
@@ -107,15 +222,15 @@ export async function ProviderPageTemplate({
         aria-label="Provider identity"
       >
         <div className="pro-hero-top">
-          {/* Avatar: real image or gradient initials fallback */}
+          {/* Avatar: logo preferred, falls back to avatar, then gradient initials */}
           <div
             className="pro-hero-avatar"
-            style={provider.avatarUrl ? undefined : { background: serviceGradient }}
+            style={(provider.logoUrl || provider.avatarUrl) ? undefined : { background: serviceGradient }}
           >
-            {provider.avatarUrl ? (
+            {(provider.logoUrl || provider.avatarUrl) ? (
               <img
                 className="pro-hero-avatar-img"
-                src={provider.avatarUrl}
+                src={provider.logoUrl ?? provider.avatarUrl}
                 alt={provider.displayName}
               />
             ) : (
@@ -189,7 +304,24 @@ export async function ProviderPageTemplate({
             cityName={model.cityName}
             regionCode={provider.primaryRegionCode}
             postalCode={provider.postalCode}
+            email={provider.email}
+            websiteUrl={provider.websiteUrl}
+            bookingUrl={provider.bookingUrl}
+            lat={provider.lat}
+            lng={provider.lng}
           />
+
+          {/* Hours */}
+          <HoursSection hours={provider.hours} />
+
+          {/* Services */}
+          <ServicesSection liveServices={liveServices} />
+
+          {/* Menu */}
+          <MenuSection menuCategories={menuCategories} />
+
+          {/* Gallery */}
+          <GallerySection portfolio={portfolio} />
 
           {/* Trust / Reviews */}
           <section className="card card--subtle pro-trust" aria-label="Reviews and trust">

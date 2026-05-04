@@ -1,16 +1,25 @@
+"use client";
+
 import {
   buildPlatformClaimLink,
   buildPlatformExploreLink,
   buildPlatformProviderLink
 } from "@/features/conversion/lib/deepLinkBuilder";
 import ProviderLeadCaptureCard from "@/features/conversion/components/ProviderLeadCaptureCard";
+import { useTrafficLanguage } from "@/lib/language";
 
 export function DirectoryCtaModules({ context }) {
+  const { lang } = useTrafficLanguage();
+
   return (
     <div className="card stack-grid">
-      <h3 className="homepage-card-title">Continue on Vibez Citizens</h3>
+      <h3 className="homepage-card-title">
+        {lang === "es" ? "Continuar en Vibez Citizens" : "Continue on Vibez Citizens"}
+      </h3>
       <p>
-        Open live provider profiles, compare availability, and continue booking workflows on the platform.
+        {lang === "es"
+          ? "Abre perfiles en vivo, compara disponibilidad y continúa el proceso de reserva en la plataforma."
+          : "Open live provider profiles, compare availability, and continue booking workflows on the platform."}
       </p>
       <div className="row-wrap">
         <a
@@ -19,7 +28,7 @@ export function DirectoryCtaModules({ context }) {
           target="_blank"
           rel="noreferrer"
         >
-          Explore on Vibez Citizens
+          {lang === "es" ? "Explorar en Vibez Citizens" : "Explore on Vibez Citizens"}
         </a>
       </div>
     </div>

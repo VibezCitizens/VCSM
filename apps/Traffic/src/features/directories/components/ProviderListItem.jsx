@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { getCountryByCode } from "@/data/repositories/geo.repo";
 import { getServiceById } from "@/data/repositories/service.repo";
 import { getPublicReviewSummaryForProvider } from "@/data/repositories/reviewSummary.repo";
 import { countryProviderPath, providerPath } from "@/lib/paths";
+import { ProviderListItemFooter } from "@/features/directories/components/ProviderListItemFooter";
 
 function resolveProviderHref(provider) {
   const country = getCountryByCode(provider.primaryCountryCode);
@@ -121,7 +121,6 @@ export async function ProviderListItem({ item, rank }) {
     ? formatRating(reviewSummary.averageRating)
     : formatRating(stats?.ratingAvg);
   const reviewCount = Number(reviewSummary?.reviewCount ?? stats?.reviewCount ?? 0);
-  const reviewCountLabel = reviewCount === 1 ? "1 review" : `${reviewCount} reviews`;
   const responseTime = formatResponseTime(stats?.responseTimeP50Minutes);
 
   const avatarColor = getAvatarColor(provider.displayName);
@@ -161,41 +160,22 @@ export async function ProviderListItem({ item, rank }) {
             <p className="dir-card-bio">{provider.shortBio}</p>
           )}
 
-          <div className="dir-card-stats">
-            {rating && (
+          {rating && (
+            <div className="dir-card-stats">
               <span className="dir-card-stat">
                 <strong>★ {rating}</strong>
               </span>
-            )}
-            {reviewCount > 0 && (
-              <>
-                <span className="dir-card-stat-divider">·</span>
-                <span className="dir-card-stat">{reviewCountLabel}</span>
-              </>
-            )}
-            {responseTime && (
-              <>
-                <span className="dir-card-stat-divider">·</span>
-                <span className="dir-card-stat">Replies in {responseTime}</span>
-              </>
-            )}
-            {providerServices.length > 0 && (
-              <>
-                <span className="dir-card-stat-divider">·</span>
-                <span className="dir-card-stat">{providerServices.length} services</span>
-              </>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        <div className="dir-card-actions">
-          {rank != null && (
-            <span className="dir-card-rank">#{rank}</span>
-          )}
-          <Link className="dir-card-cta" href={href}>
-            View profile
-          </Link>
-        </div>
+        <ProviderListItemFooter
+          href={href}
+          rank={rank}
+          reviewCount={reviewCount}
+          responseTime={responseTime}
+          serviceCount={providerServices.length}
+        />
 
       </div>
     </article>

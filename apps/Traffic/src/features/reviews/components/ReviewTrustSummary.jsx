@@ -1,3 +1,7 @@
+"use client";
+
+import { useTrafficLanguage } from "@/lib/language";
+
 function formatRating(value) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
@@ -7,14 +11,18 @@ function formatRating(value) {
   return numeric.toFixed(1);
 }
 
-function formatReviewCount(value) {
+function formatReviewCount(value, lang) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) {
-    return "0 reviews";
+    return lang === "es" ? "0 reseñas" : "0 reviews";
   }
 
   const count = Math.round(numeric);
   const formatted = new Intl.NumberFormat("en-US").format(count);
+
+  if (lang === "es") {
+    return `${formatted} ${count === 1 ? "reseña" : "reseñas"}`;
+  }
   return `${formatted} ${count === 1 ? "review" : "reviews"}`;
 }
 
@@ -34,6 +42,8 @@ function buildBreakdownLabel(summary) {
 }
 
 export function ReviewTrustSummary({ summary, compact = false }) {
+  const { lang } = useTrafficLanguage();
+
   if (!summary) {
     return null;
   }
@@ -49,7 +59,7 @@ export function ReviewTrustSummary({ summary, compact = false }) {
   const chips = (
     <>
       <span className="pill">★ {formatRating(summary.averageRating)}</span>
-      <span className="pill">{formatReviewCount(summary.reviewCount)}</span>
+      <span className="pill">{formatReviewCount(summary.reviewCount, lang)}</span>
       {summary.trustBadge ? <span className="pill pill--ok">{summary.trustBadge}</span> : null}
     </>
   );
