@@ -16,7 +16,7 @@ export const TAB = Object.freeze({
   RATES: T("rates", "Rates"),
 
   PORTFOLIO: T("portfolio", "Portfolio"),
-  BOOK: T("book", "Calendar"),
+  BOOK: T("book", "Book"),
 
   // ✅ NEW
   CONTENT: T("content", "Content"),
@@ -47,6 +47,8 @@ function makeTabs(keys) {
       .filter(Boolean)
   );
 }
+
+// ─── Base layouts ──────────────────────────────────────────────────────────
 
 export const VPORT_TABS = makeTabs([
   "ABOUT",
@@ -126,39 +128,63 @@ export const VPORT_RATES_TABS = makeTabs([
   "SUBSCRIBERS",
 ]);
 
-/**
- * Profile Tabs Configuration
- * ==========================
- *
- * This module defines:
- *  1) TAB catalog: all possible tabs (key + label).
- *  2) TAB_FLAGS: feature flags to "shutdown" (hide) specific tabs without deleting them.
- *  3) makeTabs(): builds immutable tab arrays from string keys, applying flags + validation.
- *  4) Layout exports: predefined tab layouts for different VPORT contexts.
- *
- * Why this exists
- * --------------
- * - Keep tab definitions centralized.
- * - Control what shows per layout by editing arrays only.
- * - Allow WIP tabs to be disabled via flags and re-enabled later with one flip.
- *
- * How to use
- * ----------
- * - Remove a tab: remove its string from the layout array (or set TAB_FLAGS[KEY] = false).
- * - Reorder tabs: reorder the strings in the layout array.
- * - Add a tab:
- *     1) add it to TAB
- *     2) optionally add flag to TAB_FLAGS
- *     3) add its KEY to one or more layout arrays
- *
- * Important behaviors
- * -------------------
- * - If TAB_FLAGS[KEY] === false, that tab will NOT appear even if present in a layout array.
- * - Unknown keys in layout arrays will warn and be skipped.
- * - All returned arrays are frozen for safety (immutable).
- */
+// ─── New layouts ───────────────────────────────────────────────────────────
 
-/**
+// Arts, Media & Entertainment — portfolio-first for visual/performing creators.
+export const VPORT_CREATIVE_TABS = makeTabs([
+  "PORTFOLIO",
+  "VIBES",
+  "CONTENT",
+  "REVIEWS",
+  "SERVICES",
+  "ABOUT",
+  "PHOTOS",
+  "SUBSCRIBERS",
+]);
+
+// Beauty & Wellness (broad), Education & Care, Sports & Fitness, Animal Care
+// — service + portfolio + booking in one layout.
+export const VPORT_SERVICE_BOOK_TABS = makeTabs([
+  "PORTFOLIO",
+  "BOOK",
+  "SERVICES",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
+]);
+
+// Health & Medical — appointment-first, no portfolio.
+export const VPORT_HEALTH_TABS = makeTabs([
+  "BOOK",
+  "SERVICES",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "SUBSCRIBERS",
+]);
+
+// Home, Maintenance & Trades — portfolio of past work is the primary trust signal.
+export const VPORT_TRADES_TABS = makeTabs([
+  "PORTFOLIO",
+  "SERVICES",
+  "BOOK",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "SUBSCRIBERS",
+]);
+
+// Retail, Sales & Commerce — services/products catalog first.
+export const VPORT_RETAIL_TABS = makeTabs([
+  "SERVICES",
+  "REVIEWS",
+  "ABOUT",
+  "PHOTOS",
+  "VIBES",
+  "SUBSCRIBERS",
+]);
 
 
 /**
@@ -171,7 +197,6 @@ export const VPORT_RATES_TABS = makeTabs([
  * - The "key" field (e.g., "services") is what UI/state/routing typically uses.
  * - Keeping WIP tabs here is safe; visibility is controlled by TAB_FLAGS + layouts.
  */
-
 
 /**
  * TAB_FLAGS (Feature Flags)
@@ -187,7 +212,6 @@ export const VPORT_RATES_TABS = makeTabs([
  * - Shut down tabs until implementation is ready, then reactivate by flipping to true.
  */
 
-
 /**
  * makeTabs(keys)
  * --------------
@@ -197,43 +221,30 @@ export const VPORT_RATES_TABS = makeTabs([
  *  1) For each key, skip if TAB_FLAGS[key] === false
  *  2) Validate that TAB[key] exists; warn if unknown
  *  3) Return a frozen array of tab objects
-
-/* ============================================================
-   BASE LAYOUTS
-   ============================================================
  *
- * Layouts define:
- * - which tabs show for a given profile context
- * - the order they show
+ * Profile Tabs Configuration
+ * ==========================
  *
- * You can add new layouts later without touching UI, as long as UI reads from these exports.
- */
-
-/**
- * VPORT_TABS
+ * This module defines:
+ *  1) TAB catalog: all possible tabs (key + label).
+ *  2) TAB_FLAGS: feature flags to "shutdown" (hide) specific tabs without deleting them.
+ *  3) makeTabs(): builds immutable tab arrays from string keys, applying flags + validation.
+ *  4) Layout exports: predefined tab layouts for different VPORT contexts.
+ *
+ * How to use
  * ----------
- * Default/general VPORT layout (fallback for "Other" group).
- */
-
-/**
- * VPORT_SERVICE_TABS
- * ------------------
- * Layout intended for service-oriented VPORTs (e.g., Beauty & Wellness).
+ * - Remove a tab: remove its string from the layout array (or set TAB_FLAGS[KEY] = false).
+ * - Reorder tabs: reorder the strings in the layout array.
+ * - Add a tab:
+ *     1) add it to TAB
+ *     2) optionally add flag to TAB_FLAGS
+ *     3) add its KEY to one or more layout arrays
  *
- * Notes:
- * - Includes SERVICES/PORTFOLIO/BOOK keys, but they are currently disabled via TAB_FLAGS.
- * - When ready, flip TAB_FLAGS.SERVICES/PORTFOLIO/BOOK to true to show them.
- */
-/**
- * VPORT_FOOD_TABS
- * --------------
- * Layout intended for food/hospitality VPORTs (e.g., restaurants, catering).
- */
-
-/**
- * VPORT_GAS_TABS
- * --------------
- * Layout intended for gas/fuel VPORTs.
+ * Important behaviors
+ * -------------------
+ * - If TAB_FLAGS[KEY] === false, that tab will NOT appear even if present in a layout array.
+ * - Unknown keys in layout arrays will warn and be skipped.
+ * - All returned arrays are frozen for safety (immutable).
  */
 
 /* ============================================================

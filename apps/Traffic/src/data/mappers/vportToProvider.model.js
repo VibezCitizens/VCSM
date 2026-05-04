@@ -149,6 +149,18 @@ function resolveLegacyCityId(countryCode, citySlug) {
   return `vport-city:${countryCode}:${citySlug}`;
 }
 
+function computeRankScore(row, serviceId) {
+  let score = 30;
+  if (isUuid(row.actor_id)) score += 20;
+  if (safeStr(row.avatar_url)) score += 15;
+  if (safeStr(row.bio).length > 10) score += 10;
+  if (safeStr(row.phone_public)) score += 10;
+  if (safeStr(row.banner_url)) score += 5;
+  if (serviceId) score += 5;
+  if (normalizeSlug(row.city_slug)) score += 5;
+  return Math.min(score, 100);
+}
+
 /**
  * Maps a flattened Supabase VPORT row into TRAZE's Provider/ProviderService/ProviderStats shape.
  *
@@ -248,7 +260,7 @@ export function mapVportRowToProvider(row) {
     bookingCount30d: 0,
     responseRate: 100,
     responseTimeP50Minutes: 30,
-    rankScore: 50,
+    rankScore: computeRankScore(row, serviceId),
     updatedAt: claimedAt ?? new Date().toISOString()
   };
 

@@ -15,9 +15,14 @@ export const metadata = {
   description:
     "TRAZE public discovery layer for country, city, locality, service, provider, guide, and review SEO pages.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_ORIGIN || "https://traze.vibezcitizens.com"),
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
+    title: "TRAZE",
+  },
+  icons: {
+    apple: "/icons/icon.svg",
   },
   other: {
     "mobile-web-app-capable": "yes",

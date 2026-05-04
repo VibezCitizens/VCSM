@@ -20,8 +20,8 @@ export async function onRequest(context) {
   if (env.SUPABASE_URL && env.SUPABASE_ANON_KEY) {
     try {
       rows = await fetchAllPages(env, 'profiles', 'slug=not.is.null&is_active=eq.true&is_deleted=eq.false&select=slug,updated_at');
-    } catch {
-      // Network timeout or Supabase error — return empty sitemap
+    } catch (err) {
+      console.error('[sitemap:vport-reviews] Supabase error:', err?.message ?? String(err));
     }
   }
 
@@ -74,7 +74,10 @@ async function fetchAllPages(env, table, query) {
       }
     );
 
-    if (!res.ok) break;
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status}: ${body.slice(0, 300)}`);
+    }
     const page = await res.json();
     if (!Array.isArray(page) || page.length === 0) break;
     all.push(...page);

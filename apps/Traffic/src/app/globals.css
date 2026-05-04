@@ -3261,3 +3261,41 @@ p {
     align-items: flex-start;
   }
 }
+
+@media (max-width: 540px) {
+  .hp-location-row {
+    flex-wrap: wrap;
+  }
+
+  .hp-location-select-wrap {
+    flex: 1 1 100%;
+  }
+
+  .hp-use-location-btn {
+    flex: 1;
+    justify-content: center;
+    min-height: 40px;
+  }
+}
+
+.hp-location-hint {
+  font-size: 0.76rem;
+  color: rgba(185, 178, 210, 0.58);
+  margin: 0;
+  padding-top: 0.1rem;
+}
+
+.hp-location-hint-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: rgba(167, 139, 250, 0.82);
+  cursor: pointer;
+  font-family: var(--traffic-font-sans);
+  transition: color 140ms ease;
+}
+
+.hp-location-hint-btn:hover {
+  color: #a78bfa;
+}

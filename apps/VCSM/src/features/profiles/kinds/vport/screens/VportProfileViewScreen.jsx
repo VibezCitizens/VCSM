@@ -20,7 +20,7 @@ import VportBarberShopBookingView from "@/features/profiles/kinds/vport/screens/
 
 import { useActorStore } from "@hydration";
 import { queryKeys } from "@/queries/queryKeys";
-import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
+import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/getVportTabsByType.model";
 import { useVportProfileBySlug } from "@/features/profiles/kinds/vport/hooks/useVportProfileBySlug";
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
 import { useIsActorOwner } from "@/features/profiles/hooks/useIsActorOwner";
@@ -36,7 +36,7 @@ export default function VportProfileViewScreen({
   identity,
   tabs = VPORT_TABS,
 }) {
-  const [tab, setTab] = useState("vibes");
+  const [tab, setTab] = useState(null);
   const [gateVersion, setGateVersion] = useState(0);
   const [reviewsDefaultTab, setReviewsDefaultTab] = useState(null);
 

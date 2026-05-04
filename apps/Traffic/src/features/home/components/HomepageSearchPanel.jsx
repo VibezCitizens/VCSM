@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, MapPin, LocateFixed } from "lucide-react";
 import { countryCityPath, countryCityServicePath } from "@/lib/paths";
 import { normalizeSlug } from "@/lib/slugs";
+import { trackSearch } from "@/lib/analytics";
 
 function mapServiceQuery(rawQuery) {
   const normalized = normalizeSlug(rawQuery);
@@ -56,6 +57,40 @@ export default function HomepageSearchPanel({
   const [query, setQuery] = useState("");
   const [locationSlug, setLocationSlug] = useState(defaultLocation?.citySlug ?? "miami");
   const [locating, setLocating] = useState(false);
+  const [locationDetected, setLocationDetected] = useState(false);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    async function tryAutoDetect() {
+      try {
+        const permission = await navigator.permissions.query({ name: "geolocation" });
+        if (permission.state !== "granted") return;
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const nearest = locationOptions
+              .filter((o) => o.lat != null && o.lon != null)
+              .reduce((best, option) => {
+                const dist = haversineKm(latitude, longitude, option.lat, option.lon);
+                return best === null || dist < best.dist ? { slug: option.citySlug, dist } : best;
+              }, null);
+            if (nearest) {
+              setLocationSlug(nearest.slug);
+              setLocationDetected(true);
+            }
+          },
+          () => {},
+          { timeout: 6000 }
+        );
+      } catch {
+        // navigator.permissions not supported (older iOS Safari) — skip silently
+      }
+    }
+
+    tryAutoDetect();
+  }, [locationOptions]);
 
   const optionMap = useMemo(
     () => new Map(locationOptions.map((option) => [option.citySlug, option])),
@@ -91,6 +126,12 @@ export default function HomepageSearchPanel({
 
     const serviceSlug = mapServiceQuery(query);
     const hasLiveService = serviceSlug && liveServiceSlugs.includes(serviceSlug);
+
+    trackSearch({
+      query: query.trim(),
+      citySlug: location.citySlug,
+      serviceSlug: hasLiveService ? serviceSlug : null
+    });
 
     if (hasLiveService) {
       router.push(countryCityServicePath(location.countrySlug, location.citySlug, serviceSlug));
@@ -177,11 +218,21 @@ export default function HomepageSearchPanel({
             className="hp-use-location-btn"
             onClick={handleUseMyLocation}
             disabled={locating}
+            aria-label="Detect my current location"
           >
             <LocateFixed size={13} />
-            {locating ? "Detecting..." : "Use my location"}
+            {locating ? "Detecting..." : locationDetected ? "Located" : "Use my location"}
           </button>
         </div>
+
+        {!locationDetected && !locating && location && (
+          <p className="hp-location-hint">
+            Showing results for {location.label}.{" "}
+            <button type="button" className="hp-location-hint-btn" onClick={handleUseMyLocation}>
+              Not your location?
+            </button>
+          </p>
+        )}
       </form>
 
       {popularLinks.length > 0 && (

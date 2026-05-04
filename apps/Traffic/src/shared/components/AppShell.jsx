@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getPlatformOrigin } from "@/lib/env";
+import { initAnalytics, trackPageView } from "@/lib/analytics";
 
 function claimHref() {
   try {
@@ -24,6 +26,17 @@ const NAV_LINKS = [
 
 export function AppShell({ children }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+    initAnalytics();
+  }, []);
+
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
 
   return (
     <>
