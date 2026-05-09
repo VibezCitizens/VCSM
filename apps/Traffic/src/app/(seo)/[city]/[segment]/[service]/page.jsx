@@ -105,25 +105,29 @@ export function generateStaticParams() {
   ]);
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const graph = resolvePage(params);
   if (!graph) {
     return {};
   }
 
   if (graph.routeMode === "country_provider") {
-    return buildCountryProviderMetadata(graph);
+    return buildCountryProviderMetadata(graph, { routeLocale });
   }
 
   if (graph.routeMode === "country_city_service") {
-    return buildCountryCityServiceMetadata(graph);
+    return buildCountryCityServiceMetadata(graph, { routeLocale });
   }
 
   if (graph.routeMode === "country_service_hub") {
-    return buildCountryServiceHubMetadata(graph);
+    return buildCountryServiceHubMetadata(graph, { routeLocale });
   }
 
-  return buildLegacyLocalityServiceMetadata(graph);
+  return buildLegacyLocalityServiceMetadata(graph, { routeLocale });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 export default async function TripleSegmentPage({ params }) {

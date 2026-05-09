@@ -29,17 +29,21 @@ export function generateStaticParams() {
   return dedupeCityParams([...countryPages, ...listCityStaticParams()]);
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const graph = resolvePage(params);
   if (!graph) {
     return {};
   }
 
   if (graph.routeMode === "country") {
-    return buildCountryMetadata(graph);
+    return buildCountryMetadata(graph, { routeLocale });
   }
 
-  return buildLegacyCityMetadata(graph);
+  return buildLegacyCityMetadata(graph, { routeLocale });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 export default function CityPage({ params }) {

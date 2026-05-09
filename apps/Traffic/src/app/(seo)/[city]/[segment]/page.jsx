@@ -58,17 +58,21 @@ export function generateStaticParams() {
   return dedupeParamPairs([...fallbackCountryCity, ...fallbackCityService]);
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const graph = resolvePage(params);
   if (!graph) {
     return {};
   }
 
   if (graph.routeMode === "country_city") {
-    return buildCountryCityMetadata(graph);
+    return buildCountryCityMetadata(graph, { routeLocale });
   }
 
-  return buildLegacyCityServiceMetadata(graph);
+  return buildLegacyCityServiceMetadata(graph, { routeLocale });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 export default function DualSegmentPage({ params }) {

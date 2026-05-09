@@ -1,4 +1,5 @@
 import { buildCanonical } from "@/seo/canonical";
+import { buildLocalizedAlternates, routeLocaleToOpenGraphLocale } from "@/seo/locale";
 
 function normalizeLanguageAlternates(languageAlternates) {
   if (!languageAlternates) {
@@ -13,8 +14,15 @@ function normalizeLanguageAlternates(languageAlternates) {
 }
 
 function baseMetadata(args) {
-  const canonical = buildCanonical(args.path);
-  const languages = normalizeLanguageAlternates(args.languageAlternates);
+  const localizedAlternates = buildLocalizedAlternates(args.canonicalPath ?? args.path, {
+    locale: args.routeLocale
+  });
+  const canonical = args.canonical
+    ? buildCanonical(args.canonical)
+    : localizedAlternates.canonical;
+  const languages =
+    normalizeLanguageAlternates(args.languageAlternates) ??
+    localizedAlternates.languages;
   const robots = args.robots;
   const openGraphType = args.openGraphType ?? "website";
   const openGraphExtras = args.openGraphExtras ?? {};
@@ -36,7 +44,7 @@ function baseMetadata(args) {
       description,
       url: canonical,
       type: openGraphType,
-      locale: args.locale ?? "en_US",
+      locale: args.openGraphLocale ?? routeLocaleToOpenGraphLocale(args.routeLocale, args.locale ?? "en_US"),
       siteName: args.siteName ?? "TRAZE",
       ...openGraphExtras
     },

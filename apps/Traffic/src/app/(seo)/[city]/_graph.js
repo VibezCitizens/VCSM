@@ -67,7 +67,7 @@ export function resolvePage(params) {
   return resolveCountryPage(params) ?? resolveLegacyCityPage(params);
 }
 
-export function buildCountryMetadata(graph) {
+export function buildCountryMetadata(graph, options = {}) {
   const providers = listProvidersByCountry(graph.country.code);
   const cities = listStructuredCitiesByCountryCode(graph.country.code);
 
@@ -75,11 +75,12 @@ export function buildCountryMetadata(graph) {
     title: `Top Local Service Providers in ${graph.country.name}`,
     description: `Explore ${providers.length} verified and discoverable providers across ${cities.length} cities in ${graph.country.name}.`,
     path: countryPath(graph.country.slug),
-    locale: getLocaleForCountryCode(graph.country.code)
+    locale: getLocaleForCountryCode(graph.country.code),
+    routeLocale: options.routeLocale
   });
 }
 
-export function buildLegacyCityMetadata(graph) {
+export function buildLegacyCityMetadata(graph, options = {}) {
   const locationTail = [graph.region?.code ?? graph.city.stateCode, graph.country.code].filter(Boolean).join(", ");
 
   const title = `Top Service Providers in ${graph.city.name}${locationTail ? `, ${locationTail}` : ""}`;
@@ -90,6 +91,7 @@ export function buildLegacyCityMetadata(graph) {
     description,
     path: countryCityPath(graph.country.slug, graph.city.slug),
     locale: getLocaleForCountryCode(graph.country.code),
+    routeLocale: options.routeLocale,
     robots: LEGACY_TRANSITION_ROBOTS
   });
 }

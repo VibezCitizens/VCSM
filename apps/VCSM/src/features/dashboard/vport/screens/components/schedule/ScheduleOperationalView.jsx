@@ -162,7 +162,7 @@ export default function ScheduleOperationalView({
   }
 
   return (
-    <div style={{ flex: 1, overflow: "auto", padding: "14px 16px 40px", display: "grid", gap: 14, alignContent: "start" }}>
+    <div style={{ flex: 1, overflow: "auto", padding: "14px 16px 0", paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 110px)", display: "grid", gap: 14, alignContent: "start" }}>
 
       {/* Open/Closed status + hours */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

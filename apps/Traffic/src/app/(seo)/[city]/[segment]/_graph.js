@@ -83,7 +83,7 @@ export function resolvePage(params) {
   return resolveCountryCity(params) ?? resolveLegacyCityService(params);
 }
 
-export function buildCountryCityMetadata(graph) {
+export function buildCountryCityMetadata(graph, options = {}) {
   const locationTail = [graph.region?.code ?? graph.city.stateCode, graph.country.code]
     .filter(Boolean)
     .join(", ");
@@ -92,11 +92,12 @@ export function buildCountryCityMetadata(graph) {
     title: `Top Service Providers in ${graph.city.name}${locationTail ? `, ${locationTail}` : ""}`,
     description: `Browse rated providers across all service categories in ${graph.city.name}, ${graph.country.name}. Compare pricing, reviews, and book directly.`,
     path: countryCityPath(graph.country.slug, graph.city.slug),
-    locale: getLocaleForCountryCode(graph.country.code)
+    locale: getLocaleForCountryCode(graph.country.code),
+    routeLocale: options.routeLocale
   });
 }
 
-export function buildLegacyCityServiceMetadata(graph) {
+export function buildLegacyCityServiceMetadata(graph, options = {}) {
   const locationTail = [graph.city.name, graph.region?.code ?? graph.city.stateCode, graph.country.code]
     .filter(Boolean)
     .join(", ");
@@ -106,6 +107,7 @@ export function buildLegacyCityServiceMetadata(graph) {
     description: `Find top-rated ${graph.service.name.toLowerCase()} providers in ${graph.city.name}, ${graph.country.name}. Compare pricing, read reviews, and book directly.`,
     path: countryCityServicePath(graph.country.slug, graph.city.slug, graph.service.slug),
     locale: getLocaleForCountryCode(graph.country.code),
+    routeLocale: options.routeLocale,
     robots: LEGACY_TRANSITION_ROBOTS
   });
 }
