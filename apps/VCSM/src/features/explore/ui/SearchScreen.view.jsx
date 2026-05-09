@@ -1,22 +1,26 @@
 import React, { Suspense } from 'react'
 import { Search, X } from 'lucide-react'
+import { useTranslation } from '@i18n'
 import { useSearchActor } from '../hooks/useSearchActor'
 import { OnboardingCardsView } from '@/features/onboarding/adapters/onboarding.adapter'
 import ResultList from './ResultList'
 import ExploreFeed from './ExploreFeed'
 import '@/features/explore/styles/explore-modern.css'
 
+const FILTER_KEYS = [
+  { key: 'all', tKey: 'explore.filterAll' },
+  { key: 'users', tKey: 'explore.filterCitizens' },
+  { key: 'vports', tKey: 'explore.filterVports' },
+  { key: 'posts', tKey: 'explore.filterVibes' },
+  { key: 'groups', tKey: 'explore.filterDistricts' },
+]
+
 export default function SearchScreen() {
+  const { t } = useTranslation()
   const { query, filter, debounced, canClear, setQuery, setFilter } = useSearchActor()
   const isSearching = query.trim().length > 0 || debounced.trim().length > 0
 
-  const FILTERS = [
-    { key: 'all', label: 'All' },
-    { key: 'users', label: 'Citizens' },
-    { key: 'vports', label: 'Vports' },
-    { key: 'posts', label: 'Vibes' },
-    { key: 'groups', label: 'Districts' },
-  ]
+  const FILTERS = FILTER_KEYS.map(({ key, tKey }) => ({ key, label: t(tKey) }))
 
   return (
     <div className="explore-modern w-full flex flex-col flex-1 min-h-0">
@@ -33,7 +37,7 @@ export default function SearchScreen() {
 
             <input
               type="text"
-              placeholder="Search citizens, vports, vibes, districts..."
+              placeholder={t('explore.searchPlaceholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="explore-search-input"
@@ -44,7 +48,7 @@ export default function SearchScreen() {
                 type="button"
                 onClick={() => setQuery('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-white/50 transition hover:bg-white/6/60 hover:text-white"
-                aria-label="Clear"
+                aria-label={t('explore.clearSearch')}
               >
                 <X size={15} />
               </button>
@@ -80,7 +84,7 @@ export default function SearchScreen() {
         style={{ paddingBottom: 'calc(var(--vc-bottom-nav-total-height, 3.75rem) + 0.75rem)' }}
       >
         {isSearching ? (
-          <Suspense fallback={<div className="text-center text-white/70">Loading...</div>}>
+          <Suspense fallback={<div className="text-center text-white/70">{t('explore.loading')}</div>}>
             <ResultList query={debounced || query} filter={filter} />
           </Suspense>
         ) : (

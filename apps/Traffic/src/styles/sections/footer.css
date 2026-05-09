@@ -1,0 +1,110 @@
+/* ============================================================
+   SECTIONS — Footer (.homepage-footer-*)
+   ============================================================ */
+
+.homepage-footer {
+  border-top: 1px solid rgba(134, 126, 166, 0.32);
+  border-radius: 0;
+  padding: 0.9rem 0 0;
+  background: transparent;
+  display: grid;
+  gap: 0.64rem;
+  box-shadow: none;
+}
+
+/* Polish footer override */
+.homepage-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 2rem;
+  padding-bottom: 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 0;
+}
+
+.homepage-footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.62rem;
+  flex-wrap: wrap;
+}
+
+/* Polish footer-top override */
+.homepage-footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.homepage-footer-brand {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.homepage-footer-name {
+  font-family: var(--traffic-font-sans);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin: 0;
+  letter-spacing: 0.06em;
+}
+
+.homepage-footer-powered {
+  font-size: 0.72rem;
+  color: rgba(168, 162, 192, 0.42);
+  margin: 0;
+}
+
+.homepage-footer-links {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Polish footer-links override */
+.homepage-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem 1.25rem;
+  flex-wrap: wrap;
+}
+
+.homepage-footer-link {
+  font-size: 0.83rem;
+  color: rgba(199, 210, 241, 0.72);
+  transition: color 140ms ease;
+  white-space: nowrap;
+}
+
+.homepage-footer-link:hover {
+  color: #fff;
+}
+
+.homepage-footer-link--strong {
+  color: rgba(209, 224, 255, 0.95);
+  font-weight: 600;
+}
+
+.homepage-footer-disclaimer {
+  font-size: 0.71rem;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.55;
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.homepage-footer-disclaimer a {
+  color: rgba(255, 255, 255, 0.48);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.homepage-footer-disclaimer a:hover {
+  color: rgba(255, 255, 255, 0.75);
+}

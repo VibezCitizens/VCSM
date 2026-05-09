@@ -1,0 +1,244 @@
+/* ============================================================
+   SECTIONS — Homepage hero
+   ============================================================ */
+
+.homepage-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.8rem, 5.5vw, 5rem) 0;
+}
+
+/* Polish hero override */
+.homepage-hero {
+  padding: clamp(2.1rem, 4.2vw, 3.2rem) 0 1rem;
+}
+
+/* ── Hero 2-column layout ─────────────────────────────────── */
+
+.homepage-hero-layout {
+  display: grid;
+  grid-template-columns: 56fr 44fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* Polish layout override */
+.homepage-hero-layout {
+  grid-template-columns: 58fr 42fr;
+  gap: 2.6rem;
+  align-items: start;
+}
+
+.homepage-hero-content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Polish content override */
+.homepage-hero-content {
+  gap: 1rem;
+}
+
+/* ── Hero title ───────────────────────────────────────────── */
+
+.homepage-hero-title {
+  font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+  max-width: none;
+  line-height: 1.1;
+  letter-spacing: 0;
+  color: transparent;
+  background-image: linear-gradient(130deg, #ffffff 0%, #e8e2ff 55%, #c9d9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Polish title override */
+.homepage-hero-title {
+  font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+  max-width: none;
+  line-height: 1.1;
+  display: grid;
+  gap: 0.16rem;
+}
+
+.homepage-hero-title-accent {
+  color: transparent;
+  background-image: linear-gradient(100deg, #c4b5fd 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Polish title-accent override */
+.homepage-hero-title-accent {
+  display: block;
+  font-size: 0.93em;
+}
+
+/* ── Hero copy ────────────────────────────────────────────── */
+
+.homepage-hero-copy {
+  max-width: 72ch;
+  color: rgba(226, 222, 238, 0.94);
+  font-size: 1.02rem;
+  line-height: 1.62;
+}
+
+/* Polish copy override */
+.homepage-hero-copy {
+  max-width: 62ch;
+  color: rgba(230, 235, 255, 0.9);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.homepage-hero-note {
+  font-size: 0.8rem;
+  color: rgba(181, 191, 227, 0.72);
+}
+
+/* ── Hero visual / map ────────────────────────────────────── */
+
+.homepage-hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-hero-map {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Polish map override */
+.homepage-hero-map {
+  width: 314px;
+  height: 314px;
+}
+
+.homepage-hero-map-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+
+.homepage-hero-map-pin {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-hero-map-pin-icon {
+  color: rgba(139, 92, 246, 0.9);
+  filter: drop-shadow(0 2px 10px rgba(139, 92, 246, 0.38));
+  position: relative;
+  z-index: 3;
+}
+
+.homepage-hero-map-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.1);
+  animation: map-pulse 2.6s ease-out infinite;
+  z-index: 1;
+}
+
+@keyframes map-pulse {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+}
+
+/* ── Hero chips ───────────────────────────────────────────── */
+
+.homepage-hero-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(14, 16, 28, 0.88);
+  border: 1px solid rgba(128, 123, 162, 0.24);
+  color: rgba(210, 205, 238, 0.78);
+  font-size: 0.73rem;
+  font-weight: 500;
+  font-family: var(--traffic-font-sans);
+  box-shadow: 0 3px 10px rgba(4, 6, 14, 0.3);
+  white-space: nowrap;
+  z-index: 4;
+}
+
+.homepage-hero-chip--1 { top:  9%; left:  3%; }
+.homepage-hero-chip--2 { top:  9%; right: 3%; }
+.homepage-hero-chip--3 { bottom: 19%; left:  3%; }
+.homepage-hero-chip--4 { bottom: 19%; right: 3%; }
+
+/* Polish chip override */
+.homepage-hero-chip {
+  background: rgba(15, 19, 32, 0.74);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: rgba(217, 225, 248, 0.86);
+}
+
+/* ── Hero facts ───────────────────────────────────────────── */
+
+.homepage-hero-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.homepage-hero-fact {
+  border-radius: 11px;
+  padding: 0.58rem 0.66rem;
+  background: rgba(16, 19, 31, 0.56);
+  border: 1px solid rgba(117, 133, 190, 0.2);
+  display: grid;
+  gap: 0.14rem;
+}
+
+.homepage-hero-fact strong {
+  font-size: 1rem;
+  color: #eef2ff;
+  font-family: var(--traffic-font-sans);
+}
+
+.homepage-hero-fact span {
+  font-size: 0.73rem;
+  color: rgba(181, 191, 227, 0.75);
+}
+
+/* ── CTA panel ────────────────────────────────────────────── */
+
+.homepage-cta-panel {
+  border-radius: 16px;
+  padding: clamp(1rem, 2.6vw, 1.45rem);
+}
+
+/* Polish cta-panel override */
+.homepage-cta-panel {
+  padding: 1.05rem;
+}
+
+.homepage-claim-title {
+  font-size: clamp(1.45rem, 2.8vw, 1.9rem);
+}
+
+/* Polish claim-title override */
+.homepage-claim-title {
+  font-size: clamp(1.32rem, 2.35vw, 1.74rem);
+}

@@ -1,131 +1,132 @@
 "use client";
 
-import Link from "next/link";
-import { Scissors, ShieldCheck, Utensils, Fuel, DollarSign } from "lucide-react";
 import { useTrafficLanguage } from "@/lib/language";
-import { countryCityServicePath } from "@/lib/paths";
+import { countryCityServicePath, countryServiceHubPath } from "@/lib/paths";
+import TrazeCategoryCard from "@/shared/components/TrazeCategoryCard";
 
-const CATEGORIES = [
-  {
-    id: "barber",
-    label: "Barbers",
-    labelEs: "Barberías",
-    icon: Scissors,
-    description: "Local barbershops with real availability and booking.",
-    descriptionEs: "Barberías locales con disponibilidad y reservas en tiempo real.",
-    live: true
-  },
-  {
-    id: "locksmith",
-    label: "Locksmiths",
-    labelEs: "Cerrajeros",
-    icon: ShieldCheck,
-    description: "Emergency and scheduled locksmith services near you.",
-    descriptionEs: "Servicios de cerrajería de emergencia y programados cerca de ti.",
-    live: true
-  },
-  {
-    id: "restaurant",
-    label: "Restaurants",
-    labelEs: "Restaurantes",
-    icon: Utensils,
-    description: "Dine-in, takeout, and delivery options around you.",
-    descriptionEs: "Opciones de comer en el lugar, para llevar y a domicilio.",
-    live: false
-  },
-  {
-    id: "gas-station",
-    label: "Gas Stations",
-    labelEs: "Gasolineras",
-    icon: Fuel,
-    description: "Find fuel stops and compare prices by location.",
-    descriptionEs: "Encuentra gasolineras y compara precios por ubicación.",
-    live: false
-  },
-  {
-    id: "money-exchange",
-    label: "Money Exchange",
-    labelEs: "Casa de Cambio",
-    icon: DollarSign,
-    description: "Currency exchange counters and wire transfer spots.",
-    descriptionEs: "Casas de cambio y puntos de transferencia de dinero.",
-    live: false
+function getCategoryLabel(cat, lang) {
+  return lang === "es" && cat.categoryLabelEs
+    ? cat.categoryLabelEs
+    : cat.categoryLabel;
+}
+
+function getCategoryDescription(cat, lang) {
+  return lang === "es" && cat.categoryDescriptionEs
+    ? cat.categoryDescriptionEs
+    : (cat.categoryDescription ?? "");
+}
+
+function getCategoryRouteKey(cat) {
+  const services = Array.isArray(cat.services) ? cat.services : [];
+  const liveService =
+    services.find((service) => Number(service.providerCount ?? 0) > 0) ??
+    services[0] ??
+    null;
+
+  const serviceKey = String(liveService?.serviceKey ?? "").trim();
+  if (serviceKey) return serviceKey;
+
+  return String(cat?.categoryKey ?? "").trim();
+}
+
+function getCategoryHref(cat, defaultCountrySlug, defaultCitySlug) {
+  const serviceSlug = getCategoryRouteKey(cat);
+  if (!serviceSlug) return `/categories?filter=${encodeURIComponent(cat.categoryKey)}`;
+  if (!defaultCountrySlug) return `/categories?filter=${encodeURIComponent(serviceSlug)}`;
+
+  if (defaultCitySlug) {
+    return countryCityServicePath(defaultCountrySlug, defaultCitySlug, serviceSlug);
   }
-];
 
-export default function HomepageCategoryGrid({ defaultCountrySlug, defaultCitySlug }) {
-  const { lang } = useTrafficLanguage();
+  return countryServiceHubPath(defaultCountrySlug, serviceSlug);
+}
 
-  const liveCategories = CATEGORIES.filter((c) => c.live);
-  const comingSoonCategories = CATEGORIES.filter((c) => !c.live);
+/**
+ * HomepageCategoryGrid
+ *
+ * Renders live Traze service categories from server data. Cards appear only
+ * when at least one public provider exists for the category/service.
+ */
+export default function HomepageCategoryGrid({
+  categories = [],
+  defaultCountrySlug = "",
+  defaultCitySlug = null,
+  showHeading = true,
+  showInactiveCategories = false,
+  showEmptyState = false,
+  emptyQuery = "",
+  emptyTitle = null,
+  emptyDescription = null
+}) {
+  const { lang, t } = useTrafficLanguage();
+
+  const allCategories = Array.isArray(categories) ? categories : [];
+  const visibleCategories = showInactiveCategories
+    ? allCategories
+    : allCategories.filter((cat) => cat.isLive === true);
+
+  if (!visibleCategories.length && !showEmptyState) {
+    return null;
+  }
 
   return (
-    <section className="homepage-section homepage-section--divider homepage-directory-surface-soft" id="categories">
-      <div className="homepage-section-heading">
-        <h2 className="section-title">
-          {lang === "es" ? "Explorar por categoría" : "Browse by category"}
-        </h2>
-        <p>
-          {lang === "es"
-            ? "Empieza con un tipo de servicio y filtra por ciudad y disponibilidad."
-            : "Start with a service type, then narrow by city and availability."}
-        </p>
-      </div>
+    <section
+      className="homepage-section homepage-section--divider homepage-directory-surface-soft traze-page-card"
+      id="categories"
+    >
+      {showHeading && (
+        <div className="homepage-section-heading">
+          <h2 className="section-title">
+            {t("homepage.browseByCategory")}
+          </h2>
+          <p>{t("homepage.categoryBody")}</p>
+        </div>
+      )}
 
-      <div className="hp-cat-grid">
-        {liveCategories.map((cat) => {
-          const Icon = cat.icon;
-          const href = countryCityServicePath(defaultCountrySlug, defaultCitySlug, cat.id);
-          const catLabel = lang === "es" && cat.labelEs ? cat.labelEs : cat.label;
-          const catDescription = lang === "es" && cat.descriptionEs ? cat.descriptionEs : cat.description;
+      {visibleCategories.length === 0 ? (
+        <div className="homepage-empty-state">
+          <h3 className="homepage-card-title">
+            {emptyTitle ??
+            (emptyQuery
+              ? t("homepage.noCategoriesFound")
+              : t("homepage.noLiveCategories"))}
+          </h3>
+          <p className="homepage-meta-note">
+            {emptyDescription ??
+            (emptyQuery
+              ? t("homepage.noCategoriesMatch", { query: emptyQuery })
+              : t("homepage.categoriesPending"))}
+          </p>
+        </div>
+      ) : (
+        <div className="hp-cat-grid">
+          {visibleCategories.map((cat) => {
+            const catLabel       = getCategoryLabel(cat, lang);
+            const catDescription = getCategoryDescription(cat, lang);
+            const isLive         = cat.isLive === true;
+            const href           = getCategoryHref(cat, defaultCountrySlug, defaultCitySlug);
+            const distinctPills  = Array.isArray(cat.services)
+              ? cat.services
+                  .slice(0, 4)
+                  .map((svc) => (lang === "es" && svc.serviceLabelEs ? svc.serviceLabelEs : svc.serviceLabel))
+                  .filter((label) => label && label.toLowerCase() !== catLabel.toLowerCase())
+              : [];
 
-          return (
-            <article key={cat.id} className="hp-cat-card hp-cat-card--live">
-              <div className="hp-cat-card-icon">
-                <Icon size={20} />
-              </div>
-              <div className="hp-cat-card-body">
-                <div className="hp-cat-card-top">
-                  <h3 className="hp-cat-card-name">{catLabel}</h3>
-                  <span className="pill pill--live">
-                    {lang === "es" ? "En vivo" : "Live"}
-                  </span>
-                </div>
-                <p className="hp-cat-card-desc">{catDescription}</p>
-                <Link className="hp-cat-card-cta" href={href}>
-                  {lang === "es" ? "Explorar" : "Explore"}
-                </Link>
-              </div>
-            </article>
-          );
-        })}
-
-        {comingSoonCategories.map((cat) => {
-          const Icon = cat.icon;
-          const catLabel = lang === "es" && cat.labelEs ? cat.labelEs : cat.label;
-          const catDescription = lang === "es" && cat.descriptionEs ? cat.descriptionEs : cat.description;
-
-          return (
-            <article key={cat.id} className="hp-cat-card">
-              <div className="hp-cat-card-icon hp-cat-card-icon--muted">
-                <Icon size={20} />
-              </div>
-              <div className="hp-cat-card-body">
-                <div className="hp-cat-card-top">
-                  <h3 className="hp-cat-card-name">{catLabel}</h3>
-                  <span className="pill pill--coming">
-                    {lang === "es" ? "Próximamente" : "Coming soon"}
-                  </span>
-                </div>
-                <p className="hp-cat-card-desc">{catDescription}</p>
-                <span className="hp-cat-card-cta hp-cat-card-cta--soon">
-                  {lang === "es" ? "Notifícame" : "Notify me"}
-                </span>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+            return (
+              <TrazeCategoryCard
+                key={cat.categoryKey}
+                categoryKey={cat.categoryKey}
+                label={catLabel}
+                description={catDescription}
+                isLive={isLive}
+                href={href}
+                pills={distinctPills}
+                lang={lang}
+              />
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

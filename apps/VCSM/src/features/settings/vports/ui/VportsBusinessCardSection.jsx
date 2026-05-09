@@ -1,5 +1,6 @@
 import { Check, Copy, ExternalLink, QrCode as QrIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '@i18n'
 import Card from '@/features/settings/ui/Card'
 
 function handleCopyLink(v, setCopiedId) {
@@ -26,6 +27,7 @@ export function VportsBusinessCardSection({
   setQrTarget,
   setQrCopied,
 }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   if (activeActor === 'profile') return null
@@ -35,7 +37,7 @@ export function VportsBusinessCardSection({
 
   return (
     <Card>
-      <div className="mb-3 text-sm font-semibold text-white">Business Cards</div>
+      <div className="mb-3 text-sm font-semibold text-white">{t('settings.businessCards.title')}</div>
       <div className="space-y-3">
         {activeVportCards.map(v => {
           const isDisabled = v.is_deleted || !v.is_active
@@ -69,15 +71,15 @@ export function VportsBusinessCardSection({
                     : { border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.3)' }
                   }
                 >
-                  {isPublished && !isDisabled ? 'Published' : 'Unpublished'}
+                  {isPublished && !isDisabled ? t('settings.businessCards.published') : t('settings.businessCards.unpublished')}
                 </span>
               </div>
 
               {isDisabled ? (
                 <p className="mb-2.5 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
                   {v.is_deleted
-                    ? 'Restore this VPORT before publishing its business card.'
-                    : 'This VPORT is inactive.'}
+                    ? t('settings.businessCards.restoreBeforePublish')
+                    : t('settings.businessCards.vportInactive')}
                 </p>
               ) : (
                 <div className="mb-2.5 flex items-center gap-1.5 overflow-hidden rounded-lg px-2.5 py-1.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -99,7 +101,7 @@ export function VportsBusinessCardSection({
                     className="settings-btn settings-btn--ghost px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                     style={{ color: '#fcd34d', borderColor: 'rgba(217,119,6,0.35)' }}
                   >
-                    {isBusy ? 'Updating…' : 'Unpublish'}
+                    {isBusy ? t('settings.businessCards.updating') : t('actions.unpublish')}
                   </button>
                 ) : (
                   <button
@@ -108,7 +110,7 @@ export function VportsBusinessCardSection({
                     className="settings-btn px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                     style={{ background: 'var(--vc-accent)', color: '#fff' }}
                   >
-                    {isBusy ? 'Publishing…' : 'Publish card'}
+                    {isBusy ? t('settings.businessCards.publishing') : t('settings.businessCards.publishCard')}
                   </button>
                 )}
 
@@ -118,7 +120,7 @@ export function VportsBusinessCardSection({
                   className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                  {isCopied ? 'Copied' : 'Copy link'}
+                  {isCopied ? t('settings.businessCards.copied') : t('settings.businessCards.copyLink')}
                 </button>
 
                 <button
@@ -127,7 +129,7 @@ export function VportsBusinessCardSection({
                   className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <QrIcon className="h-3 w-3" />
-                  Quick QR
+                  {t('settings.businessCards.quickQr')}
                 </button>
 
                 <button
@@ -136,7 +138,7 @@ export function VportsBusinessCardSection({
                   className="settings-btn settings-btn--ghost inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ExternalLink className="h-3 w-3" />
-                  Preview
+                  {t('settings.businessCards.preview')}
                 </button>
               </div>
             </div>

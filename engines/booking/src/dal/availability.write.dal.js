@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../config.js'
+import { getVportClient } from '../config.js'
 
 const RULE_SELECT = [
   'id', 'resource_id', 'rule_type', 'weekday', 'start_time', 'end_time',
@@ -27,9 +27,8 @@ export async function dalUpsertAvailabilityRule({ row } = {}) {
   if (!r.start_time)  throw new Error('BookingEngine: start_time is required')
   if (!r.end_time)    throw new Error('BookingEngine: end_time is required')
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
-    .from('booking_availability_rules')
+  const { data, error } = await getVportClient()
+    .from('availability_rules')
     .upsert(pickDefined(r, RULE_WRITE_COLUMNS), { onConflict: 'id' })
     .select(RULE_SELECT)
     .single()
@@ -45,9 +44,8 @@ export async function dalUpsertAvailabilityException({ row } = {}) {
   if (!r.starts_at)      throw new Error('BookingEngine: starts_at is required')
   if (!r.ends_at)        throw new Error('BookingEngine: ends_at is required')
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
-    .from('booking_availability_exceptions')
+  const { data, error } = await getVportClient()
+    .from('availability_exceptions')
     .upsert(pickDefined(r, EXCEPTION_WRITE_COLUMNS), { onConflict: 'id' })
     .select(EXCEPTION_SELECT)
     .single()

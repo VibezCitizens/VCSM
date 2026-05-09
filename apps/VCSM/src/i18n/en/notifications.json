@@ -1,0 +1,48 @@
+{
+  "header": {
+    "title": "Notifications",
+    "vportTitle": "Vport Notifications",
+    "markAllRead": "Mark all read",
+    "tabNotifications": "Notifications",
+    "tabAppointments": "Appointments"
+  },
+  "empty": {
+    "caughtUp": "You're all caught up",
+    "newActivity": "New activity will appear here."
+  },
+  "follow": {
+    "subscribed": "subscribed to you",
+    "sentSubscribeRequest": "sent you a subscribe request",
+    "acceptedSubscribeRequest": "accepted your subscribe request.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "team": {
+    "invitedToJoin": "invited you to join their team"
+  },
+  "comment": {
+    "commented": "commented on your Spark 💬",
+    "likedSpark": "liked your Spark ❤️",
+    "replied": "replied to your Spark 💬"
+  },
+  "reaction": {
+    "likedVibe": "liked your Vibe 👍",
+    "dislikedVibe": "disliked your Vibe 👎",
+    "roseVibe": "sent a rose to your Vibe 🌹",
+    "mentionedVibe": "mentioned you in a Vibe"
+  },
+  "booking": {
+    "booked": "booked {{service}}",
+    "bookedAt": "booked {{service}} at {{time}}",
+    "confirmed": "confirmed {{service}}",
+    "confirmedAt": "confirmed {{service}} at {{time}}",
+    "cancelled": "cancelled {{service}}",
+    "cancelledAt": "cancelled {{service}} at {{time}}",
+    "defaultService": "a service",
+    "defaultBooking": "a booking"
+  },
+  "review": {
+    "reviewed": "reviewed your business",
+    "reviewedRated": "reviewed your business ({{rating}}/5)"
+  }
+}

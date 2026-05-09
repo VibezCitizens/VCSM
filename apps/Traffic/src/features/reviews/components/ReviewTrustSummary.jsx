@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrafficLanguage } from "@/lib/language";
+import { translate } from "@/i18n";
 
 function formatRating(value) {
   const numeric = Number(value);
@@ -14,16 +15,13 @@ function formatRating(value) {
 function formatReviewCount(value, lang) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) {
-    return lang === "es" ? "0 reseñas" : "0 reviews";
+    return `0 ${translate("common.reviews", lang).toLowerCase()}`;
   }
 
   const count = Math.round(numeric);
   const formatted = new Intl.NumberFormat("en-US").format(count);
 
-  if (lang === "es") {
-    return `${formatted} ${count === 1 ? "reseña" : "reseñas"}`;
-  }
-  return `${formatted} ${count === 1 ? "review" : "reviews"}`;
+  return `${formatted} ${count === 1 ? translate("common.review", lang) : translate("common.reviews", lang).toLowerCase()}`;
 }
 
 function buildBreakdownLabel(summary) {

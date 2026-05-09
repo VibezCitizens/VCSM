@@ -1,12 +1,12 @@
-// src/features/settings/privacy/ui/UserLookup.jsx
-
 import { useCallback } from 'react'
+import { useTranslation } from '@i18n'
 import { useActorLookup } from '@/features/settings/privacy/hooks/useActorLookup'
 import { useMyBlocks } from '@/features/settings/privacy/hooks/useMyBlocks'
 import ActorLink from '@/shared/components/ActorLink'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 
 export default function UserLookup() {
+  const { t } = useTranslation()
   const { loading, error, blockedIds, block, unblock } = useMyBlocks()
   const {
     query,
@@ -35,7 +35,7 @@ export default function UserLookup() {
           onClick={handleSearch}
           className="settings-btn settings-btn--ghost px-3 py-2 text-sm"
         >
-          Search
+          {t('actions.search')}
         </button>
       </div>
 
@@ -60,7 +60,7 @@ export default function UserLookup() {
         ))}
 
         {!searching && results.length === 0 && (
-          <div className="text-xs text-white/40">No results yet.</div>
+          <div className="text-xs text-white/40">{t('settings.privacy.noResults')}</div>
         )}
       </div>
     </div>
@@ -68,6 +68,7 @@ export default function UserLookup() {
 }
 
 function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblock, busy }) {
+  const { t } = useTranslation()
   const actor = useActorSummary(actorId)
 
   const name = actor?.displayName || displayName
@@ -95,7 +96,7 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
               : 'settings-btn settings-btn--danger'
           }`}
         >
-          Unblock
+          {t('settings.privacy.unblock')}
         </button>
       ) : (
         <button
@@ -107,7 +108,7 @@ function LookupRow({ actorId, displayName, username, isBlocked, onBlock, onUnblo
               : 'settings-btn settings-btn--ghost'
           }`}
         >
-          Block
+          {t('settings.privacy.block')}
         </button>
       )}
     </div>

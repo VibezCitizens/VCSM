@@ -1,0 +1,70 @@
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, rgba(31, 122, 89, 0.07) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(31, 122, 89, 0.05) 1px, transparent 1px),
+    var(--dash-bg);
+  background-size: 28px 28px;
+}
+
+.dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  padding: 24px;
+  background: var(--dash-surface-strong);
+  color: #f8fbf6;
+}
+
+.dashboard-main {
+  min-width: 0;
+  padding: 24px;
+}
+
+.dashboard-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-width: 0;
+  margin-bottom: 20px;
+}
+
+.dashboard-title {
+  min-width: 0;
+}
+
+.dashboard-title span {
+  color: var(--dash-green);
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.dashboard-title h1 {
+  margin: 2px 0 4px;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.dashboard-title p {
+  color: var(--dash-muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* ── No-rail shell variant ─────────────────────────────── */
+.dashboard-shell--no-rail {
+  grid-template-columns: 280px minmax(0, 1fr);
+}

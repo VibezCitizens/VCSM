@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { useActorStore } from "@hydration";
 import { queryKeys } from "@/queries/queryKeys";
+import { useTranslation } from "@i18n";
 
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
@@ -26,6 +27,7 @@ import ActorProfileTagsView from "@/features/profiles/screens/views/ActorProfile
 import "@/features/profiles/styles/profiles-modern.css";
 
 export default function ActorProfileViewScreen({ viewerActorId, profileActorId, identity }) {
+  const { t } = useTranslation();
   const [tab, setTab] = useState("posts");
   const [gateVersion, setGateVersion] = useState(0);
 
@@ -144,7 +146,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
   if (error && !displayProfile) {
     return (
       <div className="profiles-modern flex justify-center py-20 text-rose-300">
-        Failed to load profile.
+        {t('profile.header.failedToLoad')}
       </div>
     );
   }
@@ -212,7 +214,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
 
               {tab === "videos" && (
                 <div className="flex items-center justify-center py-10 text-white/40">
-                  Videos - coming soon
+                  {t('profile.header.videosSoon')}
                 </div>
               )}
 

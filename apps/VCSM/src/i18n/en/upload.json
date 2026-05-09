@@ -1,0 +1,8 @@
+{
+  "addPhotosVideos": "Add photos/videos (up to {{max}})",
+  "addPhotoVideo": "Add photo/video",
+  "tapToUpload": "Tap to upload or drag and drop",
+  "selectedCount": "Selected: {{count}} / {{max}}",
+  "captionPlaceholder": "Write a caption... (use @ to tag)",
+  "addLocation": "Add location"
+}

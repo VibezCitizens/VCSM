@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useVportOwnerSchedule } from "@/features/dashboard/vport/hooks/useVportOwnerSchedule";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
@@ -10,6 +10,7 @@ import {
   ScheduleSkeleton,
 } from "./components/schedule/ScheduleGrid";
 import { CreateBookingModal, BookingDetailModal } from "./components/schedule/ScheduleModals";
+import ScheduleOperationalView from "./components/schedule/ScheduleOperationalView";
 import "@/features/dashboard/vport/styles/dashboard-schedule-modern.css";
 
 export default function VportDashboardScheduleScreen({ actorId: propActorId, embedded = false }) {
@@ -17,6 +18,8 @@ export default function VportDashboardScheduleScreen({ actorId: propActorId, emb
   const actorId  = propActorId ?? routeActorId;
   const navigate = useNavigate();
   const isDesktop = useDesktopBreakpoint();
+
+  const [mobileView, setMobileView] = useState("operational");
 
   const {
     dateKey, isToday,
@@ -55,23 +58,32 @@ export default function VportDashboardScheduleScreen({ actorId: propActorId, emb
         )}
 
         <div className="sched-date-nav" style={embedded ? { flex: 1 } : {}}>
-          <button type="button" className="sched-nav-btn" onClick={prevDay} aria-label="Previous day">‹</button>
+          {mobileView === "timeline" && !isDesktop && (
+            <button type="button" className="sched-nav-btn" onClick={() => setMobileView("operational")} aria-label="Back to summary" style={{ marginRight: 2 }}>‹</button>
+          )}
+          {(mobileView === "operational" || isDesktop) && (
+            <button type="button" className="sched-nav-btn" onClick={prevDay} aria-label="Previous day">‹</button>
+          )}
           <span className="sched-date-label">{formatDateHeader(dateKey, isToday)}</span>
-          <button type="button" className="sched-nav-btn" onClick={nextDay} aria-label="Next day">›</button>
+          {(mobileView === "operational" || isDesktop) && (
+            <button type="button" className="sched-nav-btn" onClick={nextDay} aria-label="Next day">›</button>
+          )}
         </div>
 
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          {!isToday && (
+          {!isToday && (mobileView === "operational" || isDesktop) && (
             <button type="button" className="sched-today-btn" onClick={goToToday}>Today</button>
           )}
-          <button
-            type="button"
-            className="sched-add-btn"
-            onClick={() => { if (lanes.length > 0) openCreateModal(lanes[0].resource.id, "10:00"); }}
-          >
-            <span style={{ fontSize: 15, lineHeight: 1 }}>+</span>
-            {isDesktop && " Booking"}
-          </button>
+          {isDesktop && (
+            <button
+              type="button"
+              className="sched-add-btn"
+              onClick={() => { if (lanes.length > 0) openCreateModal(lanes[0].resource.id, "10:00"); }}
+            >
+              <span style={{ fontSize: 15, lineHeight: 1 }}>+</span>
+              {" Booking"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -85,25 +97,37 @@ export default function VportDashboardScheduleScreen({ actorId: propActorId, emb
           <div className="sched-empty-body">{error}</div>
           <button type="button" className="sched-empty-btn" onClick={refresh}>Retry</button>
         </div>
-      ) : lanes.length === 0 ? (
-        <div className="sched-empty">
-          <span className="sched-empty-icon">✂️</span>
-          <div className="sched-empty-title">No barbers on your team</div>
-          <div className="sched-empty-body">Add barbers to your team to start scheduling appointments.</div>
-          <button type="button" className="sched-empty-btn" onClick={() => navigate(`/actor/${actorId}/dashboard/team`)}>
-            + Add team member
-          </button>
-        </div>
       ) : isDesktop ? (
-        <ScheduleGrid
+        lanes.length === 0 ? (
+          <div className="sched-empty">
+            <span className="sched-empty-icon">🗓</span>
+            <div className="sched-empty-title">No team members yet</div>
+            <div className="sched-empty-body">Add team members to start scheduling appointments.</div>
+            <button type="button" className="sched-empty-btn" onClick={() => navigate(`/actor/${actorId}/dashboard/team`)}>
+              + Add team member
+            </button>
+          </div>
+        ) : (
+          <ScheduleGrid
+            lanes={lanes}
+            isToday={isToday}
+            onSlotClick={handleSlotClick}
+            onBookingClick={openDetailModal}
+          />
+        )
+      ) : mobileView === "operational" ? (
+        <ScheduleOperationalView
           lanes={lanes}
           isToday={isToday}
-          onSlotClick={handleSlotClick}
+          openCreateModal={lanes.length > 0 ? openCreateModal : null}
           onBookingClick={openDetailModal}
+          onViewTimeline={() => setMobileView("timeline")}
         />
       ) : (
         <>
-          <MobileBarberSelector lanes={lanes} activeIdx={mobileBarberIdx} onSelect={setMobileBarberIdx} />
+          {lanes.length > 1 && (
+            <MobileBarberSelector lanes={lanes} activeIdx={mobileBarberIdx} onSelect={setMobileBarberIdx} />
+          )}
           {activeMobileLane && (
             <MobileScheduleGrid
               lane={activeMobileLane}

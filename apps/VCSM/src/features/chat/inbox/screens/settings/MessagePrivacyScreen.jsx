@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 
 import useMessagePrivacySettings from '@/features/chat/inbox/hooks/useMessagePrivacySettings'
+import { useTranslation } from '@i18n'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
@@ -65,6 +66,7 @@ function ToggleRow({ title, subtitle, value, onChange }) {
 }
 
 export default function MessagePrivacyScreen() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { settings, setWhoCanMessage, setAllowNewMessageRequests } = useMessagePrivacySettings()
 
@@ -75,21 +77,21 @@ export default function MessagePrivacyScreen() {
     () => [
       {
         key: 'everyone',
-        title: 'Everyone',
-        subtitle: 'Anyone can start a new Vox with you',
+        title: t('vox.privacy.everyoneTitle'),
+        subtitle: t('vox.privacy.everyoneSubtitle'),
       },
       {
         key: 'following',
-        title: 'People you follow',
-        subtitle: 'Only people you follow can start a new Vox',
+        title: t('vox.privacy.followingTitle'),
+        subtitle: t('vox.privacy.followingSubtitle'),
       },
       {
         key: 'nobody',
-        title: 'Nobody',
-        subtitle: 'No one can start a new Vox (existing Vox still work)',
+        title: t('vox.privacy.nobodyTitle'),
+        subtitle: t('vox.privacy.nobodySubtitle'),
       },
     ],
-    []
+    [t]
   )
 
   return (
@@ -109,7 +111,7 @@ export default function MessagePrivacyScreen() {
               <ChevronLeft size={22} />
             </button>
             <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
-              Vox privacy
+              {t('vox.privacy.title')}
             </h1>
             <div className="ml-auto w-10" />
           </div>
@@ -117,7 +119,7 @@ export default function MessagePrivacyScreen() {
 
         <div className="flex-1 space-y-6 overflow-y-auto px-4 py-4">
           <section className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-white/50">Who can Vox you</div>
+            <div className="text-xs uppercase tracking-wider text-white/50">{t('vox.privacy.whoCanVoxYou')}</div>
             <div className="module-modern-card overflow-hidden rounded-2xl">
               {options.map((option, idx) => (
                 <div key={option.key}>
@@ -134,17 +136,17 @@ export default function MessagePrivacyScreen() {
           </section>
 
           <section className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-white/50">Requests</div>
+            <div className="text-xs uppercase tracking-wider text-white/50">{t('vox.privacy.requestsSection')}</div>
             <div className="module-modern-card overflow-hidden rounded-2xl">
               <ToggleRow
-                title="Allow Vox requests"
-                subtitle="If someone cannot Vox you directly, they may appear in Requests"
+                title={t('vox.privacy.allowRequestsTitle')}
+                subtitle={t('vox.privacy.allowRequestsSubtitle')}
                 value={allowRequests}
                 onChange={setAllowNewMessageRequests}
               />
             </div>
             <div className="px-1 text-xs text-white/40">
-              Controls whether first-contact inbound messages can route to Requests.
+              {t('vox.privacy.allowRequestsHint')}
             </div>
           </section>
         </div>

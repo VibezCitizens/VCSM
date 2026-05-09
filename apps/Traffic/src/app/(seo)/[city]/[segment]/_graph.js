@@ -6,15 +6,19 @@ import {
   getRegionById
 } from "@/data/repositories/geo.repo";
 import { getServiceBySlug } from "@/data/repositories/service.repo";
-import { getStructuredCityBySlug } from "@/data/repositories/provider.repo";
+import {
+  getStructuredCityBySlug,
+  listProvidersByCityAndService,
+  listProvidersByCountryCitySlug
+} from "@/data/repositories/provider.repo";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 import { countryCityPath, countryCityServicePath } from "@/lib/paths";
 
 export const LEGACY_TRANSITION_ROBOTS = {
-  index: true,
+  index: false,
   follow: true,
   googleBot: {
-    index: true,
+    index: false,
     follow: true
   }
 };
@@ -28,6 +32,10 @@ export function resolveCountryCity(params) {
   const city = getCityBySlug(params.segment, { countryId: country.id })
     ?? getStructuredCityBySlug(country.code, params.segment);
   if (!city) {
+    return null;
+  }
+
+  if (listProvidersByCountryCitySlug(country.code, city.slug).length === 0) {
     return null;
   }
 
@@ -57,6 +65,10 @@ export function resolveLegacyCityService(params) {
   }
 
   const region = city.regionId ? getRegionById(city.regionId) : null;
+
+  if (listProvidersByCityAndService(city.id, service.id).length === 0) {
+    return null;
+  }
 
   return {
     routeMode: "legacy_city_service",

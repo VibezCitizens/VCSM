@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@i18n'
 
 import { useFollowRequestStatus } from '@/features/social/friend/request/hooks/useFollowRequestStatus'
 import { useFollowStatus } from '@/features/social/friend/subscribe/hooks/useFollowStatus'
@@ -18,6 +19,7 @@ export function useSubscribeAction({
   targetActorId,
   onAfterChange,
 }) {
+  const { t } = useTranslation()
   const actionActorId = useMemo(() => viewerActorId ?? null, [viewerActorId])
 
   const isFollowing = useFollowStatus({
@@ -40,10 +42,10 @@ export function useSubscribeAction({
   const unsubscribe = useUnsubscribeAction()
 
   const label = useMemo(() => {
-    if (effectiveIsFollowing) return 'Unsubscribe'
-    if (effectiveRequestStatus === 'pending') return 'Requested'
-    return 'Subscribe'
-  }, [effectiveIsFollowing, effectiveRequestStatus])
+    if (effectiveIsFollowing) return t('profile.actions.unsubscribe')
+    if (effectiveRequestStatus === 'pending') return t('profile.actions.requested')
+    return t('profile.actions.subscribe')
+  }, [effectiveIsFollowing, effectiveRequestStatus, t])
 
   const disabled =
     !actionActorId ||

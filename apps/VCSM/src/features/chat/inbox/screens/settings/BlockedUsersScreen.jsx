@@ -15,10 +15,12 @@ import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { MyBlocksProvider, useMyBlocks } from '@/features/settings/adapters/privacy/hooks/useMyBlocks.adapter'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import BlockConfirmModal from '@/features/block/adapters/ui/BlockConfirmModal.adapter'
+import { useTranslation } from '@i18n'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 function BlockedRow({ blockedActorId, onUnblock }) {
+  const { t } = useTranslation()
   const actor = useActorSummary(blockedActorId)
 
   return (
@@ -44,13 +46,14 @@ function BlockedRow({ blockedActorId, onUnblock }) {
         onClick={() => onUnblock(blockedActorId)}
         className="module-modern-btn module-modern-btn--ghost rounded-xl px-3 py-1.5 text-sm text-white/90"
       >
-        Unblock
+        {t('vox.blocked.unblock')}
       </button>
     </div>
   )
 }
 
 function BlockedUsersBody() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { loading, error, blocks, unblock } = useMyBlocks()
 
@@ -100,7 +103,7 @@ function BlockedUsersBody() {
             </button>
 
             <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
-              Blocked Citizens
+              {t('vox.blocked.title')}
             </h1>
 
             <div className="ml-auto w-10" />
@@ -109,7 +112,7 @@ function BlockedUsersBody() {
 
         <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
           <div className="px-1 text-xs text-white/40">
-            Blocked Citizens can't Vox you, and you won't see their content.
+            {t('vox.blocked.description')}
           </div>
 
           {error ? (
@@ -120,10 +123,10 @@ function BlockedUsersBody() {
 
           <div className="module-modern-card overflow-hidden rounded-2xl">
             {loading ? (
-              <div className="px-4 py-4 text-sm text-white/50">Loading...</div>
+              <div className="px-4 py-4 text-sm text-white/50">{t('vox.blocked.loading')}</div>
             ) : blockedActorIds.length === 0 ? (
               <div className="px-4 py-4 text-sm text-white/50">
-                You haven't blocked any Citizens.
+                {t('vox.blocked.empty')}
               </div>
             ) : (
               blockedActorIds.map((id, idx) => (

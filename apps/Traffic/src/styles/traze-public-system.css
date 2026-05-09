@@ -1,0 +1,191 @@
+/* ============================================================
+   TRAZE PUBLIC DESIGN SYSTEM
+   Shared primitives for all public-facing Traze pages.
+   Page-specific overrides live in styles/pages/*.css.
+   ============================================================ */
+
+/* ── Eyebrow ──────────────────────────────────────────────── */
+
+.traze-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  background: rgba(109, 70, 220, 0.1);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(200, 185, 255, 0.88);
+  width: fit-content;
+}
+
+/* ── Stat pill ────────────────────────────────────────────── */
+
+.traze-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  background: rgba(109, 70, 220, 0.1);
+  font-size: 0.76rem;
+  color: rgba(205, 192, 255, 0.85);
+}
+
+.traze-stat-pill strong {
+  font-weight: 700;
+  color: rgba(230, 222, 255, 0.95);
+}
+
+/* ── Stats row ────────────────────────────────────────────── */
+
+.traze-stats-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Hero card ────────────────────────────────────────────── */
+
+.traze-hero-card {
+  position: relative;
+  display: grid;
+  gap: 0.86rem;
+  padding: clamp(1.25rem, 3vw, 2.15rem);
+  border-radius: 20px;
+  border: 1px solid rgba(123, 140, 196, 0.24);
+  background:
+    radial-gradient(120% 120% at 0% -10%, rgba(139, 92, 246, 0.14), transparent 68%),
+    radial-gradient(88% 120% at 100% 0%, rgba(78, 164, 255, 0.1), transparent 70%),
+    linear-gradient(145deg, rgba(16, 19, 31, 0.78), rgba(9, 11, 20, 0.86));
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 116, 180, 0.04),
+    0 16px 42px rgba(2, 4, 12, 0.32);
+  overflow: hidden;
+}
+
+.traze-hero-card::before {
+  content: "";
+  position: absolute;
+  top: -48%;
+  right: -18%;
+  width: 46%;
+  height: 210%;
+  background: radial-gradient(ellipse at center, rgba(78, 164, 255, 0.16), transparent 76%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.traze-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hero title ───────────────────────────────────────────── */
+
+.traze-hero-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0;
+  color: transparent;
+  background-image: linear-gradient(130deg, #ffffff 0%, #e8e2ff 55%, #c9d9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  margin: 0;
+}
+
+/* ── Hero subtitle ────────────────────────────────────────── */
+
+.traze-hero-sub {
+  font-size: 0.98rem;
+  color: rgba(220, 215, 238, 0.85);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ── Generic section ──────────────────────────────────────── */
+
+.traze-section {
+  padding: 1.75rem 1.5rem;
+  border-top: 1px solid rgba(129, 149, 208, 0.1);
+}
+
+/* ── Section header ───────────────────────────────────────── */
+
+.traze-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+  flex-wrap: wrap;
+}
+
+/* ── Section title (eyebrow style) ───────────────────────── */
+
+.traze-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(175, 185, 220, 0.6);
+  margin: 0;
+}
+
+/* ── Section "view all" link ──────────────────────────────── */
+
+.traze-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(178, 170, 228, 0.78);
+  text-decoration: none;
+  transition: color 130ms ease;
+  flex-shrink: 0;
+}
+
+.traze-section-link:hover {
+  color: #fff;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+
+.traze-empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.traze-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(230, 226, 248, 0.88);
+  margin: 0;
+}
+
+.traze-empty-sub {
+  font-size: 0.88rem;
+  color: rgba(182, 176, 206, 0.62);
+  margin: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .traze-section {
+    padding: 1.25rem 1rem;
+  }
+
+  .traze-hero-card {
+    padding: 1.1rem;
+    border-radius: 14px;
+  }
+}

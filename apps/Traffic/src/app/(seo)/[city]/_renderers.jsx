@@ -1,5 +1,5 @@
 import { listLocalitiesByCity } from "@/data/repositories/city.repo";
-import { getLocaleForCountryCode } from "@/data/repositories/geo.repo";
+import { getLocaleForCountryCode, getRegionByCode } from "@/data/repositories/geo.repo";
 import { listServices } from "@/data/repositories/service.repo";
 import {
   listProvidersByCity,
@@ -25,77 +25,134 @@ import {
   neighborhoodServicePath
 } from "@/lib/paths";
 import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
+import { CountryHubTemplate } from "@/features/directories/templates/CountryHubTemplate";
 import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
+import {
+  listLiveProviderCountries,
+  listLiveProviderLocationOptions
+} from "@/data/repositories/provider.repo";
+
+function groupCitiesByState(cities, countrySlug) {
+  const order = [];
+  const map = new Map();
+
+  for (const city of cities) {
+    const key = city.stateCode ?? "__none__";
+    if (!map.has(key)) {
+      order.push(key);
+      map.set(key, { stateCode: city.stateCode ?? null, cities: [] });
+    }
+    map.get(key).cities.push({
+      slug: city.slug,
+      name: city.name,
+      nameEs: city.nameEs ?? city.name,
+      href: countryCityPath(countrySlug, city.slug),
+      providerCount: 0
+    });
+  }
+
+  return order.map((k) => map.get(k));
+}
+
+function toHubCard(item, countrySlug) {
+  const p = item.provider;
+  return {
+    id: p.id,
+    href: countryProviderPath(countrySlug, p.slug),
+    name: p.displayName,
+    category: item.serviceLabel ?? "",
+    categoryKey: p.primaryServiceSlug ?? "",
+    city: p.primaryCityName ?? null,
+    stateCode: p.primaryRegionCode ?? null,
+    primaryCountryCode: p.primaryCountryCode ?? null,
+    rating: p.ratingAvg ?? 0,
+    reviewCount: p.reviewCount ?? 0,
+    responseTimeP50Minutes: p.responseTimeP50Minutes ?? null,
+    verified: p.claimStatus === "claimed",
+    avatarUrl: p.avatarUrl ?? null,
+    logoUrl: p.logoUrl ?? null
+  };
+}
 
 export function renderCountryPage(graph) {
   const services = listServices();
-  const providers = listProvidersByCountry(graph.country.code);
-  const cities = listStructuredCitiesByCountryCode(graph.country.code).filter(
+  const allProviders = listProvidersByCountry(graph.country.code);
+  const structuredCities = listStructuredCitiesByCountryCode(graph.country.code);
+
+  const liveCities = structuredCities.filter(
     (city) => listProvidersByCountryCitySlug(graph.country.code, city.slug).length > 0
   );
 
-  const model = buildDirectoryPageModel({
-    title: `Top Local Service Providers in ${graph.country.name}`,
-    description: `Explore ${providers.length} discoverable providers across ${cities.length} active cities in ${graph.country.name}.`,
-    itemName: graph.country.name,
-    providers,
-    priceAggregate: null,
-    locale: getLocaleForCountryCode(graph.country.code)
+  // Featured — max 6 cards
+  const featuredProviders = allProviders.slice(0, 6).map((item) =>
+    toHubCard(item, graph.country.slug)
+  );
+
+  // Cities grouped by state with provider counts, state name, and state-level aggregates
+  const rawGroups = groupCitiesByState(liveCities, graph.country.slug);
+  const enrichedStateGroups = rawGroups.map((group) => {
+    const citiesWithCounts = group.cities.map((city) => ({
+      ...city,
+      providerCount: listProvidersByCountryCitySlug(graph.country.code, city.slug).length
+    }));
+    const stateProviderCount = citiesWithCounts.reduce((sum, c) => sum + c.providerCount, 0);
+    const stateName = group.stateCode
+      ? (getRegionByCode(graph.country.id, group.stateCode)?.name ?? group.stateCode)
+      : null;
+    return {
+      stateCode: group.stateCode,
+      stateName,
+      providerCount: stateProviderCount,
+      cityCount: citiesWithCounts.length,
+      cities: citiesWithCounts
+    };
   });
+
+  const geoData = [{
+    countryCode: graph.country.code,
+    countrySlug: graph.country.slug,
+    countryName: graph.country.name,
+    countryNameEs: graph.country.nameEs ?? graph.country.name,
+    providerCount: allProviders.length,
+    cityCount: liveCities.length,
+    stateGroups: enrichedStateGroups
+  }];
+
+  // Services active in this country
+  const serviceHubCandidates = new Set(
+    listCountryServiceHubStaticParams().map((entry) => `${entry.country}:${entry.service}`)
+  );
+
+  const serviceGroups = services
+    .map((service) => {
+      const serviceProviders = listProvidersByCountryAndService(graph.country.code, service.id);
+      if (!serviceProviders.length) return null;
+      const cityCount = new Set(serviceProviders.map((i) => i.provider.primaryCitySlug).filter(Boolean)).size;
+      const isIndexed = serviceHubCandidates.has(`${graph.country.slug}:${service.slug}`);
+      const hasHub = isCountryServiceIndexable(serviceProviders.length, cityCount) && isIndexed;
+      return {
+        slug: service.slug,
+        name: service.name,
+        nameEs: service.nameEs ?? service.name,
+        href: hasHub
+          ? countryServiceHubPath(graph.country.slug, service.slug)
+          : countryCityPath(graph.country.slug, liveCities[0]?.slug ?? ""),
+        providerCount: serviceProviders.length
+      };
+    })
+    .filter(Boolean);
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: graph.country.name }
   ];
 
-  const serviceHubCandidates = new Set(
-    listCountryServiceHubStaticParams().map((entry) => `${entry.country}:${entry.service}`)
-  );
-
-  const serviceHubLinks = services
-    .map((service) => {
-      const serviceProviders = listProvidersByCountryAndService(graph.country.code, service.id);
-      const cityCount = new Set(
-        serviceProviders
-          .map((item) => item.provider.primaryCitySlug)
-          .filter(Boolean)
-      ).size;
-      const isStrongCoverage = isCountryServiceIndexable(serviceProviders.length, cityCount);
-      const isIndexed = serviceHubCandidates.has(`${graph.country.slug}:${service.slug}`);
-
-      if (!isStrongCoverage || !isIndexed) {
-        return null;
-      }
-
-      return {
-        label: `${service.name} in ${graph.country.name}`,
-        href: countryServiceHubPath(graph.country.slug, service.slug)
-      };
-    })
-    .filter(Boolean);
-
-  const cityLinks = cities.map((city) => ({
-    label: `Providers in ${city.name}`,
-    href: countryCityPath(graph.country.slug, city.slug)
-  }));
-
-  const featuredProviderLinks = providers.slice(0, 8).map((item) => ({
-    label: item.provider.displayName,
-    href: countryProviderPath(graph.country.slug, item.provider.slug)
-  }));
-
-  const relatedLinks = dedupeInternalLinks([
-    ...serviceHubLinks,
-    ...cityLinks,
-    ...featuredProviderLinks
-  ]);
-
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),
     buildDirectoryItemListSchema({
-      name: model.title,
+      name: `Service directory in ${graph.country.name}`,
       path: countryPath(graph.country.slug),
-      providers,
+      providers: allProviders,
       cityName: undefined,
       countryName: graph.country.name,
       resolveProviderPath: (provider) => countryProviderPath(graph.country.slug, provider.slug)
@@ -103,13 +160,21 @@ export function renderCountryPage(graph) {
   ];
 
   return (
-    <DirectoryPageTemplate
+    <CountryHubTemplate
+      country={graph.country}
       breadcrumbs={breadcrumbs}
-      model={model}
-      context={{ countrySlug: graph.country.slug }}
-      relatedLinks={relatedLinks}
       schema={schema}
-      liveDataStatus={LIVE_DATA_STATUS}
+      context={{ countrySlug: graph.country.slug }}
+      stats={{
+        providerCount: allProviders.length,
+        cityCount: liveCities.length,
+        serviceCount: serviceGroups.length
+      }}
+      featuredProviders={featuredProviders}
+      geoData={geoData}
+      serviceGroups={serviceGroups}
+      locationOptions={listLiveProviderLocationOptions()}
+      countryOptions={listLiveProviderCountries()}
     />
   );
 }

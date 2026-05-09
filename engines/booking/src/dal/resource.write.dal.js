@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../config.js'
+import { getVportClient } from '../config.js'
 
 const RESOURCE_SELECT = [
   'id', 'owner_actor_id', 'resource_type', 'name',
@@ -21,9 +21,8 @@ export async function dalInsertBookingResource({ row } = {}) {
   if (!r.owner_actor_id) throw new Error('BookingEngine: owner_actor_id is required')
   if (!r.resource_type)  throw new Error('BookingEngine: resource_type is required')
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
-    .from('booking_resources')
+  const { data, error } = await getVportClient()
+    .from('resources')
     .insert(pickDefined(r, WRITE_COLUMNS))
     .select(RESOURCE_SELECT)
     .single()
@@ -43,9 +42,8 @@ export async function dalUpsertBookingResourceServices({ rows } = {}) {
 
   if (!payload.length) return []
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
-    .from('booking_resource_services')
+  const { data, error } = await getVportClient()
+    .from('resource_services')
     .upsert(payload, { onConflict: 'resource_id,service_id' })
     .select(RESOURCE_SERVICE_SELECT)
 

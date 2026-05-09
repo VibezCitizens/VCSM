@@ -222,6 +222,17 @@ Always render modals as **fragment siblings**, not children of styled card conta
 | `session-summaries/` | Conversation logs |
 | `db_snapshot/` | Schema snapshots and seeds |
 | `debuggers/` | Dev-only debug panels |
+| `apps/WT/` | Internal transfer and staging workspace — never deploy |
+
+### `apps/WT/` — Transfer Workspace Rules
+
+`apps/WT/` is an internal staging and transfer workspace. It is **not a product app** and must never be deployed, bundled, or referenced from any production build.
+
+- Never import from `apps/WT/` into any other app or engine.
+- Never add `apps/WT/` to any CI/CD pipeline or deployment config.
+- Never create production environment variables (`.env.production`) inside `apps/WT/`.
+- Code in `apps/WT/` may be experimental, in-progress, or intentionally incomplete.
+- Always confirm which app you are actually working in — do not confuse `apps/WT/mine-transfer` with `apps/VCSM/` or `apps/Traffic/`.
 
 ### README.md Files
 - README.md files must NOT exist in the codebase unless explicitly approved.

@@ -7,11 +7,13 @@ import { useBootstrapHydration } from '@/bootstrap/bootstrap.hydrate.controller'
 import { useNotificationUnread, useChatUnread } from '@/bootstrap/bootstrap.selectors'
 import { useOneSignalPush } from '@/hooks/useOneSignalPush'
 import { getCachedActorCanonicalSlug } from '@/features/profiles/controller/buildActorCanonicalSlug.controller'
+import { useTranslation } from '@i18n'
 
 export default function BottomNavBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const { identity } = useIdentity()
+  const { t } = useTranslation()
   const browserToolbarLift = useMemo(() => {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') return '0px'
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '')
@@ -57,20 +59,20 @@ export default function BottomNavBar() {
           height: 'var(--vc-bottom-nav-rail-height)',
         }}
         role="navigation"
-        aria-label="Primary"
+        aria-label={t('nav.primary')}
       >
-        <Tab to="/feed" label="Home" icon={<Home size={18} />} end />
-        <Tab to="/explore" label="Explore" icon={<Compass size={18} />} />
+        <Tab to="/feed" label={t('nav.home')} icon={<Home size={18} />} end />
+        <Tab to="/explore" label={t('nav.explore')} icon={<Compass size={18} />} />
 
         <Tab
           to="/chat"
-          label={chatUnread > 0 ? `Vox (${chatUnread})` : 'Vox'}
+          label={chatUnread > 0 ? t('nav.voxWithCount', { count: chatUnread }) : t('nav.vox')}
           icon={<MessageCircle size={18} />}
           badgeCount={chatUnread}
         />
 
         <button
-          aria-label="New Upload"
+          aria-label={t('nav.newUpload')}
           onClick={() => navigate('/upload')}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-purple-200/25 bg-gradient-to-br from-violet-500 via-indigo-400 to-sky-400 text-white shadow-[0_12px_30px_rgba(83,104,255,0.62),0_0_16px_rgba(87,150,255,0.5)] transition-all duration-200 hover:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-indigo-200/60"
         >
@@ -79,13 +81,13 @@ export default function BottomNavBar() {
 
         <Tab
           to="/notifications"
-          label={notiCount > 0 ? `Notifications (${notiCount})` : 'Notifications'}
+          label={notiCount > 0 ? t('nav.notificationsWithCount', { count: notiCount }) : t('nav.notifications')}
           icon={<Bell size={18} />}
           badgeCount={notiCount}
         />
 
-        <ProfileNavTab personaActorId={personaActorId} navigate={navigate} location={location} />
-        <Tab to="/settings" label="Settings" icon={<Settings size={18} />} />
+        <ProfileNavTab personaActorId={personaActorId} navigate={navigate} location={location} t={t} />
+        <Tab to="/settings" label={t('nav.settings')} icon={<Settings size={18} />} />
       </nav>
     </div>
   )
@@ -94,7 +96,7 @@ export default function BottomNavBar() {
 // Navigates directly to the canonical profile slug when cached (10-min TTL),
 // falling back to /profile/self only on the very first session visit.
 // This eliminates the mandatory double-mount that /profile/self causes on every tap.
-function ProfileNavTab({ personaActorId, navigate, location }) {
+function ProfileNavTab({ personaActorId, navigate, location, t }) {
   const isActive = location.pathname.startsWith('/profile')
 
   const handleClick = useCallback(() => {
@@ -118,7 +120,7 @@ function ProfileNavTab({ personaActorId, navigate, location }) {
   return (
     <button
       type="button"
-      aria-label="Citizen"
+      aria-label={t('nav.citizen')}
       onClick={handleClick}
       className={`relative flex h-10 min-w-[40px] items-center justify-center rounded-full px-1 transition-all duration-150 ${
         isActive

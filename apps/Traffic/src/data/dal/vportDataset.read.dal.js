@@ -1,51 +1,69 @@
 import { getSupabaseClient } from "@/data/connectors/supabase.client";
 
-const VPORT_PUBLIC_TRAZE_PROFILE_PROJECTION = [
+const PROVIDER_INDEX_PROJECTION = [
   "id",
-  "actor_id",
+  "source",
+  "source_id",
   "slug",
-  "name",
-  "bio",
+  "display_name",
+  "business_type",
+  "service_id",
+  "service_slug",
+  "service_name",
+  "country_code",
+  "state_code",
+  "city_name",
+  "city_slug",
+  "zip_code",
+  "address_text",
+  "lat",
+  "lng",
+  "phone",
+  "website_url",
+  "instagram_url",
+  "facebook_url",
+  "google_maps_url",
   "avatar_url",
   "banner_url",
-  "phone_public",
-  "location_text",
-  "address",
-  "timezone",
-  "city",
-  "city_slug",
-  "state_code",
-  "city_country_code",
-  "country_code",
-  "category_key",
-  "directory_visible",
-  "directory_status",
-  "created_at",
   "logo_url",
-  "email_public",
-  "website_url",
-  "booking_url",
   "hours",
-  "lat",
-  "lng"
+  "claim_status",
+  "is_active",
+  "is_indexable",
+  "created_at",
+  "updated_at"
 ].join(", ");
 
 let loggedVportDatasetError = false;
 
-export async function readVportPublicTrazeProfileRows() {
+function normalizeCountryCode(value) {
+  const countryCode = String(value ?? "").trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(countryCode) ? countryCode : null;
+}
+
+export async function readPublicTrazeProviderIndexRows(options = {}) {
   const client = getSupabaseClient();
   if (!client) return null;
 
-  const { data, error } = await client
+  let query = client
     .schema("vport")
-    .from("public_traze_profiles_v")
-    .select(VPORT_PUBLIC_TRAZE_PROFILE_PROJECTION)
+    .from("public_traze_provider_index_v")
+    .select(PROVIDER_INDEX_PROJECTION)
+    .eq("is_active", true)
+    .eq("is_indexable", true)
     .order("created_at", { ascending: false });
 
+  const countryCode = normalizeCountryCode(options.countryCode);
+  if (countryCode) {
+    query = query.eq("country_code", countryCode);
+  }
+
+  const { data, error } = await query;
+
   if (error) {
-    if (process.env.NODE_ENV !== "production" && !loggedVportDatasetError) {
+    if (!loggedVportDatasetError) {
       loggedVportDatasetError = true;
-      console.warn("[vportDataset] Supabase query failed:", error.message);
+      console.error("[vportDataset] public_traze_provider_index_v query failed:", error.message);
     }
     return null;
   }

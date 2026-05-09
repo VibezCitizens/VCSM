@@ -16,6 +16,8 @@ import {
   getProviderBySlug,
   getStructuredCityBySlug,
   listProvidersByCountryAndService,
+  listProvidersByCountryCitySlugAndService,
+  listProvidersByLocalityAndService,
   listServicesForProvider
 } from "@/data/repositories/provider.repo";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
@@ -28,9 +30,9 @@ import {
 } from "@/lib/paths";
 
 export const LEGACY_TRANSITION_ROBOTS = {
-  index: true,
+  index: false,
   follow: true,
-  googleBot: { index: true, follow: true }
+  googleBot: { index: false, follow: true }
 };
 
 export function resolveCountryProvider(params) {
@@ -117,6 +119,10 @@ export function resolveCountryCityService(params) {
     return null;
   }
 
+  if (listProvidersByCountryCitySlugAndService(country.code, city.slug, service.id).length === 0) {
+    return null;
+  }
+
   const region = city.regionId ? getRegionById(city.regionId) : null;
   return { routeMode: "country_city_service", country, city, region, service };
 }
@@ -139,6 +145,10 @@ export function resolveLegacyLocalityService(params) {
 
   const country = getCountryById(city.countryId);
   if (!country) {
+    return null;
+  }
+
+  if (listProvidersByLocalityAndService(locality.id, service.id).length === 0) {
     return null;
   }
 

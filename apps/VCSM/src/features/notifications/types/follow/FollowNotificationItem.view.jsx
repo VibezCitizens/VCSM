@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '@i18n'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 
 export default function FollowNotificationItem({ notification }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   if (!notification) return null
@@ -9,7 +11,7 @@ export default function FollowNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="subscribed to you"
+      message={t('notifications.follow.subscribed')}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}

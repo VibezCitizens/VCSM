@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '@i18n'
 import { useActorVibeTags } from '@/features/profiles/screens/views/tabs/tags/hooks/useActorVibeTags'
 
 export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { tags, loading, error } = useActorVibeTags(actorId)
   const [activeTagKey, setActiveTagKey] = useState(null)
@@ -30,7 +32,7 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
   if (error) {
     return (
       <section className="profiles-tags-card profiles-error p-5 text-sm">
-        Failed to load tags.
+        {t('profile.tags.failedToLoad')}
       </section>
     )
   }
@@ -41,9 +43,9 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
     <section className="profiles-tags-wrap">
       <div className="profiles-tags-card p-5">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="profiles-tags-title">Tags</h3>
+          <h3 className="profiles-tags-title">{t('profile.tags.title')}</h3>
           <span className="text-[11px] uppercase tracking-[0.14em] text-white/70/70">
-            {tags.length} selected
+            {t('profile.tags.selected', { count: tags.length })}
           </span>
         </div>
 
@@ -66,7 +68,7 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
               })
             ) : (
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70/75">
-                No tags yet
+                {t('profile.tags.noTagsYet')}
               </span>
             )}
 
@@ -75,9 +77,9 @@ export default function ActorProfileTagsView({ actorId, canAddTag = false }) {
                 type="button"
                 onClick={() => navigate('/citizen/vibes')}
                 className="profiles-tag-chip profiles-tag-chip-add"
-                aria-label="Add Tag"
+                aria-label={t('profile.tabs.tags')}
               >
-                + Add Tag
+                {t('profile.tags.addTag')}
               </button>
             )}
           </div>

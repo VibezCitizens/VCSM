@@ -1,0 +1,59 @@
+Table
+
+What it is for
+
+traffic.business_intake_leads
+
+Temporary queue for businesses you manually add from the dashboard before/while importing them into Traze.
+
+traffic.providers
+
+The real public business/profile record Traze should display. This is the main table.
+
+traffic.provider_services
+
+Connects a provider to one or more services, with optional prices. Example: Casa de Cambio → Money Exchange.
+
+traffic.services
+
+Master list of searchable services. Example: Barber, Locksmith, Restaurant, Money Exchange.
+
+traffic.specialties
+
+More specific service variations. Example: service = locksmith, specialty = car lockout.
+
+traffic.cities
+
+Supported cities Traze knows as structured locations.
+
+traffic.neighborhoods
+
+Smaller areas inside a city. Optional, useful later for SEO/local discovery.
+
+traffic.provider_stats_current
+
+Current ranking/trust numbers for a provider: reviews, rating, rank score, response time, etc.
+
+traffic.price_aggregates
+
+Market price ranges by city/service. Example: barber in Laredo P25/P50/P75 prices.
+
+traffic.business_claim_requests
+
+When a business owner clicks “Claim Profile,” this stores the claim request and verification status.
+
+traffic.page_candidates
+
+SEO page inventory. Tracks which pages should exist: city pages, service pages, provider pages, etc.
+
+traffic.page_internal_links
+
+Internal SEO linking map between pages. Example: /us/laredo/barber links to related providers.
+
+traffic.seo_rules
+
+Config/rules for titles, meta descriptions, indexing rules, page templates.
+
+traffic.sitemap_chunks
+
+Tracks generated sitemap files/chunks for Google indexing.

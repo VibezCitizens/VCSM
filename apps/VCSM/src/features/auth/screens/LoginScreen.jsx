@@ -10,6 +10,7 @@ import { ChevronRight, Smartphone, Sparkles } from 'lucide-react'
 import { getActiveSeasonTheme } from '@/season'
 import { authTheme } from '@/features/auth/styles/authTheme'
 import { useLogin } from '@/features/auth/hooks/useLogin'
+import { useTranslation } from '@i18n'
 
 // iOS install modal
 import IosInstallPrompt from '@/app/platform/ios/components/IosInstallPrompt'
@@ -18,6 +19,8 @@ function LoginScreen() {
   const navigate = useNavigate()
   const location = useLocation()
   const season = getActiveSeasonTheme('topRight')
+
+  const { t } = useTranslation()
 
   const {
     email,
@@ -105,16 +108,16 @@ function LoginScreen() {
 
               <div className="relative text-center">
                 <h1 className="font-serif text-[clamp(2.45rem,9.6vw,3.35rem)] font-semibold leading-[0.96] tracking-[0.005em] whitespace-nowrap text-transparent bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 bg-clip-text">
-                  Vibez Citizens
+                  {t('auth.login.title')}
                 </h1>
                 <p className="mt-2 text-sm tracking-[0.08em] text-amber-100/80">
-                  Where your vibez belongs.
+                  {t('auth.login.tagline')}
                 </p>
               </div>
 
               <div className="space-y-1.5">
                 <label htmlFor="login-email" className="text-xs font-medium tracking-wide text-[#d1d5db]">
-                  Email
+                  {t('auth.email')}
                 </label>
                 <input
                   id="login-email"
@@ -131,12 +134,12 @@ function LoginScreen() {
 
               <div className="space-y-1.5">
                 <label htmlFor="login-password" className="text-xs font-medium tracking-wide text-[#d1d5db]">
-                  Password
+                  {t('auth.password')}
                 </label>
                 <input
                   id="login-password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -151,8 +154,8 @@ function LoginScreen() {
                   role="status"
                   aria-live="polite"
                 >
-                  <p className="font-semibold">Email confirmed</p>
-                  <p className="mt-0.5 text-[#86efac]/75 text-xs">You can now log in to your account.</p>
+                  <p className="font-semibold">{t('auth.login.emailConfirmedTitle')}</p>
+                  <p className="mt-0.5 text-[#86efac]/75 text-xs">{t('auth.login.emailConfirmedBody')}</p>
                 </div>
               )}
 
@@ -162,8 +165,8 @@ function LoginScreen() {
                   role="alert"
                   aria-live="polite"
                 >
-                  <p className="font-semibold">Account not found</p>
-                  <p className="mt-0.5 text-amber-200/75 text-xs">This account has been deleted. If you think this is a mistake, please contact support.</p>
+                  <p className="font-semibold">{t('auth.login.accountNotFoundTitle')}</p>
+                  <p className="mt-0.5 text-amber-200/75 text-xs">{t('auth.login.accountNotFoundBody')}</p>
                 </div>
               )}
 
@@ -193,7 +196,7 @@ function LoginScreen() {
                   Beta
                 </span>
 
-                {loading ? 'Logging in…' : 'Login'}
+                {loading ? t('auth.login.loggingIn') : t('auth.login.loginButton')}
               </button>
 
               <div className="flex items-center justify-between pt-2 text-sm">
@@ -201,7 +204,7 @@ function LoginScreen() {
                   to="/forgot-password"
                   className="font-medium text-[#c4b5fd] no-underline transition hover:text-[#ddd6fe]"
                 >
-                  Forgot password?
+                  {t('auth.forgotPassword')}
                 </Link>
 
                 <Link
@@ -209,7 +212,7 @@ function LoginScreen() {
                   state={navState}
                   className="font-medium text-[#c4b5fd] no-underline transition hover:text-[#ddd6fe]"
                 >
-                  Create account
+                  {t('auth.createAccount')}
                 </Link>
               </div>
 
@@ -234,11 +237,11 @@ function LoginScreen() {
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
-                            Install on iPhone
+                            {t('auth.login.installTitle')}
                             <Sparkles size={14} className="text-cyan-200" />
                           </div>
                           <div className="text-xs text-white/70">
-                            Guided setup in 3 quick steps
+                            {t('auth.login.installSubtitle')}
                           </div>
                         </div>
                       </div>
@@ -259,13 +262,13 @@ function LoginScreen() {
             aria-label="Site links"
             style={{ color: 'rgba(255,255,255,0.45)' }}
           >
-            <Link to="/about" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">About</Link>
+            <Link to="/about" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">{t('nav.about')}</Link>
             <span className="mx-2" style={{ color: 'rgba(255,255,255,0.22)' }}>·</span>
-            <Link to="/contact" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">Contact</Link>
+            <Link to="/contact" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">{t('nav.contact')}</Link>
             <span className="mx-2" style={{ color: 'rgba(255,255,255,0.22)' }}>·</span>
-            <Link to="/legal/privacy-policy" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">Privacy</Link>
+            <Link to="/legal/privacy-policy" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">{t('nav.privacy')}</Link>
             <span className="mx-2" style={{ color: 'rgba(255,255,255,0.22)' }}>·</span>
-            <Link to="/legal/terms-of-service" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">Terms</Link>
+            <Link to="/legal/terms-of-service" className="text-[#c4b5fd] transition hover:text-[#ddd6fe]">{t('nav.terms')}</Link>
           </nav>
         </div>
       </div>

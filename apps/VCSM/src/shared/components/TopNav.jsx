@@ -1,9 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Eye, LogOut } from 'lucide-react';
+import { useTranslation } from '@i18n';
 
 export default function TopNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useTranslation();
 
   const inVoid = pathname.startsWith('/void');
   const isChatInboxRoot = pathname === '/chat';
@@ -18,25 +20,25 @@ export default function TopNav() {
         <div className="min-w-[84px]" aria-hidden="true" />
 
         <h1 className="text-xl font-bold text-center flex-1 select-none">
-          {inVoid ? 'The Void' : 'Vibez Citizens'}
+          {inVoid ? t('nav.theVoid') : t('nav.vibezCitizens')}
         </h1>
 
         <div className="min-w-[84px] flex justify-end">
           {inVoid ? (
             <button
               onClick={() => navigate('/feed')}
-              title="Exit the Void"
+              title={t('nav.exitVoid')}
               className="text-white opacity-80 hover:opacity-100 transition focus:outline-none"
-              aria-label="Exit the Void"
+              aria-label={t('nav.exitVoid')}
             >
               <LogOut size={18} />
             </button>
           ) : (
             <button
               onClick={() => navigate('/void')}
-              title="Enter the Void"
+              title={t('nav.enterVoid')}
               className="text-white opacity-60 hover:opacity-100 transition focus:outline-none"
-              aria-label="Enter the Void"
+              aria-label={t('nav.enterVoid')}
             >
               <Eye size={18} />
             </button>

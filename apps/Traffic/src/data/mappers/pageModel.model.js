@@ -63,10 +63,11 @@ export function buildDirectoryPageModel(args) {
 
 export function buildProviderPageModel(args) {
   const location = [args.cityName, args.countryName].filter(Boolean).join(", ");
+  const place = args.localityName || args.cityName || args.countryName || "the area";
 
   return {
     title: `${args.provider.displayName}${location ? ` in ${location}` : ""}`,
-    description: `${args.provider.displayName} serves ${args.localityName || args.cityName}. Explore services, reputation signals, and continue booking on TRAZE.`,
+    description: `${args.provider.displayName} serves ${place}. Explore services, contact details, and reputation signals on TRAZE.`,
     provider: args.provider,
     serviceNames: args.services.map((service) => service.name),
     cityName: args.cityName ?? null,

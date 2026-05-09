@@ -1,0 +1,8 @@
+{
+  "addPhotosVideos": "Agrega fotos/videos (hasta {{max}})",
+  "addPhotoVideo": "Agregar foto/video",
+  "tapToUpload": "Toca para subir o arrastra y suelta",
+  "selectedCount": "Seleccionado: {{count}} / {{max}}",
+  "captionPlaceholder": "Escribe una descripción… (usa @ para etiquetar)",
+  "addLocation": "Agregar ubicación"
+}

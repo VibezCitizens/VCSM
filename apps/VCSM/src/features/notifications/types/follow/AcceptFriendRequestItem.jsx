@@ -1,8 +1,9 @@
-// src/features/notifications/types/follow/AcceptFriendRequestItem.jsx
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '@i18n'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 
 export default function AcceptFriendRequestItem({ notification }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   if (!notification) return null
@@ -10,7 +11,7 @@ export default function AcceptFriendRequestItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="accepted your subscribe request."
+      message={t('notifications.follow.acceptedSubscribeRequest')}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}

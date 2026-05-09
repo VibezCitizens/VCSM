@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useTranslation } from '@i18n'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 
 function formatSlotTime(iso) {
@@ -10,18 +11,19 @@ function formatSlotTime(iso) {
 }
 
 export default function BookingCreatedNotificationItem({ notification }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { identity } = useIdentity()
   if (!notification) return null
 
-  const service = notification.context?.serviceLabelSnapshot ?? 'a service'
+  const service = notification.context?.serviceLabelSnapshot ?? t('notifications.booking.defaultService')
   const time = formatSlotTime(notification.context?.startsAt)
-  const timeLabel = time ? ` at ${time}` : ''
+  const message = time
+    ? t('notifications.booking.bookedAt', { service, time })
+    : t('notifications.booking.booked', { service })
 
-  // Use stored linkPath when it already points to the dashboard (new format).
-  // Fall back to identity.actorId for legacy notifications with old profile paths.
-  const linkPath = notification.linkPath ?? ""
-  const destination = linkPath.includes("/dashboard/booking-history")
+  const linkPath = notification.linkPath ?? ''
+  const destination = linkPath.includes('/dashboard/booking-history')
     ? linkPath
     : (identity?.actorId
         ? `/actor/${identity.actorId}/dashboard/booking-history`
@@ -30,7 +32,7 @@ export default function BookingCreatedNotificationItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message={`booked ${service}${timeLabel}`}
+      message={message}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       onClick={destination ? () => navigate(destination) : undefined}

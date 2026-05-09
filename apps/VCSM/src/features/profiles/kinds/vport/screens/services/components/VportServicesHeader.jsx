@@ -1,5 +1,6 @@
 // src/features/profiles/kinds/vport/screens/services/components/VportServicesHeader.jsx
 import React from "react";
+import { useTranslation } from "@i18n";
 
 export default function VportServicesHeader({
   title = "Services",
@@ -7,12 +8,13 @@ export default function VportServicesHeader({
   right = null,
   stats = [],
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-200/75">
-            Vport Catalog
+            {t('vport.servicesView.catalog')}
           </div>
           <div className="mt-1 text-lg font-black text-white sm:text-xl">{title}</div>
         </div>

@@ -1,0 +1,71 @@
+{
+  "inbox": {
+    "vportTitle": "Vport Vox",
+    "voidTitle": "Void Vox",
+    "title": "Vox",
+    "newVox": "Nuevo Vox",
+    "moreActions": "Más acciones",
+    "errorLoad": "No se pudo cargar Vox",
+    "tryAgain": "Intentar de nuevo",
+    "noVoxYet": "Aún no hay Vox",
+    "noVoxDesc": "Inicia un Vox y aparecerá aquí.",
+    "deleteVox": "Eliminar Vox"
+  },
+  "start": {
+    "title": "Nuevo Vox",
+    "searchPlaceholder": "Buscar Ciudadanos, Vports…",
+    "searching": "Buscando…",
+    "noResults": "No hay resultados para \"{{query}}\"."
+  },
+  "chatSettings": {
+    "title": "Vox y Chat",
+    "sectionVox": "VOX",
+    "voxTitle": "Vox",
+    "voxSubtitle": "Preferencias de Vox",
+    "spamTitle": "Spam",
+    "spamSubtitle": "Vox marcados como spam",
+    "requestsTitle": "Solicitudes",
+    "requestsSubtitle": "Ciudadanos que te contactaron primero",
+    "archivedTitle": "Archivados",
+    "archivedSubtitle": "Ocultos del Vox principal",
+    "sectionChatSettings": "CONFIGURACIÓN DE CHAT",
+    "blockedTitle": "Ciudadanos bloqueados",
+    "blockedSubtitle": "Administra quién no puede enviarte Vox",
+    "privacyTitle": "Privacidad de Vox",
+    "privacySubtitle": "Quién puede enviarte Vox",
+    "safetyTitle": "Seguridad",
+    "safetySubtitle": "Preferencias de spam y reportes"
+  },
+  "preferences": {
+    "title": "Vox",
+    "sectionPreferences": "Preferencias",
+    "hideEmptyTitle": "Ocultar Vox vacíos",
+    "hideEmptySubtitle": "Ocultar Vox sin mensajes",
+    "showPreviewTitle": "Mostrar vista previa",
+    "showPreviewSubtitle": "Mostrar vista previa debajo de cada Vox",
+    "sectionAdvanced": "Avanzado",
+    "advancedTitle": "Vox y Chat",
+    "advancedSubtitle": "Volver al centro de configuración"
+  },
+  "blocked": {
+    "title": "Ciudadanos bloqueados",
+    "description": "Los Ciudadanos bloqueados no pueden enviarte Vox y no verás su contenido.",
+    "loading": "Cargando…",
+    "empty": "No has bloqueado ningún Ciudadano.",
+    "unblock": "Desbloquear"
+  },
+  "privacy": {
+    "title": "Privacidad de Vox",
+    "whoCanVoxYou": "Quién puede enviarte Vox",
+    "everyoneTitle": "Todos",
+    "everyoneSubtitle": "Cualquiera puede iniciar un nuevo Vox contigo",
+    "followingTitle": "Personas que sigues",
+    "followingSubtitle": "Solo las personas que sigues pueden iniciar un nuevo Vox",
+    "nobodyTitle": "Nadie",
+    "nobodySubtitle": "Nadie puede iniciar un nuevo Vox (los Vox existentes seguirán funcionando)",
+    "requestsSection": "Solicitudes",
+    "allowRequestsTitle": "Permitir solicitudes de Vox",
+    "allowRequestsSubtitle": "Si alguien no puede enviarte Vox directamente, puede aparecer en Solicitudes",
+    "allowRequestsHint": "Controla si los mensajes iniciales pueden enviarse a Solicitudes."
+  }
+}

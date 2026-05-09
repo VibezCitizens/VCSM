@@ -1,68 +1,70 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
+import { useTranslation } from '@i18n'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 export default function InboxChatSettingsScreen() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const rows = useMemo(
     () => [
       {
-        section: 'Vox',
+        section: t('vox.chatSettings.sectionVox'),
         items: [
           {
-            title: 'Vox',
-            subtitle: 'Vox preferences',
+            title: t('vox.chatSettings.voxTitle'),
+            subtitle: t('vox.chatSettings.voxSubtitle'),
             icon: 'VOX',
             onClick: () => navigate('/chat/settings/inbox'),
           },
           {
-            title: 'Spam',
-            subtitle: 'Vox you marked as spam',
+            title: t('vox.chatSettings.spamTitle'),
+            subtitle: t('vox.chatSettings.spamSubtitle'),
             icon: 'SPM',
             onClick: () => navigate('/chat/spam'),
           },
           {
-            title: 'Requests',
-            subtitle: 'Citizens who reached out first',
+            title: t('vox.chatSettings.requestsTitle'),
+            subtitle: t('vox.chatSettings.requestsSubtitle'),
             icon: 'REQ',
             onClick: () => navigate('/chat/requests'),
           },
           {
-            title: 'Archived',
-            subtitle: 'Hidden from main Vox',
+            title: t('vox.chatSettings.archivedTitle'),
+            subtitle: t('vox.chatSettings.archivedSubtitle'),
             icon: 'ARC',
             onClick: () => navigate('/chat/archived'),
           },
         ],
       },
       {
-        section: 'Chat Settings',
+        section: t('vox.chatSettings.sectionChatSettings'),
         items: [
           {
-            title: 'Blocked Citizens',
-            subtitle: 'Manage who cannot Vox you',
+            title: t('vox.chatSettings.blockedTitle'),
+            subtitle: t('vox.chatSettings.blockedSubtitle'),
             icon: 'BLK',
             onClick: () => navigate('/chat/settings/blocked'),
           },
           {
-            title: 'Vox privacy',
-            subtitle: 'Who can Vox you',
+            title: t('vox.chatSettings.privacyTitle'),
+            subtitle: t('vox.chatSettings.privacySubtitle'),
             icon: 'PRV',
             onClick: () => navigate('/chat/settings/privacy'),
           },
           {
-            title: 'Safety',
-            subtitle: 'Spam and reporting preferences',
+            title: t('vox.chatSettings.safetyTitle'),
+            subtitle: t('vox.chatSettings.safetySubtitle'),
             icon: 'SFT',
             onClick: () => navigate('/chat/settings/safety'),
           },
         ],
       },
     ],
-    [navigate]
+    [navigate, t]
   )
 
   return (
@@ -82,7 +84,7 @@ export default function InboxChatSettingsScreen() {
               <ChevronLeft size={22} />
             </button>
             <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
-              Vox and Chat
+              {t('vox.chatSettings.title')}
             </h1>
             <div className="ml-auto w-10" />
           </div>

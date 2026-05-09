@@ -13,9 +13,6 @@
 import { listCities, listLocalitiesByCity, listNeighborhoodsByCity } from "@/data/repositories/city.repo";
 import { listCountries } from "@/data/repositories/geo.repo";
 import { listServices, listSpecialtiesByService } from "@/data/repositories/service.repo";
-import { MOCK_PROVIDERS_A } from "@/data/connectors/mockProviders.a";
-import { MOCK_PROVIDERS_B } from "@/data/connectors/mockProviders.b";
-import { MOCK_PROVIDERS_C } from "@/data/connectors/mockProviders.c";
 
 // ── Locality-level ────────────────────────────────────────────────────────────
 
@@ -136,18 +133,4 @@ export function listNeighborhoodServiceTaxonomyParams() {
   }
 
   return entries;
-}
-
-// ── Provider slugs (mock fallback) ────────────────────────────────────────────
-
-const ALL_MOCK_PROVIDERS = [
-  ...MOCK_PROVIDERS_A,
-  ...MOCK_PROVIDERS_B,
-  ...MOCK_PROVIDERS_C,
-];
-
-export function listMockProviderSlugParams() {
-  return ALL_MOCK_PROVIDERS
-    .filter((provider) => provider.isActive && provider.isIndexable)
-    .map((provider) => ({ providerSlug: provider.slug }));
 }

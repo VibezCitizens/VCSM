@@ -1,0 +1,26 @@
+/* ── Filter chips ──────────────────────────────────────── */
+.filter-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.filter-chip {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--dash-line);
+  background: var(--dash-surface);
+  color: var(--dash-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.filter-chip--active {
+  border-color: var(--dash-green);
+  background: var(--dash-green);
+  color: #fff;
+}

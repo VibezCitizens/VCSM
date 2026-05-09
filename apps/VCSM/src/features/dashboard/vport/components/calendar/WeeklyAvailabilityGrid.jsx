@@ -8,6 +8,7 @@ import TimeLabelsColumn from "./TimeLabelsColumn";
 import DayHeader from "./DayHeader";
 import DayBody, { DayPills } from "./DayBody";
 import RangeToggle from "./RangeToggle";
+import WorkingHoursDayCard from "./WorkingHoursDayCard";
 
 export default function WeeklyAvailabilityGrid({
   resourceId,
@@ -171,60 +172,144 @@ export default function WeeklyAvailabilityGrid({
   const tzRow = <div style={{ fontSize: 10, color: "rgba(148,163,184,.5)", fontWeight: 600, letterSpacing: ".04em" }}>Timezone: {tz}</div>;
 
   if (isMobile) {
-    const dbs    = blocks.filter(b => b.weekday === activeDay);
-    const isOpen = !closedDays.has(activeDay);
-    const mobileToolbar = (
-      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-        <button type="button" onClick={applyMonToWeekdays} disabled={saving} style={tBtn({ minHeight: 44, padding: "10px 10px" })}>Apply Mon → Weekdays</button>
-        <button type="button" onClick={set9to5} disabled={saving} style={tBtn({ minHeight: 44, padding: "10px 10px" })}>Set 9–5 Weekdays</button>
-        <button type="button" onClick={clearAll} disabled={saving} style={tBtn({ minHeight: 44, padding: "10px 10px", borderColor: "rgba(239,68,68,.28)", color: "rgba(252,165,165,.75)" })}>Clear All</button>
-        {applyMsg && <span style={{ fontSize: 11, fontWeight: 600, color: applyMsg.ok ? "rgba(134,239,172,.85)" : "rgba(252,165,165,.8)" }}>{applyMsg.text}</span>}
-      </div>
-    );
-    const mobileSaveRow = (
-      <div style={{ display: "grid", gap: 6 }}>
-        <button type="button" disabled={saving} onClick={save} style={{ width: "100%", borderRadius: 9, border: "1px solid rgba(139,92,246,.5)", background: saving ? "rgba(109,40,217,.2)" : "rgba(109,40,217,.42)", color: "#f8fafc", fontSize: 14, fontWeight: 700, padding: "13px 18px", cursor: saving ? "wait" : "pointer", transition: "background .15s" }}>
-          {saving ? "Saving…" : "Save Working Hours"}
-        </button>
-        {saveMsg && <span style={{ fontSize: 12, fontWeight: 600, color: saveMsg.ok ? "#86efac" : "#fca5a5", textAlign: "center" }}>{saveMsg.text}</span>}
-      </div>
-    );
+    const todayWd = new Date().getDay();
+    const tz      = resourceTz || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     return (
-      <div style={{ display: "grid", gap: 10 }}>
-        <div style={{ display: "grid", gap: 4 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <button type="button" onClick={() => setWeekStart(d => addDays(d, -7))} style={tBtn({ padding: "5px 7px" })}>‹</button>
-            <button type="button" onClick={() => setWeekStart(getWeekStart(new Date()))} disabled={isThisWeek} style={tBtn({ opacity: isThisWeek ? 0.4 : 1, cursor: isThisWeek ? "default" : "pointer" })}>This week</button>
-            <button type="button" onClick={() => setWeekStart(d => addDays(d, 7))} style={tBtn({ padding: "5px 7px" })}>›</button>
-            <RangeToggle mode={mode} onChange={setMode} />
+      <div style={{ display: "grid", gap: 8 }}>
+        {/* Stacked day cards */}
+        {[0, 1, 2, 3, 4, 5, 6].map(wd => (
+          <WorkingHoursDayCard
+            key={wd}
+            weekday={wd}
+            isToday={wd === todayWd}
+            isOpen={!closedDays.has(wd)}
+            blocks={blocks.filter(b => b.weekday === wd)}
+            onToggle={() => toggleDay(wd)}
+            onBlocksChange={dbs => setDayBlocks(wd, dbs)}
+          />
+        ))}
+
+        {/* Quick actions */}
+        <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              type="button"
+              onClick={applyMonToWeekdays}
+              disabled={saving}
+              style={{
+                flex: 1,
+                minHeight: 44,
+                borderRadius: 10,
+                border: "1px solid rgba(148,163,184,.16)",
+                background: "rgba(15,23,42,.6)",
+                color: "rgba(203,213,225,.75)",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: saving ? "default" : "pointer",
+                padding: "10px 8px",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              Apply Mon → Weekdays
+            </button>
+            <button
+              type="button"
+              onClick={set9to5}
+              disabled={saving}
+              style={{
+                flex: 1,
+                minHeight: 44,
+                borderRadius: 10,
+                border: "1px solid rgba(148,163,184,.16)",
+                background: "rgba(15,23,42,.6)",
+                color: "rgba(203,213,225,.75)",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: saving ? "default" : "pointer",
+                padding: "10px 8px",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              Set 9–5 Weekdays
+            </button>
           </div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(148,163,184,.5)" }}>{weekLabel} · {tz}</div>
-        </div>
-        <DayPills active={activeDay} closedDays={closedDays} blocks={blocks} onChange={setActiveDay} />
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: weekDates[activeDay].toDateString() === todayDate.toDateString() ? "rgba(167,139,250,.9)" : "rgba(255,255,255,.85)" }}>{DAY_LABELS[activeDay]}</div>
-          <button type="button" onClick={() => toggleDay(activeDay)} style={{ borderRadius: 5, border: `1px solid ${isOpen ? "rgba(34,197,94,.3)" : "rgba(239,68,68,.2)"}`, background: isOpen ? "rgba(34,197,94,.1)" : "rgba(239,68,68,.06)", color: isOpen ? "rgba(134,239,172,.9)" : "rgba(252,165,165,.6)", fontSize: 10, fontWeight: 700, padding: "3px 7px", cursor: "pointer" }}>
-            {isOpen ? "OPEN" : "CLOSED"}
+          <button
+            type="button"
+            onClick={clearAll}
+            disabled={saving}
+            style={{
+              minHeight: 44,
+              borderRadius: 10,
+              border: "1px solid rgba(239,68,68,.13)",
+              background: "none",
+              color: "rgba(252,165,165,.38)",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: saving ? "default" : "pointer",
+              padding: "10px 12px",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Clear All
           </button>
-          {isOpen && dbs.length > 0 && <div style={{ fontSize: 11, color: "rgba(167,139,250,.7)" }}>{dayHoursSummary(dbs)}</div>}
-        </div>
-        {!isOpen ? (
-          <div style={{ padding: "16px 0", textAlign: "center", fontSize: 12, color: "rgba(255,255,255,.28)" }}>Tap CLOSED to open this day</div>
-        ) : (
-          <>
-            {dbs.length === 0 && <div style={{ borderRadius: 8, border: "1px dashed rgba(139,92,246,.2)", padding: "8px 12px", fontSize: 11, color: "rgba(203,213,225,.4)", textAlign: "center" }}>Tap to set hours for {DAY_LABELS[activeDay]}</div>}
-            <div style={{ borderRadius: 10, border: "1px solid rgba(148,163,184,.12)", background: "rgba(2,6,23,.72)", overflow: "hidden" }}>
-              <div style={{ display: "flex", maxHeight: "min(420px,calc(100vh - 380px))", overflowY: "auto" }}>
-                <div style={{ position: "sticky", left: 0, flexShrink: 0, zIndex: 3, background: "rgba(2,6,23,.9)" }}>
-                  <TimeLabelsColumn gs={grid.s} gh={grid.h} ticks={ticks} />
-                </div>
-                <DayBody wd={activeDay} isOpen={isOpen} isToday={weekDates[activeDay].toDateString() === todayDate.toDateString()} blocks={dbs} gs={grid.s} ge={grid.e} gh={grid.h} ticks={ticks} onBlocksChange={dbs2 => setDayBlocks(activeDay, dbs2)} />
-              </div>
+          {applyMsg && (
+            <div style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: applyMsg.ok ? "rgba(134,239,172,.8)" : "rgba(252,165,165,.75)",
+              textAlign: "center",
+              padding: "2px 0",
+            }}>
+              {applyMsg.text}
             </div>
-          </>
-        )}
-        {mobileToolbar}
-        {mobileSaveRow}
+          )}
+        </div>
+
+        {/* Save */}
+        <div style={{ display: "grid", gap: 8, marginTop: 4 }}>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={save}
+            style={{
+              width: "100%",
+              minHeight: 52,
+              borderRadius: 12,
+              border: saving ? "1px solid rgba(139,92,246,.3)" : "1px solid rgba(139,92,246,.5)",
+              background: saving
+                ? "rgba(109,40,217,.2)"
+                : "linear-gradient(135deg, rgba(109,40,217,.65) 0%, rgba(139,92,246,.5) 100%)",
+              color: "#f8fafc",
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: saving ? "wait" : "pointer",
+              letterSpacing: ".01em",
+              transition: "background .15s",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            {saving ? "Saving…" : "Save Working Hours"}
+          </button>
+          {saveMsg && (
+            <div style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: saveMsg.ok ? "rgba(134,239,172,.8)" : "rgba(252,165,165,.75)",
+              textAlign: "center",
+            }}>
+              {saveMsg.text}
+            </div>
+          )}
+          <div style={{
+            fontSize: 11,
+            color: "rgba(148,163,184,.3)",
+            textAlign: "center",
+            fontWeight: 500,
+          }}>
+            {tz}
+          </div>
+        </div>
       </div>
     );
   }

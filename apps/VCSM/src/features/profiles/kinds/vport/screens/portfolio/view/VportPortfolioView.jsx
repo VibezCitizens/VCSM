@@ -10,12 +10,14 @@
 
 import { useMemo, useState, useCallback } from "react";
 import { Image as ImageIcon, Sparkles } from "lucide-react";
+import { useTranslation } from "@i18n";
 import { useVportPortfolio } from "@/features/profiles/kinds/vport/hooks/portfolio/useVportPortfolio";
 import PortfolioItemModal from "@/features/profiles/kinds/vport/screens/portfolio/PortfolioItemModal";
 
 import "@/features/profiles/styles/profiles-portfolio-modern.css";
 
 function PortfolioItemCard({ item, onOpen }) {
+  const { t } = useTranslation();
   const coverUrl = item?.coverUrl ?? item?.media?.[0]?.url ?? null;
   const isTransformation = item?.portfolioKind === "before_after";
   const tags = item?.tags ?? [];
@@ -46,19 +48,19 @@ function PortfolioItemCard({ item, onOpen }) {
           {isTransformation ? (
             <span className="flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-[10px] font-semibold text-amber-300 backdrop-blur-sm">
               <Sparkles size={10} />
-              Before & After
+              {t('vport.portfolioView.beforeAfter')}
             </span>
           ) : null}
           {item.isFeatured ? (
             <span className="rounded-lg bg-black/60 px-2 py-1 text-[10px] font-semibold text-sky-300 backdrop-blur-sm">
-              Featured
+              {t('vport.portfolioView.featured')}
             </span>
           ) : null}
         </div>
 
         {(item.mediaCount ?? 0) > 1 ? (
           <span className="absolute bottom-2 right-2 rounded-lg bg-black/60 px-2 py-1 text-[10px] font-medium text-white/80 backdrop-blur-sm">
-            {item.mediaCount} photos
+            {t('vport.portfolioView.photos', { count: item.mediaCount })}
           </span>
         ) : null}
       </div>
@@ -88,6 +90,7 @@ export default function VportPortfolioView({
   availableTabs = [],
   onSelectTab = null,
 }) {
+  const { t } = useTranslation();
   const actorId = profile?.actor_id ?? profile?.actorId ?? null;
   const {
     items,
@@ -149,18 +152,18 @@ export default function VportPortfolioView({
       <div className="profiles-card rounded-2xl p-5">
         <div className="flex flex-col items-center gap-3 py-10">
           <ImageIcon size={32} className="text-white/15" />
-          <div className="text-sm font-medium" style={{ color: 'var(--vc-text-muted)' }}>No work published yet</div>
+          <div className="text-sm font-medium" style={{ color: 'var(--vc-text-muted)' }}>{t('vport.portfolioView.noWorkYet')}</div>
           <div className="text-xs" style={{ color: 'var(--vc-text-muted)' }}>
-            {profile?.displayName ?? "This business"} hasn't added portfolio items yet.
+            {t('vport.portfolioView.noItemsYet', { name: profile?.displayName ?? 'This business' })}
           </div>
-          {availableTabs.some((t) => t.key === "services") ? (
+          {availableTabs.some((tab) => tab.key === "services") ? (
             <button
               type="button"
               onClick={() => onSelectTab?.("services")}
               className="mt-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium transition-colors hover:bg-white/8"
               style={{ color: 'var(--vc-text-muted)' }}
             >
-              View services instead
+              {t('vport.portfolioView.viewServices')}
             </button>
           ) : null}
         </div>
@@ -174,9 +177,9 @@ export default function VportPortfolioView({
       <div className="profiles-card rounded-2xl p-5">
         {/* Header */}
         <div className="mb-4">
-          <div className="text-base font-semibold" style={{ color: 'var(--vc-text)' }}>Portfolio</div>
+          <div className="text-base font-semibold" style={{ color: 'var(--vc-text)' }}>{t('vport.portfolioView.title')}</div>
           <div className="mt-1 text-xs" style={{ color: 'var(--vc-text-muted)' }}>
-            {items.length} {items.length === 1 ? "item" : "items"}
+            {items.length === 1 ? t('vport.portfolioView.item', { count: items.length }) : t('vport.portfolioView.items', { count: items.length })}
           </div>
         </div>
 
@@ -194,7 +197,7 @@ export default function VportPortfolioView({
               ].join(" ")}
               style={filterTag ? { color: 'var(--vc-text-muted)' } : undefined}
             >
-              All
+              {t('vport.portfolioView.all')}
             </button>
             {allTags.map((tag) => (
               <button
@@ -231,7 +234,7 @@ export default function VportPortfolioView({
             className="mt-4 w-full rounded-xl border border-white/8 bg-white/[0.02] py-3 text-center text-sm font-medium disabled:opacity-50 transition-colors hover:bg-white/5"
             style={{ color: 'var(--vc-text-muted)' }}
           >
-            {loadingMore ? "Loading..." : "Load more"}
+            {loadingMore ? "Loading..." : t('vport.portfolioView.loadMore')}
           </button>
         ) : null}
       </div>

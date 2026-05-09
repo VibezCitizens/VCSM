@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useTranslation } from '@i18n'
 
 export function VportDangerRow({ vport, onSoftDelete, onHardDelete, onRestore }) {
+  const { t } = useTranslation()
   return (
     <div className="settings-danger-row rounded-xl p-3">
       <div className="flex items-center gap-3">
@@ -14,7 +16,7 @@ export function VportDangerRow({ vport, onSoftDelete, onHardDelete, onRestore })
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="truncate text-sm font-semibold text-rose-100">{vport.name}</span>
             {vport.is_deleted && (
-              <span className="settings-status-badge settings-status-badge--inactive shrink-0">Deactivated</span>
+              <span className="settings-status-badge settings-status-badge--inactive shrink-0">{t('settings.vport.deactivated')}</span>
             )}
           </div>
           <div className="truncate text-xs text-rose-100/50">@{vport.slug}</div>
@@ -23,10 +25,10 @@ export function VportDangerRow({ vport, onSoftDelete, onHardDelete, onRestore })
           {vport.is_deleted ? (
             <>
               <button onClick={onRestore} className="settings-btn settings-btn--ghost px-2.5 py-1.5 text-xs">
-                Restore
+                {t('settings.vport.restore')}
               </button>
               <button onClick={onHardDelete} className="settings-btn settings-btn--danger px-2.5 py-1.5 text-xs">
-                Delete permanently
+                {t('settings.vport.deletePermanently')}
               </button>
             </>
           ) : (
@@ -35,7 +37,7 @@ export function VportDangerRow({ vport, onSoftDelete, onHardDelete, onRestore })
               className="settings-btn settings-btn--ghost px-2.5 py-1.5 text-xs"
               style={{ color: '#fcd34d', borderColor: 'rgba(217,119,6,0.35)' }}
             >
-              Deactivate…
+              {t('settings.vport.deactivateEllipsis')}
             </button>
           )}
         </div>
@@ -45,46 +47,51 @@ export function VportDangerRow({ vport, onSoftDelete, onHardDelete, onRestore })
 }
 
 export function SoftDeleteModal({ vport, busy, onCancel, onConfirm }) {
+  const { t } = useTranslation()
   return (
     <DeleteModal
-      title="Deactivate this VPORT?"
+      title={t('settings.vport.deactivateTitle')}
       busy={busy}
-      busyLabel="Deactivating…"
+      busyLabel={t('settings.vport.deactivatingBusy')}
       onCancel={onCancel}
       onConfirm={onConfirm}
-      confirmLabel="Deactivate VPORT"
+      confirmLabel={t('settings.vport.deactivateConfirm')}
       confirmClassName="settings-btn border border-amber-500/40 bg-amber-500/15 text-amber-300"
     >
       <p className="text-sm text-white/70">
-        <span className="font-semibold text-white">{vport.name}</span> will be hidden from public
-        pages and you won't be able to switch into it. You can restore it later from this screen.
+        <span className="font-semibold text-white">{vport.name}</span>{' '}
+        {t('settings.vport.deactivateBody')}
       </p>
     </DeleteModal>
   )
 }
 
 export function HardDeleteModal({ vport, busy, onCancel, onConfirm }) {
+  const { t } = useTranslation()
   const [confirmText, setConfirmText] = useState('')
   const canConfirm = confirmText.trim() === vport.name.trim()
 
   return (
     <DeleteModal
-      title="Permanently delete this VPORT?"
+      title={t('settings.vport.hardDeleteTitle')}
       busy={busy}
-      busyLabel="Deleting…"
+      busyLabel={t('settings.vport.deletingBusy')}
       onCancel={onCancel}
       onConfirm={onConfirm}
-      confirmLabel="Delete permanently"
+      confirmLabel={t('settings.vport.deletePermanently')}
       confirmDisabled={!canConfirm}
     >
       <p className="text-sm text-white/70">
-        All data for <span className="font-semibold text-white">{vport.name}</span> will be
-        destroyed — services, reviews, menus, media, and posts.
+        {t('settings.vport.hardDeleteBodyPre')}{' '}
+        <span className="font-semibold text-white">{vport.name}</span>{' '}
+        {t('settings.vport.hardDeleteBodyPost')}
       </p>
-      <p className="mt-2 text-sm font-semibold text-rose-300">This is permanent and cannot be undone.</p>
+      <p className="mt-2 text-sm font-semibold text-rose-300">{t('settings.vport.hardDeletePermanent')}</p>
       <div className="mt-3 space-y-1.5">
         <label className="block text-xs text-white/50">
-          Type <span className="font-semibold text-white/80">{vport.name}</span> to confirm
+          {t('settings.vport.typeToConfirmPre')}{' '}
+          <span className="font-semibold text-white/80">{vport.name}</span>{' '}
+          {t('settings.vport.typeToConfirmPost')}
         </label>
         <input
           type="text"
@@ -99,27 +106,29 @@ export function HardDeleteModal({ vport, busy, onCancel, onConfirm }) {
 }
 
 export function RestoreModal({ vport, busy, onCancel, onConfirm }) {
+  const { t } = useTranslation()
   return (
     <DeleteModal
-      title="Restore this VPORT?"
+      title={t('settings.vport.restoreTitle')}
       busy={busy}
-      busyLabel="Restoring…"
+      busyLabel={t('settings.vport.restoringBusy')}
       onCancel={onCancel}
       onConfirm={onConfirm}
-      confirmLabel="Restore VPORT"
+      confirmLabel={t('settings.vport.restoreConfirm')}
       confirmClassName="settings-btn settings-btn--primary"
     >
       <p className="text-sm text-white/70">
-        <span className="font-semibold text-white">{vport.name}</span> will become publicly visible
-        again and you'll be able to switch into it.
+        <span className="font-semibold text-white">{vport.name}</span>{' '}
+        {t('settings.vport.restoreBody')}
       </p>
     </DeleteModal>
   )
 }
 
 export function DeleteModal({ title, busy, busyLabel, onCancel, onConfirm, confirmLabel, confirmClassName, confirmDisabled, children }) {
+  const { t } = useTranslation()
   const btnClass = confirmClassName ?? 'settings-btn settings-btn--danger'
-  const activeBusyLabel = busyLabel ?? 'Deleting…'
+  const activeBusyLabel = busyLabel ?? t('settings.vport.deletingBusy')
   const isDisabled = busy || !!confirmDisabled
 
   return (
@@ -131,7 +140,7 @@ export function DeleteModal({ title, busy, busyLabel, onCancel, onConfirm, confi
         </div>
         <div className="p-4">{children}</div>
         <div className="flex justify-end gap-2 border-t border-white/8 p-4">
-          <button onClick={onCancel} disabled={busy} className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm">Cancel</button>
+          <button onClick={onCancel} disabled={busy} className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm">{t('actions.cancel')}</button>
           <button
             onClick={onConfirm}
             disabled={isDisabled}
@@ -147,6 +156,7 @@ export function DeleteModal({ title, busy, busyLabel, onCancel, onConfirm, confi
 }
 
 export function DangerLabel() {
+  const { t } = useTranslation()
   return (
     <div className="flex items-center gap-2">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#fca5a5" strokeWidth="1.6">
@@ -154,7 +164,7 @@ export function DangerLabel() {
         <path d="M8 7v3" strokeLinecap="round" />
         <circle cx="8" cy="12" r="0.6" fill="#fca5a5" stroke="none" />
       </svg>
-      <span className="text-sm font-semibold text-rose-200/80">Danger zone</span>
+      <span className="text-sm font-semibold text-rose-200/80">{t('settings.dangerZone')}</span>
     </div>
   )
 }

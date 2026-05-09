@@ -29,6 +29,7 @@ export const COUNTRIES = [
     id: "country-us",
     code: "US",
     slug: "us",
+    aliases: ["united-states", "usa"],
     name: "United States",
     nameEs: "Estados Unidos",
     defaultLocale: "en-US",
@@ -38,7 +39,8 @@ export const COUNTRIES = [
   {
     id: "country-mx",
     code: "MX",
-    slug: "mexico",
+    slug: "mx",
+    aliases: ["mexico"],
     name: "Mexico",
     nameEs: "México",
     defaultLocale: "es-MX",

@@ -1,0 +1,33 @@
+/* ============================================================
+   COMPONENTS — Generic cards (.card, .card--*)
+   ============================================================ */
+
+.card {
+  border: 1px solid var(--vc-border);
+  background: var(--vc-card-bg);
+  border-radius: var(--traffic-radius-md);
+  padding: var(--traffic-space-4);
+  box-shadow: var(--vc-shadow-card);
+  backdrop-filter: var(--vc-backdrop-blur);
+}
+
+.card--hero {
+  border-color: var(--vc-border-strong);
+  background:
+    radial-gradient(85% 70% at 14% -8%, rgba(139, 92, 246, 0.16), transparent 70%),
+    radial-gradient(70% 45% at 90% 16%, rgba(78, 164, 255, 0.16), transparent 72%),
+    var(--vc-card-bg-blue);
+  box-shadow: var(--vc-shadow-elevated);
+}
+
+.card--cta {
+  border-color: rgba(139, 92, 246, 0.32);
+  background:
+    linear-gradient(145deg, rgba(139, 92, 246, 0.16), rgba(11, 11, 15, 0.96) 48%, rgba(78, 164, 255, 0.14)),
+    var(--vc-card-bg);
+}
+
+.card--subtle {
+  border-color: var(--vc-border-subtle);
+  background: var(--vc-card-bg);
+}

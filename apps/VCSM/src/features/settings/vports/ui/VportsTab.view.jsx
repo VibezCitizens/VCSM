@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AlertTriangle, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { useTranslation } from '@i18n'
 
 import Card from '@/features/settings/ui/Card'
 import OnemoredaysAd from '@/features/ads/adapters/widgets/OnemoredaysAd.adapter'
@@ -44,6 +45,7 @@ export default function VportsTabView() {
     setBusinessCardPublished,
   } = useVportsController()
 
+  const { t } = useTranslation()
   const [hardDeleteConfirmText, setHardDeleteConfirmText] = useState('')
   const [unpublishTarget, setUnpublishTarget] = useState(null)
   const [copiedId, setCopiedId] = useState(null)
@@ -82,7 +84,7 @@ export default function VportsTabView() {
   return (
     <div className="space-y-5">
       <Card>
-        <div className="mb-3 text-sm font-semibold text-white">Your Profile</div>
+        <div className="mb-3 text-sm font-semibold text-white">{t('settings.vports.yourProfile')}</div>
         <button
           onClick={() => switchToProfile(profileActorId, setBusy)}
           disabled={busy || activeActor === 'profile'}
@@ -94,24 +96,24 @@ export default function VportsTabView() {
           ].join(' ')}
         >
           <span className="font-medium text-white">
-            {activeActor === 'profile' ? 'Current Profile' : 'Switch to My Profile'}
+            {activeActor === 'profile' ? t('settings.vports.currentProfile') : t('settings.vports.switchToMyProfile')}
           </span>
-          <span className="settings-vport-tag px-2 py-0.5 text-[10px] uppercase">Profile</span>
+          <span className="settings-vport-tag px-2 py-0.5 text-[10px] uppercase">{t('settings.vports.profileTag')}</span>
         </button>
       </Card>
 
       <Card>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-semibold text-white">Your VPORTs</div>
+          <div className="text-sm font-semibold text-white">{t('settings.vports.yourVports')}</div>
           <button onClick={() => setShowCreator(true)} className="settings-btn settings-btn--ghost inline-flex items-center gap-2 px-3 py-1.5 text-xs">
             <Plus className="h-4 w-4" />
-            Create VPORT
+            {t('settings.vports.createVport')}
           </button>
         </div>
 
         {!activeVports.length ? (
           <div className="settings-card-surface rounded-xl px-4 py-3 text-sm text-white/50">
-            {deactivatedVports.length > 0 ? 'No active VPORTs. See deactivated VPORTs below.' : 'You do not own any VPORTs yet.'}
+            {deactivatedVports.length > 0 ? t('settings.vports.noActiveVports') : t('settings.vports.noVportsYet')}
           </div>
         ) : (
           <ul className="m-0 grid list-none grid-cols-1 gap-2.5 p-0">
@@ -150,7 +152,7 @@ export default function VportsTabView() {
                         isActive ? 'opacity-90' : '',
                       ].join(' ')}
                     >
-                      {isActive ? 'Current' : 'Switch'}
+                      {isActive ? t('settings.vports.current') : t('settings.vports.switch')}
                     </button>
                   </div>
                 </li>
@@ -167,7 +169,7 @@ export default function VportsTabView() {
         >
           <div className="flex items-center gap-2 px-4 py-3.5" style={{ borderBottom: '1px solid rgba(217,119,6,0.15)' }}>
             <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: '#fbbf24' }} />
-            <span className="text-sm font-semibold" style={{ color: '#fcd34d' }}>Deactivated VPORTs</span>
+            <span className="text-sm font-semibold" style={{ color: '#fcd34d' }}>{t('settings.vports.deactivatedVports')}</span>
           </div>
           <div className="space-y-2 p-3">
             {deactivatedVports.map(v => (
@@ -194,14 +196,14 @@ export default function VportsTabView() {
                     style={{ color: '#fcd34d', borderColor: 'rgba(217,119,6,0.35)' }}
                   >
                     <RotateCcw className="mr-1 inline h-3 w-3" />
-                    Recover
+                    {t('settings.vports.recover')}
                   </button>
                   <button
                     onClick={() => { setHardDeleteConfirmText(''); setHardDeleteTarget(v) }}
                     className="settings-btn settings-btn--danger shrink-0 px-2.5 py-1.5 text-xs"
                   >
                     <Trash2 className="mr-1 inline h-3 w-3" />
-                    Delete
+                    {t('actions.delete')}
                   </button>
                 </div>
               </div>

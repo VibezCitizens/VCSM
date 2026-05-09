@@ -1,0 +1,36 @@
+{
+  "tabs": {
+    "photos": "Photos",
+    "videos": "Videos",
+    "posts": "Vibes",
+    "friends": "Friends",
+    "tags": "Tags"
+  },
+  "header": {
+    "failedToLoad": "Failed to load profile.",
+    "videosSoon": "Videos - coming soon",
+    "noBio": "No bio provided.",
+    "subscribers": "{{count}} Subscribers"
+  },
+  "tags": {
+    "title": "Tags",
+    "selected": "{{count}} selected",
+    "noTagsYet": "No tags yet",
+    "addTag": "+ Add Tag",
+    "failedToLoad": "Failed to load tags."
+  },
+  "privateGate": {
+    "badge": "Access Controlled",
+    "title": "Private Profile",
+    "subtitle": "Subscriber approval is required to access protected profile content.",
+    "instructionBefore": "Tap",
+    "instructionAfter": "in the header to submit an access request. Access is granted automatically after approval.",
+    "messagingPending": "Messaging remains available while access is pending."
+  },
+  "actions": {
+    "subscribe": "Subscribe",
+    "unsubscribe": "Unsubscribe",
+    "requested": "Requested",
+    "message": "Message"
+  }
+}

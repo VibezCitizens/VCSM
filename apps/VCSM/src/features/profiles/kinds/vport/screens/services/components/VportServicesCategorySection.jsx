@@ -1,5 +1,6 @@
 // src/features/profiles/kinds/vport/screens/services/components/VportServicesCategorySection.jsx
 import React from "react";
+import { useTranslation } from "@i18n";
 import VportServiceBadge from "./VportServiceBadge";
 
 export default function VportServicesCategorySection({
@@ -10,6 +11,7 @@ export default function VportServicesCategorySection({
   onToggleService = null, // ({ key, enabled }) => void
   onEditServiceMeta = null, // ({ key }) => void
 }) {
+  const { t } = useTranslation();
   if (!items?.length) return null;
 
   const canToggle = typeof onToggleService === "function";
@@ -22,7 +24,7 @@ export default function VportServicesCategorySection({
           {title || "Other"}
         </div>
         <div className="rounded-full border border-white/12 bg-white/[0.03] px-2.5 py-1 text-[11px] font-semibold text-white/85">
-          {items.length} {items.length === 1 ? "service" : "services"}
+          {items.length} {items.length === 1 ? t('vport.servicesView.service') : t('vport.servicesView.services')}
         </div>
       </div>
 

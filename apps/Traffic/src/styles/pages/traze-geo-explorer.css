@@ -1,0 +1,184 @@
+/* ============================================================
+   COMPONENT — Traze Geo Explorer (.tge-*)
+   ============================================================ */
+
+.tge-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.tge-country-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Country header (only shown when >1 country) ─────────── */
+
+.tge-country-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(220, 228, 255, 0.85);
+  letter-spacing: 0.02em;
+}
+
+.tge-country-code {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.48rem;
+  border-radius: 5px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(109, 70, 220, 0.15);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: rgba(200, 185, 255, 0.9);
+}
+
+.tge-country-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(220, 228, 255, 0.9);
+}
+
+.tge-country-meta {
+  font-size: 0.72rem;
+  color: rgba(160, 175, 220, 0.5);
+}
+
+/* ── State list ───────────────────────────────────────────── */
+
+.tge-state-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tge-state-group {
+  border-radius: 10px;
+  border: 1px solid rgba(129, 149, 208, 0.12);
+  background: rgba(18, 22, 42, 0.4);
+  overflow: hidden;
+}
+
+/* ── State toggle row ─────────────────────────────────────── */
+
+.tge-state-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 140ms ease;
+}
+
+.tge-state-toggle:hover {
+  background: rgba(109, 70, 220, 0.08);
+}
+
+.tge-state-code {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.42rem;
+  border-radius: 4px;
+  border: 1px solid rgba(129, 149, 208, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: rgba(181, 194, 230, 0.7);
+  flex-shrink: 0;
+}
+
+.tge-state-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(210, 218, 248, 0.9);
+  flex: 1;
+}
+
+.tge-state-meta {
+  font-size: 0.72rem;
+  color: rgba(160, 175, 220, 0.5);
+  white-space: nowrap;
+}
+
+.tge-state-chevron {
+  font-size: 1.1rem;
+  color: rgba(160, 175, 220, 0.45);
+  transition: transform 200ms ease;
+  transform: rotate(90deg);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tge-state-group--collapsed .tge-state-chevron {
+  transform: rotate(0deg);
+}
+
+/* ── City grid ────────────────────────────────────────────── */
+
+.tge-city-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem 0.85rem;
+}
+
+.tge-city-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(129, 149, 208, 0.16);
+  background: rgba(18, 22, 42, 0.7);
+  text-decoration: none;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.tge-city-chip:hover {
+  border-color: rgba(139, 92, 246, 0.38);
+  background: rgba(109, 70, 220, 0.1);
+}
+
+.tge-city-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(210, 218, 248, 0.88);
+}
+
+.tge-city-count {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(160, 170, 210, 0.55);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .tge-state-toggle {
+    padding: 0.65rem 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .tge-state-meta {
+    display: none;
+  }
+
+  .tge-city-grid {
+    padding: 0.4rem 0.85rem 0.7rem;
+  }
+}

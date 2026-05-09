@@ -1,75 +1,130 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
-import { useVportTeam } from "@/features/dashboard/vport/adapters/vport.adapter";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import { SkeletonCardList } from "@/shared/components/Skeleton";
-import { BarberPickerModal } from "@/features/dashboard/vport/screens/components/team/BarberPickerModal";
-import { renderMemberCard } from "@/features/dashboard/vport/screens/components/team/TeamMemberCards";
+import { useVportTeamAccess } from "@/features/dashboard/vport/hooks/useVportTeamAccess";
+import { TeamMemberCard } from "@/features/dashboard/vport/screens/components/team/TeamMemberCards";
+import { AddTeamMemberSheet } from "@/features/dashboard/vport/screens/components/team/AddTeamMemberSheet";
+import { ConfirmRemoveModal } from "@/features/dashboard/vport/screens/components/team/ConfirmRemoveModal";
 
 export function VportDashboardTeamScreen() {
   const navigate = useNavigate();
-  const params = useParams();
+  const params   = useParams();
   const { identity, identityLoading } = useIdentity();
-  const actorId = useMemo(() => params?.actorId ?? null, [params]);
   const isDesktop = useDesktopBreakpoint();
 
+  const actorId       = useMemo(() => params?.actorId ?? null, [params]);
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const isOwner       = Boolean(actorId) && Boolean(viewerActorId) && String(viewerActorId) === String(actorId);
 
-  const isBarbershop = identity?.vportType === "barbershop";
+  const { members, loading, error, addMember, updateRole, setStatus, removeMember, searchCandidates } =
+    useVportTeamAccess(actorId, isOwner);
 
-  const { members, loading, error, adding, addError, findEligibleBarbers, sendRequest, removeMember } =
-    useVportTeam(isOwner ? actorId : null);
+  const [showAddSheet,  setShowAddSheet]  = useState(false);
+  const [adding,        setAdding]        = useState(false);
+  const [pendingRemove, setPendingRemove] = useState(null);
+  const [removing,      setRemoving]      = useState(false);
+  const [removeError,   setRemoveError]   = useState("");
+  const [mutateError,   setMutateError]   = useState("");
 
-  const [showModal, setShowModal] = useState(false);
-  const [removingId, setRemovingId] = useState(null);
-  const [removeError, setRemoveError] = useState("");
+  const activeMembers   = useMemo(() => members.filter((m) => m.status === "active"),   [members]);
+  const inactiveMembers = useMemo(() => members.filter((m) => m.status === "inactive"), [members]);
+  const pendingMembers  = useMemo(() => members.filter((m) => m.status === "pending"),  [members]);
+  const declinedMembers = useMemo(() => members.filter((m) => m.status === "declined"), [members]);
+
+  const handleAdd = useCallback(async (payload) => {
+    setAdding(true);
+    setMutateError("");
+    try {
+      await addMember(payload);
+      setShowAddSheet(false);
+    } catch (e) {
+      throw e;
+    } finally {
+      setAdding(false);
+    }
+  }, [addMember]);
+
+  const handleUpdateRole = useCallback(async ({ resourceId, role }) => {
+    setMutateError("");
+    try {
+      await updateRole({ resourceId, role });
+    } catch (e) {
+      setMutateError(e?.message || "Failed to update role.");
+      throw e;
+    }
+  }, [updateRole]);
+
+  const handleSetStatus = useCallback(async ({ resourceId, status }) => {
+    setMutateError("");
+    try {
+      await setStatus({ resourceId, status });
+    } catch (e) {
+      setMutateError(e?.message || "Failed to update status.");
+      throw e;
+    }
+  }, [setStatus]);
+
+  const handleRemoveRequest = useCallback((member) => {
+    setRemoveError("");
+    setPendingRemove(member);
+  }, []);
+
+  const handleRemoveConfirm = useCallback(async () => {
+    if (!pendingRemove) return;
+    setRemoving(true);
+    setRemoveError("");
+    try {
+      await removeMember({ resourceId: pendingRemove.resource_id });
+      setPendingRemove(null);
+    } catch (e) {
+      setRemoveError(e?.message || "Failed to remove member.");
+    } finally {
+      setRemoving(false);
+    }
+  }, [pendingRemove, removeMember]);
 
   if (!actorId) return null;
 
   if (identityLoading) {
     return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
-
   if (!identity) {
     return <div className="p-10 text-center text-white/50">Sign in required.</div>;
   }
-
   if (!isOwner) {
     return <div className="p-10 text-center text-white/50">You can only manage your own team.</div>;
   }
 
-  async function handleSelect(barberVportActorId, barberVportName) {
-    try {
-      await sendRequest(barberVportActorId, barberVportName);
-      setShowModal(false);
-    } catch {
-      // addError set in hook
-    }
-  }
-
-  async function handleRemove(resourceId) {
-    setRemovingId(resourceId);
-    setRemoveError("");
-    try {
-      await removeMember(resourceId);
-    } catch (e) {
-      setRemoveError(e?.message || "Failed to remove.");
-    } finally {
-      setRemovingId(null);
-    }
-  }
-
-  const activeMembers = members.filter((m) => m.meta?.status !== "declined");
-  const declinedMembers = members.filter((m) => m.meta?.status === "declined");
   const shell = createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 1100 });
+
+  function MemberSection({ title, list }) {
+    if (!list.length) return null;
+    return (
+      <div style={{ display: "grid", gap: 8 }}>
+        {title && (
+          <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(148,163,184,.32)", letterSpacing: ".07em", paddingLeft: 2 }}>
+            {title}
+          </div>
+        )}
+        {list.map((m) => (
+          <TeamMemberCard
+            key={m.resource_id}
+            member={m}
+            isOwner={isOwner}
+            viewerActorId={viewerActorId}
+            onUpdateRole={handleUpdateRole}
+            onSetStatus={handleSetStatus}
+            onRemove={handleRemoveRequest}
+          />
+        ))}
+      </div>
+    );
+  }
 
   const content = (
     <div style={shell.page}>
@@ -81,58 +136,76 @@ export function VportDashboardTeamScreen() {
             <div style={shell.rightSpacer} />
           </div>
 
-          <div style={{ padding: 16 }} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="text-xs text-zinc-500">
-                {activeMembers.length} {activeMembers.length === 1 ? "member" : "members"}
+          <div style={{ padding: 16, paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 100px)", display: "grid", gap: 14 }}>
+
+            {/* Header row */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ fontSize: 12, color: "rgba(148,163,184,.42)" }}>
+                {activeMembers.length} {activeMembers.length === 1 ? "active member" : "active members"}
               </div>
-              {isBarbershop && (
-                <button
-                  type="button"
-                  onClick={() => setShowModal(true)}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-xl text-zinc-100"
-                  style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
-                >
-                  + Add barber
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowAddSheet(true)}
+                style={{
+                  height: 34, padding: "0 14px", borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: "pointer",
+                  border: "1px solid rgba(139,92,246,.3)",
+                  background: "rgba(139,92,246,.12)",
+                  color: "rgba(167,139,250,.9)",
+                }}
+              >
+                + Add Member
+              </button>
             </div>
 
+            {mutateError && (
+              <div style={{ borderRadius: 8, background: "rgba(239,68,68,.07)", border: "1px solid rgba(239,68,68,.16)", padding: "9px 12px", fontSize: 12, color: "#fca5a5" }}>
+                {mutateError}
+              </div>
+            )}
+
             {loading && <SkeletonCardList count={3} showBody={false} />}
-            {!loading && error && <p className="text-sm text-rose-400">{error}</p>}
-            {!loading && removeError && <p className="text-sm text-rose-400">{removeError}</p>}
+            {!loading && error && <div style={{ fontSize: 13, color: "#fca5a5" }}>{error}</div>}
 
-            {!loading && !error && activeMembers.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 gap-2">
-                <div className="text-zinc-500 text-sm font-medium">No barbers yet.</div>
-                <div className="text-zinc-600 text-xs">Add barbers who follow this shop.</div>
+            {!loading && !error && members.length === 0 && (
+              <div style={{
+                borderRadius: 14, border: "1px dashed rgba(139,92,246,.14)",
+                padding: "36px 20px", textAlign: "center", display: "grid", gap: 8,
+              }}>
+                <div style={{ fontSize: 13, color: "rgba(148,163,184,.42)" }}>No team members yet.</div>
+                <div style={{ fontSize: 12, color: "rgba(148,163,184,.28)" }}>Add members to collaborate on this vport.</div>
               </div>
             )}
 
-            {!loading && !error && activeMembers.length > 0 && (
-              <div className="space-y-2">
-                {activeMembers.map((m) => renderMemberCard(m, { onRemove: handleRemove, removingId }))}
-              </div>
+            {!loading && !error && (
+              <>
+                <MemberSection list={activeMembers} />
+                <MemberSection title="PENDING" list={pendingMembers} />
+                <MemberSection title="INACTIVE" list={inactiveMembers} />
+                <MemberSection title="DECLINED" list={declinedMembers} />
+              </>
             )}
 
-            {!loading && !error && declinedMembers.length > 0 && (
-              <div className="space-y-2 mt-4">
-                <div className="text-xs text-zinc-700 px-1">Declined</div>
-                {declinedMembers.map((m) => renderMemberCard(m, { onRemove: handleRemove, removingId }))}
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {showModal && (
-        <BarberPickerModal
-          actorId={actorId}
+      {showAddSheet && (
+        <AddTeamMemberSheet
+          onAdd={handleAdd}
+          onClose={() => setShowAddSheet(false)}
+          searchCandidates={searchCandidates}
           adding={adding}
-          addError={addError}
-          findEligibleBarbers={findEligibleBarbers}
-          onSelect={handleSelect}
-          onClose={() => setShowModal(false)}
+          isDesktop={isDesktop}
+        />
+      )}
+
+      {pendingRemove && (
+        <ConfirmRemoveModal
+          member={pendingRemove}
+          removing={removing}
+          error={removeError}
+          onConfirm={handleRemoveConfirm}
+          onCancel={() => { setPendingRemove(null); setRemoveError(""); }}
         />
       )}
     </div>

@@ -36,8 +36,7 @@ import {
   countryPath,
   countryProviderPath,
   countryServiceHubPath,
-  neighborhoodServicePath,
-  providerPath
+  neighborhoodServicePath
 } from "@/lib/paths";
 
 /**
@@ -256,18 +255,6 @@ function listLegacyPageCandidates() {
         }
       }
     }
-  }
-
-  for (const provider of listProviders()) {
-    if (!isProviderIndexable(provider)) {
-      continue;
-    }
-
-    pages.push({
-      pageType: "provider",
-      path: providerPath(provider.slug),
-      updatedAt: getProviderUpdatedAt(provider)
-    });
   }
 
   return pages;

@@ -1,7 +1,9 @@
 import React from 'react'
 import { Trash2 } from 'lucide-react'
+import { useTranslation } from '@i18n'
 
 export default function CardInbox({ entry, onClick, onDelete, showThreadPreview = true }) {
+  const { t } = useTranslation()
   if (!entry) return null
 
   const {
@@ -36,7 +38,7 @@ export default function CardInbox({ entry, onClick, onDelete, showThreadPreview 
 
             {showThreadPreview && (
               <span className={`mt-0.5 truncate text-xs ${hasUnread ? 'text-white/70' : 'text-white/40'}`} title={preview || ''}>
-                {preview || 'No Vox yet'}
+                {preview || t('vox.inbox.noVoxYet')}
               </span>
             )}
           </div>
@@ -56,7 +58,7 @@ export default function CardInbox({ entry, onClick, onDelete, showThreadPreview 
                 onDelete(conversationId)
               }}
               className="module-modern-btn module-modern-btn--ghost p-2 text-white/70"
-              aria-label="Delete Vox"
+              aria-label={t('vox.inbox.deleteVox')}
             >
               <Trash2 size={16} />
             </button>

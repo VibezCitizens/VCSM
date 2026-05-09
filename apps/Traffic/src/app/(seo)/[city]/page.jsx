@@ -1,10 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   listCityStaticParams,
   listCountryStaticParams
 } from "@/data/repositories/staticParams.repo";
 import { resolvePage, buildCountryMetadata, buildLegacyCityMetadata } from "./_graph";
 import { renderCountryPage, renderLegacyCityPage } from "./_renderers";
+import { countryPath } from "@/lib/paths";
 
 function dedupeCityParams(entries) {
   const seen = new Set();
@@ -48,6 +49,10 @@ export default function CityPage({ params }) {
   }
 
   if (graph.routeMode === "country") {
+    if (params.city !== graph.country.slug) {
+      redirect(countryPath(graph.country.slug));
+    }
+
     return renderCountryPage(graph);
   }
 

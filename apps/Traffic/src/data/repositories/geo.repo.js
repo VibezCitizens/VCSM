@@ -6,7 +6,13 @@ export function listCountries() {
 }
 
 export function getCountryBySlug(countrySlug) {
-  return listCountries().find((country) => slugEquals(country.slug, countrySlug)) ?? null;
+  const rawSlug = String(countrySlug ?? "").trim();
+  if (!rawSlug) return null;
+
+  return listCountries().find((country) =>
+    slugEquals(country.slug, rawSlug) ||
+    (Array.isArray(country.aliases) && country.aliases.some((alias) => slugEquals(alias, rawSlug)))
+  ) ?? null;
 }
 
 export function getCountryByCode(countryCode) {

@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
+import { useTranslation } from '@i18n'
 import { useMyBlocks } from '@/features/settings/privacy/hooks/useMyBlocks'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 
 export default function BlockedUsersSimple() {
+  const { t } = useTranslation()
   const { loading, error, blocks, unblock, refresh } = useMyBlocks()
 
   const empty = useMemo(() => !loading && (!blocks || blocks.length === 0), [loading, blocks])
@@ -10,16 +12,16 @@ export default function BlockedUsersSimple() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-xs text-white/50">{loading ? 'Loading...' : `${blocks.length} blocked`}</div>
+        <div className="text-xs text-white/50">{loading ? t('settings.loading') : t('settings.privacy.nBlocked', { count: blocks.length })}</div>
 
         <button onClick={refresh} className="settings-btn settings-btn--ghost px-3 py-1.5 text-xs">
-          Refresh
+          {t('actions.refresh')}
         </button>
       </div>
 
       {error && <div className="text-xs text-rose-300">{error}</div>}
 
-      {empty && <div className="text-sm italic text-white/40">You have not blocked any Citizens.</div>}
+      {empty && <div className="text-sm italic text-white/40">{t('settings.privacy.noBlockedCitizens')}</div>}
 
       <div className="grid gap-3">
         {blocks.map((b) => (
@@ -36,6 +38,7 @@ export default function BlockedUsersSimple() {
 }
 
 function BlockedUserCard({ actorId, onUnblock, busy }) {
+  const { t } = useTranslation()
   const actor = useActorSummary(actorId)
 
   return (
@@ -60,7 +63,7 @@ function BlockedUserCard({ actorId, onUnblock, busy }) {
         disabled={busy}
         className={`settings-btn px-3 py-1.5 text-xs ${busy ? 'border border-white/12 text-white/40' : 'settings-btn--danger'}`}
       >
-        Unblock
+        {t('settings.privacy.unblock')}
       </button>
     </div>
   )

@@ -1,6 +1,7 @@
 import { AnswerCard } from "@/features/answers/components/AnswerCard";
 import { AnswerSeoJsonLd } from "@/features/answers/components/AnswerSeoJsonLd";
 import { QuestionHeader } from "@/features/answers/components/QuestionHeader";
+import { AnswerDetailNotFound } from "@/features/answers/components/AnswerDetailNotFound";
 import { useAnswerPage } from "@/features/answers/hooks/useAnswerPage";
 
 export async function AnswerDetailView({ slug }) {
@@ -12,11 +13,7 @@ export async function AnswerDetailView({ slug }) {
       <AnswerSeoJsonLd page={page} />
       <QuestionHeader question={page.question} topic={page.topic} seo={page.seo} />
       {result.status === "not_found" ? (
-        <section className="answers-detail__empty">
-          <h2>We could not find that answer.</h2>
-          <p>The answer may not exist yet, or the slug may have changed before publication.</p>
-          <a href="/answers">Browse TRAZE Answers</a>
-        </section>
+        <AnswerDetailNotFound />
       ) : (
         <AnswerCard answer={page.answer} />
       )}

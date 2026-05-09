@@ -3,6 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@chat": ["../../engines/chat/index.js"],
+      "@i18n": ["../../engines/i18n/index.js"],
+      "@i18n/*": ["../../engines/i18n/*"],
       "@/*": ["src/*"]
     },
     "jsx": "react-jsx",

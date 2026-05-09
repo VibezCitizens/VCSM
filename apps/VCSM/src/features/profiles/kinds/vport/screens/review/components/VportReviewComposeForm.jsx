@@ -1,5 +1,6 @@
 import React from "react";
 import { Star, MessageSquare } from "lucide-react";
+import { useTranslation } from "@i18n";
 import { InputStars } from "@/features/profiles/kinds/vport/screens/review/components/VportReviewStars";
 
 export function VportReviewComposeForm({
@@ -26,16 +27,18 @@ export function VportReviewComposeForm({
   onStartEdit,
   onCancelEdit,
 }) {
+  const { t } = useTranslation();
+
   if (canCompose && myExists && !isEditing) {
     return (
       <div className="mt-5 flex items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
-        <div className="text-sm text-white/60">You've already reviewed this place.</div>
+        <div className="text-sm text-white/60">{t('vport.reviewsView.alreadyReviewed')}</div>
         <button
           type="button"
           onClick={onStartEdit}
           className="rounded-full border border-sky-300/35 bg-sky-300/10 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-300/18 transition-colors"
         >
-          Edit my review
+          {t('vport.reviewsView.editMyReview')}
         </button>
       </div>
     );
@@ -47,10 +50,10 @@ export function VportReviewComposeForm({
       return (
         <div className="mt-5 rounded-xl border border-white/6 bg-white/[0.02] px-4 py-3 text-sm text-white/40">
           {!sessionActorId
-            ? "Sign in to leave a review."
+            ? t('vport.reviewsView.signInToReview')
             : !reviewAuthorActorId
-              ? "Switch to your personal profile to leave a review."
-              : "You can't review your own page."}
+              ? t('vport.reviewsView.switchToPersonal')
+              : t('vport.reviewsView.cantReviewOwn')}
         </div>
       );
     }
@@ -61,10 +64,10 @@ export function VportReviewComposeForm({
     <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
       <div className="mb-4">
         <div className="text-base font-semibold text-white">
-          {isEditing ? "Edit your review" : "Write a review"}
+          {isEditing ? t('vport.reviewsView.editReview') : t('vport.reviewsView.writeReview')}
         </div>
         <div className="mt-1 text-xs text-white/45">
-          Rate each category below, then add an optional comment.
+          {t('vport.reviewsView.rateEachCategory')}
         </div>
       </div>
 
@@ -141,7 +144,7 @@ export function VportReviewComposeForm({
       <textarea
         className="w-full min-h-20 resize-none rounded-xl border border-white/8 bg-black/20 p-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-white/20 transition-colors"
         rows={3}
-        placeholder="Share your experience — what stood out?"
+        placeholder={t('vport.reviewsView.commentPlaceholder')}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
@@ -167,7 +170,7 @@ export function VportReviewComposeForm({
               onClick={onCancelEdit}
               className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 hover:bg-white/10 transition-colors"
             >
-              Cancel
+              {t('vport.reviewsView.cancel')}
             </button>
           ) : null}
           <button
@@ -183,7 +186,7 @@ export function VportReviewComposeForm({
                   : "border border-sky-300/40 bg-sky-300/15 text-sky-100 hover:bg-sky-300/22",
             ].join(" ")}
           >
-            {submitting ? "Submitting..." : isEditing ? "Update review" : "Submit review"}
+            {submitting ? t('vport.reviewsView.submitting') : isEditing ? t('vport.reviewsView.updateReview') : t('vport.reviewsView.submitReview')}
           </button>
         </div>
       </div>

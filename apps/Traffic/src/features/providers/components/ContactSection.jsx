@@ -59,7 +59,7 @@ export function ContactSection({
   lat,
   lng
 }) {
-  const { lang } = useTrafficLanguage();
+  const { t } = useTrafficLanguage();
 
   const addressLines = buildAddressLines(address, locationText, cityName, regionCode, postalCode);
   const hasPhone = Boolean(phone);
@@ -75,16 +75,16 @@ export function ContactSection({
   return (
     <section
       className="card card--subtle pro-contact"
-      aria-label={lang === "es" ? "Información de contacto" : "Contact information"}
+      aria-label={t("providerProfile.contactInformation")}
     >
       <h2 className="pro-section-title">
-        {lang === "es" ? "Contacto" : "Contact"}
+        {t("providerProfile.contact")}
       </h2>
       <ul className="pro-contact-list">
         {hasPhone ? (
           <li className="pro-contact-row">
             <span className="pro-contact-label">
-              {lang === "es" ? "Teléfono" : "Phone"}
+              {t("common.phone")}
             </span>
             <a href={`tel:${phone}`} className="pro-contact-value pro-contact-link">
               {formatPhone(phone)}
@@ -94,7 +94,7 @@ export function ContactSection({
         {hasEmail ? (
           <li className="pro-contact-row">
             <span className="pro-contact-label">
-              {lang === "es" ? "Correo" : "Email"}
+              {t("common.email")}
             </span>
             <a href={`mailto:${email}`} className="pro-contact-value pro-contact-link">
               {email}
@@ -104,7 +104,7 @@ export function ContactSection({
         {hasWebsite ? (
           <li className="pro-contact-row">
             <span className="pro-contact-label">
-              {lang === "es" ? "Sitio web" : "Website"}
+              {t("common.website")}
             </span>
             <a
               href={websiteUrl}
@@ -119,7 +119,7 @@ export function ContactSection({
         {hasBooking ? (
           <li className="pro-contact-row">
             <span className="pro-contact-label">
-              {lang === "es" ? "Reserva" : "Booking"}
+              {t("common.booking")}
             </span>
             <a
               href={bookingUrl}
@@ -127,14 +127,14 @@ export function ContactSection({
               target="_blank"
               rel="noreferrer noopener"
             >
-              {lang === "es" ? "Reservar en línea" : "Book online"}
+              {t("providerProfile.bookOnline")}
             </a>
           </li>
         ) : null}
         {hasAddress ? (
           <li className="pro-contact-row">
             <span className="pro-contact-label">
-              {lang === "es" ? "Dirección" : "Address"}
+              {t("common.address")}
             </span>
             <address className="pro-contact-value pro-contact-address">
               {addressLines.map((line) => (
@@ -152,7 +152,7 @@ export function ContactSection({
               target="_blank"
               rel="noreferrer noopener"
             >
-              {lang === "es" ? "Cómo llegar ↗" : "Get directions ↗"}
+              {t("providerProfile.getDirections")}
             </a>
           </li>
         ) : null}

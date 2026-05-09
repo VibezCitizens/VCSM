@@ -1,0 +1,14 @@
+.dashboard-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dashboard-grid--primary,
+.dashboard-grid--deep {
+  grid-template-columns: minmax(0, 1.65fr) minmax(280px, 0.85fr);
+}
+
+.dashboard-grid--secondary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}

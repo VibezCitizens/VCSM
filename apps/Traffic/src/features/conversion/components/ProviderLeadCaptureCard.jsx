@@ -19,7 +19,7 @@ export default function ProviderLeadCaptureCard({
   supabaseUrl,
   supabaseAnonKey
 }) {
-  const { lang } = useTrafficLanguage();
+  const { t } = useTrafficLanguage();
 
   const {
     values,
@@ -43,63 +43,53 @@ export default function ProviderLeadCaptureCard({
   return (
     <section
       className="card card--cta pro-cta"
-      aria-label={lang === "es" ? "Contactar proveedor" : "Contact provider"}
+      aria-label={t("leadCapture.contactProviderAria")}
     >
       <h2 className="pro-cta-title">
-        {lang === "es" ? "Contactar este proveedor" : "Contact this provider"}
+        {t("leadCapture.contactProviderTitle")}
       </h2>
-      <p className="pro-cta-desc">
-        {lang === "es"
-          ? "Envía un mensaje y te responderán"
-          : "Send a message and they'll get back to you"}
-      </p>
+      <p className="pro-cta-desc">{t("leadCapture.contactProviderBody")}</p>
 
       <div className="pro-lead-quick-actions">
         {phoneHref ? (
           <a className="btn btn--ghost" href={phoneHref}>
-            {lang === "es" ? "Llamar ahora" : "Call now"}
+            {t("leadCapture.callNow")}
           </a>
         ) : (
           <button className="btn btn--ghost" type="button" disabled>
-            {lang === "es" ? "Llamar ahora" : "Call now"}
+            {t("leadCapture.callNow")}
           </button>
         )}
-        <a className="btn btn--primary" href={profileHref} target="_blank" rel="noreferrer">
-          {lang === "es" ? "Ver perfil completo" : "View full profile"}
-        </a>
+        {profileHref ? (
+          <a className="btn btn--primary" href={profileHref} target="_blank" rel="noreferrer">
+            {t("leadCapture.viewFullProfile")}
+          </a>
+        ) : null}
       </div>
 
       {isSubmitted ? (
         <div className="pro-lead-success" role="status" aria-live="polite">
           <p className="pro-lead-success-title">
-            {lang === "es" ? "Mensaje enviado ✅" : "Message sent ✅"}
+            {t("leadCapture.messageSent")}
           </p>
-          <p className="pro-lead-success-copy">
-            {lang === "es"
-              ? "El proveedor te contactará pronto."
-              : "The provider will contact you soon."}
-          </p>
+          <p className="pro-lead-success-copy">{t("leadCapture.messageSentBody")}</p>
         </div>
       ) : isUnavailable ? (
         <div className="pro-lead-success" role="status" aria-live="polite">
           <p className="pro-lead-success-title">
-            {lang === "es" ? "Contacto no disponible" : "Contact unavailable"}
+            {t("leadCapture.contactUnavailable")}
           </p>
           <p className="pro-lead-success-copy">
             {phoneHref
-              ? (lang === "es"
-                  ? "Este proveedor no está recibiendo mensajes aquí. Llámales o revisa su perfil completo."
-                  : "This provider isn't accepting messages here right now. Give them a call or view their full profile.")
-              : (lang === "es"
-                  ? "Este proveedor no está recibiendo mensajes aquí. Ve a su perfil para contactarles."
-                  : "This provider isn't accepting messages here right now. View their full profile to get in touch.")}
+              ? t("leadCapture.unavailableWithPhone")
+              : t("leadCapture.unavailableNoPhone")}
           </p>
         </div>
       ) : (
         <form className="pro-lead-form" onSubmit={handleSubmit} noValidate>
           <label className="pro-lead-field" htmlFor="lead-name">
             <span className="pro-lead-label">
-              {lang === "es" ? "Nombre" : "Name"}
+              {t("common.name")}
             </span>
             <input
               id="lead-name"
@@ -114,7 +104,7 @@ export default function ProviderLeadCaptureCard({
 
           <label className="pro-lead-field" htmlFor="lead-phone">
             <span className="pro-lead-label">
-              {lang === "es" ? "Teléfono" : "Phone"}
+              {t("common.phone")}
             </span>
             <input
               id="lead-phone"
@@ -130,7 +120,7 @@ export default function ProviderLeadCaptureCard({
 
           <label className="pro-lead-field" htmlFor="lead-email">
             <span className="pro-lead-label">
-              {lang === "es" ? "Correo" : "Email"}
+              {t("common.email")}
             </span>
             <input
               id="lead-email"
@@ -139,13 +129,13 @@ export default function ProviderLeadCaptureCard({
               onChange={(event) => setField("email", event.target.value)}
               autoComplete="email"
               inputMode="email"
-              placeholder={lang === "es" ? "Opcional" : "Optional"}
+              placeholder={t("common.optional")}
             />
           </label>
 
           <label className="pro-lead-field" htmlFor="lead-message">
             <span className="pro-lead-label">
-              {lang === "es" ? "Mensaje" : "Message"}
+              {t("common.message")}
             </span>
             <textarea
               id="lead-message"
@@ -167,15 +157,15 @@ export default function ProviderLeadCaptureCard({
 
           <button className="btn btn--primary pro-lead-submit" type="submit" disabled={isSubmitting}>
             {isSubmitting
-              ? (lang === "es" ? "Enviando..." : "Sending...")
-              : (lang === "es" ? "Enviar solicitud" : "Send request")}
+              ? t("leadCapture.sending")
+              : t("leadCapture.sendRequest")}
           </button>
         </form>
       )}
 
       {claimStatus !== "claimed" && claimLink ? (
         <a className="btn btn--claim" href={claimLink} target="_blank" rel="noreferrer">
-          {lang === "es" ? "Reclamar este perfil" : "Claim This Profile"}
+          {t("leadCapture.claimThisProfile")}
         </a>
       ) : null}
     </section>

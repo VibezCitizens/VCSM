@@ -1,29 +1,28 @@
 // src/features/profiles/screens/views/ActorProfileTabs.jsx
 import { useMemo } from 'react'
+import { useTranslation } from '@i18n'
 
-const BASE_TABS = [
-  { key: 'photos', label: 'Photos' },
-  { key: 'videos', label: 'Videos' },
-  { key: 'posts', label: 'Vibes' },
-  { key: 'friends', label: 'Friends' },
+const TAB_KEYS = [
+  { key: 'photos',  tKey: 'profile.tabs.photos'  },
+  { key: 'videos',  tKey: 'profile.tabs.videos'  },
+  { key: 'posts',   tKey: 'profile.tabs.posts'   },
+  { key: 'friends', tKey: 'profile.tabs.friends' },
 ]
 
-export default function ActorProfileTabs({
-  tab,
-  setTab,
-  includeTags = false,
-}) {
-  const tabs = useMemo(
-    () =>
-      includeTags
-        ? [
-            ...BASE_TABS.slice(0, 3),
-            { key: 'tags', label: 'Tags' },
-            BASE_TABS[3],
-          ]
-        : BASE_TABS,
-    [includeTags]
-  )
+export default function ActorProfileTabs({ tab, setTab, includeTags = false }) {
+  const { t } = useTranslation()
+
+  const tabs = useMemo(() => {
+    const base = TAB_KEYS.map(({ key, tKey }) => ({ key, label: t(tKey) }))
+    if (includeTags) {
+      return [
+        ...base.slice(0, 3),
+        { key: 'tags', label: t('profile.tabs.tags') },
+        base[3],
+      ]
+    }
+    return base
+  }, [includeTags, t])
 
   return (
     <div className="mt-4 px-4 relative z-30">

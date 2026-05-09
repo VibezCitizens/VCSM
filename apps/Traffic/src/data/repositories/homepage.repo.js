@@ -1,82 +1,15 @@
-import { fetchVportHomepageRows } from "@/data/connectors/vportHomepage.connector";
-import { getCityBySlug, listCities } from "@/data/repositories/city.repo";
+import { getProviderStats } from "@/data/repositories/aggregate.repo";
+import { getCityBySlug } from "@/data/repositories/city.repo";
 import { getCountryByCode, getCountryById } from "@/data/repositories/geo.repo";
-import { countryCityServicePath, countryProviderPath } from "@/lib/paths";
-import { normalizeSlug } from "@/lib/slugs";
-
-const FALLBACK_CATEGORIES = [
-  {
-    id: "barbers",
-    label: "Barbers",
-    blurb: "Haircuts, fades, and beard trims.",
-    href: "/us/san-francisco/barber",
-    status: "Live"
-  },
-  {
-    id: "locksmiths",
-    label: "Locksmiths",
-    blurb: "Lockouts, rekey, and key replacement.",
-    href: "/us/san-francisco/locksmith",
-    status: "Live"
-  },
-  {
-    id: "restaurants",
-    label: "Restaurants",
-    blurb: "Dining listings and booking slots.",
-    href: null,
-    status: "Launching"
-  },
-  {
-    id: "gas-stations",
-    label: "Gas Stations",
-    blurb: "Nearby stations and service info.",
-    href: null,
-    status: "Launching"
-  },
-  {
-    id: "money-exchange",
-    label: "Money Exchange",
-    blurb: "Exchange points by city.",
-    href: null,
-    status: "Launching"
-  }
-];
-
-const KEY_TO_ROUTE_SERVICE = {
-  barber: "barber",
-  hairstylist: "barber",
-  barbershop: "barber",
-  esthetician: "barber",
-  locksmith: "locksmith"
-};
+import {
+  listProviders,
+  listServicesForProvider
+} from "@/data/repositories/provider.repo";
+import { getServiceById } from "@/data/repositories/service.repo";
+import { countryProviderPath } from "@/lib/paths";
 
 function toText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function toAddressObject(address) {
-  if (!address) {
-    return {};
-  }
-
-  if (typeof address === "string") {
-    try {
-      const parsed = JSON.parse(address);
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-        return parsed;
-      }
-    } catch {
-      return {};
-    }
-
-    return {};
-  }
-
-  if (typeof address === "object" && !Array.isArray(address)) {
-    return address;
-  }
-
-  return {};
 }
 
 function toTitleCase(raw) {
@@ -94,134 +27,75 @@ function toTitleCase(raw) {
     .join(" ");
 }
 
-function pickCountryCode(address, fallback = "US") {
-  const raw = toText(
-    address.country_code ?? address.countryCode ?? address.iso2 ?? address.country
-  ).toUpperCase();
-
-  if (/^[A-Z]{2}$/.test(raw)) {
-    return raw;
-  }
-
-  return fallback;
-}
-
-function categoryLabelForKey(categoryKey, categoryMap) {
-  const key = toText(categoryKey).toLowerCase();
-  if (!key) {
-    return "Local service";
-  }
-
-  const liveLabel = categoryMap.get(key);
-  if (liveLabel) {
-    return liveLabel;
-  }
-
-  return toTitleCase(key);
-}
-
-function buildLiveCategoryMap(categoryRows) {
-  const map = new Map();
-
-  categoryRows.forEach((row) => {
-    const key = toText(row?.key).toLowerCase();
-    if (!key) {
-      return;
-    }
-
-    const label = toText(row?.label) || toTitleCase(key);
-    map.set(key, label);
-  });
-
-  return map;
-}
-
-function buildLiveProviderCards({
-  profiles,
-  profileCategories,
-  publicTrazeProfiles,
-  categoryMap,
-  defaultCountrySlug
-}) {
-  const primaryCategoryByProfileId = new Map(
-    profileCategories
-      .filter((row) => row?.is_primary === true)
-      .map((row) => [String(row.profile_id), toText(row.category_key).toLowerCase()])
-  );
-
-  const trazeViewByProfileId = new Map(
-    publicTrazeProfiles.map((row) => [String(row.id), row])
-  );
-
-  const profileLikeRows = profiles.length > 0 ? profiles : publicTrazeProfiles;
-
-  return profileLikeRows
-    .map((profile) => {
-      const profileId = String(profile?.id ?? "").trim();
-      const trazeViewRow = trazeViewByProfileId.get(profileId) ?? profile;
-
-      const slug = normalizeSlug(profile?.slug ?? trazeViewRow?.slug);
-      const actorId = toText(profile?.actor_id ?? trazeViewRow?.actor_id) || null;
-
-      if (!profileId || !slug) {
-        return null;
-      }
-
-      const address = toAddressObject(trazeViewRow?.address);
-      const locationText = toText(trazeViewRow?.location_text) || null;
-      const city = toText(trazeViewRow?.city) || null;
-      const stateCode = toText(trazeViewRow?.state_code).toUpperCase() || null;
-
-      const countryCode = pickCountryCode(
-        {
-          ...address,
-          country_code: trazeViewRow?.city_country_code ?? trazeViewRow?.country_code ?? address.country_code,
-          country: address.country
-        },
-        "US"
-      );
-
-      const country = getCountryByCode(countryCode);
-      const countrySlug = country?.slug ?? defaultCountrySlug;
-
-      const categoryFromPrimary = primaryCategoryByProfileId.get(profileId);
-      const categoryFromView = toText(trazeViewRow?.category_key).toLowerCase();
-      const categoryKey = categoryFromPrimary ?? (categoryFromView || null);
-      const category = categoryLabelForKey(categoryKey, categoryMap);
-
-      const locationLabel = city
-        ? (stateCode ? (city + ", " + stateCode) : city)
-        : (locationText ?? null);
-
-      return {
-        id: profileId,
-        actorId,
-        profileId,
-        slug,
-        name: toText(profile?.name ?? trazeViewRow?.name) || slug,
-        category,
-        categoryKey,
-        city,
-        stateCode,
-        primaryCityName: city,
-        primaryRegionCode: stateCode,
-        locationText: locationLabel,
-        avatarUrl: toText(profile?.avatar_url ?? trazeViewRow?.avatar_url) || null,
-        bannerUrl: toText(profile?.banner_url ?? trazeViewRow?.banner_url) || null,
-        rating: null,
-        reviewCount: null,
-        responseTimeLabel: null,
-        nextAvailableLabel: null,
-        verified: false,
-        href: countryProviderPath(countrySlug, slug),
-        source: "live"
-      };
-    })
-    .filter(Boolean);
-}
-
 function normalizeCity(value) {
   return toText(value).toLowerCase();
+}
+
+function firstProviderService(providerId) {
+  const providerService = listServicesForProvider(providerId)[0] ?? null;
+  if (!providerService) return null;
+
+  const service = getServiceById(providerService.serviceId);
+  return service
+    ? { providerService, service }
+    : { providerService, service: null };
+}
+
+function formatLocationText(provider) {
+  const city = provider.primaryCityName ?? null;
+  const state = provider.primaryRegionCode ?? null;
+  const country = provider.primaryCountryCode ?? null;
+
+  if (city && state && country) return `${city}, ${state}, ${country}`;
+  if (city && country) return `${city}, ${country}`;
+  if (city) return city;
+  if (provider.locationText) return provider.locationText;
+  return country;
+}
+
+function buildHomepageProviderCard(provider) {
+  const country = getCountryByCode(provider.primaryCountryCode);
+  if (!country) return null;
+
+  const stats = getProviderStats(provider.id);
+  const serviceLink = firstProviderService(provider.id);
+  const service = serviceLink?.service ?? null;
+  const categoryKey = service?.slug ?? provider.businessType ?? provider.categoryKey ?? null;
+  const category = service?.name ?? toTitleCase(categoryKey);
+
+  return {
+    id: provider.id,
+    actorId: provider.vcsmActorId ?? null,
+    profileId: provider.id,
+    slug: provider.slug,
+    name: provider.displayName,
+    category,
+    categoryKey,
+    city: provider.primaryCityName ?? null,
+    stateCode: provider.primaryRegionCode ?? null,
+    primaryCityName: provider.primaryCityName ?? null,
+    primaryRegionCode: provider.primaryRegionCode ?? null,
+    primaryCountryCode: provider.primaryCountryCode,
+    countrySlug: country.slug,
+    countryName: country.name,
+    countryNameEs: country.nameEs ?? country.name,
+    locationText: formatLocationText(provider),
+    avatarUrl: provider.avatarUrl ?? null,
+    bannerUrl: provider.bannerUrl ?? null,
+    logoUrl: provider.logoUrl ?? null,
+    rating: stats?.ratingAvg ?? null,
+    reviewCount: stats?.reviewCount ?? null,
+    responseTimeMinutes: stats?.responseTimeP50Minutes ?? null,
+    responseTimeLabel: null,
+    nextAvailableLabel: null,
+    phone: provider.phoneE164 ?? null,
+    phoneNumber: provider.phoneE164 ?? null,
+    bookingUrl: provider.bookingUrl ?? null,
+    verified: provider.source === "vport" || provider.claimStatus === "claimed",
+    href: countryProviderPath(country.slug, provider.slug),
+    source: provider.source,
+    rankScore: stats?.rankScore ?? 0
+  };
 }
 
 function selectProvidersForHomepage({ liveCards, defaultCityName }) {
@@ -251,135 +125,122 @@ function selectProvidersForHomepage({ liveCards, defaultCityName }) {
   };
 }
 
-function buildHomepageStats({ liveProfiles, liveProviderCards, status }) {
-  const stats = [];
+function buildHomepageStats(liveProviderCards) {
+  if (!liveProviderCards.length) return [];
 
-  if (!status.profiles && !status.publicTrazeProfiles) {
-    return stats;
-  }
+  const categoryCount = new Set(
+    liveProviderCards
+      .map((card) => toText(card.categoryKey).toLowerCase())
+      .filter(Boolean)
+  ).size;
 
-  const activeVports = liveProviderCards.length > 0 ? liveProviderCards.length : liveProfiles.length;
+  const citiesCount = new Set(
+    liveProviderCards
+      .map((card) => normalizeCity(card.city))
+      .filter(Boolean)
+  ).size;
 
-  if (activeVports <= 0) {
-    return stats;
-  }
-
-  stats.push({
-    label: "Active Vports",
-    labelEs: "Vports activos",
-    value: String(activeVports)
-  });
-
-  if (status.publicTrazeProfiles || status.profileCategories) {
-    const categoryCount = new Set(
-      liveProviderCards
-        .map((card) => toText(card.categoryKey).toLowerCase())
-        .filter(Boolean)
-    ).size;
-
-    if (categoryCount > 0) {
-      stats.push({
-        label: "Active categories",
-        labelEs: "Categorías activas",
-        value: String(categoryCount)
-      });
-    }
-  }
-
-  if (status.publicTrazeProfiles || status.profilePublicDetails) {
-    const citiesCount = new Set(
-      liveProviderCards
-        .map((card) => normalizeCity(card.city))
-        .filter(Boolean)
-    ).size;
-
-    if (citiesCount > 0) {
-      stats.push({
-        label: "Active cities",
-        labelEs: "Ciudades activas",
-        value: String(citiesCount)
-      });
-    }
-  }
-
-  return stats;
-}
-
-function buildHomepageCategories({ categoryRows, defaultCountrySlug, defaultCitySlug }) {
-  const activeRows = categoryRows
-    .filter((row) => row?.is_active !== false)
-    .filter((row) => toText(row?.key))
-    .slice(0, 8);
-
-  if (!activeRows.length) {
-    return FALLBACK_CATEGORIES;
-  }
-
-  return activeRows.map((row) => {
-    const key = toText(row.key).toLowerCase();
-    const label = toText(row.label) || toTitleCase(key);
-
-    const liveServiceSlug = KEY_TO_ROUTE_SERVICE[key] ?? null;
-
-    return {
-      id: key,
-      label,
-      blurb: `Browse ${label.toLowerCase()} listings.`,
-      href: liveServiceSlug
-        ? countryCityServicePath(defaultCountrySlug, defaultCitySlug, liveServiceSlug)
-        : null,
-      status: liveServiceSlug ? "Live" : "Launching"
-    };
-  });
+  return [
+    {
+      label: "Active profiles",
+      labelEs: "Perfiles activos",
+      value: String(liveProviderCards.length)
+    },
+    ...(categoryCount > 0
+      ? [{
+          label: "Active categories",
+          labelEs: "Categorias activas",
+          value: String(categoryCount)
+        }]
+      : []),
+    ...(citiesCount > 0
+      ? [{
+          label: "Active cities",
+          labelEs: "Ciudades activas",
+          value: String(citiesCount)
+        }]
+      : [])
+  ];
 }
 
 export async function getHomepageLiveDirectoryData({
-  defaultCitySlug = "miami",
+  defaultCitySlug = null,
+  countryCode = null,
   providerLimit = 8
 } = {}) {
-  const cities = listCities();
-  const defaultCity = getCityBySlug(defaultCitySlug) ?? cities[0] ?? null;
+  const defaultCity = defaultCitySlug ? (getCityBySlug(defaultCitySlug) ?? null) : null;
   const defaultCountry = defaultCity ? getCountryById(defaultCity.countryId) : null;
+  const scopedCountryCode = countryCode ?? defaultCountry?.code ?? null;
 
-  const defaultCountrySlug = defaultCountry?.slug ?? "us";
-  const defaultCityName = defaultCity?.name ?? null;
-
-  const liveRows = await fetchVportHomepageRows();
-  const categoryMap = buildLiveCategoryMap(liveRows.categories);
-
-  const liveProviderCards = buildLiveProviderCards({
-    profiles: liveRows.profiles,
-    profileCategories: liveRows.profileCategories,
-    publicTrazeProfiles: liveRows.publicTrazeProfiles,
-    categoryMap,
-    defaultCountrySlug
-  });
+  const liveProviderCards = listProviders({ countryCode: scopedCountryCode })
+    .map(buildHomepageProviderCard)
+    .filter(Boolean)
+    .sort((left, right) => Number(right.rankScore ?? 0) - Number(left.rankScore ?? 0));
 
   const selectedLive = selectProvidersForHomepage({
     liveCards: liveProviderCards,
-    defaultCityName
-  });
-
-  const providers = selectedLive.cards.slice(0, providerLimit);
-  const stats = buildHomepageStats({
-    liveProfiles: liveRows.profiles,
-    liveProviderCards,
-    status: liveRows.status
-  });
-
-  const categories = buildHomepageCategories({
-    categoryRows: liveRows.categories,
-    defaultCountrySlug,
-    defaultCitySlug: defaultCity?.slug ?? defaultCitySlug
+    defaultCityName: defaultCity?.name ?? null
   });
 
   return {
-    providers,
-    stats,
-    categories,
+    providers: selectedLive.cards.slice(0, providerLimit),
+    stats: buildHomepageStats(liveProviderCards),
+    categories: [],
     locationMode: selectedLive.locationMode,
     hasLiveProviders: liveProviderCards.length > 0,
     liveProviderCount: liveProviderCards.length,
-    status: liveRows.status
+    status: {
+      profiles: liveProviderCards.length > 0,
+      profilePublicDetails: false,
+      profileCategories: false,
+      categories: false,
+      publicTrazeProfiles: liveProviderCards.length > 0
+    }
   };
+}
+
+export function groupProvidersByCountry(providers) {
+  const order = [];
+  const map = new Map();
+
+  for (const provider of providers) {
+    const code = String(provider.primaryCountryCode ?? "").toUpperCase();
+    if (!code) continue;
+
+    if (!map.has(code)) {
+      order.push(code);
+      map.set(code, {
+        countryCode: code,
+        countrySlug: provider.countrySlug ?? code.toLowerCase(),
+        countryName: provider.countryName ?? code,
+        countryNameEs: provider.countryNameEs ?? provider.countryName ?? code,
+        providers: [],
+        citySlugs: new Set(),
+        categoryKeys: new Set()
+      });
+    }
+
+    const group = map.get(code);
+    group.providers.push(provider);
+    if (provider.primaryCitySlug ?? provider.city) {
+      group.citySlugs.add(String(provider.primaryCitySlug ?? provider.city).toLowerCase());
+    }
+    if (provider.categoryKey) {
+      group.categoryKeys.add(String(provider.categoryKey).toLowerCase());
+    }
+  }
+
+  return order.map((code) => {
+    const g = map.get(code);
+    return {
+      countryCode: g.countryCode,
+      countrySlug: g.countrySlug,
+      countryName: g.countryName,
+      countryNameEs: g.countryNameEs,
+      providerCount: g.providers.length,
+      cityCount: g.citySlugs.size,
+      serviceCount: g.categoryKeys.size,
+      providers: g.providers
+    };
+  });
 }

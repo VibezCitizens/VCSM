@@ -4,6 +4,8 @@
     "paths": {
       "@identity": ["../../engines/identity/index.js"],
       "@booking": ["../../engines/booking/index.js"],
+      "@i18n": ["../../engines/i18n/index.js"],
+      "@i18n/*": ["../../engines/i18n/*"],
       "@/*": ["src/*"]
     },
     "jsx": "react-jsx",

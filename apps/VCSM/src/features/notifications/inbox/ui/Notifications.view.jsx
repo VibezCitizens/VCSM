@@ -1,3 +1,4 @@
+import { useTranslation } from '@i18n'
 import NotificationItem from './NotificationItem.view'
 
 function NotificationsSkeleton({ count = 6 }) {
@@ -9,9 +10,9 @@ function NotificationsSkeleton({ count = 6 }) {
             className="noti-skeleton-pulse"
             style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0 }}
           />
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div className="noti-skeleton-pulse" style={{ height: 12, width: 128, borderRadius: 6 }} />
-            <div className="noti-skeleton-pulse" style={{ height: 12, width: 200, maxWidth: "70%", borderRadius: 6 }} />
+            <div className="noti-skeleton-pulse" style={{ height: 12, width: 200, maxWidth: '70%', borderRadius: 6 }} />
             <div className="noti-skeleton-pulse" style={{ height: 10, width: 64, borderRadius: 6 }} />
           </div>
         </li>
@@ -21,6 +22,8 @@ function NotificationsSkeleton({ count = 6 }) {
 }
 
 export default function NotificationsView({ rows, loading }) {
+  const { t } = useTranslation()
+
   if (loading) {
     return <NotificationsSkeleton count={6} />
   }
@@ -29,11 +32,11 @@ export default function NotificationsView({ rows, loading }) {
     return (
       <div className="notifications-empty">
         <span style={{ fontSize: 32, lineHeight: 1 }}>🔔</span>
-        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--vc-text-soft)", marginTop: 8 }}>
-          You're all caught up
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--vc-text-soft)', marginTop: 8 }}>
+          {t('notifications.empty.caughtUp')}
         </div>
-        <div style={{ fontSize: 12, color: "var(--vc-text-muted)" }}>
-          New activity will appear here.
+        <div style={{ fontSize: 12, color: 'var(--vc-text-muted)' }}>
+          {t('notifications.empty.newActivity')}
         </div>
       </div>
     )

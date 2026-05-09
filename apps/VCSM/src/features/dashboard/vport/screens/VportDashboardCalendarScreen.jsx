@@ -98,7 +98,7 @@ export function VportDashboardCalendarScreen() {
                 <div style={{ color: "rgba(203,213,225,.5)", fontSize: 12, marginTop: 2 }}>
                   {isDesktop
                     ? "Drag to create · Click to select and delete · Drag bottom edge to resize"
-                    : "Tap to add hours · Tap selected hours to delete"}
+                    : "Set your weekly business hours"}
                 </div>
               </div>
 

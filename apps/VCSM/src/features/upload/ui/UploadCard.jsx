@@ -1,3 +1,4 @@
+import { useTranslation } from "@i18n";
 import { MAX_VIBES_PHOTOS } from "../hooks/useMediaSelection";
 
 export default function UploadCard({
@@ -7,6 +8,7 @@ export default function UploadCard({
   inputRef,
   onChosen,
 }) {
+  const { t } = useTranslation()
   return (
     <div
       className="upload-card upload-card-pressable relative overflow-hidden rounded-3xl px-6 py-8 text-center"
@@ -31,13 +33,13 @@ export default function UploadCard({
         </div>
 
         <div className="text-lg font-semibold text-white">
-          {isVibes ? "Add photos/videos (up to 10)" : "Add photo/video"}
+          {isVibes ? t('upload.addPhotosVideos', { max: MAX_VIBES_PHOTOS }) : t('upload.addPhotoVideo')}
         </div>
-        <div className="mt-1 text-sm text-white/50">Tap to upload or drag and drop</div>
+        <div className="mt-1 text-sm text-white/50">{t('upload.tapToUpload')}</div>
 
         {isVibes && (
           <div className="mt-3 text-xs text-white/50">
-            Selected: <span className="text-white/90">{selectedCount}</span> / {MAX_VIBES_PHOTOS}
+            {t('upload.selectedCount', { count: selectedCount, max: MAX_VIBES_PHOTOS })}
           </div>
         )}
       </div>

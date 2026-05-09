@@ -1,13 +1,18 @@
-import Link from "next/link";
+"use client";
 
-export function InternalLinkGrid({ title, links }) {
-  if (!links.length) {
-    return null;
-  }
+import Link from "next/link";
+import { useTrafficLanguage } from "@/lib/language";
+
+export function InternalLinkGrid({ title, titleEs, links }) {
+  const { lang } = useTrafficLanguage();
+
+  if (!links.length) return null;
+
+  const displayTitle = lang === "es" && titleEs ? titleEs : title;
 
   return (
     <section className="card stack-grid">
-      <h3 className="homepage-card-title">{title}</h3>
+      <h3 className="homepage-card-title">{displayTitle}</h3>
       <ul className="link-grid">
         {links.map((link) => (
           <li key={`${link.href}::${link.secondaryHref ?? ""}`}>

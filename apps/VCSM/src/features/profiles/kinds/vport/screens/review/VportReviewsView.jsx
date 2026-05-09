@@ -1,5 +1,6 @@
 // src/features/profiles/kinds/vport/screens/review/VportReviewsView.jsx
 import React, { useMemo, useState, useCallback, useEffect } from "react";
+import { useTranslation } from "@i18n";
 import { useVportReviews } from "@/features/profiles/kinds/vport/hooks/review/useVportReviews";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
@@ -22,6 +23,7 @@ export default function VportReviewsView({
   viewerActorId: _viewerActorId = null,
   mode = "public",
 }) {
+  const { t } = useTranslation();
   const { identity } = useIdentity();
   const targetActorId = targetActorIdProp ?? profile?.actor_id ?? profile?.actorId ?? null;
   const sessionActorId = identity?.actorId ?? null;
@@ -133,13 +135,15 @@ export default function VportReviewsView({
           <div className="flex flex-col items-center gap-1 sm:items-start sm:pt-1">
             <div className="text-sm font-medium text-white/80">
               {verifiedCount === 0
-                ? "No reviews yet"
-                : `Based on ${verifiedCount} ${verifiedCount === 1 ? "review" : "reviews"}`}
+                ? t('vport.reviewsView.noReviews')
+                : verifiedCount === 1
+                  ? t('vport.reviewsView.basedOn', { count: verifiedCount })
+                  : t('vport.reviewsView.basedOnPlural', { count: verifiedCount })}
             </div>
             <div className="text-xs text-white/45">
               {isOwnerMode
                 ? "Quality signals across all review dimensions"
-                : "Ratings from verified community members"}
+                : t('vport.reviewsView.communityRatings')}
             </div>
           </div>
         </div>

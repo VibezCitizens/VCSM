@@ -94,11 +94,11 @@
  * @property {string|null} bannerUrl — VPORT banner image URL from Supabase storage
  * @property {string|null} logoUrl — VPORT logo image URL from ppd.logo_url
  * @property {string|null} locationText — human-readable location string, e.g. "Laredo, TX"
- * @property {string|null} cityId — source city UUID from vport.public_traze_profiles_v
+ * @property {string|null} cityId — source city UUID when available
  * @property {string|null} primaryCityName — structured city name from vport.cities
  * @property {string|null} primaryCitySlug — structured city slug from vport.cities
  * @property {string|null} categoryKey — primary category key from vport.profile_categories/categories
- * @property {string|null} timezone — provider timezone from public_traze_profiles_v
+ * @property {string|null} timezone — provider timezone when available
  * @property {boolean|null} directoryVisible — public directory visibility flag from VPORT
  * @property {string|null} directoryStatus — public directory publish status from VPORT
  * @property {string|null} email — public email from ppd.email_public
@@ -107,6 +107,13 @@
  * @property {object|null} hours — hours jsonb: { monday: { open, close } | { closed: true } | null, ... }
  * @property {number|null} lat — latitude from ppd.lat
  * @property {number|null} lng — longitude from ppd.lng
+ * @property {"vport"|"seed"} [source] — canonical public provider source
+ * @property {string|null} [sourceProviderId] — source row id from public_traze_provider_index_v
+ * @property {string|null} [businessType]
+ * @property {string|null} [platformProfileUrl]
+ * @property {string|null} [googleMapsUrl]
+ * @property {string|null} [instagramUrl]
+ * @property {string|null} [facebookUrl]
  */
 
 /**

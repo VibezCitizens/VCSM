@@ -15,8 +15,7 @@ export async function listBookingResourceServicesByResourceIdDAL({
     throw new Error("listBookingResourceServicesByResourceIdDAL: resourceId is required");
   }
 
-  let query = supabase
-    .schema("vc")
+  let query = vportClient
     .from("resource_services")
     .select(BOOKING_RESOURCE_SERVICE_SELECT)
     .eq("resource_id", resourceId)

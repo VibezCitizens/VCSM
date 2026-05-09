@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
+import { useTranslation } from "@i18n";
 import MentionChips from "@/features/upload/ui/MentionChips";
 import MentionTypeahead from "@/features/upload/ui/MentionTypeahead";
 import { useMentionAutocomplete } from "@/features/upload/hooks/useMentionAutocomplete";
@@ -14,6 +15,7 @@ export default function CaptionCard({
   locationText,
   setLocationText,
 }) {
+  const { t } = useTranslation()
   const taRef = useRef(null);
 
   const {
@@ -142,7 +144,7 @@ export default function CaptionCard({
         onSelect={onCaretEvent}
         onKeyUp={onCaretEvent}
         rows={3}
-        placeholder="Write a caption... (use @ to tag)"
+        placeholder={t('upload.captionPlaceholder')}
         className="upload-caption-area w-full resize-none bg-transparent px-5 py-4 placeholder:text-white/40 focus:outline-none"
       />
 
@@ -174,7 +176,7 @@ export default function CaptionCard({
               setLocationText(e.target.value);
               setCityQuery(e.target.value);
             }}
-            placeholder="Add location"
+            placeholder={t('upload.addLocation')}
             className="min-w-0 flex-1 bg-transparent text-white/90 placeholder:text-white/40 focus:outline-none"
           />
 

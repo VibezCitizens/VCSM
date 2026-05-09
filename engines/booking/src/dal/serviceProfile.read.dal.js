@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../config.js'
+import { getVportClient } from '../config.js'
 
 const SERVICE_PROFILE_SELECT = [
   'service_id', 'duration_minutes', 'padding_before_minutes', 'padding_after_minutes',
@@ -14,9 +14,8 @@ export async function dalListBookingServiceProfilesByServiceIds({ serviceIds, in
   const ids = normalizeIds(serviceIds)
   if (!ids.length) return []
 
-  let query = getSupabaseClient()
-    .schema('vc')
-    .from('booking_service_profiles')
+  let query = getVportClient()
+    .from('service_booking_profiles')
     .select(SERVICE_PROFILE_SELECT)
     .in('service_id', ids)
     .order('created_at', { ascending: true })

@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '@i18n'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 import { useFollowRequestActions } from '@/features/social/adapters/friend/request/hooks/useFollowRequestActions.adapter'
 
 export default function FollowRequestItem({ notification }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { acceptRequest, declineRequest } = useFollowRequestActions()
   const [busy, setBusy] = useState(false)
@@ -93,7 +95,7 @@ export default function FollowRequestItem({ notification }) {
   return (
     <NotificationCard
       actor={notification.sender}
-      message="sent you a subscribe request"
+      message={t('notifications.follow.sentSubscribeRequest')}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       actions={
@@ -106,7 +108,7 @@ export default function FollowRequestItem({ notification }) {
               disabled:opacity-50
             "
           >
-            Accept
+            {t('notifications.follow.accept')}
           </button>
 
           <button
@@ -117,7 +119,7 @@ export default function FollowRequestItem({ notification }) {
               disabled:opacity-50
             "
           >
-            Decline
+            {t('notifications.follow.decline')}
           </button>
         </>
       }

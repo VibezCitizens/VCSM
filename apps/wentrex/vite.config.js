@@ -29,12 +29,12 @@ export default defineConfig(({ mode }) => ({
         replacement: fileURLToPath(new URL('./src/features/services', import.meta.url)),
       },
       {
-        find: '@platform/i18n',
-        replacement: fileURLToPath(new URL('../../platform/i18n', import.meta.url)),
+        find: /^@i18n\/(.*)/,
+        replacement: fileURLToPath(new URL('../../engines/i18n/$1', import.meta.url)),
       },
       {
         find: '@i18n',
-        replacement: fileURLToPath(new URL('../../platform/i18n/src', import.meta.url)),
+        replacement: fileURLToPath(new URL('../../engines/i18n/index.js', import.meta.url)),
       },
       {
         find: '@',

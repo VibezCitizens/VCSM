@@ -1,0 +1,13 @@
+{
+  "filterAll": "Todos",
+  "filterCitizens": "Ciudadanos",
+  "filterVports": "Vports",
+  "filterVibes": "Vibes",
+  "filterDistricts": "Distritos",
+  "searchPlaceholder": "Buscar ciudadanos, vports, vibes, distritos…",
+  "clearSearch": "Limpiar",
+  "loading": "Cargando…",
+  "noResults": "No se encontraron resultados",
+  "noResultsHint": "Intenta buscar otra cosa",
+  "vibesSection": "Vibes"
+}

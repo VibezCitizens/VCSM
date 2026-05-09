@@ -6,6 +6,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Search, X } from 'lucide-react'
+import { useTranslation } from '@i18n'
 
 /**
  * StartConversationModal
@@ -13,6 +14,7 @@ import { Search, X } from 'lucide-react'
  * No behavior changes.
  */
 export default function StartConversationModal({ open, onClose, onPick, onSearch }) {
+  const { t } = useTranslation()
   const [q, setQ] = useState('')
   const [loading, setLoading] = useState(false)
   const [rows, setRows] = useState([])
@@ -82,7 +84,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
         aria-label="New Vox"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">New Vox</h2>
+          <h2 className="text-lg font-semibold text-white">{t('vox.start.title')}</h2>
 
           <button
             type="button"
@@ -102,7 +104,7 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
 
           <input
             type="text"
-            placeholder="Search Citizens, Vports..."
+            placeholder={t('vox.start.searchPlaceholder')}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="module-modern-input w-full rounded-2xl py-2.5 pl-10 pr-10 text-sm"
@@ -123,12 +125,12 @@ export default function StartConversationModal({ open, onClose, onPick, onSearch
           )}
         </div>
 
-        {loading && <div className="py-2 text-sm text-white/50">Searching...</div>}
+        {loading && <div className="py-2 text-sm text-white/50">{t('vox.start.searching')}</div>}
 
         {!loading && query && rows.length === 0 && (
           <div className="module-modern-card rounded-2xl p-3 text-sm text-white/50">
             {typeof onSearch === 'function' ? (
-              <>No results for "{query}".</>
+              <>{t('vox.start.noResults', { query })}</>
             ) : (
               <>
                 Connect <code>onSearch</code> to enable results.

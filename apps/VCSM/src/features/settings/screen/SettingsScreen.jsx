@@ -9,26 +9,30 @@ import {
 } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import '@/features/settings/styles/settings-modern.css'
+import { useTranslation } from '@i18n'
 
 const PrivacyView = lazy(() => import('../privacy/ui/PrivacyTab.view'))
 const ProfileView = lazy(() => import('../profile/adapter/ProfileTab'))
 const AccountView = lazy(() => import('../account/ui/AccountTab.view'))
 const VportsView = lazy(() => import('../vports/ui/VportsTab.view'))
 
-const TABS = [
-  { key: 'privacy', label: 'Privacy', View: PrivacyView },
-  { key: 'profile', label: 'Profile', View: ProfileView },
-  { key: 'account', label: 'Account', View: AccountView },
-  { key: 'vports', label: 'VPORTs', View: VportsView },
+const TAB_DEFS = [
+  { key: 'privacy', View: PrivacyView },
+  { key: 'profile', View: ProfileView },
+  { key: 'account', View: AccountView },
+  { key: 'vports', View: VportsView },
 ]
 
 export default function SettingsScreen() {
   const navigate = useNavigate()
   const [search, setSearch] = useSearchParams()
+  const { t } = useTranslation()
+
+  const TABS = TAB_DEFS.map(({ key, View }) => ({ key, label: t(`settings.tabs.${key}`), View }))
 
   const initialTab = useMemo(() => {
     const q = (search.get('tab') || '').toLowerCase()
-    return TABS.some((t) => t.key === q) ? q : 'privacy'
+    return TAB_DEFS.some((def) => def.key === q) ? q : 'privacy'
   }, [search])
 
   const [tab, setTab] = useState(initialTab)
@@ -42,7 +46,7 @@ export default function SettingsScreen() {
     }
   }, [tab, search, setSearch])
 
-  const activeIndex = useMemo(() => TABS.findIndex((t) => t.key === tab), [tab])
+  const activeIndex = useMemo(() => TAB_DEFS.findIndex((def) => def.key === tab), [tab])
   const tabRefs = useRef([])
 
   const focusIdx = (idx) => {
@@ -86,18 +90,18 @@ export default function SettingsScreen() {
       <header className="sticky top-0 z-20 border-b border-white/8 bg-[#060914]/74 backdrop-blur-xl">
         <div className="mx-auto w-full max-w-3xl px-4">
           <div className="flex items-center justify-between py-3">
-            <h1 className="text-lg font-bold tracking-wide text-white">Settings</h1>
+            <h1 className="text-lg font-bold tracking-wide text-white">{t('settings.title')}</h1>
             <button
               onClick={() => navigate(-1)}
               className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
             >
-              Close
+              {t('actions.close')}
             </button>
           </div>
 
           <div
             role="tablist"
-            aria-label="Settings sections"
+            aria-label={t('settings.settingsSections')}
             onKeyDown={onKeyTabs}
             className="settings-tablist mb-3 grid gap-1 rounded-2xl p-1"
             style={{ gridTemplateColumns: `repeat(${TABS.length}, minmax(0, 1fr))` }}
@@ -128,7 +132,7 @@ export default function SettingsScreen() {
           return (
             <section key={item.key} hidden={tab !== item.key}>
               {tab === item.key && (
-                <Suspense fallback={<div className="py-10 text-center text-white/50">Loading...</div>}>
+                <Suspense fallback={<div className="py-10 text-center text-white/50">{t('settings.loading')}</div>}>
                   <ActiveView />
                 </Suspense>
               )}

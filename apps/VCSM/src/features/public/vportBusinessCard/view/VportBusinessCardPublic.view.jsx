@@ -66,7 +66,7 @@ export default function VportBusinessCardPublicView({ slug, fromSettings = false
   const profileHref = useMemo(() => {
     const key = card?.slug;
     if (!key || !card?.isTrazeListingActive) return "";
-    return `https://traze.vibezcitizens.com/pro/${key}`;
+    return `https://traze.vibezcitizens.com/us/pro/${key}`;
   }, [card?.slug, card?.isTrazeListingActive]);
 
   const callHref = useMemo(() => {

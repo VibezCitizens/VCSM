@@ -1,0 +1,413 @@
+/* ============================================================
+   SECTIONS — Featured providers (.hp-providers-*, .hp-provider-*)
+   ============================================================ */
+
+/* ── Providers header ─────────────────────────────────────── */
+
+.hp-providers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.hp-providers-title {
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  margin-bottom: 0.12rem;
+}
+
+.hp-providers-subtitle {
+  font-size: 0.8rem;
+  color: rgba(190, 184, 214, 0.6);
+}
+
+/* Polish header overrides */
+.hp-providers-title {
+  font-size: clamp(1.1rem, 2.1vw, 1.34rem);
+}
+
+.hp-providers-subtitle {
+  color: rgba(183, 194, 229, 0.72);
+}
+
+.hp-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: rgba(178, 170, 228, 0.78);
+  white-space: nowrap;
+  transition: color 140ms ease;
+}
+
+.hp-view-all:hover {
+  color: #fff;
+}
+
+/* ── Providers row ────────────────────────────────────────── */
+
+.hp-providers-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.68rem;
+}
+
+/* Polish providers-row override */
+.hp-providers-row {
+  grid-template-columns: repeat(auto-fit, minmax(295px, 1fr));
+  gap: 0.74rem;
+}
+
+/* ── Provider card (compact icon style) ──────────────────── */
+
+.hp-provider-card {
+  display: grid;
+  gap: 0.32rem;
+  padding: 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+  text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.hp-provider-card:hover {
+  border-color: rgba(139, 92, 246, 0.28);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.065);
+}
+
+/* Polish provider-card overrides */
+.hp-provider-card {
+  padding: 0.9rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(129, 149, 208, 0.2);
+  background: rgba(14, 17, 29, 0.68);
+  display: grid;
+  gap: 0.54rem;
+}
+
+.hp-provider-card:hover {
+  border-color: rgba(109, 170, 255, 0.56);
+  background: rgba(17, 22, 36, 0.84);
+  transform: translateY(-2px);
+}
+
+/* ── Provider card head (new layout) ─────────────────────── */
+
+.hp-provider-card-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.62rem;
+  align-items: start;
+}
+
+.hp-provider-main {
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+/* ── Provider icon / avatar ───────────────────────────────── */
+
+.hp-provider-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.22rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.hp-provider-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+}
+
+.hp-provider-icon-fallback {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Provider text fields ─────────────────────────────────── */
+
+.hp-provider-name {
+  font-family: var(--traffic-font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--vc-text);
+  line-height: 1.25;
+  margin: 0;
+}
+
+/* Polish name override */
+.hp-provider-name {
+  font-size: 0.93rem;
+  line-height: 1.28;
+}
+
+.hp-provider-category {
+  font-size: 0.75rem;
+  color: rgba(185, 178, 208, 0.68);
+  text-transform: capitalize;
+  margin: 0;
+}
+
+/* Polish category override */
+.hp-provider-category {
+  font-size: 0.76rem;
+  color: rgba(186, 198, 233, 0.76);
+}
+
+.hp-provider-location {
+  display: flex;
+  align-items: center;
+  gap: 0.26rem;
+  font-size: 0.73rem;
+  color: rgba(172, 166, 196, 0.58);
+  margin: 0;
+}
+
+/* Polish location override */
+.hp-provider-location {
+  font-size: 0.78rem;
+  color: rgba(181, 194, 230, 0.82);
+}
+
+/* ── Provider status badge ────────────────────────────────── */
+
+.hp-provider-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.24rem;
+  border-radius: 999px;
+  border: 1px solid rgba(121, 169, 245, 0.35);
+  background: rgba(39, 86, 163, 0.18);
+  color: rgba(193, 224, 255, 0.93);
+  padding: 0.2rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.hp-provider-status--verified {
+  border-color: rgba(99, 226, 194, 0.36);
+  background: rgba(16, 115, 93, 0.2);
+  color: rgba(188, 247, 231, 0.95);
+}
+
+/* ── Provider rating ──────────────────────────────────────── */
+
+.hp-provider-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.26rem;
+  margin-top: 0.12rem;
+}
+
+.hp-provider-star {
+  color: #f59e0b;
+  font-size: 0.84rem;
+  line-height: 1;
+}
+
+.hp-provider-rating-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--vc-text);
+  font-family: var(--traffic-font-sans);
+}
+
+.hp-provider-review-count {
+  font-size: 0.73rem;
+  color: rgba(182, 176, 206, 0.58);
+}
+
+/* ── Provider stats ───────────────────────────────────────── */
+
+.hp-provider-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.hp-provider-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.24rem;
+  font-size: 0.78rem;
+  color: rgba(199, 210, 241, 0.9);
+}
+
+.hp-provider-stat--rating {
+  font-weight: 600;
+  color: rgba(247, 250, 255, 0.95);
+}
+
+.hp-provider-stat--rating svg {
+  color: #fbbf24;
+  fill: #fbbf24;
+}
+
+/* ── Provider footer ──────────────────────────────────────── */
+
+.hp-provider-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border-top: 1px solid rgba(132, 149, 198, 0.22);
+  padding-top: 0.5rem;
+}
+
+.hp-provider-response {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: rgba(177, 190, 226, 0.84);
+}
+
+.hp-provider-cta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(187, 211, 255, 0.96);
+}
+
+/* ── Country filter tabs ──────────────────────────────────── */
+
+.hp-filter-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 1.25rem;
+}
+
+.hp-filter-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.85rem;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: rgba(185, 198, 232, 0.55);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  white-space: nowrap;
+}
+
+.hp-filter-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(220, 215, 255, 0.85);
+}
+
+.hp-filter-tab--active {
+  background: rgba(109, 70, 220, 0.28);
+  color: #e2d9ff;
+  font-weight: 600;
+}
+
+/* ── Country group ────────────────────────────────────────── */
+
+.hp-country-group {
+  display: grid;
+  gap: 0.82rem;
+}
+
+.hp-country-group + .hp-country-group {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(129, 149, 208, 0.14);
+}
+
+/* ── Country group header ─────────────────────────────────── */
+
+.hp-country-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hp-country-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.hp-country-code-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.18rem 0.45rem;
+  border-radius: 5px;
+  border: 1px solid rgba(129, 149, 208, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(181, 194, 230, 0.6);
+  flex-shrink: 0;
+}
+
+.hp-country-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(220, 228, 255, 0.92);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.hp-country-meta {
+  font-size: 0.76rem;
+  color: rgba(181, 194, 230, 0.62);
+  margin: 0.1rem 0 0;
+}
+
+.hp-country-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(178, 170, 228, 0.78);
+  white-space: nowrap;
+  transition: color 130ms ease;
+  flex-shrink: 0;
+}
+
+.hp-country-link:hover {
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .hp-country-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

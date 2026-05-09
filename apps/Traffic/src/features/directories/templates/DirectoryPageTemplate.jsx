@@ -3,12 +3,22 @@ import { InternalLinkGrid } from "@/features/directories/components/InternalLink
 import { ProviderListItem } from "@/features/directories/components/ProviderListItem";
 import { DirectoryCtaModules } from "@/features/conversion/components/CtaModules";
 import { DirectoryFilterRow } from "@/features/directories/components/DirectoryFilterRow";
+import { DirectoryTitleClient } from "@/features/directories/components/DirectoryTitleClient";
+import { DirectoryHeroClient } from "@/features/directories/components/DirectoryHeroClient";
+import { DirectoryResultsClient, DirectoryEmptyStateClient } from "@/features/directories/components/DirectoryResultsClient";
 import { getRelatedGuideLinksForContext } from "@/features/directories/lib/relatedGuides";
+import { getServiceBySlug } from "@/data/repositories/service.repo";
+import { getCountryBySlug } from "@/data/repositories/geo.repo";
+import {
+  listLiveProviderCountries,
+  listLiveProviderLocationOptions
+} from "@/data/repositories/provider.repo";
 import { JsonLdScript } from "@/shared/components/JsonLdScript";
+import { TrazePageShell } from "@/shared/components/TrazePageShell";
+
 function titleizeSlug(value) {
   const raw = String(value ?? "").trim();
   if (!raw) return "";
-
   return raw
     .split(/[-_]+/g)
     .filter(Boolean)
@@ -20,28 +30,42 @@ function buildServiceLabel(context) {
   return context?.serviceSlug ? `${titleizeSlug(context.serviceSlug)}s` : "Services";
 }
 
+function buildServiceLabelEs(context) {
+  if (!context?.serviceSlug) return "Servicios";
+  const service = getServiceBySlug(context.serviceSlug);
+  if (service?.nameEs) return service.nameEs;
+  return buildServiceLabel(context);
+}
+
 function buildPlaceLabel(context, breadcrumbs = []) {
-  if (context?.citySlug) {
-    return titleizeSlug(context.citySlug);
-  }
+  if (context?.citySlug) return titleizeSlug(context.citySlug);
 
   const breadcrumbTail = breadcrumbs[breadcrumbs.length - 1];
   const label = String(breadcrumbTail?.label ?? "").trim();
-  if (label && label.toLowerCase() !== "home") {
-    return label;
-  }
+  if (label && label.toLowerCase() !== "home") return label;
 
-  const countryCode = String(context?.countrySlug ?? "us").trim().toUpperCase();
+  const countryCode = String(context?.countrySlug ?? "").trim().toUpperCase();
   if (countryCode === "US") return "United States";
-  return countryCode;
+  return countryCode || "Directory";
+}
+
+function buildPlaceLabelEs(context, breadcrumbs = []) {
+  if (context?.countrySlug && !context?.citySlug) {
+    const country = getCountryBySlug(context.countrySlug);
+    if (country?.nameEs) return country.nameEs;
+  }
+  // City names are the same in both languages; fall through to EN
+  return buildPlaceLabel(context, breadcrumbs);
 }
 
 function buildDisplayTitle(context, serviceLabel, placeLabel) {
-  if (context?.serviceSlug) {
-    return `${serviceLabel} in ${placeLabel}`;
-  }
-
+  if (context?.serviceSlug) return `${serviceLabel} in ${placeLabel}`;
   return `Top providers in ${placeLabel}`;
+}
+
+function buildDisplayTitleEs(context, serviceLabelEs, placeLabelEs) {
+  if (context?.serviceSlug) return `${serviceLabelEs} en ${placeLabelEs}`;
+  return `Mejores proveedores en ${placeLabelEs}`;
 }
 
 function parsePriceParts(priceSummary) {
@@ -63,64 +87,72 @@ export async function DirectoryPageTemplate({
     : await getRelatedGuideLinksForContext(context, { limit: 3 });
 
   const serviceLabel = buildServiceLabel(context);
+  const serviceLabelEs = buildServiceLabelEs(context);
+
   const placeLabel = buildPlaceLabel(context, breadcrumbs);
+  const placeLabelEs = buildPlaceLabelEs(context, breadcrumbs);
+
   const displayTitle = buildDisplayTitle(context, serviceLabel, placeLabel);
+  const displayTitleEs = buildDisplayTitleEs(context, serviceLabelEs, placeLabelEs);
+
   const locationLabel = context?.citySlug
-    ? `${placeLabel}, ${String(context?.countrySlug ?? "US").toUpperCase()}`
+    ? [placeLabel, String(context?.countrySlug ?? "").toUpperCase()].filter(Boolean).join(", ")
     : placeLabel;
+
   const priceParts = parsePriceParts(model.priceSummary);
+
   const compareSubject = context?.serviceSlug
     ? `${serviceLabel.toLowerCase()} providers`
     : "local providers";
+  const compareSubjectEs = context?.serviceSlug
+    ? `${serviceLabelEs.toLowerCase()}`
+    : "proveedores locales";
 
   const isDev = process.env.NODE_ENV !== "production";
   const liveDataFailed = liveDataStatus !== "ok";
+  const countries = listLiveProviderCountries();
+  const routeCountry = context?.countrySlug
+    ? getCountryBySlug(context.countrySlug)
+    : null;
+  const locationOptions = listLiveProviderLocationOptions();
 
   return (
-    <div className="stack-grid">
+    <TrazePageShell>
       <JsonLdScript id="directory-schema" schema={schema} />
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="dir-hero">
+      <section className="dir-hero traze-page-hero">
         <DirectoryBreadcrumbs items={breadcrumbs} />
-        <h1 className="dir-hero-title">{displayTitle}</h1>
-        <p className="dir-hero-copy">
-          Compare {compareSubject}, pricing, and availability.
-        </p>
-        <div className="dir-hero-stats">
-          <span className="pill">
-            {model.providerCount} {model.providerCount === 1 ? "provider" : "providers"}
-          </span>
-          <span className="pill pill--ghost">Live directory</span>
-        </div>
-        <div className="dir-hero-meta" aria-label="Directory details">
-          <span className="dir-hero-meta-item">Scope: {placeLabel}</span>
-          {priceParts.slice(0, 2).map((part) => (
-            <span key={part} className="dir-hero-meta-item">{part}</span>
-          ))}
-        </div>
+        <DirectoryTitleClient titleEn={displayTitle} titleEs={displayTitleEs} />
+        <DirectoryHeroClient
+          compareSubject={compareSubject}
+          compareSubjectEs={compareSubjectEs}
+          providerCount={model.providerCount}
+          placeLabel={placeLabel}
+          placeLabelEs={placeLabelEs}
+          priceParts={priceParts}
+        />
         {isDev && liveDataFailed && (
           <div className="dir-dev-warning">Live data unavailable</div>
         )}
       </section>
 
       {/* ── Search + filters ─────────────────────────────── */}
-      <DirectoryFilterRow serviceLabel={serviceLabel} locationLabel={locationLabel} />
+      <DirectoryFilterRow
+        locationLabel={locationLabel}
+        countrySlug={context?.countrySlug ?? ""}
+        countryCode={routeCountry?.code ?? ""}
+        citySlug={context?.citySlug ?? null}
+        locationOptions={locationOptions}
+        countryOptions={countries}
+      />
 
       {/* ── Provider list ─────────────────────────────────── */}
       <section className="dir-results-wrap" aria-label="Provider results">
-        <header className="dir-results-header">
-          <h2 className="dir-results-title">Available providers</h2>
-          <p className="dir-results-subtitle">
-            {model.providerCount} {model.providerCount === 1 ? "result" : "results"}
-          </p>
-        </header>
+        <DirectoryResultsClient providerCount={model.providerCount} serviceLabel={serviceLabel} />
         <div className="dir-providers-section">
           {model.providers.length === 0 ? (
-            <div className="dir-empty-state">
-              <p className="dir-empty-title">No providers listed yet in this area.</p>
-              <p className="dir-empty-copy">Be the first to list your {serviceLabel.toLowerCase()} service on TRAZE.</p>
-            </div>
+            <DirectoryEmptyStateClient serviceLabel={serviceLabel} />
           ) : (
             model.providers.map((item, index) => (
               <ProviderListItem key={item.provider.id} item={item} rank={index + 1} />
@@ -129,9 +161,9 @@ export async function DirectoryPageTemplate({
         </div>
       </section>
 
-      <InternalLinkGrid title="TRAZE Guides & Resources" links={contextGuideLinks} />
-      <InternalLinkGrid title="Related TRAZE Discovery Pages" links={relatedLinks} />
+      <InternalLinkGrid title="TRAZE Guides & Resources" titleEs="Guías y recursos" links={contextGuideLinks} />
+      <InternalLinkGrid title="Related TRAZE Discovery Pages" titleEs="Páginas de descubrimiento relacionadas" links={relatedLinks} />
       <DirectoryCtaModules context={context} />
-    </div>
+    </TrazePageShell>
   );
 }

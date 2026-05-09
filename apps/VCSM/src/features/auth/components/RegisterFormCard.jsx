@@ -1,6 +1,7 @@
 import { CheckCircle2, Eye, EyeOff, XCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ConsentCheckbox from './ConsentCheckbox'
+import { useTranslation } from '@i18n'
 
 function inputClass() {
   return [
@@ -51,6 +52,8 @@ export default function RegisterFormCard({
   onTogglePassword,
   onToggleConfirmPassword,
 }) {
+  const { t } = useTranslation()
+
   return (
     <div
       className="min-h-screen px-4 py-8 text-white"
@@ -71,10 +74,10 @@ export default function RegisterFormCard({
         >
           <div className="mb-6 space-y-1">
             <h1 className="text-center text-[1.65rem] font-semibold tracking-tight text-white">
-              Join Vibez Citizens
+              {t('auth.register.title')}
             </h1>
             <p className="text-center text-sm text-[#9ca3af]">
-              Create your account to get started.
+              {t('auth.register.subtitle')}
             </p>
           </div>
 
@@ -101,7 +104,7 @@ export default function RegisterFormCard({
           <form className="space-y-4" onSubmit={onSubmit} noValidate>
             <div className="space-y-1.5">
               <label htmlFor="register-email" className="text-xs font-medium tracking-wide text-[#d1d5db]">
-                Email
+                {t('auth.email')}
               </label>
               <input
                 id="register-email"
@@ -119,7 +122,7 @@ export default function RegisterFormCard({
 
             <div className="space-y-1.5">
               <label htmlFor="register-password" className="text-xs font-medium tracking-wide text-[#d1d5db]">
-                Password
+                {t('auth.password')}
               </label>
               <div className="relative">
                 <input
@@ -127,7 +130,7 @@ export default function RegisterFormCard({
                   className={`${inputClass()} pr-10`}
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  placeholder="Create a secure password"
+                  placeholder={t('auth.register.passwordPlaceholder')}
                   value={form.password}
                   onChange={onInputChange}
                   required
@@ -137,7 +140,7 @@ export default function RegisterFormCard({
                   type="button"
                   onClick={onTogglePassword}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-[#9ca3af] transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#6C4DF6]/50"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -145,7 +148,7 @@ export default function RegisterFormCard({
 
               {!showPasswordRules ? (
                 <p className="pt-1 text-xs text-[#9ca3af]">
-                  Use at least 8 characters including uppercase, lowercase and a number.
+                  {t('auth.register.passwordHint')}
                 </p>
               ) : (
                 <ul className="space-y-1.5 pt-1" aria-live="polite">
@@ -158,7 +161,7 @@ export default function RegisterFormCard({
 
             <div className="space-y-1.5">
               <label htmlFor="register-confirm-password" className="text-xs font-medium tracking-wide text-[#d1d5db]">
-                Confirm password
+                {t('auth.confirmPassword')}
               </label>
               <div className="relative">
                 <input
@@ -166,7 +169,7 @@ export default function RegisterFormCard({
                   className={`${inputClass()} pr-10`}
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
-                  placeholder="Re-enter your password"
+                  placeholder={t('auth.register.confirmPasswordPlaceholder')}
                   value={form.confirmPassword}
                   onChange={onInputChange}
                   required
@@ -176,7 +179,7 @@ export default function RegisterFormCard({
                   type="button"
                   onClick={onToggleConfirmPassword}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-[#9ca3af] transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#6C4DF6]/50"
-                  aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                  aria-label={showConfirmPassword ? t('auth.hideConfirmPassword') : t('auth.showConfirmPassword')}
                 >
                   {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -202,23 +205,23 @@ export default function RegisterFormCard({
 
             <div className="space-y-1.5 pt-1">
               <ConsentCheckbox checked={termsAccepted} onChange={onToggleTermsAccepted}>
-                I agree to the{' '}
+                {t('auth.register.consentPrefix')}{' '}
                 <Link
                   to="/legal/terms-of-service"
                   target="_blank"
                   className="font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
                 >
-                  Terms of Service
+                  {t('auth.termsOfService')}
                 </Link>
-                {' '}and{' '}
+                {' '}{t('auth.register.consentAnd')}{' '}
                 <Link
                   to="/legal/privacy-policy"
                   target="_blank"
                   className="font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
                 >
-                  Privacy Policy
+                  {t('auth.privacyPolicy')}
                 </Link>
-                {' '}and confirm that I am at least 18 years old.
+                {' '}{t('auth.register.consentSuffix')}
               </ConsentCheckbox>
 
               {consentError ? (
@@ -243,7 +246,7 @@ export default function RegisterFormCard({
                   : 'cursor-not-allowed bg-white/10 text-white/60 shadow-none',
               ].join(' ')}
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? t('auth.register.creating') : t('auth.createAccount')}
             </button>
           </form>
 
@@ -253,7 +256,7 @@ export default function RegisterFormCard({
               state={navState}
               className="font-medium text-[#c4b5fd] no-underline transition hover:text-[#ddd6fe]"
             >
-              Already have an account?
+              {t('auth.alreadyHaveAccount')}
             </Link>
 
             <button
@@ -261,7 +264,7 @@ export default function RegisterFormCard({
               onClick={onBackClick}
               className="rounded-lg border border-white/12 bg-white/5 px-3 py-1.5 text-white/80 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#6C4DF6]/50"
             >
-              Back
+              {t('actions.back')}
             </button>
           </div>
         </div>

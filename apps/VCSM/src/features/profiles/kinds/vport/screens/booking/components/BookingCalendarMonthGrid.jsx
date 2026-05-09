@@ -1,3 +1,5 @@
+import { useTranslation } from "@i18n";
+
 export function BookingCalendarMonthGrid({
   monthLabel,
   weekdayLabels,
@@ -6,6 +8,7 @@ export function BookingCalendarMonthGrid({
   onNextMonth,
   onSelectDate,
 }) {
+  const { t } = useTranslation();
   return (
     <section className="profiles-booking-month-shell" aria-label="Appointment calendar">
       <div className="profiles-booking-month-head">
@@ -65,12 +68,12 @@ export function BookingCalendarMonthGrid({
               <span className="profiles-booking-day-number">{cell.dayNumber}</span>
               <span className="profiles-booking-day-metrics">
                 {cell.isPast
-                  ? "Past"
+                  ? t('vport.bookingView.dayPast')
                   : cell.isClosed
-                    ? "Closed"
+                    ? t('vport.bookingView.dayClosed')
                     : cell.appointmentCount > 0
                       ? `${cell.appointmentCount} appt`
-                      : "Open"}
+                      : t('vport.bookingView.dayOpen')}
               </span>
 
               <span className="profiles-booking-dot-row" aria-hidden="true">

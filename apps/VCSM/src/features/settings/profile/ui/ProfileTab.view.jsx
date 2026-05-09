@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Lock } from 'lucide-react'
+import { useTranslation } from '@i18n'
 import Card from '@/features/settings/ui/Card'
 import ProfessionalAccessButton from './ProfessionalAccessButton'
 
@@ -28,18 +29,20 @@ export default function ProfileTabView({
   onSave,
   profilePath,
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="space-y-4">
       <Card>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-semibold text-white">Profile</div>
+          <div className="text-sm font-semibold text-white">{t('settings.profile.heading')}</div>
           <Link to={profilePath} className="text-sm text-purple-300 hover:text-purple-300">
-            View my profile
+            {t('settings.profile.viewMyProfile')}
           </Link>
         </div>
 
         <section className="space-y-1">
-          <label className="text-xs text-white/70">Avatar banner</label>
+          <label className="text-xs text-white/70">{t('settings.profile.avatarBanner')}</label>
           <div className="overflow-hidden rounded-xl border border-white/12 bg-white/4/50">
             <div className="relative h-32 w-full sm:h-40 md:h-48">
               <img
@@ -58,7 +61,7 @@ export default function ProfileTabView({
               className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
               disabled={saving || busyBanner}
             >
-              Choose banner
+              {t('settings.profile.chooseBanner')}
             </button>
             {(previewBanner || bannerUrl) && (
               <button
@@ -67,15 +70,15 @@ export default function ProfileTabView({
                 className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
                 disabled={saving || busyBanner}
               >
-                Remove
+                {t('actions.remove')}
               </button>
             )}
-            <span className="text-[11px] text-white/40">PNG/JPG {'<='} 5MB</span>
+            <span className="text-[11px] text-white/40">{t('settings.profile.fileSizeHint')}</span>
           </div>
         </section>
 
         <section className="mt-4 space-y-1">
-          <label className="text-xs text-white/70">Avatar photo</label>
+          <label className="text-xs text-white/70">{t('settings.profile.avatarPhoto')}</label>
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 overflow-hidden rounded-xl bg-white/6">
               {(previewAvatar || photoUrl) ? (
@@ -90,7 +93,7 @@ export default function ProfileTabView({
                 className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
                 disabled={saving || busyAvatar}
               >
-                Choose image
+                {t('settings.profile.chooseImage')}
               </button>
               {(previewAvatar || photoUrl) && (
                 <button
@@ -99,7 +102,7 @@ export default function ProfileTabView({
                   className="settings-btn settings-btn--ghost px-3 py-1.5 text-sm"
                   disabled={saving || busyAvatar}
                 >
-                  Remove
+                  {t('actions.remove')}
                 </button>
               )}
             </div>
@@ -108,7 +111,7 @@ export default function ProfileTabView({
 
         <section className="mt-4 space-y-1">
           <label className="inline-flex items-center gap-1.5 text-xs text-white/50">
-            Username
+            {t('settings.profile.username')}
             <Lock size={12} className="text-white/50" aria-hidden="true" />
           </label>
           <div className="relative">
@@ -127,7 +130,7 @@ export default function ProfileTabView({
         </section>
 
         <section className="mt-3 space-y-1">
-          <label className="text-xs text-white/70">Display name</label>
+          <label className="text-xs text-white/70">{t('settings.profile.displayName')}</label>
           <input
             value={displayName}
             onChange={(e) => onChangeDisplayName(e.target.value)}
@@ -139,7 +142,7 @@ export default function ProfileTabView({
         {email && (
           <section className="mt-3 space-y-1">
             <label className="inline-flex items-center gap-1.5 text-xs text-white/50">
-              Email
+              {t('auth.email')}
               <Lock size={12} className="text-white/50" aria-hidden="true" />
             </label>
             <div className="relative">
@@ -159,7 +162,7 @@ export default function ProfileTabView({
         )}
 
         <section className="mt-3 space-y-1">
-          <label className="text-xs text-white/70">Bio</label>
+          <label className="text-xs text-white/70">{t('settings.profile.bio')}</label>
           <textarea
             value={bio}
             onChange={(e) => onChangeBio(e.target.value)}
@@ -170,11 +173,11 @@ export default function ProfileTabView({
         </section>
 
         {error && <div className="mt-3 rounded-lg border border-rose-300/25 bg-rose-950/35 px-3 py-2 text-sm text-rose-100">{error}</div>}
-        {saved && !saving && <div className="mt-3 text-sm text-emerald-300">Changes saved</div>}
+        {saved && !saving && <div className="mt-3 text-sm text-emerald-300">{t('settings.profile.changesSaved')}</div>}
 
         <div className="mt-4 flex justify-end">
           <button onClick={onSave} disabled={saving} className="settings-btn settings-btn--primary px-4 py-2 text-sm font-semibold">
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? t('settings.profile.saving') : t('actions.save')}
           </button>
         </div>
       </Card>

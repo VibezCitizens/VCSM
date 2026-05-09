@@ -75,6 +75,10 @@ export default function TermsOfServiceContent() {
         <li>one or more business or public listing identities (&ldquo;VPORTs&rdquo;).</li>
       </ul>
       <p>
+        The Platform may include business identities or listings created by Vibez
+        Citizens prior to being claimed by a business owner.
+      </p>
+      <p>
         If you create, manage, or operate a VPORT, you represent and warrant that:
       </p>
       <ul>
@@ -106,6 +110,11 @@ export default function TermsOfServiceContent() {
         <li>greeting cards, replies, and similar content;</li>
         <li>other user-generated content.</li>
       </ul>
+      <p>
+        Content on the Platform may include both user-generated content and
+        platform-generated or aggregated listing data compiled by Vibez Citizens
+        from publicly available sources, third-party data, or user contributions.
+      </p>
       <p>
         You retain ownership of the content you create, subject to the rights you
         grant us under these Terms.
@@ -164,6 +173,35 @@ export default function TermsOfServiceContent() {
         Any transaction, appointment, booking, or interaction between a user and a
         business or service provider is solely between those parties unless
         expressly stated otherwise.
+      </p>
+
+      <h2>7A. Third-Party Business Listings and Public Data</h2>
+      <p>
+        The Platform may include business listings, profiles, or service provider
+        information that has been created, compiled, or aggregated by Vibez Citizens
+        using publicly available information, third-party data sources, user
+        submissions, or other lawful means.
+      </p>
+      <p>You understand and agree that:</p>
+      <ul>
+        <li>some business listings may be created by Vibez Citizens and not directly by the business owner;</li>
+        <li>information such as business name, location, contact details, and general service descriptions may be derived from publicly available sources or user contributions;</li>
+        <li>Vibez Citizens does not guarantee the accuracy, completeness, or current status of such information;</li>
+        <li>businesses and service providers may claim, update, correct, or request changes to their listings where applicable.</li>
+      </ul>
+      <p>
+        If you are a business owner or authorized representative, you may have the
+        ability to claim your listing, update your information, or request
+        corrections through the Platform.
+      </p>
+      <p>
+        Vibez Citizens may, at its discretion, update, correct, restrict, or remove
+        listings based on verified requests, legal obligations, or platform
+        policies.
+      </p>
+      <p>
+        The inclusion of a business on the Platform does not imply endorsement,
+        affiliation, or partnership unless explicitly stated.
       </p>
 
       <h2>8. Bookings and Service Requests</h2>
@@ -394,7 +432,8 @@ export default function TermsOfServiceContent() {
         <li>reviews are accurate;</li>
         <li>providers are licensed, qualified, safe, or available;</li>
         <li>communications are uninterrupted or always secure;</li>
-        <li>content will always be preserved or recoverable.</li>
+        <li>content will always be preserved or recoverable;</li>
+        <li>business listings based on publicly available or third-party data reflect real-time or owner-verified information.</li>
       </ul>
 
       <h2>21. Limitation of Liability</h2>

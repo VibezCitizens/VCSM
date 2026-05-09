@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
+import { useTranslation } from '@i18n'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
@@ -59,6 +60,7 @@ function NavRow({ title, subtitle, icon, onClick, divider = true }) {
 }
 
 export default function InboxSettingsScreen() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { settings, setHideEmptyConversations, setShowThreadPreview } = useVexSettings()
 
@@ -68,19 +70,19 @@ export default function InboxSettingsScreen() {
   const groups = useMemo(
     () => [
       {
-        section: 'Preferences',
+        section: t('vox.preferences.sectionPreferences'),
         body: (
           <div className="module-modern-card overflow-hidden rounded-2xl">
             <ToggleRow
-              title="Hide empty Vox"
-              subtitle="Hide Vox with no messages"
+              title={t('vox.preferences.hideEmptyTitle')}
+              subtitle={t('vox.preferences.hideEmptySubtitle')}
               value={hideEmptyThreads}
               onChange={setHideEmptyConversations}
             />
             <div className="h-px bg-white/6" />
             <ToggleRow
-              title="Show preview"
-              subtitle="Show preview under each Vox"
+              title={t('vox.preferences.showPreviewTitle')}
+              subtitle={t('vox.preferences.showPreviewSubtitle')}
               value={showThreadPreview}
               onChange={setShowThreadPreview}
             />
@@ -88,12 +90,12 @@ export default function InboxSettingsScreen() {
         ),
       },
       {
-        section: 'Advanced',
+        section: t('vox.preferences.sectionAdvanced'),
         body: (
           <div className="module-modern-card overflow-hidden rounded-2xl">
             <NavRow
-              title="Vox and Chat"
-              subtitle="Back to settings hub"
+              title={t('vox.preferences.advancedTitle')}
+              subtitle={t('vox.preferences.advancedSubtitle')}
               icon="SET"
               onClick={() => navigate('/chat/settings')}
               divider={false}
@@ -102,7 +104,7 @@ export default function InboxSettingsScreen() {
         ),
       },
     ],
-    [hideEmptyThreads, navigate, setHideEmptyConversations, setShowThreadPreview, showThreadPreview]
+    [hideEmptyThreads, navigate, setHideEmptyConversations, setShowThreadPreview, showThreadPreview, t]
   )
 
   return (
@@ -122,7 +124,7 @@ export default function InboxSettingsScreen() {
               <ChevronLeft size={22} />
             </button>
             <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-white">
-              Vox
+              {t('vox.preferences.title')}
             </h1>
             <div className="ml-auto w-10" />
           </div>

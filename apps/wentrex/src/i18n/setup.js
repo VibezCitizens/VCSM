@@ -1,14 +1,14 @@
 // Wentrex i18n assembly — merges shared platform dictionaries with app-specific namespaces.
 // Pass the result to <I18nProvider dictionary={dictionary}> in main.jsx.
 
-import common from '@platform/i18n/en/common.json'
-import actions from '@platform/i18n/en/actions.json'
-import errors from '@platform/i18n/en/errors.json'
-import status from '@platform/i18n/en/status.json'
-import state from '@platform/i18n/en/state.json'
-import time from '@platform/i18n/en/time.json'
-import auth from '@platform/i18n/en/auth.json'
-import notifications from '@platform/i18n/en/notifications.json'
+import common from '@i18n/en/common.json'
+import actions from '@i18n/en/actions.json'
+import errors from '@i18n/en/errors.json'
+import status from '@i18n/en/status.json'
+import state from '@i18n/en/state.json'
+import time from '@i18n/en/time.json'
+import auth from '@i18n/en/auth.json'
+import notifications from '@i18n/en/notifications.json'
 
 import courses from './en/courses.json'
 import enrollments from './en/enrollments.json'

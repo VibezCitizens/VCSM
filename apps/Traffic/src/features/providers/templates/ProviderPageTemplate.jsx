@@ -2,9 +2,14 @@ import { InternalLinkGrid } from "@/features/directories/components/InternalLink
 import { ProviderCtaModules } from "@/features/conversion/components/CtaModules";
 import { getProviderGuideLinks } from "@/features/providers/lib/providerGuideLinks";
 import { ContactSection } from "@/features/providers/components/ContactSection";
-import ProviderReviewList from "@/features/providers/components/ProviderReviewList";
-import { ReviewTrustSummary } from "@/features/reviews/components/ReviewTrustSummary";
+import { ProviderHoursSection } from "@/features/providers/components/ProviderHoursSection";
+import { ProviderServicesSection } from "@/features/providers/components/ProviderServicesSection";
+import { ProviderMenuSection } from "@/features/providers/components/ProviderMenuSection";
+import { ProviderGallerySection } from "@/features/providers/components/ProviderGallerySection";
+import { ProviderHeroBadges, ProviderHeroStats } from "@/features/providers/components/ProviderHeroStatus";
+import { ProviderTrustSection } from "@/features/providers/components/ProviderTrustSection";
 import { JsonLdScript } from "@/shared/components/JsonLdScript";
+import { ProviderDataDisclaimer } from "@/features/providers/components/ProviderDataDisclaimer";
 
 const SERVICE_GRADIENT = {
   locksmith: "linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #4338ca 100%)",
@@ -45,118 +50,6 @@ function isDefaultBio(bio, displayName) {
   return !bio || bio === `Visit ${displayName} on Vibez Citizens.`;
 }
 
-const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-const DAY_LABELS = { monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thu", friday: "Fri", saturday: "Sat", sunday: "Sun" };
-
-function HoursSection({ hours }) {
-  if (!hours || typeof hours !== "object") return null;
-  const rows = DAYS.map((day) => ({ day, schedule: hours[day] ?? null }));
-  const hasAny = rows.some(({ schedule }) => schedule != null);
-  if (!hasAny) return null;
-  return (
-    <section className="card card--subtle pro-hours" aria-label="Business hours">
-      <h2 className="pro-section-title">Hours</h2>
-      <ul className="pro-hours-list">
-        {rows.map(({ day, schedule }) => (
-          <li key={day} className="pro-hours-row">
-            <span className="pro-hours-day">{DAY_LABELS[day]}</span>
-            <span className="pro-hours-time">
-              {!schedule ? "—" : schedule.closed ? "Closed" : `${schedule.open} – ${schedule.close}`}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function formatCents(cents, currencyCode) {
-  if (cents == null) return null;
-  try {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: currencyCode ?? "USD", maximumFractionDigits: 0 }).format(cents / 100);
-  } catch {
-    return `$${Math.round(cents / 100)}`;
-  }
-}
-
-function ServicesSection({ liveServices }) {
-  if (!liveServices?.length) return null;
-  return (
-    <section className="card card--subtle pro-services" aria-label="Services offered">
-      <h2 className="pro-section-title">Services</h2>
-      <ul className="pro-services-list">
-        {liveServices.map((svc) => (
-          <li key={svc.key ?? svc.id} className="pro-service-row">
-            <span className="pro-service-name">{svc.label}</span>
-            {svc.booking ? (
-              <span className="pro-service-meta">
-                {svc.booking.price_cents != null
-                  ? <span className="pro-service-price">{formatCents(svc.booking.price_cents, svc.booking.currency_code)}</span>
-                  : null}
-                {svc.booking.duration_minutes != null
-                  ? <span className="pro-service-duration">{svc.booking.duration_minutes} min</span>
-                  : null}
-              </span>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function MenuSection({ menuCategories }) {
-  if (!menuCategories?.length) return null;
-  const preview = menuCategories.slice(0, 2);
-  return (
-    <section className="card card--subtle pro-menu" aria-label="Menu">
-      <h2 className="pro-section-title">Menu</h2>
-      {preview.map((cat) => (
-        <div key={cat.key} className="pro-menu-category">
-          <p className="pro-menu-category-name">{cat.name}</p>
-          <ul className="pro-menu-items">
-            {cat.items.slice(0, 4).map((item) => (
-              <li key={item.key ?? item.name} className="pro-menu-item">
-                {item.imageUrl ? (
-                  <img className="pro-menu-item-img" src={item.imageUrl} alt={item.name} loading="lazy" />
-                ) : null}
-                <div className="pro-menu-item-info">
-                  <span className="pro-menu-item-name">{item.name}</span>
-                  {item.description ? <span className="pro-menu-item-desc">{item.description}</span> : null}
-                  {item.priceCents != null ? (
-                    <span className="pro-menu-item-price">{formatCents(item.priceCents, item.currencyCode)}</span>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </section>
-  );
-}
-
-function GallerySection({ portfolio }) {
-  if (!portfolio?.length) return null;
-  return (
-    <section className="card card--subtle pro-gallery" aria-label="Portfolio gallery">
-      <h2 className="pro-section-title">Gallery</h2>
-      <div className="pro-gallery-grid">
-        {portfolio.slice(0, 9).map((item) => (
-          <div key={item.portfolioItemId} className="pro-gallery-item">
-            <img
-              className="pro-gallery-img"
-              src={item.mediaUrl}
-              alt={item.altText ?? item.title ?? "Portfolio image"}
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export async function ProviderPageTemplate({
   model,
   stats,
@@ -182,7 +75,7 @@ export async function ProviderPageTemplate({
     model.cityName,
     model.countryName
   );
-  const isVerified = Boolean(provider.vcsmActorId);
+  const isVerified = provider.source === "vport" || provider.claimStatus === "claimed";
   const summaryReviewCount = Number(reviewSummary?.reviewCount ?? 0);
   const summaryAverageRating = Number(reviewSummary?.averageRating ?? 0);
   const statsReviewCount = Number(stats?.reviewCount ?? 0);
@@ -197,7 +90,6 @@ export async function ProviderPageTemplate({
   const hasVisibleReviews = visibleReviews.length > 0 || hasVisibleReviewSignals;
   const showBio = !isDefaultBio(provider.shortBio, provider.displayName);
 
-  // Banner: real image with dark overlay, else pure CSS gradient hero
   const heroBannerStyle = provider.bannerUrl
     ? {
         backgroundImage: `linear-gradient(to bottom, rgba(11,11,15,0.55) 0%, rgba(11,11,15,0.97) 100%), url(${provider.bannerUrl})`,
@@ -206,7 +98,6 @@ export async function ProviderPageTemplate({
       }
     : undefined;
 
-  // Strip legacy SEO-plumbing links — only show human-readable discovery links
   const exploreLinks = relatedLinks.filter(
     (link) => !link.label.toLowerCase().startsWith("legacy")
   );
@@ -222,7 +113,6 @@ export async function ProviderPageTemplate({
         aria-label="Provider identity"
       >
         <div className="pro-hero-top">
-          {/* Avatar: logo preferred, falls back to avatar, then gradient initials */}
           <div
             className="pro-hero-avatar"
             style={(provider.logoUrl || provider.avatarUrl) ? undefined : { background: serviceGradient }}
@@ -238,16 +128,10 @@ export async function ProviderPageTemplate({
             )}
           </div>
 
-          <div className="pro-hero-badges">
-            {model.serviceNames.map((name) => (
-              <span className="pill pill--live" key={name}>{name}</span>
-            ))}
-            {isVerified ? (
-              <span className="pill pill--ok">Verified</span>
-            ) : (
-              <span className="pill">Unclaimed</span>
-            )}
-          </div>
+          <ProviderHeroBadges
+            serviceNames={model.serviceNames}
+            isVerified={isVerified}
+          />
         </div>
 
         <h1 className="pro-hero-name">{provider.displayName}</h1>
@@ -260,26 +144,14 @@ export async function ProviderPageTemplate({
           <p className="pro-hero-bio">{provider.shortBio}</p>
         ) : null}
 
-        <div className="pro-hero-stats">
-          {hasVisibleReviewSignals ? (
-            <>
-              <span className="pro-stat">
-                <span className="pro-stat-value">&#9733; {ratingValue.toFixed(1)}</span>
-                <span className="pro-stat-label">Rating</span>
-              </span>
-              <span className="pro-stat-divider" aria-hidden="true" />
-              <span className="pro-stat">
-                <span className="pro-stat-value">{reviewCountValue}</span>
-                <span className="pro-stat-label">Reviews</span>
-              </span>
-            </>
-          ) : (
-            <span className="pro-new-badge">New on TRAZE</span>
-          )}
-        </div>
+        <ProviderHeroStats
+          ratingValue={ratingValue}
+          reviewCountValue={reviewCountValue}
+          hasVisibleReviewSignals={hasVisibleReviewSignals}
+        />
       </section>
 
-      {/* ── BODY (sidebar first in DOM → top on mobile, right on desktop) ── */}
+      {/* ── BODY ─────────────────────────────────────────────── */}
       <div className="pro-body">
         <aside className="pro-sidebar">
           <ProviderCtaModules
@@ -290,11 +162,11 @@ export async function ProviderPageTemplate({
             claimStatus={provider.claimStatus}
             vcsmActorId={provider.vcsmActorId}
             vcsmSlug={provider.vcsmSlug}
+            providerSource={provider.source}
           />
         </aside>
 
         <div className="pro-main">
-          {/* Contact */}
           <ContactSection
             phone={provider.phoneE164}
             address={provider.addressLine1
@@ -311,54 +183,35 @@ export async function ProviderPageTemplate({
             lng={provider.lng}
           />
 
-          {/* Hours */}
-          <HoursSection hours={provider.hours} />
+          <ProviderHoursSection hours={provider.hours} />
+          <ProviderServicesSection liveServices={liveServices} />
+          <ProviderMenuSection menuCategories={menuCategories} />
+          <ProviderGallerySection portfolio={portfolio} />
 
-          {/* Services */}
-          <ServicesSection liveServices={liveServices} />
-
-          {/* Menu */}
-          <MenuSection menuCategories={menuCategories} />
-
-          {/* Gallery */}
-          <GallerySection portfolio={portfolio} />
-
-          {/* Trust / Reviews */}
-          <section className="card card--subtle pro-trust" aria-label="Reviews and trust">
-            {hasVisibleReviews ? (
-              <>
-                <h2 className="pro-section-title">Reviews</h2>
-                {reviewSummary ? (
-                  <ReviewTrustSummary summary={reviewSummary} />
-                ) : null}
-
-                {visibleReviews.length > 0 ? (
-                  <ProviderReviewList reviews={visibleReviews} />
-                ) : hasVisibleReviewSignals ? (
-                  <p className="pro-review-meta-note">
-                    This profile has ratings, but no written comments yet.
-                  </p>
-                ) : null}
-              </>
-            ) : (
-              <div className="pro-trust-empty">
-                <p className="pro-trust-empty-text">
-                  This provider is new. Visit their live profile to connect or be the first to review.
-                </p>
-              </div>
-            )}
-          </section>
+          <ProviderTrustSection
+            reviewSummary={reviewSummary}
+            visibleReviews={visibleReviews}
+            hasVisibleReviews={hasVisibleReviews}
+            hasVisibleReviewSignals={hasVisibleReviewSignals}
+          />
 
           {providerGuideLinks.length > 0 ? (
-            <InternalLinkGrid title="Guides & Resources" links={providerGuideLinks} />
+            <InternalLinkGrid title="Guides & Resources" titleEs="Guías y recursos" links={providerGuideLinks} />
           ) : null}
         </div>
       </div>
 
       {/* ── EXPLORE NEARBY ───────────────────────────────────── */}
       {exploreLinks.length > 0 ? (
-        <InternalLinkGrid title="Explore nearby" links={exploreLinks} />
+        <InternalLinkGrid title="Explore nearby" titleEs="Explorar cerca" links={exploreLinks} />
       ) : null}
+
+      {/* ── DATA DISCLAIMER ──────────────────────────────────── */}
+      <ProviderDataDisclaimer
+        providerName={provider.displayName}
+        providerSlug={provider.slug}
+        claimStatus={provider.claimStatus}
+      />
     </div>
   );
 }

@@ -9,18 +9,14 @@ import ProviderLeadCaptureCard from "@/features/conversion/components/ProviderLe
 import { useTrafficLanguage } from "@/lib/language";
 
 export function DirectoryCtaModules({ context }) {
-  const { lang } = useTrafficLanguage();
+  const { t } = useTrafficLanguage();
 
   return (
     <div className="card stack-grid">
       <h3 className="homepage-card-title">
-        {lang === "es" ? "Continuar en Vibez Citizens" : "Continue on Vibez Citizens"}
+        {t("cta.continueOnVc")}
       </h3>
-      <p>
-        {lang === "es"
-          ? "Abre perfiles en vivo, compara disponibilidad y continúa el proceso de reserva en la plataforma."
-          : "Open live provider profiles, compare availability, and continue booking workflows on the platform."}
-      </p>
+      <p>{t("cta.continueBody")}</p>
       <div className="row-wrap">
         <a
           className="pill pill--primary pill--strong"
@@ -28,7 +24,7 @@ export function DirectoryCtaModules({ context }) {
           target="_blank"
           rel="noreferrer"
         >
-          {lang === "es" ? "Explorar en Vibez Citizens" : "Explore on Vibez Citizens"}
+          {t("cta.exploreOnVc")}
         </a>
       </div>
     </div>
@@ -42,10 +38,14 @@ export function ProviderCtaModules({
   providerName,
   claimStatus,
   vcsmActorId,
-  vcsmSlug
+  vcsmSlug,
+  providerSource
 }) {
   const claimLink = buildPlatformClaimLink(providerSlug, vcsmActorId, "provider");
-  const profileHref = buildPlatformProviderLink(providerSlug, vcsmSlug, "provider");
+  const profileHref =
+    providerSource === "seed" && !vcsmActorId && !vcsmSlug
+      ? null
+      : buildPlatformProviderLink(providerSlug, vcsmSlug, "provider");
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL ?? "";
   const supabaseAnonKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";

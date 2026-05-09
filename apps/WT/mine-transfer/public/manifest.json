@@ -1,0 +1,22 @@
+{
+  "name": "VCSM Dashboard",
+  "short_name": "VCSM",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#edf5fb",
+  "theme_color": "#0f4a72",
+  "icons": [
+    
+  {
+    "src": "/vibez-icon-192x192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+  {
+    "src": "/vibez-icon-512x512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }
+
+  ]
+}

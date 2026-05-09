@@ -376,3 +376,40 @@
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.3);
 }
+
+/* ── Locale switcher ───────────────────────────────────────── */
+.locale-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.locale-switcher button {
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+  color: var(--vc-text);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.locale-switcher button[aria-pressed="true"] {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.45);
+  color: #c4b5fd;
+  cursor: default;
+}
+
+.locale-switcher button:not([aria-pressed="true"]):hover {
+  background: var(--vc-surface-strong);
+}
+
+.locale-switcher span[aria-hidden="true"] {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+  user-select: none;
+}

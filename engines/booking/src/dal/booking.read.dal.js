@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../config.js'
+import { getVportClient } from '../config.js'
 
 const BOOKING_SELECT = [
   'id', 'resource_id', 'service_id', 'customer_actor_id', 'customer_profile_id',
@@ -25,8 +25,7 @@ function asTimestamp(value, field) {
 export async function dalGetBookingById({ bookingId }) {
   if (!bookingId) throw new Error('BookingEngine: bookingId is required')
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
+  const { data, error } = await getVportClient()
     .from('bookings')
     .select(BOOKING_SELECT)
     .eq('id', bookingId)
@@ -42,8 +41,7 @@ export async function dalListBookingsInRange({ resourceId, rangeStart, rangeEnd,
   const startIso = asTimestamp(rangeStart, 'rangeStart')
   const endIso   = asTimestamp(rangeEnd,   'rangeEnd')
 
-  let query = getSupabaseClient()
-    .schema('vc')
+  let query = getVportClient()
     .from('bookings')
     .select(publicMode ? BOOKING_SELECT_PUBLIC : BOOKING_SELECT)
     .eq('resource_id', resourceId)
@@ -63,8 +61,7 @@ export async function dalListBookingsInRange({ resourceId, rangeStart, rangeEnd,
 export async function dalListBookingsByResource({ resourceId, statuses = null, limit = 50, offset = 0 }) {
   if (!resourceId) throw new Error('BookingEngine: resourceId is required')
 
-  let query = getSupabaseClient()
-    .schema('vc')
+  let query = getVportClient()
     .from('bookings')
     .select(BOOKING_SELECT)
     .eq('resource_id', resourceId)

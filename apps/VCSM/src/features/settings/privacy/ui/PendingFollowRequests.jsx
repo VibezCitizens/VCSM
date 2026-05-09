@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useTranslation } from '@i18n'
 import { useIncomingFollowRequests } from '@/features/social/adapters/friend/request/hooks/useIncomingFollowRequests.adapter'
 import { usePendingFollowRequestActions } from '@/features/settings/privacy/hooks/usePendingFollowRequestActions'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import ActorLink from '@/shared/components/ActorLink'
 
 export default function PendingFollowRequests({ actorId }) {
+  const { t } = useTranslation()
   const { requests, loading } = useIncomingFollowRequests(actorId)
   const [hidden, setHidden] = useState(() => new Set())
   const hide = (requesterActorId) =>
@@ -24,7 +26,7 @@ export default function PendingFollowRequests({ actorId }) {
 
   return (
     <section className="settings-card-surface rounded-xl p-4">
-      <h3 className="mb-2 text-sm font-semibold text-white">Pending follow requests</h3>
+      <h3 className="mb-2 text-sm font-semibold text-white">{t('settings.privacy.pendingFollowRequests')}</h3>
 
       <div className="space-y-2">
         {visibleRequests.map((req) => (
@@ -47,6 +49,7 @@ function RequestRow({
   onOptimisticHide,
   onRollbackHide,
 }) {
+  const { t } = useTranslation()
   const actor = useActorSummary(requesterActorId)
   const { busy, accept, decline } = usePendingFollowRequestActions({
     requesterActorId,
@@ -71,7 +74,7 @@ function RequestRow({
           onClick={accept}
           className="settings-btn settings-btn--primary px-3 py-1.5 text-xs disabled:opacity-50"
         >
-          Accept
+          {t('actions.accept')}
         </button>
 
         <button
@@ -79,7 +82,7 @@ function RequestRow({
           onClick={decline}
           className="settings-btn settings-btn--ghost px-3 py-1.5 text-xs disabled:opacity-50"
         >
-          Decline
+          {t('actions.decline')}
         </button>
       </div>
     </div>

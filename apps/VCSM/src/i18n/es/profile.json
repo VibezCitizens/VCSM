@@ -1,0 +1,36 @@
+{
+  "tabs": {
+    "photos": "Fotos",
+    "videos": "Videos",
+    "posts": "Vibes",
+    "friends": "Amigos",
+    "tags": "Etiquetas"
+  },
+  "header": {
+    "failedToLoad": "No se pudo cargar el perfil.",
+    "videosSoon": "Videos - próximamente",
+    "noBio": "No se proporcionó biografía.",
+    "subscribers": "{{count}} Suscriptores"
+  },
+  "tags": {
+    "title": "Etiquetas",
+    "selected": "{{count}} seleccionadas",
+    "noTagsYet": "Aún no hay etiquetas",
+    "addTag": "+ Agregar etiqueta",
+    "failedToLoad": "No se pudieron cargar las etiquetas."
+  },
+  "privateGate": {
+    "badge": "Acceso controlado",
+    "title": "Perfil privado",
+    "subtitle": "Se requiere aprobación de suscripción para acceder al contenido protegido del perfil.",
+    "instructionBefore": "Toca",
+    "instructionAfter": "en el encabezado para enviar una solicitud de acceso. El acceso se concede automáticamente después de la aprobación.",
+    "messagingPending": "La mensajería seguirá disponible mientras el acceso esté pendiente."
+  },
+  "actions": {
+    "subscribe": "Suscribirse",
+    "unsubscribe": "Cancelar suscripción",
+    "requested": "Solicitado",
+    "message": "Mensaje"
+  }
+}

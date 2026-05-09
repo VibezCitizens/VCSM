@@ -4,6 +4,7 @@ import { getServiceBySlug, listServices, listSpecialtiesByService } from "@/data
 import {
   listAllActiveProviders,
   listProviders,
+  listProvidersByCity,
   listProvidersByCityAndService,
   listProvidersByCountry,
   listProvidersByCountryAndService,
@@ -170,7 +171,9 @@ export function listCountryProviderStaticParams() {
 }
 
 export function listCityStaticParams() {
-  return listCities().map((city) => ({ city: city.slug }));
+  return listCities()
+    .filter((city) => isCityIndexable(listProvidersByCity(city.id).length))
+    .map((city) => ({ city: city.slug }));
 }
 
 export function listCityServiceStaticParams() {

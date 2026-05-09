@@ -1,22 +1,17 @@
 "use client";
 
 import { MapPin, Scissors, Key, Utensils, Fuel } from "lucide-react";
+import TrazeSearchBar from "@/components/TrazeSearchBar";
+import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
 import { useTrafficLanguage } from "@/lib/language";
-import HomepageSearchPanel from "@/features/home/components/HomepageSearchPanel";
 
 export default function HomepageHeroSection({
   defaultLocation,
   locationOptions,
-  liveServiceSlugs,
-  popularLinks,
-  heroStats
+  countryOptions,
+  liveServiceSlugs
 }) {
-  const { lang } = useTrafficLanguage();
-
-  const localizedPopularLinks = popularLinks.map((link) => ({
-    ...link,
-    label: lang === "es" && link.labelEs ? link.labelEs : link.label
-  }));
+  const { t } = useTrafficLanguage();
 
   return (
     <section className="homepage-hero" id="hero">
@@ -24,50 +19,32 @@ export default function HomepageHeroSection({
         <div className="homepage-hero-content">
           <span className="pill homepage-eyebrow">
             <MapPin size={11} style={{ marginRight: 4 }} />
-            {lang === "es" ? "DIRECTORIO DE SERVICIOS LOCALES" : "LOCAL SERVICES DIRECTORY"}
+            {t("homepage.heroEyebrow")}
           </span>
 
           <h1 className="homepage-hero-title">
-            {lang === "es" ? "Busca servicios locales." : "Search local services."}
+            {t("homepage.heroTitle")}
             <span className="homepage-hero-title-accent">
-              {lang === "es" ? "Reserva con confianza." : "Book with confidence."}
+              {t("homepage.heroTitleAccent")}
             </span>
           </h1>
 
-          <p className="homepage-hero-copy">
-            {lang === "es"
-              ? "Compara proveedores de confianza por categoría, ubicación y disponibilidad en un solo lugar."
-              : "Compare trusted providers by category, location, and availability in one clean marketplace."}
-          </p>
+          <p className="homepage-hero-copy">{t("homepage.heroBody")}</p>
 
-          <HomepageSearchPanel
+          <TrazeSearchBar
+            screenKey="home"
+            {...TRAZE_SCREEN_SEARCH.home}
             defaultLocation={defaultLocation}
             locationOptions={locationOptions}
+            countryOptions={countryOptions}
             liveServiceSlugs={liveServiceSlugs}
-            popularLinks={localizedPopularLinks}
+            showCountrySelector
+            showCitySelector
+            locationPlaceholder={{
+              en: "City, state, or country",
+              es: "Ciudad, estado o pais"
+            }}
           />
-
-          {heroStats.length > 0 ? (
-            <div
-              className="homepage-hero-facts"
-              aria-label={lang === "es" ? "Destacados del directorio" : "Directory highlights"}
-            >
-              {heroStats.map((stat) => (
-                <div className="homepage-hero-fact" key={stat.label}>
-                  <strong>{stat.value}</strong>
-                  <span>{lang === "es" && stat.labelEs ? stat.labelEs : stat.label}</span>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          {defaultLocation?.label ? (
-            <p className="homepage-hero-note">
-              {lang === "es"
-                ? `Mostrando rutas rápidas para ${defaultLocation.label}.`
-                : `Showing quick routes for ${defaultLocation.label}.`}
-            </p>
-          ) : null}
         </div>
 
         <div className="homepage-hero-visual" aria-hidden="true">
@@ -90,13 +67,13 @@ export default function HomepageHeroSection({
             </div>
 
             <div className="homepage-hero-chip homepage-hero-chip--1">
-              <Scissors size={12} /> {lang === "es" ? "Barbero" : "Barber"}
+              <Scissors size={12} /> {t("homepage.barber")}
             </div>
             <div className="homepage-hero-chip homepage-hero-chip--2">
-              <Key size={12} /> {lang === "es" ? "Cerrajero" : "Locksmith"}
+              <Key size={12} /> {t("homepage.locksmith")}
             </div>
             <div className="homepage-hero-chip homepage-hero-chip--3">
-              <Utensils size={12} /> {lang === "es" ? "Restaurante" : "Restaurant"}
+              <Utensils size={12} /> {t("homepage.restaurant")}
             </div>
             <div className="homepage-hero-chip homepage-hero-chip--4">
               <Fuel size={12} /> Gas

@@ -1,5 +1,6 @@
 import { useSearchTabsActor } from '@/features/explore/hooks/useSearchTabsActor'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useTranslation } from '@i18n'
 import ActorSearchResultRow from './ActorSearchResultRow'
 import PostCard from './PostCard'
 import WanderCardSearch from '@/features/explore/ui/features/WanderCardSearch'
@@ -8,6 +9,7 @@ import FeaturedResultCard from './FeaturedResultCard'
 import { SkeletonRow } from '@/shared/components/Skeleton'
 
 export default function ResultList({ query, filter }) {
+  const { t } = useTranslation()
   const { identity } = useIdentity()
   const viewerActorId = identity?.actorId ?? null
   const { items, loading } = useSearchTabsActor({ query, filter, viewerActorId })
@@ -56,7 +58,7 @@ export default function ResultList({ query, filter }) {
       {postItems.length > 0 && (
         <>
           {actorItems.length > 0 && (
-            <p className="explore-section-label">Vibes</p>
+            <p className="explore-section-label">{t('explore.vibesSection')}</p>
           )}
           {postItems.map((it) => <PostCard key={`post:${it.id}`} post={it} />)}
         </>

@@ -1,6 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_STORAGE_KEY,
+  localeFromPathname,
+  normalizeLocale
+} from "@/lib/i18n";
+import { translate } from "@/i18n";
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -11,10 +18,13 @@ export const LanguageContext = createContext("en");
 
 function detectInitialLang() {
   // SSR guard — no window/localStorage access during server render
-  if (typeof window === "undefined") return "en";
+  if (typeof window === "undefined") return DEFAULT_LOCALE;
+
+  const routeLocale = localeFromPathname(window.location.pathname);
+  if (routeLocale) return routeLocale;
 
   try {
-    const stored = localStorage.getItem("traffic-lang");
+    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (stored === "en" || stored === "es") return stored;
   } catch {
     // localStorage blocked (private mode, etc.) — fall through
@@ -26,31 +36,35 @@ function detectInitialLang() {
     // navigator not available — fall through
   }
 
-  return "en";
+  return DEFAULT_LOCALE;
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function LanguageProvider({ children }) {
   // Start with "en" on the server; client reconciles on mount
-  const [lang, setLangState] = useState("en");
+  const [lang, setLangState] = useState(DEFAULT_LOCALE);
 
   useEffect(() => {
     setLangState(detectInitialLang());
   }, []);
 
   function setLang(next) {
-    const value = next === "es" ? "es" : "en";
+    const value = normalizeLocale(next);
     setLangState(value);
     try {
-      localStorage.setItem("traffic-lang", value);
+      localStorage.setItem(LOCALE_STORAGE_KEY, value);
     } catch {
       // localStorage blocked — still update in-memory state
     }
   }
 
+  function t(key, params) {
+    return translate(key, lang, params);
+  }
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang }}>
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -61,7 +75,7 @@ export function LanguageProvider({ children }) {
 export function useTrafficLanguage() {
   const ctx = useContext(LanguageContext);
   // If consumed above the provider (shouldn't happen), return a no-op fallback
-  if (typeof ctx === "string") return { lang: ctx, setLang: () => {} };
+  if (typeof ctx === "string") return { lang: ctx, setLang: () => {}, t: (key, params) => translate(key, ctx, params) };
   return ctx;
 }
 

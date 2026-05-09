@@ -1,7 +1,10 @@
-import { MOCK_PROVIDERS, MOCK_PROVIDER_SERVICES } from "@/data/connectors/unifiedDataset";
+import {
+  LIVE_PROVIDER_INDEX_PROVIDERS,
+  LIVE_PROVIDER_INDEX_PROVIDER_SERVICES
+} from "@/data/connectors/unifiedDataset";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
-import { getCityById } from "@/data/repositories/city.repo";
-import { getCountryByCode } from "@/data/repositories/geo.repo";
+import { getCityById, getCityBySlug } from "@/data/repositories/city.repo";
+import { getCountryByCode, listCountries } from "@/data/repositories/geo.repo";
 import { normalizeSlug, slugEquals } from "@/lib/slugs";
 
 function sortByRank(items) {
@@ -22,7 +25,7 @@ function hasStructuredCity(provider) {
 
 function listProviderIdsByService(serviceId, specialtyId = null) {
   return new Set(
-    MOCK_PROVIDER_SERVICES.filter((providerService) => {
+    LIVE_PROVIDER_INDEX_PROVIDER_SERVICES.filter((providerService) => {
       if (!providerService.isActive || providerService.serviceId !== serviceId) {
         return false;
       }
@@ -56,7 +59,7 @@ function parseCityRef(cityId) {
   }
 
   const value = String(cityId ?? "").trim();
-  const match = value.match(/^vport-city:([A-Z]{2}):(.+)$/);
+  const match = value.match(/^(?:vport|traffic|seed)-city:([A-Z]{2}):(.+)$/);
   if (!match) {
     return null;
   }
@@ -83,9 +86,14 @@ function toCityLabel(citySlug) {
     .join(" ");
 }
 
+function maybeNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
 export function listProviders(filters = {}) {
-  return MOCK_PROVIDERS.filter((provider) => {
-    if (!provider.isActive || !provider.isIndexable) {
+  return LIVE_PROVIDER_INDEX_PROVIDERS.filter((provider) => {
+    if (!provider.isActive || !provider.isIndexable || provider.directoryVisible === false) {
       return false;
     }
 
@@ -112,17 +120,17 @@ export function getProviderBySlug(providerSlug, options = {}) {
 }
 
 export function getProviderBySlugAny(providerSlug) {
-  return MOCK_PROVIDERS.find(
-    (provider) => provider.isActive && slugEquals(provider.slug, providerSlug)
+  return LIVE_PROVIDER_INDEX_PROVIDERS.find(
+    (provider) => provider.isActive && provider.isIndexable && slugEquals(provider.slug, providerSlug)
   ) ?? null;
 }
 
 export function listAllActiveProviders() {
-  return MOCK_PROVIDERS.filter((provider) => provider.isActive && provider.slug);
+  return LIVE_PROVIDER_INDEX_PROVIDERS.filter((provider) => provider.isActive && provider.isIndexable && provider.slug);
 }
 
 export function listServicesForProvider(providerId) {
-  return MOCK_PROVIDER_SERVICES.filter(
+  return LIVE_PROVIDER_INDEX_PROVIDER_SERVICES.filter(
     (providerService) => providerService.providerId === providerId && providerService.isActive
   );
 }
@@ -208,22 +216,103 @@ export function listStructuredCitiesByCountryCode(countryCode) {
     }
 
     if (!grouped.has(citySlug)) {
+      const taxCity = getCityBySlug(citySlug, { countryId: country?.id });
       grouped.set(citySlug, {
-        id: provider.primaryCityId ?? `vport-city:${normalizedCountryCode}:${citySlug}`,
+        id: provider.primaryCityId ?? taxCity?.id ?? `vport-city:${normalizedCountryCode}:${citySlug}`,
         slug: citySlug,
-        name: provider.primaryCityName ?? toCityLabel(citySlug),
-        stateCode: provider.primaryRegionCode ?? null,
+        name: provider.primaryCityName ?? taxCity?.name ?? toCityLabel(citySlug),
+        stateCode: provider.primaryRegionCode ?? taxCity?.stateCode ?? null,
         countryCode: normalizedCountryCode,
         countryId: country?.id ?? null,
         regionId: null,
         timezone: provider.timezone ?? null,
+        lat: maybeNumber(provider.lat) ?? taxCity?.lat ?? null,
+        lon: maybeNumber(provider.lng) ?? taxCity?.lon ?? null,
         isActive: true,
         isStructured: true
       });
+      return;
+    }
+
+    const current = grouped.get(citySlug);
+    if (current.lat == null) {
+      const taxCity = getCityBySlug(citySlug, { countryId: country?.id });
+      current.lat = maybeNumber(provider.lat) ?? taxCity?.lat ?? null;
+      current.lon = maybeNumber(provider.lng) ?? taxCity?.lon ?? null;
+    }
+    if (!current.stateCode && provider.primaryRegionCode) {
+      current.stateCode = provider.primaryRegionCode;
     }
   });
 
   return [...grouped.values()].sort((left, right) => left.name.localeCompare(right.name));
+}
+
+export function listLiveProviderCountries() {
+  const grouped = new Map();
+
+  for (const provider of listProviders()) {
+    const countryCode = normalizeCountryCode(provider.primaryCountryCode);
+    if (!countryCode) continue;
+
+    const country = getCountryByCode(countryCode);
+    const key = countryCode;
+    const current = grouped.get(key) ?? {
+      countryCode,
+      countrySlug: country?.slug ?? countryCode.toLowerCase(),
+      name: country?.name ?? countryCode,
+      nameEs: country?.nameEs ?? country?.name ?? countryCode,
+      providerCount: 0,
+      citySlugs: new Set()
+    };
+
+    current.providerCount += 1;
+    if (provider.primaryCitySlug) {
+      current.citySlugs.add(normalizeSlug(provider.primaryCitySlug));
+    }
+    grouped.set(key, current);
+  }
+
+  return [...grouped.values()]
+    .map((entry) => ({
+      countryCode: entry.countryCode,
+      countrySlug: entry.countrySlug,
+      name: entry.name,
+      nameEs: entry.nameEs,
+      providerCount: entry.providerCount,
+      cityCount: entry.citySlugs.size
+    }))
+    .sort((left, right) => {
+      const countryOrder = new Map(listCountries().map((country, index) => [country.code, index]));
+      const leftOrder = countryOrder.get(left.countryCode) ?? 999;
+      const rightOrder = countryOrder.get(right.countryCode) ?? 999;
+      if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+      return left.name.localeCompare(right.name);
+    });
+}
+
+export function listLiveProviderLocationOptions() {
+  return listLiveProviderCountries().flatMap((country) =>
+    listStructuredCitiesByCountryCode(country.countryCode).map((city) => ({
+      citySlug: city.slug,
+      countrySlug: country.countrySlug,
+      name: city.name,
+      nameEs: city.nameEs ?? city.name,
+      stateCode: city.stateCode ?? null,
+      countryCode: country.countryCode,
+      countryName: country.name,
+      countryNameEs: country.nameEs,
+      label: city.stateCode
+        ? `${city.name}, ${city.stateCode}, ${country.countryCode}`
+        : `${city.name}, ${country.countryCode}`,
+      labelEs: city.stateCode
+        ? `${city.nameEs ?? city.name}, ${city.stateCode}, ${country.countryCode}`
+        : `${city.nameEs ?? city.name}, ${country.countryCode}`,
+      href: `/${country.countrySlug}/${city.slug}`,
+      lat: city.lat ?? null,
+      lon: city.lon ?? null
+    }))
+  );
 }
 
 export function getStructuredCityBySlug(countryCode, citySlug) {

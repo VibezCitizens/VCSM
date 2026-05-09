@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../config.js'
+import { getVportClient } from '../config.js'
 
 const RULE_SELECT = [
   'id', 'resource_id', 'rule_type', 'weekday', 'start_time', 'end_time',
@@ -22,9 +22,8 @@ function asTimestamp(value, field) {
 export async function dalListAvailabilityRulesByResourceId({ resourceId, includeInactive = false }) {
   if (!resourceId) throw new Error('BookingEngine: resourceId is required')
 
-  let query = getSupabaseClient()
-    .schema('vc')
-    .from('booking_availability_rules')
+  let query = getVportClient()
+    .from('availability_rules')
     .select(RULE_SELECT)
     .eq('resource_id', resourceId)
     .order('weekday',    { ascending: true })
@@ -44,9 +43,8 @@ export async function dalListAvailabilityExceptionsInRange({ resourceId, rangeSt
   const startIso = asTimestamp(rangeStart, 'rangeStart')
   const endIso   = asTimestamp(rangeEnd,   'rangeEnd')
 
-  let query = getSupabaseClient()
-    .schema('vc')
-    .from('booking_availability_exceptions')
+  let query = getVportClient()
+    .from('availability_exceptions')
     .select(EXCEPTION_SELECT)
     .eq('resource_id', resourceId)
     .lt('starts_at', endIso)

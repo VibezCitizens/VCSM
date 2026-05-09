@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '@i18n'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 
 function formatSlotTime(iso) {
@@ -9,17 +10,20 @@ function formatSlotTime(iso) {
 }
 
 export default function BookingConfirmedNotificationItem({ notification }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   if (!notification) return null
 
-  const service = notification.context?.serviceLabelSnapshot ?? 'your booking'
+  const service = notification.context?.serviceLabelSnapshot ?? t('notifications.booking.defaultBooking')
   const time = formatSlotTime(notification.context?.startsAt)
-  const timeLabel = time ? ` at ${time}` : ''
+  const message = time
+    ? t('notifications.booking.confirmedAt', { service, time })
+    : t('notifications.booking.confirmed', { service })
 
   return (
     <NotificationCard
       actor={notification.sender}
-      message={`confirmed ${service}${timeLabel}`}
+      message={message}
       timestamp={notification.createdAt}
       unread={!notification.isRead}
       onClick={notification.linkPath ? () => navigate(notification.linkPath) : undefined}

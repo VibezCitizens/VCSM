@@ -1,19 +1,16 @@
 /**
- * Live dataset — loads real VPORT data from Supabase.
+ * Live dataset — loads real TRAZE public provider data from Supabase.
  *
- * Previously merged mock provider data with live VPORT data.
- * Mock provider merging has been removed. Only real VPORT profiles
- * from vport.public_traze_profiles_v are used at runtime.
+ * All public provider rows come from the canonical VPORT provider index view:
+ * vport.public_traze_provider_index_v. The view itself merges real VPORT
+ * profiles and public-safe seed listings, with VPORT winning by slug.
  *
- * Export names kept for backward compatibility with provider.repo.js
- * and aggregate.repo.js — the MOCK_ prefix is now a legacy artifact.
- *
- * If Supabase is unavailable (missing env vars or network error), the
- * build continues with empty provider arrays — this file never throws.
+ * If Supabase is unavailable, the build continues with empty provider arrays,
+ * but the failure is logged. No mock provider fallback is injected.
  */
 
 import { loadVportRows } from "@/data/connectors/vportDataset";
-import { mapVportRowToProvider } from "@/data/mappers/vportToProvider.model";
+import { mapProviderIndexRowToProvider } from "@/data/mappers/providerIndex.model";
 import { readAllServicePriceRows } from "@/data/dal/priceAggregate.read.dal";
 
 /** @typedef {import("@/data/types").Provider} Provider */
@@ -30,28 +27,46 @@ const providerServices = [];
 /** @type {ProviderStats[]} */
 const providerStats = [];
 
+function logDatasetError(scope, error) {
+  console.error(`[unifiedDataset] ${scope}:`, error?.message ?? error);
+}
+
+function addMappedProvider(mapped) {
+  if (!mapped?.provider?.id || !mapped.provider.slug) return;
+
+  providers.push(mapped.provider);
+
+  if (Array.isArray(mapped.providerServices)) {
+    providerServices.push(...mapped.providerServices);
+  } else if (mapped.providerService) {
+    providerServices.push(mapped.providerService);
+  }
+
+  if (mapped.providerStats) {
+    providerStats.push(mapped.providerStats);
+  }
+}
+
 try {
   const rows = await loadVportRows();
 
   for (const row of rows) {
     let mapped;
     try {
-      mapped = mapVportRowToProvider(row);
+      mapped = mapProviderIndexRowToProvider(row);
     } catch (err) {
       if (process.env.NODE_ENV !== "production") {
-        console.error("[unifiedDataset] Failed to map row", row?.slug, err?.message ?? err);
+        logDatasetError(`Failed to map provider index row ${row?.slug ?? ""}`, err);
       }
       continue;
     }
 
     if (!mapped) continue;
 
-    providers.push(mapped.provider);
-    if (mapped.providerService) providerServices.push(mapped.providerService);
-    providerStats.push(mapped.providerStats);
+    addMappedProvider(mapped);
   }
-} catch {
-  // Never let a load failure break the build
+} catch (error) {
+  logDatasetError("provider index load failed", error);
 }
 
 // ─── Compute real price aggregates ───────────────────────────────────────────
@@ -100,7 +115,7 @@ try {
       const bucket = buckets.get(key) ?? {
         cityId: primaryCityId,
         serviceId,
-        countryId: `country-${(primaryCountryCode ?? "us").toLowerCase()}`,
+        countryId: primaryCountryCode ? `country-${primaryCountryCode.toLowerCase()}` : null,
         prices: []
       };
       bucket.prices.push(minPrice);
@@ -129,8 +144,8 @@ try {
       });
     }
   }
-} catch {
-  // Never let price computation failure break the build
+} catch (error) {
+  logDatasetError("price aggregate computation failed", error);
 }
 
 function computePercentile(sorted, p) {
@@ -143,19 +158,19 @@ function computePercentile(sorted, p) {
 
 // ─── Live-only exports ────────────────────────────────────────────────────────
 // These names are kept for backward compat with importing repos.
-// No mock data is mixed in — these arrays contain only real VPORT profiles.
+// No mock data is mixed in — these arrays contain canonical provider-index rows.
 
 /** @type {Provider[]} */
-export const MOCK_PROVIDERS = providers;
+export const LIVE_PROVIDER_INDEX_PROVIDERS = providers;
 
 /** @type {ProviderService[]} */
-export const MOCK_PROVIDER_SERVICES = providerServices;
+export const LIVE_PROVIDER_INDEX_PROVIDER_SERVICES = providerServices;
 
 /** @type {ProviderStats[]} */
-export const MOCK_PROVIDER_STATS = providerStats;
+export const LIVE_PROVIDER_INDEX_PROVIDER_STATS = providerStats;
 
 /** @type {PriceAggregate[]} */
-export const MOCK_PRICE_AGGREGATES = priceAggregates;
+export const LIVE_PROVIDER_INDEX_PRICE_AGGREGATES = priceAggregates;
 
 /** Whether live VPORT data loaded successfully. "ok" | "unavailable" */
 export const LIVE_DATA_STATUS = providers.length > 0 ? "ok" : "unavailable";

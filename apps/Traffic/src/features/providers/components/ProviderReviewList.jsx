@@ -15,7 +15,7 @@ function formatReviewRating(value) {
 }
 
 export default function ProviderReviewList({ reviews = [] }) {
-  const { lang } = useTrafficLanguage();
+  const { t } = useTrafficLanguage();
   const safeReviews = Array.isArray(reviews) ? reviews : [];
   const [visibleCount, setVisibleCount] = useState(
     Math.min(REVIEW_BATCH_SIZE, safeReviews.length)
@@ -54,7 +54,7 @@ export default function ProviderReviewList({ reviews = [] }) {
           className="btn btn--ghost pro-review-load-btn"
           onClick={() => setVisibleCount(nextVisibleCount)}
         >
-          {lang === "es" ? `Cargar ${nextBatchCount} más` : `Load ${nextBatchCount} more`}
+          {t("providerProfile.loadMore", { count: nextBatchCount })}
         </button>
       ) : null}
     </>

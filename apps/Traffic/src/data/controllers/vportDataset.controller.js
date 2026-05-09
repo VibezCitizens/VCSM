@@ -1,18 +1,15 @@
-import { readVportPublicTrazeProfileRows } from "@/data/dal/vportDataset.read.dal";
-import { flattenVportPublicTrazeProfileRow } from "@/data/mappers/vportDataset.model";
+import { readPublicTrazeProviderIndexRows } from "@/data/dal/vportDataset.read.dal";
 
-export async function loadVportRows() {
+export async function loadVportRows(options = {}) {
   let rawRows;
   try {
-    rawRows = await readVportPublicTrazeProfileRows();
+    rawRows = await readPublicTrazeProviderIndexRows(options);
   } catch (err) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("[vportDataset] Unexpected error fetching VPORT rows:", err?.message ?? err);
-    }
+    console.error("[vportDataset] Unexpected error fetching provider index rows:", err?.message ?? err);
     return [];
   }
 
   if (!rawRows) return [];
 
-  return rawRows.map(flattenVportPublicTrazeProfileRow);
+  return rawRows;
 }

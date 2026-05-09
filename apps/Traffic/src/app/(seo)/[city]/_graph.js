@@ -6,6 +6,7 @@ import {
   getRegionById
 } from "@/data/repositories/geo.repo";
 import {
+  listProvidersByCity,
   listProvidersByCountry,
   listStructuredCitiesByCountryCode
 } from "@/data/repositories/provider.repo";
@@ -13,10 +14,10 @@ import { buildDirectoryMetadata } from "@/seo/metadata";
 import { countryPath, countryCityPath } from "@/lib/paths";
 
 export const LEGACY_TRANSITION_ROBOTS = {
-  index: true,
+  index: false,
   follow: true,
   googleBot: {
-    index: true,
+    index: false,
     follow: true
   }
 };
@@ -24,6 +25,10 @@ export const LEGACY_TRANSITION_ROBOTS = {
 export function resolveCountryPage(params) {
   const country = getCountryBySlug(params.city);
   if (!country) {
+    return null;
+  }
+
+  if (listProvidersByCountry(country.code).length === 0) {
     return null;
   }
 
@@ -41,6 +46,10 @@ export function resolveLegacyCityPage(params) {
 
   const country = getCountryById(city.countryId);
   if (!country) {
+    return null;
+  }
+
+  if (listProvidersByCity(city.id).length === 0) {
     return null;
   }
 

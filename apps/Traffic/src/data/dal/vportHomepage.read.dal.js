@@ -8,21 +8,26 @@ const CATEGORIES_SELECT = [
 
 const TRAZE_VIEW_BASE_SELECT = [
   "id",
-  "actor_id",
-  "name",
+  "source",
+  "source_id",
+  "display_name",
   "slug",
+  "business_type",
+  "service_slug",
+  "service_name",
   "avatar_url",
   "banner_url",
-  "location_text",
-  "address",
   "country_code",
-  "city",
-  "city_slug",
   "state_code",
-  "city_country_code",
-  "category_key",
-  "directory_visible",
-  "directory_status",
+  "city_name",
+  "city_slug",
+  "zip_code",
+  "address_text",
+  "phone",
+  "website_url",
+  "claim_status",
+  "is_active",
+  "is_indexable",
   "created_at"
 ];
 
@@ -46,6 +51,11 @@ function toArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function normalizeCountryCode(value) {
+  const countryCode = String(value ?? "").trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(countryCode) ? countryCode : null;
+}
+
 function mapProfilesFromTrazeView(rows) {
   return toArray(rows)
     .map((row) => {
@@ -57,12 +67,15 @@ function mapProfilesFromTrazeView(rows) {
 
       return {
         id,
-        actor_id: row?.actor_id ?? null,
-        name: row?.name ?? slug,
+        actor_id: null,
+        source: row?.source ?? null,
+        source_id: row?.source_id ?? null,
+        name: row?.display_name ?? slug,
+        display_name: row?.display_name ?? slug,
         slug,
         avatar_url: row?.avatar_url ?? null,
         banner_url: row?.banner_url ?? null,
-        is_active: true,
+        is_active: row?.is_active !== false,
         is_deleted: false,
         created_at: row?.created_at ?? null
       };
@@ -85,19 +98,26 @@ async function readCategories(client) {
   return { ok: true, rows };
 }
 
-async function readPublicTrazeProfilesView(client) {
+async function readPublicTrazeProfilesView(client, options = {}) {
   let lastError = null;
+  const countryCode = normalizeCountryCode(options.countryCode);
 
   const startIndex = resolvedTrazeViewSelectIndex ?? 0;
   for (let index = startIndex; index < TRAZE_VIEW_SELECT_CANDIDATES.length; index += 1) {
     const selectClause = TRAZE_VIEW_SELECT_CANDIDATES[index];
-    const { data, error } = await client
+    let query = client
       .schema("vport")
-      .from("public_traze_profiles_v")
+      .from("public_traze_provider_index_v")
       .select(selectClause)
-      .eq("directory_visible", true)
-      .eq("directory_status", "listed")
+      .eq("is_active", true)
+      .eq("is_indexable", true)
       .order("created_at", { ascending: false });
+
+    if (countryCode) {
+      query = query.eq("country_code", countryCode);
+    }
+
+    const { data, error } = await query;
 
     if (!error) {
       resolvedTrazeViewSelectIndex = index;
@@ -108,7 +128,7 @@ async function readPublicTrazeProfilesView(client) {
   }
 
   if (lastError) {
-    logQueryErrorOnce("public_traze_profiles_v", lastError);
+    logQueryErrorOnce("public_traze_provider_index_v", lastError);
   }
 
   return { ok: false, rows: [] };
@@ -119,7 +139,7 @@ async function readPublicTrazeProfilesView(client) {
  * Private table reads are optional and should never block rendering.
  * Never throws so static export can gracefully fallback to mock content.
  */
-export async function fetchVportHomepageRows() {
+export async function fetchVportHomepageRows(options = {}) {
   const client = getSupabaseClient();
 
   if (!client) {
@@ -142,7 +162,7 @@ export async function fetchVportHomepageRows() {
   try {
     const [categoriesResult, trazeViewResult] = await Promise.all([
       readCategories(client),
-      readPublicTrazeProfilesView(client)
+      readPublicTrazeProfilesView(client, options)
     ]);
 
     const viewBackfilledProfiles = mapProfilesFromTrazeView(trazeViewResult.rows);

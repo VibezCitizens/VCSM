@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { useTranslation } from "@i18n";
 import { BookingCalendarAgendaPanel } from "@/features/profiles/kinds/vport/screens/booking/components/BookingCalendarAgendaPanel";
 import { BookingCalendarDayPanel } from "@/features/profiles/kinds/vport/screens/booking/components/BookingCalendarDayPanel";
 import { BookingCalendarMonthGrid } from "@/features/profiles/kinds/vport/screens/booking/components/BookingCalendarMonthGrid";
@@ -5,9 +7,7 @@ import { useVportBookingView } from "@/features/profiles/kinds/vport/screens/boo
 import VportPublicBookingFlow from "@/features/profiles/kinds/vport/screens/booking/view/VportPublicBookingFlow";
 import {
   DURATION_OPTIONS,
-  SEGMENT_LABELS,
   STATUS_LABELS,
-  WEEKDAY_LABELS,
 } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendar.model";
 import "@/features/profiles/styles/profiles-booking-modern.css";
 import "@/features/profiles/styles/profiles-booking-daypanel-modern.css";
@@ -29,6 +29,24 @@ export default function VportBookingView({ profile, isOwner = false }) {
 
 function VportOwnerBookingView({ profile }) {
   const isOwner = true;
+  const { t } = useTranslation();
+
+  const weekdayLabels = useMemo(() => [
+    t('vport.bookingView.weekdaySun'),
+    t('vport.bookingView.weekdayMon'),
+    t('vport.bookingView.weekdayTue'),
+    t('vport.bookingView.weekdayWed'),
+    t('vport.bookingView.weekdayThu'),
+    t('vport.bookingView.weekdayFri'),
+    t('vport.bookingView.weekdaySat'),
+  ], [t]);
+
+  const segmentLabels = useMemo(() => ({
+    morning: t('vport.bookingView.segmentMorning'),
+    afternoon: t('vport.bookingView.segmentAfternoon'),
+    evening: t('vport.bookingView.segmentEvening'),
+  }), [t]);
+
   const {
     viewerActorId,
     resources,
@@ -77,10 +95,10 @@ function VportOwnerBookingView({ profile }) {
     <section className="profiles-card profiles-booking-shell p-4 sm:p-5">
       <header className="profiles-booking-header">
         <div>
-          <p className="profiles-booking-kicker">Appointments & Availability</p>
-          <h3 className="profiles-booking-title">Calendar</h3>
+          <p className="profiles-booking-kicker">{t('vport.bookingView.kicker')}</p>
+          <h3 className="profiles-booking-title">{t('vport.bookingView.title')}</h3>
           <p className="profiles-booking-subtitle">
-            Booking availability for @{profile?.username || "barber"}.
+            {t('vport.bookingView.subtitle', { username: profile?.username || 'barber' })}
           </p>
         </div>
       </header>
@@ -92,17 +110,17 @@ function VportOwnerBookingView({ profile }) {
 
       <div className="profiles-booking-stats-grid">
         <article className="profiles-booking-stat-card">
-          <p className="profiles-booking-stat-label">Open Slots</p>
+          <p className="profiles-booking-stat-label">{t('vport.bookingView.openSlots')}</p>
           <p className="profiles-booking-stat-value">{monthStats.openSlots}</p>
         </article>
 
         <article className="profiles-booking-stat-card">
-          <p className="profiles-booking-stat-label">Booked</p>
+          <p className="profiles-booking-stat-label">{t('vport.bookingView.booked')}</p>
           <p className="profiles-booking-stat-value">{monthStats.bookedCount}</p>
         </article>
 
         <article className="profiles-booking-stat-card">
-          <p className="profiles-booking-stat-label">Pending</p>
+          <p className="profiles-booking-stat-label">{t('vport.bookingView.pending')}</p>
           <p className="profiles-booking-stat-value">{monthStats.pendingCount}</p>
         </article>
       </div>
@@ -115,11 +133,11 @@ function VportOwnerBookingView({ profile }) {
           className="text-[9px] font-semibold uppercase tracking-widest mb-3"
           style={{ color: "rgba(255,255,255,0.2)" }}
         >
-          Owner Tools
+          {t('vport.bookingView.ownerTools')}
         </div>
 
         <div className="profiles-booking-duration-switch" role="radiogroup" aria-label="Appointment duration">
-          <span className="profiles-booking-duration-label">Duration</span>
+          <span className="profiles-booking-duration-label">{t('vport.bookingView.duration')}</span>
           {DURATION_OPTIONS.map((durationOption) => {
             const isActive = slotDurationMinutes === durationOption;
             return (
@@ -145,7 +163,7 @@ function VportOwnerBookingView({ profile }) {
             role="tab"
             aria-selected={viewMode === "calendar"}
           >
-            Calendar
+            {t('vport.bookingView.viewCalendar')}
           </button>
           <button
             type="button"
@@ -154,7 +172,7 @@ function VportOwnerBookingView({ profile }) {
             role="tab"
             aria-selected={viewMode === "agenda"}
           >
-            Agenda
+            {t('vport.bookingView.viewAgenda')}
           </button>
         </div>
       </div>
@@ -162,7 +180,7 @@ function VportOwnerBookingView({ profile }) {
       {viewMode === "calendar" ? (
         <BookingCalendarMonthGrid
           monthLabel={monthLabel}
-          weekdayLabels={WEEKDAY_LABELS}
+          weekdayLabels={weekdayLabels}
           monthCells={monthCells}
           onPrevMonth={onPrevMonth}
           onNextMonth={onNextMonth}
@@ -181,7 +199,7 @@ function VportOwnerBookingView({ profile }) {
           selectedSlot={selectedSlot}
           selectedSlotsBySegment={selectedSlotsBySegment}
           selectedAppointments={selectedAppointments}
-          segmentLabels={SEGMENT_LABELS}
+          segmentLabels={segmentLabels}
           statusLabels={STATUS_LABELS}
           isSelectedSlotAvailable={isSelectedSlotAvailable}
           primaryActionLabel={isOwner ? "Add appointment from selected slot" : "Request selected slot"}
@@ -209,7 +227,7 @@ function VportOwnerBookingView({ profile }) {
           upcomingAppointments={upcomingAppointments}
           weeklyAvailabilityDays={weeklyAvailabilityDays}
           weekLabel={agendaWeekLabel}
-          segmentLabels={SEGMENT_LABELS}
+          segmentLabels={segmentLabels}
           statusLabels={STATUS_LABELS}
           isOwner={isOwner}
         />

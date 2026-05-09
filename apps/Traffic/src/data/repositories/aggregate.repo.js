@@ -1,13 +1,16 @@
-import { MOCK_PRICE_AGGREGATES, MOCK_PROVIDER_STATS } from "@/data/connectors/unifiedDataset";
+import {
+  LIVE_PROVIDER_INDEX_PRICE_AGGREGATES,
+  LIVE_PROVIDER_INDEX_PROVIDER_STATS
+} from "@/data/connectors/unifiedDataset";
 
 export function getProviderStats(providerId) {
-  return MOCK_PROVIDER_STATS.find((stats) => stats.providerId === providerId) ?? null;
+  return LIVE_PROVIDER_INDEX_PROVIDER_STATS.find((stats) => stats.providerId === providerId) ?? null;
 }
 
 export function getPriceAggregate(params) {
   const localityId = params.localityId ?? params.neighborhoodId ?? null;
 
-  const exact = MOCK_PRICE_AGGREGATES.find((row) => {
+  const exact = LIVE_PROVIDER_INDEX_PRICE_AGGREGATES.find((row) => {
     if (params.countryId && row.countryId !== params.countryId) {
       return false;
     }
@@ -29,7 +32,7 @@ export function getPriceAggregate(params) {
   }
 
   return (
-    MOCK_PRICE_AGGREGATES.find((row) => {
+    LIVE_PROVIDER_INDEX_PRICE_AGGREGATES.find((row) => {
       if (params.countryId && row.countryId !== params.countryId) {
         return false;
       }

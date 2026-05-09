@@ -1,0 +1,117 @@
+/* ============================================================
+   VIBEZ CITIZENS — DESIGN TOKENS
+   ============================================================
+   Merged from citizens-theme.css (vc-* tokens) and globals.css
+   (:root traffic-* tokens + aliases). Single source of truth.
+   ============================================================ */
+
+:root {
+  /* ── VCSM design tokens (from citizens-theme.css) ── */
+
+  /* Background tiers */
+  --vc-bg-0: #0b0b0f;
+  --vc-bg-1: #0e0d14;
+  --vc-bg-2: #13121a;
+
+  /* Page glow gradients */
+  --vc-gradient-a: rgba(108, 77, 246, 0.15);
+  --vc-gradient-b: rgba(59, 130, 246, 0.1);
+
+  /* Surfaces */
+  --vc-surface: rgba(20, 18, 30, 0.66);
+  --vc-surface-strong: rgba(26, 22, 38, 0.84);
+  --vc-surface-input: rgba(14, 12, 22, 0.78);
+
+  /* Borders */
+  --vc-border: rgba(139, 92, 246, 0.18);
+  --vc-border-strong: rgba(139, 92, 246, 0.28);
+  --vc-border-subtle: rgba(139, 92, 246, 0.1);
+
+  /* Text */
+  --vc-text: #f0eef5;
+  --vc-text-soft: #d1d0d8;
+  --vc-text-muted: #9892a6;
+
+  /* Accents */
+  --vc-accent-primary: #8b5cf6;
+  --vc-accent-primary-hover: #a78bfa;
+  --vc-accent-secondary: #4ea4ff;
+  --vc-accent-tertiary: #42d3ff;
+  --vc-accent-pink: #ff69c6;
+
+  /* Semantic */
+  --vc-success: #22c55e;
+  --vc-error: #ef4444;
+  --vc-warning: #f59e0b;
+  --vc-danger-a: rgba(190, 24, 93, 0.7);
+  --vc-danger-b: rgba(220, 38, 38, 0.72);
+
+  /* Elevation */
+  --vc-shadow-card: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --vc-shadow-elevated: 0 24px 45px rgba(0, 0, 0, 0.36), 0 0 22px rgba(139, 92, 246, 0.1);
+  --vc-shadow-glow: 0 10px 30px rgba(139, 92, 246, 0.35);
+
+  /* Surface gradients */
+  --vc-card-bg: linear-gradient(180deg, rgba(20, 20, 26, 0.98) 0%, rgba(20, 20, 26, 0.9) 100%);
+  --vc-card-bg-blue: linear-gradient(160deg, rgba(139, 92, 246, 0.08) 0%, transparent 45%), var(--vc-card-bg);
+
+  /* Focus / glass */
+  --vc-ring: 0 0 0 3px rgba(139, 92, 246, 0.24);
+  --vc-backdrop-blur: blur(12px);
+
+  /* Legacy compat aliases */
+  --cit-bg-0: var(--vc-bg-0);
+  --cit-bg-1: var(--vc-bg-1);
+  --cit-bg-2: var(--vc-bg-2);
+  --cit-surface: var(--vc-surface);
+  --cit-border: var(--vc-border);
+  --cit-text: var(--vc-text);
+  --cit-text-muted: var(--vc-text-muted);
+  --cit-accent-a: var(--vc-accent-primary);
+  --cit-accent-b: var(--vc-accent-pink);
+  --cit-accent-c: var(--vc-accent-secondary);
+
+  /* ── Traffic-specific tokens ── */
+
+  color-scheme: dark;
+  --traffic-main-max-width: 1240px;
+  --traffic-page-pad-inline: 1rem;
+  --traffic-page-pad-block: 1.25rem;
+  --traffic-page-bottom-pad: 3.5rem;
+
+  --traffic-radius-sm: 0.75rem;
+  --traffic-radius-md: 1rem;
+  --traffic-radius-lg: 1.1rem;
+  --traffic-radius-xl: 1.2rem;
+  --traffic-radius-pill: 9999px;
+
+  --traffic-space-1: 0.25rem;
+  --traffic-space-2: 0.5rem;
+  --traffic-space-3: 0.75rem;
+  --traffic-space-4: 1rem;
+  --traffic-space-5: 1.25rem;
+
+  --traffic-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --traffic-font-display: "GFS Didot", "Times New Roman", serif;
+
+  /* Traffic compatibility aliases mapped to VCSM tokens */
+  --bg: var(--vc-bg-0);
+  --surface: var(--vc-surface);
+  --surface-muted: var(--vc-surface-strong);
+  --text: var(--vc-text);
+  --text-soft: var(--vc-text-soft);
+  --text-muted: var(--vc-text-muted);
+  --border: var(--vc-border);
+  --border-subtle: var(--vc-border-subtle);
+  --border-strong: var(--vc-border-strong);
+  --accent: var(--vc-accent-primary);
+  --accent-strong: var(--vc-accent-primary-hover);
+  --ok: var(--vc-success);
+  --danger: var(--vc-error);
+
+  /* iOS / PWA safe area */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}

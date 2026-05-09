@@ -1,0 +1,42 @@
+/* ============================================================
+   COMPONENTS — Language toggle (.traffic-lang-*)
+   ============================================================ */
+
+.traffic-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--traffic-radius-pill);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.traffic-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 28px;
+  padding: 0 0.45rem;
+  border: none;
+  border-radius: var(--traffic-radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 130ms ease, color 130ms ease;
+}
+
+.traffic-lang-btn:hover {
+  color: var(--text);
+}
+
+.traffic-lang-btn--active {
+  background: var(--accent);
+  color: #fff;
+}

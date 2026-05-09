@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   listCityServiceStaticParams,
   listCountryCityStaticParams
@@ -9,6 +9,7 @@ import {
 } from "@/data/repositories/taxonomyParams.repo";
 import { resolvePage, buildCountryCityMetadata, buildLegacyCityServiceMetadata } from "./_graph";
 import { renderCountryCityPage, renderLegacyCityServicePage } from "./_renderers";
+import { countryCityPath } from "@/lib/paths";
 
 function dedupeParamPairs(entries) {
   const seen = new Set();
@@ -77,6 +78,10 @@ export default function DualSegmentPage({ params }) {
   }
 
   if (graph.routeMode === "country_city") {
+    if (params.city !== graph.country.slug) {
+      redirect(countryCityPath(graph.country.slug, graph.city.slug));
+    }
+
     return renderCountryCityPage(graph);
   }
 

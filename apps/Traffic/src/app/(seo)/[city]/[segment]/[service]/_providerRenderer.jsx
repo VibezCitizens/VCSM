@@ -12,8 +12,7 @@ import {
   countryCityPath,
   countryCityServicePath,
   countryProviderPath,
-  neighborhoodServicePath,
-  providerPath
+  neighborhoodServicePath
 } from "@/lib/paths";
 
 export async function renderCountryProviderPage(graph) {
@@ -62,7 +61,6 @@ export async function renderCountryProviderPage(graph) {
           href: countryCityServicePath(graph.country.slug, graph.city.slug, service.slug)
         }))
       : []),
-    { label: "Legacy provider path", href: providerPath(graph.provider.slug) },
     ...(graph.city
       ? graph.services.map((service) => ({
           label: `Legacy city-service path (${graph.city.slug}/${service.slug})`,

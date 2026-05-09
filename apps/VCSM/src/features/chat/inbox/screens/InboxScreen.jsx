@@ -18,10 +18,12 @@ import StartConversationModal from '@/features/chat/start/screens/StartConversat
 import { inboxOnSearch } from '@/features/chat/inbox/constants/inboxSearchAdapter'
 import { useStartConversation } from '@/features/chat/start/hooks/useStartConversation'
 import { useChatMessagePrefetch } from '@/features/chat/inbox/hooks/useChatMessagePrefetch'
+import { useTranslation } from '@i18n'
 import '@/features/ui/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 export default function InboxScreen() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { identity, loading: identityLoading } = useIdentity()
 
@@ -90,13 +92,13 @@ export default function InboxScreen() {
   if (identityLoading || !actorId) return null
   if (error) return (
     <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-      <p className="text-sm text-white/50">Couldn&apos;t load Vox</p>
+      <p className="text-sm text-white/50">{t('vox.inbox.errorLoad')}</p>
       <button
         type="button"
         onClick={refresh}
         className="rounded-xl bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/15 active:bg-white/20"
       >
-        Try again
+        {t('vox.inbox.tryAgain')}
       </button>
     </div>
   )
@@ -117,7 +119,7 @@ export default function InboxScreen() {
           }}
         >
           <h1 className="text-lg font-semibold text-white">
-            {actorKind === 'vport' ? 'Vport Vox' : actorKind === 'void' ? 'Void Vox' : 'Vox'}
+            {actorKind === 'vport' ? t('vox.inbox.vportTitle') : actorKind === 'void' ? t('vox.inbox.voidTitle') : t('vox.inbox.title')}
           </h1>
 
           <div className="relative">
@@ -152,7 +154,7 @@ export default function InboxScreen() {
                     }}
                     className="w-full px-4 py-3 text-left text-white hover:bg-white/10"
                   >
-                    New Vox
+                    {t('vox.inbox.newVox')}
                   </button>
 
                   <div className="h-px bg-white/10" />
@@ -165,7 +167,7 @@ export default function InboxScreen() {
                     }}
                     className="w-full px-4 py-3 text-left text-white hover:bg-white/10"
                   >
-                    More actions
+                    {t('vox.inbox.moreActions')}
                   </button>
                 </div>
               </>

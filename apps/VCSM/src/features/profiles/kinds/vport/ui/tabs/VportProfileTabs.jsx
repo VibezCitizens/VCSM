@@ -1,8 +1,10 @@
 // src/features/profiles/kinds/vport/ui/tabs/VportProfileTabs.jsx
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useTranslation } from "@i18n";
 
 export default function VportProfileTabs({ tab, setTab, tabs }) {
+  const { t } = useTranslation();
   const list = useMemo(() => (Array.isArray(tabs) ? tabs : []), [tabs]);
   const scrollRef = useRef(null);
 
@@ -131,14 +133,14 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
               scrollPaddingRight: rightPad,
             }}
           >
-            {list.map((t) => {
-              const active = tab === t.key;
+            {list.map((tabItem) => {
+              const active = tab === tabItem.key;
 
               return (
                 <button
-                  key={t.key}
-                  data-tab-key={t.key}
-                  onClick={() => setTab(t.key)}
+                  key={tabItem.key}
+                  data-tab-key={tabItem.key}
+                  onClick={() => setTab(tabItem.key)}
                   className={`
                     profiles-tab-btn
                     relative py-3
@@ -148,7 +150,7 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
                   `}
                   aria-current={active ? "page" : undefined}
                 >
-                  {t.label}
+                  {tabItem.tKey ? t(tabItem.tKey) : tabItem.label}
 
                   {active && (
                     <span
@@ -162,6 +164,7 @@ export default function VportProfileTabs({ tab, setTab, tabs }) {
                 </button>
               );
             })}
+
           </div>
         </div>
       </div>

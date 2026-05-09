@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom'
 import { useResetPassword } from '@/features/auth/hooks/useResetPassword'
 import { authTheme } from '@/features/auth/styles/authTheme'
 import '@/features/auth/styles/registerFormCard.css'
+import { useTranslation } from '@i18n'
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation()
+
   const {
     email,
     setEmail,
@@ -30,10 +33,10 @@ export default function ForgotPasswordScreen() {
         >
           <div className="mb-6 space-y-1">
             <h1 className="text-center text-[1.65rem] font-semibold tracking-tight text-white">
-              Forgot password
+              {t('auth.forgot.title')}
             </h1>
             <p className="text-center text-sm text-[#9ca3af]">
-              Enter your email and we'll send you a reset link.
+              {t('auth.forgot.subtitle')}
             </p>
           </div>
 
@@ -47,7 +50,7 @@ export default function ForgotPasswordScreen() {
               </div>
 
               <p className="text-center text-xs text-[#9ca3af]">
-                Redirecting you to login…
+                {t('auth.forgot.redirecting')}
               </p>
 
               <button
@@ -55,7 +58,7 @@ export default function ForgotPasswordScreen() {
                 onClick={goToLogin}
                 className="w-full rounded-xl bg-[#6C4DF6] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(108,77,246,0.35)] transition-all duration-200 hover:-translate-y-[1px] hover:bg-[#7657ff] active:translate-y-0"
               >
-                Back to login
+                {t('auth.forgot.backToLogin')}
               </button>
             </div>
           ) : (
@@ -75,7 +78,7 @@ export default function ForgotPasswordScreen() {
                     htmlFor="forgot-email"
                     className="text-xs font-medium tracking-wide text-[#d1d5db]"
                   >
-                    Email
+                    {t('auth.email')}
                   </label>
                   <input
                     id="forgot-email"
@@ -104,7 +107,7 @@ export default function ForgotPasswordScreen() {
                       : 'cursor-not-allowed bg-white/10 text-white/60 shadow-none',
                   ].join(' ')}
                 >
-                  {loading ? 'Sending…' : 'Send reset link'}
+                  {loading ? t('auth.forgot.sending') : t('auth.forgot.sendResetLink')}
                 </button>
               </form>
 
@@ -112,7 +115,7 @@ export default function ForgotPasswordScreen() {
                 to="/login"
                 className="mt-1 block w-full rounded-xl bg-white/10 px-4 py-3 text-center text-sm font-semibold text-white/60 no-underline transition-all duration-200 hover:bg-white/15 hover:text-white"
               >
-                Back to login
+                {t('auth.forgot.backToLogin')}
               </Link>
             </>
           )}

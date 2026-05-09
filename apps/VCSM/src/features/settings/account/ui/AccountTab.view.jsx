@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { useVportsList } from '@/features/settings/vports/hooks/useVportsList'
 import { useAccountController } from '@/features/settings/account/hooks/useAccountController'
 import { VportDangerRow, SoftDeleteModal, HardDeleteModal, RestoreModal, DeleteModal, DangerLabel, Chevron } from '@/features/settings/account/ui/components/AccountTabSubComponents'
+import { useTranslation } from '@i18n'
 
 export default function AccountTabView() {
+  const { t } = useTranslation()
   const { items: vports, setItems: setVports } = useVportsList()
   const {
     isVport,
@@ -35,7 +37,7 @@ export default function AccountTabView() {
   const [hardTarget, setHardTarget] = useState(null)
   const [restoreTarget, setRestoreTarget] = useState(null)
 
-  const citizenName = displayName ?? 'Your account'
+  const citizenName = displayName ?? t('settings.account.yourAccount')
   const citizenAvatar = avatarUrl || '/avatar.jpg'
 
   async function handleSoftConfirm() {
@@ -83,7 +85,7 @@ export default function AccountTabView() {
               {slug ? <div className="truncate text-sm text-white/50">@{slug}</div> : null}
             </div>
             <button onClick={logout} className="settings-btn settings-btn--ghost shrink-0 px-3 py-1.5 text-sm">
-              Sign out
+              {t('auth.signOut')}
             </button>
           </div>
         </div>
@@ -193,16 +195,16 @@ export default function AccountTabView() {
             <div className="settings-danger-row rounded-xl p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold text-rose-100">Delete account</div>
+                  <div className="text-sm font-semibold text-rose-100">{t('settings.account.deleteAccount')}</div>
                   <div className="mt-0.5 text-xs text-rose-100/70">
-                    Removes your profile, posts, messages, and all VPORTs permanently.
+                    {t('settings.account.deleteAccountDesc')}
                   </div>
                 </div>
                 <button
                   onClick={() => setShowConfirmAccount(true)}
                   className="settings-btn settings-btn--danger shrink-0 px-3 py-1.5 text-sm"
                 >
-                  Delete…
+                  {t('settings.account.deleteEllipsis')}
                 </button>
               </div>
               {errAccount && (
@@ -243,17 +245,16 @@ export default function AccountTabView() {
 
       {showConfirmAccount && (
         <DeleteModal
-          title="Delete your account"
+          title={t('settings.account.deleteAccountModalTitle')}
           busy={busyAccount}
           onCancel={() => !busyAccount && setShowConfirmAccount(false)}
           onConfirm={deleteAccount}
-          confirmLabel="Delete account"
+          confirmLabel={t('settings.account.deleteAccount')}
         >
           <p className="text-sm text-white/70">
-            This will permanently delete your profile, all Vibes, Vox, VPORTs, and any content
-            associated with your account.
+            {t('settings.account.deleteAccountBody')}
           </p>
-          <p className="mt-2 text-sm text-rose-300/80">This cannot be undone.</p>
+          <p className="mt-2 text-sm text-rose-300/80">{t('settings.account.cannotBeUndone')}</p>
         </DeleteModal>
       )}
     </div>

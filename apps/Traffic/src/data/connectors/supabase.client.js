@@ -4,8 +4,8 @@ let _client = null;
 
 /**
  * Returns a Supabase anon client for build-time / server-side reads.
- * Returns null if SUPABASE_URL or SUPABASE_ANON_KEY are not set,
- * so callers can degrade gracefully to mock data.
+ * Returns null if SUPABASE_URL or SUPABASE_ANON_KEY are not set —
+ * callers receive empty arrays and degrade to notFound().
  *
  * Never call this in client components — the anon key is fine for public
  * reads but env vars without NEXT_PUBLIC_ prefix are server-only.

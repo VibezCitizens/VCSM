@@ -1,6 +1,6 @@
 // src/features/profiles/config/profileTabs.config.js
 
-const T = (key, label) => ({ key, label });
+const T = (key, label) => ({ key, label, tKey: `vport.tabs.${key}` });
 
 export const TAB = Object.freeze({
   VIBES: T("vibes", "Vibes"),

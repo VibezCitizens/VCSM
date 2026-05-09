@@ -12,6 +12,7 @@ import ActorActionsMenu from '@/features/block/adapters/ui/ActorActionsMenu'
 import { useSubscribeAction } from '@/features/social/adapters/friend/request/hooks/useSubscribeAction.adapter'
 import { useFollowerCount } from '@/features/social/adapters/friend/subscribe/hooks/useFollowerCount.adapter'
 import SubscribeDebugPanel from '@/features/social/adapters/friend/subscribe/components/SubscribeDebugPanel.adapter'
+import { useTranslation } from '@i18n'
 
 // ============================================================
 // ActorProfileHeader
@@ -25,6 +26,7 @@ export default function ActorProfileHeader({
   profileIsPrivate,
   loading = false,
 }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const actorId = profile?.actorId ?? null
   const isSelf = actorId === viewerActorId
@@ -137,11 +139,11 @@ export default function ActorProfileHeader({
                 </div>
 
                 <div className="mt-3 text-sm text-white/90">
-                  {profile.bio || 'No bio provided.'}
+                  {profile.bio || t('profile.header.noBio')}
                 </div>
 
                 <div className="mt-4 text-xs uppercase tracking-[0.12em] text-cyan-300">
-                  {followerCount} Subscribers
+                  {t('profile.header.subscribers', { count: followerCount })}
                 </div>
               </div>
             </div>
@@ -170,7 +172,7 @@ export default function ActorProfileHeader({
             {/* ================= BOTTOM RIGHT ACTIONS ================= */}
             {!isSelf && (
               <div className="mt-4 flex w-full flex-col gap-2 sm:absolute sm:bottom-4 sm:right-4 sm:mt-0 sm:w-auto sm:items-end">
-                <MessageButton onClick={handleMessage} />
+                <MessageButton onClick={handleMessage} label={t('profile.actions.message')} />
                 <SubscribeButton
                   isSubscribed={isSubscribed}
                   label={subscribeLabel}

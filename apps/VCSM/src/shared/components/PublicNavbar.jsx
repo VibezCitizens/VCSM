@@ -3,14 +3,15 @@ import { Link, useLocation } from 'react-router-dom'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { NavLink, HamburgerIcon } from '@/shared/components/publicNavbarComponents'
 import { PublicNavbarMobileMenu } from '@/shared/components/PublicNavbarMobileMenu'
+import { useTranslation } from '@i18n'
 
 export const PUBLIC_NAV_HEIGHT = 64
 
-const NAV_LINKS = [
-  { label: 'About',  to: '/about' },
-  { label: 'VPORT',  to: '/how-to/create-vport' },
-  { label: 'How-To', to: '/how-to/create-profile' },
-  { label: 'Contact', to: '/contact' },
+const NAV_LINK_ROUTES = [
+  { key: 'about',   to: '/about' },
+  { key: 'vport',   to: '/how-to/create-vport' },
+  { key: 'howTo',   to: '/how-to/create-profile' },
+  { key: 'contact', to: '/contact' },
 ]
 
 export default function PublicNavbar() {
@@ -29,6 +30,8 @@ export default function PublicNavbar() {
 
   const { identity, identityLoading } = useIdentity()
   const isLoggedIn = !identityLoading && !!identity?.actorId
+  const { t } = useTranslation()
+  const NAV_LINKS = NAV_LINK_ROUTES.map(({ key, to }) => ({ label: t(`nav.${key}`), to }))
 
   useEffect(() => { setMenuOpen(false) }, [pathname])
 
@@ -150,7 +153,7 @@ export default function PublicNavbar() {
                   border: '1px solid rgba(139,92,246,0.30)', whiteSpace: 'nowrap', cursor: 'pointer',
                 }}
               >
-                Go to app
+                {t('nav.goToApp')}
               </Link>
             ) : (
               <>
@@ -169,7 +172,7 @@ export default function PublicNavbar() {
                       cursor: 'pointer', whiteSpace: 'nowrap',
                     }}
                   >
-                    Log in
+                    {t('nav.logIn')}
                   </Link>
                 )}
                 {isWide && (
@@ -189,7 +192,7 @@ export default function PublicNavbar() {
                       cursor: 'pointer', whiteSpace: 'nowrap',
                     }}
                   >
-                    Get started
+                    {t('nav.getStarted')}
                   </Link>
                 )}
               </>
@@ -199,7 +202,7 @@ export default function PublicNavbar() {
             {!isWide && (
               <button
                 onClick={() => setMenuOpen((v) => !v)}
-                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: 36, height: 36, borderRadius: 8, border: 'none',

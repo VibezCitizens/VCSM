@@ -1,0 +1,71 @@
+{
+  "inbox": {
+    "vportTitle": "Vport Vox",
+    "voidTitle": "Void Vox",
+    "title": "Vox",
+    "newVox": "New Vox",
+    "moreActions": "More actions",
+    "errorLoad": "Couldn't load Vox",
+    "tryAgain": "Try again",
+    "noVoxYet": "No Vox yet",
+    "noVoxDesc": "Start a Vox and your Vox will appear here.",
+    "deleteVox": "Delete Vox"
+  },
+  "start": {
+    "title": "New Vox",
+    "searchPlaceholder": "Search Citizens, Vports...",
+    "searching": "Searching...",
+    "noResults": "No results for \"{{query}}\"."
+  },
+  "chatSettings": {
+    "title": "Vox and Chat",
+    "sectionVox": "VOX",
+    "voxTitle": "Vox",
+    "voxSubtitle": "Vox preferences",
+    "spamTitle": "Spam",
+    "spamSubtitle": "Vox you marked as spam",
+    "requestsTitle": "Requests",
+    "requestsSubtitle": "Citizens who reached out first",
+    "archivedTitle": "Archived",
+    "archivedSubtitle": "Hidden from main Vox",
+    "sectionChatSettings": "CHAT SETTINGS",
+    "blockedTitle": "Blocked Citizens",
+    "blockedSubtitle": "Manage who cannot Vox you",
+    "privacyTitle": "Vox privacy",
+    "privacySubtitle": "Who can Vox you",
+    "safetyTitle": "Safety",
+    "safetySubtitle": "Spam and reporting preferences"
+  },
+  "preferences": {
+    "title": "Vox",
+    "sectionPreferences": "Preferences",
+    "hideEmptyTitle": "Hide empty Vox",
+    "hideEmptySubtitle": "Hide Vox with no messages",
+    "showPreviewTitle": "Show preview",
+    "showPreviewSubtitle": "Show preview under each Vox",
+    "sectionAdvanced": "Advanced",
+    "advancedTitle": "Vox and Chat",
+    "advancedSubtitle": "Back to settings hub"
+  },
+  "blocked": {
+    "title": "Blocked Citizens",
+    "description": "Blocked Citizens can't Vox you, and you won't see their content.",
+    "loading": "Loading...",
+    "empty": "You haven't blocked any Citizens.",
+    "unblock": "Unblock"
+  },
+  "privacy": {
+    "title": "Vox privacy",
+    "whoCanVoxYou": "Who can Vox you",
+    "everyoneTitle": "Everyone",
+    "everyoneSubtitle": "Anyone can start a new Vox with you",
+    "followingTitle": "People you follow",
+    "followingSubtitle": "Only people you follow can start a new Vox",
+    "nobodyTitle": "Nobody",
+    "nobodySubtitle": "No one can start a new Vox (existing Vox still work)",
+    "requestsSection": "Requests",
+    "allowRequestsTitle": "Allow Vox requests",
+    "allowRequestsSubtitle": "If someone cannot Vox you directly, they may appear in Requests",
+    "allowRequestsHint": "Controls whether first-contact inbound messages can route to Requests."
+  }
+}

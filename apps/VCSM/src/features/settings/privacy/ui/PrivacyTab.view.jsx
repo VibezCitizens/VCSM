@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useTranslation } from '@i18n'
 
 import ProfilePrivacyToggle from '@/features/settings/privacy/ui/ProfilePrivacyToggle'
 import UserLookup from '@/features/settings/privacy/ui/UserLookup'
@@ -9,6 +10,7 @@ import { MyBlocksProvider } from '@/features/settings/privacy/hooks/useMyBlocks'
 
 export default function PrivacyTabView() {
   const { identity } = useIdentity()
+  const { t } = useTranslation()
 
   const actorId = identity?.actorId || null
   const kind = identity?.kind || null
@@ -22,19 +24,19 @@ export default function PrivacyTabView() {
   if (!actorProps) {
     return (
       <section className="settings-card-surface rounded-xl p-4">
-        <div className="text-sm text-white/70">Preparing your identity...</div>
-        <div className="text-xs text-white/40">Privacy controls will load shortly.</div>
+        <div className="text-sm text-white/70">{t('settings.privacy.preparing')}</div>
+        <div className="text-xs text-white/40">{t('settings.privacy.preparingDetail')}</div>
       </section>
     )
   }
 
-  const lookupTitle = isVport ? 'Find a Citizen (VPORT scope)' : 'Find a Citizen'
-  const blockedTitle = isVport ? 'Blocked Citizens (VPORT scope)' : 'Blocked Citizens'
-  const visibilityTitle = isVport ? 'VPORT visibility' : 'Profile visibility'
+  const lookupTitle = isVport ? t('settings.privacy.findCitizenVport') : t('settings.privacy.findCitizen')
+  const blockedTitle = isVport ? t('settings.privacy.blockedCitizensVport') : t('settings.privacy.blockedCitizens')
+  const visibilityTitle = isVport ? t('settings.privacy.vportVisibility') : t('settings.privacy.profileVisibility')
 
   const visibilityHelp = isVport
-    ? 'Control who can see this VPORT and its activity.'
-    : 'Control who can see your profile and activity.'
+    ? t('settings.privacy.vportVisibilityHelp')
+    : t('settings.privacy.profileVisibilityHelp')
 
   return (
     <MyBlocksProvider {...actorProps}>
@@ -45,7 +47,7 @@ export default function PrivacyTabView() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h3 className="text-sm font-semibold text-white">{visibilityTitle}</h3>
-              <div className="text-xs text-white/50">Public (default) or Private</div>
+              <div className="text-xs text-white/50">{t('settings.privacy.publicOrPrivate')}</div>
             </div>
             <ProfilePrivacyToggle actorId={actorId} />
           </div>

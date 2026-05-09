@@ -1,0 +1,48 @@
+{
+  "header": {
+    "title": "Notificaciones",
+    "vportTitle": "Notificaciones de Vport",
+    "markAllRead": "Marcar todo como leído",
+    "tabNotifications": "Notificaciones",
+    "tabAppointments": "Citas"
+  },
+  "empty": {
+    "caughtUp": "Estás al día",
+    "newActivity": "La nueva actividad aparecerá aquí."
+  },
+  "follow": {
+    "subscribed": "se suscribió a ti",
+    "sentSubscribeRequest": "te envió una solicitud de suscripción",
+    "acceptedSubscribeRequest": "aceptó tu solicitud de suscripción.",
+    "accept": "Aceptar",
+    "decline": "Rechazar"
+  },
+  "team": {
+    "invitedToJoin": "te invitó a unirte a su equipo"
+  },
+  "comment": {
+    "commented": "comentó en tu Spark 💬",
+    "likedSpark": "le gustó tu Spark ❤️",
+    "replied": "respondió a tu Spark 💬"
+  },
+  "reaction": {
+    "likedVibe": "le gustó tu Vibe 👍",
+    "dislikedVibe": "no le gustó tu Vibe 👎",
+    "roseVibe": "envió una rosa a tu Vibe 🌹",
+    "mentionedVibe": "te mencionó en un Vibe"
+  },
+  "booking": {
+    "booked": "reservó {{service}}",
+    "bookedAt": "reservó {{service}} a las {{time}}",
+    "confirmed": "confirmó {{service}}",
+    "confirmedAt": "confirmó {{service}} a las {{time}}",
+    "cancelled": "canceló {{service}}",
+    "cancelledAt": "canceló {{service}} a las {{time}}",
+    "defaultService": "un servicio",
+    "defaultBooking": "una reserva"
+  },
+  "review": {
+    "reviewed": "reseñó tu negocio",
+    "reviewedRated": "reseñó tu negocio ({{rating}}/5)"
+  }
+}

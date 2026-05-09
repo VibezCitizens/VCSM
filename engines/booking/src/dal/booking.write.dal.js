@@ -1,4 +1,4 @@
-import { getSupabaseClient } from '../config.js'
+import { getVportClient } from '../config.js'
 
 const BOOKING_SELECT = [
   'id', 'resource_id', 'service_id', 'customer_actor_id', 'customer_profile_id',
@@ -31,8 +31,7 @@ export async function dalInsertBooking({ row } = {}) {
   if (!r.service_label_snapshot) throw new Error('BookingEngine: service_label_snapshot is required')
   if (r.duration_minutes == null) throw new Error('BookingEngine: duration_minutes is required')
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
+  const { data, error } = await getVportClient()
     .from('bookings')
     .insert(pickDefined(r, INSERT_COLUMNS))
     .select(BOOKING_SELECT)
@@ -45,8 +44,7 @@ export async function dalInsertBooking({ row } = {}) {
 export async function dalDeleteBooking({ bookingId } = {}) {
   if (!bookingId) throw new Error('BookingEngine: bookingId is required')
 
-  const { error } = await getSupabaseClient()
-    .schema('vc')
+  const { error } = await getVportClient()
     .from('bookings')
     .delete()
     .eq('id', bookingId)
@@ -63,8 +61,7 @@ export async function dalUpdateBookingStatus({ bookingId, status, cancelledAt, c
   if (completedAt  !== undefined) patch.completed_at  = completedAt
   if (internalNote !== undefined) patch.internal_note = internalNote
 
-  const { data, error } = await getSupabaseClient()
-    .schema('vc')
+  const { data, error } = await getVportClient()
     .from('bookings')
     .update(patch)
     .eq('id', bookingId)

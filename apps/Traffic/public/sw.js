@@ -1,10 +1,28 @@
-const CACHE_VERSION = "traze-v1";
+const CACHE_VERSION = "traze-v3";
 const CACHE_ASSETS = `${CACHE_VERSION}-assets`;
 const CACHE_PAGES = `${CACHE_VERSION}-pages`;
+const CORE_ASSETS = [
+  "/",
+  "/offline.html",
+  "/manifest.json",
+  "/favicon.png",
+  "/favicon-16x16.png",
+  "/favicon-32x32.png",
+  "/apple-touch-icon.png",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/icons/maskable-512.png",
+  "/geo/world-countries.topo.json"
+];
 
 const ALL_CACHES = new Set([CACHE_ASSETS, CACHE_PAGES]);
 
-self.addEventListener("install", () => {
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_ASSETS).then((cache) =>
+      cache.addAll(CORE_ASSETS).catch(() => undefined)
+    )
+  );
   self.skipWaiting();
 });
 
@@ -30,6 +48,11 @@ self.addEventListener("fetch", (event) => {
 
   // Versioned Next.js static assets — stale while revalidate
   if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(staleWhileRevalidate(request, CACHE_ASSETS));
+    return;
+  }
+
+  if (isCoreAsset(url.pathname) || request.destination === "image" || request.destination === "manifest") {
     event.respondWith(staleWhileRevalidate(request, CACHE_ASSETS));
     return;
   }
@@ -63,6 +86,10 @@ async function networkFirst(request, cacheName) {
     return response;
   } catch {
     const cache = await caches.open(cacheName);
-    return (await cache.match(request)) ?? Response.error();
+    return (await cache.match(request)) ?? (await caches.match("/offline.html")) ?? Response.error();
   }
+}
+
+function isCoreAsset(pathname) {
+  return CORE_ASSETS.includes(pathname) || pathname.startsWith("/icons/");
 }

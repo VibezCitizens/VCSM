@@ -1,5 +1,6 @@
 // src/features/profiles/kinds/vport/screens/services/components/VportServicesPanel.jsx
 import React, { useMemo } from "react";
+import { useTranslation } from "@i18n";
 import { SkeletonRow } from "@/shared/components/Skeleton";
 import VportServicesHeader from "./VportServicesHeader";
 import VportServicesEmptyState from "./VportServicesEmptyState";
@@ -29,17 +30,18 @@ export default function VportServicesPanel({
   subtitle = "Capabilities and amenities offered by this vport.",
   headerRight = null,
 }) {
+  const { t } = useTranslation();
   const hasServices = (services?.length ?? 0) > 0;
   const grouped = useMemo(() => groupByCategory(services), [services]);
   const categoryCount = grouped.size;
 
   const headerStats = useMemo(() => {
     return [
-      { label: "Live services", value: String(services?.length ?? 0) },
-      { label: "Categories", value: String(categoryCount) },
-      { label: "Availability", value: hasServices ? "Active" : "Preparing" },
+      { label: t('vport.servicesView.liveServices'), value: String(services?.length ?? 0) },
+      { label: t('vport.servicesView.categories'), value: String(categoryCount) },
+      { label: t('vport.servicesView.availability'), value: hasServices ? t('vport.servicesView.active') : t('vport.servicesView.preparing') },
     ];
-  }, [services?.length, categoryCount, hasServices]);
+  }, [services?.length, categoryCount, hasServices, t]);
 
   return (
     <div className="profiles-card relative overflow-hidden rounded-2xl p-6 space-y-5">

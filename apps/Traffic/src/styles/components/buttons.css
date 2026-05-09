@@ -1,0 +1,75 @@
+/* ============================================================
+   COMPONENTS — Buttons (.btn, .btn--*)
+   ============================================================ */
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease,
+    border-color 160ms ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: none;
+}
+
+.btn:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn--primary {
+  background: linear-gradient(90deg, var(--vc-accent-primary), var(--vc-accent-primary-hover));
+  color: #fff;
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: var(--vc-shadow-glow);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 12px 36px rgba(139, 92, 246, 0.45);
+  opacity: 0.94;
+}
+
+.btn--ghost {
+  background: var(--vc-surface);
+  color: var(--vc-text-soft);
+  border-color: var(--vc-border);
+}
+
+.btn--ghost:hover {
+  border-color: var(--vc-border-strong);
+  color: #fff;
+  opacity: 1;
+}
+
+.btn--claim {
+  background: transparent;
+  color: var(--vc-text-muted);
+  border: 1px dashed var(--vc-border);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.btn--claim:hover {
+  border-color: var(--vc-border-strong);
+  color: var(--vc-text-soft);
+  opacity: 1;
+}

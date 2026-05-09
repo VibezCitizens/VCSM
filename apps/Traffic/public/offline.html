@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a12" />
+    <title>Traze offline</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #07070d;
+        --panel: #10101a;
+        --border: rgba(151, 122, 255, 0.24);
+        --text: #f7f4ff;
+        --muted: #aaa2bd;
+        --accent: #8b5cf6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.22), transparent 34rem),
+          radial-gradient(circle at 70% 80%, rgba(78, 164, 255, 0.16), transparent 28rem),
+          var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(100%, 520px);
+        padding: 32px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: linear-gradient(145deg, rgba(20, 20, 33, 0.94), rgba(10, 10, 18, 0.92));
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+      }
+
+      img {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        display: block;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 32px;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      a {
+        display: inline-flex;
+        margin-top: 24px;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/icon-192.png" alt="" />
+      <h1>Traze is offline</h1>
+      <p>
+        The directory needs a connection to refresh live provider coverage. Previously opened pages may still be available.
+      </p>
+      <a href="/">Return home</a>
+    </main>
+  </body>
+</html>
