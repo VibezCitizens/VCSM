@@ -76,6 +76,7 @@ export function usePostReactions(postId, { preloadedReaction = null, preloadedCo
           postId,
           actorId,
           reaction,
+          currentCounts: counts,
         });
 
         setMyReaction(result.reaction);

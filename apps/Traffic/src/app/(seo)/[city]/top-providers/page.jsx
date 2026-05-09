@@ -8,20 +8,26 @@ import { getCountryBySlug } from "@/data/repositories/geo.repo";
 import TopProvidersDiscoveryClient from "@/features/providers/components/TopProvidersDiscoveryClient";
 import { getPlatformOrigin } from "@/lib/env";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
+import { buildDirectoryMetadata } from "@/seo/metadata";
 
 export function generateStaticParams() {
   return listLiveProviderCountries().map((country) => ({ city: country.countrySlug }));
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const country = getCountryBySlug(params.city);
   if (!country) return {};
 
-  return {
+  return buildDirectoryMetadata({
     title: `Top Service Providers in ${country.name} | TRAZE`,
     description: `Browse top-ranked TRAZE service providers in ${country.name}.`,
-    alternates: { canonical: `/${country.slug}/top-providers` }
-  };
+    path: `/${country.slug}/top-providers`,
+    routeLocale
+  });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 function buildClaimHref() {

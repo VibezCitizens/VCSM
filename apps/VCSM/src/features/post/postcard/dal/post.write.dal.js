@@ -66,51 +66,6 @@ async function replacePostMentions(postId, actorIds) {
 }
 
 /**
- * Create a post
- * DAL — RAW INSERT RESULT ONLY
- */
-export async function createPostDAL({ actorId, text }) {
-  if (!actorId) {
-    throw new Error("createPostDAL: actorId required");
-  }
-
-  const { data, error } = await supabase
-    .schema("vc")
-    .from("posts")
-    .insert({
-      actor_id: actorId,
-      text,
-    })
-    .select(
-      `
-      id,
-      actor_id,
-      text,
-      title,
-      media_type,
-      media_url,
-      post_type,
-      tags,
-      created_at
-    `
-    )
-    .maybeSingle();
-
-  if (error) throw error;
-
-  // ✅ Persist mentions (best-effort, but do NOT fail the post if mention insert fails)
-  try {
-    const handles = extractMentionHandles(text);
-    const mentionedActorIds = await resolveMentionActorIds(handles);
-    await insertPostMentionsDAL(data?.id, mentionedActorIds);
-  } catch (e) {
-    console.warn("[createPostDAL] mention persistence failed:", e);
-  }
-
-  return { data, error: null };
-}
-
-/**
  * Edit post text (owner-only)
  * Requires vc.posts.edited_at
  */

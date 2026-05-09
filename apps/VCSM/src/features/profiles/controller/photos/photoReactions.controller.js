@@ -22,9 +22,11 @@ export async function enrichPhotoPostsController({
   const postIds = posts.map((p) => p?.id).filter(Boolean);
   if (!postIds.length) return [];
 
-  const reactions = await listPostReactions(postIds);
-  const commentCounts = await listPostCommentsCount(postIds);
-  const roseCounts = await listPostRoseCount(postIds);
+  const [reactions, commentCounts, roseCounts] = await Promise.all([
+    listPostReactions(postIds),
+    listPostCommentsCount(postIds),
+    listPostRoseCount(postIds),
+  ]);
 
   return enrichPhotoPostsModel({
     posts,

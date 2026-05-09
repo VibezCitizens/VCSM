@@ -32,6 +32,7 @@ export async function fetchPostByIdDAL(postId) {
       )
     `)
     .eq("id", postId)
+    .is("deleted_at", null)
     .order("sort_order", { foreignTable: "post_media", ascending: true })
     .maybeSingle();
 
@@ -42,4 +43,20 @@ export async function fetchPostByIdDAL(postId) {
   const actor = actorRows?.[0] ?? null;
 
   return { data: { ...row, actor }, error: null };
+}
+
+/**
+ * Lightweight existence check — no hydration, no joins.
+ * Returns true only if the post exists and has not been soft-deleted.
+ */
+export async function checkPostExistsDAL(postId) {
+  if (!postId) return false;
+  const { data } = await supabase
+    .schema("vc")
+    .from("posts")
+    .select("id")
+    .eq("id", postId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  return Boolean(data);
 }

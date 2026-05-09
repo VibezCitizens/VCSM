@@ -13,28 +13,23 @@ import HomepageCategoryGrid from "@/features/home/components/HomepageCategoryGri
 import HomepageCtaFooter from "@/features/home/components/HomepageCtaFooter";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import TrazeGeoCoverageGlobe from "@/shared/components/TrazeGeoCoverageGlobe";
+import { buildDirectoryMetadata } from "@/seo/metadata";
 
 const HOMEPAGE_TITLE = "Find Local Service Providers | TRAZE";
 const HOMEPAGE_DESCRIPTION =
   "Find local services by location, compare availability, and book fast on TRAZE.";
 
-export const metadata = {
-  title: HOMEPAGE_TITLE,
-  description: HOMEPAGE_DESCRIPTION,
-  alternates: { canonical: "/" },
-  openGraph: {
+export function buildHomepageMetadata(routeLocale = null) {
+  return buildDirectoryMetadata({
     title: HOMEPAGE_TITLE,
     description: HOMEPAGE_DESCRIPTION,
-    url: "/",
-    type: "website",
-    siteName: "TRAZE"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: HOMEPAGE_TITLE,
-    description: HOMEPAGE_DESCRIPTION
-  }
-};
+    path: "/",
+    routeLocale,
+    twitterCard: "summary_large_image"
+  });
+}
+
+export const metadata = buildHomepageMetadata();
 
 // No hardcoded default city — the homepage is location-neutral on first load.
 // The client-side search panel handles city selection (including geolocation).

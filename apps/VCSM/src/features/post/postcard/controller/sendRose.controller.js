@@ -16,7 +16,7 @@ import {
   fetchReactionSummaryDAL,
 } from "@/features/post/postcard/dal/postReactions.read.dal";
 
-import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
+import { fetchPostByIdDAL, checkPostExistsDAL } from "@/features/post/postcard/dal/post.read.dal";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 /**
@@ -40,6 +40,12 @@ export async function sendRoseController({
   if (!qty || qty <= 0) {
     throw new Error("sendRose: qty must be > 0");
   }
+
+  // ============================================================
+  // 0️⃣ GUARD — reject interactions on deleted posts
+  // ============================================================
+  const postExists = await checkPostExistsDAL(postId);
+  if (!postExists) throw new Error("This post is no longer available.");
 
   // ============================================================
   // 2️⃣ WRITE (RAW MUTATION)

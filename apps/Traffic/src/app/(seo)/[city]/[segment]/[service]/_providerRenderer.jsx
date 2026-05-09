@@ -85,6 +85,17 @@ export async function renderCountryProviderPage(graph) {
       reviewCount: graph.stats?.reviewCount,
       addressLine1: graph.provider.addressLine1,
       postalCode: graph.provider.postalCode,
+      telephone: graph.provider.phoneE164,
+      image: graph.provider.logoUrl ?? graph.provider.avatarUrl ?? graph.provider.bannerUrl,
+      sameAs: [
+        graph.provider.websiteUrl,
+        graph.provider.googleMapsUrl,
+        graph.provider.instagramUrl,
+        graph.provider.facebookUrl
+      ],
+      lat: graph.provider.lat,
+      lng: graph.provider.lng,
+      hours: graph.provider.hours,
       cityName: graph.city?.name ?? graph.provider.primaryCityName,
       localityName: graph.locality?.name,
       regionName: graph.region?.name,

@@ -1,5 +1,6 @@
 import { getSiteOrigin } from "@/lib/env";
 import { listPageCandidates } from "@/data/repositories/pageCandidate.repo";
+import { buildLocalizedAlternates } from "@/seo/locale";
 
 const PRIORITY = {
   country_provider: 0.9,
@@ -28,6 +29,9 @@ export default function sitemap() {
     url: `${siteOrigin}${page.path}`,
     lastModified: new Date(page.updatedAt),
     changeFrequency: CHANGE_FREQ[page.pageType] ?? "monthly",
-    priority: PRIORITY[page.pageType] ?? 0.6
+    priority: PRIORITY[page.pageType] ?? 0.6,
+    alternates: {
+      languages: buildLocalizedAlternates(page.path).languages
+    }
   }));
 }

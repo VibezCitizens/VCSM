@@ -32,6 +32,15 @@ export function buildDirectoryItemListSchema(args) {
           "@type": "LocalBusiness",
           name: item.provider.displayName,
           url: buildCanonical(providerPath),
+          telephone: item.provider.phoneE164 ?? undefined,
+          image: item.provider.logoUrl ?? item.provider.avatarUrl ?? item.provider.bannerUrl ?? undefined,
+          sameAs: compactUrls([
+            item.provider.websiteUrl,
+            item.provider.googleMapsUrl,
+            item.provider.instagramUrl,
+            item.provider.facebookUrl
+          ]),
+          geo: buildGeoSchema(item.provider.lat, item.provider.lng),
           address: {
             "@type": "PostalAddress",
             streetAddress: item.provider.addressLine1 ?? undefined,
@@ -61,6 +70,11 @@ export function buildProviderSchema(args) {
     name: args.providerName,
     description: args.description,
     url: buildCanonical(args.providerPath),
+    telephone: args.telephone ?? undefined,
+    image: args.image ?? undefined,
+    sameAs: compactUrls(args.sameAs),
+    geo: buildGeoSchema(args.lat, args.lng),
+    openingHoursSpecification: buildOpeningHoursSpecification(args.hours),
     address: {
       "@type": "PostalAddress",
       streetAddress: args.addressLine1 ?? undefined,
@@ -79,6 +93,77 @@ export function buildProviderSchema(args) {
           }
       : undefined
   };
+}
+
+function compactUrls(urls = []) {
+  const entries = Array.isArray(urls) ? urls : [urls];
+  const clean = entries
+    .map((url) => String(url ?? "").trim())
+    .filter((url) => /^https?:\/\//i.test(url));
+  return clean.length ? clean : undefined;
+}
+
+function buildGeoSchema(lat, lng) {
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180 ||
+    (latitude === 0 && longitude === 0)
+  ) {
+    return undefined;
+  }
+
+  return {
+    "@type": "GeoCoordinates",
+    latitude,
+    longitude
+  };
+}
+
+function buildOpeningHoursSpecification(hours) {
+  if (!hours || typeof hours !== "object" || Array.isArray(hours)) {
+    return undefined;
+  }
+
+  const dayMap = {
+    monday: "Monday",
+    mon: "Monday",
+    tuesday: "Tuesday",
+    tue: "Tuesday",
+    wednesday: "Wednesday",
+    wed: "Wednesday",
+    thursday: "Thursday",
+    thu: "Thursday",
+    friday: "Friday",
+    fri: "Friday",
+    saturday: "Saturday",
+    sat: "Saturday",
+    sunday: "Sunday",
+    sun: "Sunday"
+  };
+
+  const specs = Object.entries(hours)
+    .map(([dayKey, value]) => {
+      if (!value || typeof value !== "object" || value.closed) return null;
+      const opens = value.open ?? value.opens ?? value.start;
+      const closes = value.close ?? value.closes ?? value.end;
+      const dayOfWeek = dayMap[String(dayKey).toLowerCase()];
+      if (!dayOfWeek || !opens || !closes) return null;
+      return {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek,
+        opens,
+        closes
+      };
+    })
+    .filter(Boolean);
+
+  return specs.length ? specs : undefined;
 }
 
 export function buildArticleSchema(args) {

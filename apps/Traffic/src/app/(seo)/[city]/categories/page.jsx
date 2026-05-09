@@ -7,20 +7,26 @@ import {
 import { getCountryBySlug } from "@/data/repositories/geo.repo";
 import CategoriesDiscoveryClient from "@/features/categories/components/CategoriesDiscoveryClient";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
+import { buildDirectoryMetadata } from "@/seo/metadata";
 
 export function generateStaticParams() {
   return listLiveProviderCountries().map((country) => ({ city: country.countrySlug }));
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const country = getCountryBySlug(params.city);
   if (!country) return {};
 
-  return {
+  return buildDirectoryMetadata({
     title: `Service Categories in ${country.name} | TRAZE`,
     description: `Browse live TRAZE service categories with providers in ${country.name}.`,
-    alternates: { canonical: `/${country.slug}/categories` }
-  };
+    path: `/${country.slug}/categories`,
+    routeLocale
+  });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 export default async function CountryCategoriesPage({ params }) {

@@ -5,12 +5,18 @@ import {
 } from "@/data/repositories/provider.repo";
 import CategoriesDiscoveryClient from "@/features/categories/components/CategoriesDiscoveryClient";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
+import { buildDirectoryMetadata } from "@/seo/metadata";
 
-export const metadata = {
-  title: "Service Categories | TRAZE",
-  description: "Choose your country to explore live service categories on TRAZE.",
-  alternates: { canonical: "/categories" }
-};
+export function buildCategoriesMetadata(routeLocale = null) {
+  return buildDirectoryMetadata({
+    title: "Service Categories | TRAZE",
+    description: "Choose your country to explore live service categories on TRAZE.",
+    path: "/categories",
+    routeLocale
+  });
+}
+
+export const metadata = buildCategoriesMetadata();
 
 export default async function CategoriesPage() {
   const countries = listLiveProviderCountries();

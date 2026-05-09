@@ -1,5 +1,6 @@
 import { getSitemapChunk, listSitemapChunks, listPageCandidates } from "@/data/repositories/pageCandidate.repo";
 import { buildCanonical } from "@/seo/canonical";
+import { buildLocalizedAlternates, listLocalizedSitemapPaths } from "@/seo/locale";
 
 const CHUNK_SIZE = 5000;
 
@@ -11,6 +12,25 @@ export function generateStaticParams() {
   return Array.from({ length: chunkCount }, (_, i) => ({ chunk: `chunk-${i + 1}.xml` }));
 }
 
+function escapeXml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function renderAlternateLinks(basePath) {
+  const alternates = buildLocalizedAlternates(basePath).languages;
+  return Object.entries(alternates)
+    .map(
+      ([hrefLang, href]) =>
+        `    <xhtml:link rel="alternate" hreflang="${escapeXml(hrefLang)}" href="${escapeXml(href)}" />`
+    )
+    .join("\n");
+}
+
 export async function GET(request, { params }) {
   const chunkData = await getSitemapChunk(params.chunk);
 
@@ -19,14 +39,22 @@ export async function GET(request, { params }) {
   }
 
   const urls = chunkData.urls
+    .flatMap((page) =>
+      listLocalizedSitemapPaths(page.path).map((localized) => ({
+        ...page,
+        path: localized.path,
+        basePath: page.path
+      }))
+    )
     .map(
       (page) =>
-        `  <url>\n    <loc>${buildCanonical(page.path)}</loc>\n    <lastmod>${page.updatedAt}</lastmod>\n    <changefreq>weekly</changefreq>\n  </url>`
+        `  <url>\n    <loc>${escapeXml(buildCanonical(page.path))}</loc>\n${renderAlternateLinks(page.basePath)}\n    <lastmod>${escapeXml(page.updatedAt)}</lastmod>\n    <changefreq>weekly</changefreq>\n  </url>`
     )
     .join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
 </urlset>`;
 

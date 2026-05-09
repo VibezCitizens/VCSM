@@ -3,6 +3,7 @@ import { getProviderBySlugAny } from "@/data/repositories/provider.repo";
 import { getCountryByCode } from "@/data/repositories/geo.repo";
 import { listAllActiveProviderStaticParams } from "@/data/repositories/staticParams.repo";
 import { countryProviderPath } from "@/lib/paths";
+import { buildLocalizedAlternates } from "@/seo/locale";
 
 const REDIRECT_ROBOTS = {
   index: false,
@@ -14,8 +15,21 @@ export function generateStaticParams() {
   return listAllActiveProviderStaticParams();
 }
 
-export function generateMetadata() {
-  return { robots: REDIRECT_ROBOTS };
+export function generateMetadataForLocale({ params }, routeLocale = null) {
+  const legacyPath = `/pro/${params.providerSlug}`;
+  const alternates = buildLocalizedAlternates(legacyPath, { locale: routeLocale });
+
+  return {
+    alternates: {
+      canonical: alternates.canonical,
+      languages: alternates.languages
+    },
+    robots: REDIRECT_ROBOTS
+  };
+}
+
+export function generateMetadata(args) {
+  return generateMetadataForLocale(args);
 }
 
 export default function LegacyProviderRedirectPage({ params }) {

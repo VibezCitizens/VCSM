@@ -1,6 +1,6 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
-export async function listActorPostsByActorDAL({ actorId }) {
+export async function listActorPostsByActorDAL({ actorId, limit = 60 }) {
   const { data, error } = await supabase
     .schema("vc")
     .from("posts")
@@ -18,7 +18,8 @@ export async function listActorPostsByActorDAL({ actorId }) {
     `)
     .eq("actor_id", actorId)
     .is("deleted_at", null)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(limit);
 
   if (error) throw error;
   return data ?? [];

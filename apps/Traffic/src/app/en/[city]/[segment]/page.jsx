@@ -1,2 +1,7 @@
-export { generateMetadata, generateStaticParams } from "../../../(seo)/[city]/[segment]/page";
+import { generateMetadataForLocale } from "../../../(seo)/[city]/[segment]/page";
+
+export { generateStaticParams } from "../../../(seo)/[city]/[segment]/page";
+export function generateMetadata(args) {
+  return generateMetadataForLocale(args, "en");
+}
 export { default } from "../../../(seo)/[city]/[segment]/page";

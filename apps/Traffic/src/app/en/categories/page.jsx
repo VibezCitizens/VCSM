@@ -1,2 +1,4 @@
-export { metadata } from "../../categories/page";
+import { buildCategoriesMetadata } from "../../categories/page";
+
+export const metadata = buildCategoriesMetadata("en");
 export { default } from "../../categories/page";

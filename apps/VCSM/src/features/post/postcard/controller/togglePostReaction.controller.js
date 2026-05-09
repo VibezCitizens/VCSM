@@ -19,10 +19,17 @@ import {
   deleteReactionDAL,
 } from "../dal/postReactions.write.dal";
 
-import { fetchPostByIdDAL } from "../dal/post.read.dal";
+import { fetchPostByIdDAL, checkPostExistsDAL } from "../dal/post.read.dal";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 const VALID_REACTIONS = ["like", "dislike"];
+
+function applyReactionDelta(currentCounts, prevReaction, nextReaction) {
+  const counts = { ...currentCounts };
+  if (prevReaction) counts[prevReaction] = Math.max(0, (counts[prevReaction] ?? 0) - 1);
+  if (nextReaction) counts[nextReaction] = (counts[nextReaction] ?? 0) + 1;
+  return counts;
+}
 
 /**
  * Toggle a post reaction for an actor
@@ -37,12 +44,19 @@ export async function togglePostReactionController({
   postId,
   actorId,
   reaction,
+  currentCounts = null,
 }) {
   if (!postId) throw new Error("togglePostReaction: postId required");
   if (!actorId) throw new Error("togglePostReaction: actorId required");
   if (!VALID_REACTIONS.includes(reaction)) {
     throw new Error(`Invalid reaction: ${reaction}`);
   }
+
+  // ============================================================
+  // 0️⃣ GUARD — reject interactions on deleted posts
+  // ============================================================
+  const postExists = await checkPostExistsDAL(postId);
+  if (!postExists) throw new Error("This post is no longer available.");
 
   // ============================================================
   // 1️⃣ READ EXISTING REACTION
@@ -89,23 +103,22 @@ export async function togglePostReactionController({
   }
 
   // ============================================================
-  // 3️⃣ LOAD AGGREGATED COUNTS
+  // 3️⃣ RESOLVE COUNTS — optimistic delta or authoritative RPC
   // ============================================================
-  const { data: summaryRows, error: summaryErr } =
-    await fetchReactionSummaryDAL(postId);
+  let counts;
+  const prevReaction = existing?.reaction ?? null;
 
-  if (summaryErr) throw summaryErr;
-
-  // ============================================================
-  // 4️⃣ NORMALIZE COUNTS (DOMAIN SHAPE)
-  // ============================================================
-  const counts = (summaryRows || []).reduce(
-    (acc, row) => {
-      acc[row.kind] = Number(row.qty);
-      return acc;
-    },
-    { like: 0, dislike: 0, rose: 0 }
-  );
+  if (currentCounts != null) {
+    counts = applyReactionDelta(currentCounts, prevReaction, nextReaction);
+  } else {
+    const { data: summaryRows, error: summaryErr } =
+      await fetchReactionSummaryDAL(postId);
+    if (summaryErr) throw summaryErr;
+    counts = (summaryRows || []).reduce(
+      (acc, row) => { acc[row.kind] = Number(row.qty); return acc; },
+      { like: 0, dislike: 0, rose: 0 }
+    );
+  }
 
   // ============================================================
   // 5️⃣ DOMAIN RESULT

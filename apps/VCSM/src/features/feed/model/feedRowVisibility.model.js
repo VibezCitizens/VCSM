@@ -47,7 +47,10 @@ export function resolveFeedRowVisibilityModel({
   }
 
   if (actor.vport_id) {
-    const isActive = vportMap?.[actor.vport_id]?.is_active !== false;
+    // vportMap is keyed by actor.id (rowActorId), NOT by actor.vport_id.
+    // is_active must be explicitly true — undefined/null treated as inactive.
+    const vportEntry = vportMap?.[rowActorId] ?? null;
+    const isActive = vportEntry !== null && vportEntry.is_active === true;
     return {
       post_id: postId,
       actor_id: rowActorId,

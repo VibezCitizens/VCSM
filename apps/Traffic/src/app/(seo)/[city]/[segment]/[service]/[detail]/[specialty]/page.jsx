@@ -76,7 +76,7 @@ function resolvePage(params) {
   };
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const graph = resolvePage(params);
   if (!graph) {
     return {};
@@ -92,8 +92,13 @@ export function generateMetadata({ params }) {
       graph.service.slug,
       graph.specialty.slug
     ),
-    locale: getLocaleForCountryCode(graph.country.code)
+    locale: getLocaleForCountryCode(graph.country.code),
+    routeLocale
   });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 export default function CountryCityLocalityServiceSpecialtyPage({ params }) {

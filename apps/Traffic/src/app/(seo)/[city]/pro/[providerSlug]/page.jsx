@@ -142,7 +142,7 @@ function buildProviderGraph(cityParam, providerSlug) {
   };
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadataForLocale({ params }, routeLocale = null) {
   const graph = buildProviderGraph(params.city, params.providerSlug);
   if (!graph) return {};
 
@@ -157,8 +157,13 @@ export function generateMetadata({ params }) {
     description,
     path: countryProviderPath(graph.country.slug, graph.provider.slug),
     locale: getLocaleForCountryCode(graph.country.code),
+    routeLocale,
     robots: graph.provider.isIndexable ? PROVIDER_ROBOTS : PROVIDER_NOINDEX_ROBOTS
   });
+}
+
+export function generateMetadata({ params }) {
+  return generateMetadataForLocale({ params });
 }
 
 export default async function CountryProviderPage({ params }) {
@@ -237,6 +242,17 @@ export default async function CountryProviderPage({ params }) {
       reviewCount: stats?.reviewCount,
       addressLine1: provider.addressLine1,
       postalCode: provider.postalCode,
+      telephone: provider.phoneE164,
+      image: provider.logoUrl ?? provider.avatarUrl ?? provider.bannerUrl,
+      sameAs: [
+        provider.websiteUrl,
+        provider.googleMapsUrl,
+        provider.instagramUrl,
+        provider.facebookUrl
+      ],
+      lat: provider.lat,
+      lng: provider.lng,
+      hours: provider.hours,
       cityName: city?.name ?? provider.primaryCityName,
       localityName: locality?.name,
       regionName: region?.name,

@@ -2,7 +2,7 @@
 
 import { listPostComments, readPostCommentActorIdDAL } from "../dal/postComments.read.dal";
 import { createComment } from "../dal/comments.dal";
-import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
+import { fetchPostByIdDAL, checkPostExistsDAL } from "@/features/post/postcard/dal/post.read.dal";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 /**
@@ -48,6 +48,9 @@ export async function loadCommentThread(postId) {
  * - Returns raw comment row + replies placeholder
  */
 export async function createRootComment({ postId, actorId, content }) {
+  const postExists = await checkPostExistsDAL(postId);
+  if (!postExists) throw new Error("This post is no longer available.");
+
   const row = await createComment({
     postId,
     actorId,
@@ -86,6 +89,9 @@ export async function createReplyComment({
   content,
 }) {
   if (!postId || !actorId || !parentCommentId) return null;
+
+  const postExists = await checkPostExistsDAL(postId);
+  if (!postExists) throw new Error("This post is no longer available.");
 
   const row = await createComment({
     postId,

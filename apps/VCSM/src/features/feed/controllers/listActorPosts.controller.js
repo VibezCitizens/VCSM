@@ -30,8 +30,8 @@
 
 import { listActorPostsByActorDAL } from "@/features/feed/dal/listActorPostsByActor.dal";
 
-export async function listActorPosts({ actorId, viewerActorId }) {
+export async function listActorPosts({ actorId, viewerActorId, limit }) {
   if (!actorId) throw new Error("Missing actorId");
   if (!viewerActorId) throw new Error("Missing viewerActorId");
-  return listActorPostsByActorDAL({ actorId });
+  return listActorPostsByActorDAL({ actorId, ...(limit != null && { limit }) });
 }

@@ -6,12 +6,18 @@ import {
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
 import DirectoryLandingClient from "@/features/directories/components/DirectoryLandingClient";
+import { buildDirectoryMetadata } from "@/seo/metadata";
 
-export const metadata = {
-  title: "Directory | TRAZE",
-  description: "Choose a country to browse live local service providers on TRAZE.",
-  alternates: { canonical: "/directory" }
-};
+export function buildDirectoryLandingMetadata(routeLocale = null) {
+  return buildDirectoryMetadata({
+    title: "Directory | TRAZE",
+    description: "Choose a country to browse live local service providers on TRAZE.",
+    path: "/directory",
+    routeLocale
+  });
+}
+
+export const metadata = buildDirectoryLandingMetadata();
 
 export default async function DirectoryLandingPage() {
   const countries = listLiveProviderCountries();
