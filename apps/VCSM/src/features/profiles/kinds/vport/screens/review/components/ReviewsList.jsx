@@ -97,7 +97,7 @@ export default function ReviewsList({ loading, reviews, viewerActorId = null, on
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={`rev-skel:${i}`} className="rounded-2xl border border-white/6 p-4" style={{ background: 'var(--vc-card-bg)' }}>
             <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl" style={{ background: 'rgba(139,92,246,0.08)' }} />
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg" style={{ background: 'rgba(139,92,246,0.08)' }} />
               <div className="flex-1 space-y-2">
                 <div className="h-3 w-28 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.1)' }} />
                 <div className="h-2 w-16 animate-pulse rounded" style={{ background: 'rgba(139,92,246,0.06)' }} />
@@ -167,7 +167,7 @@ export default function ReviewsList({ loading, reviews, viewerActorId = null, on
                     <img
                       src={actor.avatar || "/avatar.jpg"}
                       alt={actor.displayName}
-                      className="h-10 w-10 rounded-2xl border border-white/10 object-cover"
+                      className="h-10 w-10 rounded-lg border border-white/10 object-cover"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = "/avatar.jpg";
@@ -175,7 +175,7 @@ export default function ReviewsList({ loading, reviews, viewerActorId = null, on
                     />
                   </Link>
                 ) : (
-                  <div className="h-10 w-10 shrink-0 rounded-2xl border border-white/10 bg-white/5" />
+                  <div className="h-10 w-10 shrink-0 rounded-lg border border-white/10 bg-white/5" />
                 )}
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">

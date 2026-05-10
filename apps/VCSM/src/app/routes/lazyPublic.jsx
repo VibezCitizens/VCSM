@@ -9,8 +9,10 @@ export function lazyWithLog(label, importer) {
   );
 }
 
-// ── Legal (static — no lazy flash) ───────────────────────────────────────────
-export { default as LegalDocumentScreen } from "@/features/legal/screens/LegalDocumentScreen";
+// ── Legal ─────────────────────────────────────────────────────────────────────
+export const LegalDocumentScreen = lazyWithLog("LegalDocumentScreen", () =>
+  import("@/features/legal/screens/LegalDocumentScreen"),
+);
 
 // ── About / Contact ───────────────────────────────────────────────────────────
 export const AboutScreen = lazyWithLog("AboutScreen", () =>

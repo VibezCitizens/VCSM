@@ -18,6 +18,7 @@ export function VportActorMenuCategoryFormModal({
   titleOverride = null,
   disableKey = false,
   className = "",
+  onShareToFeed = null,
 } = {}) {
   const effectiveMode = useMemo(() => {
     if (mode) return mode;
@@ -30,10 +31,12 @@ export function VportActorMenuCategoryFormModal({
   const [sortOrderValue, setSortOrderValue] = useState(0);
   const [isActiveValue, setIsActiveValue] = useState(true);
   const [error, setError] = useState(null);
+  const [shareToFeed, setShareToFeed] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setError(null);
+    setShareToFeed(false);
     setKeyValue(category?.key ?? "");
     setNameValue(category?.name ?? "");
     setDescriptionValue(category?.description ?? "");
@@ -69,12 +72,20 @@ export function VportActorMenuCategoryFormModal({
       if (!payload.name) { setError(new Error("Name is required")); return; }
       try {
         await onSave(payload);
+        if (shareToFeed && onShareToFeed) {
+          const action = payload.categoryId ? "updated" : "added";
+          try {
+            await onShareToFeed({ action, subject: "category", subjectName: payload.name });
+          } catch {
+            // Non-blocking — category save already committed
+          }
+        }
         handleClose();
       } catch (err) {
         setError(err);
       }
     },
-    [onSave, category, keyValue, nameValue, descriptionValue, sortOrderValue, isActiveValue, handleClose]
+    [onSave, category, keyValue, nameValue, descriptionValue, sortOrderValue, isActiveValue, handleClose, shareToFeed, onShareToFeed]
   );
 
   if (!open) return null;
@@ -113,6 +124,9 @@ export function VportActorMenuCategoryFormModal({
             effectiveMode={effectiveMode}
             error={error}
             handleClose={handleClose}
+            showShareToFeed={!!onShareToFeed}
+            shareToFeed={shareToFeed}
+            setShareToFeed={setShareToFeed}
           />
         </form>
       </div>

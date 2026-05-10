@@ -117,6 +117,18 @@ export const VPORT_TYPE_GROUPS = Object.freeze({
   Other: ["other"],
 });
 
+// Maps a vport type to the category_key used in vport.service_catalog.
+// A type alias means the form type shares an existing catalog — no DB duplication.
+export const VPORT_SERVICE_CATALOG_ALIASES = Object.freeze({
+  barbershop: "barber",
+});
+
+// Returns the canonical service catalog key for a given vport type.
+export function resolveVportServiceCatalogType(vportType) {
+  const normalized = String(vportType ?? "").trim().toLowerCase();
+  return VPORT_SERVICE_CATALOG_ALIASES[normalized] ?? normalized;
+}
+
 export function getAllVportTypes() {
   return Object.values(VPORT_TYPE_GROUPS).flat();
 }

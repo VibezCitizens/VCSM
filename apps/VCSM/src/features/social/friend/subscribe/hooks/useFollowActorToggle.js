@@ -28,6 +28,7 @@ export function useFollowActorToggle() {
       await ctrlCancelFollowRequest({
         requesterActorId: followerActorId,
         targetActorId: followedActorId,
+        assertingActorId: followerActorId,
       });
       return {
         isFollowing: false,

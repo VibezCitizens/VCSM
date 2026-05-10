@@ -15,3 +15,4 @@ Disallow: /m/
 Disallow: /wanders/
 
 Sitemap: https://vibezcitizens.com/sitemap.xml
+LLMs: https://vibezcitizens.com/llms.txt

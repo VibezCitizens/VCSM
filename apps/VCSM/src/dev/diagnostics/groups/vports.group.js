@@ -32,14 +32,14 @@ export async function runVportsGroup({ onTestUpdate, shared }) {
         const slugBase = `diag-${String(userId).replace(/-/g, "").slice(0, 10)}-${Date.now()}`.slice(0, 28);
 
         const { data, error } = await supabase
-          .schema("vc")
+          .schema("vport")
           .rpc("create_vport", {
             p_name: name,
             p_slug: slugBase,
             p_avatar_url: null,
             p_bio: "Diagnostics create_vport smoke test",
             p_banner_url: null,
-            p_vport_type: "other",
+            p_primary_category_key: "other",
           });
 
         if (error) {
@@ -59,10 +59,11 @@ export async function runVportsGroup({ onTestUpdate, shared }) {
           throw error;
         }
 
+        const row = Array.isArray(data) ? data[0] : data;
         const created = {
-          actorId: data?.actor_id ?? null,
-          vportId: data?.vport_id ?? null,
-          slug: data?.slug ?? null,
+          actorId: row?.actor_id ?? null,
+          vportId: row?.profile_id ?? null,
+          slug: row?.slug ?? null,
           raw: data,
         };
 

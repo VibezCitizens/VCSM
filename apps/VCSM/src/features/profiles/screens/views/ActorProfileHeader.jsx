@@ -12,6 +12,7 @@ import ActorActionsMenu from '@/features/block/adapters/ui/ActorActionsMenu'
 import { useSubscribeAction } from '@/features/social/adapters/friend/request/hooks/useSubscribeAction.adapter'
 import { useFollowerCount } from '@/features/social/adapters/friend/subscribe/hooks/useFollowerCount.adapter'
 import SubscribeDebugPanel from '@/features/social/adapters/friend/subscribe/components/SubscribeDebugPanel.adapter'
+import { useBlockStatus } from '@/features/block/adapters/hooks/useBlockStatus.adapter'
 import { useTranslation } from '@i18n'
 
 // ============================================================
@@ -35,6 +36,12 @@ export default function ActorProfileHeader({
   const { handleMessage } = useProfileHeaderMessaging({
     profileId: actorId,
   })
+
+  // Bidirectional block check — safe with null IDs (returns isBlocked: false).
+  // MessageButton is disabled when a block exists in either direction.
+  const { isBlocked: viewerBlockedProfile, blockedMe: profileBlockedViewer } =
+    useBlockStatus(viewerActorId, actorId)
+  const isMessagingBlocked = viewerBlockedProfile || profileBlockedViewer
 
   const {
     count: followerCount,
@@ -172,7 +179,11 @@ export default function ActorProfileHeader({
             {/* ================= BOTTOM RIGHT ACTIONS ================= */}
             {!isSelf && (
               <div className="mt-4 flex w-full flex-col gap-2 sm:absolute sm:bottom-4 sm:right-4 sm:mt-0 sm:w-auto sm:items-end">
-                <MessageButton onClick={handleMessage} label={t('profile.actions.message')} />
+                <MessageButton
+                  onClick={handleMessage}
+                  label={t('profile.actions.message')}
+                  disabled={isMessagingBlocked}
+                />
                 <SubscribeButton
                   isSubscribed={isSubscribed}
                   label={subscribeLabel}

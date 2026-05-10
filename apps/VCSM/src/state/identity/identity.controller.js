@@ -220,7 +220,7 @@ async function _loadDefaultIdentityForUserInner({ userId, resolveAttempt }) {
 
     debugLoginEvent('HYDRATION_ACTOR_READ_SUCCESS', {
       phase: 'hydration', status: 'success',
-      payload: { actorId: actorRow.id, kind: actorRow.kind, profileId: actorRow.profile_id },
+      payload: { actorId: actorRow.id, kind: actorRow.kind },
     })
 
     const hydratedIdentity = await hydrateIdentityActor(actorRow)

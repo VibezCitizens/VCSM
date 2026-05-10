@@ -69,7 +69,6 @@ export function normalizeFeedRows({
         created_at: r.created_at,
         edited_at: r.edited_at ?? null,
         deleted_at: r.deleted_at ?? null,
-        deleted_by_actor_id: r.deleted_by_actor_id ?? null,
         post_type: r.post_type || "post",
         actor_id: r.actor_id,
 

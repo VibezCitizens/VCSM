@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { DAY_ABBR, MONTH_ABBR } from "@/features/profiles/kinds/vport/screens/booking/view/bookingFlowHelpers";
 
 export function StepDateSelect({ dateStrip, selectedDateKey, onSelect }) {
+  const hasAnySlots = dateStrip.some((d) => d.hasSlots);
   const scrollRef = useRef(null);
   const dragRef = useRef({ active: false, x: 0, scrollLeft: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -61,6 +62,20 @@ export function StepDateSelect({ dateStrip, selectedDateKey, onSelect }) {
 
   const arrowScroll = (dir) => scrollRef.current?.scrollBy({ left: dir * 200, behavior: "smooth" });
   const todayEntry = dateStrip[0];
+
+  if (!hasAnySlots) {
+    return (
+      <div className="mt-2 rounded-xl border px-4 py-5 space-y-1"
+        style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+        <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.5)" }}>
+          No available times
+        </div>
+        <div className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+          This shop has not set their hours yet. Check back soon.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

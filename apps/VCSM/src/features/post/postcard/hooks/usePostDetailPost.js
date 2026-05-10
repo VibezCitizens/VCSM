@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getPostById } from "@/features/post/postcard/controller/getPostById.controller";
 import { getPostMentionMap } from "@/features/post/postcard/controller/getPostMentionMap.controller";
 
-export default function usePostDetailPost(postId) {
+export default function usePostDetailPost(postId, viewerActorId = null) {
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
 
@@ -17,8 +17,7 @@ export default function usePostDetailPost(postId) {
       setLoadingPost(true);
 
       try {
-        // 1) base post (existing controller)
-        const basePost = await getPostById(postId);
+        const basePost = await getPostById(postId, viewerActorId);
 
         if (!basePost) {
           if (!cancelled) setPost(null);
@@ -49,7 +48,7 @@ export default function usePostDetailPost(postId) {
 
         if (!cancelled) setPost(hydratedPost);
       } catch (err) {
-        console.error("[PostDetail] load post failed:", err);
+        if (import.meta.env.DEV) console.error("[PostDetail] load post failed:", err);
         if (!cancelled) setPost(null);
       } finally {
         if (!cancelled) setLoadingPost(false);
@@ -61,7 +60,7 @@ export default function usePostDetailPost(postId) {
     return () => {
       cancelled = true;
     };
-  }, [postId]);
+  }, [postId, viewerActorId]);
 
   return { post, loadingPost };
 }

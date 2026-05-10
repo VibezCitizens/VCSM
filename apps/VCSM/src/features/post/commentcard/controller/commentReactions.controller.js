@@ -18,30 +18,30 @@ export async function toggleCommentLike({
   if (alreadyLiked) {
     // Toggle OFF — removed, no notification
     await unlikeComment({ commentId, actorId });
-  } else {
-    // New like — created
-    await likeComment({ commentId, actorId });
-
-    const comment = await readCommentActorAndPostIdDAL(commentId);
-
-    if (comment?.actor_id) {
-      publishVcsmNotification({
-        recipientActorId: comment.actor_id,
-        actorId,
-        kind: 'social.post.comment_like',
-        objectType: 'comment',
-        objectId: commentId,
-        linkPath: comment.post_id ? `/post/${comment.post_id}` : null,
-        context: {},
-      });
-    }
+    const likeCount = await getCommentLikeCount(commentId);
+    return { isLiked: false, likeCount };
   }
 
-  const likeCount = await getCommentLikeCount(commentId);
+  // New like — notification routing and count read are independent, run in parallel
+  await likeComment({ commentId, actorId });
 
-  return {
-    isLiked: !alreadyLiked,
-    likeCount,
-  };
+  const [comment, likeCount] = await Promise.all([
+    readCommentActorAndPostIdDAL(commentId),
+    getCommentLikeCount(commentId),
+  ]);
+
+  if (comment?.actor_id) {
+    publishVcsmNotification({
+      recipientActorId: comment.actor_id,
+      actorId,
+      kind: 'social.post.comment_like',
+      objectType: 'comment',
+      objectId: commentId,
+      linkPath: comment.post_id ? `/post/${comment.post_id}` : null,
+      context: {},
+    });
+  }
+
+  return { isLiked: true, likeCount };
 }
 

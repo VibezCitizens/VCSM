@@ -1,14 +1,9 @@
 import { signUpForInviteDAL } from "@/features/join/dal/joinAuth.dal";
 import { readBarberVportByOwnerUserIdDAL } from "@/features/join/dal/barberVport.read.dal";
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from "@/features/join/dal/joinInvite.dal";
+import { recordSignupConsent } from "@/features/legal/adapters/legal.adapter";
 
 const BARBER_CATEGORY = "barber";
-
-function syntheticAdultBirthdate() {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - 18);
-  return d.toISOString().split("T")[0];
-}
 
 export async function loadInviteForJoin(token) {
   if (!token) return null;
@@ -32,6 +27,17 @@ export async function signUpForBarbershopInvite(token, { name, username, email, 
   });
 
   const session = data?.session ?? null;
+
+  // Record consent immediately when session is available (no email confirm required).
+  // If email confirm is required, the ProtectedRoute gate will record consent on first entry.
+  if (session?.user?.id) {
+    await recordSignupConsent({ userId: session.user.id }).catch((err) => {
+      // Consent recording must not block account creation.
+      // The gate will self-heal at next ProtectedRoute entry.
+      if (import.meta.env.DEV) console.warn('[joinBarbershop] recordSignupConsent failed:', err)
+    });
+  }
+
   return { requiresEmailConfirm: !session };
 }
 
@@ -74,13 +80,12 @@ async function buildAndBootstrapUserActor(user, displayName, desiredUsername, {
     usernameBase: desiredUsername,
   });
 
+  // birthdate, age, and isAdult are intentionally omitted.
+  // Real age attestation must be collected from the user — never synthesized.
   await upsertCompletedOnboardingProfileDAL?.({
     profileId: user.id,
     displayName,
     username,
-    birthdate: syntheticAdultBirthdate(),
-    age: 18,
-    isAdult: true,
     sex: null,
     updatedAt: new Date().toISOString(),
   });
@@ -153,7 +158,15 @@ export async function createBarberVportAndAccept(token, vportName, { readCurrent
   return { barberVportActorId: vportResult.actorId };
 }
 
-export async function useExistingBarberVportAndAccept(token, vportActorId) {
+export async function useExistingBarberVportAndAccept(token, vportActorId, { readCurrentAuthUserDAL } = {}) {
+  const user = await readCurrentAuthUserDAL?.();
+  if (!user) throw new Error("Not signed in.");
+
+  const existingVport = await readBarberVportByOwnerUserIdDAL(user.id);
+  if (!existingVport || String(existingVport.actor_id) !== String(vportActorId)) {
+    throw new Error("Caller does not own this barber vport.");
+  }
+
   await acceptJoinResourceDAL(token, vportActorId);
   return { barberVportActorId: vportActorId };
 }

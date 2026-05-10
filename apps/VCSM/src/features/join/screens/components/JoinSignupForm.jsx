@@ -52,9 +52,9 @@ export function JoinSignupForm({ working, onSubmit, onSwitchToLogin, formError, 
       <CheckRow checked={ageConfirmed} onChange={setAgeConfirmed} label="I am 18 years of age or older." />
       <CheckRow checked={termsAccepted} onChange={setTermsAccepted}>
         I agree to the{" "}
-        <a href="/terms" target="_blank" rel="noopener noreferrer" style={s.link}>Terms of Service</a>{" "}
+        <a href="/legal/terms-of-service" target="_blank" rel="noopener noreferrer" style={s.link}>Terms of Service</a>{" "}
         and{" "}
-        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={s.link}>Privacy Policy</a>.
+        <a href="/legal/privacy-policy" target="_blank" rel="noopener noreferrer" style={s.link}>Privacy Policy</a>.
       </CheckRow>
 
       {formError && <p style={s.errorText}>{formError}</p>}

@@ -211,6 +211,7 @@ export async function runSettingsPrivacyFeatureGroup({ onTestUpdate, shared }) {
               blockedActorId: targetActorId,
               scope: context.scope,
               existingBlockedIds: startSet,
+              callerActorId: context.actorId,
             });
             changed = !startSet.has(targetActorId);
 
@@ -224,6 +225,7 @@ export async function runSettingsPrivacyFeatureGroup({ onTestUpdate, shared }) {
               blockedActorId: targetActorId,
               scope: context.scope,
               existingBlockedIds: midSet,
+              callerActorId: context.actorId,
             });
 
             const endSet = new Set((await ctrlListMyBlocks({
@@ -245,6 +247,7 @@ export async function runSettingsPrivacyFeatureGroup({ onTestUpdate, shared }) {
                 blockedActorId: targetActorId,
                 scope: context.scope,
                 existingBlockedIds: new Set([targetActorId]),
+                callerActorId: context.actorId,
               }).catch(() => null);
             }
           }

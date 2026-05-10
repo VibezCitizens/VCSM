@@ -75,7 +75,10 @@ export async function publishVcsmNotification({
       },
     })
     return true
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) {
+      console.error('[publishVcsmNotification] failed:', err)
+    }
     return false
   }
 }

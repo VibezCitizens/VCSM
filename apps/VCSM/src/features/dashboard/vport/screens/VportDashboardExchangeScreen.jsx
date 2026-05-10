@@ -14,6 +14,7 @@ import Toast from "@/shared/components/components/Toast";
 import VportRatesView from "@/features/profiles/adapters/kinds/vport/screens/rates/view/VportRatesView.jsx.adapter";
 import VportRateEditorCard from "@/features/profiles/adapters/kinds/vport/screens/rates/components/VportRateEditorCard.jsx.adapter";
 import useUpsertVportRate from "@/features/profiles/adapters/kinds/vport/hooks/rates/useUpsertVportRate.js.adapter";
+import { usePublishExchangeRatePost } from "@/features/profiles/kinds/vport/hooks/exchange/usePublishExchangeRatePost";
 
 function normalizeCurrencyCode(v) {
   return String(v ?? "")
@@ -78,8 +79,10 @@ export function VportDashboardExchangeScreen() {
   const [optimisticRatesByPair, setOptimisticRatesByPair] = useState({});
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [shareToFeed, setShareToFeed] = useState(false);
 
   const m = useUpsertVportRate({ actorId, rateType: "fx" });
+  const { publishExchangeRatePost } = usePublishExchangeRatePost({ actorId });
   const optimisticRates = useMemo(
     () => Object.values(optimisticRatesByPair || {}),
     [optimisticRatesByPair]
@@ -142,6 +145,19 @@ export function VportDashboardExchangeScreen() {
       setSellRate("");
       setRefreshSeed((n) => n + 1);
       showToast(`New exchange rate published: ${safeBase}/${safeQuote}`);
+
+      if (shareToFeed) {
+        try {
+          await publishExchangeRatePost({
+            baseCurrency: safeBase,
+            quoteCurrency: safeQuote,
+            buyRate: mapped.buyRate ?? buyRate,
+            sellRate: mapped.sellRate ?? sellRate,
+          });
+        } catch {
+          // feed publish failure is non-blocking
+        }
+      }
     } catch {
       setOptimisticRatesByPair((prev) => {
         const next = { ...prev };
@@ -159,6 +175,8 @@ export function VportDashboardExchangeScreen() {
     sellRate,
     optimisticRatesByPair,
     showToast,
+    shareToFeed,
+    publishExchangeRatePost,
   ]);
 
   if (!actorId) return null;
@@ -213,6 +231,8 @@ export function VportDashboardExchangeScreen() {
               submitting={m.isLoading}
               error={m.error?.message ?? m.error ?? null}
               disabled={false}
+              shareToFeed={shareToFeed}
+              onToggleShareToFeed={setShareToFeed}
             />
           </div>
 

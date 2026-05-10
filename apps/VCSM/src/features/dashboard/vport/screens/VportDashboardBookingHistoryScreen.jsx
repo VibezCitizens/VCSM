@@ -15,8 +15,6 @@ import TodayView from "@/features/dashboard/vport/components/bookingHistory/Toda
 import QuickBookingModal from "@/features/dashboard/vport/components/bookingHistory/QuickBookingModal";
 
 const HISTORY_TABS = [
-  { key: "upcoming",  label: "Upcoming"  },
-  { key: "pending",   label: "Pending"   },
   { key: "past",      label: "Past"      },
   { key: "cancelled", label: "Cancelled" },
   { key: "all",       label: "All"       },
@@ -51,7 +49,7 @@ function groupByDate(bookings) {
 function ModeToggle({ mode, onChange }) {
   return (
     <div style={{ display: "flex", gap: 0, borderRadius: 10, border: "1px solid rgba(148,163,184,.14)", overflow: "hidden", background: "rgba(2,6,23,.6)" }}>
-      {[{ k: "today", l: "Today" }, { k: "history", l: "History" }].map(({ k, l }) => (
+      {[{ k: "today", l: "Today" }, { k: "upcoming", l: "Upcoming" }, { k: "history", l: "History" }].map(({ k, l }) => (
         <button
           key={k}
           type="button"
@@ -81,7 +79,7 @@ export default function VportDashboardBookingHistoryScreen() {
   const isOwner       = Boolean(targetActorId) && Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId);
 
   const [mode,        setMode]        = useState("today");
-  const [historyTab,  setHistoryTab]  = useState("upcoming");
+  const [historyTab,  setHistoryTab]  = useState("past");
   const [showNewBook, setShowNewBook] = useState(false);
 
   const resources  = useVportOwnerResources({ ownerActorId: targetActorId, includeInactive: true, enabled: Boolean(targetActorId) });
@@ -91,7 +89,7 @@ export default function VportDashboardBookingHistoryScreen() {
   const { bookings, loading: histLoading, loadingMore, hasMore, error: histError, loadMore, reload } =
     useVportBookingHistory({ resourceId, enabled: Boolean(resourceId) });
 
-  const actions = useVportBookingActions({ onSuccess: reload });
+  const actions = useVportBookingActions({ onSuccess: reload, actorId: targetActorId });
 
   useEffect(() => {
     const ids = [...new Set(bookings.map(b => b.customerActorId).filter(Boolean))];
@@ -100,6 +98,9 @@ export default function VportDashboardBookingHistoryScreen() {
 
   const loading  = resources.loading || (Boolean(resourceId) && histLoading);
   const error    = resources.error ?? histError ?? null;
+
+  const upcomingFiltered = useMemo(() => filterBookings(bookings, "upcoming"), [bookings]);
+  const upcomingGrouped  = useMemo(() => groupByDate(upcomingFiltered), [upcomingFiltered]);
 
   const histFiltered = useMemo(() => filterBookings(bookings, historyTab), [bookings, historyTab]);
   const histGrouped  = useMemo(() => groupByDate(histFiltered), [histFiltered]);
@@ -136,6 +137,55 @@ export default function VportDashboardBookingHistoryScreen() {
                 actorId={targetActorId}
                 onNewBooking={() => setShowNewBook(true)}
               />
+            )}
+
+            {/* UPCOMING VIEW */}
+            {mode === "upcoming" && (
+              <div style={{ display: "grid", gap: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", color: "rgba(148,163,184,.4)" }}>
+                  FUTURE APPOINTMENTS
+                </div>
+
+                {actions.error && (
+                  <div style={{ borderRadius: 8, background: "rgba(239,68,68,.07)", border: "1px solid rgba(239,68,68,.16)", padding: "9px 12px", fontSize: 12, color: "#fca5a5" }}>
+                    {actions.error}
+                  </div>
+                )}
+
+                {loading ? (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "40px 0" }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid rgba(255,255,255,.15)", borderTopColor: "rgba(255,255,255,.6)", animation: "spin 0.7s linear infinite" }} />
+                    <div style={{ fontSize: 13, color: "rgba(148,163,184,.5)" }}>Loading…</div>
+                  </div>
+                ) : !upcomingFiltered.length ? (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "40px 0" }}>
+                    <Calendar size={28} style={{ color: "rgba(255,255,255,.15)" }} />
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,.38)" }}>No upcoming bookings</div>
+                    <div style={{ fontSize: 12, color: "rgba(148,163,184,.3)" }}>Future appointments will appear here.</div>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gap: 20 }}>
+                    {Array.from(upcomingGrouped.entries()).map(([dateLabel, dayBookings]) => (
+                      <div key={dateLabel}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(148,163,184,.42)", letterSpacing: ".05em" }}>{dateLabel}</div>
+                          <div style={{ fontSize: 10, color: "rgba(148,163,184,.28)" }}>{dayBookings.length} booking{dayBookings.length !== 1 ? "s" : ""}</div>
+                        </div>
+                        <div style={{ display: "grid", gap: 8 }}>
+                          {dayBookings.map(b => (
+                            <BookingCard key={b.id} booking={b} working={actions.working}
+                              onConfirm={actions.confirm}
+                              onCancel={actions.cancel}
+                              onComplete={actions.complete}
+                              onNoShow={actions.noShow}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* HISTORY VIEW */}

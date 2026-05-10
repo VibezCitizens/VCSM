@@ -31,6 +31,7 @@ import Spinner from '@/shared/components/Spinner'
 import { useConversationScroll } from '@/features/chat/conversation/hooks/conversation/useConversationScroll'
 import resolvePartnerActor from '@/features/chat/conversation/lib/resolvePartnerActor'
 import canReadConversation from '@/features/chat/conversation/permissions/canReadConversation'
+import { useBlockStatus } from '@/features/block/adapters/hooks/useBlockStatus.adapter'
 import { chatNavDbg } from '@/features/chat/debug/chatNavDebugger'
 
 import Toast from '@/shared/components/components/Toast'
@@ -111,6 +112,30 @@ export default function ConversationView({ conversationId }) {
     [actorId, conversation, seedConversation, members]
   )
   const effectivePartnerActor = resolvedPartnerActor ?? seedPartnerActor
+
+  // Block check — uses the server-resolved partner (null for groups or before members load).
+  // effectiveConversation is available from seed, so isDirectChat is known immediately.
+  // useBlockStatus is safe with null IDs: returns { loading: false, isBlocked: false, blockedMe: false }.
+  const isDirectChat = effectiveConversation?.conversationKind === 'direct'
+  const partnerActorIdForBlock = resolvedPartnerActor?.actorId ?? null
+  const {
+    loading: blockStatusLoading,
+    isBlocked: partnerIsBlocked,
+    blockedMe: partnerBlockedMe,
+  } = useBlockStatus(actorId, partnerActorIdForBlock)
+
+  const isConversationBlocked =
+    Boolean(partnerActorIdForBlock && (partnerIsBlocked || partnerBlockedMe))
+
+  // Gate the composer while block status is pending for direct chats.
+  // Covers two flash windows:
+  //   1. Before members arrive (partnerActorIdForBlock is null — we know it's direct
+  //      from effectiveConversation.conversationKind but haven't resolved the partner yet)
+  //   2. After members arrive but while useBlockStatus async is in flight
+  //      (initial state is isBlocked: false which would briefly show the composer)
+  // Group chats are never gated (isDirectChat = false → blockCheckPending = false).
+  const blockCheckPending =
+    isDirectChat && (!partnerActorIdForBlock || blockStatusLoading)
 
   const { viewer, openViewer, closeViewer } = useMediaViewer()
   const { conversationCovered, setConversationCovered, undoConversationCover } =
@@ -289,7 +314,7 @@ export default function ConversationView({ conversationId }) {
         </div>
       )}
 
-      {!conversationCovered && (
+      {!conversationCovered && !isConversationBlocked && !blockCheckPending && (
         <ChatInput
           onSend={handleSend}
           onAttach={handleAttach}
@@ -300,6 +325,12 @@ export default function ConversationView({ conversationId }) {
           onSaveEdit={(text) => { handleSaveEdit(text) }}
           onCancelEdit={() => { handleCancelEdit() }}
         />
+      )}
+
+      {isConversationBlocked && (
+        <div className="px-4 py-3 text-center text-sm text-white/50 border-t border-white/8">
+          Messaging is unavailable because one of you has blocked the other.
+        </div>
       )}
 
       <ConversationActionsMenu

@@ -4,6 +4,7 @@ import { getLegalDocumentController } from '../controllers/legalDocument.control
 export function useLegalDocument({ appKey, documentType, version, enabled = true }) {
   const [docMeta, setDocMeta] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (!enabled) {
@@ -13,14 +14,26 @@ export function useLegalDocument({ appKey, documentType, version, enabled = true
 
     let cancelled = false
     setLoading(true)
+    setError(null)
 
     getLegalDocumentController({ appKey, documentType, version })
-      .then((doc) => { if (!cancelled) setDocMeta(doc) })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setLoading(false) })
+      .then((doc) => {
+        if (!cancelled) setDocMeta(doc)
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.message ?? 'Failed to load document metadata')
+          if (import.meta.env.DEV) {
+            console.error('[useLegalDocument] fetch failed:', { appKey, documentType, version }, err)
+          }
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
 
     return () => { cancelled = true }
   }, [appKey, documentType, version, enabled])
 
-  return { docMeta, loading }
+  return { docMeta, loading, error }
 }

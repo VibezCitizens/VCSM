@@ -230,7 +230,6 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset, media = "a
       created_at,
       edited_at,
       deleted_at,
-      deleted_by_actor_id,
       location_text
     `)
     .eq("actor_id", actorId)

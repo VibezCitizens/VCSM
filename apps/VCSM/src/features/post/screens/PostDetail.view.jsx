@@ -67,7 +67,7 @@ export default function PostDetailView() {
 
   const commentCount = usePostCommentCount(postId);
   const thread = useCommentThread(postId);
-  const { post, loadingPost } = usePostDetailPost(postId);
+  const { post, loadingPost } = usePostDetailPost(postId, actorId);
 
   const commentCovers = useCommentCovers({
     actorId,

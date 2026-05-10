@@ -13,7 +13,8 @@
 //   4. Outbox event insert
 // ============================================================
 
-import { fetchConversationMember } from '../dal/conversationMembers.partner.read.dal.js'
+import { fetchConversationMember, fetchDirectPartner } from '../dal/conversationMembers.partner.read.dal.js'
+import { listUserBlockRowsBetweenActorsDAL } from '../dal/blockRelations.read.dal.js'
 import { ensureConversationMembership } from './ensureConversationMembership.controller.js'
 import {
   assertMessageHasContent,
@@ -45,6 +46,25 @@ export async function sendMessageController({
     mediaUrl: mediaUrl || (effectiveAttachments.length > 0 ? effectiveAttachments[0].public_url : null),
     messageKind: effectiveMessageKind,
   })
+
+  /* ============================================================
+     BLOCK CHECK — direct conversations only
+     Resolve the partner actor and check for an active block in either
+     direction. Group chats are excluded: partnerActorId is null for
+     groups and the block check is skipped.
+     ============================================================ */
+  const { partnerActorId, isDirectConversation } =
+    await fetchDirectPartner({ conversationId, actorId })
+
+  if (isDirectConversation && partnerActorId) {
+    const blockRows = await listUserBlockRowsBetweenActorsDAL({
+      actorA: actorId,
+      actorB: partnerActorId,
+    })
+    if (blockRows.length > 0) {
+      throw new Error('[sendMessage] blocked relationship - messaging not allowed')
+    }
+  }
 
   /* ============================================================
      ENSURE EXISTING MEMBERSHIP

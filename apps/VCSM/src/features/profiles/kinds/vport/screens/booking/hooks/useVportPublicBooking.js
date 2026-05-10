@@ -15,6 +15,7 @@ import {
 } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
 import { buildBookingPayload } from "@/features/profiles/kinds/vport/screens/booking/model/buildBookingPayload.model";
 import { canAdvanceBookingStep } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.helpers";
+import { mapAvailabilityRule } from "@/features/dashboard/vport/model/vportAvailabilityRule.model";
 
 const FALLBACK_DURATION = 30;
 
@@ -104,7 +105,12 @@ export function useVportPublicBooking({ profile }) {
     setAvailabilityLoading(true);
     setAvailabilityError(null);
     getAvailability({ resourceId, rangeStart, rangeEnd })
-      .then((data) => { if (!cancelled) setAvailabilityData(data); })
+      .then((data) => {
+        if (!cancelled) setAvailabilityData({
+          ...data,
+          rules: (data.rules ?? []).map(mapAvailabilityRule),
+        });
+      })
       .catch((e) => { if (!cancelled) setAvailabilityError(e); })
       .finally(() => { if (!cancelled) setAvailabilityLoading(false); });
     return () => { cancelled = true; };
@@ -197,8 +203,8 @@ export function useVportPublicBooking({ profile }) {
   const goBack = useCallback(() => setStep((s) => Math.max(s - 1, 0)), []);
 
   const canAdvanceFromStep = useCallback(
-    (name) => canAdvanceBookingStep(name, { dataReady, hasBarbers, hasAvailabilityRules, hasUpcomingSlots, selectedDateKey, selectedSlot, clientName, slotsByDate }),
-    [dataReady, hasBarbers, hasAvailabilityRules, hasUpcomingSlots, selectedDateKey, selectedSlot, clientName, slotsByDate]
+    (name) => canAdvanceBookingStep(name, { dataReady, availabilityLoading, hasAvailabilityRules, hasUpcomingSlots, selectedDateKey, selectedSlot, clientName, slotsByDate }),
+    [dataReady, availabilityLoading, hasAvailabilityRules, hasUpcomingSlots, selectedDateKey, selectedSlot, clientName, slotsByDate]
   );
 
   const handleSelectDate = useCallback((key) => {

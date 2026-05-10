@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { submitFuelPriceSuggestionController } from "@/features/profiles/kinds/vport/controller/gas/submitFuelPriceSuggestion.controller";
+import { publishFuelPriceUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/gas/publishFuelPriceUpdateAsPost.controller";
 
 /**
  * Hook — Submit Fuel Price Suggestion
@@ -68,9 +69,21 @@ export function useSubmitFuelPriceSuggestion({ targetActorId, identity }) {
     [targetActorId, me, isOwner]
   );
 
+  const publishFeedPost = useCallback(
+    async ({ updatedFuels }) => {
+      if (!isOwner || !me?.actorId) return { published: false, reason: "not_owner" };
+      return publishFuelPriceUpdateAsPostController({
+        actorId: me.actorId,
+        updatedFuels,
+      });
+    },
+    [isOwner, me]
+  );
+
   return {
     loading,
     error,
     submit,
+    publishFeedPost,
   };
 }

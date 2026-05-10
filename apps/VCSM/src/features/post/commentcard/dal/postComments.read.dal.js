@@ -17,7 +17,8 @@ export async function listPostComments(postId) {
     `)
     .eq("post_id", postId)
     .is("deleted_at", null)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
+    .limit(50);
 
   if (error) throw error;
   return data ?? [];

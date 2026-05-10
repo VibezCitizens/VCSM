@@ -5,6 +5,7 @@ import upsertVportServicesByActorDal from "@/features/profiles/kinds/vport/dal/s
 import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/model/services/vportServiceCatalogFallback.model";
 import { dalInsertLocksmithServiceDetailDefaults } from "@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal";
 import { getLocksmithServiceDefaults } from "@/features/profiles/kinds/vport/model/locksmith/locksmithServiceDefaults.model";
+import { resolveVportServiceCatalogType } from "@/features/profiles/kinds/vport/config/vportTypes.config";
 
 /**
  * Controller:
@@ -30,8 +31,10 @@ export default async function upsertVportServicesController({
     throw new Error("upsertVportServicesController: vportType is required");
   }
 
+  const resolvedCatalogType = resolveVportServiceCatalogType(vportType);
+
   const catalogRowsRaw = await readVportServiceCatalogByType({
-    vportType,
+    vportType: resolvedCatalogType,
     includeInactive: false,
   });
 
@@ -73,7 +76,12 @@ export default async function upsertVportServicesController({
     })
     .filter(Boolean);
 
-  // ✅ this is the actual DB save
+  if (list.length > 0 && payload.length === 0) {
+    throw new Error(
+      `NO_VALID_SERVICE_KEYS_AFTER_CATALOG_FILTER: ${list.length} key(s) submitted for type "${vportType}" (resolved: "${resolvedCatalogType}") but none matched the catalog. Keys: ${list.map((i) => i?.key).join(", ")}`
+    );
+  }
+
   const saved = await upsertVportServicesByActorDal({ actorId: targetActorId, rows: payload });
 
   // For locksmith vports, provision default detail rows for newly-enabled services.

@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import {
   overlayStyle,
   cardStyle,
@@ -22,7 +23,34 @@ export function VportActorMenuItemFormModal({
   disableKey = false,
   lockCategory = false,
   className = "",
+  onShareToFeed = null,
 } = {}) {
+  const [shareToFeed, setShareToFeed] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setShareToFeed(false);
+  }, [open]);
+
+  const wrappedOnSave = useCallback(
+    async (payload) => {
+      await onSave(payload);
+      if (shareToFeed && onShareToFeed) {
+        const action = payload.itemId ? "updated" : "added";
+        const categoryName =
+          Array.isArray(categories)
+            ? (categories.find((c) => c.id === payload.categoryId)?.name ?? null)
+            : null;
+        try {
+          await onShareToFeed({ action, subject: "item", subjectName: payload.name, categoryName, imageUrl: payload.imageUrl ?? null });
+        } catch {
+          // Non-blocking — menu save already committed
+        }
+      }
+    },
+    [onSave, shareToFeed, onShareToFeed, categories]
+  );
+
   const {
     effectiveMode,
     safeCategories,
@@ -50,7 +78,7 @@ export function VportActorMenuItemFormModal({
     setDescriptionValue,
     setSortOrderValue,
     setIsActiveValue,
-  } = useMenuItemForm({ open, mode, item, categories, actorId, saving, titleOverride, onSave, onClose });
+  } = useMenuItemForm({ open, mode, item, categories, actorId, saving, titleOverride, onSave: wrappedOnSave, onClose });
 
   if (!open) return null;
 
@@ -110,6 +138,21 @@ export function VportActorMenuItemFormModal({
               <div style={{ height: 10 }} />
             </div>
           </div>
+
+          {onShareToFeed && (
+            <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "10px 16px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={shareToFeed}
+                  onChange={(e) => setShareToFeed(e.target.checked)}
+                  disabled={saving}
+                  style={{ appearance: "auto", WebkitAppearance: "checkbox", width: 16, height: 16, margin: 0, accentColor: "#38bdf8" }}
+                />
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.70)" }}>Share this update to my feed</span>
+              </label>
+            </div>
+          )}
 
           <div style={{ padding: 16, borderTop: "1px solid rgba(255,255,255,0.10)", background: "rgba(17, 17, 17, 0.92)", paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}>
             <VportActorMenuItemFormActions

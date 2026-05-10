@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
+import { createTTLCache } from '@/shared/lib/ttlCache'
 
 /**
  * ============================================================
@@ -8,6 +9,13 @@ import { supabase } from '@/services/supabase/supabaseClient'
  * This DAL ONLY mutates accepted follow edges
  * ============================================================
  */
+
+// 8s TTL — prevents repeated DB hits during rapid UI interactions.
+const followStatusCache = createTTLCache(8_000)
+
+function followStatusKey(followerActorId, followedActorId) {
+  return `${followerActorId}:${followedActorId}`
+}
 
 /**
  * Insert or reactivate a follow edge
@@ -57,6 +65,7 @@ export async function dalInsertFollow({
     throw error
   }
 
+  followStatusCache.invalidate(followStatusKey(followerActorId, followedActorId))
   return true
 }
 
@@ -83,6 +92,7 @@ export async function dalDeactivateFollow({
     throw error
   }
 
+  followStatusCache.invalidate(followStatusKey(followerActorId, followedActorId))
   return true
 }
 
@@ -97,6 +107,9 @@ export async function dalGetFollowStatus({
     return false
   }
 
+  const key = followStatusKey(followerActorId, followedActorId)
+  if (followStatusCache.has(key)) return followStatusCache.get(key)
+
   const { data, error } = await supabase
   .schema ('vc')
     .from('actor_follows')
@@ -110,5 +123,7 @@ export async function dalGetFollowStatus({
     return false
   }
 
-  return Boolean(data?.is_active)
+  const result = Boolean(data?.is_active)
+  followStatusCache.set(key, result)
+  return result
 }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useIdentity } from "@/state/identity/identityContext";
 import {
   deleteVportLeadController,
   listVportLeadsController,
@@ -6,6 +7,8 @@ import {
 } from "@/features/dashboard/vport/controller/vportLeads.controller";
 
 export function useVportLeads(actorId) {
+  const { identity } = useIdentity();
+  const sessionActorId = identity?.actorId ?? null;
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,7 +24,7 @@ export function useVportLeads(actorId) {
     setLoading(true);
     setError("");
     try {
-      const next = await listVportLeadsController(actorId, { limit: 150 });
+      const next = await listVportLeadsController(actorId, { limit: 150 }, sessionActorId);
       setLeads(next ?? []);
       return next ?? [];
     } catch (e) {
@@ -30,7 +33,7 @@ export function useVportLeads(actorId) {
     } finally {
       setLoading(false);
     }
-  }, [actorId]);
+  }, [actorId, sessionActorId]);
 
   useEffect(() => {
     void refresh();
@@ -47,7 +50,7 @@ export function useVportLeads(actorId) {
         const updated = await markVportLeadContactedController(actorId, {
           leadId: lead.id,
           source: lead.source,
-        });
+        }, sessionActorId);
         if (updated?.id) {
           setLeads((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
         }
@@ -59,7 +62,7 @@ export function useVportLeads(actorId) {
         setBusyLeadId(null);
       }
     },
-    [actorId]
+    [actorId, sessionActorId]
   );
 
   const deleteLead = useCallback(
@@ -69,7 +72,7 @@ export function useVportLeads(actorId) {
       setActionError("");
       setBusyLeadId(leadId);
       try {
-        await deleteVportLeadController(actorId, { leadId });
+        await deleteVportLeadController(actorId, { leadId }, sessionActorId);
         setLeads((prev) => prev.filter((item) => item.id !== leadId));
         return true;
       } catch (e) {
@@ -79,7 +82,7 @@ export function useVportLeads(actorId) {
         setBusyLeadId(null);
       }
     },
-    [actorId]
+    [actorId, sessionActorId]
   );
 
   return {

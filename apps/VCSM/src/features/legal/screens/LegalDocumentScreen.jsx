@@ -1,12 +1,20 @@
+import { lazy, Suspense } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { authTheme } from '@/features/auth/adapters/auth.adapter'
 import { useLegalDocument } from '../hooks/useLegalDocument'
-import PrivacyPolicyContent from '../docs/PrivacyPolicyContent'
-import TermsOfServiceContent from '../docs/TermsOfServiceContent'
 import PublicNavbar, { PUBLIC_NAV_HEIGHT } from '@/shared/components/PublicNavbar'
 import '@/features/legal/styles/legalDocument.css'
 
+const AgeVerificationContent = lazy(() => import('../docs/AgeVerificationContent'))
+const PrivacyPolicyContent = lazy(() => import('../docs/PrivacyPolicyContent'))
+const TermsOfServiceContent = lazy(() => import('../docs/TermsOfServiceContent'))
+
 const DOCUMENT_MAP = {
+  'age-verification': {
+    component: AgeVerificationContent,
+    documentType: 'age_verification',
+    fallbackTitle: 'Age Verification Attestation',
+  },
   'privacy-policy': {
     component: PrivacyPolicyContent,
     documentType: 'privacy_policy',
@@ -19,6 +27,11 @@ const DOCUMENT_MAP = {
   },
 }
 
+const baseStyle = {
+  background: authTheme.pageBackground,
+  paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top))`,
+}
+
 export default function LegalDocumentScreen() {
   const { docType } = useParams()
   const [searchParams] = useSearchParams()
@@ -26,7 +39,7 @@ export default function LegalDocumentScreen() {
 
   const requestedVersion = searchParams.get('v') || null
 
-  const { docMeta, loading } = useLegalDocument({
+  const { docMeta, loading, error: docError } = useLegalDocument({
     appKey: 'vcsm',
     documentType: entry?.documentType,
     version: requestedVersion,
@@ -35,10 +48,7 @@ export default function LegalDocumentScreen() {
 
   if (!entry) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center p-6 text-white"
-        style={{ background: authTheme.pageBackground, paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top))` }}
-      >
+      <div className="min-h-screen flex items-center justify-center p-6 text-white" style={baseStyle}>
         <PublicNavbar />
         <p style={{ color: 'var(--vc-text-muted)' }}>Document not found.</p>
       </div>
@@ -55,7 +65,7 @@ export default function LegalDocumentScreen() {
   return (
     <div
       className="min-h-screen px-4 text-white"
-      style={{ background: authTheme.pageBackground, paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top) + 32px)` }}
+      style={{ ...baseStyle, paddingTop: `calc(${PUBLIC_NAV_HEIGHT}px + env(safe-area-inset-top) + 32px)` }}
     >
       <PublicNavbar />
       <div className="mx-auto w-full max-w-2xl">
@@ -67,19 +77,28 @@ export default function LegalDocumentScreen() {
           }}
         >
           <div className="legal-doc-content">
-            {/* Dynamic header from DB record */}
             {!loading && (
               <div className="mb-6">
-                <h1>{title}{version ? ` v${version}` : ''}</h1>
-                {publishedAt && (
-                  <p className="text-sm" style={{ color: 'var(--vc-text-muted)' }}>
-                    Effective {publishedAt}
+                {docError ? (
+                  <p className="text-sm mb-2" style={{ color: 'var(--vc-text-muted)' }}>
+                    Document metadata unavailable. Showing current version.
                   </p>
+                ) : (
+                  <>
+                    <h1>{title}{version ? ` v${version}` : ''}</h1>
+                    {publishedAt && (
+                      <p className="text-sm" style={{ color: 'var(--vc-text-muted)' }}>
+                        Effective {publishedAt}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}
 
-            <Content />
+            <Suspense fallback={null}>
+              <Content />
+            </Suspense>
           </div>
         </div>
       </div>

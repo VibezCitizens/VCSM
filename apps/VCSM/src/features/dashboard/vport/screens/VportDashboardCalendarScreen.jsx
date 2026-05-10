@@ -12,6 +12,8 @@ import useVportManageAvailability from "@/features/dashboard/vport/hooks/useVpor
 import useVportEnsureResource from "@/features/dashboard/vport/hooks/useVportEnsureResource";
 import WeeklyAvailabilityGrid from "@/features/dashboard/vport/components/calendar/WeeklyAvailabilityGrid";
 import ResourceDropdown from "@/features/dashboard/vport/components/calendar/ResourceDropdown";
+import { usePublishBarbershopHoursPost } from "@/features/profiles/kinds/vport/hooks/barbershop/usePublishBarbershopHoursPost";
+import { usePublishLocksmithPost } from "@/features/profiles/kinds/vport/hooks/locksmith/usePublishLocksmithPost";
 
 export function VportDashboardCalendarScreen() {
   const navigate  = useNavigate();
@@ -55,6 +57,27 @@ export function VportDashboardCalendarScreen() {
 
   const availability       = useVportResourceAvailability({ resourceId: selectedResourceId, rangeStart, rangeEnd, enabled: Boolean(selectedResourceId) && isOwner });
   const manageAvailability = useVportManageAvailability();
+
+  const isBarbershop = ["barbershop", "barber"].includes(
+    String(identity?.vportType ?? "").toLowerCase()
+  );
+  const isLocksmith = String(identity?.vportType ?? "").toLowerCase() === "locksmith";
+  const [shareToFeed, setShareToFeed] = useState(false);
+  const { publishBarbershopHoursPost } = usePublishBarbershopHoursPost({ actorId });
+  const { publishHoursPost: publishLocksmithHoursPost } = usePublishLocksmithPost({ actorId });
+
+  const handleSaveSuccess = useCallback(
+    async ({ blocks }) => {
+      if (!shareToFeed) return;
+      setShareToFeed(false);
+      if (isBarbershop) {
+        try { await publishBarbershopHoursPost({ blocks }); } catch { }
+      } else if (isLocksmith) {
+        try { await publishLocksmithHoursPost({ blocks }); } catch { }
+      }
+    },
+    [shareToFeed, isBarbershop, isLocksmith, publishBarbershopHoursPost, publishLocksmithHoursPost]
+  );
 
   const rules = useMemo(
     () => (Array.isArray(availability.data?.rules) ? availability.data.rules : []),
@@ -115,6 +138,18 @@ export function VportDashboardCalendarScreen() {
                 </div>
               )}
 
+              {(isBarbershop || isLocksmith) && (
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "rgba(203,213,225,.75)", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={shareToFeed}
+                    onChange={(e) => setShareToFeed(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: "#818cf8", cursor: "pointer" }}
+                  />
+                  Share these hours to my feed
+                </label>
+              )}
+
               {!resLoading && !ensurePending && activeResources.length === 0 ? (
                 <div style={{ borderRadius: 10, border: "1px dashed rgba(139,92,246,.2)", padding: "20px 16px", textAlign: "center", display: "grid", gap: 10 }}>
                   <div style={{ fontSize: 13, color: "rgba(203,213,225,.6)" }}>
@@ -145,6 +180,7 @@ export function VportDashboardCalendarScreen() {
                       manageAvailability={manageAvailability}
                       availabilityRefresh={availability.refresh}
                       isMobile={!isDesktop}
+                      onSaveSuccess={handleSaveSuccess}
                     />
                   )}
                 </>

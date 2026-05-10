@@ -13,6 +13,7 @@ import { useVportPortfolio } from "@/features/profiles/adapters/profiles.adapter
 import { PortfolioBugsBunnyPanel } from "./components/PortfolioBugsBunnyPanel";
 import PortfolioItemForm from "./components/portfolio/PortfolioItemForm";
 import PortfolioManagerCard from "./components/portfolio/PortfolioManagerCard";
+import { usePublishBarbershopPortfolioPost } from "@/features/profiles/kinds/vport/hooks/barbershop/usePublishBarbershopPortfolioPost";
 
 function buildInitialValues(detail) {
   if (!detail) return null;
@@ -46,8 +47,17 @@ export default function VportDashboardPortfolioScreen() {
   const isDesktop = useDesktopBreakpoint();
   const isOwner = Boolean(targetActorId) && Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId);
 
+  const isBarbershop = ["barbershop", "barber"].includes(
+    String(identity?.vportType ?? "").toLowerCase()
+  );
+
   const { allItems, loading, error, reload, optimisticRemove, optimisticAdd, optimisticUpdate, getItem } =
     useVportPortfolio(targetActorId);
+
+  const [shareToFeed, setShareToFeed] = useState(false);
+  const { publishBarbershopPortfolioPost } = usePublishBarbershopPortfolioPost({
+    actorId: targetActorId,
+  });
 
   const [showCreate, setShowCreate] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -55,10 +65,22 @@ export default function VportDashboardPortfolioScreen() {
   const [editingItemDetail, setEditingItemDetail] = useState(null);
   const [loadingEdit, setLoadingEdit] = useState(false);
 
-  const handleCreated = useCallback((optimisticItem) => {
-    setShowCreate(false);
-    if (optimisticItem) optimisticAdd(optimisticItem);
-  }, [optimisticAdd]);
+  const handleCreated = useCallback(
+    (optimisticItem, { firstMediaUrl } = {}) => {
+      setShowCreate(false);
+      setShareToFeed(false);
+      if (optimisticItem) optimisticAdd(optimisticItem);
+      if (shareToFeed && isBarbershop) {
+        const title = optimisticItem?.title ?? null;
+        try {
+          publishBarbershopPortfolioPost({ portfolioTitle: title, mediaUrl: firstMediaUrl ?? null });
+        } catch {
+          // non-blocking — portfolio item already created
+        }
+      }
+    },
+    [optimisticAdd, shareToFeed, isBarbershop, publishBarbershopPortfolioPost]
+  );
 
   const handleEdit = useCallback(async (item) => {
     setLoadingEdit(true);
@@ -137,7 +159,9 @@ export default function VportDashboardPortfolioScreen() {
                   actorId={targetActorId}
                   vportType={identity?.vportType ?? null}
                   onDone={handleCreated}
-                  onCancel={() => setShowCreate(false)}
+                  onCancel={() => { setShowCreate(false); setShareToFeed(false); }}
+                  shareToFeed={isBarbershop ? shareToFeed : false}
+                  onToggleShareToFeed={isBarbershop ? setShareToFeed : null}
                 />
               </div>
             ) : null}

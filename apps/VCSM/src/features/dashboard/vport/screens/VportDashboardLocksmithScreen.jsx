@@ -9,6 +9,7 @@ import { createVportDashboardShellStyles } from "@/features/dashboard/vport/scre
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 import { useLocksmithProfile, useLocksmithOwner } from "@/features/profiles/adapters/profiles.adapter";
+import { usePublishLocksmithPost } from "@/features/profiles/kinds/vport/hooks/locksmith/usePublishLocksmithPost";
 import {
   AreaForm,
   AreaCard,
@@ -27,25 +28,32 @@ export default function VportDashboardLocksmithScreen() {
 
   const { serviceAreas, serviceDetails, gapServices, loading, reload } = useLocksmithProfile(targetActorId, "locksmith");
   const owner = useLocksmithOwner(targetActorId, { onSuccess: reload });
+  const { publishServiceAreaPost } = usePublishLocksmithPost({ actorId: targetActorId });
 
   const [showAddArea, setShowAddArea] = useState(false);
   const [editingArea, setEditingArea] = useState(null);
   const [deletingAreaId, setDeletingAreaId] = useState(null);
 
-  const handleAddArea = useCallback(async (area) => {
+  const handleAddArea = useCallback(async (area, { shareToFeed } = {}) => {
     try {
       await owner.addArea(area);
       setShowAddArea(false);
+      if (shareToFeed) {
+        try { await publishServiceAreaPost(area); } catch (_) {}
+      }
     } catch (_) {}
-  }, [owner]);
+  }, [owner, publishServiceAreaPost]);
 
-  const handleUpdateArea = useCallback(async (area) => {
+  const handleUpdateArea = useCallback(async (area, { shareToFeed } = {}) => {
     if (!editingArea?.id) return;
     try {
       await owner.updateArea(editingArea.id, area);
       setEditingArea(null);
+      if (shareToFeed) {
+        try { await publishServiceAreaPost(area); } catch (_) {}
+      }
     } catch (_) {}
-  }, [owner, editingArea]);
+  }, [owner, editingArea, publishServiceAreaPost]);
 
   const handleDeleteArea = useCallback(async (areaId) => {
     setDeletingAreaId(areaId);

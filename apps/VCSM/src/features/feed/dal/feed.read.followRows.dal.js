@@ -26,17 +26,20 @@ export async function readFeedFollowRowsDAL({ viewerActorId, actorIds = [] }) {
     return cached.filter((r) => idSet.has(r.followed_actor_id));
   }
 
+  // Fetch the full follow graph for this viewer — not scoped to the current page's actorIds.
+  // Caching a page-scoped subset caused cache misses on every scroll page.
   const { data, error } = await supabase
     .schema("vc")
     .from("actor_follows")
     .select("follower_actor_id,followed_actor_id,is_active")
     .eq("follower_actor_id", viewerActorId)
-    .eq("is_active", true)
-    .in("followed_actor_id", uniqueActorIds);
+    .eq("is_active", true);
 
   if (error) throw error;
 
-  const rows = data ?? [];
-  followCache.set(viewerActorId, rows);
-  return rows;
+  const allRows = data ?? [];
+  followCache.set(viewerActorId, allRows);
+
+  const idSet = new Set(uniqueActorIds);
+  return allRows.filter((r) => idSet.has(r.followed_actor_id));
 }

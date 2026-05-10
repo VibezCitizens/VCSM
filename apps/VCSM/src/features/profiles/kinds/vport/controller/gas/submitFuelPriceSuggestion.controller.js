@@ -5,6 +5,7 @@ import { fetchVportStationPriceSettingsDAL } from "@/features/profiles/kinds/vpo
 import { createFuelPriceSubmissionDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceSubmissions.write.dal";
 
 import { upsertVportFuelPriceDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.write.dal";
+import { createVportFuelPriceHistoryDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceHistory.write.dal";
 
 import { mapVportFuelPriceRow, mapVportFuelPriceRows } from "@/features/profiles/kinds/vport/model/gas/vportFuelPrice.model";
 import { mapFuelPriceSubmissionRow } from "@/features/profiles/kinds/vport/model/gas/vportFuelPriceSubmission.model";
@@ -77,6 +78,18 @@ export async function submitFuelPriceSuggestionController({
     });
 
     if (error) throw error;
+
+    const { error: histErr } = await createVportFuelPriceHistoryDAL({
+      targetActorId,
+      fuelKey,
+      price: p,
+      currencyCode,
+      unit,
+      actorId,
+      source,
+      isAvailable,
+    });
+    if (histErr) throw histErr;
 
     // Invalidate read cache so the next refresh fetches fresh data from DB
     invalidateFuelPriceCache(targetActorId);

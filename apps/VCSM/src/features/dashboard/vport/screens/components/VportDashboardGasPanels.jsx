@@ -24,6 +24,7 @@ export function VportDashboardOfficialGasPanel({
   submitError,
   afterSubmitSuggestion,
   submitSuggestion,
+  onShareToFeed = null,
   refresh,
 }) {
   return (
@@ -46,11 +47,8 @@ export function VportDashboardOfficialGasPanel({
           submitting={submitting}
           allowOwnerUpdate={true}
           afterSubmitSuggestion={afterSubmitSuggestion}
-          submitSuggestion={async (payload) => {
-            const res = await submitSuggestion(payload);
-            if (res?.ok) await refresh();
-            return res;
-          }}
+          onShareToFeed={onShareToFeed}
+          submitSuggestion={submitSuggestion}
         />
         {submitError ? (
           <div className="mt-4 rounded-2xl border border-red-900/60 bg-red-950/40 p-4 text-sm text-red-300">

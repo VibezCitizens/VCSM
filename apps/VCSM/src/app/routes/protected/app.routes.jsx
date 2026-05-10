@@ -6,6 +6,7 @@ import { releaseFlags } from "@/shared/config/releaseFlags";
 import { learningProtectedRoutes } from "@/app/routes/learning/learning.routes";
 import {
   BlockedVportGuard,
+  OwnerOnlyDashboardGuard,
   VportToActorDashboardRedirect,
   VportToActorSettingsRedirect,
   VportToActorAdsRedirect,
@@ -198,20 +199,25 @@ export function protectedAppRoutes({
     {
       element: <BlockedVportGuard />,
       children: [
-        { path: "/actor/:actorId/dashboard", element: <VportDashboardScreen /> },
-        { path: "/actor/:actorId/dashboard/gas", element: <VportDashboardGasScreen /> },
-        { path: "/actor/:actorId/dashboard/reviews", element: <VportDashboardReviewScreen /> },
-        { path: "/actor/:actorId/dashboard/leads", element: <VportDashboardLeadsScreen /> },
-        { path: "/actor/:actorId/dashboard/services", element: <VportDashboardServicesScreen /> },
-        { path: "/actor/:actorId/dashboard/exchange", element: <VportDashboardExchangeScreen /> },
-        { path: "/actor/:actorId/dashboard/calendar", element: <VportDashboardCalendarScreen /> },
-        { path: "/actor/:actorId/dashboard/portfolio", element: <VportDashboardPortfolioScreen /> },
-        { path: "/actor/:actorId/dashboard/locksmith", element: <VportDashboardLocksmithScreen /> },
-        { path: "/actor/:actorId/dashboard/booking-history", element: <VportDashboardBookingHistoryScreen /> },
-        { path: "/actor/:actorId/dashboard/team", element: <VportDashboardTeamScreen /> },
-        { path: "/actor/:actorId/dashboard/team-requests", element: <BarberTeamRequestsScreen /> },
-        { path: "/actor/:actorId/dashboard/schedule", element: <VportDashboardScheduleScreen /> },
-        { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
+        {
+          element: <OwnerOnlyDashboardGuard />,
+          children: [
+            { path: "/actor/:actorId/dashboard", element: <VportDashboardScreen /> },
+            { path: "/actor/:actorId/dashboard/gas", element: <VportDashboardGasScreen /> },
+            { path: "/actor/:actorId/dashboard/reviews", element: <VportDashboardReviewScreen /> },
+            { path: "/actor/:actorId/dashboard/leads", element: <VportDashboardLeadsScreen /> },
+            { path: "/actor/:actorId/dashboard/services", element: <VportDashboardServicesScreen /> },
+            { path: "/actor/:actorId/dashboard/exchange", element: <VportDashboardExchangeScreen /> },
+            { path: "/actor/:actorId/dashboard/calendar", element: <VportDashboardCalendarScreen /> },
+            { path: "/actor/:actorId/dashboard/portfolio", element: <VportDashboardPortfolioScreen /> },
+            { path: "/actor/:actorId/dashboard/locksmith", element: <VportDashboardLocksmithScreen /> },
+            { path: "/actor/:actorId/dashboard/booking-history", element: <VportDashboardBookingHistoryScreen /> },
+            { path: "/actor/:actorId/dashboard/team", element: <VportDashboardTeamScreen /> },
+            { path: "/actor/:actorId/dashboard/team-requests", element: <BarberTeamRequestsScreen /> },
+            { path: "/actor/:actorId/dashboard/schedule", element: <VportDashboardScheduleScreen /> },
+            { path: "/actor/:actorId/settings", element: <VportSettingsScreen /> },
+          ],
+        },
       ],
     },
 

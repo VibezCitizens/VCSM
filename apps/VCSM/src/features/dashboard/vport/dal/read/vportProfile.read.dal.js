@@ -26,3 +26,16 @@ export async function getVportProfileIdByActorDAL({ actorId } = {}) {
   if (error) throw error;
   return data?.id ?? null;
 }
+
+export async function getVportActorIdByProfileIdDAL({ profileId } = {}) {
+  if (!profileId) return null;
+
+  const { data, error } = await vportSchema
+    .from("profiles")
+    .select("actor_id")
+    .eq("id", profileId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data?.actor_id ?? null;
+}

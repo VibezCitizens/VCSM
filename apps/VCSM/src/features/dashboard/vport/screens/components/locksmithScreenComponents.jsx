@@ -29,10 +29,11 @@ export function AreaForm({ initial, onSave, onCancel, saving }) {
   const [maxEta, setMaxEta] = useState(initial?.maxEtaMinutes ?? "");
   const [travelFee, setTravelFee] = useState(initial?.travelFeeCents ? (initial.travelFeeCents / 100).toFixed(2) : "");
   const [emergency, setEmergency] = useState(initial?.isEmergencyCovered ?? true);
+  const [shareToFeed, setShareToFeed] = useState(false);
 
   const handleSubmit = () => {
     const areaType = zipCode ? "zip" : radiusMiles ? "radius" : "city";
-    onSave({
+    const area = {
       label: label.trim() || city.trim() || "Coverage area",
       areaType,
       city: city.trim() || null,
@@ -43,7 +44,8 @@ export function AreaForm({ initial, onSave, onCancel, saving }) {
       maxEtaMinutes: maxEta ? parseInt(maxEta, 10) : null,
       travelFeeCents: travelFee ? Math.round(parseFloat(travelFee) * 100) : 0,
       isEmergencyCovered: emergency,
-    });
+    };
+    onSave(area, { shareToFeed });
   };
 
   return (
@@ -82,6 +84,17 @@ export function AreaForm({ initial, onSave, onCancel, saving }) {
       <ConsentCheckbox checked={emergency} onChange={() => setEmergency((v) => !v)}>
         Emergency service available in this area
       </ConsentCheckbox>
+
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={shareToFeed}
+          disabled={saving}
+          onChange={(e) => setShareToFeed(e.target.checked)}
+          style={{ width: 16, height: 16, accentColor: "#818cf8", cursor: "pointer" }}
+        />
+        <span className="text-xs text-white/50">Share this service area update to my feed</span>
+      </label>
 
       <div className="flex justify-end gap-2 pt-1">
         <button type="button" onClick={onCancel} className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 hover:bg-white/10">Cancel</button>

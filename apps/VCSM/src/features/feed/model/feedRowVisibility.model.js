@@ -48,9 +48,21 @@ export function resolveFeedRowVisibilityModel({
 
   if (actor.vport_id) {
     // vportMap is keyed by actor.id (rowActorId), NOT by actor.vport_id.
-    // is_active must be explicitly true — undefined/null treated as inactive.
+    // vportMap is built from vport.profiles (not the TRAZE directory view).
     const vportEntry = vportMap?.[rowActorId] ?? null;
-    const isActive = vportEntry !== null && vportEntry.is_active === true;
+    if (vportEntry === null) {
+      return {
+        post_id: postId,
+        actor_id: rowActorId,
+        visible: false,
+        reason: "missing_vport_profile",
+        is_private: null,
+        is_following: false,
+        is_owner: actor.id === viewerActorId,
+        actor_kind: actor.kind ?? "vport",
+      };
+    }
+    const isActive = vportEntry.is_active !== false && vportEntry.is_deleted !== true;
     return {
       post_id: postId,
       actor_id: rowActorId,

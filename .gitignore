@@ -1,4 +1,5 @@
 apps/emergency/
+apps/WT/
 node_modules/
 dist/
 .env
