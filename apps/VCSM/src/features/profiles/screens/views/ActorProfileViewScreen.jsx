@@ -198,6 +198,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
               >
                 <ActorProfilePostsView
                   profileActorId={resolvedProfile.actorId}
+                  canViewContent={gate.canView}
                   onShare={handleShare}
                   onOpenMenu={openPostMenu}
                 />

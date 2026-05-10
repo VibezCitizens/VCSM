@@ -8,6 +8,13 @@ import {
   markVportBusinessCardLeadContactedDAL,
 } from "@/features/dashboard/vport/dal/write/vportLeads.write.dal";
 
+function assertCallerOwns(callerActorId, ownerActorId, op) {
+  if (!callerActorId) throw new Error(`${op}: callerActorId required`);
+  if (String(callerActorId) !== String(ownerActorId)) {
+    throw new Error(`${op}: caller does not own this vport`);
+  }
+}
+
 function toText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -36,13 +43,15 @@ async function resolveProfileId(actorId) {
   return profileId;
 }
 
-export async function listVportLeadsController(actorId, { limit = 100 } = {}) {
+export async function listVportLeadsController(actorId, { limit = 100 } = {}, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "listVportLeadsController");
   const profileId = await resolveProfileId(actorId);
   const rows = await readVportBusinessCardLeadsByProfileDAL(profileId, { limit });
   return rows.map(normalizeLead).filter((lead) => lead.id);
 }
 
-export async function markVportLeadContactedController(actorId, { leadId, source } = {}) {
+export async function markVportLeadContactedController(actorId, { leadId, source } = {}, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "markVportLeadContactedController");
   const profileId = await resolveProfileId(actorId);
   const updated = await markVportBusinessCardLeadContactedDAL({
     profileId,
@@ -52,12 +61,14 @@ export async function markVportLeadContactedController(actorId, { leadId, source
   return updated ? normalizeLead(updated) : null;
 }
 
-export async function countNewVportLeadsController(actorId) {
+export async function countNewVportLeadsController(actorId, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "countNewVportLeadsController");
   const profileId = await resolveProfileId(actorId);
   return readNewLeadsCountByProfileDAL(profileId);
 }
 
-export async function deleteVportLeadController(actorId, { leadId } = {}) {
+export async function deleteVportLeadController(actorId, { leadId } = {}, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "deleteVportLeadController");
   const profileId = await resolveProfileId(actorId);
   await deleteVportBusinessCardLeadDAL({
     profileId,

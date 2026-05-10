@@ -23,9 +23,12 @@ export default function PortfolioItemForm({
   onOptimisticUpdate = null,
   onDone,
   onCancel,
+  shareToFeed = false,
+  onToggleShareToFeed = null,
 }) {
   const isEdit = mode === "edit";
   const isLocksmith = String(vportType ?? "").toLowerCase() === "locksmith";
+  const isBarbershop = ["barbershop", "barber"].includes(String(vportType ?? "").toLowerCase());
 
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [description, setDescription] = useState(initialValues?.description ?? "");
@@ -45,6 +48,7 @@ export default function PortfolioItemForm({
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const fileRef = useRef(null);
+  const [lkShareToFeed, setLkShareToFeed] = useState(false);
 
   const { upload } = usePortfolioMediaUpload({ actorId });
   const existingMediaCount = initialValues?.existingMediaCount ?? 0;
@@ -54,6 +58,7 @@ export default function PortfolioItemForm({
     tagsInput, previews, onDone, isLocksmith, onOptimisticUpdate,
     jobType, propertyType, lockType, hardwareBrand, serviceMode,
     isEmergencyJob, isSecurityUpgrade, estimatedDuration, existingMediaCount, upload,
+    shareToFeed: isLocksmith ? lkShareToFeed : shareToFeed,
   });
 
   const handleFiles = useCallback((e) => {
@@ -227,6 +232,32 @@ export default function PortfolioItemForm({
           ? `${files.length} new photo${files.length > 1 ? "s" : ""} selected — tap to change`
           : isEdit ? "Add more photos (optional)" : "Tap to add photos"}
       </button>
+
+      {!isEdit && isBarbershop && onToggleShareToFeed ? (
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "rgba(203,213,225,.7)", cursor: saving ? "default" : "pointer", marginBottom: 12 }}>
+          <input
+            type="checkbox"
+            checked={shareToFeed}
+            onChange={(e) => onToggleShareToFeed(e.target.checked)}
+            disabled={saving}
+            style={{ width: 16, height: 16, accentColor: "#818cf8", cursor: saving ? "default" : "pointer" }}
+          />
+          Share this portfolio item to my feed
+        </label>
+      ) : null}
+
+      {!isEdit && isLocksmith ? (
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "rgba(203,213,225,.7)", cursor: saving ? "default" : "pointer", marginBottom: 12 }}>
+          <input
+            type="checkbox"
+            checked={lkShareToFeed}
+            onChange={(e) => setLkShareToFeed(e.target.checked)}
+            disabled={saving}
+            style={{ width: 16, height: 16, accentColor: "#818cf8", cursor: saving ? "default" : "pointer" }}
+          />
+          Share this portfolio item to my feed
+        </label>
+      ) : null}
 
       {error ? (
         <div className="mb-3 rounded-xl border border-red-500/25 bg-red-500/8 px-4 py-3 text-sm text-red-200">

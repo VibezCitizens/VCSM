@@ -5,11 +5,6 @@ import {
   acceptRequiredConsents,
 } from '../controllers/legalConsent.controller'
 
-/**
- * Hook to manage legal consent gate state.
- * Uses the compliance engine to check if the user needs to re-consent.
- * Returns loading, consent status, required actions, and accept handler.
- */
 export function useLegalConsent() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -17,6 +12,8 @@ export function useLegalConsent() {
   const [requiredActions, setRequiredActions] = useState([])
   const [accepting, setAccepting] = useState(false)
   const [error, setError] = useState(null)
+  const [gateError, setGateError] = useState(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     if (!user?.id) {
@@ -30,6 +27,7 @@ export function useLegalConsent() {
     async function check() {
       try {
         setLoading(true)
+        setGateError(null)
         const gate = await resolveLegalGateForSession({ userId: user.id })
         if (!cancelled) {
           const blocked = gate.decision === 'REQUIRE_RECONSENT'
@@ -37,11 +35,14 @@ export function useLegalConsent() {
           setRequiredActions(blocked ? gate.requiredActions : [])
         }
       } catch (err) {
-        console.error('[LegalConsent] gate check failed:', err)
+        if (import.meta.env.DEV) {
+          console.error('[LegalConsent] gate check failed:', err)
+        }
         if (!cancelled) {
-          setError(err.message)
-          // On error, don't block — allow app entry
-          setRequiresConsent(false)
+          // Fail closed: block gate on any error until a successful check completes
+          setGateError(err.message ?? 'Consent check failed')
+          setRequiresConsent(true)
+          setRequiredActions([])
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -50,7 +51,11 @@ export function useLegalConsent() {
 
     check()
     return () => { cancelled = true }
-  }, [user?.id])
+  }, [user?.id, retryCount])
+
+  const retryConsent = useCallback(() => {
+    setRetryCount((c) => c + 1)
+  }, [])
 
   const acceptAll = useCallback(async () => {
     if (!user?.id || requiredActions.length === 0) return
@@ -66,7 +71,9 @@ export function useLegalConsent() {
       setRequiresConsent(false)
       setRequiredActions([])
     } catch (err) {
-      console.error('[LegalConsent] re-consent failed:', err)
+      if (import.meta.env.DEV) {
+        console.error('[LegalConsent] re-consent failed:', err)
+      }
       setError(err.message)
     } finally {
       setAccepting(false)
@@ -80,5 +87,7 @@ export function useLegalConsent() {
     accepting,
     error,
     acceptAll,
+    gateError,
+    retryConsent,
   }
 }

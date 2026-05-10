@@ -27,7 +27,7 @@ async function resolveVportIdFromActor(actorId) {
     const row = await dalReadActorKindAndVportId(actorId)
     return row?.vport_id ?? null
   } catch (error) {
-    console.error('[Blocks.controller] resolveVportIdFromActor failed', error)
+    if (import.meta.env.DEV) console.error('[Blocks.controller] resolveVportIdFromActor failed', error)
     return null
   }
 }
@@ -69,7 +69,11 @@ export async function ctrlBlockActor({
   blockedActorId,
   scope,
   existingBlockedIds,
+  callerActorId,
 }) {
+  if (!callerActorId || String(callerActorId) !== String(actorId)) {
+    throw new Error('ctrlBlockActor: caller does not own this actor')
+  }
   if (!actorId) throw new Error('Missing actorId')
   if (!blockedActorId) throw new Error('Missing blockedActorId')
   if (actorId === blockedActorId) throw new Error('You cannot block yourself.')
@@ -98,7 +102,11 @@ export async function ctrlUnblockActor({
   blockedActorId,
   scope,
   existingBlockedIds,
+  callerActorId,
 }) {
+  if (!callerActorId || String(callerActorId) !== String(actorId)) {
+    throw new Error('ctrlUnblockActor: caller does not own this actor')
+  }
   if (!actorId) throw new Error('Missing actorId')
   if (!blockedActorId) throw new Error('Missing blockedActorId')
   if (scope !== 'user' && scope !== 'vport') throw new Error('Invalid scope')

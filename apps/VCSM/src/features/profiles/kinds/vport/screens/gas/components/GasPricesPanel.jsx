@@ -16,6 +16,7 @@ export function GasPricesPanel({
   allowOwnerUpdate = false,
   isStationOwner = false,
   afterSubmitSuggestion = null,
+  onShareToFeed = null,
 }) {
   const [showBulkModal, setShowBulkModal] = useState(false);
 
@@ -187,6 +188,8 @@ export function GasPricesPanel({
             submitting={submitting}
             submitSuggestion={submitSuggestion}
             afterSubmitSuggestion={afterSubmitSuggestion}
+            canShareToFeed={allowOwnerUpdate}
+            onShareToFeed={onShareToFeed}
           />
         </>
       )}

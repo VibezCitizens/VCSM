@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { updateBookingStatusController } from "@/features/dashboard/vport/controller/updateVportBooking.controller";
 
-export default function useVportBookingActions({ onSuccess } = {}) {
+export default function useVportBookingActions({ onSuccess, actorId = null } = {}) {
   const [working, setWorking] = useState(false);
   const [error, setError]     = useState(null);
 
@@ -18,10 +18,10 @@ export default function useVportBookingActions({ onSuccess } = {}) {
     }
   }, [onSuccess]);
 
-  const confirm  = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "confirmed" })),  [runAction]);
-  const cancel   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "cancelled" })),  [runAction]);
-  const complete = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "completed" })),  [runAction]);
-  const noShow   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "no_show" })),    [runAction]);
+  const confirm  = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "confirmed", actorId })),  [runAction, actorId]);
+  const cancel   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "cancelled", actorId })),  [runAction, actorId]);
+  const complete = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "completed", actorId })),  [runAction, actorId]);
+  const noShow   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "no_show",   actorId })),  [runAction, actorId]);
 
   return { working, error, confirm, cancel, complete, noShow };
 }

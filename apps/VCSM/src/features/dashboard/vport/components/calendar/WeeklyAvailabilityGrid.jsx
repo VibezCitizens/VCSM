@@ -18,6 +18,7 @@ export default function WeeklyAvailabilityGrid({
   manageAvailability,
   availabilityRefresh,
   isMobile,
+  onSaveSuccess,
 }) {
   const [blocks, setBlocks]         = useState(() => rulesToBlocks(rules));
   const [closedDays, setClosedDays] = useState(() => {
@@ -130,6 +131,7 @@ export default function WeeklyAvailabilityGrid({
       await availabilityRefresh();
       setSaveMsg({ ok: true, text: "Saved." });
       setApplyMsg(null);
+      onSaveSuccess?.({ blocks: [...blocks] });
     } catch (err) {
       setSaveMsg({ ok: false, text: String(err?.message ?? err) });
     } finally {

@@ -19,6 +19,11 @@
     "addTag": "+ Add Tag",
     "failedToLoad": "Failed to load tags."
   },
+  "unavailableGate": {
+    "badge": "Account Unavailable",
+    "title": "This account is no longer available",
+    "subtitle": "This profile has been removed or deactivated and is no longer publicly accessible."
+  },
   "privateGate": {
     "badge": "Access Controlled",
     "title": "Private Profile",

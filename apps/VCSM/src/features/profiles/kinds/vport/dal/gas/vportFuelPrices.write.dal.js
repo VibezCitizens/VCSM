@@ -24,6 +24,19 @@ export async function resolveActorIdFromProfileId(profileId) {
   return data?.actor_id ?? null;
 }
 
+export async function updateFuelPriceUnitForActorDAL({ actorId, unit }) {
+  if (!actorId) throw new Error("actorId required");
+  if (!unit) throw new Error("unit required");
+
+  const profileId = await resolveProfileId(actorId);
+  if (!profileId) return { error: new Error("profile not found for actor") };
+
+  return vportSchema
+    .from("fuel_prices")
+    .update({ unit, updated_at: new Date().toISOString() })
+    .eq("profile_id", profileId);
+}
+
 export async function upsertVportFuelPriceDAL({
   targetActorId,
   fuelKey,

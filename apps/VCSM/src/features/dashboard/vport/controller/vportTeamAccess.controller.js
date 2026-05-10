@@ -10,6 +10,13 @@ import { searchActorsDAL } from "@/features/actors/dal/searchActors.dal";
 
 const VALID_ROLES = ["owner", "manager", "staff"];
 
+function assertCallerOwns(callerActorId, ownerActorId, op) {
+  if (!callerActorId) throw new Error(`${op}: callerActorId required`);
+  if (String(callerActorId) !== String(ownerActorId)) {
+    throw new Error(`${op}: caller does not own this vport`);
+  }
+}
+
 async function resolveProfileId(actorId) {
   const profile = await readVportProfileByActorIdDAL({ actorId });
   const id = profile?.id ?? null;
@@ -34,14 +41,15 @@ function assertOwnerRemains(rows, excludeResourceId, operation) {
   }
 }
 
-export async function getTeamAccessController(actorId) {
+export async function getTeamAccessController(actorId, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "getTeamAccessController");
   if (!actorId) return [];
   const profileId = await resolveProfileId(actorId);
   return fetchTeamMembersByProfileId(profileId);
 }
 
-export async function addTeamMemberController(actorId, { memberActorId, role, displayName }) {
-  if (!actorId) throw new Error("addTeamMemberController: actorId required");
+export async function addTeamMemberController(actorId, { memberActorId, role, displayName }, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "addTeamMemberController");
   if (!memberActorId) throw new Error("Member actor is required.");
   if (!VALID_ROLES.includes(role)) throw new Error(`Invalid role. Must be: ${VALID_ROLES.join(", ")}`);
   if (String(actorId) === String(memberActorId)) throw new Error("Cannot add yourself as a team member.");
@@ -58,8 +66,8 @@ export async function addTeamMemberController(actorId, { memberActorId, role, di
   return insertLinkedTeamMemberDAL({ profileId, memberActorId, name: displayName ?? memberActorId, role });
 }
 
-export async function updateTeamMemberRoleController(actorId, { resourceId, role }) {
-  if (!actorId) throw new Error("updateTeamMemberRoleController: actorId required");
+export async function updateTeamMemberRoleController(actorId, { resourceId, role }, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "updateTeamMemberRoleController");
   if (!resourceId) throw new Error("Resource ID is required.");
   if (!VALID_ROLES.includes(role)) throw new Error("Invalid role.");
 
@@ -75,8 +83,8 @@ export async function updateTeamMemberRoleController(actorId, { resourceId, role
   return updateTeamMemberRoleDAL({ resourceId, meta: target.meta, role });
 }
 
-export async function setTeamMemberStatusController(actorId, { resourceId, status }) {
-  if (!actorId) throw new Error("setTeamMemberStatusController: actorId required");
+export async function setTeamMemberStatusController(actorId, { resourceId, status }, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "setTeamMemberStatusController");
   if (!resourceId) throw new Error("Resource ID is required.");
   if (!["active", "inactive"].includes(status)) throw new Error("Status must be active or inactive.");
 
@@ -96,8 +104,8 @@ export async function setTeamMemberStatusController(actorId, { resourceId, statu
   return setTeamMemberActiveDAL({ resourceId, isActive: status === "active" });
 }
 
-export async function removeTeamMemberController(actorId, { resourceId }) {
-  if (!actorId) throw new Error("removeTeamMemberController: actorId required");
+export async function removeTeamMemberController(actorId, { resourceId }, callerActorId) {
+  assertCallerOwns(callerActorId, actorId, "removeTeamMemberController");
   if (!resourceId) throw new Error("Resource ID is required.");
 
   const profileId = await resolveProfileId(actorId);

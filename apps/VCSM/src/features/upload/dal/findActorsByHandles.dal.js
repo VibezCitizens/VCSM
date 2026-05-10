@@ -68,3 +68,17 @@ export async function findActorsByHandles(handles) {
 
   return out;
 }
+
+export async function filterValidActorIdsDAL(actorIds) {
+  const ids = Array.isArray(actorIds) ? actorIds.filter(Boolean) : [];
+  if (ids.length === 0) return [];
+
+  const { data, error } = await supabase
+    .schema("vc")
+    .from("actors")
+    .select("id")
+    .in("id", ids);
+
+  if (error) throw error;
+  return (data || []).map((r) => r.id);
+}

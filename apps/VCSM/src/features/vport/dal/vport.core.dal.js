@@ -96,10 +96,12 @@ export async function createVport({
   // Awaited — the platform.user_app_actor_links row must be committed before
   // createVport() returns, otherwise switchToVport races against a missing link.
   if (row.actor_id) {
-    await supabase.schema('identity').rpc('refresh_actor_directory_row', {
-      p_actor_domain: 'vc',
-      p_actor_id: row.actor_id,
-    }).catch(() => {})
+    try {
+      await supabase.schema('identity').rpc('refresh_actor_directory_row', {
+        p_actor_domain: 'vc',
+        p_actor_id: row.actor_id,
+      });
+    } catch { /* non-fatal */ }
   }
 
   return {
@@ -222,10 +224,10 @@ export async function updateVport(
   if (error) raise("Failed to update Vport", { error });
 
   if (data?.actor_id) {
-    supabase.schema('identity').rpc('refresh_actor_directory_row', {
+    Promise.resolve(supabase.schema('identity').rpc('refresh_actor_directory_row', {
       p_actor_domain: 'vc',
       p_actor_id: data.actor_id,
-    }).catch(() => {})
+    })).catch(() => {})
   }
 
   return data;

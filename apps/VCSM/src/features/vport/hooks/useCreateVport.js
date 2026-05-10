@@ -45,7 +45,6 @@ export function useCreateVport({ onCreated } = {}) {
         avatarFile,
         avatarUrl,
         directoryVisible,
-        userId: user.id,
         withList: !!onCreated,
       });
 

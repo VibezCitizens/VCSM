@@ -55,7 +55,7 @@ export async function getDebugPrivacyRowsController({ actorId, postIds }) {
   return postActors.map((postActor) => {
     const actor = actorMap[postActor.actor_id];
     const isVport = Boolean(actor?.vport_id);
-    const isOwner = !isVport && actor?.profile_id === actorId;
+    const isOwner = myActorIds.includes(postActor.actor_id);
     const isPrivate = actorPrivacyMap[postActor.actor_id] ?? true;
     const isPublic = !isPrivate;
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBookingOps } from "@/features/booking/adapters/booking.adapter";
 import { dismissBooking } from "@booking";
+import { hydrateActorsByIds } from "@hydration";
 
 export function useMyAppointments({ actorId } = {}) {
   const { listMyBookings, cancelBooking } = useBookingOps()
@@ -19,6 +20,12 @@ export function useMyAppointments({ actorId } = {}) {
       const { bookings, ownerNames: names } = await listMyBookings({ actorId });
       setRows(bookings);
       setOwnerNames(names);
+      const allActorIds = [
+        ...bookings.map((b) => b.vportActorId ?? b.ownerActorId),
+        ...bookings.map((b) => b.memberActorId),
+      ].filter(Boolean);
+      const uniqueIds = [...new Set(allActorIds)];
+      if (uniqueIds.length) hydrateActorsByIds(uniqueIds).catch(() => {});
     } catch (err) {
       setError(err?.message ?? "Failed to load appointments.");
     } finally {

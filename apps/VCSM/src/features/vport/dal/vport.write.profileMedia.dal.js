@@ -2,11 +2,13 @@ import vportClient from '@/services/supabase/vportClient'
 
 // vport.profiles.actor_id is the canonical lookup key — no raw profile ID crosses the boundary.
 
-export async function updateVportAvatarMediaAssetIdDAL({ actorId, mediaAssetId }) {
+export async function updateVportAvatarMediaAssetIdDAL({ actorId, mediaAssetId, avatarUrl }) {
   if (!actorId || !mediaAssetId) return
+  const patch = { avatar_media_asset_id: mediaAssetId }
+  if (avatarUrl) patch.avatar_url = avatarUrl
   const { error } = await vportClient
     .from('profiles')
-    .update({ avatar_media_asset_id: mediaAssetId })
+    .update(patch)
     .eq('actor_id', actorId)
   if (error) throw error
 }

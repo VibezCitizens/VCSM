@@ -1,12 +1,13 @@
 import {
   dalInsertFollow,
-  dalDeactivateFollow,
 } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { ctrlGetFollowRelationshipState } from '@/features/social/friend/subscribe/controllers/getFollowRelationshipState.controller'
 import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
 import { FOLLOW_RELATION_STATES } from '@/features/social/friend/subscribe/model/followRelationState.model'
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
+import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.adapter'
+import { ctrlGetBlockStatus } from '@/features/block'
 
 export async function ctrlSubscribe({
   followerActorId,
@@ -18,6 +19,14 @@ export async function ctrlSubscribe({
 
   if (followerActorId === followedActorId) {
     throw new Error('Cannot follow yourself')
+  }
+
+  const { isBlocked } = await ctrlGetBlockStatus({
+    actorId: followerActorId,
+    targetActorId: followedActorId,
+  })
+  if (isBlocked) {
+    throw new Error('Cannot follow a blocked actor')
   }
 
   const relation = await ctrlGetFollowRelationshipState({
@@ -72,8 +81,9 @@ export async function ctrlSubscribe({
   }
 
   invalidateFollowerCount(followedActorId)
+  // Bust feed follow cache so private posts from this actor become visible immediately
+  invalidateFeedFollowCache(followerActorId)
 
-  // Publish follow notification through engine (replaces DB trigger path)
   publishVcsmNotification({
     recipientActorId: followedActorId,
     actorId: followerActorId,
@@ -96,24 +106,3 @@ export async function ctrlSubscribe({
   }
 }
 
-export async function ctrlUnsubscribe({
-  followerActorId,
-  followedActorId,
-}) {
-  if (!followerActorId || !followedActorId) {
-    throw new Error('Missing actor ids')
-  }
-
-  if (followerActorId === followedActorId) {
-    throw new Error('Cannot unsubscribe from yourself')
-  }
-
-  await dalDeactivateFollow({
-    followerActorId,
-    followedActorId,
-  })
-
-  invalidateFollowerCount(followedActorId)
-
-  return true
-}

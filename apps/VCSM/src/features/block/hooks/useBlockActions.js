@@ -23,6 +23,7 @@ import {
   blockActorController,
   unblockActorController,
 } from "@/features/block/controllers/blockActor.controller";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 /**
  * useBlockActions
@@ -33,6 +34,8 @@ import {
 export function useBlockActions(myActorId, targetActorId) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { identity } = useIdentity();
+  const sessionActorId = identity?.actorId ?? null;
 
   /* ============================================================
      BLOCK
@@ -44,7 +47,7 @@ export function useBlockActions(myActorId, targetActorId) {
     setError(null);
 
     try {
-      await blockActorController(myActorId, targetActorId);
+      await blockActorController(myActorId, targetActorId, sessionActorId);
     } catch (err) {
       console.error("[useBlockActions] block failed:", err);
       setError(err);
@@ -52,7 +55,7 @@ export function useBlockActions(myActorId, targetActorId) {
     } finally {
       setLoading(false);
     }
-  }, [myActorId, targetActorId]);
+  }, [myActorId, targetActorId, sessionActorId]);
 
   /* ============================================================
      UNBLOCK
@@ -64,7 +67,7 @@ export function useBlockActions(myActorId, targetActorId) {
     setError(null);
 
     try {
-      await unblockActorController(myActorId, targetActorId);
+      await unblockActorController(myActorId, targetActorId, sessionActorId);
     } catch (err) {
       console.error("[useBlockActions] unblock failed:", err);
       setError(err);
@@ -72,7 +75,7 @@ export function useBlockActions(myActorId, targetActorId) {
     } finally {
       setLoading(false);
     }
-  }, [myActorId, targetActorId]);
+  }, [myActorId, targetActorId, sessionActorId]);
 
   return {
     block,

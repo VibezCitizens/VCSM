@@ -1,0 +1,50 @@
+# Vibez Citizens
+
+> Vibez Citizens (VCSM) is a social commerce platform where creators and service providers build actor-based identities — personal profiles or business storefronts called Vports — to post content, book services, run catalogs, and connect with customers.
+
+## What it is
+
+Vibez Citizens combines a social feed with a service marketplace. Think Instagram meets Airbnb: people follow each other, post content, react, and chat — but service providers also run full storefronts with booking calendars, service catalogs, pricing, reviews, and portfolios, all under one identity.
+
+## Core concepts
+
+- **Citizens** — personal profile identities. Post content, follow others, subscribe to Vports, book services, leave reviews.
+- **Vports** — business storefront identities. Run a service catalog, manage availability and bookings, showcase portfolio work, publish updates to the feed, and receive reviews.
+- **Districts** — location-scoped communities (coming).
+- **Vibes** — social feed posts from Citizens and Vports.
+- **Sparks** — reactions (likes, roses, gifts) on posts and content.
+- **Wanders** — async virtual postcards sent between actors.
+
+## Vport business types
+
+Vports cover 48 business categories across trades, beauty, food, health, professional services, retail, transport, and more. Some examples:
+
+- Locksmiths — service areas, ETA coverage, emergency availability, portfolio of completed jobs
+- Barbershops — team booking, availability calendar, cut portfolio, before/after work
+- Restaurants — digital menu, booking, reviews with food-specific dimensions
+- Gas stations — live fuel price board, customer price submissions
+- Currency exchange offices — live FX rate pairs published to the feed
+- Freelancers, trainers, tutors, designers, lawyers, and 40+ other types
+
+## Key features
+
+- **Booking** — appointment scheduling and emergency request modes per Vport
+- **Service catalog** — structured service listings with pricing, ETA, requirements
+- **Portfolio** — photo-based work showcase with kind-specific metadata (job type, before/after, etc.)
+- **Reviews** — multi-dimension star ratings with category-weighted scoring
+- **Feed** — unified social feed mixing personal posts and Vport business updates
+- **Chat** — real-time messaging between Citizens and Vports
+- **QR codes** — shareable business card links for each Vport
+- **External site integration** — businesses can surface their Vport data on their own domain while VCSM remains the source of truth
+
+## External integrations
+
+Third-party business websites (example: tripointlockandkeys.com) can consume their Vport profile data — services, reviews, availability — via VCSM Edge Function APIs, keeping their own domain and design while VCSM manages the underlying business identity.
+
+## Discovery
+
+VCSM feeds a programmatic SEO directory at traffic.vibezcitizens.com (TRAZE) that generates city/service/provider pages for organic search, routing visitors back to platform profiles via deep links.
+
+## Platform URL
+
+https://vibezcitizens.com

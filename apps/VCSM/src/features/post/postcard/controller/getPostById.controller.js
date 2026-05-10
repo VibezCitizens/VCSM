@@ -8,27 +8,13 @@
 // ============================================================
 
 import { fetchPostByIdDAL } from "@/features/post/postcard/dal/post.read.dal";
+import { checkPostVisibilityDAL } from "@/features/post/postcard/dal/postVisibility.dal";
 
 /**
- * Domain Result:
- * {
- *   id,
- *   actor: {
- *     actorId,
- *     displayName,
- *     username,
- *     photoUrl,
- *     vportName?,
- *     vportSlug?
- *   },
- *   text,
- *   media[],            // ✅ MULTI-MEDIA
- *   created_at,
- *   location_text?,     // ✅ add
- *   locationText?       // ✅ add
- * }
+ * Returns null when the post does not exist, is deleted, or the viewer is not
+ * authorized (blocked relationship, private account not followed).
  */
-export async function getPostById(postId) {
+export async function getPostById(postId, viewerActorId = null) {
   if (!postId) throw new Error("getPostById: postId required");
 
   // ============================================================
@@ -38,6 +24,15 @@ export async function getPostById(postId) {
 
   if (error) throw error;
   if (!row) return null;
+
+  // ============================================================
+  // 1b. VISIBILITY GATE
+  // ============================================================
+  const { canView } = await checkPostVisibilityDAL({
+    postActorId: row.actor_id,
+    viewerActorId,
+  });
+  if (!canView) return null;
 
   // ============================================================
   // 2️⃣ NORMALIZE MEDIA (NEW + BACK-COMPAT)

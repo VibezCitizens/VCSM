@@ -7,8 +7,11 @@ import {
   ctrlUnblockActor,
 } from '@/features/settings/privacy/controller/Blocks.controller'
 import { hydrateActorsFromRows } from '@/state/actors/hydrateActors'
+import { useIdentity } from '@/state/identity/identityContext'
 
 export function useBlockedCitizens(actorId, scope) {
+  const { identity } = useIdentity()
+  const sessionActorId = identity?.actorId ?? null
   const qc = useQueryClient()
   const key = queryKeys.settingsBlockedCitizens(actorId)
 
@@ -33,13 +36,13 @@ export function useBlockedCitizens(actorId, scope) {
 
   const blockMutation = useMutation({
     mutationFn: (blockedActorId) =>
-      ctrlBlockActor({ actorId, blockedActorId, scope, existingBlockedIds: blockedIds }),
+      ctrlBlockActor({ actorId, blockedActorId, scope, existingBlockedIds: blockedIds, callerActorId: sessionActorId }),
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   })
 
   const unblockMutation = useMutation({
     mutationFn: (blockedActorId) =>
-      ctrlUnblockActor({ actorId, blockedActorId, scope, existingBlockedIds: blockedIds }),
+      ctrlUnblockActor({ actorId, blockedActorId, scope, existingBlockedIds: blockedIds, callerActorId: sessionActorId }),
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   })
 

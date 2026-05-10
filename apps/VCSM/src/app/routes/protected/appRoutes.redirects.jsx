@@ -4,6 +4,24 @@ import { Navigate, Outlet, useParams } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
 import { releaseFlags } from "@/shared/config/releaseFlags";
 
+/**
+ * Route-level ownership gate for all /actor/:actorId/dashboard/* routes.
+ * Verifies the URL actorId matches the session identity's actorId.
+ * Non-owners are redirected to /feed before any screen or hook runs.
+ */
+export function OwnerOnlyDashboardGuard() {
+  const { actorId } = useParams()
+  const { identity, identityLoading } = useIdentity()
+
+  if (identityLoading) return null
+  if (!identity) return <Navigate to="/feed" replace />
+  if (!actorId || String(identity.actorId) !== String(actorId)) {
+    return <Navigate to="/feed" replace />
+  }
+
+  return <Outlet />
+}
+
 export function BlockedVportGuard() {
   const { identity, loading, blockedVport } = useIdentity()
   if (loading) return null

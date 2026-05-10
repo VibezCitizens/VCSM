@@ -13,7 +13,9 @@
     "test:load": "node src/scripts/load/simulateAppUsers.mjs",
     "test:load:1000": "node src/scripts/load/simulateAppUsers.mjs --users=1000 --concurrency=120 --steps=6 --baseUrl=http://127.0.0.1:4173",
     "test:load:auth": "node src/scripts/load/simulateAuthenticatedActors.mjs",
-    "test:load:auth:1000": "node src/scripts/load/simulateAuthenticatedActors.mjs --users=1000 --concurrency=80 --seedConcurrency=25 --actions=4 --seedMissing=0"
+    "test:load:auth:1000": "node src/scripts/load/simulateAuthenticatedActors.mjs --users=1000 --concurrency=80 --seedConcurrency=25 --actions=4 --seedMissing=0",
+    "legal:check-files": "node scripts/legal/check-legal-files.mjs",
+    "legal:release": "node scripts/legal/generate-legal-migration.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",

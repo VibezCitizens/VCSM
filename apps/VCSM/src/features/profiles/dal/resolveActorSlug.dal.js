@@ -142,6 +142,7 @@ export async function resolveActorBySlugOrUsernameDAL(slugOrUsername) {
       .select('id')
       .eq('profile_id', profileData.id)
       .eq('kind', 'user')
+      .eq('is_deleted', false)
       .maybeSingle()
 
     if (actorErr) {

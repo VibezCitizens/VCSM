@@ -16,7 +16,7 @@ const PAGE_SIZE = 20
  * Accepts actorId directly (no reset/loadInitial calls needed in the consumer).
  * Invalidate via queryKeys.actorPosts(actorId) on post delete.
  */
-export function useActorPosts(actorId) {
+export function useActorPosts(actorId, canViewContent) {
   const {
     data,
     isLoading,
@@ -29,7 +29,7 @@ export function useActorPosts(actorId) {
       getActorPostsController({ actorId, page: pageParam, pageSize: PAGE_SIZE }),
     getNextPageParam: (lastPage, pages) =>
       lastPage.done ? undefined : pages.length,
-    enabled: !!actorId,
+    enabled: !!actorId && canViewContent !== false,
     staleTime: 60_000,
     gcTime: 300_000,
   })

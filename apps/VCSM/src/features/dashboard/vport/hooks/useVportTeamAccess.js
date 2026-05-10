@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { hydrateActorsByIds } from "@hydration";
+import { useIdentity } from "@/state/identity/identityContext";
 import {
   getTeamAccessController,
   addTeamMemberController,
@@ -27,6 +28,9 @@ function normalizeRow(row) {
 }
 
 export function useVportTeamAccess(actorId, isOwner) {
+  const { identity } = useIdentity();
+  const sessionActorId = identity?.actorId ?? null;
+
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
@@ -36,7 +40,7 @@ export function useVportTeamAccess(actorId, isOwner) {
     setLoading(true);
     setError("");
     try {
-      const raw  = await getTeamAccessController(actorId);
+      const raw  = await getTeamAccessController(actorId, sessionActorId);
       const rows = (raw ?? []).map(normalizeRow);
       setMembers(rows);
       const ids  = rows.map((m) => m.actor_id).filter(Boolean);
@@ -46,36 +50,36 @@ export function useVportTeamAccess(actorId, isOwner) {
     } finally {
       setLoading(false);
     }
-  }, [actorId, isOwner]);
+  }, [actorId, isOwner, sessionActorId]);
 
   useEffect(() => { loadMembers(); }, [loadMembers]);
 
   const addMember = useCallback(async ({ memberActorId, role, displayName }) => {
-    const raw = await addTeamMemberController(actorId, { memberActorId, role, displayName });
+    const raw = await addTeamMemberController(actorId, { memberActorId, role, displayName }, sessionActorId);
     const row = normalizeRow(raw);
     setMembers((prev) => [...prev, row]);
     if (row.actor_id) hydrateActorsByIds([row.actor_id]);
     return row;
-  }, [actorId]);
+  }, [actorId, sessionActorId]);
 
   const updateRole = useCallback(async ({ resourceId, role }) => {
-    const raw = await updateTeamMemberRoleController(actorId, { resourceId, role });
+    const raw = await updateTeamMemberRoleController(actorId, { resourceId, role }, sessionActorId);
     const row = normalizeRow(raw);
     setMembers((prev) => prev.map((m) => m.resource_id === resourceId ? row : m));
     return row;
-  }, [actorId]);
+  }, [actorId, sessionActorId]);
 
   const setStatus = useCallback(async ({ resourceId, status }) => {
-    const raw = await setTeamMemberStatusController(actorId, { resourceId, status });
+    const raw = await setTeamMemberStatusController(actorId, { resourceId, status }, sessionActorId);
     const row = normalizeRow(raw);
     setMembers((prev) => prev.map((m) => m.resource_id === resourceId ? row : m));
     return row;
-  }, [actorId]);
+  }, [actorId, sessionActorId]);
 
   const removeMember = useCallback(async ({ resourceId }) => {
-    await removeTeamMemberController(actorId, { resourceId });
+    await removeTeamMemberController(actorId, { resourceId }, sessionActorId);
     setMembers((prev) => prev.filter((m) => m.resource_id !== resourceId));
-  }, [actorId]);
+  }, [actorId, sessionActorId]);
 
   const searchCandidates = useCallback(async (query) => {
     return searchTeamCandidatesController({ query, viewerActorId: actorId });

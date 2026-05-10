@@ -58,8 +58,13 @@ export async function sendRoseController({
 
   if (writeErr) throw writeErr;
 
+  // Post-insert reads are independent — run in parallel to save one round-trip.
+  const [{ data: post }, { data: rows, error: readErr }] = await Promise.all([
+    fetchPostByIdDAL(postId),
+    fetchReactionSummaryDAL(postId),
+  ]);
+
   // Publish rose notification — always a creation, never toggled
-  const { data: post } = await fetchPostByIdDAL(postId);
   if (post?.actor_id) {
     publishVcsmNotification({
       recipientActorId: post.actor_id,
@@ -75,8 +80,6 @@ export async function sendRoseController({
   // ============================================================
   // 3️⃣ READ (AGGREGATED COUNTS — RPC)
   // ============================================================
-  const { data: rows, error: readErr } =
-    await fetchReactionSummaryDAL(postId);
 
   if (readErr) throw readErr;
 

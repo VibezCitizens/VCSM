@@ -19,6 +19,11 @@
     "addTag": "+ Agregar etiqueta",
     "failedToLoad": "No se pudieron cargar las etiquetas."
   },
+  "unavailableGate": {
+    "badge": "Cuenta no disponible",
+    "title": "Esta cuenta ya no está disponible",
+    "subtitle": "Este perfil ha sido eliminado o desactivado y ya no es accesible públicamente."
+  },
   "privateGate": {
     "badge": "Acceso controlado",
     "title": "Perfil privado",

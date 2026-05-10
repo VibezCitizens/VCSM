@@ -43,8 +43,6 @@ export default function DebugPrivacyPanel({ actorId, posts }) {
             <tr>
               <th className="text-left pr-3 py-1">post_id</th>
               <th className="text-left pr-3 py-1">actor_id</th>
-              <th className="text-left pr-3 py-1">profile_id</th>
-              <th className="text-left pr-3 py-1">vport_id</th>
               <th className="text-left pr-3 py-1">isVport</th>
               <th className="text-left pr-3 py-1">isOwner</th>
               <th className="text-left pr-3 py-1">isPublic</th>
@@ -60,8 +58,6 @@ export default function DebugPrivacyPanel({ actorId, posts }) {
               <tr key={r.post_id}>
                 <td className="pr-3 py-1">{r.post_id}</td>
                 <td className="pr-3 py-1">{r.actor_id}</td>
-                <td className="pr-3 py-1">{r.profile_id ?? "—"}</td>
-                <td className="pr-3 py-1">{r.vport_id ?? "—"}</td>
                 <td className="pr-3 py-1">{String(r.isVport)}</td>
                 <td className="pr-3 py-1">{String(r.isOwner)}</td>
                 <td className="pr-3 py-1">{String(r.isPublic)}</td>

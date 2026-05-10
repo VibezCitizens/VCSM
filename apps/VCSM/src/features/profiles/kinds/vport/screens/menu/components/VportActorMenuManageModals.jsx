@@ -34,6 +34,9 @@ export function VportActorMenuManageModals({
   confirmLoading,
   onConfirm,
   onCloseConfirm,
+
+  // feed share
+  onShareToFeed = null,
 } = {}) {
   const modalRoot = typeof document !== "undefined" ? document.body : null;
 
@@ -44,6 +47,7 @@ export function VportActorMenuManageModals({
       onSave={onSaveCategory}
       onClose={onCloseCategoryModal}
       saving={!!savingCategory}
+      onShareToFeed={onShareToFeed}
     />
   );
 
@@ -59,6 +63,7 @@ export function VportActorMenuManageModals({
       className="vport-menu-item-modal"
       titleOverride={itemModalItem?.id ? "Edit item" : "New item"}
       actorId={actorId}
+      onShareToFeed={onShareToFeed}
     />
   );
 

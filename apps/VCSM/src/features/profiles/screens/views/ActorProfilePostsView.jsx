@@ -55,11 +55,12 @@ function VibesTabSkeleton({ count = 2 }) {
 
 export default function ActorProfilePostsView({
   profileActorId,
+  canViewContent,
   onShare,
   onOpenMenu,
 }) {
   const navigate = useNavigate();
-  const { posts, loading, hasMore, loadMore, loadingMore } = useActorPosts(profileActorId);
+  const { posts, loading, hasMore, loadMore, loadingMore } = useActorPosts(profileActorId, canViewContent);
 
   const openPost = (postId) => {
     if (!postId) return;

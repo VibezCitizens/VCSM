@@ -26,6 +26,8 @@ export default function VportRateEditorCard({
   submitting = false,
   error = null,
   disabled = false,
+  shareToFeed = false,
+  onToggleShareToFeed,
 } = {}) {
   const safeBase = normCode(baseCurrency);
   const safeQuote = normCode(quoteCurrency);
@@ -106,7 +108,28 @@ export default function VportRateEditorCard({
         <div className="mt-3 profiles-error rounded-xl p-3 text-sm">{String(error)}</div>
       ) : null}
 
-      <div className="mt-4 flex items-center justify-end">
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
+          <input
+            type="checkbox"
+            checked={shareToFeed}
+            onChange={(e) => onToggleShareToFeed?.(e.target.checked)}
+            disabled={disabled || submitting}
+            style={{
+              appearance: "auto",
+              WebkitAppearance: "checkbox",
+              width: 16,
+              height: 16,
+              margin: 0,
+              accentColor: "#38bdf8",
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>
+            Share to feed
+          </span>
+        </label>
+
         <button
           type="button"
           onClick={() => {
@@ -119,6 +142,7 @@ export default function VportRateEditorCard({
           {submitting ? "Saving..." : "Publish Rate"}
         </button>
       </div>
+
     </div>
   );
 }

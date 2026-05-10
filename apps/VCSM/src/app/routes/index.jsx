@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
+import { RouteErrorBoundary } from "@/app/routes/RouteErrorBoundary";
 
 import ProtectedRoute from "@/app/guards/ProtectedRoute";
 import ProfileGatedOutlet from "@/app/guards/ProfileGatedOutlet";
@@ -260,8 +261,10 @@ export default function AppRoutes() {
   const element = useRoutes(routes);
 
   return (
-    <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
-      {element}
-    </Suspense>
+    <RouteErrorBoundary>
+      <Suspense fallback={<div className="text-center p-10">Loading…</div>}>
+        {element}
+      </Suspense>
+    </RouteErrorBoundary>
   );
 }

@@ -2,12 +2,12 @@ import {
   getVportResourceByIdDAL,
   listVportResourcesByProfileIdDAL,
 } from "@/features/dashboard/vport/dal/read/vportResource.read.dal";
-import { getVportProfileIdByActorDAL } from "@/features/dashboard/vport/dal/read/vportProfile.read.dal";
+import { getVportProfileIdByActorDAL, getVportActorIdByProfileIdDAL } from "@/features/dashboard/vport/dal/read/vportProfile.read.dal";
 import { readActorVportLinkDAL } from "@/features/dashboard/vport/dal/read/actorVport.read.dal";
 import { listVportAvailabilityRulesByResourceIdDAL } from "@/features/dashboard/vport/dal/read/vportAvailabilityRules.read.dal";
 import { listVportBookingsInRangeDAL } from "@/features/dashboard/vport/dal/read/vportBookingsInRange.read.dal";
 import { insertVportBookingDAL } from "@/features/dashboard/vport/dal/write/insertVportBooking.write.dal";
-import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
+import { publishVcsmNotificationBatch } from "@/features/notifications/adapters/notifications.adapter";
 
 export async function getVportResourceAvailabilityController({ resourceId, rangeStart, rangeEnd }) {
   if (!resourceId) return { rules: [], exceptions: [], bookings: [] };
@@ -84,15 +84,25 @@ export async function createVportPublicBookingController({
     },
   });
 
-  const ownerActorId = resource.owner_actor_id;
-  if (requestActorId && ownerActorId && String(requestActorId) !== String(ownerActorId)) {
-    publishVcsmNotification({
-      recipientActorId: ownerActorId,
+  const vportActorId   = await getVportActorIdByProfileIdDAL({ profileId: resource.profile_id });
+  const memberActorId  = resource.member_actor_id ?? null;
+
+  // Collect unique recipients: vport owner + the specific team member (if different)
+  // Remove the requester so they don't notify themselves
+  const recipientSet = new Set();
+  if (vportActorId)  recipientSet.add(String(vportActorId));
+  if (memberActorId) recipientSet.add(String(memberActorId));
+  if (requestActorId) recipientSet.delete(String(requestActorId));
+
+  const recipientActorIds = [...recipientSet];
+  if (requestActorId && recipientActorIds.length > 0) {
+    publishVcsmNotificationBatch({
+      recipientActorIds,
       actorId: requestActorId,
       kind: "booking_created",
       objectType: "booking",
       objectId: booking?.id ? String(booking.id) : null,
-      linkPath: `/actor/${ownerActorId}/dashboard/booking-history`,
+      linkPath: vportActorId ? `/actor/${vportActorId}/dashboard/booking-history` : null,
       context: {
         serviceLabelSnapshot: serviceLabelSnapshot ?? null,
         startsAt: startsAt ?? null,

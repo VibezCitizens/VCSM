@@ -183,7 +183,7 @@ export async function runVportFeatureGroup({ onTestUpdate, shared }) {
         return {
           createFormUsesRelativeImports: createFormSource.includes("../"),
           createFormUsesHardcodedUploadEndpoint: createFormSource.includes("upload.vibezcitizens.com"),
-          modelCallsCreateVportRpc: modelSource.includes("rpc('create_vport'"),
+          modelCallsCreateVportRpc: modelSource.includes('rpc("create_vport"'),
           modelHasRequireUserGuard: modelSource.includes("requireUser"),
           modelImportsSupabaseClient: modelSource.includes("supabaseClient"),
           readModelHasRequireUserGuard: readSource.includes("requireUser"),

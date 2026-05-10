@@ -7,14 +7,18 @@ export function BulkUpdateFuelPricesModal({
   submitting,
   submitSuggestion,
   afterSubmitSuggestion = null,
+  canShareToFeed = false,
+  onShareToFeed = null,
 }) {
   const [values, setValues] = useState({});
   const [localError, setLocalError] = useState(null);
+  const [shareToFeed, setShareToFeed] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setValues({});
     setLocalError(null);
+    setShareToFeed(false);
   }, [open]);
 
   const anyValue = useMemo(() => {
@@ -97,6 +101,21 @@ export function BulkUpdateFuelPricesModal({
           ) : null}
         </div>
 
+        {canShareToFeed && (
+          <div className="border-t border-white/8 px-4 py-3">
+            <label className="flex cursor-pointer items-center gap-2.5">
+              <input
+                type="checkbox"
+                checked={shareToFeed}
+                onChange={(e) => setShareToFeed(e.target.checked)}
+                disabled={submitting}
+                style={{ appearance: "auto", WebkitAppearance: "checkbox", width: 16, height: 16, margin: 0, accentColor: "#38bdf8", flexShrink: 0 }}
+              />
+              <span className="text-xs text-white/70">Share this update to my feed</span>
+            </label>
+          </div>
+        )}
+
         <div className="mt-auto flex items-center justify-end gap-2 border-t border-white/10 bg-black/20 px-4 py-3">
           <button
             type="button"
@@ -111,44 +130,69 @@ export function BulkUpdateFuelPricesModal({
             disabled={!anyValue || submitting}
             onClick={async () => {
               setLocalError(null);
+
+              // Validate all rows first before touching the DB
+              const validRows = [];
               for (const row of rows) {
                 const raw = values[row.fuelKey];
                 if (raw === undefined || raw === null || String(raw).trim() === "") continue;
-
                 const proposedPrice = Number(raw);
                 if (!Number.isFinite(proposedPrice) || proposedPrice <= 0) {
                   setLocalError(`Invalid number for ${row.label}`);
                   return;
                 }
+                validRows.push({ row, proposedPrice });
+              }
 
-                const res = await submitSuggestion?.({
-                  fuelKey: row.fuelKey,
-                  proposedPrice,
-                  currencyCode: row.official.currencyCode ?? "USD",
-                  unit: row.official.unit ?? "liter",
-                });
+              if (validRows.length === 0) return;
 
-                if (!res?.ok) {
-                  setLocalError(res?.reason ?? "Failed to submit");
-                  return;
-                }
+              // Submit all in parallel
+              const results = await Promise.all(
+                validRows.map(({ row, proposedPrice }) =>
+                  submitSuggestion?.({
+                    fuelKey: row.fuelKey,
+                    proposedPrice,
+                    currencyCode: row.official.currencyCode ?? "USD",
+                    unit: row.official.unit ?? "liter",
+                  }).then((res) => ({ row, proposedPrice, res }))
+                )
+              );
 
-                if (afterSubmitSuggestion) {
-                  const submissionId =
-                    res?.submissionId ?? res?.id ?? res?.submission?.id ?? null;
-                  if (submissionId) {
-                    const r2 = await afterSubmitSuggestion({
-                      submissionId,
-                      fuelKey: row.fuelKey,
-                      proposedPrice,
-                    });
-                    if (r2 && r2.ok === false) {
-                      setLocalError(r2?.reason ?? "Failed to apply to official");
-                      return;
-                    }
-                  }
+              const firstFail = results.find((r) => !r.res?.ok);
+              if (firstFail) {
+                setLocalError(firstFail.res?.reason ?? "Failed to submit");
+                return;
+              }
+
+              const updatedFuels = results
+                .filter((r) => r.res?.official)
+                .map((r) => ({
+                  fuelKey: r.res.official.fuelKey ?? r.row.fuelKey,
+                  price: r.res.official.price,
+                  currencyCode: r.res.official.currencyCode ?? "USD",
+                  unit: r.res.official.unit ?? "liter",
+                }));
+
+              // Review/approve all in parallel — single refresh wave at the end
+              if (afterSubmitSuggestion) {
+                await Promise.allSettled(
+                  results.map(({ row, proposedPrice, res }) => {
+                    const submissionId =
+                      res?.submissionId ?? res?.id ?? res?.submission?.id ?? null;
+                    if (!submissionId) return Promise.resolve();
+                    return afterSubmitSuggestion({ submissionId, fuelKey: row.fuelKey, proposedPrice });
+                  })
+                );
+              }
+
+              if (shareToFeed && onShareToFeed && updatedFuels.length > 0) {
+                try {
+                  await onShareToFeed({ updatedFuels });
+                } catch {
+                  // Non-blocking — price update already committed
                 }
               }
+
               onClose();
             }}
             className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:cursor-not-allowed disabled:opacity-50"

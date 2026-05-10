@@ -7,7 +7,7 @@
 import { fetchFeedPagePipeline } from '@/features/feed/pipeline/fetchFeedPage.pipeline'
 
 const PAGE_SIZE = 10
-const MAX_EMPTY_PAGES_PER_FETCH = 3
+const MAX_EMPTY_PAGES_PER_FETCH = 2
 const INITIAL_VISIBLE_TARGET = 3
 const FEED_FETCH_TIMEOUT_MS = 15_000
 

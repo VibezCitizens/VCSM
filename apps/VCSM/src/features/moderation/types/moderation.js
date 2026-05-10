@@ -27,6 +27,7 @@ export const REPORT_REASONS = /** @type {const} */ ([
 export const REPORT_STATUSES = /** @type {const} */ ([
   'open',
   'triaged',
+  'in_review',
   'needs_more_info',
   'actioned',
   'dismissed',

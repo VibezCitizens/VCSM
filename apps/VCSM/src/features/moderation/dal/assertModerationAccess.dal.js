@@ -1,8 +1,7 @@
 // src/features/moderation/dal/assertModerationAccess.dal.js
 // ============================================================
-// Authorization guard for moderation write paths.
-// Checks whether an actorId holds a platform-admin or
-// platform-moderator role before any enforcement action runs.
+// Raw DB read: checks whether an actorId holds a moderation role.
+// Returns a boolean — no authorization decisions here.
 //
 // Role tables checked (in order):
 //   1. learning.platform_admins  — existing cross-platform admin table
@@ -13,50 +12,24 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 
 /**
- * Returns true if actorId has an authorized moderation role.
- * Returns false on any DB error so callers always get a boolean.
+ * Returns true if the current session user has an authorized moderation role.
+ * Uses learning.is_current_user_platform_admin() which resolves via auth.uid() server-side.
+ * Returns false on any DB error — callers always get a boolean.
  */
-async function _isModerationAuthorized(actorId) {
-  if (!actorId) return false
-
+export async function isModerationAuthorizedDAL(actorId) {
   try {
     const { data, error } = await supabase
       .schema('learning')
-      .from('platform_admins')
-      .select('actor_id')
-      .eq('actor_id', actorId)
-      .limit(1)
+      .rpc('is_current_user_platform_admin')
 
     if (error) {
-      // Table may not exist in all environments (42P01 = undefined_table).
-      // Any other error should be treated as a denial, not as authorized.
+      // 42P01 = undefined_table — treat as not authorized in envs without the table.
       if (error.code === '42P01') return false
       throw error
     }
 
-    return Array.isArray(data) && data.length > 0
+    return data === true
   } catch {
     return false
-  }
-}
-
-/**
- * Asserts that actorId is authorized to perform moderation actions.
- * Throws a FORBIDDEN error object if the check fails.
- * Must be called before any write in moderation enforcement controllers.
- */
-export async function assertModerationAccessDAL(actorId) {
-  if (!actorId) {
-    const err = new Error('assertModerationAccessDAL: actorId required')
-    err.code = 'FORBIDDEN'
-    throw err
-  }
-
-  const authorized = await _isModerationAuthorized(actorId)
-
-  if (!authorized) {
-    const err = new Error('Forbidden: actor is not authorized to perform moderation actions')
-    err.code = 'FORBIDDEN'
-    throw err
   }
 }

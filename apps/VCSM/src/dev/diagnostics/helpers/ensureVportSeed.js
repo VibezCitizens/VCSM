@@ -45,21 +45,22 @@ async function createVportViaRpc(shared) {
   const marker = markerForUser(userId, "vport");
 
   const { data, error } = await supabase
-    .schema("vc")
+    .schema("vport")
     .rpc("create_vport", {
       p_name: `Diagnostics ${marker}`,
       p_slug: marker.slice(0, 20),
       p_avatar_url: null,
       p_bio: "Diagnostics seeded vport",
       p_banner_url: null,
-      p_vport_type: "other",
+      p_primary_category_key: "other",
     });
 
   if (error) throw error;
 
+  const row = Array.isArray(data) ? data[0] : data;
   return {
-    actorId: data?.actor_id ?? null,
-    vportId: data?.vport_id ?? null,
+    actorId: row?.actor_id ?? null,
+    vportId: row?.profile_id ?? null,
     raw: data ?? null,
   };
 }

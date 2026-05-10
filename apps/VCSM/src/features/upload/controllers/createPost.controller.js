@@ -6,13 +6,14 @@ import { extractHashtags } from "../lib/extractHashtags";
 
 // ✅ mentions pipeline
 import { extractMentions } from "../lib/extractMentions";
-import { findActorsByHandles } from "../dal/findActorsByHandles.dal";
+import { findActorsByHandles, filterValidActorIdsDAL } from "../dal/findActorsByHandles.dal";
 import { insertPostMentions } from "../dal/insertPostMentions.dal";
 import {
   deletePostByIdDAL,
   getCurrentAuthUserDAL,
 } from "@/features/upload/dal/postAuthRollback.dal";
 import { publishVcsmNotificationBatch } from "@/features/notifications/adapters/notifications.adapter";
+import { ctrlGetBlockedActorSet } from "@/features/block";
 
 const MAX_VIBES_PHOTOS = 10;
 
@@ -120,8 +121,10 @@ export async function createPostController({ identity, input }) {
   let resolvedMentionIds = [];
   try {
     if (mentionedActorIdsFromUI.length > 0) {
-      await insertPostMentions(postId, mentionedActorIdsFromUI);
-      resolvedMentionIds = mentionedActorIdsFromUI;
+      // Validate client-provided actor IDs against DB before inserting
+      const validatedIds = await filterValidActorIdsDAL(mentionedActorIdsFromUI);
+      await insertPostMentions(postId, validatedIds);
+      resolvedMentionIds = validatedIds;
     } else if (mentionHandles.length > 0) {
       const resolved = await findActorsByHandles(mentionHandles);
       const mentionedActorIds = [
@@ -136,17 +139,25 @@ export async function createPostController({ identity, input }) {
     }
   }
 
-  // Publish mention notifications (recipients already known — no extra DB read)
+  // Publish mention notifications — exclude actors in any block relationship with author
   if (resolvedMentionIds.length > 0) {
-    publishVcsmNotificationBatch({
-      recipientActorIds: resolvedMentionIds,
+    const blockedSet = await ctrlGetBlockedActorSet({
       actorId: identity.actorId,
-      kind: 'social.post.mention',
-      objectType: 'post',
-      objectId: postId,
-      linkPath: `/post/${postId}`,
-      context: {},
+      candidateActorIds: resolvedMentionIds,
     });
+    const notifiableIds = resolvedMentionIds.filter((id) => !blockedSet.has(id));
+
+    if (notifiableIds.length > 0) {
+      publishVcsmNotificationBatch({
+        recipientActorIds: notifiableIds,
+        actorId: identity.actorId,
+        kind: 'social.post.mention',
+        objectType: 'post',
+        objectId: postId,
+        linkPath: `/post/${postId}`,
+        context: {},
+      });
+    }
   }
 
   return {

@@ -1,6 +1,6 @@
 // features/vport/controller/submitCreateVport.controller.js
 // ============================================================
-// Orchestrates vport creation: upload → create → workspace setup → list refresh.
+// Orchestrates vport creation: create → workspace setup → async upload + write-back → list refresh.
 // No React. No UI. Pure async.
 // ============================================================
 
@@ -21,21 +21,8 @@ export async function submitCreateVportController({
   avatarFile,
   avatarUrl,
   directoryVisible,
-  userId,
   withList = false,
 }) {
-  let finalAvatarUrl = avatarUrl || "";
-  let vportUploadResult = null;
-
-  if (!finalAvatarUrl && avatarFile) {
-    vportUploadResult = await uploadMediaController({
-      file: avatarFile,
-      scope: "vport_creation_avatar",
-      ownerActorId: userId,
-    });
-    finalAvatarUrl = vportUploadResult.publicUrl || "";
-  }
-
   const normalizedType = String(type).toLowerCase();
   const allTypes = Object.values(TYPE_GROUPS).flat();
   if (!allTypes.includes(normalizedType)) {
@@ -45,7 +32,7 @@ export async function submitCreateVportController({
   const res = await createVport({
     name: name.trim(),
     slug: null,
-    avatarUrl: finalAvatarUrl || null,
+    avatarUrl: avatarUrl || null,
     bio: (description || "").trim() || null,
     vportType: normalizedType,
     directoryVisible,
@@ -73,13 +60,19 @@ export async function submitCreateVportController({
     }
   }
 
-  if (vportUploadResult && res?.actorId) {
+  if (avatarFile && res?.actorId) {
     ;(async () => {
-      bugBunnyUploadStep('vport_creation_avatar', 'writeback:start', { actorId: res.actorId, profileId: res.profileId })
+      bugBunnyUploadStep('vport_creation_avatar', 'upload:start', { actorId: res.actorId })
       try {
+        const uploadResult = await uploadMediaController({
+          file: avatarFile,
+          scope: "vport_creation_avatar",
+          ownerActorId: res.actorId,
+        })
+        bugBunnyUploadStep('vport_creation_avatar', 'writeback:start', { actorId: res.actorId, profileId: res.profileId })
         const appId = await resolveVcsmAppIdDAL()
         const mediaAsset = await createMediaAssetController({
-          mediaUploadResult:  vportUploadResult,
+          mediaUploadResult:  uploadResult,
           ownerActorId:       res.actorId,
           createdByActorId:   res.actorId,
           scope:              'vport_creation_avatar',
@@ -87,20 +80,20 @@ export async function submitCreateVportController({
           mediaRole:          'avatar',
           appId,
         })
-        if (mediaAsset?.id && res?.actorId) {
-          await updateVportAvatarMediaAssetIdDAL({ actorId: res.actorId, mediaAssetId: mediaAsset.id })
-          bugBunnyUploadStep('vport_creation_avatar', 'writeback:profile', { profileId: res.profileId, mediaAssetId: mediaAsset.id })
+        if (mediaAsset?.id) {
+          await updateVportAvatarMediaAssetIdDAL({ actorId: res.actorId, mediaAssetId: mediaAsset.id, avatarUrl: uploadResult.publicUrl ?? null })
+          bugBunnyUploadStep('vport_creation_avatar', 'writeback:profile', { profileId: res.profileId, mediaAssetId: mediaAsset.id, avatarUrl: uploadResult.publicUrl ?? null })
         } else {
-          bugBunnyUploadStep('vport_creation_avatar', 'writeback:profile-skipped', { hasAssetId: !!mediaAsset?.id, hasProfileId: !!res?.profileId })
+          bugBunnyUploadStep('vport_creation_avatar', 'writeback:profile-skipped', { hasAssetId: false, hasProfileId: !!res?.profileId })
         }
       } catch (e) {
         bugBunnyUploadError('vport_creation_avatar', 'writeback:failed', e, { actorId: res.actorId })
-        if (import.meta.env?.DEV) console.warn('[submitCreateVportController] media_assets write-back failed (non-fatal):', e?.message)
+        if (import.meta.env?.DEV) console.warn('[submitCreateVportController] media write-back failed (non-fatal):', e?.message)
       }
     })()
   }
 
   const list = withList ? await listMyVports().catch(() => null) : null;
 
-  return { res, finalAvatarUrl, list };
+  return { res, list };
 }

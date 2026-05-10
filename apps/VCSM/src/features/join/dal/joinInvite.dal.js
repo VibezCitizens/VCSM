@@ -1,6 +1,6 @@
 import vportSchema from "@/services/supabase/vportClient";
 
-const RESOURCE_COLS = "id, name, resource_type, is_active, member_actor_id, meta, profile_id, barbershop:profiles!profile_id(id, name, actor_id)";
+const RESOURCE_COLS = "id, name, resource_type, is_active, member_actor_id, meta, barbershop:profiles!profile_id(id, name, actor_id)";
 
 export async function fetchJoinResourceByIdDAL(resourceId) {
   if (!resourceId) return null;

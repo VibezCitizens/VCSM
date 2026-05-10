@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { createItem, updateItem } from "@portfolio";
 import { addPortfolioMediaWithRecord } from "@/features/dashboard/vport/controller/addPortfolioMediaWithRecord.controller";
 import { ctrlSavePortfolioDetail } from "@/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller";
+import { publishLocksmithPortfolioUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/locksmith/publishLocksmithPortfolioUpdateAsPost.controller";
 
 const TITLE_MAX = 22;
 
@@ -29,6 +30,7 @@ export function usePortfolioItemSubmit({
   estimatedDuration,
   existingMediaCount,
   upload,
+  shareToFeed = false,
 }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -77,10 +79,12 @@ export function usePortfolioItemSubmit({
         itemId = resultItem.id;
       }
 
+      let firstMediaUrl = null;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const uploadResult = await upload(file);
         const url = uploadResult.publicUrl;
+        if (i === 0 && !isEdit) firstMediaUrl = url ?? null;
         const isFirstOfItem = !isEdit && i === 0;
         const mediaRole =
           kind === "before_after" && i === 0 ? "before"
@@ -107,10 +111,21 @@ export function usePortfolioItemSubmit({
           isSecurityUpgrade,
           estimatedDurationMinutes: estimatedDuration ? parseInt(estimatedDuration, 10) : null,
         });
+
+        if (shareToFeed && !isEdit) {
+          try {
+            await publishLocksmithPortfolioUpdateAsPostController({
+              actorId,
+              portfolioTitle: trimmedTitle || null,
+              jobType: jobType || null,
+              mediaUrl: firstMediaUrl,
+            });
+          } catch (_) {}
+        }
       }
 
       previews.forEach(URL.revokeObjectURL);
-      onDone?.(resultItem);
+      onDone?.(resultItem, { firstMediaUrl });
     } catch (e) {
       rollback?.();
       setError(e);

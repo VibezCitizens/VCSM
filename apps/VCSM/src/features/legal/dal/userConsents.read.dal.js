@@ -25,6 +25,7 @@ export async function dalGetUserConsents({ userId, appId }) {
     .eq('accepted', true)
     .is('revoked_at', null)
     .order('accepted_at', { ascending: false })
+    .limit(20)
 
   if (error) throw error
   return data ?? []

@@ -1,11 +1,6 @@
 import readVportServiceCatalogByTypeDAL from "@/features/vport/dal/readVportServiceCatalogByType.dal";
 import { mapVportServiceCatalogRows } from "@/features/vport/model/vportServiceCatalog.model";
-
-// Types that share another type's service catalog.
-// No DB duplication — catalog is looked up under the canonical key.
-const SERVICE_CATALOG_TYPE_ALIASES = Object.freeze({
-  barbershop: "barber",
-});
+import { resolveVportServiceCatalogType } from "@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter";
 
 export default async function getVportServiceCatalogController({ vportType, getFallbackServiceCatalogRows } = {}) {
   const safeVportType = (vportType ?? "").toString().trim().toLowerCase();
@@ -13,7 +8,7 @@ export default async function getVportServiceCatalogController({ vportType, getF
     return { vportType: null, services: [] };
   }
 
-  const resolvedType = SERVICE_CATALOG_TYPE_ALIASES[safeVportType] ?? safeVportType;
+  const resolvedType = resolveVportServiceCatalogType(safeVportType);
 
   const rows = await readVportServiceCatalogByTypeDAL({
     vportType: resolvedType,

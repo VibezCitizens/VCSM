@@ -19,16 +19,6 @@ export { getReportRowById, getReportRowByDedupeKey } from '@/features/moderation
 // - returns raw rows
 // ============================================================
 
-function isRlsDenied(error) {
-  if (!error) return false
-  const code = String(error?.code ?? '')
-  const msg = String(error?.message ?? '')
-  const details = String(error?.details ?? '')
-  return code === '42501' || /row-level security/i.test(`${msg} ${details}`)
-}
-
-let skipReportEventsInsertForSession = false
-
 /**
  * upsertInboxEntryFolder (DAL)
  * - creates/updates inbox entry folder for an actor + conversation
@@ -183,32 +173,17 @@ export async function insertReportEventRow({
     created_at: createdAt,
   }
 
-  if (skipReportEventsInsertForSession) {
-    return { row: null, error: null, skipped: true }
-  }
-
   const { error } = await supabase
     .schema('moderation')
     .from('report_events')
     .insert(insert)
 
   if (error) {
-    if (isRlsDenied(error)) {
-      skipReportEventsInsertForSession = true
-      console.warn('[DAL][moderation.report_events.insert] skipped by RLS (non-fatal)', {
-        reportId,
-        actorId,
-        eventType,
-        code: error?.code ?? null,
-        message: error?.message ?? null,
-      })
-    } else {
-      console.error('[DAL][moderation.report_events.insert] error', { insert, error })
-    }
-    return { row: null, error, skipped: false }
+    console.error('[DAL][moderation.report_events.insert] error', { insert, error })
+    return { row: null, error }
   }
 
-  return { row: insert, error: null, skipped: false }
+  return { row: insert, error: null }
 }
 
 /**

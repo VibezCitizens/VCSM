@@ -1,6 +1,7 @@
 import useVportActorMenu from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenu";
 import useVportActorMenuCategoriesMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuCategoriesMutations";
 import useVportActorMenuItemsMutations from "@/features/profiles/kinds/vport/hooks/menu/useVportActorMenuItemsMutations";
+import { usePublishMenuPost } from "@/features/profiles/kinds/vport/hooks/menu/usePublishMenuPost";
 import { invalidateMenuCache } from "@/features/profiles/kinds/vport/lib/menuCache";
 import VportActorMenuEmptyState from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuEmptyState";
 import VportActorMenuCategory from "@/features/profiles/kinds/vport/screens/menu/components/VportActorMenuCategory";
@@ -49,6 +50,8 @@ export function VportActorMenuManagePanel({
       await refresh();
     },
   });
+
+  const { publishMenuPost } = usePublishMenuPost({ actorId });
 
   const {
     categoryModalOpen,
@@ -168,6 +171,7 @@ export function VportActorMenuManagePanel({
         confirmLoading={confirmLoading}
         onConfirm={runConfirm}
         onCloseConfirm={closeConfirm}
+        onShareToFeed={publishMenuPost}
       />
     </div>
   );

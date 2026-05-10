@@ -1,7 +1,7 @@
-export function canAdvanceBookingStep(name, { dataReady, hasBarbers, hasAvailabilityRules, hasUpcomingSlots, selectedDateKey, selectedSlot, clientName, slotsByDate }) {
+export function canAdvanceBookingStep(name, { dataReady, availabilityLoading, hasAvailabilityRules, hasUpcomingSlots, selectedDateKey, selectedSlot, clientName, slotsByDate }) {
   switch (name) {
     case "service":
-      return dataReady && (hasBarbers ? true : hasAvailabilityRules && hasUpcomingSlots);
+      return dataReady && !availabilityLoading && hasAvailabilityRules && hasUpcomingSlots;
     case "barber": return true;
     case "date":
       return Boolean(selectedDateKey) && (slotsByDate[selectedDateKey]?.length ?? 0) > 0;

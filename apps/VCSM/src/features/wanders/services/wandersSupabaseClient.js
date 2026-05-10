@@ -16,7 +16,7 @@ function warn(...args) {
 }
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('[WandersSupabase] Missing env vars', {
+  if (import.meta.env.DEV) console.error('[WandersSupabase] Missing env vars', {
     VITE_SUPABASE_URL_present: Boolean(SUPABASE_URL),
     VITE_SUPABASE_ANON_KEY_present: Boolean(SUPABASE_ANON_KEY),
   })

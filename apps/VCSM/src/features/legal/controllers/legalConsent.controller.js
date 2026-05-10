@@ -1,25 +1,27 @@
 import { dalGetActiveLegalDocuments } from '../dal/legalDocuments.read.dal'
 import { dalGetUserConsents } from '../dal/userConsents.read.dal'
 import { dalRecordLegalAcceptance } from '../dal/userConsents.write.dal'
-import { getPublicIp } from '../dal/getPublicIp.dal'
 import { buildConsentComplianceStatus } from '../engine/legalCompliance.engine'
 import { createTTLCache } from '@/shared/lib/ttlCache'
 
 const VCSM_APP_KEY = 'vcsm'
-const legalDocsCache = createTTLCache(300_000) // 5 minutes
-const consentCache = createTTLCache(90_000) // 90 seconds — consent status is stable within a session
+
+// Reduced from 5 min to 60 s — limits non-enforcement window after a version bump
+const legalDocsCache = createTTLCache(60_000)
+const consentCache = createTTLCache(90_000)
 
 /**
  * Fetch active legal documents for the VCSM app.
- * Cached for 5 minutes — legal docs change extremely rarely.
- * @returns {Promise<Array>} Active legal document rows.
+ * Only caches non-empty results — empty docs must not be treated as compliant.
  */
 export async function getActiveLegalDocuments() {
   const cached = legalDocsCache.get(VCSM_APP_KEY)
   if (cached) return cached
 
   const docs = await dalGetActiveLegalDocuments({ appKey: VCSM_APP_KEY })
-  legalDocsCache.set(VCSM_APP_KEY, docs)
+  if (docs.length > 0) {
+    legalDocsCache.set(VCSM_APP_KEY, docs)
+  }
   return docs
 }
 
@@ -28,23 +30,21 @@ export function invalidateLegalDocsCache() {
 }
 
 /**
- * Invalidate the consent cache for a user (call after recording new consents).
- * If no userId is provided, clears the entire consent cache.
+ * Invalidate the consent cache for a specific user+app pair (call after recording new consents).
+ * If userId+appId are provided, invalidates only the matching entry.
+ * If either is missing, clears the entire consent cache as a safe fallback.
  */
-export function invalidateConsentCache(userId) {
-  if (userId) {
-    consentCache.invalidate(userId)
-  } else {
-    consentCache.invalidateAll()
-  }
+export function invalidateConsentCache(userId, appId) {
+  if (userId && appId) consentCache.invalidate(`${userId}:${appId}`)
+  else consentCache.invalidateAll()
 }
 
 /**
  * Fetch user consents with a 90-second TTL cache.
- * Prevents redundant DB hits when multiple components/guards check consent status.
+ * Cache key includes appId to prevent cross-app collision.
  */
 async function getCachedUserConsents({ userId, appId }) {
-  const cacheKey = userId
+  const cacheKey = `${userId}:${appId}`
   const cached = consentCache.get(cacheKey)
   if (cached) return cached
 
@@ -55,10 +55,6 @@ async function getCachedUserConsents({ userId, appId }) {
 
 /**
  * Check whether the user has accepted all currently active legal documents.
- *
- * @param {Object} params
- * @param {string} params.userId
- * @returns {Promise<{ requiresConsent: boolean, pending: Array, accepted: Array }>}
  */
 export async function getUserConsentStatus({ userId }) {
   const activeDocs = await getActiveLegalDocuments()
@@ -69,7 +65,6 @@ export async function getUserConsentStatus({ userId }) {
   const appId = activeDocs[0].app_id
   const consents = await getCachedUserConsents({ userId, appId })
 
-  // Build a set of (document_type, version) the user has accepted
   const acceptedSet = new Set(
     consents.map((c) => `${c.consent_type}:${c.consent_version}`)
   )
@@ -86,21 +81,15 @@ export async function getUserConsentStatus({ userId }) {
     }
   }
 
-  return {
-    requiresConsent: pending.length > 0,
-    pending,
-    accepted,
-  }
+  return { requiresConsent: pending.length > 0, pending, accepted }
 }
 
 /**
  * Record acceptance of multiple legal documents at once.
- *
- * @param {Object} params
- * @param {string} params.userId
- * @param {string|null} params.userAppAccountId
- * @param {Array} params.documents - Array of legal document objects to accept
- * @param {string} params.acceptedVia - 'login_gate' | 'signup' | 'settings' | 'reconsent'
+ * IP address is intentionally omitted — must be captured server-side (Carnage task).
+ * accepted_at is omitted so the DB DEFAULT now() applies (server-authoritative time).
+ * locale and user_agent are informational only and not used as legal evidence.
+ * Inserts are parallelized via Promise.all.
  */
 export async function recordLegalAcceptance({
   userId,
@@ -110,27 +99,27 @@ export async function recordLegalAcceptance({
 }) {
   const locale = typeof navigator !== 'undefined' ? navigator.language : null
   const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : null
-  const ipAddress = await getPublicIp()
 
-  const results = []
-  for (const doc of documents) {
-    const result = await dalRecordLegalAcceptance({
-      userId,
-      userAppAccountId,
-      appId: doc.app_id,
-      legalDocumentId: doc.id,
-      consentType: doc.document_type,
-      consentVersion: doc.version,
-      acceptedVia,
-      locale,
-      userAgent,
-      ipAddress,
-    })
-    results.push(result)
-  }
+  const results = await Promise.all(
+    documents.map((doc) =>
+      dalRecordLegalAcceptance({
+        userId,
+        userAppAccountId,
+        appId: doc.app_id,
+        legalDocumentId: doc.id,
+        consentType: doc.document_type,
+        consentVersion: doc.version,
+        acceptedVia,
+        locale,
+        userAgent,
+      })
+    )
+  )
 
-  // Bust the consent cache so subsequent reads reflect new acceptance
-  invalidateConsentCache(userId)
+  // Pass the appId from the first document so the cache key matches the stored entry.
+  // All documents in a single acceptance batch share the same app_id.
+  const appId = documents[0]?.app_id ?? null
+  invalidateConsentCache(userId, appId)
 
   return results
 }
@@ -138,16 +127,13 @@ export async function recordLegalAcceptance({
 /**
  * Record consent during signup flow.
  * Resolves active legal documents dynamically, then inserts acceptance rows.
- *
- * @param {Object} params
- * @param {string} params.userId - The newly created user's ID
- * @returns {Promise<Array>} Inserted consent rows
- * @throws If document resolution or consent insert fails
  */
 export async function recordSignupConsent({ userId }) {
   const activeDocs = await getActiveLegalDocuments()
   if (activeDocs.length === 0) {
-    console.warn('[LegalConsent] No active legal documents found during signup')
+    if (import.meta.env.DEV) {
+      console.warn('[LegalConsent] No active legal documents found during signup')
+    }
     return []
   }
 
@@ -165,16 +151,16 @@ export async function recordSignupConsent({ userId }) {
 
 /**
  * Resolve legal gate for the current session.
- * Fetches active docs + user consents, runs compliance engine, returns decision.
- *
- * @param {Object} params
- * @param {string} params.userId
- * @returns {Promise<{ decision: 'ALLOW_ACCESS'|'REQUIRE_RECONSENT', requiredActions: Array }>}
+ * Throws if active documents cannot be loaded or are empty —
+ * callers must handle errors by failing closed (blocking gate entry).
  */
 export async function resolveLegalGateForSession({ userId }) {
   const activeDocs = await getActiveLegalDocuments()
+
+  // Empty docs is a platform configuration error — not a compliant state.
+  // Throw so the hook fails closed and surfaces a recoverable error UI.
   if (activeDocs.length === 0) {
-    return { decision: 'ALLOW_ACCESS', requiredActions: [] }
+    throw new Error('No active legal documents configured. Platform setup required.')
   }
 
   const appId = activeDocs[0].app_id
@@ -198,20 +184,12 @@ export async function resolveLegalGateForSession({ userId }) {
 
 /**
  * Accept a set of required consent actions (re-consent flow).
- * Each action maps to a legal document that the user must accept.
- *
- * @param {Object} params
- * @param {string} params.userId
- * @param {string|null} params.userAppAccountId
- * @param {Array} params.requiredActions - From buildConsentComplianceStatus().requiredActions
- * @returns {Promise<Array>} Inserted consent rows
  */
 export async function acceptRequiredConsents({
   userId,
   userAppAccountId,
   requiredActions,
 }) {
-  // Convert requiredActions into the document shape that recordLegalAcceptance expects
   const documents = requiredActions.map((action) => ({
     id: action.legal_document_id,
     app_id: action.app_id,

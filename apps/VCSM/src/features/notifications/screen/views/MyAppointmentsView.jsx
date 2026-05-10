@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatTimestamp } from "@/shared/lib/formatTimestamp";
 import useMyAppointments from "@/features/notifications/screen/hooks/useMyAppointments";
+import { useActorSummary } from "@/state/actors/useActorSummary";
+import { hydrateActorsByIds } from "@hydration";
 
 const TABS = [
   { key: "upcoming", label: "Upcoming" },
@@ -45,7 +47,69 @@ function AppointmentSkeleton() {
   );
 }
 
-function AppointmentCard({ booking, provider, onCancel, cancelling, onDismiss, dismissing }) {
+function VportCell({ vportActorId, vportName }) {
+  const summary = useActorSummary(vportActorId);
+  useEffect(() => {
+    if (summary.missing && vportActorId) {
+      hydrateActorsByIds([vportActorId]).catch(() => {});
+    }
+  }, [vportActorId, summary.missing]);
+
+  // vportName from the DB join is the instant fallback — no flash
+  const name = (!summary.missing && summary.displayName !== "User")
+    ? summary.displayName
+    : (vportName ?? null);
+  const avatar = summary.missing ? "/avatar.jpg" : (summary.avatar ?? "/avatar.jpg");
+
+  if (!vportActorId && !name) return null;
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <img
+        src={avatar}
+        alt={name ?? ""}
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: 8,
+          objectFit: "cover",
+          border: "1px solid rgba(255,255,255,0.10)",
+          flexShrink: 0,
+          background: "rgba(255,255,255,0.05)",
+        }}
+        onError={(e) => { e.currentTarget.src = "/avatar.jpg"; }}
+      />
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--vc-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {name ?? "Unknown place"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MemberLine({ memberActorId, memberName }) {
+  const summary = useActorSummary(memberActorId);
+  useEffect(() => {
+    if (summary.missing && memberActorId) {
+      hydrateActorsByIds([memberActorId]).catch(() => {});
+    }
+  }, [memberActorId, summary.missing]);
+
+  const name = (!summary.missing && summary.displayName !== "User")
+    ? summary.displayName
+    : (memberName ?? null);
+
+  if (!name) return null;
+
+  return (
+    <div style={{ fontSize: 12, color: "rgba(167,139,250,0.85)", fontWeight: 500, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      with {name}
+    </div>
+  );
+}
+
+function AppointmentCard({ booking, onCancel, cancelling, onDismiss, dismissing }) {
   const [cancelError, setCancelError] = useState(null);
   const statusStyle = STATUS_STYLES[booking.status] ?? STATUS_STYLES.pending;
   const isBusy = cancelling === booking.id;
@@ -54,7 +118,6 @@ function AppointmentCard({ booking, provider, onCancel, cancelling, onDismiss, d
   const canDismiss = booking.status === "cancelled" || booking.status === "completed" || booking.status === "no_show";
   const timeStr = formatApptTime(booking.startsAt);
   const dateStr = formatApptDate(booking.startsAt);
-  const providerName = provider?.name ?? null;
 
   const variant =
     booking.status === "confirmed" ? "upcoming"
@@ -69,17 +132,11 @@ function AppointmentCard({ booking, provider, onCancel, cancelling, onDismiss, d
 
   return (
     <div className={`appt-card appt-card--${variant}`}>
-      {/* Header row: service + status badge */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 10 }}>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--vc-text)", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {booking.serviceLabelSnapshot || "Appointment"}
-          </div>
-          {providerName && (
-            <div style={{ fontSize: 12, color: "rgba(167,139,250,0.85)", marginTop: 3, fontWeight: 500 }}>
-              with {providerName}
-            </div>
-          )}
+      {/* Vport header: avatar + name + status badge */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <VportCell vportActorId={booking.vportActorId ?? booking.ownerActorId} vportName={booking.vportName} />
+          <MemberLine memberActorId={booking.memberActorId} memberName={booking.memberName} />
         </div>
         <span
           className="appt-status-badge"
@@ -89,8 +146,13 @@ function AppointmentCard({ booking, provider, onCancel, cancelling, onDismiss, d
         </span>
       </div>
 
+      {/* Service label */}
+      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--vc-text-soft)", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {booking.serviceLabelSnapshot || "Appointment"}
+      </div>
+
       {/* Date / time row */}
-      <div style={{ fontSize: 13, color: "var(--vc-text-soft)", display: "flex", flexWrap: "wrap", gap: "4px 10px" }}>
+      <div style={{ fontSize: 12, color: "var(--vc-text-muted)", display: "flex", flexWrap: "wrap", gap: "4px 8px" }}>
         {dateStr && <span>{dateStr}</span>}
         {timeStr && <span style={{ opacity: 0.75 }}>· {timeStr}</span>}
         {booking.durationMinutes > 0 && (
@@ -188,7 +250,7 @@ function EmptyAppointments({ tab }) {
 
 export default function MyAppointmentsView({ actorId }) {
   const [activeTab, setActiveTab] = useState("upcoming");
-  const { loading, error, upcoming, pending, past, ownerNames, cancelAppointment, cancelling, dismissAppointment, dismissing } =
+  const { loading, error, upcoming, pending, past, cancelAppointment, cancelling, dismissAppointment, dismissing } =
     useMyAppointments({ actorId });
 
   const tabRows = { upcoming, pending, past }[activeTab] ?? [];
@@ -221,7 +283,6 @@ export default function MyAppointmentsView({ actorId }) {
             <AppointmentCard
               key={b.id}
               booking={b}
-              provider={b.ownerActorId ? (ownerNames[b.ownerActorId] ?? null) : null}
               onCancel={cancelAppointment}
               cancelling={cancelling}
               onDismiss={dismissAppointment}

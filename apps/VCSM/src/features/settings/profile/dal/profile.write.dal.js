@@ -50,7 +50,7 @@ export async function updateProfile(subjectId, mode, data) {
     .single()
 
   if (error) {
-    console.error('[updateProfile:user] DB ERROR', error)
+    if (import.meta.env.DEV) console.error('[updateProfile:user] DB ERROR', error)
     throw error
   }
 

@@ -23,6 +23,8 @@ import { queryKeys } from "@/queries/queryKeys";
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/getVportTabsByType.model";
 import { useVportProfileBySlug } from "@/features/profiles/kinds/vport/hooks/useVportProfileBySlug";
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
+import { isDeletedProfileActor } from "@/features/profiles/model/isDeletedProfileActor.model";
+import UnavailableProfileGate from "@/features/profiles/adapters/ui/UnavailableProfileGate.adapter";
 import { useIsActorOwner } from "@/features/profiles/hooks/useIsActorOwner";
 import { useVportProfileActions } from "@/features/profiles/kinds/vport/hooks/useVportProfileActions";
 import VportProfileTabContent from "./components/VportProfileTabContent";
@@ -152,6 +154,21 @@ export default function VportProfileViewScreen({
 
   if (error && !displayProfile) {
     return <div className="profiles-modern flex justify-center py-20 text-rose-300">Failed to load profile.</div>;
+  }
+
+  const isVportUnavailable =
+    !publicDetailsLoading &&
+    (
+      publicDetails === null ||
+      isDeletedProfileActor({ isDeleted: publicDetails?.isDeleted, isActive: publicDetails?.isActive })
+    );
+
+  if (isVportUnavailable) {
+    return (
+      <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
+        <UnavailableProfileGate />
+      </div>
+    );
   }
 
   const isBarbershopOwner = isOwner && vportType === "barbershop";

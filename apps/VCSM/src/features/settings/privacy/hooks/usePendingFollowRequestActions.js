@@ -25,7 +25,7 @@ export function usePendingFollowRequestActions({
         window.dispatchEvent(new Event('noti:refresh'))
       }
     } catch (error) {
-      console.error('Accept failed', error)
+      if (import.meta.env.DEV) console.error('Accept failed', error)
       onRollbackHide?.()
     } finally {
       setBusy(false)
@@ -45,7 +45,7 @@ export function usePendingFollowRequestActions({
         window.dispatchEvent(new Event('noti:refresh'))
       }
     } catch (error) {
-      console.error('Decline failed', error)
+      if (import.meta.env.DEV) console.error('Decline failed', error)
       onRollbackHide?.()
     } finally {
       setBusy(false)

@@ -15,6 +15,7 @@ export async function fetchVportPublicDetailsByActorId(actorId) {
       avatar_url,
       banner_url,
       is_active,
+      is_deleted,
       public_details:profile_public_details (
         city_id,
         website_url,

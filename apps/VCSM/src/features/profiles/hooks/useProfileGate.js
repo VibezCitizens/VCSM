@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useFollowStatus } from "@/features/social/adapters/friend/subscribe/hooks/useFollowStatus.adapter";
 import { useSendFollowRequest } from "@/features/social/adapters/friend/request/hooks/useSendFollowRequest.adapter";
 import { useActorPrivacy } from "@/features/social/adapters/privacy/hooks/useActorPrivacy.adapter";
+import { useBlockStatus } from "@/features/block";
 
 export function useProfileGate({
   viewerActorId,
@@ -15,6 +16,7 @@ export function useProfileGate({
     followerActorId: viewerActorId,
     followedActorId: targetActorId,
   });
+  const { isBlocked, loading: blockLoading } = useBlockStatus(viewerActorId, targetActorId);
   const sendFollowRequest = useSendFollowRequest();
 
   const isSelf = useMemo(
@@ -31,9 +33,10 @@ export function useProfileGate({
     ? true
     : isSelf
       ? false
-      : privacyLoading;
+      : privacyLoading || blockLoading;
 
-  const canView = !isPrivate || isSelf || isFollowing;
+  // Self-view always allowed. Block gates everything — no content shown in either direction.
+  const canView = isSelf || (!isBlocked && (!isPrivate || isFollowing));
 
   const requestFollow = useCallback(async () => {
     if (!viewerActorId || !targetActorId) return false;
@@ -55,6 +58,7 @@ export function useProfileGate({
     loading,
     isPrivate,
     isFollowing,
+    isBlocked,
     isSelf,
     canView,
     requestFollow,

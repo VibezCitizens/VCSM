@@ -10,6 +10,10 @@ export function invalidateActorsBundleCache() {
   bundleCache.invalidateAll();
 }
 
+export function invalidateActorBundleEntry(actorId) {
+  if (actorId) bundleCache.invalidate(`actor:${actorId}`);
+}
+
 export async function readActorsBundle(actorIds) {
   const uniqueActorIds = [...new Set((actorIds || []).filter(Boolean))];
   if (uniqueActorIds.length === 0) {
@@ -45,7 +49,8 @@ export async function readActorsBundle(actorIds) {
     .schema("vc")
     .from("actors")
     .select("id, kind, profile_id, vport_id")
-    .in("id", uncachedIds);
+    .in("id", uncachedIds)
+    .eq("is_deleted", false);
 
   const actorMap = {};
   (actors || []).forEach((a) => (actorMap[a.id] = a));
@@ -64,20 +69,21 @@ export async function readActorsBundle(actorIds) {
             .from("profiles")
             .select("id, display_name, username, photo_url")
             .in("id", profileIds)
+            .eq("is_deleted", false)
         : Promise.resolve({ data: [] }),
 
-      uniqueActorIds.length
+      uncachedIds.length
         ? supabase
             .schema("vc")
             .from("actor_privacy_settings")
             .select("actor_id, is_private")
-            .in("actor_id", uniqueActorIds)
+            .in("actor_id", uncachedIds)
         : Promise.resolve({ data: [] }),
 
       actorIdsForVports.length
         ? vportSchema
-            .from("public_traze_profiles_v")
-            .select("actor_id, name, slug, avatar_url, is_active")
+            .from("profiles")
+            .select("actor_id, name, slug, avatar_url, is_active, is_deleted")
             .in("actor_id", actorIdsForVports)
         : Promise.resolve({ data: [] }),
     ]);

@@ -23,6 +23,9 @@ export function VportActorMenuCategoryFormBody({
   effectiveMode,
   error,
   handleClose,
+  shareToFeed = false,
+  setShareToFeed = null,
+  showShareToFeed = false,
 }) {
   const buttonBase = getButtonBase(saving);
   const primaryButton = getPrimaryButton(saving);
@@ -100,6 +103,19 @@ export function VportActorMenuCategoryFormBody({
           {error?.message ?? "Something went wrong"}
         </div>
       ) : null}
+
+      {showShareToFeed && setShareToFeed && (
+        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", paddingTop: 4 }}>
+          <input
+            type="checkbox"
+            checked={shareToFeed}
+            onChange={(e) => setShareToFeed(e.target.checked)}
+            disabled={saving}
+            style={{ appearance: "auto", WebkitAppearance: "checkbox", width: 16, height: 16, margin: 0, accentColor: "#38bdf8" }}
+          />
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.70)" }}>Share this update to my feed</span>
+        </label>
+      )}
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
         <button type="button" onClick={handleClose} disabled={saving} style={buttonBase}>

@@ -14,7 +14,7 @@ import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 export default function ProtectedRoute() {
   const { user, loading } = useAuth()
-  const { loading: consentLoading, requiresConsent, requiredActions, accepting, error, acceptAll } = useLegalConsent()
+  const { loading: consentLoading, requiresConsent, requiredActions, accepting, error, acceptAll, gateError, retryConsent } = useLegalConsent()
 
   useEffect(() => {
     appendIOSProdDebugLog('protected_route_state', {
@@ -25,8 +25,9 @@ export default function ProtectedRoute() {
       requiredActionsCount: Array.isArray(requiredActions) ? requiredActions.length : 0,
       accepting,
       hasError: !!error,
+      hasGateError: !!gateError,
     })
-  }, [loading, user?.id, consentLoading, requiresConsent, requiredActions, accepting, error])
+  }, [loading, user?.id, consentLoading, requiresConsent, requiredActions, accepting, error, gateError])
 
   if (loading) return null
   if (!user) {
@@ -56,6 +57,9 @@ export default function ProtectedRoute() {
         accepting={accepting}
         error={error}
         onAccept={acceptAll}
+        gateError={gateError}
+        onRetry={retryConsent}
+        loading={consentLoading}
       />
     )
   }

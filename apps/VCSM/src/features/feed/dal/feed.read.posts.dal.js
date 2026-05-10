@@ -20,7 +20,6 @@ export async function readFeedPostsPage({
       realm_id,
       edited_at,
       deleted_at,
-      deleted_by_actor_id,
       location_text
     `)
     .is("deleted_at", null)

@@ -9,6 +9,8 @@ import {
 
 import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
+import { ctrlGetBlockStatus } from '@/features/block'
+import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.adapter'
 
 /**
  * ============================================================
@@ -28,6 +30,14 @@ export async function ctrlSendFollowRequest({
 
   if (requesterActorId === targetActorId) {
     throw new Error('Cannot follow yourself')
+  }
+
+  const { isBlocked } = await ctrlGetBlockStatus({
+    actorId: requesterActorId,
+    targetActorId,
+  })
+  if (isBlocked) {
+    throw new Error('Cannot send follow request to a blocked actor')
   }
 
   const existing = await dalGetRequestStatus({
@@ -60,9 +70,13 @@ export async function ctrlSendFollowRequest({
 export async function ctrlAcceptFollowRequest({
   requesterActorId,
   targetActorId,
+  assertingActorId,
 }) {
   if (!requesterActorId || !targetActorId) {
     throw new Error('ctrlAcceptFollowRequest: missing actor ids')
+  }
+  if (!assertingActorId || assertingActorId !== targetActorId) {
+    throw new Error('ctrlAcceptFollowRequest: session actor does not own this request')
   }
 
   const status = await dalGetRequestStatus({
@@ -85,6 +99,10 @@ export async function ctrlAcceptFollowRequest({
     status: 'accepted',
   })
 
+  // Bust follow caches for both actors so the new relationship is visible immediately
+  invalidateFeedFollowCache(requesterActorId)
+  invalidateFeedFollowCache(targetActorId)
+
   // Publish follow_request_accepted notification through engine (replaces DB trigger path)
   publishVcsmNotification({
     recipientActorId: requesterActorId,
@@ -102,9 +120,13 @@ export async function ctrlAcceptFollowRequest({
 export async function ctrlDeclineFollowRequest({
   requesterActorId,
   targetActorId,
+  assertingActorId,
 }) {
   if (!requesterActorId || !targetActorId) {
     throw new Error('ctrlDeclineFollowRequest: missing actor ids')
+  }
+  if (!assertingActorId || assertingActorId !== targetActorId) {
+    throw new Error('ctrlDeclineFollowRequest: session actor does not own this request')
   }
 
   const status = await dalGetRequestStatus({
@@ -128,9 +150,13 @@ export async function ctrlDeclineFollowRequest({
 export async function ctrlCancelFollowRequest({
   requesterActorId,
   targetActorId,
+  assertingActorId,
 }) {
   if (!requesterActorId || !targetActorId) {
     throw new Error('ctrlCancelFollowRequest: missing actor ids')
+  }
+  if (!assertingActorId || assertingActorId !== requesterActorId) {
+    throw new Error('ctrlCancelFollowRequest: session actor does not own this request')
   }
 
   const status = await dalGetRequestStatus({

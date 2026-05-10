@@ -20,6 +20,7 @@ export function mapVportPublicDetailsModel(raw, vportTypeRow) {
     avatarUrl: raw.avatar_url ?? null,
     bannerUrl: raw.banner_url ?? null,
     isActive: raw.is_active ?? null,
+    isDeleted: raw.is_deleted ?? false,
 
     // public details
     cityId: raw.city_id ?? null,
