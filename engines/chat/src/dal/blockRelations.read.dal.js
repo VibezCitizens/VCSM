@@ -19,8 +19,15 @@ export async function listUserBlockRowsBetweenActorsDAL({
 
   const checkBlockRelation = getCheckBlockRelation()
   if (!checkBlockRelation) {
-    // No app-provided block checker — assume no blocks
-    return []
+    // No block checker configured — fail closed.
+    // Apps must provide checkBlockRelation via configureChatEngine().
+    // Returning a synthetic blocked row prevents conversation creation
+    // and message send when the block checker is absent.
+    console.warn(
+      '[chat/blockRelations] checkBlockRelation DI not configured.' +
+      ' Failing closed — configure via configureChatEngine({ checkBlockRelation })'
+    )
+    return [{ synthetic: true, reason: 'no_block_checker_configured' }]
   }
 
   const isBlocked = await checkBlockRelation({ actorA, actorB })

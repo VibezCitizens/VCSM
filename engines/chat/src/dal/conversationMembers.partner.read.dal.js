@@ -51,3 +51,52 @@ export async function fetchConversationMemberActorIds({ conversationId }) {
 
   return (data ?? []).map((r) => r?.actor_id).filter(Boolean)
 }
+
+/**
+ * For a direct conversation, return the partner's actorId and confirm
+ * the conversation kind. Used by sendMessage block enforcement.
+ *
+ * Runs two queries in parallel:
+ *   1. chat.conversations  — to read conversation_kind
+ *   2. chat.conversation_members — to find the other active member
+ *
+ * Returns { partnerActorId: string|null, isDirectConversation: boolean }.
+ * partnerActorId is null for group conversations or when partner row is missing.
+ */
+export async function fetchDirectPartner({ conversationId, actorId }) {
+  if (!conversationId || !actorId) {
+    return { partnerActorId: null, isDirectConversation: false }
+  }
+
+  const supabase = getSupabaseClient()
+
+  const [
+    { data: conv,       error: convErr },
+    { data: partnerRow, error: memberErr },
+  ] = await Promise.all([
+    supabase
+      .schema('chat')
+      .from('conversations')
+      .select('conversation_kind')
+      .eq('id', conversationId)
+      .maybeSingle(),
+    supabase
+      .schema('chat')
+      .from('conversation_members')
+      .select('actor_id')
+      .eq('conversation_id', conversationId)
+      .neq('actor_id', actorId)
+      .eq('membership_status', 'active')
+      .maybeSingle(),
+  ])
+
+  if (convErr) throw convErr
+  if (memberErr) throw memberErr
+
+  const isDirectConversation = conv?.conversation_kind === 'direct'
+
+  return {
+    partnerActorId: isDirectConversation ? (partnerRow?.actor_id ?? null) : null,
+    isDirectConversation,
+  }
+}

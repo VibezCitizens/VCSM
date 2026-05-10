@@ -40,20 +40,7 @@ export async function startDirectConversation({
     throw new Error('[chat/start] target actor id is invalid')
   }
 
-  console.log('[startDirectConversation] START', {
-    fromActorId,
-    toActorId,
-    realmId,
-    picked,
-  })
-
   const effectiveRealmId = await resolveChatRealmId({ fromActorId, realmId })
-
-  console.log('[startDirectConversation] REALM', {
-    fromActorId,
-    toActorId,
-    effectiveRealmId,
-  })
 
   const isBlocked =
     (await listUserBlockRowsBetweenActorsDAL({
@@ -70,22 +57,9 @@ export async function startDirectConversation({
     realmId: effectiveRealmId,
   })
 
-  console.log('[startDirectConversation] GET_OR_CREATE RESULT', {
-    fromActorId,
-    toActorId,
-    conversationId,
-  })
-
   const opened = await openConversation({
     conversationId,
     actorId: fromActorId,
-  })
-
-  console.log('[startDirectConversation] OPEN RESULT', {
-    fromActorId,
-    toActorId,
-    conversationId,
-    opened,
   })
 
   await publishDomainEvent({
