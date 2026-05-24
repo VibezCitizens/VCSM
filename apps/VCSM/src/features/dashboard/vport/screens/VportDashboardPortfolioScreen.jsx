@@ -5,6 +5,7 @@ import { Image as ImageIcon, Plus } from "lucide-react";
 
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
@@ -13,7 +14,7 @@ import { useVportPortfolio } from "@/features/profiles/adapters/profiles.adapter
 import { PortfolioBugsBunnyPanel } from "./components/PortfolioBugsBunnyPanel";
 import PortfolioItemForm from "./components/portfolio/PortfolioItemForm";
 import PortfolioManagerCard from "./components/portfolio/PortfolioManagerCard";
-import { usePublishBarbershopPortfolioPost } from "@/features/profiles/kinds/vport/hooks/barbershop/usePublishBarbershopPortfolioPost";
+import { usePublishBarbershopPortfolioPost } from "@/features/profiles/adapters/profiles.adapter";
 
 function buildInitialValues(detail) {
   if (!detail) return null;
@@ -45,7 +46,7 @@ export default function VportDashboardPortfolioScreen() {
   const targetActorId = params?.actorId ?? null;
   const viewerActorId = identity?.actorId ?? null;
   const isDesktop = useDesktopBreakpoint();
-  const isOwner = Boolean(targetActorId) && Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId);
+  const { isOwner } = useVportOwnership(viewerActorId, targetActorId);
 
   const isBarbershop = ["barbershop", "barber"].includes(
     String(identity?.vportType ?? "").toLowerCase()

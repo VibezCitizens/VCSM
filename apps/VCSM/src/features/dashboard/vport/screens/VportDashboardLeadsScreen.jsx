@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { SkeletonCardList } from "@/shared/components/Skeleton";
 import { useIdentity } from "@/state/identity/identityContext";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
@@ -25,10 +26,7 @@ export default function VportDashboardLeadsScreen() {
   });
 
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const {
     leads,
@@ -42,7 +40,7 @@ export default function VportDashboardLeadsScreen() {
 
   if (!actorId) return null;
 
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return (
       <div className="px-4 py-6">
         <SkeletonCardList count={3} showBody={false} />

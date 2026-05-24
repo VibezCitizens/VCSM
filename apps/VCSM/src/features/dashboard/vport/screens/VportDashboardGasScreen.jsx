@@ -8,6 +8,7 @@ import { useUpdateStationFuelUnit } from "@/features/profiles/kinds/vport/hooks/
 
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 
 import { useVportGasPrices } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useVportGasPrices.adapter";
 import { useSubmitFuelPriceSuggestion } from "@/features/profiles/adapters/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion.adapter";
@@ -27,10 +28,7 @@ export function VportDashboardGasScreen() {
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
   const isDesktop = useDesktopBreakpoint();
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const goBack = useCallback(() => {
     if (!actorId) return;
@@ -134,7 +132,7 @@ export function VportDashboardGasScreen() {
   );
 
   if (!actorId) return null;
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
   if (!identity) {

@@ -1,8 +1,5 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 import vportSchema from "@/services/supabase/vportClient";
-import { useActorStore } from "@/state/actors/actorStore";
-
-const STORE_TTL_MS = 5 * 60 * 1000;
 
 function makeActorRoute({ kind, username, actorId, vportId }) {
   if (kind === "user" && username) return `/u/${username}`;
@@ -11,40 +8,9 @@ function makeActorRoute({ kind, username, actorId, vportId }) {
   return "/feed";
 }
 
-// Returns a built authorActorEntry from the actor store if fresh, else null.
-function authorFromStore(actorId) {
-  const stored = useActorStore.getState().actors?.[actorId];
-  if (!stored?._hydratedAt || Date.now() - stored._hydratedAt > STORE_TTL_MS) return null;
-  const kind = stored.kind ?? null;
-  if (!kind) return null;
-  const username =
-    kind === "vport"
-      ? (stored.vportSlug ?? stored.username ?? null)
-      : (stored.username ?? null);
-  const displayName =
-    kind === "vport"
-      ? (stored.vportName ?? stored.displayName ?? null)
-      : (stored.displayName ?? null);
-  const photoUrl =
-    kind === "vport"
-      ? (stored.vportAvatarUrl ?? stored.photoUrl ?? "/avatar.jpg")
-      : (stored.photoUrl ?? "/avatar.jpg");
-  return {
-    actor_id: actorId,
-    kind,
-    display_name: displayName,
-    username,
-    photo_url: photoUrl,
-    banner_url: stored.bannerUrl ?? null,
-    bio: stored.bio ?? null,
-    route: makeActorRoute({ kind, username, actorId, vportId: kind === "vport" ? actorId : null }),
-  };
-}
-
-// Resolves post author identity. Checks actor store first (0 RTTs); falls back to DB (2 RTTs).
-async function resolveAuthorEntry(actorId) {
-  const cached = authorFromStore(actorId);
-  if (cached) return cached;
+// Resolves post author identity. Uses controller-provided actor data when present; falls back to DB.
+async function resolveAuthorEntry(actorId, cachedAuthorActorEntry = null) {
+  if (cachedAuthorActorEntry) return cachedAuthorActorEntry;
 
   try {
     const { data: actorRow } = await supabase
@@ -107,10 +73,12 @@ async function fetchPostMedia(postIds) {
     .order("sort_order", { ascending: true });
 
   if (error) {
-    console.warn("[fetchPostsForActorDAL] post_media read failed; falling back to legacy media_url", {
-      postCount: postIds.length,
-      error: error?.message || error,
-    });
+    if (import.meta.env?.DEV) {
+      console.warn("[fetchPostsForActorDAL] post_media read failed; falling back to legacy media_url", {
+        postCount: postIds.length,
+        error: error?.message || error,
+      });
+    }
   }
 
   const map = new Map();
@@ -213,7 +181,13 @@ async function resolveMentionEntries(allIds) {
   return entryByActorId;
 }
 
-export async function fetchPostsForActorDAL({ actorId, limit, offset, media = "all" }) {
+export async function fetchPostsForActorDAL({
+  actorId,
+  limit,
+  offset,
+  media = "all",
+  cachedAuthorActorEntry = null,
+}) {
   let query = supabase
     .schema("vc")
     .from("posts")
@@ -249,7 +223,7 @@ export async function fetchPostsForActorDAL({ actorId, limit, offset, media = "a
   // RTT 1 complete. Fetch author, media, and mentions in parallel.
   const [authorActorEntry, mediaByPostId, { byPostId: mentionedByPostId, allIds: mentionedActorIds }] =
     await Promise.all([
-      resolveAuthorEntry(actorId),
+      resolveAuthorEntry(actorId, cachedAuthorActorEntry),
       fetchPostMedia(postIds),
       fetchPostMentions(postIds),
     ]);

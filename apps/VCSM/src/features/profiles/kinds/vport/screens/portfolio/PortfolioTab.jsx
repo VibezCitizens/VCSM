@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BriefcaseBusiness, Image as ImageIcon, Sparkles } from "lucide-react";
 
 import useVportServices from "@/features/profiles/kinds/vport/hooks/services/useVportServices";
-import useBookingServiceProfiles from "@/features/booking/hooks/useBookingServiceProfiles";
+import { useBookingServiceProfiles } from "@/features/booking/adapters/booking.adapter";
 
 import PortfolioCard from "@/features/profiles/kinds/vport/screens/portfolio/PortfolioCard";
 import PortfolioEmptyState from "@/features/profiles/kinds/vport/screens/portfolio/PortfolioEmptyState";

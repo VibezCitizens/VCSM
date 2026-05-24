@@ -9,8 +9,8 @@ import { nanoid } from "nanoid";
 import { ensureGuestUser } from "@/features/wanders/core/controllers/ensureGuestUser.controller";
 
 import { uploadMediaController } from '@media'
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger'
 
 // ✅ NEW ARCH: core write DALs
@@ -187,7 +187,7 @@ export async function publishWandersFromBuilder({ realmId, baseUrl, payload, sen
     ;(async () => {
       bugBunnyUploadStep('wanders_card', 'writeback:start', { cardId: card.id, senderActorId })
       try {
-        const appId = await resolveVcsmAppIdDAL()
+        const appId = await resolveVcsmAppId()
         const mediaAsset = await createMediaAssetController({
           mediaUploadResult:  wandersUploadResult,
           ownerActorId:       senderActorId,

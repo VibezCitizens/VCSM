@@ -3,6 +3,19 @@ import vportSchema from "@/services/supabase/vportClient";
 const SELECT_COLS =
   "id,profile_id,key,label,description,service_group,sort_order,enabled,meta,created_at,updated_at";
 
+export async function getVportServiceByIdDAL({ serviceId } = {}) {
+  if (!serviceId) return null;
+
+  const { data, error } = await vportSchema
+    .from("services")
+    .select(SELECT_COLS)
+    .eq("id", serviceId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ?? null;
+}
+
 export async function listVportServicesByProfileIdDAL({ profileId, includeDisabled = false } = {}) {
   if (!profileId) return [];
 

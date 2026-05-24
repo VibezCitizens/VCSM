@@ -3,7 +3,7 @@ import {
   hasRecentExchangeRatePostDAL,
 } from "@/features/profiles/kinds/vport/dal/exchange/vportExchangeRatePost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 function formatRate(v) {
   const n = Number(v);
@@ -27,7 +27,7 @@ export async function publishExchangeRateUpdateAsPostController({
   if (!actorId) throw new Error("publishExchangeRateUpdateAsPost: actorId required");
   if (!baseCurrency || !quoteCurrency) return { published: false, reason: "missing_currencies" };
 
-  const realmId = resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentExchangeRatePostDAL({ actorId });

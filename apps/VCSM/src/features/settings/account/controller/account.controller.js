@@ -1,4 +1,4 @@
-import { dalReadVportIdByActorId } from '@/features/settings/account/dal/account.read.dal'
+import { dalReadVportIdByActorId } from '@/features/settings/profile/dal/actors.read.dal'
 import {
   dalDeleteCitizenAccountFull,
   dalDeleteMyVport,

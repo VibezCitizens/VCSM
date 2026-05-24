@@ -204,7 +204,7 @@ export default function ChatInput({
 
   return (
     <>
-      <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFilePick} className="hidden" />
+      <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFilePick} style={{ display: 'none' }} />
 
       <form
         onSubmit={(e) => {

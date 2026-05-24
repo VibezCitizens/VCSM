@@ -3,6 +3,7 @@ import {
   listCityStaticParams,
   listCountryStaticParams
 } from "@/data/repositories/staticParams.repo";
+import { listCountries } from "@/data/repositories/geo.repo";
 import { resolvePage, buildCountryMetadata, buildLegacyCityMetadata } from "./_graph";
 import { renderCountryPage, renderLegacyCityPage } from "./_renderers";
 import { countryPath } from "@/lib/paths";
@@ -26,7 +27,12 @@ function dedupeCityParams(entries) {
 
 export function generateStaticParams() {
   const countryPages = listCountryStaticParams().map((entry) => ({ city: entry.country }));
-  return dedupeCityParams([...countryPages, ...listCityStaticParams()]);
+  const combined = dedupeCityParams([...countryPages, ...listCityStaticParams()]);
+  if (combined.length > 0) return combined;
+  // Taxonomy fallback: when Supabase is unavailable at build time all provider-based
+  // functions return empty. Enumerate country slugs from the static taxonomy so the
+  // route is always included in the export. Pages with no live providers call notFound().
+  return listCountries().map((c) => ({ city: c.slug }));
 }
 
 export function generateMetadataForLocale({ params }, routeLocale = null) {
@@ -42,18 +48,20 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
   return buildLegacyCityMetadata(graph, { routeLocale });
 }
 
-export function generateMetadata({ params }) {
-  return generateMetadataForLocale({ params });
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  return generateMetadataForLocale({ params: resolvedParams });
 }
 
-export default function CityPage({ params }) {
-  const graph = resolvePage(params);
+export default async function CityPage({ params }) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     notFound();
   }
 
   if (graph.routeMode === "country") {
-    if (params.city !== graph.country.slug) {
+    if (resolvedParams.city !== graph.country.slug) {
       redirect(countryPath(graph.country.slug));
     }
 

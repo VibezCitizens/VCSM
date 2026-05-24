@@ -1,17 +1,21 @@
-import {
-  dalExchangeCodeForSession,
-  dalGetCurrentSession,
-} from '@/features/auth/dal/authCallback.dal'
+import { dalExchangeCodeForSession } from '@/features/auth/dal/authCallback.dal'
+import { dalGetAuthSession } from '@/features/auth/dal/authSession.read.dal'
 
-function parseCallbackParams() {
-  const search = new URLSearchParams(window.location.search)
-  const hash = new URLSearchParams(window.location.hash.slice(1))
+// Accepts an optional URL string so native callers can pass the deep-link URL directly.
+// Falls back to window.location.href when running in a browser context.
+function parseCallbackParams(url) {
+  const resolved = url ?? (typeof window !== 'undefined' ? window.location.href : '')
+  const parsed = new URL(resolved, 'http://localhost')
+  const search = parsed.searchParams
+  const hash = new URLSearchParams(parsed.hash.slice(1))
   return {
     code: search.get('code'),
     error: search.get('error') || hash.get('error'),
     errorDescription: search.get('error_description') || hash.get('error_description'),
-    // 'recovery' for password reset hash tokens, 'signup' for email confirmation
-    hashType: hash.get('type'),
+    // hash.get('type') is intentionally not returned — it is attacker-controllable via
+    // the URL hash and must not be used as a recovery authority (BW-LOGIN-002).
+    // Recovery is determined exclusively by Supabase's PASSWORD_RECOVERY auth event
+    // handled in AuthProvider, which only fires for real recovery-token sessions.
   }
 }
 
@@ -22,25 +26,25 @@ function parseCallbackParams() {
  *   - PKCE (code param): explicitly exchanges the code for a session
  *   - Implicit (hash tokens): detectSessionInUrl handles these; getSession() returns the result
  *
+ * Accepts an optional callbackUrl — native callers pass the deep-link URL; web callers omit it.
+ *
  * Returns { ok, session, isRecovery, error }
- * isRecovery: true when this is a password reset flow — caller must redirect to /reset-password
+ * isRecovery: always false — password reset flows are handled exclusively by
+ * AuthProvider's PASSWORD_RECOVERY event handler, not by this callback.
  */
-export async function resolveAuthCallbackController() {
-  const { code, error, errorDescription, hashType } = parseCallbackParams()
+export async function resolveAuthCallbackController(callbackUrl) {
+  const { code, error, errorDescription } = parseCallbackParams(callbackUrl)
 
   if (error) {
     return {
       ok: false,
       session: null,
       isRecovery: false,
-      error: errorDescription || 'Verification failed.',
+      // Fixed message in production — error_description is attacker-controllable via URL params
+      error: import.meta.env.DEV
+        ? (errorDescription || 'Verification failed.')
+        : 'Verification failed. Please try again or request a new link.',
     }
-  }
-
-  // Hash-based recovery tokens (implicit flow): type=recovery in hash.
-  // Do not exchange here — let ResetPasswordScreen handle the recovery session.
-  if (hashType === 'recovery') {
-    return { ok: true, session: null, isRecovery: true, error: null }
   }
 
   if (code) {
@@ -67,7 +71,7 @@ export async function resolveAuthCallbackController() {
 
   // Hash-based tokens: detectSessionInUrl processes these during client init.
   // getSession() awaits that exchange and returns the resulting session.
-  const session = await dalGetCurrentSession()
+  const session = await dalGetAuthSession()
   if (!session) {
     return { ok: false, session: null, isRecovery: false, error: null }
   }

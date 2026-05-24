@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { ctrlSearchResults } from '@/features/explore/controller/searchResults.controller'
 
-const FILTERS = ['all', 'users', 'vports', 'Voxs', 'videos', 'groups']
+const FILTERS = ['all', 'users', 'vports', 'posts', 'videos', 'groups']
 const LS_KEY = 'search:lastFilter'
 const SEARCH_CACHE_TTL_MS = 45_000
 const SEARCH_CACHE_MAX_ENTRIES = 120

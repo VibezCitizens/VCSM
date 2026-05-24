@@ -16,6 +16,7 @@ import {
 import {
   dalUpsertLocksmithPortfolioDetail,
 } from '@/features/profiles/kinds/vport/dal/locksmith/locksmithPortfolioDetails.write.dal'
+import vport from '@/services/supabase/vportClient'
 
 // ── Service Areas ──
 
@@ -42,7 +43,8 @@ export async function ctrlAddServiceArea(actorId, area) {
   })
 }
 
-export async function ctrlUpdateServiceArea(areaId, updates) {
+export async function ctrlUpdateServiceArea(actorId, areaId, updates) {
+  if (!actorId) throw new Error('[Locksmith] actorId required')
   if (!areaId) throw new Error('[Locksmith] areaId required')
   const row = {}
   if (updates.label !== undefined) row.label = updates.label
@@ -57,12 +59,13 @@ export async function ctrlUpdateServiceArea(areaId, updates) {
   if (updates.isEmergencyCovered !== undefined) row.is_emergency_covered = updates.isEmergencyCovered
   if (updates.isActive !== undefined) row.is_active = updates.isActive
   if (updates.notes !== undefined) row.notes = updates.notes
-  return dalUpdateLocksmithServiceArea(areaId, row)
+  return dalUpdateLocksmithServiceArea(areaId, actorId, row)
 }
 
-export async function ctrlDeleteServiceArea(areaId) {
+export async function ctrlDeleteServiceArea(actorId, areaId) {
+  if (!actorId) throw new Error('[Locksmith] actorId required')
   if (!areaId) throw new Error('[Locksmith] areaId required')
-  return dalDeleteLocksmithServiceArea(areaId)
+  return dalDeleteLocksmithServiceArea(areaId, actorId)
 }
 
 // ── Service Details ──
@@ -91,14 +94,31 @@ export async function ctrlSaveServiceDetail(actorId, serviceId, detail) {
   })
 }
 
-export async function ctrlDeleteServiceDetail(serviceId) {
-  return dalDeleteLocksmithServiceDetail(serviceId)
+export async function ctrlDeleteServiceDetail(actorId, serviceId) {
+  if (!actorId) throw new Error('[Locksmith] actorId required')
+  if (!serviceId) throw new Error('[Locksmith] serviceId required')
+  return dalDeleteLocksmithServiceDetail(serviceId, actorId)
 }
 
 // ── Portfolio Details ──
 
-export async function ctrlSavePortfolioDetail(portfolioItemId, detail) {
-  if (!portfolioItemId) throw new Error('[Locksmith] portfolioItemId required')
+export async function ctrlSavePortfolioDetail(actorId, portfolioItemId, detail) {
+  if (!actorId || !portfolioItemId) throw new Error('[Locksmith] actorId and portfolioItemId required')
+
+  // PORT-V-004: verify the caller owns the portfolio item before writing.
+  // Parallel lookup: resolve callerProfileId from actor_id, and itemProfileId from the item row.
+  // vportClient is pre-configured for the vport schema — no .schema() call needed.
+  const [{ data: profileRow, error: profileErr }, { data: itemRow, error: itemErr }] = await Promise.all([
+    vport.from('profiles').select('id').eq('actor_id', actorId).maybeSingle(),
+    vport.from('portfolio_items').select('profile_id').eq('id', portfolioItemId).maybeSingle(),
+  ])
+  if (profileErr || itemErr) throw new Error('[Locksmith] ownership lookup failed')
+
+  const callerProfileId = profileRow?.id ?? null
+  const itemProfileId = itemRow?.profile_id ?? null
+  if (!callerProfileId || !itemProfileId) throw new Error('[Locksmith] portfolio item or profile not found')
+  if (callerProfileId !== itemProfileId) throw new Error('[Locksmith] not authorized to save portfolio detail for this item')
+
   return dalUpsertLocksmithPortfolioDetail({
     portfolio_item_id: portfolioItemId,
     job_type: detail.jobType ?? 'other',

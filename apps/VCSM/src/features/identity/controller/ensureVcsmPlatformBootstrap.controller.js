@@ -2,7 +2,7 @@
 // ============================================================
 // VCSM — Platform Bootstrap Controller
 // ------------------------------------------------------------
-// Single-step provisioning via SECURITY DEFINER RPC:
+// Single-step provisioning via RLS-enforced RPC:
 //   platform.provision_vcsm_identity(p_user_id, p_actor_id)
 //
 // The RPC atomically creates/ensures:
@@ -17,7 +17,8 @@
 // Idempotent — safe to call on every login.
 // ============================================================
 
-import { dalProvisionVcsmIdentity } from '../dal/provision.rpc.dal.js'
+import { dalProvisionVcsmIdentity } from '@/features/identity/dal/provision.rpc.dal.js'
+import { debugLoginEvent } from '@debuggers/identity'
 
 /**
  * Ensure platform identity + actor link exist for a VCSM user.
@@ -41,9 +42,11 @@ export async function ensureVcsmPlatformBootstrap({ userId, actorId }) {
 
     return { ok: true, userAppAccountId }
   } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn('[VCSM identity] Platform bootstrap failed (non-fatal):', error?.message ?? error)
-    }
+    debugLoginEvent('PLATFORM_BOOTSTRAP_FAILED', {
+      phase: 'bootstrap', status: 'warn',
+      message: error?.message ?? 'Unknown error',
+      payload: { userId, actorId },
+    })
     return { ok: false, error: error?.message ?? 'Unknown error' }
   }
 }

@@ -1,18 +1,10 @@
 // src/features/profiles/kinds/vport/dal/services/readVportServiceAddonsByActor.js
 
 import vportSchema from "@/services/supabase/vportClient";
+import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
 
 const ADDONS_SELECT =
   "id,profile_id,service_id,key,label,enabled,meta,sort_order,created_at,updated_at";
-
-async function resolveProfileId(actorId) {
-  const { data } = await vportSchema
-    .from("profiles")
-    .select("id")
-    .eq("actor_id", actorId)
-    .maybeSingle();
-  return data?.id ?? null;
-}
 
 /**
  * DAL: Read add-ons for an actor_id (optionally filtered by parent service_id).
@@ -33,7 +25,7 @@ export async function readVportServiceAddonsByActor({
 } = {}) {
   if (!actorId) throw new Error("readVportServiceAddonsByActor: actorId is required");
 
-  const profileId = await resolveProfileId(actorId);
+  const profileId = await resolveVportProfileId(actorId);
   if (!profileId) return [];
 
   let q = vportSchema

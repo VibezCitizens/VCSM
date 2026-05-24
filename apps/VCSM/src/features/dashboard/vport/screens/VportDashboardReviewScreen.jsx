@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import VportReviewsView from "@/features/profiles/adapters/kinds/vport/screens/review/VportReviewsView.adapter";
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
@@ -21,10 +22,7 @@ export default function VportDashboardReviewScreen({
 
   const viewerActorId = identity?.actorId ?? null;
   const isDesktop = useDesktopBreakpoint();
-  const isOwner =
-    Boolean(targetActorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(targetActorId);
+  const { isOwner } = useVportOwnership(viewerActorId, targetActorId);
   const shell = createVportDashboardShellStyles({
     isDesktop,
     maxWidthDesktop: 1100,

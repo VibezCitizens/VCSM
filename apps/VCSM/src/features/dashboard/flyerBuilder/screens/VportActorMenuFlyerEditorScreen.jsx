@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createFlyerEditorScreenStyles } from "@/features/dashboard/flyerBuilder/styles/vportActorMenuFlyerEditorScreen.styles";
@@ -16,10 +17,7 @@ export function VportActorMenuFlyerEditorScreen() {
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
   const isDesktop = useDesktopBreakpoint();
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const styles = useMemo(() => createFlyerEditorScreenStyles(), []);
 
@@ -34,7 +32,7 @@ export function VportActorMenuFlyerEditorScreen() {
   }, [navigate, actorId]);
 
   if (!actorId) return null;
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return <div className="p-10 text-center text-white/50">Loading...</div>;
   }
   if (!identity) {

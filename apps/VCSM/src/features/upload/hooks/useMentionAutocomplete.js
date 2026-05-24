@@ -87,7 +87,9 @@ export function useMentionAutocomplete({ value, inputRef }) {
         setItems(res || []);
       } catch (e) {
         if (requestIdRef.current !== requestId) return;
-        console.warn("[useMentionAutocomplete] search failed:", e);
+        if (import.meta.env?.DEV) {
+          console.warn("[useMentionAutocomplete] search failed:", e);
+        }
         setItems([]);
       } finally {
         if (requestIdRef.current === requestId) {

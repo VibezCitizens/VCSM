@@ -3,7 +3,7 @@ import {
   hasRecentBarbershopHoursPostDAL,
 } from "@/features/profiles/kinds/vport/dal/barbershop/vportBarbershopPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -45,7 +45,7 @@ function buildHoursText(barbershopName, blocks) {
 export async function publishBarbershopHoursUpdateAsPostController({ actorId, blocks }) {
   if (!actorId) throw new Error("publishBarbershopHoursUpdateAsPost: actorId required");
 
-  const realmId = resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentBarbershopHoursPostDAL({ actorId });

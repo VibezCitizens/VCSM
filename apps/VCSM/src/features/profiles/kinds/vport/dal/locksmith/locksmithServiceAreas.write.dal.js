@@ -35,24 +35,28 @@ export async function dalInsertLocksmithServiceArea(row) {
   return data?.[0] ?? null
 }
 
-export async function dalDeleteLocksmithServiceArea(areaId) {
+export async function dalDeleteLocksmithServiceArea(areaId, actorId) {
   if (!areaId) throw new Error('areaId required')
+  if (!actorId) throw new Error('actorId required')
 
   const { error } = await vportSchema
     .from('locksmith_service_areas')
     .delete()
     .eq('id', areaId)
+    .eq('actor_id', actorId)
 
   if (error) throw error
 }
 
-export async function dalUpdateLocksmithServiceArea(areaId, updates) {
+export async function dalUpdateLocksmithServiceArea(areaId, actorId, updates) {
   if (!areaId) throw new Error('areaId required')
+  if (!actorId) throw new Error('actorId required')
 
   const { data, error } = await vportSchema
     .from('locksmith_service_areas')
     .update(updates)
     .eq('id', areaId)
+    .eq('actor_id', actorId)
     .select(RETURN_COLUMNS)
 
   if (error) throw error

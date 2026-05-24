@@ -26,6 +26,7 @@ export async function deleteVportActorMenuCategoryController({
   // DAL throws on error — no destructuring of { error }
   await deleteVportActorMenuCategoryDAL({
     categoryId,
+    actorId,
   });
 
   return {

@@ -1,40 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Bug } from "lucide-react";
-import { useAuth } from "@/app/providers/AuthProvider";
-import { probeVportPortfolioController } from "@/features/dashboard/vport/controller/probeVportPortfolio.controller";
-import { portfolioTraceStore } from "@/features/portfolio/setup";
+import { useVportPortfolioProbe } from "@/features/dashboard/vport/hooks/useVportPortfolioProbe";
 
 export function PortfolioBugsBunnyPanel({ actorId, identity }) {
   const [open, setOpen] = useState(false);
-  const [probe, setProbe] = useState(null);
-  const [probing, setProbing] = useState(false);
-  const [traceEvents, setTraceEvents] = useState([]);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    const unsub = portfolioTraceStore.subscribe(setTraceEvents);
-    setTraceEvents(portfolioTraceStore.events);
-    return unsub;
-  }, []);
-
-  const runProbe = useCallback(async () => {
-    if (!actorId) return;
-    setProbing(true);
-    setProbe(null);
-    try {
-      const result = await probeVportPortfolioController({
-        actorId,
-        identity,
-        userId: user?.id ?? null,
-        email: user?.email ?? null,
-      });
-      setProbe(result);
-    } catch (e) {
-      setProbe({ probeError: e?.message ?? String(e) });
-    }
-    setProbing(false);
-  }, [actorId, identity, user]);
+  const { probe, probing, traceEvents, runProbe, clearTrace } = useVportPortfolioProbe({ actorId, identity });
 
   if (!import.meta.env.DEV) return null;
 
@@ -80,7 +50,7 @@ export function PortfolioBugsBunnyPanel({ actorId, identity }) {
             </button>
             <button
               type="button"
-              onClick={() => { portfolioTraceStore.clear(); setTraceEvents([]); }}
+              onClick={clearTrace}
               style={{
                 padding: "5px 12px", borderRadius: 8, cursor: "pointer",
                 border: "1px solid rgba(255,255,255,0.1)",

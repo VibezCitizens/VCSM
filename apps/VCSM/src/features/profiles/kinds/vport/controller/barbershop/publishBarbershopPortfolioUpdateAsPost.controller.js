@@ -3,7 +3,7 @@ import {
   hasRecentBarbershopPortfolioPostDAL,
 } from "@/features/profiles/kinds/vport/dal/barbershop/vportBarbershopPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 function buildPortfolioText(barbershopName, portfolioTitle) {
   const name = barbershopName ?? "this barbershop";
@@ -19,7 +19,7 @@ export async function publishBarbershopPortfolioUpdateAsPostController({
 }) {
   if (!actorId) throw new Error("publishBarbershopPortfolioUpdateAsPost: actorId required");
 
-  const realmId = resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentBarbershopPortfolioPostDAL({ actorId });

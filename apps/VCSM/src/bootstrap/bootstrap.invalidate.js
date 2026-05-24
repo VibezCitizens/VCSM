@@ -9,6 +9,14 @@ import { useBootstrapStore } from './bootstrap.store'
 import { queryClient } from '@/queries/queryClient'
 import { queryKeys } from '@/queries/queryKeys'
 
+const DEV = import.meta.env?.DEV
+let _dbg = null
+async function dbg() {
+  if (!DEV) return null
+  if (!_dbg) _dbg = (await import('@/features/chat/debug/chatBadgeDebugger')).chatBadgeDbg
+  return _dbg
+}
+
 /** Force re-fetch of the notification unread count. */
 export function invalidateNotificationUnread() {
   const { hydratedForActorId } = useBootstrapStore.getState()
@@ -18,10 +26,11 @@ export function invalidateNotificationUnread() {
 }
 
 /** Force re-fetch of the chat unread count. */
-export function invalidateChatUnread() {
+export async function invalidateChatUnread(reason = 'write-path') {
   const { hydratedForActorId } = useBootstrapStore.getState()
   if (hydratedForActorId) {
     queryClient.invalidateQueries({ queryKey: queryKeys.chatUnread(hydratedForActorId) })
+    ;(await dbg())?.invalidate(reason)
   }
 }
 

@@ -13,10 +13,9 @@ import {
   dalInsertBlock,
   dalListMyBlocks,
   dalReadActorKindAndVportId,
-  dalSearchActors,
 } from '@/features/settings/privacy/dal/blocks.dal'
+import { searchActorsAdapter } from '@/features/actors/adapters/actors.adapter'
 import {
-  modelActorRows,
   modelBlockRows,
 } from '@/features/settings/privacy/models/blocks.model'
 
@@ -53,12 +52,10 @@ export async function ctrlListMyBlocks({ actorId, scope }) {
 // SEARCH ACTORS (SSOT — REUSED FROM EXPLORE)
 // ============================================================
 export async function ctrlSearchActors({ query }) {
-  const rows = await dalSearchActors({
+  return searchActorsAdapter({
     query,
     limit: 12,
   })
-
-  return modelActorRows(rows)
 }
 
 // ============================================================

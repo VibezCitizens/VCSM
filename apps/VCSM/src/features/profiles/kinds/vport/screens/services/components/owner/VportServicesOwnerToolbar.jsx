@@ -21,11 +21,13 @@ export default function VportServicesOwnerToolbar({
 
   const handleSave = () => {
     if (canSave) return onSave();
-    console.warn("[VportServicesOwnerToolbar] Save blocked:", reasons, {
-      dirty,
-      isSaving,
-      onSaveType: typeof onSave,
-    });
+    if (import.meta.env.DEV) {
+      console.warn("[VportServicesOwnerToolbar] Save blocked:", reasons, {
+        dirty,
+        isSaving,
+        onSaveType: typeof onSave,
+      });
+    }
   };
 
   return (

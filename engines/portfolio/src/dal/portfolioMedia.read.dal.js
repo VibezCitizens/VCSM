@@ -56,3 +56,27 @@ export async function dalListMediaByItemIds({ itemIds, trace = null }) {
 
   return data ?? []
 }
+
+/**
+ * Fetch a single portfolio media row by ID.
+ * Returns null if not found.
+ * profile_id is included in MEDIA_COLUMNS so callers can cross-check ownership
+ * before performing write operations (PORT-V-003).
+ */
+export async function dalGetPortfolioMediaById({ mediaId, trace = null }) {
+  const supabase = getSupabaseClient()
+
+  const { data, error } = await supabase
+    .schema('vport')
+    .from('portfolio_media')
+    .select(MEDIA_COLUMNS)
+    .eq('id', mediaId)
+    .maybeSingle()
+
+  if (error) {
+    trace?.report?.({ step: 'MEDIA_GET_BY_ID_ERROR', status: 'error', error })
+    throw error
+  }
+
+  return data ?? null
+}

@@ -26,7 +26,9 @@ export async function dalGetActorPrivacy({ actorId }) {
       pending.delete(actorId)
 
       if (error) {
-        console.error('[dalGetActorPrivacy] actor_privacy_settings error', error)
+        if (import.meta.env?.DEV) {
+          console.error('[dalGetActorPrivacy] actor_privacy_settings error', error)
+        }
         return { isPrivate: true }
       }
 

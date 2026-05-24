@@ -16,6 +16,7 @@ import {
   normalizeVportType,
 } from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
 import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 
 export function VportDashboardScreen() {
   const navigate = useNavigate();
@@ -28,7 +29,10 @@ export function VportDashboardScreen() {
   );
 
   const isDesktop = useDesktopBreakpoint();
-  const isOwner = Boolean(actorId) && Boolean(identity?.actorId) && String(identity.actorId) === String(actorId);
+
+  // Verified ownership via actor_owners — handles both VPORT-acting-as-itself and user-actor owners.
+  const { isOwner, ownershipLoading } = useVportOwnership(identity?.actorId ?? null, actorId);
+
   const { getVportTabsByType } = useProfilesOps();
 
   const profile = useMemo(
@@ -138,7 +142,7 @@ export function VportDashboardScreen() {
   );
 
   if (!actorId) return null;
-  if (identityLoading) return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
+  if (identityLoading || ownershipLoading) return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   if (!identity) return <div className="p-10 text-center text-white/50">Sign in required.</div>;
   if (!isOwner) return <div className="p-10 text-center text-white/50">You can only access the dashboard for your own vport.</div>;
 

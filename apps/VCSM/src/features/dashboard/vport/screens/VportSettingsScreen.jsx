@@ -8,6 +8,7 @@ import Card from "@/features/settings/adapters/ui/Card.adapter";
 import VportAboutDetailsView from "@/features/settings/adapters/profile/ui/VportAboutDetails.view.adapter";
 
 import { useIdentity } from "@/state/identity/identityContext";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
 import { useSaveVportPublicDetailsByActorId } from "@/features/dashboard/vport/hooks/useSaveVportPublicDetailsByActorId";
@@ -71,7 +72,7 @@ export default function VportSettingsScreen() {
 
   const isDesktop = useDesktopBreakpoint();
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner = Boolean(actorId) && Boolean(viewerActorId) && String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const vportType = useMemo(
     () => normalizeVportType(identity?.vportType ?? dashboardDetails.vportType ?? null),
@@ -170,7 +171,7 @@ export default function VportSettingsScreen() {
 
   if (!actorId) return null;
 
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
 

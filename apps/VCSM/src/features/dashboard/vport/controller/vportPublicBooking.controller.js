@@ -6,6 +6,7 @@ import { getVportProfileIdByActorDAL, getVportActorIdByProfileIdDAL } from "@/fe
 import { readActorVportLinkDAL } from "@/features/dashboard/vport/dal/read/actorVport.read.dal";
 import { listVportAvailabilityRulesByResourceIdDAL } from "@/features/dashboard/vport/dal/read/vportAvailabilityRules.read.dal";
 import { listVportBookingsInRangeDAL } from "@/features/dashboard/vport/dal/read/vportBookingsInRange.read.dal";
+import { getVportServiceByIdDAL } from "@/features/dashboard/vport/dal/read/vportServices.read.dal";
 import { insertVportBookingDAL } from "@/features/dashboard/vport/dal/write/insertVportBooking.write.dal";
 import { publishVcsmNotificationBatch } from "@/features/notifications/adapters/notifications.adapter";
 
@@ -37,10 +38,8 @@ export async function createVportPublicBookingController({
   startsAt,
   endsAt,
   timezone,
-  serviceLabelSnapshot,
   durationMinutes,
   requestActorId = null,
-  customerActorId = null,
   customerName = null,
   customerNote = null,
 } = {}) {
@@ -48,13 +47,13 @@ export async function createVportPublicBookingController({
   if (!startsAt)   throw new Error("createVportPublicBookingController: startsAt is required");
   if (!endsAt)     throw new Error("createVportPublicBookingController: endsAt is required");
   if (!timezone)   throw new Error("createVportPublicBookingController: timezone is required");
-  if (!serviceLabelSnapshot) throw new Error("createVportPublicBookingController: serviceLabelSnapshot is required");
 
-  // Validate resource and get profile_id (required NOT NULL in vport.bookings)
   const resource = await getVportResourceByIdDAL({ resourceId });
   if (!resource || resource.is_active !== true) throw new Error("This resource is not available for booking.");
 
-  // Only citizens (kind='user') can submit public bookings
+  // requestActorId is intentionally optional — guest/walk-in bookings are supported.
+  // When null, the booking is unattributed (customer_actor_id = null, created_by_actor_id = null).
+  // customerName + customerNote are still captured for the VPORT owner's records.
   if (requestActorId) {
     const actor = await readActorVportLinkDAL({ actorId: requestActorId });
     if (!actor) throw new Error("Only citizens can book appointments.");
@@ -65,19 +64,31 @@ export async function createVportPublicBookingController({
     throw new Error("This time slot is no longer available.");
   }
 
+  // Resolve service label server-side from the catalog — never trust client-supplied snapshot
+  let resolvedLabel = "Appointment";
+  if (serviceId) {
+    const service = await getVportServiceByIdDAL({ serviceId });
+    if (service) {
+      resolvedLabel = service.label || service.key || "Appointment";
+    }
+  }
+
   const booking = await insertVportBookingDAL({
     row: {
       profile_id:             resource.profile_id,
       resource_id:            resourceId,
       service_id:             serviceId,
-      customer_actor_id:      customerActorId ?? requestActorId,
+      // VPD-V-019: customer_actor_id is always the authenticated requestActor.
+      // Accepting a caller-supplied customerActorId would allow booking attribution injection.
+      // Guest/walk-in bookings (requestActorId = null) produce customer_actor_id = null.
+      customer_actor_id:      requestActorId ?? null,
       created_by_actor_id:    requestActorId,
       status:                 "pending",
       source:                 "public",
       starts_at:              startsAt,
       ends_at:                endsAt,
       timezone,
-      service_label_snapshot: serviceLabelSnapshot,
+      service_label_snapshot: resolvedLabel,
       duration_minutes:       durationMinutes,
       customer_name:          customerName,
       customer_note:          customerNote,
@@ -87,8 +98,6 @@ export async function createVportPublicBookingController({
   const vportActorId   = await getVportActorIdByProfileIdDAL({ profileId: resource.profile_id });
   const memberActorId  = resource.member_actor_id ?? null;
 
-  // Collect unique recipients: vport owner + the specific team member (if different)
-  // Remove the requester so they don't notify themselves
   const recipientSet = new Set();
   if (vportActorId)  recipientSet.add(String(vportActorId));
   if (memberActorId) recipientSet.add(String(memberActorId));
@@ -102,9 +111,11 @@ export async function createVportPublicBookingController({
       kind: "booking_created",
       objectType: "booking",
       objectId: booking?.id ? String(booking.id) : null,
-      linkPath: vportActorId ? `/actor/${vportActorId}/dashboard/booking-history` : null,
+      // VPD-V-020: omit linkPath to prevent raw VPORT UUID from being stored in
+      // the notification row. The owner's notification inbox provides navigation context.
+      linkPath: null,
       context: {
-        serviceLabelSnapshot: serviceLabelSnapshot ?? null,
+        serviceLabelSnapshot: resolvedLabel,
         startsAt: startsAt ?? null,
         customerName: customerName ?? null,
         status: "pending",

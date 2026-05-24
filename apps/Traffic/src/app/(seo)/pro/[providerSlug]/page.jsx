@@ -12,7 +12,11 @@ const REDIRECT_ROBOTS = {
 };
 
 export function generateStaticParams() {
-  return listAllActiveProviderStaticParams();
+  const live = listAllActiveProviderStaticParams();
+  if (live.length > 0) return live;
+  // Taxonomy fallback: no live providers at build time. Placeholder renders notFound()
+  // at static generation time so the route is included in the export.
+  return [{ providerSlug: "no-providers" }];
 }
 
 export function generateMetadataForLocale({ params }, routeLocale = null) {
@@ -28,12 +32,14 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
   };
 }
 
-export function generateMetadata(args) {
-  return generateMetadataForLocale(args);
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  return generateMetadataForLocale({ params: resolvedParams });
 }
 
-export default function LegacyProviderRedirectPage({ params }) {
-  const provider = getProviderBySlugAny(params.providerSlug);
+export default async function LegacyProviderRedirectPage({ params }) {
+  const { providerSlug } = await params;
+  const provider = getProviderBySlugAny(providerSlug);
   if (!provider) notFound();
 
   const country = getCountryByCode(provider.primaryCountryCode);

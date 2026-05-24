@@ -110,18 +110,21 @@ function withClientKeyFetch(clientKey) {
   }
 }
 
+// Module-scoped singleton — intentionally not on globalThis/window
+// (globalThis exposes auth client to XSS; module scope does not)
+let _wandersClient = null
+let _wandersClientKey = null
+let _wandersStorageKey = null
+
 export function getWandersSupabase() {
   const clientKey = getOrCreateWandersClientKey()
 
   // ✅ isolate auth storage per clientKey (guest identity per device)
   const storageKey = `sb-auth-wanders-${clientKey}`
 
-  // HMR-safe singleton by key + storageKey
-  const g = globalThis
-  const existing = g.__WANDERS_SB__
-  if (existing && existing.__clientKey === clientKey && existing.__storageKey === storageKey) {
+  if (_wandersClient && _wandersClientKey === clientKey && _wandersStorageKey === storageKey) {
     dbg('Reusing cached supabase client', { clientKey, storageKey })
-    return existing
+    return _wandersClient
   }
 
   dbg('Creating new supabase client', {
@@ -143,13 +146,13 @@ export function getWandersSupabase() {
       autoRefreshToken: true,
       detectSessionInUrl: true,
 
-      // ✅ THIS is the important part
+      // ✅ auth persisted by storageKey in localStorage — survives module resets on HMR
       storageKey,
     },
   })
 
-  Object.defineProperty(client, '__clientKey', { value: clientKey })
-  Object.defineProperty(client, '__storageKey', { value: storageKey })
-  g.__WANDERS_SB__ = client
+  _wandersClient = client
+  _wandersClientKey = clientKey
+  _wandersStorageKey = storageKey
   return client
 }

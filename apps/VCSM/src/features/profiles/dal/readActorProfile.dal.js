@@ -1,6 +1,6 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createTTLCache } from '@/shared/lib/ttlCache'
-import { dalGetActorPrivacy } from '@/features/social/privacy/dal/actorPrivacy.dal'
+import { getActorPrivacyAdapter } from '@/features/social/adapters/privacy/actorPrivacy.adapter'
 
 const profileCache = createTTLCache(30_000) // 30 seconds
 
@@ -21,7 +21,7 @@ export async function readActorProfileDAL(actorId) {
   if (!actor) return null
 
   const [privacyResult, profileFetch] = await Promise.all([
-    dalGetActorPrivacy({ actorId }),
+    getActorPrivacyAdapter({ actorId }),
     actor.kind === 'user' && actor.profile_id
       ? supabase
           .from('profiles')

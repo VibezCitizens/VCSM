@@ -1,7 +1,7 @@
 import { createUserActorForProfile } from '@/features/auth/controllers/createUserActor.controller'
+import { dalGetAuthSession } from '@/features/auth/dal/authSession.read.dal'
 import {
   generateUsernameDAL,
-  readCurrentSessionUserDAL,
   readProfileForOnboardingDAL,
   upsertCompletedOnboardingProfileDAL,
 } from '@/features/auth/dal/onboarding.dal'
@@ -38,7 +38,8 @@ function buildSessionRedirectResult(user) {
 }
 
 export async function getOnboardingBootstrapController() {
-  const user = await readCurrentSessionUserDAL()
+  const session = await dalGetAuthSession()
+  const user = session?.user ?? null
   const authState = buildSessionRedirectResult(user)
   if (authState) return authState
 
@@ -61,7 +62,8 @@ export async function completeOnboardingController({
   ensureVcsmPlatformBootstrap,
   refreshActorFn,
 }) {
-  const user = await readCurrentSessionUserDAL()
+  const session = await dalGetAuthSession()
+  const user = session?.user ?? null
   const authState = buildSessionRedirectResult(user)
   if (authState) return authState
 
@@ -121,7 +123,7 @@ export async function completeOnboardingController({
     await ensureVcsmPlatformBootstrap?.({
       userId: user.id,
       actorId: actor.id,
-    }).catch(() => {})
+    })
   }
 
   return {
@@ -130,4 +132,49 @@ export async function completeOnboardingController({
     error: null,
     data: { userId: user.id },
   }
+}
+
+/**
+ * Bootstraps auth onboarding for the join/barbershop invite flow.
+ * Verifies the active session matches userId before any profile write.
+ * Callers supply displayName and desiredUsername from server-side user_metadata.
+ */
+export async function bootstrapJoinOnboardingController({
+  userId,
+  displayName,
+  desiredUsername,
+  refreshActorFn,
+  ensureVcsmPlatformBootstrap,
+}) {
+  const session = await dalGetAuthSession()
+  const authedId = session?.user?.id ?? null
+
+  if (!authedId || authedId !== userId) {
+    throw new Error('Session mismatch. Cannot bootstrap onboarding for this user.')
+  }
+
+  const finalUsername = await generateUsernameDAL({
+    displayName,
+    usernameBase: desiredUsername,
+  })
+
+  await upsertCompletedOnboardingProfileDAL({
+    profileId: authedId,
+    displayName,
+    username: finalUsername,
+    sex: null,
+    updatedAt: new Date().toISOString(),
+  })
+
+  const actor = await createUserActorForProfile({
+    profileId: authedId,
+    userId: authedId,
+    refreshActorFn,
+  })
+
+  if (actor?.id) {
+    await ensureVcsmPlatformBootstrap?.({ userId: authedId, actorId: actor.id })
+  }
+
+  return actor
 }

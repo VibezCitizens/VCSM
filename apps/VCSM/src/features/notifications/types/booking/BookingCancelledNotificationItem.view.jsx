@@ -22,11 +22,9 @@ export default function BookingCancelledNotificationItem({ notification }) {
     ? t('notifications.booking.cancelledAt', { service, time })
     : t('notifications.booking.cancelled', { service })
 
-  const cancelledBy = notification.context?.cancelledBy
-  const destination =
-    cancelledBy === 'customer' && identity?.actorId
-      ? `/actor/${identity.actorId}/dashboard/booking-history`
-      : notification.linkPath
+  const destination = identity?.actorId
+    ? `/actor/${identity.actorId}/dashboard/booking-history`
+    : null
 
   return (
     <NotificationCard

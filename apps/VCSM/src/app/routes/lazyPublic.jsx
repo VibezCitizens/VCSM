@@ -88,6 +88,11 @@ export const VportBusinessCardPublicScreen = lazyWithLog("VportBusinessCardPubli
   import("@/features/public/vportBusinessCard/screen/VportBusinessCardPublic.screen"),
 );
 
+// ── Join ──────────────────────────────────────────────────────────────────────
+export const JoinBarbershopScreen = lazyWithLog("JoinBarbershopScreen", () =>
+  import("@/features/join/screens/JoinBarbershopScreen"),
+);
+
 // ── Public VPORT menu ─────────────────────────────────────────────────────────
 export const VportMenuRedirectScreen = lazyWithLog("VportMenuRedirectScreen", () =>
   import("@/features/public/vportMenu/screen/VportPublicMenuRedirectScreen"),

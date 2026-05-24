@@ -1,7 +1,6 @@
 import { lazyWithLog } from "@/app/routes/lazyPublic";
 
-const devDiagnosticsEnabled =
-  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
+const devDiagnosticsEnabled = import.meta.env.DEV;
 
 // ── Main App ──────────────────────────────────────────────────────────────────
 export const CentralFeed = lazyWithLog("CentralFeed", () =>

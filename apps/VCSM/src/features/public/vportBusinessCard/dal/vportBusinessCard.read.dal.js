@@ -1,9 +1,5 @@
 import vportSchema from "@/services/supabase/vportClient";
 
-/**
- * Public read by slug.
- * Returns null when card is unavailable (unpublished/inactive/deleted/missing).
- */
 export async function readVportBusinessCardPublicBySlugDAL({ slug } = {}) {
   const key = String(slug || "").trim().toLowerCase();
   if (!key) return null;

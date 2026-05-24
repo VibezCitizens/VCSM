@@ -1,6 +1,6 @@
 import { addMedia } from '@portfolio'
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { updatePortfolioMediaAssetIdDAL } from '@/features/dashboard/vport/dal/write/portfolioMediaRecord.write.dal'
 
 /**
@@ -53,7 +53,7 @@ export async function addPortfolioMediaWithRecord({
   if (mediaUploadResult && portfolioMedia?.id) {
     ;(async () => {
       try {
-        const appId = await resolveVcsmAppIdDAL()
+        const appId = await resolveVcsmAppId()
         const mediaAssetRecord = await createMediaAssetController({
           mediaUploadResult,
           ownerActorId:     actorId,
@@ -65,6 +65,9 @@ export async function addPortfolioMediaWithRecord({
         await updatePortfolioMediaAssetIdDAL({
           portfolioMediaId: portfolioMedia.id,
           mediaAssetId:     mediaAssetRecord.id,
+          // PORT-V-005b: scope the UPDATE to rows the caller owns.
+          // portfolioMedia.profileId (camelCase model) or profile_id (raw row).
+          callerProfileId:  portfolioMedia.profileId ?? portfolioMedia.profile_id,
         })
       } catch (e) {
         if (import.meta.env?.DEV) console.warn('[addPortfolioMediaWithRecord] media_assets record failed (non-fatal):', e?.message)

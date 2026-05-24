@@ -6,7 +6,8 @@
 // src/hooks/useAuth.jsx
 import { useEffect, useState, useContext, createContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/services/supabase/supabaseClient' //transfer
+import { supabase } from '@/services/supabase/supabaseClient'
+import { dalHydrateAuthSession, dalSubscribeAuthStateChange } from '@/features/auth/dal/authSession.read.dal'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 import { clearAllIdentityStorage } from '@/state/identity/identityStorage'
 import { debugLoginEvent } from '@debuggers/identity'
@@ -14,9 +15,53 @@ import { debugUserChanged } from '@debuggers/cycle'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 
+// ─── Recovery nonce ──────────────────────────────────────────────────────────
+// Written ONLY inside the PASSWORD_RECOVERY event handler below.
+// Stores a random UUID nonce + issuedAt timestamp as a JSON object so that
+// resolveRecoverySessionController (setNewPassword.controller.js) can distinguish
+// a genuine recovery flow from a manually set sessionStorage value.
+//
+// Why a nonce instead of a plain '1' flag:
+//   A simple boolean is trivially forged. A random UUID is not predictable, so
+//   manually setting the key requires knowing both the key name AND the JSON format.
+//   This raises the barrier from "trivially bypassable" to "requires code knowledge".
+//
+// ⚠ CLIENT-SIDE MITIGATION ONLY — NO SERVER-SIDE RECOVERY PROVENANCE CHECK:
+//   sessionStorage is readable and writable by any JavaScript running on the page.
+//   A user who reads the source code can deduce the format and set a valid nonce.
+//
+//   IMPORTANT (VENOM-AUTH-001): supabase.auth.updateUser({ password }) requires only
+//   a valid authenticated JWT — it does NOT enforce recovery-session provenance.
+//   There is no server-side check that the session originated from a PASSWORD_RECOVERY
+//   event. A source-code-aware user with any valid session who sets a conforming nonce
+//   can successfully update their own password. Impact: self-exploitation only.
+//
+//   AMR claims cannot be used here: Supabase v2 does not include method:'recovery'
+//   in the JWT AMR for password-reset sessions; it uses 'otp' or 'email' instead,
+//   which are indistinguishable from other OTP/email flows at the claim level.
+//
+// Key must stay in sync with RECOVERY_NONCE_KEY in setNewPassword.controller.js.
+const RECOVERY_FLAG_KEY = 'vc.auth.recovery'
+function _setRecoveryFlag() {
+  try {
+    sessionStorage.setItem(
+      RECOVERY_FLAG_KEY,
+      JSON.stringify({
+        nonce: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        issuedAt: Date.now(),
+      }),
+    )
+  } catch (_) {}
+}
+function _clearRecoveryFlag() {
+  try { sessionStorage.removeItem(RECOVERY_FLAG_KEY) } catch (_) {}
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const AuthContext = createContext({
   user: null,
-  session: null,
   loading: true, // stays true until initial hydration completes
   logout: async () => {},
 })
@@ -35,7 +80,7 @@ export function AuthProvider({ children }) {
       try {
         // 1) Initial hydration from persisted session (can be null for a moment)
         debugLoginEvent('SESSION_HYDRATE_START', { phase: 'session', status: 'start' })
-        const { data, error } = await supabase.auth.getSession()
+        const { data, error } = await dalHydrateAuthSession()
         if (error) console.warn('[Auth] getSession error:', error)
         if (!cancelled) {
           const nextSession = data?.session ?? null
@@ -55,7 +100,7 @@ export function AuthProvider({ children }) {
         }
 
         // 2) Listen for future auth changes (login/logout/token refresh)
-        const { data: listener } = supabase.auth.onAuthStateChange((_evt, nextSession) => {
+        const subscription = dalSubscribeAuthStateChange((_evt, nextSession) => {
           if (cancelled) return
           const nextUserId = nextSession?.user?.id ?? null
           appendIOSProdDebugLog('auth_state_change', {
@@ -71,11 +116,18 @@ export function AuthProvider({ children }) {
           })
 
           // PASSWORD_RECOVERY: the user clicked a password reset link.
-          // Navigate to /reset-password regardless of which route the link landed on.
-          // This is the safety net for recovery links that bypass /reset-password.
+          // Set the recovery flag BEFORE navigating so that resolveRecoverySessionController
+          // can detect a legitimate recovery flow on the /reset-password page.
           if (_evt === 'PASSWORD_RECOVERY') {
+            _setRecoveryFlag()
             appendIOSProdDebugLog('auth_password_recovery', { userId: nextUserId })
             navigate('/reset-password', { replace: true })
+          }
+
+          // Clear the recovery flag on any non-recovery auth transition so a stale flag
+          // cannot open the reset form after logout, re-login, or password update.
+          if (_evt === 'SIGNED_IN' || _evt === 'SIGNED_OUT' || _evt === 'USER_UPDATED') {
+            _clearRecoveryFlag()
           }
 
           // Guard: skip state updates on TOKEN_REFRESHED when the userId is unchanged.
@@ -97,7 +149,7 @@ export function AuthProvider({ children }) {
           }
         })
 
-        unsubscribe = () => listener?.subscription?.unsubscribe?.()
+        unsubscribe = () => subscription?.unsubscribe?.()
       } catch (e) {
         console.error('[Auth] init error:', e)
         if (!cancelled) setLoading(false)
@@ -124,12 +176,13 @@ export function AuthProvider({ children }) {
     localStorage.setItem('actor_touch', String(Date.now()))
     clearAllIdentityStorage()
 
-    // Clear identity debug sessionStorage
+    // Clear identity debug sessionStorage and the recovery flow flag
     try {
       sessionStorage.removeItem('vcsm.debug.identity.events')
       sessionStorage.removeItem('vcsm.debug.identity.snapshots')
       sessionStorage.removeItem('vcsm.debug.switch.attempts')
       sessionStorage.removeItem('vcsm.debug.switch.lastRequestedActorId')
+      sessionStorage.removeItem(RECOVERY_FLAG_KEY)
     } catch (_) {}
 
     window.dispatchEvent(
@@ -159,7 +212,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout }}>
       {children}
     </AuthContext.Provider>
   )

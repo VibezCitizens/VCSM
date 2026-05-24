@@ -3,7 +3,7 @@ import {
   hasRecentLocksmithServiceAreaPostDAL,
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 function buildPostText({ locksmithName, area }) {
   const name = locksmithName ?? "this locksmith";
@@ -32,7 +32,7 @@ function buildPostText({ locksmithName, area }) {
 export async function publishLocksmithServiceAreaUpdateAsPostController({ actorId, area }) {
   if (!actorId) throw new Error("publishLocksmithServiceAreaUpdateAsPost: actorId required");
 
-  const realmId = resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentLocksmithServiceAreaPostDAL({ actorId });

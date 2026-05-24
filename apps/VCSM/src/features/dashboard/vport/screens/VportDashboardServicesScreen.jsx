@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import VportServicesView from "@/features/profiles/adapters/kinds/vport/screens/services/view/VportServicesView.adapter";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
@@ -19,17 +20,14 @@ export function VportDashboardServicesScreen() {
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
   const isDesktop = useDesktopBreakpoint();
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const goBack = useCallback(() => {
     if (!actorId) return;
     navigate(`/actor/${actorId}/dashboard`);
   }, [navigate, actorId]);
 
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
 

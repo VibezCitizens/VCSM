@@ -9,6 +9,10 @@ import {
 } from '@/features/moderation/dal/reports.dal.columns'
 export { getReportRowById, getReportRowByDedupeKey } from '@/features/moderation/dal/reports.read.dal'
 
+function logModerationDalError(...args) {
+  if (import.meta.env?.DEV) console.error(...args)
+}
+
 // ============================================================
 // REPORTS (DAL)
 // - dumb DB adapters only
@@ -43,7 +47,7 @@ export async function upsertInboxEntryFolder({
     .maybeSingle()
 
   if (error) {
-    console.error('[DAL][inbox_entries.upsertFolder] error', { insert, error })
+    logModerationDalError('[DAL][inbox_entries.upsertFolder] error', { insert, error })
   }
 
   return { row: data ?? null, error }
@@ -99,7 +103,7 @@ export async function insertReportRow({
     .maybeSingle()
 
   if (error) {
-    console.error('[DAL][moderation.reports.insert] error', { insert, error })
+    logModerationDalError('[DAL][moderation.reports.insert] error', { insert, error })
     return { row: null, error }
   }
 
@@ -148,7 +152,7 @@ export async function updateReportRowStatus({
     .select(REPORT_COLUMNS)
     .maybeSingle()
 
-  if (error) console.error('[DAL][moderation.reports.updateStatus] error', { reportId, patch, error })
+  if (error) logModerationDalError('[DAL][moderation.reports.updateStatus] error', { reportId, patch, error })
   return { row: data ?? null, error }
 }
 
@@ -179,7 +183,7 @@ export async function insertReportEventRow({
     .insert(insert)
 
   if (error) {
-    console.error('[DAL][moderation.report_events.insert] error', { insert, error })
+    logModerationDalError('[DAL][moderation.report_events.insert] error', { insert, error })
     return { row: null, error }
   }
 
@@ -222,7 +226,7 @@ export async function insertModerationActionRow({
     .select(MOD_ACTION_COLUMNS)
     .maybeSingle()
 
-  if (error) console.error('[DAL][moderation.actions.insert] error', { insert, error })
+  if (error) logModerationDalError('[DAL][moderation.actions.insert] error', { insert, error })
   return { row: data ?? null, error }
 }
 
@@ -243,7 +247,7 @@ export async function hidePostRow({ moderatorActorId, postId, hiddenAt }) {
     .select(POST_HIDE_COLUMNS)
     .maybeSingle()
 
-  if (error) console.error('[DAL][posts.hide] error', { moderatorActorId, postId, error })
+  if (error) logModerationDalError('[DAL][posts.hide] error', { moderatorActorId, postId, error })
   return { row: data ?? null, error }
 }
 
@@ -264,6 +268,6 @@ export async function hideMessageRow({ moderatorActorId, messageId, hiddenAt }) 
     .select(MESSAGE_HIDE_COLUMNS)
     .maybeSingle()
 
-  if (error) console.error('[DAL][messages.hide] error', { moderatorActorId, messageId, error })
+  if (error) logModerationDalError('[DAL][messages.hide] error', { moderatorActorId, messageId, error })
   return { row: data ?? null, error }
 }

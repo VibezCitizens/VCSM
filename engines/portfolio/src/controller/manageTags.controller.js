@@ -3,7 +3,7 @@
 // ============================================================
 
 import { isActorOwner } from '../config.js'
-import { dalGetPortfolioItemById } from '../dal/portfolioItems.read.dal.js'
+import { dalGetPortfolioItemById, dalGetProfileIdByActorId } from '../dal/portfolioItems.read.dal.js'
 import { dalReplacePortfolioTags } from '../dal/portfolioTags.write.dal.js'
 import { dalListTagsByItemId } from '../dal/portfolioTags.read.dal.js'
 import { emit, EVENTS } from '../events.js'
@@ -22,12 +22,20 @@ export async function manageTags({ itemId, actorId, tags }) {
     throw new Error('[manageTags] itemId and actorId are required')
   }
 
-  const item = await dalGetPortfolioItemById({ itemId })
+  // PORT-V-002: fetch item and caller's profileId in parallel.
+  // portfolio_items has no actor_id column — ownership is via profile_id.
+  // The old gate (item.actor_id !== actorId) always threw because item.actor_id
+  // was always undefined, blocking owners and non-owners alike.
+  const [item, callerProfileId] = await Promise.all([
+    dalGetPortfolioItemById({ itemId }),
+    dalGetProfileIdByActorId({ actorId }),
+  ])
+
   if (!item) {
     throw new Error('[manageTags] portfolio item not found')
   }
 
-  if (item.actor_id !== actorId) {
+  if (item.profile_id !== callerProfileId) {
     throw new Error('[manageTags] not authorized to manage tags for this item')
   }
 

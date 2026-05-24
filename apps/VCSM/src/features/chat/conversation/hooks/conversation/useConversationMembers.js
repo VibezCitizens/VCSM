@@ -10,7 +10,14 @@
 // ============================================================
 
 import { useConversationMembers as useEngineMembers } from '@chat'
+import canReadConversation from '@/features/chat/conversation/permissions/canReadConversation'
 
 export default function useConversationMembers({ conversationId, actorId }) {
-  return useEngineMembers({ conversationId, actorId })
+  const result = useEngineMembers({ conversationId, actorId })
+  // Derived access gate: true while members are still loading (no premature denial),
+  // false only after server members confirm the actor is not an active member.
+  const canRead = !result.members?.length
+    ? true
+    : canReadConversation({ actorId, members: result.members })
+  return { ...result, canRead }
 }

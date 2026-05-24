@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { blockActorController } from "@/features/block/controllers/blockActor.controller";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
+import { invalidateFeedBlockCache } from "@/features/feed/adapters/feedCache.adapter";
 
 export function useBlockActorAction() {
   const { identity } = useIdentity();
@@ -14,6 +15,8 @@ export function useBlockActorAction() {
       throw new Error("Cannot block yourself");
     }
 
-    return blockActorController(blockerActorId, blockedActorId, sessionActorId);
+    const result = await blockActorController(blockerActorId, blockedActorId, sessionActorId);
+    invalidateFeedBlockCache(blockerActorId);
+    return result;
   }, [sessionActorId]);
 }

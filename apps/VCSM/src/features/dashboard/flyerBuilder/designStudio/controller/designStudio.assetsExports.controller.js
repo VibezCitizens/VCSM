@@ -14,8 +14,8 @@ import {
   mapDesignRenderJob,
 } from "@/features/dashboard/flyerBuilder/designStudio/model/designStudioMapper.model";
 import { requireOwnerActorAccess } from "@/features/dashboard/flyerBuilder/designStudio/controller/designStudio.shared.controller";
-import { createMediaAssetController } from "@/features/media/controller/createMediaAsset.controller";
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from "@/features/media/adapters/media.adapter";
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 
 export async function ctrlUploadDesignAsset({ ownerActorId, file }) {
   await requireOwnerActorAccess(ownerActorId)
@@ -39,7 +39,7 @@ export async function ctrlUploadDesignAsset({ ownerActorId, file }) {
 
   // Record in platform.media_assets — additive, never blocks the caller.
   try {
-    const appId = await resolveVcsmAppIdDAL()
+    const appId = await resolveVcsmAppId()
     await createMediaAssetController({
       mediaUploadResult:  result,
       ownerActorId,

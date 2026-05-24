@@ -11,6 +11,7 @@ import { aboutPublicRoutes } from "@/app/routes/public/about.routes";
 import { authPublicRoutes } from "@/app/routes/public/auth.routes";
 import { contactPublicRoutes } from "@/app/routes/public/contact.routes";
 import { howToPublicRoutes } from "@/app/routes/public/howto.routes";
+import { joinPublicRoutes } from "@/app/routes/public/join.routes";
 import { legalPublicRoutes } from "@/app/routes/public/legal.routes";
 import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
@@ -23,6 +24,7 @@ import {
   HowToCreateProfileScreen,
   HowToCreateVportScreen,
   VportCategoryLandingScreen,
+  JoinBarbershopScreen,
   LoginScreen,
   RegisterScreen,
   ForgotPasswordScreen,
@@ -137,6 +139,7 @@ export default function AppRoutes() {
       VportCategoryLandingScreen,
     }),
 
+    ...joinPublicRoutes({ JoinBarbershopScreen }),
     ...legalPublicRoutes({ LegalDocumentScreen }),
 
     ...wandersPublicRoutes({

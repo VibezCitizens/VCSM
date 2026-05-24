@@ -1,51 +1,44 @@
 import { supabase } from '@/services/supabase/supabaseClient'
-import { getWandersSupabase } from '@/features/wanders/adapters/services/wandersSupabaseClient.adapter'
 
-function resolveAuthClient(isWandersFlow) {
-  return isWandersFlow ? getWandersSupabase() : supabase
+function resolveClient(override) {
+  return override ?? supabase
 }
 
-export async function dalReadRegisterSession({ isWandersFlow }) {
-  const client = resolveAuthClient(isWandersFlow)
-  const { data, error } = await client.auth.getSession()
+export async function dalReadRegisterSession({ client } = {}) {
+  const c = resolveClient(client)
+  const { data, error } = await c.auth.getSession()
   if (error) throw error
   return data?.session ?? null
 }
 
-export async function dalUpdateRegisterUser({ isWandersFlow, email, password }) {
-  const client = resolveAuthClient(isWandersFlow)
-  const { data, error } = await client.auth.updateUser({
-    email,
-    password,
-  })
+export async function dalUpdateRegisterUser({ client, email, password }) {
+  const c = resolveClient(client)
+  const { data, error } = await c.auth.updateUser({ email, password })
   if (error) throw error
   return data
 }
 
-export async function dalSignUpRegisterUser({ isWandersFlow, email, password }) {
-  const client = resolveAuthClient(isWandersFlow)
-  const { data, error } = await client.auth.signUp({
-    email,
-    password,
-  })
+export async function dalSignUpRegisterUser({ client, email, password }) {
+  const c = resolveClient(client)
+  const { data, error } = await c.auth.signUp({ email, password })
   if (error) throw error
   return data
 }
 
-export async function dalSignOutRegisterSession({ isWandersFlow }) {
-  const client = resolveAuthClient(isWandersFlow)
-  const { error } = await client.auth.signOut({ scope: 'local' })
+export async function dalSignOutRegisterSession({ client } = {}) {
+  const c = resolveClient(client)
+  const { error } = await c.auth.signOut({ scope: 'local' })
   if (error) throw error
 }
 
 export async function dalUpsertRegisterProfile({
-  isWandersFlow,
+  client,
   userId,
   email,
   createdAt,
   updatedAt,
 }) {
-  const client = resolveAuthClient(isWandersFlow)
+  const c = resolveClient(client)
   const payload = {
     id: userId,
     email,
@@ -53,7 +46,7 @@ export async function dalUpsertRegisterProfile({
   }
   if (createdAt) payload.created_at = createdAt
 
-  const { error } = await client.from('profiles').upsert(payload)
+  const { error } = await c.from('profiles').upsert(payload)
   if (error) throw error
 }
 

@@ -3,7 +3,7 @@ import {
   hasRecentLocksmithPortfolioPostDAL,
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 const JOB_TYPE_LABELS = {
   lockout: "Lockout",
@@ -34,7 +34,7 @@ export async function publishLocksmithPortfolioUpdateAsPostController({
 }) {
   if (!actorId) throw new Error("publishLocksmithPortfolioUpdateAsPost: actorId required");
 
-  const realmId = resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentLocksmithPortfolioPostDAL({ actorId });

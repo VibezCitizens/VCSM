@@ -253,7 +253,10 @@ export function useIdentityResolutionEffect({
           }
         }
       } catch (error) {
-        console.error("[Identity] failed to hydrate default identity", error);
+        debugLoginError("IDENTITY_HYDRATION_FATAL", error, {
+          phase: "identity",
+          payload: { userId: user?.id ?? null },
+        });
         if (!cancelled) {
           commitIdentity(null);
           setLoading(false);

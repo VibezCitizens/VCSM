@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
-import { useBlockStatus } from "@/features/block/adapters/hooks/useBlockStatus.adapter";
 
 import VportProfileHeader from "@/features/profiles/kinds/vport/ui/vportprofileheader/VportProfileHeader";
 import VportProfileTabs from "@/features/profiles/kinds/vport/ui/tabs/VportProfileTabs";
@@ -55,7 +54,6 @@ export default function VportProfileViewScreen({
   const canViewContent = gate.loading ? undefined : gate.canView;
 
   const { loading, error, profile } = useProfileView({ viewerActorId, profileActorId, canViewContent });
-  const { loading: blockLoading, canViewProfile } = useBlockStatus(viewerActorId, profileActorId);
 
   const storeActor = useActorStore((s) => s.actors[profileActorId] ?? null);
   const seedProfile = useMemo(() => {
@@ -97,8 +95,8 @@ export default function VportProfileViewScreen({
   }, []);
 
   useEffect(() => {
-    if (!blockLoading && canViewProfile === false) navigate("/feed", { replace: true });
-  }, [blockLoading, canViewProfile, navigate]);
+    if (!gate.loading && gate.isBlocked) navigate("/feed", { replace: true });
+  }, [gate.loading, gate.isBlocked, navigate]);
 
   const effectiveTabs = useMemo(() => {
     const fallbackTabs = Array.isArray(tabs) && tabs.length ? tabs : VPORT_TABS;
@@ -144,7 +142,7 @@ export default function VportProfileViewScreen({
     },
   });
 
-  if (!displayProfile && (loading || blockLoading || gate.loading)) {
+  if (!displayProfile && (loading || gate.loading)) {
     return (
       <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
         <VportProfileHeader loading />

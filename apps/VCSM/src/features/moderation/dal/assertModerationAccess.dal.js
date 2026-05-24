@@ -18,6 +18,7 @@ import { supabase } from '@/services/supabase/supabaseClient'
  */
 export async function isModerationAuthorizedDAL(actorId) {
   try {
+    // actorId is retained for the controller contract; authorization resolves from auth.uid().
     const { data, error } = await supabase
       .schema('learning')
       .rpc('is_current_user_platform_admin')

@@ -22,7 +22,7 @@ import ShareModal from '@/features/post/adapters/postcard/components/ShareModal.
 
 import ReportedPostCover from '@/features/moderation/adapters/components/ReportThanksOverlay.adapter'
 import { useCentralFeedActions } from '@/features/feed/hooks/useCentralFeedActions'
-import FeedConfirmModal from '@/features/feed/screens/FeedConfirmModal'
+import FeedConfirmModal from '@/features/feed/components/FeedConfirmModal'
 import Toast from '@/shared/components/components/Toast'
 import WelcomeFeedCard from '@/features/feed/components/WelcomeFeedCard'
 import { FeedSkeletonList } from '@/features/feed/components/FeedSkeletonList'
@@ -181,53 +181,6 @@ export default function CentralFeed() {
         )
       })}
 
-      <PostActionsMenu
-        open={!!postMenu}
-        anchorRect={postMenu?.anchorRect}
-        isOwn={!!postMenu?.isOwn}
-        onClose={closePostMenu}
-        onEdit={handleEditPost}
-        onDelete={handleDeletePost}
-        onFollow={handleFollowActor}
-        followLabel={isMenuActorFollowing ? 'Unsubscribe' : 'Subscribe'}
-        onProfile={handleOpenActorProfile}
-        onBlock={handleBlockActor}
-        onReport={handleReportPost}
-      />
-
-      <ReportModal
-        open={reportFlow.open}
-        title={reportFlow.context?.title ?? 'Report'}
-        subtitle={reportFlow.context?.subtitle ?? null}
-        loading={reportFlow.loading}
-        onClose={reportFlow.close}
-        onSubmit={handleReportSubmit}
-      />
-
-      <ShareModal
-        open={shareState.open}
-        title="Spread"
-        url={shareState.url}
-        onClose={closeShare}
-      />
-
-      <FeedConfirmModal
-        open={confirmState.open}
-        title={confirmState.title}
-        message={confirmState.message}
-        confirmLabel={confirmState.confirmLabel}
-        cancelLabel={confirmState.cancelLabel}
-        tone={confirmState.tone}
-        onCancel={() => closeConfirm(false)}
-        onConfirm={() => closeConfirm(true)}
-      />
-
-      <Toast
-        open={toastOpen}
-        message={toastMessage}
-        onClose={() => setToastOpen(false)}
-      />
-
       {debugPrivacy && <DebugPrivacyPanel actorId={actorId} posts={posts} />}
       {debugFilter && <DebugFeedFilterPanel rows={filterDebugRows} />}
 
@@ -241,6 +194,53 @@ export default function CentralFeed() {
 
       <div ref={sentinelRef} className="h-1" />
     </PullToRefresh>
+
+    <PostActionsMenu
+      open={!!postMenu}
+      anchorRect={postMenu?.anchorRect}
+      isOwn={!!postMenu?.isOwn}
+      onClose={closePostMenu}
+      onEdit={handleEditPost}
+      onDelete={handleDeletePost}
+      onFollow={handleFollowActor}
+      followLabel={isMenuActorFollowing ? 'Unsubscribe' : 'Subscribe'}
+      onProfile={handleOpenActorProfile}
+      onBlock={handleBlockActor}
+      onReport={handleReportPost}
+    />
+
+    <ReportModal
+      open={reportFlow.open}
+      title={reportFlow.context?.title ?? 'Report'}
+      subtitle={reportFlow.context?.subtitle ?? null}
+      loading={reportFlow.loading}
+      onClose={reportFlow.close}
+      onSubmit={handleReportSubmit}
+    />
+
+    <ShareModal
+      open={shareState.open}
+      title="Spread"
+      url={shareState.url}
+      onClose={closeShare}
+    />
+
+    <FeedConfirmModal
+      open={confirmState.open}
+      title={confirmState.title}
+      message={confirmState.message}
+      confirmLabel={confirmState.confirmLabel}
+      cancelLabel={confirmState.cancelLabel}
+      tone={confirmState.tone}
+      onCancel={() => closeConfirm(false)}
+      onConfirm={() => closeConfirm(true)}
+    />
+
+    <Toast
+      open={toastOpen}
+      message={toastMessage}
+      onClose={() => setToastOpen(false)}
+    />
     </>
   )
 }

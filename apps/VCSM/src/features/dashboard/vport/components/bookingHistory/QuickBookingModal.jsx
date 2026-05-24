@@ -1,7 +1,6 @@
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
-import { listVportServicesByProfileIdDAL } from "@/features/dashboard/vport/dal/read/vportServices.read.dal";
-import { createOwnerBookingController } from "@/features/dashboard/vport/controller/createOwnerBooking.controller";
+import { useQuickBookingModal } from "@/features/dashboard/vport/hooks/useQuickBookingModal";
 
 const DURATIONS = [15, 20, 30, 45, 60, 75, 90, 120];
 
@@ -37,10 +36,8 @@ const labelStyle  = { fontSize: 11, fontWeight: 700, color: "rgba(148,163,184,.4
 const fieldStyle  = { display: "grid", gap: 0 };
 const rowStyle    = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 };
 
-export default function QuickBookingModal({ actorId, resourceId, profileId, onClose, onCreated }) {
-  const [services, setServices] = useState([]);
-  const [saving,   setSaving]   = useState(false);
-  const [error,    setError]    = useState("");
+export default function QuickBookingModal({ resourceId, ownerActorId, onClose, onCreated }) {
+  const { services, saving, error, setError, createBooking } = useQuickBookingModal({ ownerActorId, resourceId });
 
   const [form, setForm] = useState({
     date:            todayStr(),
@@ -55,9 +52,7 @@ export default function QuickBookingModal({ actorId, resourceId, profileId, onCl
 
   useEffect(() => {
     setTimeout(() => firstRef.current?.focus(), 80);
-    if (!profileId) return;
-    listVportServicesByProfileIdDAL({ profileId }).then(setServices).catch(() => {});
-  }, [profileId]);
+  }, []);
 
   function set(k) {
     return (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -77,29 +72,22 @@ export default function QuickBookingModal({ actorId, resourceId, profileId, onCl
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    setSaving(true);
     try {
       const startsAt = buildIso(form.date, form.startTime);
       const endsAt   = addMinutes(startsAt, Number(form.durationMinutes));
       const svc      = services.find((s) => s.id === form.serviceId);
-      await createOwnerBookingController({
-        actorId,
-        resourceId,
-        serviceId:            form.serviceId || null,
+      await createBooking({
+        serviceId:       form.serviceId || null,
         startsAt,
         endsAt,
-        durationMinutes:      Number(form.durationMinutes),
         serviceLabelSnapshot: svc?.label ?? svc?.key ?? "Appointment",
-        customerName:         form.customerName.trim() || null,
-        customerNote:         form.customerNote.trim() || null,
+        durationMinutes: Number(form.durationMinutes),
+        customerName:    form.customerName.trim() || null,
+        customerNote:    form.customerNote.trim() || null,
       });
       onCreated?.();
       onClose();
-    } catch (err) {
-      setError(err?.message || "Failed to create booking.");
-    } finally {
-      setSaving(false);
-    }
+    } catch {}
   }
 
   const overlayStyle = {

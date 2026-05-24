@@ -6,23 +6,31 @@ import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/m
 import { dalInsertLocksmithServiceDetailDefaults } from "@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal";
 import { getLocksmithServiceDefaults } from "@/features/profiles/kinds/vport/model/locksmith/locksmithServiceDefaults.model";
 import { resolveVportServiceCatalogType } from "@/features/profiles/kinds/vport/config/vportTypes.config";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 /**
  * Controller:
  * - No direct Supabase import
- * - Ownership enforced by RLS
+ * - Ownership enforced at controller layer via assertActorOwnsVportActorController
+ *   (defense-in-depth: RLS also enforces at DB layer)
  *
  * Owns:
+ * - Actor ownership verification
  * - Input validation
  * - Catalog key validation
  * - Deterministic payload shaping
  * - Calls DAL mutation
  */
 export default async function upsertVportServicesController({
+  identityActorId,
   targetActorId,
   items,
   vportType,
 } = {}) {
+  if (!identityActorId) {
+    throw new Error("upsertVportServicesController: identityActorId is required");
+  }
+
   if (!targetActorId) {
     throw new Error("upsertVportServicesController: targetActorId is required");
   }
@@ -30,6 +38,9 @@ export default async function upsertVportServicesController({
   if (!vportType) {
     throw new Error("upsertVportServicesController: vportType is required");
   }
+
+  // Named-parameter form — positional call was a bug (would throw "requestActorId is required").
+  await assertActorOwnsVportActorController({ requestActorId: identityActorId, targetActorId });
 
   const resolvedCatalogType = resolveVportServiceCatalogType(vportType);
 
@@ -85,7 +96,9 @@ export default async function upsertVportServicesController({
   const saved = await upsertVportServicesByActorDal({ actorId: targetActorId, rows: payload });
 
   // For locksmith vports, provision default detail rows for newly-enabled services.
-  // ignoreDuplicates=true means this never overwrites existing user-customized data.
+  // Promise.allSettled is intentional: provisioning failures must not roll back the
+  // service save. However failures must NOT be silently swallowed — the controller
+  // returns structured provisioningWarnings so the caller can surface them.
   if (String(vportType).toLowerCase() === 'locksmith') {
     const enabledRows = saved.filter((r) => r.enabled && r.id);
     const results = await Promise.allSettled(
@@ -97,10 +110,12 @@ export default async function upsertVportServicesController({
         })
       )
     );
-    if (process.env.NODE_ENV !== 'production') {
-      results.forEach((result, i) => {
-        if (result.status === 'rejected') {
-          const row = enabledRows[i];
+
+    const provisioningWarnings = results
+      .map((result, i) => {
+        if (result.status !== 'rejected') return null;
+        const row = enabledRows[i];
+        if (import.meta.env.DEV) {
           console.error('[locksmith] detail provision failed', {
             actorId: targetActorId,
             serviceId: row?.id,
@@ -108,8 +123,22 @@ export default async function upsertVportServicesController({
             error: result.reason?.message,
           });
         }
-      });
-    }
+        return {
+          serviceId: row?.id ?? null,
+          serviceKey: row?.key ?? null,
+          error: result.reason?.message ?? 'Unknown provision error',
+        };
+      })
+      .filter(Boolean);
+
+    return {
+      ok: true,
+      count: saved.length,
+      rows: saved,
+      // Caller should surface these to the user or observability channel.
+      // undefined when all provisions succeeded.
+      provisioningWarnings: provisioningWarnings.length ? provisioningWarnings : undefined,
+    };
   }
 
   return {

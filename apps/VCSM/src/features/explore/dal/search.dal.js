@@ -1,8 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
-import { hydrateActorsByIds } from '@hydration'
 import { normalizeActorRow } from '@/features/explore/model/search.model'
-
-const DEV = import.meta.env?.DEV
 
 function mapFilter(filter) {
   if (filter === 'users' || filter === 'vports') return filter
@@ -29,12 +26,7 @@ async function searchActors(rawQuery, opts = {}) {
       p_offset: offset,
     })
 
-  if (error) {
-    if (import.meta.env.DEV) {
-      console.warn('[search.dal] search_actor_directory failed:', error.message)
-    }
-    throw error
-  }
+  if (error) throw error
 
   const rows = (Array.isArray(data) ? data : [])
     .map(normalizeActorRow)
@@ -48,11 +40,6 @@ async function searchActors(rawQuery, opts = {}) {
     return true
   })
 
-  const actorIds = deduped.map((r) => r.actorId).filter(Boolean)
-  if (actorIds.length) {
-    hydrateActorsByIds(actorIds).catch(() => {})
-  }
-
   return deduped
 }
 
@@ -64,8 +51,6 @@ async function searchPosts(rawQuery, opts = {}) {
 
   const normalizedTag = (q.startsWith('#') ? q.slice(1) : q).toLowerCase().trim()
   if (!normalizedTag) return []
-
-  if (DEV) console.log('[explore:search:posts:start]', { q, normalizedTag })
 
   const makeBase = () =>
     supabase
@@ -82,9 +67,6 @@ async function searchPosts(rawQuery, opts = {}) {
     makeBase().contains('tags', [normalizedTag]).order('created_at', { ascending: false }).limit(limit),
   ])
 
-  if (byText.error && DEV) console.warn('[explore:search:posts:error:text]', byText.error.message)
-  if (byTag.error && DEV) console.warn('[explore:search:posts:error:tag]', byTag.error.message)
-
   const seen = new Map()
   for (const r of [...(byText.data ?? []), ...(byTag.data ?? [])]) {
     if (!seen.has(r.id)) seen.set(r.id, r)
@@ -100,11 +82,6 @@ async function searchPosts(rawQuery, opts = {}) {
     created_at: p.created_at,
   }))
 
-  if (DEV) {
-    console.log(`[explore:search:posts:result] found=${results.length}`, { normalizedTag })
-    if (!results.length) console.log('[explore:search:posts:empty]', { q })
-  }
-
   return results
 }
 
@@ -113,8 +90,6 @@ async function searchPostsByTag(tag, opts = {}) {
 
   const normalizedTag = (tag || '').toLowerCase().trim()
   if (!normalizedTag) return []
-
-  if (DEV) console.log('[explore:search:posts:tag-only]', { normalizedTag })
 
   const { data, error } = await supabase
     .schema('vc')
@@ -126,10 +101,7 @@ async function searchPostsByTag(tag, opts = {}) {
     .order('created_at', { ascending: false })
     .limit(limit)
 
-  if (error) {
-    if (DEV) console.warn('[explore:search:posts:tag-only:error]', error.message)
-    throw error
-  }
+  if (error) throw error
 
   const results = (Array.isArray(data) ? data : []).map((p) => ({
     result_type: 'post',
@@ -140,11 +112,6 @@ async function searchPostsByTag(tag, opts = {}) {
     tags: p.tags,
     created_at: p.created_at,
   }))
-
-  if (DEV) {
-    console.log(`[explore:search:posts:tag-only:result] found=${results.length}`, { normalizedTag })
-    if (!results.length) console.log('[explore:search:posts:tag-only:empty]', { tag })
-  }
 
   return results
 }

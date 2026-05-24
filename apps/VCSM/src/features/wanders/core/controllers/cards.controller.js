@@ -17,8 +17,8 @@ import { createWandersCard, updateWandersCard as updateCardDAL } from "@/feature
 import { createWandersMailboxItem } from "@/features/wanders/core/dal/write/mailbox.write.dal";
 import { createWandersCardEvent } from "@/features/wanders/core/dal/write/events.write.dal";
 import { uploadMediaController } from '@media'
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger'
 
 // NOTE: If you have events core DAL later, you can plug it in here.
@@ -271,7 +271,7 @@ export async function publishWandersFromBuilder({ realmId, baseUrl, payload }) {
     ;(async () => {
       bugBunnyUploadStep('wanders_card', 'writeback:start', { cardId: card.id, senderActorId })
       try {
-        const appId = await resolveVcsmAppIdDAL()
+        const appId = await resolveVcsmAppId()
         const mediaAsset = await createMediaAssetController({
           mediaUploadResult:  wandersUploadResult,
           ownerActorId:       senderActorId,

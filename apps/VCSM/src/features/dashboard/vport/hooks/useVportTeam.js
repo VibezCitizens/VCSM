@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { hydrateActorsByIds } from "@hydration";
+import { useIdentity } from "@/state/identity/identityContext";
 import {
   getTeamMembersController,
   findEligibleBarbersController,
@@ -8,6 +9,9 @@ import {
 } from "@/features/dashboard/vport/controller/vportTeam.controller";
 
 export function useVportTeam(actorId) {
+  const { identity } = useIdentity();
+  const callerActorId = identity?.actorId ?? null;
+
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -47,7 +51,7 @@ export function useVportTeam(actorId) {
       setAdding(true);
       setAddError("");
       try {
-        const newMember = await sendTeamRequestController(actorId, barberVportActorId, barberVportName);
+        const newMember = await sendTeamRequestController(callerActorId, actorId, barberVportActorId, barberVportName);
         setMembers((prev) => [...prev, newMember]);
         return newMember;
       } catch (e) {
@@ -57,13 +61,13 @@ export function useVportTeam(actorId) {
         setAdding(false);
       }
     },
-    [actorId]
+    [callerActorId, actorId]
   );
 
   const removeMember = useCallback(async (resourceId) => {
-    await removeTeamMemberController(resourceId);
+    await removeTeamMemberController(callerActorId, resourceId);
     setMembers((prev) => prev.filter((m) => m.id !== resourceId));
-  }, []);
+  }, [callerActorId]);
 
   return { members, loading, error, adding, addError, findEligibleBarbers, sendRequest, removeMember };
 }

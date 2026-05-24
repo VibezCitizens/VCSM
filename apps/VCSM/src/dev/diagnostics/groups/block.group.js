@@ -9,7 +9,7 @@ import {
   fetchActorsIBlocked,
   fetchActorsWhoBlockedMe,
   fetchBlockGraph,
-} from "@/features/block/dal/block.read.dal";
+} from "@/dev/diagnostics/dal/block.diagnostics.dal";
 import {
   ensureBlocked,
   ensureFriendRankRow,

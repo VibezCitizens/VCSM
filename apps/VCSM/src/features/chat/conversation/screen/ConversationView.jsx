@@ -30,7 +30,6 @@ import Spinner from '@/shared/components/Spinner'
 
 import { useConversationScroll } from '@/features/chat/conversation/hooks/conversation/useConversationScroll'
 import resolvePartnerActor from '@/features/chat/conversation/lib/resolvePartnerActor'
-import canReadConversation from '@/features/chat/conversation/permissions/canReadConversation'
 import { useBlockStatus } from '@/features/block/adapters/hooks/useBlockStatus.adapter'
 import { chatNavDbg } from '@/features/chat/debug/chatNavDebugger'
 
@@ -93,7 +92,7 @@ export default function ConversationView({ conversationId }) {
 
   // ── Server hooks — run in background, reconcile with seed ───────────
   const { conversation, loading, error } = useConversation({ conversationId, actorId })
-  const { members } = useConversationMembers({ conversationId, actorId })
+  const { members, canRead } = useConversationMembers({ conversationId, actorId })
   const { messages, loading: messagesLoading, onEditMessage, onDeleteMessage, onSendMessage, addOptimistic, updateOptimistic, markFailed, retryMessage } =
     useConversationMessages({ conversationId, actorId })
   const { notifyTyping } = useTypingChannel({ conversationId, actorId })
@@ -256,8 +255,7 @@ export default function ConversationView({ conversationId }) {
     )
   }
 
-  // Enforce access control only after server members have arrived
-  if (members?.length > 0 && !canReadConversation({ actorId, members })) {
+  if (!canRead) {
     return <div className="p-4 text-white/50">Access denied</div>
   }
 

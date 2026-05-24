@@ -1,6 +1,6 @@
 import { uploadMediaController } from '@media'
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { saveFlyerPublicDetails } from '../dal/flyer.write.dal'
 
 export async function uploadFlyerImageCtrl({ vportId, file, kind }) {
@@ -11,7 +11,7 @@ export async function uploadFlyerImageCtrl({ vportId, file, kind }) {
     opts: { extraPath: 'assets' },
   })
 
-  resolveVcsmAppIdDAL().then((appId) =>
+  resolveVcsmAppId().then((appId) =>
     createMediaAssetController({
       mediaUploadResult:  result,
       ownerActorId:       vportId,

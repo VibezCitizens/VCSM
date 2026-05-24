@@ -2,7 +2,7 @@ import {
   resolveVportRestaurantNameDAL,
 } from "@/features/profiles/kinds/vport/dal/menu/vportMenuPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 function buildPostText({ restaurantName, action, subject, subjectName, categoryName }) {
   const name = restaurantName ?? "this restaurant";
@@ -26,7 +26,7 @@ export async function publishMenuUpdateAsPostController({
   if (!actorId) throw new Error("publishMenuUpdateAsPost: actorId required");
   if (!subjectName) return { published: false, reason: "no_subject_name" };
 
-  const realmId = await resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const restaurantName = await resolveVportRestaurantNameDAL(actorId);

@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { Image as ImageIcon, Tag, X } from "lucide-react";
 import { usePortfolioMediaUpload } from "@/features/dashboard/vport/screens/components/portfolio/hooks/usePortfolioMediaUpload";
-import ConsentCheckbox from "@/features/auth/components/ConsentCheckbox";
+import { ConsentCheckbox } from "@/features/auth/adapters/auth.adapter";
 import { usePortfolioItemSubmit } from "@/features/dashboard/vport/screens/components/portfolio/hooks/usePortfolioItemSubmit";
 
 const KIND_OPTIONS = [
@@ -191,7 +191,7 @@ export default function PortfolioItemForm({
         </div>
       ) : null}
 
-      <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFiles} />
+      <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleFiles} />
 
       {isEdit && existingMediaCount > 0 && !files.length ? (
         <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/6 bg-white/[0.02] px-3 py-2.5 text-xs text-white/40">

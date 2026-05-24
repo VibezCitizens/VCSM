@@ -1,7 +1,48 @@
 import { fetchPostsForActorDAL } from "@/features/profiles/dal/post/fetchPostsForActor.dal";
-import { PostModel } from "@/features/profiles/screens/views/tabs/post/models/post.model";
+import { buildCanonicalProfilePostModel as PostModel } from "@/features/profiles/model/postCanonical.model";
 import { hydrateActorsFromRows } from "@/state/actors/hydrateActors";
 import { useActorStore } from "@/state/actors/actorStore";
+
+const STORE_TTL_MS = 5 * 60 * 1000;
+
+function makeActorRoute({ kind, username, actorId, vportId }) {
+  if (kind === "user" && username) return `/u/${username}`;
+  if (kind === "vport" && vportId) return `/vport/${vportId}`;
+  if (actorId) return `/profile/${actorId}`;
+  return "/feed";
+}
+
+function buildAuthorActorEntryFromStore(actorId) {
+  const stored = useActorStore.getState().actors?.[actorId];
+  if (!stored?._hydratedAt || Date.now() - stored._hydratedAt > STORE_TTL_MS) return null;
+
+  const kind = stored.kind ?? null;
+  if (!kind) return null;
+
+  const username =
+    kind === "vport"
+      ? (stored.vportSlug ?? stored.username ?? null)
+      : (stored.username ?? null);
+  const displayName =
+    kind === "vport"
+      ? (stored.vportName ?? stored.displayName ?? null)
+      : (stored.displayName ?? null);
+  const photoUrl =
+    kind === "vport"
+      ? (stored.vportAvatarUrl ?? stored.photoUrl ?? "/avatar.jpg")
+      : (stored.photoUrl ?? "/avatar.jpg");
+
+  return {
+    actor_id: actorId,
+    kind,
+    display_name: displayName,
+    username,
+    photo_url: photoUrl,
+    banner_url: stored.bannerUrl ?? null,
+    bio: stored.bio ?? null,
+    route: makeActorRoute({ kind, username, actorId, vportId: kind === "vport" ? actorId : null }),
+  };
+}
 
 export async function getActorPostsController({ actorId, page, pageSize }) {
   if (!actorId) {
@@ -14,6 +55,7 @@ export async function getActorPostsController({ actorId, page, pageSize }) {
     actorId,
     limit: pageSize,
     offset,
+    cachedAuthorActorEntry: buildAuthorActorEntryFromStore(actorId),
   });
 
   if (error) {

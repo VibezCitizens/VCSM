@@ -9,7 +9,6 @@ import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
 
 import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
-import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
 import Spinner from '@/shared/components/Spinner'
 import '@/features/ui/modern/module-modern.css'
@@ -32,18 +31,12 @@ export default function SpamInboxScreen() {
 
   const inboxActions = useInboxActions({ actorId })
 
-  const filteredEntries = useMemo(() => {
+  const previews = useMemo(() => {
+    if (!actorId) return []
     return entries.filter((entry) =>
       shouldShowInboxEntry(entry, { hideEmptyConversations: hideEmptyThreads })
     )
-  }, [entries, hideEmptyThreads])
-
-  const previews = useMemo(() => {
-    if (!actorId) return []
-    return filteredEntries
-      .map((entry) => buildInboxPreview({ entry, currentActorId: actorId }))
-      .filter(Boolean)
-  }, [filteredEntries, actorId])
+  }, [entries, actorId, hideEmptyThreads])
 
   if (identityLoading || !actorId) return null
   if (error) return <div className="p-4 text-red-400">Failed to load spam Vox</div>

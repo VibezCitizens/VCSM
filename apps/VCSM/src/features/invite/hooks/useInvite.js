@@ -1,19 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
-import { ctrlSendCitizenInvite } from '../controller/invite.controller'
-
-const CODE_MESSAGES = {
-  USER_ALREADY_REGISTERED: 'This email already has an account.',
-  SELF_INVITE:             "You can't invite yourself.",
-  INVITE_FAILED:           'Invite could not be sent. Try again.',
-  EMAIL_SEND_FAILED:       'Invite saved but the email could not be sent. Try again.',
-  INVALID_EMAIL:           'Enter a valid email address.',
-  INVALID_INVITER_TYPE:    'Inviter type is missing.',
-}
-
-function codeToMessage(code) {
-  return CODE_MESSAGES[code] ?? 'Something went wrong. Please try again.'
-}
+import { codeToInviteMessage, ctrlSendCitizenInvite } from '../controller/invite.controller'
 
 export function useInvite() {
   const { identity } = useIdentity()
@@ -47,7 +34,7 @@ export function useInvite() {
 
       if (result?.ok === false) {
         if (import.meta.env.DEV) setRawDebugError(JSON.stringify(result, null, 2)) // DEV PROBE
-        setError(codeToMessage(result.code))
+        setError(codeToInviteMessage(result.code))
       } else {
         if (import.meta.env.DEV) setRawDebugError(JSON.stringify(result, null, 2)) // DEV PROBE
         // Edge Function handles actor_onboarding_steps upsert server-side.
@@ -57,7 +44,7 @@ export function useInvite() {
     } catch (err) {
       const msg = err?.message ?? ''
       if (import.meta.env.DEV) setRawDebugError(msg || String(err)) // DEV PROBE
-      setError(codeToMessage(msg) || 'Something went wrong. Please try again.')
+      setError(codeToInviteMessage(msg) || 'Something went wrong. Please try again.')
     } finally {
       setSending(false)
     }

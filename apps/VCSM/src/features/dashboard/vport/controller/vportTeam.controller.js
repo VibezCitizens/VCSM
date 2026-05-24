@@ -1,14 +1,17 @@
-import { readVportProfileByActorIdDAL } from "@/features/dashboard/vport/dal/read/vportProfile.read.dal";
+import { readVportProfileByActorIdDAL, getVportActorIdByProfileIdDAL } from "@/features/dashboard/vport/dal/read/vportProfile.read.dal";
 import {
   fetchTeamMembersByProfileId,
-  findEligibleBarbersDAL,
+  findEligibleBarberActorIdsDAL,
 } from "@/features/dashboard/vport/dal/read/vportTeam.read.dal";
+import { hydrateAndReturnSummaries } from "@hydration";
 import { insertTeamMemberDAL } from "@/features/dashboard/vport/dal/write/vportTeam.write.dal";
 import {
   insertTeamRequestDAL,
   deleteTeamResourceDAL,
 } from "@/features/dashboard/vport/dal/write/vportTeamInvite.write.dal";
+import { fetchResourceByIdDAL } from "@/features/dashboard/vport/dal/read/vportTeamInvite.read.dal";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 async function resolveProfileId(actorId) {
   const profile = await readVportProfileByActorIdDAL({ actorId });
@@ -23,38 +26,62 @@ export async function getTeamMembersController(actorId) {
   return fetchTeamMembersByProfileId(profileId);
 }
 
-export async function addTeamMemberController(actorId, { name }) {
+export async function addTeamMemberController(callerActorId, actorId, { name }) {
+  if (!callerActorId) throw new Error("addTeamMemberController: callerActorId required");
   if (!actorId) throw new Error("addTeamMemberController: actorId required");
   if (!name || !String(name).trim()) throw new Error("Name is required.");
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: actorId,
+  });
+
   const profileId = await resolveProfileId(actorId);
-  return insertTeamMemberDAL({ profileId, name: String(name).trim() });
+  return insertTeamMemberDAL({ profileId, ownerActorId: actorId, name: String(name).trim() });
 }
 
 export async function findEligibleBarbersController(actorId) {
   if (!actorId) return [];
 
   const profileId = await resolveProfileId(actorId);
-  const [allEligible, existingMembers] = await Promise.all([
-    findEligibleBarbersDAL(actorId),
+  const [eligibleActorIds, existingMembers] = await Promise.all([
+    findEligibleBarberActorIdsDAL(actorId),
     fetchTeamMembersByProfileId(profileId),
   ]);
 
   const excludedActorIds = new Set([
-    // the barbershop can't invite itself
     actorId,
-    // already on the team (not declined)
     ...existingMembers
       .filter((m) => m.member_actor_id && m.meta?.status !== "declined")
       .map((m) => m.member_actor_id),
   ]);
 
-  return allEligible.filter((b) => !excludedActorIds.has(b.actorId));
+  const uniqueActorIds = eligibleActorIds.filter((id) => !excludedActorIds.has(id));
+  if (!uniqueActorIds.length) return [];
+
+  const { rows } = await hydrateAndReturnSummaries({ actorIds: uniqueActorIds });
+  const summaryMap = Object.fromEntries(rows.map((r) => [r.actor_id ?? r.id, r]));
+
+  return uniqueActorIds.map((id) => {
+    const s = summaryMap[id];
+    return {
+      actorId: id,
+      name:   s?.display_name ?? s?.vport_name ?? "Unknown",
+      avatar: s?.photo_url ?? s?.vport_avatar_url ?? null,
+    };
+  });
 }
 
-export async function sendTeamRequestController(actorId, barberVportActorId, barberVportName) {
+export async function sendTeamRequestController(callerActorId, actorId, barberVportActorId, barberVportName) {
+  if (!callerActorId) throw new Error("sendTeamRequestController: callerActorId required");
   if (!actorId) throw new Error("sendTeamRequestController: actorId required");
   if (!barberVportActorId) throw new Error("Barber VPORT required.");
   if (!barberVportName?.trim()) throw new Error("Barber name is required.");
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: actorId,
+  });
 
   const profileId = await resolveProfileId(actorId);
 
@@ -69,10 +96,9 @@ export async function sendTeamRequestController(actorId, barberVportActorId, bar
     name:               String(barberVportName).trim(),
     memberActorId:      barberVportActorId,
     ownerActorId:       actorId,
-    requestedByActorId: actorId,
+    requestedByActorId: callerActorId,
   });
 
-  // Notify the barber so they can accept or decline
   await publishVcsmNotification({
     recipientActorId: barberVportActorId,
     actorId,
@@ -89,7 +115,22 @@ export async function sendTeamRequestController(actorId, barberVportActorId, bar
   return resource;
 }
 
-export async function removeTeamMemberController(resourceId) {
+export async function removeTeamMemberController(callerActorId, resourceId) {
+  if (!callerActorId) throw new Error("removeTeamMemberController: callerActorId required");
   if (!resourceId) throw new Error("removeTeamMemberController: resourceId required");
+
+  const resource = await fetchResourceByIdDAL(resourceId);
+  if (!resource) throw new Error("Resource not found.");
+
+  const vportActorId = resource.owner_actor_id
+    ?? await getVportActorIdByProfileIdDAL({ profileId: resource.profile_id });
+
+  if (!vportActorId) throw new Error("Could not resolve VPORT ownership.");
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: vportActorId,
+  });
+
   return deleteTeamResourceDAL(resourceId);
 }

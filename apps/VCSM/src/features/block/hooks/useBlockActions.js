@@ -24,6 +24,7 @@ import {
   unblockActorController,
 } from "@/features/block/controllers/blockActor.controller";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
+import { invalidateFeedBlockCache } from "@/features/feed/adapters/feedCache.adapter";
 
 /**
  * useBlockActions
@@ -48,6 +49,7 @@ export function useBlockActions(myActorId, targetActorId) {
 
     try {
       await blockActorController(myActorId, targetActorId, sessionActorId);
+      invalidateFeedBlockCache(myActorId);
     } catch (err) {
       console.error("[useBlockActions] block failed:", err);
       setError(err);
@@ -68,6 +70,7 @@ export function useBlockActions(myActorId, targetActorId) {
 
     try {
       await unblockActorController(myActorId, targetActorId, sessionActorId);
+      invalidateFeedBlockCache(myActorId);
     } catch (err) {
       console.error("[useBlockActions] unblock failed:", err);
       setError(err);

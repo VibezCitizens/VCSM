@@ -1,10 +1,13 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 
-export async function dalGetProfileDiscoverable(profileId) {
+// profiles.id === auth.users.id — this DAL operates on the auth user ID directly.
+// It is intentionally a login-phase operation called before actor resolution completes.
+
+export async function dalGetProfileDiscoverable(userId) {
   const { data, error } = await supabase
     .from('profiles')
     .select('id, discoverable')
-    .eq('id', profileId)
+    .eq('id', userId)
     .maybeSingle()
 
   if (error) throw error
@@ -12,7 +15,7 @@ export async function dalGetProfileDiscoverable(profileId) {
 }
 
 export async function dalUpdateProfileDiscoverable({
-  profileId,
+  userId,
   discoverable,
   updatedAt,
 }) {
@@ -22,7 +25,7 @@ export async function dalUpdateProfileDiscoverable({
       discoverable,
       updated_at: updatedAt,
     })
-    .eq('id', profileId)
+    .eq('id', userId)
 
   if (error) throw error
 }

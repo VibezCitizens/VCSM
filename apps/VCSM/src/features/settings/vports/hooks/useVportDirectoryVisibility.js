@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useIdentity } from "@/state/identity/identityContext";
 import { ctrlResolveVportIdByActorId } from "@/features/settings/profile/controller/resolveVportIdByActorId.controller";
 import {
   ctrlGetVportDirectoryState,
@@ -7,9 +8,12 @@ import {
 
 /**
  * Loads and manages directory_visible / directory_status for a vport by actorId.
- * Only the owner can read or update — enforced at the DAL layer.
+ * VPD-V-026: ownership is now enforced at the controller layer (callerActorId + vportActorId).
+ * The DAL retains owner_user_id = auth.uid() as defense-in-depth.
  */
 export function useVportDirectoryVisibility(actorId) {
+  const { identity } = useIdentity();
+  const callerActorId = identity?.actorId ?? null;
   const [vportId, setVportId] = useState(null);
   const [directoryVisible, setDirectoryVisible] = useState(null);
   const [directoryStatus, setDirectoryStatus] = useState(null);
@@ -53,7 +57,9 @@ export function useVportDirectoryVisibility(actorId) {
     setIsSaving(true);
     setError("");
     try {
-      await ctrlSetVportDirectoryVisible({ vportId, visible });
+      // VPD-V-026: pass callerActorId and vportActorId so the controller can
+      // verify ownership via actor_owners before delegating to the DAL.
+      await ctrlSetVportDirectoryVisible({ vportId, visible, callerActorId, vportActorId: actorId });
       setDirectoryVisible(visible);
     } catch (e) {
       setError(e?.message || "Failed to update directory visibility.");

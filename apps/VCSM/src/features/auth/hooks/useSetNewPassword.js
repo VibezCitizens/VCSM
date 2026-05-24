@@ -4,6 +4,7 @@ import {
   resolveRecoverySessionController,
   updatePasswordController,
   watchPasswordRecoveryController,
+  clearRecoveryFlag,
 } from '@/features/auth/controllers/setNewPassword.controller'
 import {
   evaluateConfirmPasswordState,
@@ -111,6 +112,9 @@ export function useSetNewPassword() {
     try {
       // updatePasswordController validates, updates, then signs out the recovery session.
       await updatePasswordController({ password: form.password })
+      // Explicit clear before navigation — belt-and-suspenders alongside the SIGNED_OUT
+      // event that dalSignOutRecoverySession fires, which also clears via AuthProvider.
+      clearRecoveryFlag()
       navigate('/login', { replace: true, state: { passwordReset: true } })
     } catch {
       setErrorMessage('Failed to update password. Please try again.')

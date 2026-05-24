@@ -6,14 +6,15 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIdentity } from "@/state/identity/identityContext";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import Toast from "@/shared/components/components/Toast";
 
-import VportRatesView from "@/features/profiles/adapters/kinds/vport/screens/rates/view/VportRatesView.jsx.adapter";
-import VportRateEditorCard from "@/features/profiles/adapters/kinds/vport/screens/rates/components/VportRateEditorCard.jsx.adapter";
-import useUpsertVportRate from "@/features/profiles/adapters/kinds/vport/hooks/rates/useUpsertVportRate.js.adapter";
+import VportRatesView from "@/features/profiles/adapters/kinds/vport/screens/rates/view/VportRatesView.adapter";
+import VportRateEditorCard from "@/features/profiles/adapters/kinds/vport/screens/rates/components/VportRateEditorCard.adapter";
+import useUpsertVportRate from "@/features/profiles/adapters/kinds/vport/hooks/rates/useUpsertVportRate.adapter";
 import { usePublishExchangeRatePost } from "@/features/profiles/kinds/vport/hooks/exchange/usePublishExchangeRatePost";
 
 function normalizeCurrencyCode(v) {
@@ -61,10 +62,7 @@ export function VportDashboardExchangeScreen() {
   const actorId = useMemo(() => params?.actorId ?? null, [params]);
   const isDesktop = useDesktopBreakpoint();
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const goBack = useCallback(() => {
     if (!actorId) return;
@@ -180,7 +178,7 @@ export function VportDashboardExchangeScreen() {
   ]);
 
   if (!actorId) return null;
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   }
   if (!identity) {

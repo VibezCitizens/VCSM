@@ -50,11 +50,6 @@ export default function VportServicesOwnerCategorySection({
               onClick={
                 canToggle
                   ? () => {
-                      console.log("[OwnerCategorySection] toggle", {
-                        key: k,
-                        from: enabled,
-                        to: !enabled,
-                      });
                       onToggleService({ key: k, enabled: !enabled });
                     }
                   : undefined
@@ -62,7 +57,6 @@ export default function VportServicesOwnerCategorySection({
               onDoubleClick={
                 canEdit
                   ? () => {
-                      console.log("[OwnerCategorySection] edit meta", { key: k });
                       onEditServiceMeta({ key: k });
                     }
                   : undefined

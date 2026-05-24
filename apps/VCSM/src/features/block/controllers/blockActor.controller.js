@@ -2,8 +2,8 @@
 //  BLOCK SYSTEM — CONTROLLER (ACTOR-BASED)
 // ------------------------------------------------------------
 //  Uses moderation.block_actor / moderation.unblock_actor RPCs.
-//  Follow deactivation and friend_ranks cleanup are handled
-//  server-side by the RPC.
+//  Follow deactivation is handled server-side by the RPC.
+//  friend_ranks cleanup: pending batch4 migration deployment.
 // ============================================================
 
 import {
@@ -12,13 +12,11 @@ import {
 } from "@/features/block/dal/block.write.dal";
 
 import { checkBlockStatus } from "@/features/block/dal/block.check.dal";
-import { invalidateFeedBlockCache } from "@/features/feed/adapters/feedCache.adapter";
 
 /**
  * Block an actor.
  * Idempotent — checks current status before calling RPC.
- * RPC handles: moderation.blocks upsert, block_event, follow deactivation, friend_ranks cleanup.
- * Controller handles: feed cache bust.
+ * RPC handles: moderation.blocks upsert, block_event, follow deactivation.
  */
 export async function blockActorController(blockerActorId, blockedActorId, assertingActorId) {
   if (!blockerActorId || !blockedActorId) {
@@ -36,9 +34,6 @@ export async function blockActorController(blockerActorId, blockedActorId, asser
   if (!blockedByMe) {
     await blockActorDAL(blockerActorId, blockedActorId);
   }
-
-  // Bust feed block cache so blocked actor's posts vanish on next render
-  invalidateFeedBlockCache(blockerActorId);
 
   return { blocked: true };
 }
@@ -63,7 +58,6 @@ export async function unblockActorController(blockerActorId, blockedActorId, ass
   }
 
   await unblockActorDAL(blockerActorId, blockedActorId);
-  invalidateFeedBlockCache(blockerActorId);
 
   return { blocked: false };
 }
@@ -83,11 +77,9 @@ export async function toggleBlockActorController(blockerActorId, blockedActorId,
 
   if (blockedByMe) {
     await unblockActorDAL(blockerActorId, blockedActorId);
-    invalidateFeedBlockCache(blockerActorId);
     return { blocked: false };
   }
 
   await blockActorDAL(blockerActorId, blockedActorId);
-  invalidateFeedBlockCache(blockerActorId);
   return { blocked: true };
 }

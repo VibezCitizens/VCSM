@@ -9,7 +9,7 @@ function normalizeVportType(v) {
 }
 
 export default function useVportServices({
-  identityActorId = null, // kept for future use
+  identityActorId = null,
   targetActorId = null,
   asOwner = false,
   vportType: vportTypeProp = null,
@@ -39,6 +39,9 @@ export default function useVportServices({
         targetActorId,
         vportType,
         asOwner: Boolean(asOwner),
+        // identityActorId is required by the controller when asOwner=true;
+        // it verifies server-side ownership before returning disabled services.
+        callerActorId: identityActorId,
       });
 
       setData({
@@ -58,7 +61,7 @@ export default function useVportServices({
     } finally {
       setIsLoading(false);
     }
-  }, [targetActorId, asOwner, vportType]);
+  }, [targetActorId, asOwner, vportType, identityActorId]);
 
   useEffect(() => {
     let alive = true;

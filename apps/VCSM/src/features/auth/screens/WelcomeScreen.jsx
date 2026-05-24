@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { User, Store, Compass, ArrowRight } from 'lucide-react'
+import { User, Store, Compass } from 'lucide-react'
 import { authTheme } from '@/features/auth/styles/authTheme'
 
 const OPTIONS = [
@@ -120,7 +120,6 @@ export default function WelcomeScreen() {
                     </p>
                   </div>
 
-                  <ArrowRight size={16} style={{ color: 'var(--vc-text-muted)', flexShrink: 0 }} />
                 </div>
               </Link>
             )

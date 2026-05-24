@@ -3,7 +3,7 @@ import {
   resolveVportStationNameDAL,
 } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPricePost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 const DEDUP_WINDOW_MS = 60 * 60 * 1000;
 
@@ -38,7 +38,7 @@ export async function publishFuelPriceUpdateAsPostController({ actorId, updatedF
     return { published: false, reason: "no_fuels" };
   }
 
-  const realmId = await resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const recent = await hasRecentFuelPricePostDAL({ actorId, windowMs: DEDUP_WINDOW_MS });

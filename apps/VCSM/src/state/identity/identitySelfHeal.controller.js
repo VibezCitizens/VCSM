@@ -1,5 +1,5 @@
 import { readUserActorByProfileIdDAL } from "@/state/identity/identity.read.dal";
-import { ensureVcsmPlatformBootstrap } from "@/features/identity/controller/ensureVcsmPlatformBootstrap.controller.js";
+import { ensureVcsmPlatformBootstrap } from "@/features/identity/adapters/identityOps.adapter";
 import {
   finalizeAccountState,
   switchActiveActor as engineSwitchActiveActor,

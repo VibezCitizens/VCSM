@@ -10,25 +10,6 @@
 // ============================================================
 
 /**
- * Resolve the vc actor needed for provisioning.
- * Lightweight — only queries actors, no role resolution.
- */
-export async function resolveVcsmActorForProvisioning(supabase, userId) {
-  const vc = supabase.schema('vc')
-
-  const { data: actor, error } = await vc
-    .from('actors')
-    .select('id, kind, profile_id, vport_id, is_void')
-    .eq('profile_id', userId)
-    .eq('kind', 'user')
-    .maybeSingle()
-
-  if (error) throw error
-
-  return { actor: actor ?? null }
-}
-
-/**
  * Create the VCSM all-in-one app context resolver.
  *
  * Reads ALL provisioned platform actor links for the account.
@@ -109,9 +90,6 @@ export function createVcsmAppContextResolver(supabase) {
         errorMessage: null,
         failureMode: 'ZERO_ROWS',
       })
-      if (import.meta.env.DEV) {
-        console.log('[VCSMResolver] NO_ACTIVE_LINKS', { userAppAccountId })
-      }
       return {
         actorLinks:         [],
         roleKeys:           [],
@@ -119,15 +97,6 @@ export function createVcsmAppContextResolver(supabase) {
         isSuspended:        false,
         defaultDestination: null,
       }
-    }
-
-    if (import.meta.env.DEV) {
-      console.log('[VCSMResolver] LINKS_LOADED', {
-        userAppAccountId,
-        linkCount: links.length,
-        kinds: links.map(l => l.actor_kind),
-        primaryCount: links.filter(l => l.is_primary).length,
-      })
     }
 
     trace?.report?.({

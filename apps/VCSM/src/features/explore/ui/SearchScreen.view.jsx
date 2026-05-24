@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { Search, X } from 'lucide-react'
 import { useTranslation } from '@i18n'
-import { useSearchActor } from '../hooks/useSearchActor'
+import { useSearchScreenController } from '@/features/explore/hooks/useSearchScreenController'
 import { OnboardingCardsView } from '@/features/onboarding/adapters/onboarding.adapter'
 import ResultList from './ResultList'
 import ExploreFeed from './ExploreFeed'
@@ -17,7 +17,7 @@ const FILTER_KEYS = [
 
 export default function SearchScreen() {
   const { t } = useTranslation()
-  const { query, filter, debounced, canClear, setQuery, setFilter } = useSearchActor()
+  const { query, filter, debounced, canClear, loading, results, setQuery, setFilter } = useSearchScreenController()
   const isSearching = query.trim().length > 0 || debounced.trim().length > 0
 
   const FILTERS = FILTER_KEYS.map(({ key, tKey }) => ({ key, label: t(tKey) }))
@@ -85,7 +85,7 @@ export default function SearchScreen() {
       >
         {isSearching ? (
           <Suspense fallback={<div className="text-center text-white/70">{t('explore.loading')}</div>}>
-            <ResultList query={debounced || query} filter={filter} />
+            <ResultList query={debounced || query} filter={filter} items={results} loading={loading} />
           </Suspense>
         ) : (
           <>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { hydrateActorsByIds } from "@hydration";
+import { useIdentity } from "@/state/identity/identityContext";
 import { loadDayScheduleController } from "@/features/dashboard/vport/controller/loadDaySchedule.controller";
 import { createOwnerBookingController } from "@/features/dashboard/vport/controller/createOwnerBooking.controller";
 import { updateBookingStatusController, rescheduleBookingController } from "@/features/dashboard/vport/controller/updateVportBooking.controller";
@@ -23,20 +24,22 @@ function shiftDateKey(dateKey, days) {
 }
 
 export function useVportOwnerSchedule({ actorId }) {
+  const { identity } = useIdentity();
+  const callerActorId = identity?.actorId ?? null;
+
   const [dateKey, setDateKey]           = useState(todayKey);
   const [scheduleData, setScheduleData] = useState(null);
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState(null);
 
-  const [createModal, setCreateModal]   = useState(null);  // { resourceId, startTime, dateKey }
-  const [detailModal, setDetailModal]   = useState(null);  // booking object
+  const [createModal, setCreateModal]   = useState(null);
+  const [detailModal, setDetailModal]   = useState(null);
 
   const [mobileBarberIdx, setMobileBarberIdx] = useState(0);
 
   const [saving, setSaving]     = useState(false);
   const [saveError, setSaveError] = useState(null);
 
-  // Stable ref so refresh doesn't change identity when dateKey changes
   const dateKeyRef = useRef(dateKey);
   dateKeyRef.current = dateKey;
 
@@ -45,7 +48,7 @@ export function useVportOwnerSchedule({ actorId }) {
     setLoading(true);
     setError(null);
     try {
-      const data = await loadDayScheduleController({ actorId, dateKey: key });
+      const data = await loadDayScheduleController({ actorId, dateKey: key, callerActorId });
       setScheduleData(data);
       const ids = data.lanes.map((l) => l.resource.member_actor_id).filter(Boolean);
       if (ids.length) hydrateActorsByIds(ids);
@@ -62,13 +65,11 @@ export function useVportOwnerSchedule({ actorId }) {
 
   const refresh = useCallback(() => load(dateKeyRef.current), [load]);
 
-  // Date navigation
   const goToDate  = useCallback((key) => setDateKey(key), []);
   const goToToday = useCallback(() => setDateKey(todayKey()), []);
   const prevDay   = useCallback(() => setDateKey((k) => shiftDateKey(k, -1)), []);
   const nextDay   = useCallback(() => setDateKey((k) => shiftDateKey(k, 1)), []);
 
-  // Create modal
   const openCreateModal = useCallback((resourceId, startTime) => {
     setCreateModal({ resourceId, startTime, dateKey: dateKeyRef.current });
     setSaveError(null);
@@ -84,7 +85,7 @@ export function useVportOwnerSchedule({ actorId }) {
       const startsAt   = new Date(y, mo - 1, d, sh, sm, 0, 0).toISOString();
       const endsAt     = new Date(new Date(startsAt).getTime() + Number(form.durationMinutes) * 60000).toISOString();
       await createOwnerBookingController({
-        actorId,
+        callerActorId,
         resourceId:            form.resourceId,
         serviceId:             form.serviceId || null,
         startsAt,
@@ -102,9 +103,8 @@ export function useVportOwnerSchedule({ actorId }) {
     } finally {
       setSaving(false);
     }
-  }, [actorId, refresh]);
+  }, [callerActorId, refresh]);
 
-  // Detail modal
   const openDetailModal  = useCallback((booking) => { setDetailModal(booking); setSaveError(null); }, []);
   const closeDetailModal = useCallback(() => setDetailModal(null), []);
 
@@ -112,7 +112,7 @@ export function useVportOwnerSchedule({ actorId }) {
     setSaving(true);
     setSaveError(null);
     try {
-      await updateBookingStatusController({ bookingId, status });
+      await updateBookingStatusController({ bookingId, status, callerActorId });
       setDetailModal(null);
       refresh();
     } catch (e) {
@@ -120,13 +120,13 @@ export function useVportOwnerSchedule({ actorId }) {
     } finally {
       setSaving(false);
     }
-  }, [refresh]);
+  }, [callerActorId, refresh]);
 
   const rescheduleBooking = useCallback(async ({ bookingId, startsAt, endsAt, resourceId, durationMinutes }) => {
     setSaving(true);
     setSaveError(null);
     try {
-      await rescheduleBookingController({ bookingId, startsAt, endsAt, resourceId, durationMinutes });
+      await rescheduleBookingController({ bookingId, startsAt, endsAt, resourceId, durationMinutes, callerActorId });
       setDetailModal(null);
       refresh();
     } catch (e) {
@@ -134,7 +134,7 @@ export function useVportOwnerSchedule({ actorId }) {
     } finally {
       setSaving(false);
     }
-  }, [refresh]);
+  }, [callerActorId, refresh]);
 
   const isToday = todayKey() === dateKey;
 
