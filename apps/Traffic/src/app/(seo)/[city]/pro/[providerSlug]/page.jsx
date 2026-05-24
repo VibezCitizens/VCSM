@@ -173,8 +173,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CountryProviderPage({ params }) {
-  const { city, providerSlug } = await params;
-  const graph = buildProviderGraph(city, providerSlug);
+  const { city: cityParam, providerSlug } = await params;
+  const graph = buildProviderGraph(cityParam, providerSlug);
   if (!graph) notFound();
 
   if (graph.needsCountryRedirect) {
