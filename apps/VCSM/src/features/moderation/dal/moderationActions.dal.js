@@ -9,6 +9,12 @@
 
 import { supabase } from "@/services/supabase/supabaseClient";
 
+// Allowlist mirrors the DB RLS WITH CHECK on moderation.actions:
+// action_type = ANY (ARRAY['hide', 'unhide'])
+// Reject at the DAL layer before the round-trip to avoid silent failures
+// if the DB policy is ever tightened or a typo slips through a caller.
+const ALLOWED_ACTION_TYPES = new Set(['hide', 'unhide']);
+
 const MOD_ACTION_SELECT = `
   id,
   report_id,
@@ -42,6 +48,11 @@ export async function insertModerationActionDAL({
   if (!targetType) throw new Error("insertModerationActionDAL: targetType required");
   if (!targetId) throw new Error("insertModerationActionDAL: targetId required");
   if (!actionType) throw new Error("insertModerationActionDAL: actionType required");
+  if (!ALLOWED_ACTION_TYPES.has(actionType)) {
+    throw new Error(
+      `insertModerationActionDAL: invalid actionType "${actionType}" — must be one of: ${[...ALLOWED_ACTION_TYPES].join(', ')}`
+    );
+  }
 
   const { data, error } = await supabase
     .schema("moderation")
