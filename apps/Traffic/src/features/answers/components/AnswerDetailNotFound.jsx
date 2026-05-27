@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTrafficLanguage } from "@/lib/language";
 
 export function AnswerDetailNotFound() {
@@ -9,7 +10,7 @@ export function AnswerDetailNotFound() {
     <section className="answers-detail__empty">
       <h2>{t("answers.notFoundTitle")}</h2>
       <p>{t("answers.notFoundBody")}</p>
-      <a href="/answers">{t("answers.browseAnswers")}</a>
+      <Link href="/answers">{t("answers.browseAnswers")}</Link>
     </section>
   );
 }

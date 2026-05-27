@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTrafficLanguage } from "@/lib/language";
 
 export function AnswerIndexHero() {
@@ -10,9 +11,9 @@ export function AnswerIndexHero() {
       <p>{t("answers.brand")}</p>
       <h1>{t("answers.indexTitle")}</h1>
       <p>{t("answers.indexSubtitle")}</p>
-      <a href="/ask" aria-disabled="true">
+      <Link href="/ask" aria-disabled="true">
         {t("answers.askSoon")}
-      </a>
+      </Link>
     </header>
   );
 }
@@ -44,7 +45,7 @@ export function AnswerIndexList({ pages }) {
         <ul>
           {pages.map((page) => (
             <li key={page.question.id}>
-              <a href={page.seo.canonicalPath}>{page.question.title}</a>
+              <Link href={page.seo.canonicalPath}>{page.question.title}</Link>
               <p>{page.seo.description}</p>
             </li>
           ))}
