@@ -38,6 +38,23 @@ export async function createBooking({
   if (!serviceLabelSnapshot)  throw new Error('[BookingEngine] serviceLabelSnapshot is required')
   if (!durationMinutes)       throw new Error('[BookingEngine] durationMinutes is required')
 
+  // durationMinutes bounds — checked before any DB call so validation fails fast.
+  if (typeof durationMinutes !== 'number' || durationMinutes <= 0) {
+    throw new Error('[BookingEngine] durationMinutes must be greater than 0')
+  }
+  if (durationMinutes > 1440) {
+    throw new Error('[BookingEngine] durationMinutes cannot exceed 1440 (24 hours)')
+  }
+
+  // Source allowlist — unknown sources are rejected immediately before any resource lookup
+  // or ownership check to prevent unaudited booking paths.
+  const ALL_SOURCES = new Set([...MANAGEMENT_SOURCES, ...CITIZEN_SOURCES])
+  if (!ALL_SOURCES.has(String(source))) {
+    throw new Error(
+      `[BookingEngine] Unknown booking source: "${source}". Allowed: ${[...ALL_SOURCES].join(', ')}`
+    )
+  }
+
   // Resolve resourceId from locationId (any_available mode) when not explicitly given.
   // Location-based resolution always points to vport.resources.
   let resolvedResourceId = resourceId

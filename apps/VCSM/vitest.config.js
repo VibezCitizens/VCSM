@@ -17,5 +17,10 @@ export default defineConfig({
     // Controller tests are pure Node — no DOM needed.
     // Switch to 'jsdom' only when testing components.
     environment: 'node',
+    // Include VCSM app tests AND booking engine tests (engine uses relative imports — no alias needed).
+    include: [
+      'src/**/__tests__/*.test.js',
+      '../../engines/booking/src/**/__tests__/*.test.js',
+    ],
   },
 })

@@ -46,6 +46,25 @@ export async function dalReadActorOwnerLink({ targetActorId, userProfileId }) {
   return data ?? null
 }
 
+/**
+ * Resolve the canonical profile_slug for a VPORT actor.
+ * Used in notification linkPath to avoid exposing raw UUIDs in public-facing links.
+ * Returns null (never throws) so callers can safely omit the linkPath when slug is unavailable.
+ */
+export async function dalGetVportProfileSlugByActorId({ actorId } = {}) {
+  if (!actorId) return null
+  try {
+    const { data } = await getVportClient()
+      .from('profiles')
+      .select('profile_slug')
+      .eq('actor_id', actorId)
+      .maybeSingle()
+    return data?.profile_slug ?? null
+  } catch {
+    return null
+  }
+}
+
 export async function dalReadVportServicesByActor({ actorId, includeDisabled = true }) {
   if (!actorId) throw new Error('BookingEngine: actorId is required')
 

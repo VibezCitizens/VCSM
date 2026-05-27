@@ -5,6 +5,7 @@ import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controlle
 import { mapBookingRow } from '../model/Booking.model.js'
 import { getNotifyFn } from '../config.js'
 import { BOOKING_EVENTS } from '../events.js'
+import { dalGetVportProfileSlugByActorId } from '../dal/actor.read.dal.js'
 
 export async function cancelBooking({ bookingId, requestActorId, cancelNote = undefined } = {}) {
   if (!bookingId)      throw new Error('[BookingEngine] bookingId is required')
@@ -35,13 +36,18 @@ export async function cancelBooking({ bookingId, requestActorId, cancelNote = un
 
   const recipientActorId = isCustomer ? resource?.owner_actor_id : booking.customer_actor_id
   if (recipientActorId && String(requestActorId) !== String(recipientActorId)) {
+    // Resolve canonical slug — raw actor UUIDs must never appear in public-facing notification links.
+    // dalGetVportProfileSlugByActorId returns null on failure; linkPath is omitted when slug is unavailable.
+    const ownerSlug = resource?.owner_actor_id
+      ? await dalGetVportProfileSlugByActorId({ actorId: resource.owner_actor_id })
+      : null
     getNotifyFn()?.({
       recipientActorId,
       actorId: requestActorId,
       kind: BOOKING_EVENTS.CANCELLED,
       objectType: 'booking',
       objectId: bookingId,
-      linkPath: `/profile/${resource?.owner_actor_id ?? ''}?tab=book`,
+      linkPath: ownerSlug ? `/profile/${ownerSlug}?tab=book` : undefined,
       context: {
         serviceLabelSnapshot: booking.service_label_snapshot,
         startsAt: booking.starts_at,
