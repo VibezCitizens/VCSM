@@ -14,6 +14,7 @@ import { setupVcsmPortfolioEngine } from '@/features/portfolio/setup'
 import { setupVcsmNotificationsEngine } from '@/features/notifications/setup'
 import { setupVcsmBookingEngine } from '@/features/booking/setup'
 import { setupVcsmMediaEngine } from '@/features/media/setup'
+import { initMonitoring } from '@/services/monitoring/monitoring'
 
 // Configure engines before any component renders or auth checks run.
 setupVcsmIdentityEngine()
@@ -24,6 +25,9 @@ setupVcsmPortfolioEngine()
 setupVcsmNotificationsEngine()
 setupVcsmBookingEngine()
 setupVcsmMediaEngine()
+
+// Initialize error monitoring. No-op when VITE_SENTRY_DSN is absent.
+initMonitoring()
 
 import App from './App'
 import { QueryClientProvider } from '@tanstack/react-query'

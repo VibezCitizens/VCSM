@@ -15,7 +15,10 @@
     "test:load:auth": "node src/scripts/load/simulateAuthenticatedActors.mjs",
     "test:load:auth:1000": "node src/scripts/load/simulateAuthenticatedActors.mjs --users=1000 --concurrency=80 --seedConcurrency=25 --actions=4 --seedMissing=0",
     "legal:check-files": "node scripts/legal/check-legal-files.mjs",
-    "legal:release": "node scripts/legal/generate-legal-migration.mjs"
+    "legal:release": "node scripts/legal/generate-legal-migration.mjs",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",
@@ -26,6 +29,7 @@
     "@ffmpeg/util": "^0.12.2",
     "@headlessui/react": "^2.2.9",
     "@hookform/resolvers": "^5.2.2",
+    "@sentry/react": "^10.54.0",
     "@stripe/stripe-js": "^8.1.0",
     "@supabase/supabase-js": "^2.50.0",
     "@tanstack/react-query": "^5.90.5",
@@ -72,6 +76,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "@vitest/coverage-v8": "^4.1.7",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -80,6 +85,7 @@
     "postcss": "^8.5.6",
     "unocss": "^66.2.3",
     "vite": "^6.3.5",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "vitest": "^4.1.7"
   }
 }

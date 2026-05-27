@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "vport-*", "feature/*"]
+  pull_request:
+    branches: [main, develop]
+
+# One CI run per branch at a time — cancel any in-progress run when a new
+# push lands on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # VCSM — React 19 + Vite social platform
+  # ─────────────────────────────────────────────────────────────────────────────
+  vcsm:
+    name: VCSM — install / build / test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/VCSM/package-lock.json
+
+      # VCSM vite.config.js reads envDir:'../../' (repo root).
+      # These are SAFE DUMMY VALUES — they allow vite build to inline
+      # non-empty strings. They do not connect to any real Supabase project.
+      # Real credentials are never committed and never needed for unit tests
+      # (the DAL layer is fully mocked in vitest).
+      - name: Write CI .env (dummy values for vite build)
+        run: |
+          cat > .env << 'EOF'
+          VITE_SUPABASE_URL=https://ci-placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-placeholder
+          VITE_PUBLIC_REALM_ID=00000000-0000-0000-0000-000000000001
+          VITE_VOID_REALM_ID=00000000-0000-0000-0000-000000000002
+          EOF
+
+      - name: Install
+        working-directory: apps/VCSM
+        run: npm ci
+
+      - name: Build
+        working-directory: apps/VCSM
+        run: npm run build
+
+      - name: Unit tests
+        working-directory: apps/VCSM
+        run: npm run test:run
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Wentrex — standalone multi-tenant LMS SaaS
+  # ─────────────────────────────────────────────────────────────────────────────
+  wentrex:
+    name: Wentrex — install / build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/wentrex/package-lock.json
+
+      # Wentrex vite.config.js also reads envDir:'../../' (repo root).
+      # Same dummy pattern as VCSM — safe placeholder values only.
+      - name: Write CI .env (dummy values for vite build)
+        run: |
+          cat > .env << 'EOF'
+          VITE_SUPABASE_URL=https://ci-placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-placeholder
+          EOF
+
+      - name: Install
+        working-directory: apps/wentrex
+        run: npm ci
+
+      - name: Build
+        working-directory: apps/wentrex
+        run: npm run build
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Traffic — Next.js 15 static site (programmatic SEO directory engine)
+  # No env vars required — all have hard-coded defaults in src/lib/env.js.
+  # No typecheck step — Traffic source is .jsx/.js only (no .ts/.tsx files).
+  # ─────────────────────────────────────────────────────────────────────────────
+  traffic:
+    name: Traffic — install / build / lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/Traffic/package-lock.json
+
+      - name: Install
+        working-directory: apps/Traffic
+        run: npm ci
+
+      - name: Build
+        working-directory: apps/Traffic
+        run: npm run build
+
+      - name: Lint
+        working-directory: apps/Traffic
+        run: npm run lint
