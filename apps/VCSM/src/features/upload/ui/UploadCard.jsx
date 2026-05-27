@@ -1,33 +1,72 @@
+import { useState } from "react";
 import { useTranslation } from "@i18n";
 import { MAX_VIBES_PHOTOS } from "../hooks/useMediaSelection";
 
 export default function UploadCard({
   isVibes,
   selectedCount,
-  onPick,
+  onPick,   // kept for API compatibility — label handles activation natively
   inputRef,
   onChosen,
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
+  const [isDragging, setIsDragging] = useState(false);
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(e) {
+    // Only clear when the drag leaves the card entirely (not just a child boundary)
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging(false);
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer?.files?.length) {
+      onChosen(e.dataTransfer.files);
+    }
+  }
+
   return (
-    <div
-      className="upload-card upload-card-pressable relative overflow-hidden rounded-3xl px-6 py-8 text-center"
-      onClick={onPick}
+    <label
+      className={`upload-card upload-card-pressable relative block overflow-hidden rounded-3xl px-6 py-8 text-center${isDragging ? ' upload-card--drag' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
+      {/*
+        Invisible file input that covers the entire card.
+        Using opacity-0 + absolute inset instead of display:none so that:
+        - Firefox does NOT render the native "Browse… No files selected." UI
+        - The element remains in the accessibility tree (focusable, keyboard-operable)
+        - Drag-and-drop targets this element natively in all browsers
+        The wrapping <label> activates this input on any click within the card.
+      */}
       <input
         type="file"
         ref={inputRef}
-        style={{ display: 'none' }}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        style={{ zIndex: 20 }}
         accept="image/*,video/*"
         multiple={isVibes}
         onChange={(e) => onChosen(e.target.files)}
       />
 
+      {/* Background glow — no pointer events, sits behind content */}
       <div className="pointer-events-none absolute inset-0 opacity-60">
         <div className="absolute -inset-24 bg-purple-500/8 blur-3xl" />
       </div>
 
-      <div className="relative z-10">
+      {/*
+        pointer-events-none so clicks fall through to the input overlay above,
+        and drag events bubble up to the label's drag handlers.
+      */}
+      <div className="pointer-events-none relative z-10">
         <div className="upload-plus mx-auto mb-4">
           <span>+</span>
         </div>
@@ -43,6 +82,6 @@ export default function UploadCard({
           </div>
         )}
       </div>
-    </div>
+    </label>
   );
 }

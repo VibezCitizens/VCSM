@@ -191,7 +191,7 @@ export default function PortfolioItemForm({
         </div>
       ) : null}
 
-      <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleFiles} />
+      <input ref={fileRef} type="file" accept="image/*" multiple className="sr-only" onChange={handleFiles} />
 
       {isEdit && existingMediaCount > 0 && !files.length ? (
         <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/6 bg-white/[0.02] px-3 py-2.5 text-xs text-white/40">

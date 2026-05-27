@@ -54,7 +54,8 @@ export default function ProfileTabView({
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <input ref={bannerInputRef} type="file" accept="image/*" onChange={onPickBanner} style={{ display: 'none' }} />
+            {/* sr-only: keeps input in DOM (ref.click() works) but never renders native browser UI in any browser */}
+            <input ref={bannerInputRef} type="file" accept="image/*" onChange={onPickBanner} className="sr-only" />
             <button
               type="button"
               onClick={() => bannerInputRef.current?.click()}
@@ -86,7 +87,8 @@ export default function ProfileTabView({
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <input ref={avatarInputRef} type="file" accept="image/*" onChange={onPickAvatar} style={{ display: 'none' }} />
+              {/* sr-only: keeps input in DOM (ref.click() works) but never renders native browser UI in any browser */}
+              <input ref={avatarInputRef} type="file" accept="image/*" onChange={onPickAvatar} className="sr-only" />
               <button
                 type="button"
                 onClick={() => avatarInputRef.current?.click()}

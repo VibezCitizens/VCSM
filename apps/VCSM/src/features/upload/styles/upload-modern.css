@@ -95,6 +95,13 @@
   transform: scale(0.99);
 }
 
+.upload-modern .upload-card--drag {
+  border-color: var(--vc-accent-primary);
+  box-shadow:
+    0 0 0 1px var(--vc-accent-primary),
+    var(--vc-shadow-glow);
+}
+
 .upload-modern .upload-plus {
   width: 4rem;
   height: 4rem;
