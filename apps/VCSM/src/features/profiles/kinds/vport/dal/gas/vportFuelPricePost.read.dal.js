@@ -1,3 +1,6 @@
+// Two schema selectors from the same Supabase connection — not two separate projects.
+//   vportSchema → vport.* tables (station profiles, settings, fuel prices)
+//   supabase    → vc.* tables (posts, actors, feeds)
 import { supabase } from "@/services/supabase/supabaseClient";
 import vportSchema from "@/services/supabase/vportClient";
 

@@ -1,25 +1,30 @@
 import { useMemo, useState, useEffect } from "react";
+import { useSubmitBulkFuelPrices } from "@/features/profiles/kinds/vport/hooks/gas/useSubmitBulkFuelPrices";
 
 export function BulkUpdateFuelPricesModal({
   open,
   onClose,
   rows,
-  submitting,
   submitSuggestion,
   afterSubmitSuggestion = null,
   canShareToFeed = false,
   onShareToFeed = null,
 }) {
   const [values, setValues] = useState({});
-  const [localError, setLocalError] = useState(null);
   const [shareToFeed, setShareToFeed] = useState(false);
+
+  const { handleSubmit, running, error, clearError } = useSubmitBulkFuelPrices({
+    submitSuggestion,
+    afterSubmitSuggestion,
+    onShareToFeed,
+  });
 
   useEffect(() => {
     if (!open) return;
     setValues({});
-    setLocalError(null);
+    clearError();
     setShareToFeed(false);
-  }, [open]);
+  }, [open, clearError]);
 
   const anyValue = useMemo(() => {
     return Object.values(values).some(
@@ -42,9 +47,9 @@ export function BulkUpdateFuelPricesModal({
           <button
             type="button"
             aria-label="Close"
-            onClick={submitting ? undefined : onClose}
+            onClick={running ? undefined : onClose}
             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/90 hover:bg-black/50 disabled:opacity-60"
-            disabled={submitting}
+            disabled={running}
           >
             X
           </button>
@@ -76,7 +81,7 @@ export function BulkUpdateFuelPricesModal({
                         setValues((s) => ({ ...s, [row.fuelKey]: next }));
                       }}
                       className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-black placeholder:text-zinc-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-300/25"
-                      disabled={submitting}
+                      disabled={running}
                     />
                   </div>
                 </div>
@@ -94,9 +99,9 @@ export function BulkUpdateFuelPricesModal({
             ))}
           </div>
 
-          {localError ? (
+          {error ? (
             <div className="profiles-error mt-4 rounded-2xl p-3 text-sm">
-              {String(localError?.message ?? localError)}
+              {String(error?.message ?? error)}
             </div>
           ) : null}
         </div>
@@ -108,8 +113,16 @@ export function BulkUpdateFuelPricesModal({
                 type="checkbox"
                 checked={shareToFeed}
                 onChange={(e) => setShareToFeed(e.target.checked)}
-                disabled={submitting}
-                style={{ appearance: "auto", WebkitAppearance: "checkbox", width: 16, height: 16, margin: 0, accentColor: "#38bdf8", flexShrink: 0 }}
+                disabled={running}
+                style={{
+                  appearance: "auto",
+                  WebkitAppearance: "checkbox",
+                  width: 16,
+                  height: 16,
+                  margin: 0,
+                  accentColor: "#38bdf8",
+                  flexShrink: 0,
+                }}
               />
               <span className="text-xs text-white/70">Share this update to my feed</span>
             </label>
@@ -120,84 +133,21 @@ export function BulkUpdateFuelPricesModal({
           <button
             type="button"
             onClick={onClose}
-            disabled={submitting}
+            disabled={running}
             className="profiles-pill-btn rounded-2xl px-4 py-2 text-sm font-semibold disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             type="button"
-            disabled={!anyValue || submitting}
+            disabled={!anyValue || running}
             onClick={async () => {
-              setLocalError(null);
-
-              // Validate all rows first before touching the DB
-              const validRows = [];
-              for (const row of rows) {
-                const raw = values[row.fuelKey];
-                if (raw === undefined || raw === null || String(raw).trim() === "") continue;
-                const proposedPrice = Number(raw);
-                if (!Number.isFinite(proposedPrice) || proposedPrice <= 0) {
-                  setLocalError(`Invalid number for ${row.label}`);
-                  return;
-                }
-                validRows.push({ row, proposedPrice });
-              }
-
-              if (validRows.length === 0) return;
-
-              // Submit all in parallel
-              const results = await Promise.all(
-                validRows.map(({ row, proposedPrice }) =>
-                  submitSuggestion?.({
-                    fuelKey: row.fuelKey,
-                    proposedPrice,
-                    currencyCode: row.official.currencyCode ?? "USD",
-                    unit: row.official.unit ?? "liter",
-                  }).then((res) => ({ row, proposedPrice, res }))
-                )
-              );
-
-              const firstFail = results.find((r) => !r.res?.ok);
-              if (firstFail) {
-                setLocalError(firstFail.res?.reason ?? "Failed to submit");
-                return;
-              }
-
-              const updatedFuels = results
-                .filter((r) => r.res?.official)
-                .map((r) => ({
-                  fuelKey: r.res.official.fuelKey ?? r.row.fuelKey,
-                  price: r.res.official.price,
-                  currencyCode: r.res.official.currencyCode ?? "USD",
-                  unit: r.res.official.unit ?? "liter",
-                }));
-
-              // Review/approve all in parallel — single refresh wave at the end
-              if (afterSubmitSuggestion) {
-                await Promise.allSettled(
-                  results.map(({ row, proposedPrice, res }) => {
-                    const submissionId =
-                      res?.submissionId ?? res?.id ?? res?.submission?.id ?? null;
-                    if (!submissionId) return Promise.resolve();
-                    return afterSubmitSuggestion({ submissionId, fuelKey: row.fuelKey, proposedPrice });
-                  })
-                );
-              }
-
-              if (shareToFeed && onShareToFeed && updatedFuels.length > 0) {
-                try {
-                  await onShareToFeed({ updatedFuels });
-                } catch {
-                  // Non-blocking — price update already committed
-                }
-              }
-
-              onClose();
+              const result = await handleSubmit(rows, values, { shareToFeed });
+              if (result?.ok) onClose();
             }}
             className="rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(56,189,248,0.22)] hover:from-sky-300/55 hover:to-blue-500/55 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {submitting ? "Submitting..." : "Save updates"}
+            {running ? "Submitting..." : "Save updates"}
           </button>
         </div>
       </div>

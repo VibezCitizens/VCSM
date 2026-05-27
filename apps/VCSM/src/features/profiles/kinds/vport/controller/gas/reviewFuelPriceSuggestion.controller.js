@@ -1,11 +1,13 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\profiles\kinds\vport\controller\gas\reviewFuelPriceSuggestion.controller.js
 
-import { fetchFuelPriceSubmissionByIdDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceSubmissions.read.dal";
+import { fetchFuelPriceSubmissionByIdDAL, invalidatePendingSubmissionsCache } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceSubmissions.read.dal";
 import {
   createFuelPriceSubmissionReviewDAL,
   updateFuelPriceSubmissionStatusDAL,
 } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceReviews.write.dal";
-import { upsertVportFuelPriceDAL, resolveActorIdFromProfileId } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.write.dal";
+import { upsertVportFuelPriceDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.write.dal";
+import { resolveActorIdFromProfileId } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPrices.read.dal";
+import { checkVportOwnershipController } from "@/features/profiles/adapters/kinds/vport/ownership.adapter";
 import { createVportFuelPriceHistoryDAL } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPriceHistory.write.dal";
 
 import { mapFuelPriceSubmissionRow } from "@/features/profiles/kinds/vport/model/gas/vportFuelPriceSubmission.model";
@@ -32,6 +34,18 @@ export async function reviewFuelPriceSuggestionController({
   if (subErr) throw subErr;
   if (!subRow) throw new Error("submission not found");
 
+  // ✅ SECURITY: resolve station owner before any write.
+  // submissions carry profile_id — resolve the VPORT actor_id first,
+  // then verify the caller actually owns that station via actor_owners.
+  const targetActorId = await resolveActorIdFromProfileId(subRow.profile_id);
+  if (!targetActorId) throw new Error("could not resolve actor_id from submission profile_id");
+
+  const isOwner = await checkVportOwnershipController({
+    callerActorId: decidedByActorId,
+    targetActorId,
+  });
+  if (!isOwner) return { ok: false, reason: "not_owner" };
+
   if (subRow.status !== "pending") {
     return {
       ok: false,
@@ -52,16 +66,15 @@ export async function reviewFuelPriceSuggestionController({
 
   if (updErr) throw updErr;
 
+  // Submission status changed — pending list is stale for this station.
+  invalidatePendingSubmissionsCache(targetActorId);
+
   let official = null;
   let appliedToOfficial = false;
 
   // ✅ this is the ONLY thing that writes "official prices"
+  // targetActorId was already resolved and ownership verified above.
   if (decision === "approved" && applyToOfficialOnApprove) {
-    // submissions table stores profile_id, not target_actor_id —
-    // resolve actor_id before calling DALs that key by actor
-    const targetActorId = await resolveActorIdFromProfileId(updatedSubRow.profile_id);
-    if (!targetActorId) throw new Error("could not resolve actor_id from submission profile_id");
-
     const { data: officialRow, error: officialErr } =
       await upsertVportFuelPriceDAL({
         targetActorId,

@@ -4,6 +4,7 @@ import {
 } from "@/features/profiles/kinds/vport/dal/gas/vportFuelPricePost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
+import { checkVportOwnershipController } from "@/features/profiles/adapters/kinds/vport/ownership.adapter";
 
 const DEDUP_WINDOW_MS = 60 * 60 * 1000;
 
@@ -41,11 +42,29 @@ export async function publishFuelPriceUpdateAsPostController({ actorId, updatedF
   const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
+  // ✅ SECURITY (F-002): verify actorId is a legitimate VPORT owner via actor_owners.
+  // createSystemPost accepts actorId from caller without ownership verification —
+  // this gate ensures only verified VPORT owners can post on behalf of their station.
+  const isValidVport = await checkVportOwnershipController({
+    callerActorId: actorId,
+    targetActorId: actorId,
+  });
+  if (!isValidVport) return { published: false, reason: "not_owner" };
+
+  // ✅ INPUT VALIDATION (F-010): filter to entries with a known fuelKey and a
+  // finite non-negative price. Caller-supplied fuelKey strings and prices must
+  // not reach buildPostText or the public feed unvalidated.
+  const validFuels = updatedFuels.filter(({ fuelKey, price }) => {
+    const p = Number(price);
+    return FUEL_LABELS[fuelKey] !== undefined && Number.isFinite(p) && p >= 0;
+  });
+  if (validFuels.length === 0) return { published: false, reason: "no_valid_fuels" };
+
   const recent = await hasRecentFuelPricePostDAL({ actorId, windowMs: DEDUP_WINDOW_MS });
   if (recent) return { published: false, reason: "throttled" };
 
   const stationName = await resolveVportStationNameDAL(actorId);
-  const text = buildPostText({ stationName, updatedFuels });
+  const text = buildPostText({ stationName, updatedFuels: validFuels });
 
   const created = await createSystemPost({
     actorId,
