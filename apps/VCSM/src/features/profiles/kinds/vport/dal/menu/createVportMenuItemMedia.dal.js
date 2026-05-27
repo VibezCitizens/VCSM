@@ -1,15 +1,7 @@
 import vport from '@/services/supabase/vportClient'
+import { resolveVportProfileId } from '@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal'
 
 const MEDIA_SELECT = 'id,profile_id,item_id,url,kind,sort_order,is_active,media_asset_id,created_at,updated_at'
-
-async function resolveProfileId(actorId) {
-  const { data } = await vport
-    .from('profiles')
-    .select('id')
-    .eq('actor_id', actorId)
-    .maybeSingle()
-  return data?.id ?? null
-}
 
 /**
  * Insert a row into vport.menu_item_media.
@@ -20,7 +12,7 @@ export async function createVportMenuItemMediaDAL({ actorId, itemId, url, kind =
   if (!itemId)  throw new Error('createVportMenuItemMediaDAL: itemId is required')
   if (!url)     throw new Error('createVportMenuItemMediaDAL: url is required')
 
-  const profileId = await resolveProfileId(actorId)
+  const profileId = await resolveVportProfileId(actorId)
   if (!profileId) return null
 
   const { data, error } = await vport

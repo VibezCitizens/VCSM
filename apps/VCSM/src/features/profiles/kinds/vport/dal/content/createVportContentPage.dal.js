@@ -1,6 +1,7 @@
 // src/features/profiles/kinds/vport/dal/content/createVportContentPage.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
+import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
 
 export async function readContentPageSlugsByPrefixDAL({ actorId, slugPrefix }) {
   const { data } = await vportSchema
@@ -15,15 +16,6 @@ export async function readContentPageSlugsByPrefixDAL({ actorId, slugPrefix }) {
 const CONTENT_SELECT =
   "id,actor_id,profile_id,title,slug,excerpt,body,category,service_keys,is_published,is_indexable,published_at,created_at,updated_at";
 
-async function resolveProfileId(actorId) {
-  const { data } = await vportSchema
-    .from("profiles")
-    .select("id")
-    .eq("actor_id", actorId)
-    .maybeSingle();
-  return data?.id ?? null;
-}
-
 export async function createVportContentPageDAL({
   actorId,
   title,
@@ -35,7 +27,7 @@ export async function createVportContentPageDAL({
 } = {}) {
   if (!actorId) throw new Error("createVportContentPageDAL: actorId is required");
 
-  const profileId = await resolveProfileId(actorId);
+  const profileId = await resolveVportProfileId(actorId);
   if (!profileId) throw new Error("createVportContentPageDAL: vport profile not found for actor");
 
   const { data, error } = await vportSchema
