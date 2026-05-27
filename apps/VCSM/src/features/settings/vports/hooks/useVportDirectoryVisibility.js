@@ -1,20 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
 import { useIdentity } from "@/state/identity/identityContext";
-import { ctrlResolveVportIdByActorId } from "@/features/settings/profile/controller/resolveVportIdByActorId.controller";
 import {
   ctrlGetVportDirectoryState,
   ctrlSetVportDirectoryVisible,
 } from "@/features/settings/vports/controller/vportDirectoryVisibility.controller";
 
 /**
- * Loads and manages directory_visible / directory_status for a vport by actorId.
- * VPD-V-026: ownership is now enforced at the controller layer (callerActorId + vportActorId).
+ * Loads and manages directory_visible / directory_status for a vport.
+ *
+ * VPD-V-026: ownership is enforced at the controller layer (callerActorId + vportActorId).
  * The DAL retains owner_user_id = auth.uid() as defense-in-depth.
+ *
+ * VPD-V-FIX-003: vportId is now pre-resolved by the parent (useResolvedVportId)
+ * and passed as the second argument. This eliminates the duplicate DB resolution
+ * that previously fired alongside useVportBusinessCardSettings on settings screen
+ * mount. If vportId is null the hook stays in loading state until it arrives.
+ *
+ * @param {string} actorId          - The VPORT's actorId (used as ownership target)
+ * @param {string|null} vportId     - Pre-resolved profile ID; if null, stays loading
  */
-export function useVportDirectoryVisibility(actorId) {
+export function useVportDirectoryVisibility(actorId, vportId = null) {
   const { identity } = useIdentity();
   const callerActorId = identity?.actorId ?? null;
-  const [vportId, setVportId] = useState(null);
   const [directoryVisible, setDirectoryVisible] = useState(null);
   const [directoryStatus, setDirectoryStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,18 +33,18 @@ export function useVportDirectoryVisibility(actorId) {
       setIsLoading(false);
       return;
     }
+    if (!vportId) {
+      // vportId not yet resolved by parent — stay in loading state
+      setIsLoading(true);
+      return;
+    }
 
     let alive = true;
     setIsLoading(true);
 
     async function load() {
       try {
-        const vid = await ctrlResolveVportIdByActorId(actorId);
-        if (!alive) return;
-        setVportId(vid);
-        if (!vid) { setIsLoading(false); return; }
-
-        const state = await ctrlGetVportDirectoryState({ vportId: vid });
+        const state = await ctrlGetVportDirectoryState({ vportId });
         if (!alive) return;
         setDirectoryVisible(state?.directory_visible ?? true);
         setDirectoryStatus(state?.directory_status ?? "pending");
@@ -50,7 +57,7 @@ export function useVportDirectoryVisibility(actorId) {
 
     load();
     return () => { alive = false; };
-  }, [actorId]);
+  }, [actorId, vportId]);
 
   const toggle = useCallback(async (visible) => {
     if (!vportId || isSaving) return;
@@ -66,7 +73,7 @@ export function useVportDirectoryVisibility(actorId) {
     } finally {
       setIsSaving(false);
     }
-  }, [vportId, isSaving]);
+  }, [vportId, isSaving, callerActorId, actorId]);
 
   return { directoryVisible, directoryStatus, isLoading, isSaving, error, toggle };
 }

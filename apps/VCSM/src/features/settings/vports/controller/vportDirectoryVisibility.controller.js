@@ -1,5 +1,8 @@
 import { readVportDirectoryStateDAL } from "@/features/settings/vports/dal/vports.read.dal";
-import { setVportDirectoryVisibleDAL } from "@/features/settings/vports/dal/vports.write.dal";
+import {
+  setVportDirectoryVisibleDAL,
+  syncDirectoryVisibleToPublicDetailsDAL,
+} from "@/features/settings/vports/dal/vports.write.dal";
 import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 export async function ctrlGetVportDirectoryState({ vportId }) {
@@ -28,5 +31,19 @@ export async function ctrlSetVportDirectoryVisible({ vportId, visible, callerAct
   // Controller-layer ownership gate — verifies actor_owners link and void/kind state.
   await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
 
-  return setVportDirectoryVisibleDAL(vportId, Boolean(visible));
+  const result = await setVportDirectoryVisibleDAL(vportId, Boolean(visible));
+
+  // VPD-V-FIX-002: Non-critical secondary sync moved from DAL to controller layer.
+  // vport.profiles is authoritative. Failure here is non-blocking but logged
+  // so drift between tables is visible in monitoring.
+  try {
+    await syncDirectoryVisibleToPublicDetailsDAL(vportId, Boolean(visible));
+  } catch (syncErr) {
+    console.warn(
+      "[ctrlSetVportDirectoryVisible] profile_public_details sync failed (non-blocking):",
+      syncErr?.message ?? syncErr
+    );
+  }
+
+  return result;
 }

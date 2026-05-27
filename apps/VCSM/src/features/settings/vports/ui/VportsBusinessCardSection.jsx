@@ -2,9 +2,10 @@ import { Check, Copy, ExternalLink, QrCode as QrIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from '@i18n'
 import Card from '@/features/settings/ui/Card'
+import { buildBusinessCardQrUrl } from '@/lib/qrUrlBuilders'
 
 function handleCopyLink(v, setCopiedId) {
-  const url = `https://vibezcitizens.com/vport/${v.slug}/card`
+  const url = buildBusinessCardQrUrl(v.slug)
   if (navigator.clipboard?.writeText) {
     navigator.clipboard.writeText(url).then(() => {
       setCopiedId(v.id)
@@ -43,7 +44,7 @@ export function VportsBusinessCardSection({
           const isDisabled = v.is_deleted || !v.is_active
           const isBusy = busyCardPublishId === v.id
           const isPublished = !!v.business_card_published
-          const cardUrl = `https://vibezcitizens.com/vport/${v.slug}/card`
+          const cardUrl = buildBusinessCardQrUrl(v.slug)
           const isCopied = copiedId === v.id
 
           return (
