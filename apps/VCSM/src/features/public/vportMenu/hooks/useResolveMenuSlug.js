@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { resolveMenuSlugController } from '../controller/resolveMenuSlug.controller'
+import { resolveMenuSlugController } from '@/features/public/vportMenu/controller/resolveMenuSlug.controller'
 
 export function useResolveMenuSlug(slug) {
   const [actorId, setActorId] = useState(null)

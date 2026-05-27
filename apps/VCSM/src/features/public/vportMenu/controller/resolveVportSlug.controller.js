@@ -1,4 +1,4 @@
-import { resolveVportSlugDAL } from '../dal/resolveVportSlug.dal'
+import { resolveVportSlugDAL } from '@/features/public/vportMenu/dal/resolveVportSlug.dal'
 
 export async function resolveVportSlugController(slug) {
   return resolveVportSlugDAL(slug)
