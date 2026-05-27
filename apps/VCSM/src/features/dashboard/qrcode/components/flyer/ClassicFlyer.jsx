@@ -1,5 +1,5 @@
 import React from "react";
-import QRCode from "react-qr-code";
+import { QrCode } from "@/features/dashboard/qrcode/components/QrCode";
 import {
   buildClassicFlyerStyles,
   buildPill,
@@ -143,7 +143,7 @@ export function ClassicFlyer({
               <div className="print-qrOuter" style={s.qrWrapOuter}>
                 <div className="classic-qrInner" style={s.qrWrapInner}>
                   <div className="classic-qrSvg">
-                    <QRCode value={menuUrl} size={240} />
+                    <QrCode value={menuUrl} size={240} bgColor="#ffffff" fgColor="#000000" level="M" />
                   </div>
                 </div>
               </div>

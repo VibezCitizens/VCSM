@@ -12,6 +12,8 @@ export function QrCode({
   fgColor = "#000000",
   level = "M", // L | M | Q | H
   style,
+  title,       // forwarded to SVG — improves screen-reader accessibility
+  className,   // forwarded to SVG — allows caller CSS (e.g. print image-rendering rules)
 }) {
   const v = typeof value === "string" ? value : value == null ? "" : String(value);
 
@@ -19,7 +21,7 @@ export function QrCode({
 
   return (
     <div style={{ width: size, height: size, ...style }}>
-      <QRCode value={v} size={size} bgColor={bgColor} fgColor={fgColor} level={level} />
+      <QRCode value={v} size={size} bgColor={bgColor} fgColor={fgColor} level={level} title={title} className={className} />
     </div>
   );
 }

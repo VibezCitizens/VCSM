@@ -1,18 +1,35 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import QRCode from "react-qr-code";
 import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
+import { QrCode } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
+import { buildReviewsQrUrl } from "@/lib/qrUrlBuilders";
 
+/**
+ * Full-screen QR code card linking to this vport's public reviews page.
+ *
+ * P0 FIX: QR is never rendered until canonicalSlug is resolved.
+ * A raw actorId must never appear in a public-facing QR URL.
+ * Uses the canonical shared QrCode component (not react-qr-code directly).
+ * Uses buildReviewsQrUrl — no hardcoded domains.
+ */
 export function VportPublicReviewsQrView({ actorId }) {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-  const { canonicalSlug } = useActorCanonicalSlug(actorId);
 
-  const reviewsUrl = useMemo(() => {
-    if (!actorId) return "";
-    if (canonicalSlug) return `${window.location.origin}/profile/${canonicalSlug}/reviews`;
-    return `${window.location.origin}/actor/${actorId}/reviews`; // fallback while slug loads
-  }, [actorId, canonicalSlug]);
+  // loading: true while slug is resolving — QR must not render until false.
+  const { canonicalSlug, loading } = useActorCanonicalSlug(actorId);
+
+  // UUID guard: a bare actorId (UUID) must never be encoded in a QR.
+  // The hook returns actorId as canonicalSlug in two cases:
+  //   1. Error path — catch block fallback (network failure, RPC timeout)
+  //   2. No-slug-data path — controller fallback when actor has no name/slug in DB
+  // Both cases produce a truthy canonicalSlug that would bypass the loading gate.
+  // isQrSafeSlug = true only when the slug is a real human-readable canonical slug.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const isQrSafeSlug = !!canonicalSlug && !UUID_RE.test(canonicalSlug);
+
+  // Only build URL from a QR-safe canonical slug — never from a raw UUID.
+  const reviewsUrl = isQrSafeSlug ? buildReviewsQrUrl(canonicalSlug) : "";
 
   if (!actorId) return null;
 
@@ -21,7 +38,10 @@ export function VportPublicReviewsQrView({ actorId }) {
       navigate(-1);
       return;
     }
-    if (canonicalSlug) {
+    // Use isQrSafeSlug — canonicalSlug may be a UUID fallback (truthy but unsafe).
+    // When slug is not QR-safe, fall through to the internal /actor/:id route instead
+    // of exposing the UUID in the browser address bar via /profile/:uuid/reviews.
+    if (isQrSafeSlug) {
       navigate(`/profile/${canonicalSlug}/reviews`, { replace: true });
     } else {
       navigate(`/actor/${actorId}/reviews`, { replace: true });
@@ -80,6 +100,7 @@ export function VportPublicReviewsQrView({ actorId }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close reviews QR"
             style={{
               position: "absolute",
               top: 16,
@@ -94,7 +115,7 @@ export function VportPublicReviewsQrView({ actorId }) {
               cursor: "pointer",
             }}
           >
-            X
+            ✕
           </button>
 
           <div style={{ marginTop: 8, textAlign: "center" }}>
@@ -106,77 +127,122 @@ export function VportPublicReviewsQrView({ actorId }) {
             </div>
           </div>
 
+          {/* QR render gated — only when a QR-safe (non-UUID) slug is resolved */}
           <div style={{ marginTop: 26, display: "flex", justifyContent: "center" }}>
-            <div style={{ borderRadius: 19, background: "#fff", padding: 18 }}>
-              <QRCode value={reviewsUrl} size={220} />
-            </div>
+            {loading || !isQrSafeSlug ? (
+              /* Loading skeleton — never show UUID QR; also shown when profile is incomplete */
+              <div
+                aria-label="Loading QR code"
+                style={{
+                  borderRadius: 19,
+                  background: "rgba(255,255,255,0.06)",
+                  width: 256,
+                  height: 256,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    border: "3px solid rgba(255,255,255,0.15)",
+                    borderTopColor: "rgba(0,255,240,0.6)",
+                    animation: "spin 0.9s linear infinite",
+                  }}
+                />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              </div>
+            ) : (
+              <div
+                role="img"
+                aria-label="QR code linking to reviews page"
+                style={{ borderRadius: 19, background: "#fff", padding: 18 }}
+              >
+                <QrCode
+                  value={reviewsUrl}
+                  size={220}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="M"
+                />
+              </div>
+            )}
           </div>
 
-          <div
-            style={{
-              marginTop: 18,
-              padding: "10px 12px",
-              borderRadius: 14,
-              border: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.03)",
-              fontSize: 12,
-              color: "rgba(255,255,255,0.55)",
-              wordBreak: "break-all",
-              textAlign: "center",
-            }}
-          >
-            {reviewsUrl}
-          </div>
+          {/* URL display and actions — only when QR-safe slug is resolved */}
+          {!loading && isQrSafeSlug && (
+            <>
+              <div
+                style={{
+                  marginTop: 18,
+                  padding: "10px 12px",
+                  borderRadius: 14,
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.03)",
+                  fontSize: 12,
+                  color: "rgba(255,255,255,0.55)",
+                  wordBreak: "break-all",
+                  textAlign: "center",
+                }}
+              >
+                {reviewsUrl}
+              </div>
 
-          <div
-            style={{
-              marginTop: 14,
-              display: "flex",
-              justifyContent: "center",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
-            <a
-              href={reviewsUrl}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                padding: "10px 14px",
-                borderRadius: 14,
-                border: "1px solid rgba(0,255,240,0.22)",
-                background:
-                  "linear-gradient(135deg, rgba(0,255,240,0.18), rgba(124,58,237,0.14), rgba(0,153,255,0.14))",
-                color: "#fff",
-                fontSize: 12,
-                fontWeight: 900,
-                textDecoration: "none",
-                letterSpacing: 0.6,
-                textTransform: "uppercase",
-              }}
-            >
-              Open Reviews
-            </a>
+              <div
+                style={{
+                  marginTop: 14,
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 10,
+                  flexWrap: "wrap",
+                }}
+              >
+                <a
+                  href={reviewsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 14,
+                    border: "1px solid rgba(0,255,240,0.22)",
+                    background:
+                      "linear-gradient(135deg, rgba(0,255,240,0.18), rgba(124,58,237,0.14), rgba(0,153,255,0.14))",
+                    color: "#fff",
+                    fontSize: 12,
+                    fontWeight: 900,
+                    textDecoration: "none",
+                    letterSpacing: 0.6,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Open Reviews
+                </a>
 
-            <button
-              type="button"
-              onClick={onCopy}
-              style={{
-                padding: "10px 14px",
-                borderRadius: 14,
-                border: "1px solid rgba(255,255,255,0.10)",
-                background: "rgba(255,255,255,0.04)",
-                color: "#fff",
-                fontSize: 12,
-                fontWeight: 850,
-                cursor: "pointer",
-                letterSpacing: 0.6,
-                textTransform: "uppercase",
-              }}
-            >
-              {copied ? "Copied" : "Copy Link"}
-            </button>
-          </div>
+                <button
+                  type="button"
+                  onClick={onCopy}
+                  aria-label={copied ? "Link copied" : "Copy reviews link"}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 14,
+                    border: "1px solid rgba(255,255,255,0.10)",
+                    background: "rgba(255,255,255,0.04)",
+                    color: "#fff",
+                    fontSize: 12,
+                    fontWeight: 850,
+                    cursor: "pointer",
+                    letterSpacing: 0.6,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {copied ? "Copied" : "Copy Link"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
