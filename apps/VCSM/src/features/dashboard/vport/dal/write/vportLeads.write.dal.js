@@ -1,10 +1,7 @@
 import { vport } from "@/services/supabase/vportClient";
+import { toText } from "@/shared/lib/text";
 
 const LEAD_SELECT = "id,vport_profile_id,actor_id,name,phone,email,message,source,created_at";
-
-function toText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function normalizeContactedSource(source) {
   const normalized = toText(source).toLowerCase();
