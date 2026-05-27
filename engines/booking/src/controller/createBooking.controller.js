@@ -1,6 +1,6 @@
 import { dalGetBookingResourceById } from '../dal/resource.read.dal.js'
 import { dalGetVportResourceById, dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
-import { dalGetActorById } from '../dal/actor.read.dal.js'
+import { dalGetActorById, dalGetVportProfileSlugByActorId } from '../dal/actor.read.dal.js'
 import { dalInsertBooking } from '../dal/booking.write.dal.js'
 import { dalInsertVportBooking } from '../dal/vportBooking.write.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
@@ -121,13 +121,15 @@ export async function createBooking({
 
     if (source === 'public' && vportResource.owner_actor_id && requestActorId) {
       if (String(requestActorId) !== String(vportResource.owner_actor_id)) {
+        // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
+        const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: vportResource.owner_actor_id })
         getNotifyFn()?.({
           recipientActorId: vportResource.owner_actor_id,
           actorId:          requestActorId,
           kind:             BOOKING_EVENTS.CREATED,
           objectType:       'booking',
           objectId:         mapped.id,
-          linkPath:         `/actor/${vportResource.owner_actor_id}/dashboard/booking-history`,
+          linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
           context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
         })
       }
@@ -178,13 +180,15 @@ export async function createBooking({
 
   if (source === 'public' && resource?.owner_actor_id && requestActorId) {
     if (String(requestActorId) !== String(resource.owner_actor_id)) {
+      // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
+      const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: resource.owner_actor_id })
       getNotifyFn()?.({
         recipientActorId: resource.owner_actor_id,
         actorId:          requestActorId,
         kind:             BOOKING_EVENTS.CREATED,
         objectType:       'booking',
         objectId:         mapped.id,
-        linkPath:         `/actor/${resource.owner_actor_id}/dashboard/booking-history`,
+        linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
         context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
       })
     }
