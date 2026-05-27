@@ -1,5 +1,5 @@
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { updateAttachmentMediaAssetIdDAL } from '@/features/chat/conversation/dal/updateAttachmentMediaAsset.write.dal'
 import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger'
 
@@ -23,7 +23,7 @@ export async function recordChatAttachmentController({
 }) {
   bugBunnyUploadStep('chat_attachment', 'writeback:start', { ownerActorId, messageId, storageKey })
 
-  const appId = await resolveVcsmAppIdDAL()
+  const appId = await resolveVcsmAppId()
   const mediaAsset = await createMediaAssetController({
     mediaUploadResult,
     ownerActorId,

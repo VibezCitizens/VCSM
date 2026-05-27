@@ -1,5 +1,5 @@
 import { fetchFollowGraph } from "@/features/profiles/dal/friends/friends.read.dal";
-import { listBlockedActorRowsForCandidatesDAL } from "@/features/profiles/dal/friends/blockedActorSet.read.dal";
+import { ctrlGetBlockedActorSet } from "@/features/block";
 import { deriveFriendLists } from "@/features/profiles/model/friends/friendGraph.model";
 
 export async function getFriendListsController({ actorId }) {
@@ -20,22 +20,10 @@ export async function getFriendListsController({ actorId }) {
     ...derived.myFans,
   ];
 
-  const blockedRows = await listBlockedActorRowsForCandidatesDAL({
+  const blockedSet = await ctrlGetBlockedActorSet({
     actorId,
     candidateActorIds: allCandidateIds,
   });
-  const blockedSet = new Set();
-
-  for (const row of blockedRows) {
-    if (row?.blocker_actor_id === actorId && row?.blocked_actor_id) {
-      blockedSet.add(row.blocked_actor_id);
-      continue;
-    }
-
-    if (row?.blocked_actor_id === actorId && row?.blocker_actor_id) {
-      blockedSet.add(row.blocker_actor_id);
-    }
-  }
 
   return {
     mutual: derived.mutual.filter((id) => !blockedSet.has(id)),

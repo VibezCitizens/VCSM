@@ -7,7 +7,7 @@
 // ============================================================
 
 import { updateUserPhotoMediaAssetIdDAL, updateUserBannerMediaAssetIdDAL } from '@/features/settings/profile/dal/profileMediaAsset.write.dal'
-import { updateVportAvatarMediaAssetIdDAL, updateVportBannerMediaAssetIdDAL } from '@/features/vport/dal/vport.write.profileMedia.dal'
+import { updateVportAvatarMediaAssetIdDAL, updateVportBannerMediaAssetIdDAL } from '@/features/vport/adapters/vport.adapter'
 import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger'
 
 /**

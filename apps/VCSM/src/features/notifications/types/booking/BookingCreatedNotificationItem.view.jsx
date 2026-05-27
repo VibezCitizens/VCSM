@@ -22,12 +22,9 @@ export default function BookingCreatedNotificationItem({ notification }) {
     ? t('notifications.booking.bookedAt', { service, time })
     : t('notifications.booking.booked', { service })
 
-  const linkPath = notification.linkPath ?? ''
-  const destination = linkPath.includes('/dashboard/booking-history')
-    ? linkPath
-    : (identity?.actorId
-        ? `/actor/${identity.actorId}/dashboard/booking-history`
-        : linkPath || null)
+  const destination = identity?.actorId
+    ? `/actor/${identity.actorId}/dashboard/booking-history`
+    : null
 
   return (
     <NotificationCard

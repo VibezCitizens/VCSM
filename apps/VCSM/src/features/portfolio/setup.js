@@ -37,14 +37,19 @@ export function setupVcsmPortfolioEngine() {
     supabaseClient: supabase,
 
     isActorOwner: async (actorId) => {
+      // PORT-V-001: verify ownership via actor_owners, not just actor existence.
+      // The actor_owners_read_own RLS policy (user_id = auth.uid()) auto-scopes
+      // this query to only rows owned by the authenticated user — no explicit
+      // user_id filter is required; it is enforced at the DB layer.
+      if (!actorId) return false
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user?.id) return false
 
       const { data, error } = await supabase
         .schema('vc')
-        .from('actors')
-        .select('id')
-        .eq('id', actorId)
+        .from('actor_owners')
+        .select('actor_id')
+        .eq('actor_id', actorId)
         .eq('is_void', false)
         .limit(1)
 

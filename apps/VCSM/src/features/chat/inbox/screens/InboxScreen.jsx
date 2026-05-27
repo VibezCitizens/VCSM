@@ -11,7 +11,6 @@ import { useMarkChatRead } from '@/features/chat/inbox/hooks/useMarkChatRead'
 import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxListSkeleton from '@/features/chat/inbox/components/InboxListSkeleton'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
-import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
 
 import StartConversationModal from '@/features/chat/start/screens/StartConversationModal'
@@ -78,8 +77,6 @@ export default function InboxScreen() {
   }, [entries, hideEmptyThreads])
 
   const previews = visibleEntries
-    .map((entry) => buildInboxPreview({ entry, currentActorId: actorId }))
-    .filter(Boolean)
 
   // Prefetch messages for the top 10 visible conversations after inbox loads.
   // Runs in background — does not block rendering or delay inbox display.

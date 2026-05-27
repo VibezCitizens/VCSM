@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { useNavigate, useParams } from "react-router-dom";
-import { SkeletonCardList } from "@/shared/components/Skeleton";
+import { useNavigate } from "react-router-dom";
 import "@/features/settings/styles/settings-modern.css";
 
 import Card from "@/features/settings/adapters/ui/Card.adapter";
@@ -10,51 +9,46 @@ import VportAboutDetailsView from "@/features/settings/adapters/profile/ui/Vport
 import { useIdentity } from "@/state/identity/identityContext";
 import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
-import { useSaveVportPublicDetailsByActorId } from "@/features/dashboard/vport/hooks/useSaveVportPublicDetailsByActorId";
+import { useSaveVportSettings } from "@/features/dashboard/vport/hooks/useSaveVportSettings";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { useVportAds } from "@/features/ads/adapters/hooks/useVportAds.adapter";
 import { useVportDirectoryVisibility } from "@/features/settings/vports/hooks/useVportDirectoryVisibility";
 import { useVportBusinessCardSettings } from "@/features/settings/vports/hooks/useVportBusinessCardSettings";
+import { useResolvedVportId } from "@/features/settings/vports/hooks/useResolvedVportId";
 import { releaseFlags } from "@/shared/config/releaseFlags";
 import Toast from "@/shared/components/components/Toast";
 import {
   getDashboardViewByVportType,
   normalizeVportType,
-} from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
+} from "@/features/dashboard/vport/model/dashboardViewByVportType.model";
 import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
-import { mapPublicDetailsToDraft } from "@/features/dashboard/vport/model/vportSettingsDraft.model";
-import {
-  normalizeAddress,
-  hasAnyAddressValue,
-  hasCompleteAddress,
-  getAddressValidationError,
-  normalizePhoneDigits,
-  US_PHONE_DIGITS,
-} from "./lib/vportSettingsValidation";
 
 import VportBackButton from "./components/VportBackButton";
 import VportSettingsAdsPreview from "./components/VportSettingsAdsPreview";
 import VportSettingsTrazeCard from "./components/VportSettingsTrazeCard";
 import VportSettingsBusinessCard from "./components/VportSettingsBusinessCard";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
-import { getDashboardCardMetaByKey } from "./model/buildDashboardCards.model";
+import { getDashboardCardMetaByKey } from "@/features/dashboard/vport/model/buildDashboardCards.model";
 
-export default function VportSettingsScreen() {
+/**
+ * VPD-V-FIX-008: View Screen — hook wiring + component composition only.
+ *
+ * Receives actorId and isOwner from VportSettingsFinalScreen (Final Screen).
+ * All identity gating is handled upstream — this screen assumes a verified owner.
+ */
+export default function VportSettingsScreen({ actorId, isOwner }) {
   const navigate = useNavigate();
-  const { actorId } = useParams();
-  const { identity, identityLoading } = useIdentity();
+  const { identity } = useIdentity();
   const { loading: loadingData, details: publicDetails } = useVportPublicDetails(actorId);
   const { getVportTabsByType } = useProfilesOps();
 
-  const [draft, setDraft] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState("");
-  const [toastOpen, setToastOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-
-  const { saveByActorId } = useSaveVportPublicDetailsByActorId();
   const { ads } = useVportAds(actorId);
+
+  // VPD-V-FIX-003: Resolve vportId once here and pass to both settings hooks.
+  // Eliminates the duplicate DB read that previously fired when each hook
+  // independently called ctrlResolveVportIdByActorId on screen mount.
+  const { vportId: resolvedVportId } = useResolvedVportId(actorId);
+
   const {
     directoryVisible,
     directoryStatus,
@@ -62,7 +56,7 @@ export default function VportSettingsScreen() {
     isSaving: directorySaving,
     error: directoryError,
     toggle: toggleDirectoryVisible,
-  } = useVportDirectoryVisibility(actorId);
+  } = useVportDirectoryVisibility(actorId, resolvedVportId);
 
   const dashboardDetails = useMemo(
     () => normalizeDashboardVportDetails(publicDetails),
@@ -70,8 +64,6 @@ export default function VportSettingsScreen() {
   );
 
   const isDesktop = useDesktopBreakpoint();
-  const viewerActorId = identity?.actorId ?? null;
-  const isOwner = Boolean(actorId) && Boolean(viewerActorId) && String(viewerActorId) === String(actorId);
 
   const vportType = useMemo(
     () => normalizeVportType(identity?.vportType ?? dashboardDetails.vportType ?? null),
@@ -84,7 +76,7 @@ export default function VportSettingsScreen() {
     isSaving: cardSettingsSaving,
     error: cardSettingsError,
     updateSettings: updateCardSettings,
-  } = useVportBusinessCardSettings(actorId, vportType);
+  } = useVportBusinessCardSettings(actorId, vportType, resolvedVportId);
 
   const dashboardView = useMemo(
     () => getDashboardViewByVportType(vportType, { getTabsFn: getVportTabsByType }),
@@ -100,87 +92,11 @@ export default function VportSettingsScreen() {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
-  useEffect(() => {
-    setDraft(mapPublicDetailsToDraft(dashboardDetails));
-  }, [dashboardDetails]);
-
-  useEffect(() => {
-    if (!saved || saving) return;
-    setToastMessage("Saved");
-    setToastOpen(false);
-    setTimeout(() => setToastOpen(true), 0);
-  }, [saved, saving]);
-
-  const onChange = useCallback((patch) => {
-    setSaved(false);
-    setError("");
-    setDraft((prev) => ({ ...(prev || {}), ...(patch || {}) }));
-  }, []);
-
-  const onSave = useCallback(async () => {
-    if (!actorId || !isOwner || loadingData || !draft) return;
-
-    const normalizedAddress = normalizeAddress(draft?.address);
-    const addressStarted = hasAnyAddressValue(normalizedAddress);
-    const addressComplete = hasCompleteAddress(normalizedAddress);
-    const phoneDigits = normalizePhoneDigits(draft?.phonePublic);
-
-    const showToast = (msg) => {
-      setError("");
-      setToastMessage(msg);
-      setToastOpen(false);
-      setTimeout(() => setToastOpen(true), 0);
-    };
-
-    if (addressStarted && !addressComplete) {
-      showToast("Please enter full address.");
-      return;
-    }
-    if (addressStarted) {
-      const addressError = getAddressValidationError(normalizedAddress);
-      if (addressError) { showToast(addressError); return; }
-    }
-    if (phoneDigits && phoneDigits.length !== US_PHONE_DIGITS) {
-      showToast("Enter a valid 10-digit phone number.");
-      return;
-    }
-
-    const payload = {
-      ...draft,
-      address: addressStarted ? normalizedAddress : {},
-      phonePublic: phoneDigits,
-    };
-
-    setSaving(true);
-    setSaved(false);
-    setError("");
-
-    try {
-      const result = await saveByActorId(actorId, payload);
-      if (result?.cityId !== undefined) {
-        setDraft((prev) => ({ ...(prev || {}), cityId: result.cityId ?? null }));
-      }
-      setSaved(true);
-    } catch (e) {
-      setError(e?.message || "Failed to save.");
-    } finally {
-      setSaving(false);
-    }
-  }, [actorId, draft, isOwner, loadingData, saveByActorId]);
-
-  if (!actorId) return null;
-
-  if (identityLoading) {
-    return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
-  }
-
-  if (!identity) {
-    return <div className="p-10 text-center text-white/50">Sign in required.</div>;
-  }
-
-  if (!isOwner) {
-    return <div className="p-10 text-center text-white/50">You can only edit settings for your own vport.</div>;
-  }
+  // VPD-V-FIX-007: Save-path business logic extracted to dedicated hook.
+  // Draft state, validation, save orchestration, and toast lifecycle are now
+  // owned by useSaveVportSettings — not by this view screen.
+  const { draft, saving, saved, error, toastOpen, toastMessage, onChange, onSave, closeToast } =
+    useSaveVportSettings({ actorId, isOwner, loadingData, dashboardDetails });
 
   const shell = createVportDashboardShellStyles({ isDesktop, maxWidthDesktop: 1100 });
 
@@ -259,7 +175,7 @@ export default function VportSettingsScreen() {
           </div>
         </div>
       </div>
-      <Toast open={toastOpen} message={toastMessage} onClose={() => setToastOpen(false)} />
+      <Toast open={toastOpen} message={toastMessage} onClose={closeToast} />
     </div>
   );
 

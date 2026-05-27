@@ -8,8 +8,8 @@ import { createVport } from "@/features/vport/dal/vport.core.dal";
 import { listMyVports } from "@/features/vport/dal/vport.read.vportRecords.dal";
 import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from "@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter";
 import { uploadMediaController } from "@media";
-import { createMediaAssetController } from "@/features/media/controller/createMediaAsset.controller";
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from "@/features/media/adapters/media.adapter";
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { updateVportAvatarMediaAssetIdDAL } from "@/features/vport/dal/vport.write.profileMedia.dal";
 import { createOrganizationLocationWorkspace } from "@booking";
 import { bugBunnyUploadStep, bugBunnyUploadError } from "@debuggers/media/bugBunnyUploadDebugger";
@@ -70,7 +70,7 @@ export async function submitCreateVportController({
           ownerActorId: res.actorId,
         })
         bugBunnyUploadStep('vport_creation_avatar', 'writeback:start', { actorId: res.actorId, profileId: res.profileId })
-        const appId = await resolveVcsmAppIdDAL()
+        const appId = await resolveVcsmAppId()
         const mediaAsset = await createMediaAssetController({
           mediaUploadResult:  uploadResult,
           ownerActorId:       res.actorId,

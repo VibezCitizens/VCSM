@@ -9,6 +9,7 @@
 // ============================================================
 
 import { supabase } from '@/services/supabase/supabaseClient'
+import { debugLoginEvent, debugLoginError } from '@debuggers/identity'
 
 /**
  * Refresh a single actor's row in identity.actor_directory.
@@ -19,9 +20,10 @@ import { supabase } from '@/services/supabase/supabaseClient'
  */
 export async function refreshActorDirectoryRow(actorDomain, actorId) {
   if (!actorDomain || !actorId) {
-    if (import.meta.env.DEV) {
-      console.warn('[refreshActorDirectory] missing actorDomain or actorId', { actorDomain, actorId })
-    }
+    debugLoginEvent('REFRESH_ACTOR_DIRECTORY_MISSING_PARAMS', {
+      phase: 'identity', status: 'warn',
+      payload: { actorDomain: actorDomain ?? null, actorId: actorId ?? null },
+    })
     return { ok: false, error: new Error('missing actorDomain or actorId') }
   }
 
@@ -34,17 +36,19 @@ export async function refreshActorDirectoryRow(actorDomain, actorId) {
       })
 
     if (error) {
-      if (import.meta.env.DEV) {
-        console.warn('[refreshActorDirectory] RPC failed', { actorDomain, actorId, error: error.message })
-      }
+      debugLoginError('REFRESH_ACTOR_DIRECTORY_RPC_FAILED', error, {
+        phase: 'identity',
+        payload: { actorDomain, actorId: actorId?.slice(0, 8) ?? null },
+      })
       return { ok: false, error }
     }
 
     return { ok: true }
   } catch (err) {
-    if (import.meta.env.DEV) {
-      console.warn('[refreshActorDirectory] unexpected error', { actorDomain, actorId, error: err.message })
-    }
+    debugLoginError('REFRESH_ACTOR_DIRECTORY_UNEXPECTED_ERROR', err, {
+      phase: 'identity',
+      payload: { actorDomain, actorId: actorId?.slice(0, 8) ?? null },
+    })
     return { ok: false, error: err }
   }
 }

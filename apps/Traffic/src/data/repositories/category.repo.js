@@ -71,11 +71,8 @@ function createUnavailableError(source) {
 
 function handleUnavailable(source) {
   const error = createUnavailableError(source);
-
-  if (process.env.NODE_ENV === "production") {
-    throw error;
-  }
-
+  // output: "export" has no runtime server — build time IS production.
+  // Throwing here prevents static page generation. Warn and return empty.
   console.warn(error.message);
   return [];
 }

@@ -10,6 +10,7 @@ import { createVportFuelPriceHistoryDAL } from "@/features/profiles/kinds/vport/
 import { mapVportFuelPriceRow, mapVportFuelPriceRows } from "@/features/profiles/kinds/vport/model/gas/vportFuelPrice.model";
 import { mapFuelPriceSubmissionRow } from "@/features/profiles/kinds/vport/model/gas/vportFuelPriceSubmission.model";
 import { mapVportStationPriceSettingsRow } from "@/features/profiles/kinds/vport/model/gas/vportStationPriceSettings.model";
+import { checkVportOwnershipController } from "@/features/profiles/adapters/kinds/vport/ownership.adapter";
 
 /**
  * Citizen submits a price suggestion.
@@ -52,11 +53,10 @@ export async function submitFuelPriceSuggestionController({
 
   // ✅ Owner path: do NOT create a submission, do NOT go through approval
   if (ownerUpdate) {
-    // IMPORTANT: server-side/DB security should also enforce this (RLS/permissions).
-    // This is the minimum hard guard you can do here with what you have:
-    if (String(actorId) !== String(targetActorId)) {
-      return { ok: false, reason: "not_owner" };
-    }
+    // ✅ SECURITY: verify ownership via actor_owners — not string comparison.
+    // Handles acting-as VPORT mode and future multi-owner / delegated access.
+    const isOwner = await checkVportOwnershipController({ callerActorId: actorId, targetActorId });
+    if (!isOwner) return { ok: false, reason: "not_owner" };
 
     // Optionally keep sanity checks for owner too (your call).
     // If you want owner to bypass sanity checks entirely, remove this block.

@@ -1,7 +1,11 @@
 import { useCallback, useState } from "react";
+import { useIdentity } from "@/state/identity/identityContext";
 import { updateBookingStatusController } from "@/features/dashboard/vport/controller/updateVportBooking.controller";
 
-export default function useVportBookingActions({ onSuccess, actorId = null } = {}) {
+export default function useVportBookingActions({ onSuccess } = {}) {
+  const { identity } = useIdentity();
+  const callerActorId = identity?.actorId ?? null;
+
   const [working, setWorking] = useState(false);
   const [error, setError]     = useState(null);
 
@@ -18,10 +22,10 @@ export default function useVportBookingActions({ onSuccess, actorId = null } = {
     }
   }, [onSuccess]);
 
-  const confirm  = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "confirmed", actorId })),  [runAction, actorId]);
-  const cancel   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "cancelled", actorId })),  [runAction, actorId]);
-  const complete = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "completed", actorId })),  [runAction, actorId]);
-  const noShow   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "no_show",   actorId })),  [runAction, actorId]);
+  const confirm  = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "confirmed",  callerActorId })), [runAction, callerActorId]);
+  const cancel   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "cancelled",  callerActorId })), [runAction, callerActorId]);
+  const complete = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "completed",  callerActorId })), [runAction, callerActorId]);
+  const noShow   = useCallback((bookingId) => runAction(() => updateBookingStatusController({ bookingId, status: "no_show",    callerActorId })), [runAction, callerActorId]);
 
   return { working, error, confirm, cancel, complete, noShow };
 }

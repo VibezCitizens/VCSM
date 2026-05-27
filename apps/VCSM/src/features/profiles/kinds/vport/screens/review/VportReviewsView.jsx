@@ -1,7 +1,8 @@
 // src/features/profiles/kinds/vport/screens/review/VportReviewsView.jsx
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "@i18n";
 import { useVportReviews } from "@/features/profiles/kinds/vport/hooks/review/useVportReviews";
+import { useVportReviewCompose } from "@/features/profiles/kinds/vport/hooks/review/useVportReviewCompose";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
 
@@ -47,72 +48,18 @@ export default function VportReviewsView({
     return rows.length ? rows : [{ key: "overall_experience", label: "Overall" }];
   }, [r.dimensions]);
 
-  const [body, setBody] = useState("");
-  const [ratingsMap, setRatingsMap] = useState({});
-  const [activeDimKey, setActiveDimKey] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitErr, setSubmitErr] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const canCompose = !isOwnerMode && !!reviewAuthorActorId && reviewAuthorActorId !== targetActorId;
 
-  useEffect(() => {
-    if (!r.isEditing || !r.myReview?.ratings) return;
-    const map = {};
-    for (const rt of Array.isArray(r.myReview.ratings) ? r.myReview.ratings : []) {
-      const key = rt?.dimensionKey ?? rt?.dimension_key;
-      const val = Number(rt?.rating ?? 0);
-      if (key && val >= 1 && val <= 5) map[key] = val;
-    }
-    setRatingsMap((prev) => ({ ...prev, ...map }));
-  }, [r.isEditing, r.myReview]);
-
-  useEffect(() => {
-    setRatingsMap((prev) => {
-      const next = {};
-      for (const d of dynamicDimensions) next[d.key] = Number(prev?.[d.key] ?? 0);
-      return next;
-    });
-  }, [dynamicDimensions]);
-
-  useEffect(() => {
-    if (!dynamicDimensions.length) { setActiveDimKey(null); return; }
-    setActiveDimKey((prev) => {
-      const stillExists = dynamicDimensions.some((d) => d.key === prev);
-      return stillExists ? prev : dynamicDimensions[0].key;
-    });
-  }, [dynamicDimensions]);
-
-  const activeDimension = useMemo(() => {
-    if (!dynamicDimensions.length) return null;
-    return dynamicDimensions.find((d) => d.key === activeDimKey) ?? dynamicDimensions[0];
-  }, [dynamicDimensions, activeDimKey]);
-
-  const normalizedRatings = useMemo(() => {
-    return dynamicDimensions
-      .map((d) => ({ dimensionKey: d.key, rating: Number(ratingsMap?.[d.key] ?? 0) }))
-      .filter((row) => Number.isFinite(row.rating) && row.rating >= 1 && row.rating <= 5);
-  }, [dynamicDimensions, ratingsMap]);
-
-  const ratedCount = normalizedRatings.length;
-  const totalDims = dynamicDimensions.length;
-
-  const handleSubmit = useCallback(async () => {
-    setSubmitErr(null);
-    if (!reviewAuthorActorId) { setSubmitErr(new Error("You must be signed in to leave a review.")); return; }
-    if (!normalizedRatings.length) { setSubmitErr(new Error("Rate at least one category before submitting.")); return; }
-    setSubmitting(true);
-    try {
-      await r.submitReview({ body: body.trim() || null, ratings: normalizedRatings });
-      setBody("");
-      setRatingsMap(Object.fromEntries(dynamicDimensions.map((d) => [d.key, 0])));
-      if (r.isEditing && typeof r.cancelEdit === "function") r.cancelEdit();
-    } catch (e) {
-      setSubmitErr(e);
-    } finally {
-      setSubmitting(false);
-    }
-  }, [reviewAuthorActorId, normalizedRatings, r, dynamicDimensions, body]);
+  const compose = useVportReviewCompose({
+    dynamicDimensions,
+    reviewAuthorActorId,
+    myReview: r.myReview,
+    isEditing: r.isEditing,
+    cancelEdit: r.cancelEdit,
+    submitReview: r.submitReview,
+  });
 
   const showServicesTab = useMemo(() => {
     return (r.services?.length ?? 0) > 0 || r.isServiceTab || r.tab === "services";
@@ -202,19 +149,19 @@ export default function VportReviewsView({
           sessionActorId={sessionActorId}
           targetActorId={targetActorId}
           dynamicDimensions={dynamicDimensions}
-          activeDimKey={activeDimKey}
-          setActiveDimKey={setActiveDimKey}
-          activeDimension={activeDimension}
-          ratingsMap={ratingsMap}
-          setRatingsMap={setRatingsMap}
-          normalizedRatings={normalizedRatings}
-          ratedCount={ratedCount}
-          totalDims={totalDims}
-          body={body}
-          setBody={setBody}
-          submitting={submitting}
-          submitErr={submitErr}
-          onSubmit={handleSubmit}
+          activeDimKey={compose.activeDimKey}
+          setActiveDimKey={compose.setActiveDimKey}
+          activeDimension={compose.activeDimension}
+          ratingsMap={compose.ratingsMap}
+          setRatingsMap={compose.setRatingsMap}
+          normalizedRatings={compose.normalizedRatings}
+          ratedCount={compose.ratedCount}
+          totalDims={compose.totalDims}
+          body={compose.body}
+          setBody={compose.setBody}
+          submitting={compose.submitting}
+          submitErr={compose.submitErr}
+          onSubmit={compose.handleSubmit}
           onStartEdit={r.startEdit}
           onCancelEdit={r.cancelEdit}
         />

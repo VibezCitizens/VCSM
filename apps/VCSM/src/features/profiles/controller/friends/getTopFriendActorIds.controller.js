@@ -48,13 +48,15 @@ export async function getTopFriendActorIdsController({
           maxCount: safeLimit,
         });
       } catch (reconcileError) {
-        console.warn("[getTopFriendActorIdsController] reconcile fallback -> raw read", {
-          ownerActorId,
-          message: reconcileError?.message ?? null,
-          code: reconcileError?.code ?? null,
-          details: reconcileError?.details ?? null,
-          hint: reconcileError?.hint ?? null,
-        });
+        if (import.meta.env?.DEV) {
+          console.warn("[getTopFriendActorIdsController] reconcile fallback -> raw read", {
+            ownerActorId,
+            message: reconcileError?.message ?? null,
+            code: reconcileError?.code ?? null,
+            details: reconcileError?.details ?? null,
+            hint: reconcileError?.hint ?? null,
+          });
+        }
       }
     }
 

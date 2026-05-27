@@ -5,11 +5,12 @@ import { MapPin, Plus, Wrench } from "lucide-react";
 
 import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 
 import { useLocksmithProfile, useLocksmithOwner } from "@/features/profiles/adapters/profiles.adapter";
-import { usePublishLocksmithPost } from "@/features/profiles/kinds/vport/hooks/locksmith/usePublishLocksmithPost";
+import { usePublishLocksmithPost } from "@/features/profiles/adapters/profiles.adapter";
 import {
   AreaForm,
   AreaCard,
@@ -24,7 +25,7 @@ export default function VportDashboardLocksmithScreen() {
   const targetActorId = params?.actorId ?? null;
   const viewerActorId = identity?.actorId ?? null;
   const isDesktop = useDesktopBreakpoint();
-  const isOwner = Boolean(targetActorId) && Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId);
+  const { isOwner } = useVportOwnership(viewerActorId, targetActorId);
 
   const { serviceAreas, serviceDetails, gapServices, loading, reload } = useLocksmithProfile(targetActorId, "locksmith");
   const owner = useLocksmithOwner(targetActorId, { onSuccess: reload });

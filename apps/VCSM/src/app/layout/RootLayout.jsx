@@ -4,13 +4,15 @@ import TopNav from "@/shared/components/TopNav";
 import BottomNavBar from "@/shared/components/BottomNavBar";
 import PageContainer from "@/shared/components/PageContainer";
 import { IOSDebugHUD, IOSProdRouteDebugger } from "@/app/platform/ios";
-import { VportLeadsChip } from "@/features/dashboard/vport/components/VportLeadsChip";
+import { VportLeadsChip } from "@/features/dashboard/vport/adapters/vport.adapter";
 import { hideLaunchSplash } from "@/shared/lib/hideLaunchSplash";
 import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
+import { useIdentity } from "@/state/identity/identityContext";
 
 export default function RootLayout() {
   const { pathname } = useLocation();
   const prevPathRef = useRef(null);
+  const { identityLoading } = useIdentity();
 
   const isLearningRoute = /^\/learning(\/.*)?$/.test(pathname);
 
@@ -60,6 +62,14 @@ export default function RootLayout() {
     hideLaunchSplash();
   }, [pathname]);
 
+  // /feed defers hideLaunchSplash until identity resolves to prevent flash of null-identity content.
+  useEffect(() => {
+    if (pathname !== "/feed") return;
+    if (identityLoading) return;
+    appendIOSProdDebugLog('root_layout_feed_identity_ready', { pathname });
+    hideLaunchSplash();
+  }, [pathname, identityLoading]);
+
   // Chat sub-screens use fixed positioning with overflow-hidden.
   // All other pages use min-height with natural document scrolling.
   const rootClassName = isLearningRoute
@@ -74,7 +84,9 @@ export default function RootLayout() {
 
       <main className={mainClass}>
         <PageContainer>
-          <Outlet />
+          {/* Gate content on identity resolution for authenticated routes.
+              Auth routes (login/register/etc.) bypass this — identity is irrelevant there. */}
+          {(isAuthRoute || !identityLoading) ? <Outlet /> : null}
         </PageContainer>
       </main>
 

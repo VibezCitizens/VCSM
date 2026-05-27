@@ -9,6 +9,9 @@ coverage/
 .parcel-cache/
 .turbo/
 
+# Generated legal artifact — contains absolute local paths, never ship
+licenses.json
+
 # Next/Storybook (safe to keep even if unused)
 .next/
 storybook-static/

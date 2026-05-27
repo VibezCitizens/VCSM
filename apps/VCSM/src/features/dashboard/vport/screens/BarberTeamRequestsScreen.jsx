@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import { useBarberTeamRequests } from "@/features/dashboard/vport/hooks/useBarberTeamRequests";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
@@ -77,10 +78,7 @@ export function BarberTeamRequestsScreen() {
   const isDesktop = useDesktopBreakpoint();
 
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner =
-    Boolean(actorId) &&
-    Boolean(viewerActorId) &&
-    String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const { requests, loading, error, working, workError, accept, decline } = useBarberTeamRequests(
     isOwner ? actorId : null
@@ -88,7 +86,7 @@ export function BarberTeamRequestsScreen() {
 
   if (!actorId) return null;
 
-  if (identityLoading) {
+  if (identityLoading || ownershipLoading) {
     return (
       <div className="px-4 py-6">
         <SkeletonCardList count={2} showBody={false} />

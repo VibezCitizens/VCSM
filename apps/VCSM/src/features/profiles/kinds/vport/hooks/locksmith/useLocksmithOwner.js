@@ -35,8 +35,8 @@ export function useLocksmithOwner(actorId, { onSuccess } = {}) {
   }, [onSuccess])
 
   const addArea = useCallback((area) => wrap(() => ctrlAddServiceArea(actorId, area)), [actorId, wrap])
-  const updateArea = useCallback((areaId, updates) => wrap(() => ctrlUpdateServiceArea(areaId, updates)), [wrap])
-  const deleteArea = useCallback((areaId) => wrap(() => ctrlDeleteServiceArea(areaId)), [wrap])
+  const updateArea = useCallback((areaId, updates) => wrap(() => ctrlUpdateServiceArea(actorId, areaId, updates)), [actorId, wrap])
+  const deleteArea = useCallback((areaId) => wrap(() => ctrlDeleteServiceArea(actorId, areaId)), [actorId, wrap])
   const saveServiceDetail = useCallback((serviceId, detail) => wrap(() => ctrlSaveServiceDetail(actorId, serviceId, detail)), [actorId, wrap])
   const savePortfolioDetail = useCallback((portfolioItemId, detail) => wrap(() => ctrlSavePortfolioDetail(portfolioItemId, detail)), [wrap])
 

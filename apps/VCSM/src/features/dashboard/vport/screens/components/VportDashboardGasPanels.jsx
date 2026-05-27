@@ -11,17 +11,29 @@ const CARD_STYLE = {
   boxShadow: "0 18px 50px rgba(0,0,0,0.45)",
 };
 
+/**
+ * Official gas prices panel — dashboard owner view.
+ *
+ * isOwner: verified by useVportOwnership in the parent screen.
+ *   Passed through to GasPricesPanel so edit controls are explicitly owner-gated,
+ *   not relying on allowOwnerUpdate prop alone.
+ *
+ * canSubmit: precomputed boolean (!!identity?.actorId) from parent screen.
+ *   GasPricesPanel no longer receives the full identity object — only this flag.
+ *
+ * Note: No standalone GasStates here. GasPricesPanel manages its own loading/error/empty
+ *   state internally. A prior version incorrectly rendered GasStates with identityLoading
+ *   (always false at this render point due to early return in parent screen) — removed.
+ */
 export function VportDashboardOfficialGasPanel({
-  identityLoading,
   loading,
   error,
   official,
   officialByFuelKey,
   communitySuggestionByFuelKey,
   settings,
-  identity,
-  submitting,
-  submitError,
+  canSubmit,
+  isOwner,
   afterSubmitSuggestion,
   submitSuggestion,
   onShareToFeed = null,
@@ -35,7 +47,6 @@ export function VportDashboardOfficialGasPanel({
       </div>
 
       <div style={{ marginTop: 14 }}>
-        <GasStates loading={identityLoading} error={null} empty={false} />
         <GasPricesPanel
           loading={loading}
           error={error}
@@ -43,18 +54,13 @@ export function VportDashboardOfficialGasPanel({
           officialByFuelKey={officialByFuelKey}
           communitySuggestionByFuelKey={communitySuggestionByFuelKey}
           settings={settings}
-          identity={identity}
-          submitting={submitting}
-          allowOwnerUpdate={true}
+          canSubmit={canSubmit}
+          isOwner={isOwner}
+          allowOwnerUpdate={isOwner}
           afterSubmitSuggestion={afterSubmitSuggestion}
           onShareToFeed={onShareToFeed}
           submitSuggestion={submitSuggestion}
         />
-        {submitError ? (
-          <div className="mt-4 rounded-2xl border border-red-900/60 bg-red-950/40 p-4 text-sm text-red-300">
-            {String(submitError?.message ?? submitError)}
-          </div>
-        ) : null}
       </div>
     </div>
   );
@@ -110,4 +116,3 @@ export function VportDashboardPendingGasPanel({
     </div>
   );
 }
-

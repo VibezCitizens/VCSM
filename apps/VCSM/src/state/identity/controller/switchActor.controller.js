@@ -169,7 +169,6 @@ export async function switchActorController({
 
   } catch (error) {
     dbg.error("SWITCH_DONE", error, { message: "Switch failed" });
-    console.error("[Identity] failed to switch actor", error);
   }
 
   // Note: localStorageWritten=false because saveIdentity() is called by the context

@@ -59,13 +59,3 @@ export async function unblockActor(blockerActorId, blockedActorId, reason = null
   }
 }
 
-/**
- * Toggle block state.
- */
-export async function toggleBlockActor(isBlocked, blockerActorId, blockedActorId) {
-  if (isBlocked) {
-    await unblockActor(blockerActorId, blockedActorId);
-  } else {
-    await blockActor(blockerActorId, blockedActorId);
-  }
-}

@@ -100,7 +100,8 @@ export function usePortfolioItemSubmit({
       }
 
       if (isLocksmith) {
-        await ctrlSavePortfolioDetail(itemId, {
+        // PORT-V-004b: actorId is now the first arg so the controller can verify ownership.
+        await ctrlSavePortfolioDetail(actorId, itemId, {
           jobType: jobType || "other",
           propertyType: propertyType || null,
           lockType: lockType.trim() || null,

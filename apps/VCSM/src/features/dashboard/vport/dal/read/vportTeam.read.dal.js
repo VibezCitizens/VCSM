@@ -1,6 +1,5 @@
 import { vc } from "@/services/supabase/vcClient";
 import vportSchema from "@/services/supabase/vportClient";
-import { hydrateAndReturnSummaries } from "@hydration";
 
 export async function fetchTeamMembersByProfileId(profileId) {
   if (!profileId) return [];
@@ -17,7 +16,7 @@ export async function fetchTeamMembersByProfileId(profileId) {
   return data ?? [];
 }
 
-export async function findEligibleBarbersDAL(barbershopActorId) {
+export async function findEligibleBarberActorIdsDAL(barbershopActorId) {
   if (!barbershopActorId) return [];
 
   // Step 1: get all active followers of the barbershop
@@ -84,22 +83,5 @@ export async function findEligibleBarbersDAL(barbershopActorId) {
     });
   }
 
-  const uniqueActorIds = [...new Set(barberActorIds)];
-  if (!uniqueActorIds.length) return [];
-
-  // Step 4: hydration engine resolves display data — no manual profile selects
-  const { rows } = await hydrateAndReturnSummaries({ actorIds: uniqueActorIds });
-
-  const summaryMap = Object.fromEntries(
-    rows.map((r) => [r.actor_id ?? r.id, r])
-  );
-
-  return uniqueActorIds.map((actorId) => {
-    const s = summaryMap[actorId];
-    return {
-      actorId,
-      name: s?.display_name ?? s?.vport_name ?? "Unknown",
-      avatar: s?.photo_url ?? s?.vport_avatar_url ?? null,
-    };
-  });
+  return [...new Set(barberActorIds)];
 }

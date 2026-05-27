@@ -4,13 +4,15 @@ import {
   listLiveProviderCountries,
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
-import { getCountryBySlug } from "@/data/repositories/geo.repo";
+import { getCountryBySlug, listCountries } from "@/data/repositories/geo.repo";
 import CategoriesDiscoveryClient from "@/features/categories/components/CategoriesDiscoveryClient";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 
 export function generateStaticParams() {
-  return listLiveProviderCountries().map((country) => ({ city: country.countrySlug }));
+  const live = listLiveProviderCountries().map((country) => ({ city: country.countrySlug }));
+  if (live.length > 0) return live;
+  return listCountries().map((c) => ({ city: c.slug }));
 }
 
 export function generateMetadataForLocale({ params }, routeLocale = null) {
@@ -25,12 +27,14 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
   });
 }
 
-export function generateMetadata({ params }) {
-  return generateMetadataForLocale({ params });
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  return generateMetadataForLocale({ params: resolvedParams });
 }
 
 export default async function CountryCategoriesPage({ params }) {
-  const country = getCountryBySlug(params.city);
+  const { city } = await params;
+  const country = getCountryBySlug(city);
   const liveCountry = listLiveProviderCountries().find(
     (entry) => entry.countryCode === country?.code
   );
@@ -39,7 +43,7 @@ export default async function CountryCategoriesPage({ params }) {
     notFound();
   }
 
-  if (params.city !== country.slug) {
+  if (city !== country.slug) {
     redirect(`/${country.slug}/categories`);
   }
 

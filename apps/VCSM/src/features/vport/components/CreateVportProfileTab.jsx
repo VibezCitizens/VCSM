@@ -39,7 +39,7 @@ export function CreateVportProfileTab({
               ref={inputRef}
               type="file"
               accept="image/*"
-              className="hidden"
+              style={{ display: 'none' }}
               onChange={handlePickFile}
             />
             <button

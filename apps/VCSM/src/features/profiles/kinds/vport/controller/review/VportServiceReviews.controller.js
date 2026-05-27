@@ -49,7 +49,7 @@ export async function ctrlListServiceReviews({ targetActorId, serviceId, limit =
 
   if (!serviceId) return [];
 
-  const rows = await ctrlListReviews(targetActorId, limit);
+  const rows = await ctrlListReviews(targetActorId, { limit });
   const list = Array.isArray(rows) ? rows : [];
 
   const hasServiceBinding = list.some((r) => r?.serviceId || r?.service_id);

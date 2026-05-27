@@ -5,9 +5,20 @@ import { useIdentity } from "@/state/identity/identityContext";
 import { releaseFlags } from "@/shared/config/releaseFlags";
 
 /**
- * Route-level ownership gate for all /actor/:actorId/dashboard/* routes.
- * Verifies the URL actorId matches the session identity's actorId.
- * Non-owners are redirected to /feed before any screen or hook runs.
+ * Route-level UX gate for all /actor/:actorId/dashboard/* routes.
+ * Verifies the URL actorId matches the session identity's actorId and
+ * redirects non-owners to /feed before any screen or hook renders.
+ *
+ * PORT-V-006/008 — SECURITY SCOPE CLARIFICATION:
+ * This guard is a UI convenience only. It is NOT the authoritative security
+ * boundary. All mutation controllers independently verify actor ownership
+ * via vc.actor_owners before performing any write operation. This guard
+ * prevents rendering the dashboard UI for non-owners; controllers prevent
+ * any write regardless of how a caller reaches a mutation path.
+ *
+ * actorId is read from useParams() (URL), NOT from the identity store —
+ * this is intentional. The URL is the resource identifier; identity.actorId
+ * is the caller. Mismatches are denied here at the route level.
  */
 export function OwnerOnlyDashboardGuard() {
   const { actorId } = useParams()

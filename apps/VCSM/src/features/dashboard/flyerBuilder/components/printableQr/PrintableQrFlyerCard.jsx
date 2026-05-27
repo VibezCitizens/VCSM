@@ -1,5 +1,5 @@
 import React from "react";
-import QRCode from "react-qr-code";
+import { QrCode } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
 
 import {
   buildPrintableQrAlt,
@@ -18,18 +18,17 @@ function PrintableQrCode({ menuUrl, qrSizePx, altText }) {
     );
   }
 
+  // QrCode provides its own sizing wrapper — no outer div needed.
   return (
-    <div style={{ width: `${qrSizePx}px`, height: `${qrSizePx}px` }}>
-      <QRCode
-        value={cleanMenuUrl}
-        size={qrSizePx}
-        bgColor="#FFFFFF"
-        fgColor="#111827"
-        level="M"
-        title={altText}
-        className="pqs-qr-image"
-      />
-    </div>
+    <QrCode
+      value={cleanMenuUrl}
+      size={qrSizePx}
+      bgColor="#FFFFFF"
+      fgColor="#111827"
+      level="M"
+      title={altText}
+      className="pqs-qr-image"
+    />
   );
 }
 

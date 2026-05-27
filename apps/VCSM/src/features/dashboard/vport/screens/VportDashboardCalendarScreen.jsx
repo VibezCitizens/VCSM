@@ -6,14 +6,16 @@ import { useIdentity } from "@/state/identity/identityContext";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
-import useVportOwnerResources from "@/features/dashboard/vport/hooks/useVportOwnerResources";
-import useVportResourceAvailability from "@/features/dashboard/vport/hooks/useVportResourceAvailability";
-import useVportManageAvailability from "@/features/dashboard/vport/hooks/useVportManageAvailability";
-import useVportEnsureResource from "@/features/dashboard/vport/hooks/useVportEnsureResource";
+import {
+  useOwnerBookingResources,
+  useBookingAvailability,
+  useManageAvailability,
+  useEnsureOwnerBookingResource,
+} from "@/features/booking/adapters/booking.adapter";
+import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 import WeeklyAvailabilityGrid from "@/features/dashboard/vport/components/calendar/WeeklyAvailabilityGrid";
 import ResourceDropdown from "@/features/dashboard/vport/components/calendar/ResourceDropdown";
-import { usePublishBarbershopHoursPost } from "@/features/profiles/kinds/vport/hooks/barbershop/usePublishBarbershopHoursPost";
-import { usePublishLocksmithPost } from "@/features/profiles/kinds/vport/hooks/locksmith/usePublishLocksmithPost";
+import { usePublishBarbershopHoursPost, usePublishLocksmithPost } from "@/features/profiles/adapters/profiles.adapter";
 
 export function VportDashboardCalendarScreen() {
   const navigate  = useNavigate();
@@ -23,17 +25,17 @@ export function VportDashboardCalendarScreen() {
 
   const actorId       = useMemo(() => params?.actorId ?? null, [params]);
   const viewerActorId = identity?.actorId ?? null;
-  const isOwner       = Boolean(actorId) && Boolean(viewerActorId) && String(viewerActorId) === String(actorId);
+  const { isOwner, ownershipLoading } = useVportOwnership(viewerActorId, actorId);
 
   const goBack = useCallback(() => { if (actorId) navigate(`/actor/${actorId}/dashboard`); }, [navigate, actorId]);
 
-  const resources = useVportOwnerResources({ ownerActorId: actorId, includeInactive: true, enabled: isOwner && Boolean(actorId) });
-  const { isPending: ensurePending, error: ensureError, ensure: ensureOwnerResource } = useVportEnsureResource();
+  const resources = useOwnerBookingResources({ ownerActorId: actorId, includeInactive: true, enabled: isOwner && Boolean(actorId) });
+  const { isPending: ensurePending, error: ensureError, ensure: ensureOwnerResource } = useEnsureOwnerBookingResource();
   const didBootstrap = useRef(false);
 
   const activeResources = useMemo(
-    () => resources.resources.filter(r => r.is_active),
-    [resources.resources]
+    () => resources.items.filter(r => r.is_active),
+    [resources.items]
   );
   const hasAnyResource = Boolean(resources.primary?.id);
   const resLoading     = resources.loading;
@@ -55,8 +57,8 @@ export function VportDashboardCalendarScreen() {
   const rangeStart = useMemo(() => new Date(rangeAnchor.getFullYear(), rangeAnchor.getMonth(), 1).toISOString(), [rangeAnchor]);
   const rangeEnd   = useMemo(() => new Date(rangeAnchor.getFullYear(), rangeAnchor.getMonth() + 1, 0, 23, 59, 59).toISOString(), [rangeAnchor]);
 
-  const availability       = useVportResourceAvailability({ resourceId: selectedResourceId, rangeStart, rangeEnd, enabled: Boolean(selectedResourceId) && isOwner });
-  const manageAvailability = useVportManageAvailability();
+  const availability       = useBookingAvailability({ resourceId: selectedResourceId, rangeStart, rangeEnd, enabled: Boolean(selectedResourceId) && isOwner });
+  const manageAvailability = useManageAvailability();
 
   const isBarbershop = ["barbershop", "barber"].includes(
     String(identity?.vportType ?? "").toLowerCase()
@@ -96,7 +98,7 @@ export function VportDashboardCalendarScreen() {
     })();
   }, [isOwner, actorId, viewerActorId, resLoading, resources, hasAnyResource, ensurePending, ensureOwnerResource]);
 
-  if (identityLoading) return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
+  if (identityLoading || ownershipLoading) return <div className="px-4 py-6"><SkeletonCardList count={3} showBody={false} /></div>;
   if (!identity) return <div className="p-10 text-center text-white/50">Sign in required.</div>;
   if (!actorId)  return <div className="p-10 text-center text-white/50">Invalid vport.</div>;
   if (!isOwner)  return <div className="p-10 text-center text-white/50">You can only manage your own calendar.</div>;

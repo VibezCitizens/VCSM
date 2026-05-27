@@ -54,7 +54,7 @@ export default function ProfileTabView({
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <input ref={bannerInputRef} type="file" accept="image/*" onChange={onPickBanner} className="hidden" />
+            <input ref={bannerInputRef} type="file" accept="image/*" onChange={onPickBanner} style={{ display: 'none' }} />
             <button
               type="button"
               onClick={() => bannerInputRef.current?.click()}
@@ -86,7 +86,7 @@ export default function ProfileTabView({
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <input ref={avatarInputRef} type="file" accept="image/*" onChange={onPickAvatar} className="hidden" />
+              <input ref={avatarInputRef} type="file" accept="image/*" onChange={onPickAvatar} style={{ display: 'none' }} />
               <button
                 type="button"
                 onClick={() => avatarInputRef.current?.click()}

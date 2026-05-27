@@ -4,14 +4,16 @@ import {
   listLiveProviderCountries,
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
-import { getCountryBySlug } from "@/data/repositories/geo.repo";
+import { getCountryBySlug, listCountries } from "@/data/repositories/geo.repo";
 import TopProvidersDiscoveryClient from "@/features/providers/components/TopProvidersDiscoveryClient";
 import { getPlatformOrigin } from "@/lib/env";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 
 export function generateStaticParams() {
-  return listLiveProviderCountries().map((country) => ({ city: country.countrySlug }));
+  const live = listLiveProviderCountries().map((country) => ({ city: country.countrySlug }));
+  if (live.length > 0) return live;
+  return listCountries().map((c) => ({ city: c.slug }));
 }
 
 export function generateMetadataForLocale({ params }, routeLocale = null) {
@@ -26,8 +28,9 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
   });
 }
 
-export function generateMetadata({ params }) {
-  return generateMetadataForLocale({ params });
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  return generateMetadataForLocale({ params: resolvedParams });
 }
 
 function buildClaimHref() {
@@ -42,7 +45,8 @@ function buildClaimHref() {
 }
 
 export default async function CountryTopProvidersPage({ params }) {
-  const country = getCountryBySlug(params.city);
+  const { city } = await params;
+  const country = getCountryBySlug(city);
   const liveCountry = listLiveProviderCountries().find(
     (entry) => entry.countryCode === country?.code
   );
@@ -51,7 +55,7 @@ export default async function CountryTopProvidersPage({ params }) {
     notFound();
   }
 
-  if (params.city !== country.slug) {
+  if (city !== country.slug) {
     redirect(`/${country.slug}/top-providers`);
   }
 

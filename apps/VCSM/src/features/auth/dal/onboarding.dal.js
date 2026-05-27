@@ -1,11 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 
-export async function readCurrentSessionUserDAL() {
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
-  return data?.session?.user ?? null
-}
-
 export async function readCurrentAuthUserDAL() {
   const { data, error } = await supabase.auth.getUser()
   if (error) throw error

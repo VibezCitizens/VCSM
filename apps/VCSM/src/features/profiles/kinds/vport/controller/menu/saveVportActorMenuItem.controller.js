@@ -5,8 +5,8 @@ import updateVportActorMenuItemDAL from "@/features/profiles/kinds/vport/dal/men
 import readVportActorMenuItemsDAL from "@/features/profiles/kinds/vport/dal/menu/readVportActorMenuItems.dal";
 import readVportActorMenuCategoriesDAL from "@/features/profiles/kinds/vport/dal/menu/readVportActorMenuCategories.dal";
 import { createVportMenuItemMediaDAL } from "@/features/profiles/kinds/vport/dal/menu/createVportMenuItemMedia.dal";
-import { createMediaAssetController } from "@/features/media/controller/createMediaAsset.controller";
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from "@/features/media/adapters/media.adapter";
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 
 import { VportActorMenuItemModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenuItem.model";
 
@@ -114,7 +114,7 @@ export async function saveVportActorMenuItemController({
 function recordMenuItemMedia({ actorId, itemId, url, mediaUploadResult }) {
   ;(async () => {
     try {
-      const appId = await resolveVcsmAppIdDAL()
+      const appId = await resolveVcsmAppId()
       const mediaAssetRecord = await createMediaAssetController({
         mediaUploadResult,
         ownerActorId:     actorId,

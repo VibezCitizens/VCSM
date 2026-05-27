@@ -49,7 +49,7 @@ export function safeParseJson(value) {
   let s = value.trim();
   if (!s) return null;
 
-  // Unwrap up to 2 layers:
+  // Unwrap up to 2 layers of double-encoded JSON
   for (let i = 0; i < 2; i++) {
     try {
       const parsed = JSON.parse(s);
@@ -98,7 +98,7 @@ export function findTemplateById(templateId) {
   return null;
 }
 
-// try common aliases without changing DB values
+// Try common aliases without changing DB values
 export function findTemplateWithAliases(templateId) {
   const id = normalizeTemplateKey(templateId);
   if (!id) return { tpl: null, usedKey: null, tried: [] };
@@ -106,7 +106,7 @@ export function findTemplateWithAliases(templateId) {
   const tried = [];
   const candidates = [id, id.replace(/\./g, "-"), id.replace(/-/g, ".")].filter(Boolean);
 
-  // de-dupe in order
+  // De-dupe in order
   const uniq = [];
   for (const c of candidates) {
     if (!uniq.includes(c)) uniq.push(c);
@@ -201,7 +201,7 @@ export function buildFallbackStyles({ theme, isMystery, hasImage }) {
 }
 
 /**
- * Convert a DB card row / payload into the shape your templates expect:
+ * Convert a DB card row / payload into the shape templates expect:
  * { toName, fromName, message, sendAnonymously, accent?, company?, ... }
  */
 export function toTemplateData({ isAnonymous, customization, messageText, toName, fromName }) {

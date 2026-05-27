@@ -1,29 +1,46 @@
 import { getVportProfileIdByActorDAL } from "@/features/dashboard/vport/dal/read/vportProfile.read.dal";
-import { listVportResourcesByProfileIdDAL } from "@/features/dashboard/vport/dal/read/vportResource.read.dal";
-import { listVportAvailabilityRulesByResourceIdDAL } from "@/features/dashboard/vport/dal/read/vportAvailabilityRules.read.dal";
+import {
+  listVportResourcesByProfileIdDAL,
+  listVportResourcesByOwnerActorIdDAL,
+} from "@/features/dashboard/vport/dal/read/vportResource.read.dal";
+import { listVportAvailabilityRulesByResourceIdsDAL } from "@/features/dashboard/vport/dal/read/vportAvailabilityRules.read.dal";
 import { listVportBookingsForProfileDayDAL } from "@/features/dashboard/vport/dal/read/listVportBookingsForProfileDay.read.dal";
 import { listVportServicesByProfileIdDAL } from "@/features/dashboard/vport/dal/read/vportServices.read.dal";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
-export async function loadDayScheduleController({ actorId, dateKey }) {
+export async function loadDayScheduleController({ actorId, dateKey, callerActorId }) {
   if (!actorId || !dateKey) throw new Error("actorId and dateKey are required");
+  if (!callerActorId) throw new Error("loadDayScheduleController: callerActorId is required");
+
+  // Ownership gate — prevents any authenticated actor from reading another VPORT's
+  // schedule (which includes customer names and notes). VPD-V-022.
+  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: actorId });
 
   const profileId = await getVportProfileIdByActorDAL({ actorId });
   if (!profileId) throw new Error("Vport profile not found.");
 
-  const staff = await listVportResourcesByProfileIdDAL({ profileId });
+  // Merge profile-based resources (legacy staff) + actor-based resources (engine calendar resource)
+  const [profileResources, actorResources] = await Promise.all([
+    listVportResourcesByProfileIdDAL({ profileId }),
+    listVportResourcesByOwnerActorIdDAL({ ownerActorId: actorId }),
+  ]);
+  const seen = new Set();
+  const staff = [...profileResources, ...actorResources].filter((r) => {
+    if (seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
 
   const [year, month, day] = dateKey.split("-").map(Number);
   const dateObj    = new Date(year, month - 1, day);
   const weekdayInt = dateObj.getDay();
 
-  const rulesResults = await Promise.all(
-    staff.map((m) =>
-      listVportAvailabilityRulesByResourceIdDAL({ resourceId: m.id })
-        .then((rules) => [m.id, rules])
-        .catch(() => [m.id, []])
-    )
-  );
-  const rulesMap = Object.fromEntries(rulesResults);
+  const allRulesFlat = await listVportAvailabilityRulesByResourceIdsDAL({ resourceIds: staff.map((m) => m.id) });
+  const rulesMap = {};
+  for (const rule of allRulesFlat) {
+    if (!rulesMap[rule.resource_id]) rulesMap[rule.resource_id] = [];
+    rulesMap[rule.resource_id].push(rule);
+  }
 
   const rangeStart = new Date(year, month - 1, day, 0, 0, 0, 0).toISOString();
   const rangeEnd   = new Date(year, month - 1, day, 23, 59, 59, 999).toISOString();

@@ -2,10 +2,10 @@ import { AnswerCard } from "@/features/answers/components/AnswerCard";
 import { AnswerSeoJsonLd } from "@/features/answers/components/AnswerSeoJsonLd";
 import { QuestionHeader } from "@/features/answers/components/QuestionHeader";
 import { AnswerDetailNotFound } from "@/features/answers/components/AnswerDetailNotFound";
-import { useAnswerPage } from "@/features/answers/hooks/useAnswerPage";
+import { fetchAnswerPage } from "@/features/answers/hooks/useAnswerPage";
 
 export async function AnswerDetailView({ slug }) {
-  const result = await useAnswerPage({ slug });
+  const result = await fetchAnswerPage({ slug });
   const page = result.page;
 
   return (

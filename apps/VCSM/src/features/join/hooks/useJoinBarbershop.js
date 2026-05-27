@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import {
   loadInviteForJoin,
   checkJoinAuthState,
@@ -40,7 +40,7 @@ export const VIEWS = {
 export function useJoinBarbershop(token) {
   const { identity, identityLoading } = useIdentity();
   const { refreshVcActorDirectory, ensureVcsmPlatformBootstrap } = useIdentityOps();
-  const { readCurrentAuthUserDAL, signInWithPassword, createUserActorForProfile, generateUsernameDAL, upsertCompletedOnboardingProfileDAL } = useAuthOps();
+  const { readCurrentAuthUserDAL, signInWithPassword } = useAuthOps();
   const { createVport } = useVportCoreOps();
   const [view, setView] = useState(VIEWS.LOADING);
   const [flowType, setFlowType] = useState(null); // 'qr' | 'invite'
@@ -129,7 +129,7 @@ export function useJoinBarbershop(token) {
           setView(VIEWS.SIGNUP);
         } else if (action === "auto_resume") {
           setView(VIEWS.RESUMING);
-          autoResumeInviteOnboarding(token, { ensureVcsmPlatformBootstrap, refreshActorFn: refreshVcActorDirectory, readCurrentAuthUserDAL, generateUsernameDAL, upsertCompletedOnboardingProfileDAL, createUserActorForProfile, createVport })
+          autoResumeInviteOnboarding(token, { ensureVcsmPlatformBootstrap, refreshActorFn: refreshVcActorDirectory, readCurrentAuthUserDAL, createVport })
             .then(() => setView(VIEWS.ACCEPTED))
             .catch((e) => {
               setError(e?.message || "Setup failed.");

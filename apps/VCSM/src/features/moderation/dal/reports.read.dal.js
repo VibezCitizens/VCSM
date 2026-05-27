@@ -1,6 +1,10 @@
 import { supabase } from '@/services/supabase/supabaseClient'
 import { REPORT_COLUMNS } from '@/features/moderation/dal/reports.dal.columns'
 
+function logModerationDalError(...args) {
+  if (import.meta.env?.DEV) console.error(...args)
+}
+
 export async function getReportRowById({ reportId }) {
   const { data, error } = await supabase
     .schema('moderation')
@@ -9,7 +13,7 @@ export async function getReportRowById({ reportId }) {
     .eq('id', reportId)
     .maybeSingle()
 
-  if (error) console.error('[DAL][moderation.reports.getById] error', { reportId, error })
+  if (error) logModerationDalError('[DAL][moderation.reports.getById] error', { reportId, error })
   return { row: data ?? null, error }
 }
 
@@ -22,6 +26,6 @@ export async function getReportRowByDedupeKey({ reporterActorId, dedupeKey }) {
     .eq('dedupe_key', dedupeKey)
     .maybeSingle()
 
-  if (error) console.error('[DAL][moderation.reports.getByDedupeKey] error', { reporterActorId, dedupeKey, error })
+  if (error) logModerationDalError('[DAL][moderation.reports.getByDedupeKey] error', { reporterActorId, dedupeKey, error })
   return { row: data ?? null, error }
 }

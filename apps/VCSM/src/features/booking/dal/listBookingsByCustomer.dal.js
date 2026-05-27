@@ -20,7 +20,7 @@ const BOOKING_SELECT = [
   "created_by_actor_id",
   "created_at",
   "updated_at",
-  "resources!resource_id(owner_actor_id,member_actor_id,name)",
+  "resources!resource_id(owner_actor_id,name)",
   "profiles!profile_id(actor_id,name)",
 ].join(",");
 

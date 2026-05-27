@@ -16,3 +16,18 @@ export async function listVportAvailabilityRulesByResourceIdDAL({ resourceId } =
   if (error) throw error;
   return Array.isArray(data) ? data : [];
 }
+
+export async function listVportAvailabilityRulesByResourceIdsDAL({ resourceIds } = {}) {
+  if (!resourceIds?.length) return [];
+
+  const { data, error } = await vportSchema
+    .from("availability_rules")
+    .select(COLS)
+    .in("resource_id", resourceIds)
+    .eq("is_active", true)
+    .order("weekday", { ascending: true })
+    .order("start_time", { ascending: true });
+
+  if (error) throw error;
+  return Array.isArray(data) ? data : [];
+}

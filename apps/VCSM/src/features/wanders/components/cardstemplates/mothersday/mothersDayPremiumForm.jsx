@@ -171,7 +171,7 @@ export function MothersDayPremiumForm({ data, setData, ui }) {
               ref={fileRef}
               type="file"
               accept="image/*"
-              className="hidden"
+              style={{ display: 'none' }}
               onChange={onFileChange}
             />
             <button

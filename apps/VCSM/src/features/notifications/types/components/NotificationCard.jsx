@@ -26,7 +26,7 @@ export default function NotificationCard({
         <ActorLink
           actor={actor}
           avatarSize="w-11 h-11"
-          textSize="hidden"
+          showText={false}
           showUsername={false}
           showTimestamp={false}
           className="shrink-0"

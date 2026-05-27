@@ -1,9 +1,7 @@
 import React from "react";
-import { useActorSummary } from "@hydration";
 
 export function ConfirmRemoveModal({ member, removing, error, onConfirm, onCancel }) {
-  const summary = useActorSummary(member?.actor_id);
-  const displayName = summary.displayName || member?.actor_id || "this member";
+  const displayName = member?.name || "this member";
 
   const overlayStyle = {
     position: "fixed", inset: 0, zIndex: 10001,

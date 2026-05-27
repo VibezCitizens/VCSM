@@ -2,6 +2,8 @@ import { getSiteOrigin } from "@/lib/env";
 import { listPageCandidates } from "@/data/repositories/pageCandidate.repo";
 import { buildLocalizedAlternates } from "@/seo/locale";
 
+export const dynamic = "force-static";
+
 const PRIORITY = {
   country_provider: 0.9,
   country_city_service: 0.8,

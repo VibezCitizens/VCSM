@@ -39,13 +39,15 @@ export async function dalInsertLocksmithServiceDetailDefaults(row) {
   return data?.[0] ?? null
 }
 
-export async function dalDeleteLocksmithServiceDetail(serviceId) {
+export async function dalDeleteLocksmithServiceDetail(serviceId, actorId) {
   if (!serviceId) throw new Error('serviceId required')
+  if (!actorId) throw new Error('actorId required')
 
   const { error } = await vportSchema
     .from('locksmith_service_details')
     .delete()
     .eq('service_id', serviceId)
+    .eq('actor_id', actorId)
 
   if (error) throw error
 }

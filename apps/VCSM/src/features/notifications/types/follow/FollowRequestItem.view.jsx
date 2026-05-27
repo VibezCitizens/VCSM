@@ -4,6 +4,8 @@ import { useTranslation } from '@i18n'
 import NotificationCard from '@/features/notifications/types/components/NotificationCard'
 import { useFollowRequestActions } from '@/features/social/adapters/friend/request/hooks/useFollowRequestActions.adapter'
 
+const DEV = import.meta.env?.DEV
+
 export default function FollowRequestItem({ notification }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -20,10 +22,12 @@ export default function FollowRequestItem({ notification }) {
     notification.context?.targetActorId
 
   if (!requesterActorId || !targetActorId) {
-    console.error(
-      '[FollowRequestItem] missing actor ids',
-      notification
-    )
+    if (DEV) {
+      console.error(
+        '[FollowRequestItem] missing actor ids',
+        notification
+      )
+    }
     return null
   }
 
@@ -69,7 +73,7 @@ export default function FollowRequestItem({ notification }) {
       // optional: make sure header/badges update too
       window.dispatchEvent(new Event('noti:refresh'))
     } catch (err) {
-      console.error('Accept failed', err)
+      if (DEV) console.error('Accept failed', err)
       setHidden(false)
       setBusy(false)
     }
@@ -86,7 +90,7 @@ export default function FollowRequestItem({ notification }) {
         targetActorId,
       })
     } catch (err) {
-      console.error('Decline failed', err)
+      if (DEV) console.error('Decline failed', err)
       setHidden(false)
       setBusy(false)
     }

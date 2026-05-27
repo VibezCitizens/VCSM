@@ -1,16 +1,8 @@
 import vportSchema from "@/services/supabase/vportClient";
+import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
 
 const CATEGORY_SELECT =
   "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at";
-
-async function resolveProfileId(actorId) {
-  const { data } = await vportSchema
-    .from("profiles")
-    .select("id")
-    .eq("actor_id", actorId)
-    .maybeSingle();
-  return data?.id ?? null;
-}
 
 export async function createVportActorMenuCategoryDAL({
   actorId,
@@ -22,7 +14,7 @@ export async function createVportActorMenuCategoryDAL({
 }) {
   if (!actorId) throw new Error("createVportActorMenuCategoryDAL: actorId is required");
 
-  const profileId = await resolveProfileId(actorId);
+  const profileId = await resolveVportProfileId(actorId);
   if (!profileId) return null;
 
   const { data, error } = await vportSchema

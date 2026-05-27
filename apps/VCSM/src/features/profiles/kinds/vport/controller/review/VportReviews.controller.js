@@ -16,6 +16,7 @@ import {
 } from '@reviews'
 
 import { dalReadReviewTargetActor } from '@/features/profiles/kinds/vport/dal/review/reviewTarget.read.dal'
+import { readVportTypeByActorId } from '@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.dal'
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import {
   assertActorId,
@@ -43,9 +44,6 @@ export async function ctrlGetReviewFormConfig(targetActorId) {
   }
 
   // Get vport_type for subtype resolution
-  const { default: readVportTypeByActorId } = await import(
-    '@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.dal'
-  )
   const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId })
   const targetSubtype = String(actorTypeRow?.vport_type ?? '').trim().toLowerCase() || null
 
@@ -120,8 +118,13 @@ export async function ctrlSubmitReview(input) {
     throw new Error('[VportReviews] cannot review self')
   }
 
+  // Fetch author and target actors in parallel — one round trip each
+  const [authorActor, targetActor] = await Promise.all([
+    dalReadReviewTargetActor(authorActorId),
+    dalReadReviewTargetActor(targetActorId),
+  ])
+
   // Citizen-only guard: only user actors can submit reviews
-  const authorActor = await dalReadReviewTargetActor(authorActorId)
   if (!authorActor || authorActor.is_void) {
     throw new Error('[VportReviews] author actor not found or void')
   }
@@ -129,22 +132,27 @@ export async function ctrlSubmitReview(input) {
     throw new Error('Only citizens can submit reviews.')
   }
 
-  // Load dimensions to build dimensionKey → dimensionId map
-  const configDims = await ctrlGetReviewFormConfig(targetActorId)
-  if (!configDims.length) {
+  // Target must be an active vport
+  if (!targetActor || targetActor.is_void || String(targetActor.kind) !== 'vport') {
     throw new Error('[VportReviews] review dimensions unavailable for this target')
   }
 
-  // Map dimensionKey → dimensionId
-  // configDims come from engine getReviewFormConfig which returns objects with id
-  // We need the raw engine dims to get the id
-  const { default: readVportTypeByActorId } = await import(
-    '@/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.dal'
-  )
+  // Resolve vport type → target subtype (single call, static import)
   const actorTypeRow = await readVportTypeByActorId({ actorId: targetActorId })
   const targetSubtype = String(actorTypeRow?.vport_type ?? '').trim().toLowerCase() || null
 
+  if (!targetSubtype) {
+    throw new Error('[VportReviews] review dimensions unavailable for this target')
+  }
+
+  // Fetch engine dims once — used for both validation and dimensionKey → dimensionId mapping.
+  // Previously ctrlGetReviewFormConfig was called (strips id), then getReviewFormConfig again
+  // (to recover id). This single call replaces both.
   const engineDims = await getReviewFormConfig({ targetKind: 'vport', targetSubtype })
+  if (!engineDims.length) {
+    throw new Error('[VportReviews] review dimensions unavailable for this target')
+  }
+
   const keyToId = new Map()
   for (const d of engineDims) {
     if (d.key && d.id) keyToId.set(d.key, d.id)

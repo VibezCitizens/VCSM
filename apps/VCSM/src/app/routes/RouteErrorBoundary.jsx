@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { captureMonitoringError } from '@/services/monitoring/monitoring'
 
 /**
  * Catches errors thrown during lazy-chunk loading or route render.
@@ -19,6 +20,7 @@ export class RouteErrorBoundary extends Component {
     if (import.meta.env.DEV) {
       console.error('[RouteErrorBoundary] Chunk load error:', error, info)
     }
+    captureMonitoringError(error, { componentStack: info?.componentStack })
   }
 
   render() {

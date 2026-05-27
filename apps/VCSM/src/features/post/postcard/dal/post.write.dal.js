@@ -93,7 +93,9 @@ export async function updatePostTextDAL({ actorId, postId, text }) {
     const mentionedActorIds = await resolveMentionActorIds(handles);
     await replacePostMentions(postId, mentionedActorIds);
   } catch (e) {
-    console.warn("[updatePostTextDAL] mention persistence failed:", e);
+    if (import.meta.env?.DEV) {
+      console.warn("[updatePostTextDAL] mention persistence failed:", e);
+    }
   }
 
   return { data, error: null };

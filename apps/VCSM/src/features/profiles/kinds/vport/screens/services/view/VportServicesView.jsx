@@ -29,23 +29,19 @@ export default function VportServicesView({
     return actorIdProp ?? profile?.actorId ?? profile?.actor_id ?? null;
   }, [actorIdProp, profile]);
 
-  // ✅ true only when viewer owns this vport
-  const isOwner = useMemo(() => {
-    return (
-      Boolean(viewerActorId) && String(viewerActorId) === String(targetActorId)
-    );
-  }, [viewerActorId, targetActorId]);
+  // Owner UI is enabled only when the screen explicitly signals it.
+  // The dashboard screen (VportDashboardServicesScreen) gates allowOwnerEditing
+  // behind a DB-backed useVportOwnership check — it never passes true unless the
+  // viewer is a verified owner. This view must NOT recompute ownership by
+  // comparing actorIds; string equality does not constitute server verification.
+  const ownerUiEnabled = Boolean(allowOwnerEditing);
 
-  // ✅ owner UI only when explicitly allowed (dashboard)
-  const ownerUiEnabled = useMemo(() => {
-    return Boolean(allowOwnerEditing) && isOwner;
-  }, [allowOwnerEditing, isOwner]);
-
-  // ✅ hook: only request owner mode if owner UI enabled
+  // Hook passes callerActorId (viewerActorId) so the controller can verify
+  // server-side ownership before returning disabled services in owner mode.
   const s = useVportServices({
     identityActorId: viewerActorId,
     targetActorId,
-    asOwner: ownerUiEnabled, // ✅ changed
+    asOwner: ownerUiEnabled,
     vportType,
   });
 

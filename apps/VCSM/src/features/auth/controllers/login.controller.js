@@ -7,7 +7,16 @@ import {
 export async function signInWithPassword({ email, password }) {
   const { data, error } = await dalSignInWithPassword({ email, password });
   if (error) throw error;
-  return { data, error: null };
+  // Return only what callers need — tokens are managed by AuthProvider via onAuthStateChange
+  return {
+    data: {
+      user: {
+        id: data?.user?.id ?? null,
+        email: data?.user?.email ?? null,
+      },
+    },
+    error: null,
+  };
 }
 
 export async function getAuthUser() {

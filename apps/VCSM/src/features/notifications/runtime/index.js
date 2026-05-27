@@ -133,25 +133,25 @@ export async function publishEvent({ event, recipients = [], renderContext = {} 
   const recipientRows = await insertNotificationRecipientsDAL(eventId, buildRecipientRows(recipients))
   const renderedFallback = buildRenderFallback({ event, renderContext })
 
-  let deliveredCount = 0
-
-  for (const recipient of recipientRows) {
-    const recipientId = recipient?.id ?? null
-    if (!recipientId) continue
-
-    try {
-      await upsertNotificationRenderedDAL(recipientId, renderedFallback)
-      await insertNotificationInboxItemDAL(recipientId)
-      await updateNotificationRecipientStatusDAL(recipientId, 'delivered', null)
-      deliveredCount += 1
-    } catch (error) {
-      errors.push(error?.message ?? 'Failed to deliver notification')
+  const deliveryResults = await Promise.allSettled(
+    recipientRows.map(async (recipient) => {
+      const recipientId = recipient?.id ?? null
+      if (!recipientId) return null
       try {
-        await updateNotificationRecipientStatusDAL(recipientId, 'failed', error?.message ?? null)
-      } catch {
-        // no-op
+        await upsertNotificationRenderedDAL(recipientId, renderedFallback)
+        await insertNotificationInboxItemDAL(recipientId)
+        await updateNotificationRecipientStatusDAL(recipientId, 'delivered', null)
+      } catch (error) {
+        try { await updateNotificationRecipientStatusDAL(recipientId, 'failed', error?.message ?? null) } catch { /* */ }
+        throw error
       }
-    }
+      return recipientId
+    })
+  )
+  let deliveredCount = 0
+  for (const { status, value, reason } of deliveryResults) {
+    if (status === 'fulfilled' && value != null) deliveredCount += 1
+    else if (status === 'rejected') errors.push(reason?.message ?? 'Failed to deliver notification')
   }
 
   invalidateCountUnreadCache()

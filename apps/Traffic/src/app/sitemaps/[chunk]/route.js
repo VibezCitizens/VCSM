@@ -2,6 +2,8 @@ import { getSitemapChunk, listSitemapChunks, listPageCandidates } from "@/data/r
 import { buildCanonical } from "@/seo/canonical";
 import { buildLocalizedAlternates, listLocalizedSitemapPaths } from "@/seo/locale";
 
+export const dynamic = "force-static";
+
 const CHUNK_SIZE = 5000;
 
 // Sync — uses only static in-memory data so the build never depends on Supabase availability.

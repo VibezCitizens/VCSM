@@ -1,7 +1,7 @@
 import { readVportProfileByActorIdDAL } from "@/features/dashboard/vport/dal/read/vportProfile.read.dal";
 import { upsertVportPublicDetailsDAL } from "@/features/dashboard/vport/dal/write/vportPublicDetails.write.dal";
 import { resolveVportCity } from "@/features/dashboard/vport/dal/read/vportCities.read.dal";
-import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 function safeObj(value) {
   if (!value) return {};

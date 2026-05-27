@@ -1,7 +1,6 @@
 import { lazyWithLog } from "@/app/routes/lazyPublic";
 
-const devDiagnosticsEnabled =
-  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_DIAGNOSTICS === "1";
+const devDiagnosticsEnabled = import.meta.env.DEV;
 
 // ── Main App ──────────────────────────────────────────────────────────────────
 export const CentralFeed = lazyWithLog("CentralFeed", () =>
@@ -133,8 +132,8 @@ export const VportDashboardScheduleScreen = lazyWithLog(
   "VportDashboardScheduleScreen",
   () => import("@/features/dashboard/vport/screens/VportDashboardScheduleScreen"),
 );
-export const VportSettingsScreen = lazyWithLog("VportSettingsScreen", () =>
-  import("@/features/dashboard/vport/screens/VportSettingsScreen"),
+export const VportSettingsScreen = lazyWithLog("VportSettingsFinalScreen", () =>
+  import("@/features/dashboard/vport/screens/VportSettingsFinalScreen"),
 );
 
 // ── Gas ───────────────────────────────────────────────────────────────────────

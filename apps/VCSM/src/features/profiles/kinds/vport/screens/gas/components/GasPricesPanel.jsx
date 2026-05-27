@@ -1,8 +1,28 @@
 import { useMemo, useState } from "react";
 import { GasStates } from "@/features/profiles/kinds/vport/screens/gas/components/GasStates";
 import { BulkUpdateFuelPricesModal } from "@/features/profiles/kinds/vport/screens/gas/components/BulkUpdateFuelPricesModal";
-import { toEpochMs, formatLastUpdatedAt, prettyFuelLabel } from "@/features/profiles/kinds/vport/screens/gas/components/gasPrices.model";
+import {
+  resolveFuelKeys,
+  buildFuelPriceRows,
+} from "@/features/profiles/kinds/vport/model/gas/gasPrices.model";
 
+/**
+ * GasPricesPanel
+ *
+ * Displays official fuel prices + last community update for a gas station VPORT.
+ * Handles the "Update prices" CTA for owners (bulk modal) and citizen suggestions.
+ *
+ * Props:
+ *   canSubmit       — boolean: true when the viewer is authenticated and may submit prices.
+ *                     Computed by callers from identity?.actorId. Replaces the full identity
+ *                     object, which was only ever used to derive this single boolean.
+ *   isOwner         — verified ownership from useVportOwnership (passed explicitly).
+ *                     Hardens the edit control gate: allowOwnerUpdate alone is not enough.
+ *   allowOwnerUpdate — signals that this render context supports owner-level price updates.
+ *                     Must be true AND isOwner must be true for owner edit controls to appear.
+ *   isStationOwner  — used by the PUBLIC gas screen to suppress the "Update prices"
+ *                     button for owners viewing their own station (they should use dashboard).
+ */
 export function GasPricesPanel({
   loading,
   error,
@@ -10,94 +30,46 @@ export function GasPricesPanel({
   officialByFuelKey = {},
   communitySuggestionByFuelKey = {},
   settings,
-  identity,
+  canSubmit = false,
   submitSuggestion,
-  submitting = false,
   allowOwnerUpdate = false,
+  isOwner = false,
   isStationOwner = false,
   afterSubmitSuggestion = null,
   onShareToFeed = null,
 }) {
   const [showBulkModal, setShowBulkModal] = useState(false);
 
-  const me = useMemo(() => identity?.identity ?? identity ?? null, [identity]);
-  const canSubmit = !!me?.actorId;
+  const fuelKeys = useMemo(
+    () => resolveFuelKeys({ settings, official, officialByFuelKey, communitySuggestionByFuelKey }),
+    [settings, official, officialByFuelKey, communitySuggestionByFuelKey]
+  );
 
-  const fuelKeys = useMemo(() => {
-    const fromSettings =
-      settings?.fuelKeys ??
-      settings?.fuel_keys ??
-      settings?.fuels?.map((f) => f?.fuelKey ?? f?.fuel_key ?? f?.key ?? null) ??
-      settings?.fuelTypes?.map((f) => f?.fuelKey ?? f?.fuel_key ?? f?.key ?? null) ??
-      null;
-
-    const cleanSettingsKeys = Array.isArray(fromSettings)
-      ? fromSettings.map((k) => (k ? String(k) : null)).filter(Boolean)
-      : [];
-
-    if (cleanSettingsKeys.length) return cleanSettingsKeys;
-
-    const keys = new Set(["regular", "midgrade", "premium", "diesel"]);
-    for (const row of Array.isArray(official) ? official : []) {
-      const k = row?.fuelKey ?? row?.fuel_key ?? row?.key ?? null;
-      if (k) keys.add(String(k));
-    }
-    for (const k of Object.keys(officialByFuelKey || {})) keys.add(String(k));
-    for (const k of Object.keys(communitySuggestionByFuelKey || {})) keys.add(String(k));
-    return Array.from(keys);
-  }, [settings, official, officialByFuelKey, communitySuggestionByFuelKey]);
-
-  const rows = useMemo(() => {
-    return fuelKeys.map((fuelKey) => {
-      const officialRow =
-        officialByFuelKey?.[fuelKey] ??
-        (Array.isArray(official)
-          ? official.find((r) => (r?.fuelKey ?? r?.fuel_key ?? r?.key) === fuelKey) ?? null
-          : null);
-
-      const suggestion = communitySuggestionByFuelKey?.[fuelKey] ?? null;
-      const officialPrice = officialRow?.price ?? null;
-      const officialCurrencyCode = officialRow?.currencyCode ?? officialRow?.currency_code ?? "USD";
-      const officialUnit = officialRow?.unit ?? "liter";
-      const officialUpdatedAt = officialRow?.updatedAt ?? officialRow?.updated_at ?? null;
-
-      const suggestedPrice = suggestion?.proposedPrice ?? suggestion?.proposed_price ?? null;
-      const suggestedCurrencyCode = suggestion?.currencyCode ?? suggestion?.currency_code ?? officialCurrencyCode;
-      const suggestedUnit = suggestion?.unit ?? officialUnit;
-      const suggestionSubmittedAt = suggestion?.submittedAt ?? suggestion?.submitted_at ?? null;
-
-      const officialUpdatedMs = toEpochMs(officialUpdatedAt);
-      const suggestionSubmittedMs = toEpochMs(suggestionSubmittedAt);
-
-      let lastUpdateAt = null;
-      let lastUpdateSource = "none";
-      if (suggestionSubmittedMs !== null && (officialUpdatedMs === null || suggestionSubmittedMs >= officialUpdatedMs)) {
-        lastUpdateAt = suggestionSubmittedAt;
-        lastUpdateSource = "community";
-      } else if (officialUpdatedMs !== null) {
-        lastUpdateAt = officialUpdatedAt;
-        lastUpdateSource = "official";
-      }
-
-      return {
-        fuelKey,
-        label: prettyFuelLabel(fuelKey),
-        official: { price: officialPrice, currencyCode: officialCurrencyCode, unit: officialUnit },
-        community: { price: suggestedPrice, currencyCode: suggestedCurrencyCode, unit: suggestedUnit },
-        lastUpdate: { at: lastUpdateAt, source: lastUpdateSource, label: formatLastUpdatedAt(lastUpdateAt) },
-        suggestion,
-      };
-    });
-  }, [fuelKeys, official, officialByFuelKey, communitySuggestionByFuelKey]);
+  const rows = useMemo(
+    () => buildFuelPriceRows({ fuelKeys, official, officialByFuelKey, communitySuggestionByFuelKey }),
+    [fuelKeys, official, officialByFuelKey, communitySuggestionByFuelKey]
+  );
 
   const empty = !loading && !error && rows.length === 0;
 
+  /**
+   * showUpdateButton logic:
+   *
+   *   Owner dashboard path: allowOwnerUpdate=true AND isOwner=true → show bulk update button.
+   *     isOwner is verified by useVportOwnership in the parent screen — making the gate explicit.
+   *     allowOwnerUpdate alone is insufficient: avoids showing edit controls if prop is
+   *     accidentally set in a non-owner render context.
+   *
+   *   Public page, owner viewing own: isStationOwner=true → hide button (use dashboard instead).
+   *
+   *   Public page, citizen: show button to submit a suggestion.
+   */
   const showUpdateButton = useMemo(() => {
     if (!canSubmit) return false;
-    if (allowOwnerUpdate) return true;
+    if (allowOwnerUpdate && isOwner) return true;
     if (isStationOwner) return false;
     return true;
-  }, [canSubmit, allowOwnerUpdate, isStationOwner]);
+  }, [canSubmit, allowOwnerUpdate, isOwner, isStationOwner]);
 
   return (
     <div className="space-y-4">
@@ -114,6 +86,7 @@ export function GasPricesPanel({
               <button
                 type="button"
                 onClick={() => setShowBulkModal(true)}
+                aria-label="Update fuel prices"
                 className="shrink-0 rounded-2xl border border-sky-300/35 bg-gradient-to-b from-sky-300/40 to-blue-500/40 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(56,189,248,0.22)] transition hover:from-sky-300/55 hover:to-blue-500/55 active:scale-[0.98]"
               >
                 Update prices
@@ -132,6 +105,8 @@ export function GasPricesPanel({
                 <div
                   key={row.fuelKey}
                   className="profiles-subcard relative overflow-hidden rounded-3xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur"
+                  role="region"
+                  aria-label={`${row.label} fuel prices`}
                 >
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-white/10" />
                   <div className="pointer-events-none absolute -top-24 right-[-60px] h-52 w-52 rounded-full bg-purple-500/10 blur-3xl" />
@@ -146,7 +121,9 @@ export function GasPricesPanel({
                       <div className="mt-3 grid grid-cols-2 gap-3">
                         <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
                           <div className="text-[11px] uppercase tracking-wide text-white/50">Official</div>
-                          <div className="mt-1 text-xl font-semibold text-white">{row.official.price ?? "—"}</div>
+                          <div className="mt-1 text-xl font-semibold text-white" aria-label={`Official ${row.label} price: ${row.official.price ?? 'not set'}`}>
+                            {row.official.price ?? "—"}
+                          </div>
                         </div>
                         <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
                           <div className="flex items-center justify-between gap-2">
@@ -185,10 +162,9 @@ export function GasPricesPanel({
             open={showBulkModal}
             onClose={() => setShowBulkModal(false)}
             rows={rows}
-            submitting={submitting}
             submitSuggestion={submitSuggestion}
             afterSubmitSuggestion={afterSubmitSuggestion}
-            canShareToFeed={allowOwnerUpdate}
+            canShareToFeed={allowOwnerUpdate && isOwner}
             onShareToFeed={onShareToFeed}
           />
         </>

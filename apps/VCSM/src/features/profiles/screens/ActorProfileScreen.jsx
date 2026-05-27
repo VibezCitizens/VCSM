@@ -152,7 +152,7 @@ export default function ActorProfileScreen() {
       message: slugResolveErrorMessage, hasUuidInUrl, isSelf,
     });
     if (import.meta.env.DEV) return <>{probe}{SKELETON}</>;
-    if (debugMode) {
+    if (import.meta.env.DEV && debugMode) {
       return <ActorProfileProdDebugPanel routeParam={routeParam} isSelf={isSelf}
         hasUuidInUrl={hasUuidInUrl} uuidFromParam={uuidFromParam} slugToResolve={slugToResolve}
         slugResolveLoading={slugResolveLoading} actorIdFromSlug={actorIdFromSlug}
@@ -173,7 +173,7 @@ export default function ActorProfileScreen() {
       reason: "slug_not_found", routeParam, slugToResolve, hasUuidInUrl, slugNotFound, resolvedActorId,
     });
     if (import.meta.env.DEV) return <>{probe}{SKELETON}</>;
-    if (debugMode) return <ActorProfileProdDebugPanel routeParam={routeParam} isSelf={isSelf}
+    if (import.meta.env.DEV && debugMode) return <ActorProfileProdDebugPanel routeParam={routeParam} isSelf={isSelf}
       hasUuidInUrl={hasUuidInUrl} uuidFromParam={uuidFromParam} slugToResolve={slugToResolve}
       slugResolveLoading={slugResolveLoading} actorIdFromSlug={actorIdFromSlug}
       slugNotFound={slugNotFound} resolvedActorId={resolvedActorId}
@@ -188,7 +188,7 @@ export default function ActorProfileScreen() {
       reason: "missing_canonical_slug", routeParam, resolvedActorId, slugLoading, slugResolveLoading,
     });
     if (import.meta.env.DEV) return <>{probe}{SKELETON}</>;
-    if (debugMode) return <ActorProfileProdDebugPanel routeParam={routeParam} isSelf={isSelf}
+    if (import.meta.env.DEV && debugMode) return <ActorProfileProdDebugPanel routeParam={routeParam} isSelf={isSelf}
       hasUuidInUrl={hasUuidInUrl} uuidFromParam={uuidFromParam} slugToResolve={slugToResolve}
       slugResolveLoading={slugResolveLoading} actorIdFromSlug={actorIdFromSlug}
       slugNotFound={slugNotFound} resolvedActorId={resolvedActorId}

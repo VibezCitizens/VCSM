@@ -1,12 +1,14 @@
 // src/features/profiles/kinds/vport/hooks/services/useUpsertVportServices.js
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
+import { useIdentity } from "@/state/identity/identityContext";
 import upsertVportServicesController from "@/features/profiles/kinds/vport/controller/services/upsertVportServices.controller.js";
 
 /**
  * Hook Contract:
  * - Owns timing + UI state
+ * - Resolves identity and passes identityActorId to controller
  * - Calls controller only
  * - Must NOT import Supabase or DAL
  */
@@ -15,6 +17,12 @@ export default function useUpsertVportServices({
   vportType,
   onSuccess,
 } = {}) {
+  const { identity } = useIdentity();
+
+  const identityActorId = useMemo(() => {
+    return identity?.actorId ?? null;
+  }, [identity]);
+
   const [error, setError] = useState(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -36,6 +44,7 @@ export default function useUpsertVportServices({
 
       try {
         const res = await upsertVportServicesController({
+          identityActorId,
           targetActorId: targetActorIdSafe,
           vportType: vportTypeSafe,
           items,
@@ -53,7 +62,7 @@ export default function useUpsertVportServices({
         setIsPending(false);
       }
     },
-    [targetActorId, vportType, onSuccess]
+    [identityActorId, targetActorId, vportType, onSuccess]
   );
 
   return { mutate, isPending, error };

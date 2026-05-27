@@ -13,6 +13,7 @@ import { configureChatEngine } from '@chat'
 import { hydrateAndReturnSummaries } from '@hydration'
 import { supabase } from '@/services/supabase/supabaseClient'
 import { resolveRealm } from '@/shared/utils/resolveRealm'
+import { useIdentitySelectionStore } from '@/state/identity/identitySelection.store'
 import {
   normalizeHandleTerm,
   toContainsPattern,
@@ -44,11 +45,13 @@ async function searchActors(query, limit = 12) {
   const needle = (query || '').replace(/^@/, '').trim()
   if (!needle) return []
 
+  const viewerActorId = useIdentitySelectionStore.getState().activeActorId ?? null
+
   const { data, error } = await supabase
     .schema('identity')
     .rpc('search_actor_directory', {
       p_viewer_domain: 'vc',
-      p_viewer_actor_id: null,
+      p_viewer_actor_id: viewerActorId,
       p_query: needle,
       p_filter: 'all',
       p_limit: limit,

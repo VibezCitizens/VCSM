@@ -1,4 +1,4 @@
-import QRCode from "react-qr-code";
+import { QrCode } from "@/features/dashboard/qrcode/components/QrCode";
 import {
   chip,
   ctaText,
@@ -158,7 +158,7 @@ export function PosterFlyer({
               <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div className="posterQR">
                   <div style={qrBox}>
-                    <QRCode value={menuUrl} size={260} />
+                    <QrCode value={menuUrl} size={260} bgColor="#ffffff" fgColor="#000000" level="M" />
                   </div>
                   <div style={qrLabel}>Scan to view the menu</div>
                 </div>

@@ -180,7 +180,7 @@ export function WandersSendCardForm({
         <div className="mb-1.5 flex items-center justify-between gap-3">
           <label className={`${labelBase} mb-0`}>Customize</label>
           <div className="flex items-center gap-2">
-            <input ref={fileRef} type="file" accept="image/*" onChange={onFileChange} className="hidden" />
+            <input ref={fileRef} type="file" accept="image/*" onChange={onFileChange} style={{ display: 'none' }} />
             <button
               type="button"
               onClick={onPickImage}

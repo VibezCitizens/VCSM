@@ -1,12 +1,16 @@
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import getActorByIdDAL from "@/features/booking/dal/getActorById.dal";
 import insertBookingDAL from "@/features/booking/dal/insertBooking.dal";
+import { listBookingResourceServicesByResourceIdDAL } from "@/features/booking/dal/listBookingResourceServicesByResourceId.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 const MANAGEMENT_SOURCES = new Set(["owner", "admin", "import", "sync"]);
 const CITIZEN_ONLY_SOURCES = new Set(["public"]);
+const ALL_VALID_SOURCES = new Set([...MANAGEMENT_SOURCES, ...CITIZEN_ONLY_SOURCES]);
+
+const MAX_BOOKING_DURATION_MINUTES = 1440; // 24 hours hard ceiling
 
 export async function createBookingController({
   requestActorId = null,
@@ -46,9 +50,26 @@ export async function createBookingController({
     throw new Error("createBookingController: durationMinutes is required");
   }
 
+  if (!ALL_VALID_SOURCES.has(String(source))) {
+    throw new Error(`createBookingController: unrecognized source "${String(source)}"`);
+  }
+
+  const parsedDuration = Number(durationMinutes);
+  if (!Number.isFinite(parsedDuration) || parsedDuration <= 0 || parsedDuration > MAX_BOOKING_DURATION_MINUTES) {
+    throw new Error("createBookingController: durationMinutes must be a positive number not exceeding 1440");
+  }
+
   const resource = await getBookingResourceByIdDAL({ resourceId });
   if (!resource || resource.is_active !== true) {
     throw new Error("Booking resource is unavailable.");
+  }
+
+  if (serviceId) {
+    const resourceServices = await listBookingResourceServicesByResourceIdDAL({ resourceId });
+    const isLinked = resourceServices.some((rs) => String(rs.service_id) === String(serviceId));
+    if (!isLinked) {
+      throw new Error("Booking service is not available for this resource.");
+    }
   }
 
   if (MANAGEMENT_SOURCES.has(String(source))) {

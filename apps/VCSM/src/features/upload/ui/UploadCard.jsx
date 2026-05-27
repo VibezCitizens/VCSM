@@ -17,7 +17,7 @@ export default function UploadCard({
       <input
         type="file"
         ref={inputRef}
-        className="hidden"
+        style={{ display: 'none' }}
         accept="image/*,video/*"
         multiple={isVibes}
         onChange={(e) => onChosen(e.target.files)}

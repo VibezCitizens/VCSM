@@ -1,6 +1,8 @@
 import { listSitemapChunks } from "@/data/repositories/pageCandidate.repo";
 import { buildCanonical } from "@/seo/canonical";
 
+export const dynamic = "force-static";
+
 export async function GET() {
   const chunks = await listSitemapChunks();
   const entries = chunks

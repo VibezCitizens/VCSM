@@ -2,6 +2,7 @@ import { signUpForInviteDAL } from "@/features/join/dal/joinAuth.dal";
 import { readBarberVportByOwnerUserIdDAL } from "@/features/join/dal/barberVport.read.dal";
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from "@/features/join/dal/joinInvite.dal";
 import { recordSignupConsent } from "@/features/legal/adapters/legal.adapter";
+import { bootstrapJoinOnboardingController } from "@/features/auth/adapters/auth.adapter";
 
 const BARBER_CATEGORY = "barber";
 
@@ -68,51 +69,10 @@ export async function getExistingBarberVport(userId, { readCurrentAuthUserDAL } 
   return readBarberVportByOwnerUserIdDAL(uid);
 }
 
-async function buildAndBootstrapUserActor(user, displayName, desiredUsername, {
-  ensureVcsmPlatformBootstrap,
-  refreshActorFn,
-  generateUsernameDAL,
-  upsertCompletedOnboardingProfileDAL,
-  createUserActorForProfile,
-} = {}) {
-  const username = await generateUsernameDAL?.({
-    displayName,
-    usernameBase: desiredUsername,
-  });
-
-  // birthdate, age, and isAdult are intentionally omitted.
-  // Real age attestation must be collected from the user — never synthesized.
-  await upsertCompletedOnboardingProfileDAL?.({
-    profileId: user.id,
-    displayName,
-    username,
-    sex: null,
-    updatedAt: new Date().toISOString(),
-  });
-
-  const actor = await createUserActorForProfile?.({
-    profileId: user.id,
-    userId: user.id,
-    refreshActorFn,
-  });
-
-  if (actor?.id) {
-    await ensureVcsmPlatformBootstrap?.({
-      userId: user.id,
-      actorId: actor.id,
-    }).catch(() => {});
-  }
-
-  return actor;
-}
-
 export async function autoResumeInviteOnboarding(token, {
   ensureVcsmPlatformBootstrap,
   refreshActorFn,
   readCurrentAuthUserDAL,
-  generateUsernameDAL,
-  upsertCompletedOnboardingProfileDAL,
-  createUserActorForProfile,
   createVport,
 } = {}) {
   const user = await readCurrentAuthUserDAL?.();
@@ -124,12 +84,13 @@ export async function autoResumeInviteOnboarding(token, {
 
   if (!displayName) throw new Error("Missing account details. Please sign up again.");
 
-  await buildAndBootstrapUserActor(user, displayName, desiredUsername, {
-    ensureVcsmPlatformBootstrap,
+  // Session ownership verified inside bootstrapJoinOnboardingController
+  await bootstrapJoinOnboardingController({
+    userId: user.id,
+    displayName,
+    desiredUsername,
     refreshActorFn,
-    generateUsernameDAL,
-    upsertCompletedOnboardingProfileDAL,
-    createUserActorForProfile,
+    ensureVcsmPlatformBootstrap,
   });
 
   const vportResult = await createVport?.({

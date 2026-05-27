@@ -10,7 +10,8 @@ import {
   getCountryByCode,
   getCountryBySlug,
   getLocaleForCountryCode,
-  getRegionByCode
+  getRegionByCode,
+  listCountries
 } from "@/data/repositories/geo.repo";
 import { getServiceById } from "@/data/repositories/service.repo";
 import { listCountryProviderStaticParams } from "@/data/repositories/staticParams.repo";
@@ -57,10 +58,14 @@ const CATEGORY_KEY_TO_SLUG = {
 };
 
 export function generateStaticParams() {
-  return listCountryProviderStaticParams().map((entry) => ({
+  const live = listCountryProviderStaticParams().map((entry) => ({
     city: entry.country,
     providerSlug: entry.providerSlug
   }));
+  if (live.length > 0) return live;
+  // Taxonomy fallback: no live providers at build time. One placeholder per active country
+  // so the route is included in the export; each renders notFound() at static generation time.
+  return listCountries().map((c) => ({ city: c.slug, providerSlug: "no-providers" }));
 }
 
 function resolveCategorySlug(provider, services) {
@@ -162,12 +167,14 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
   });
 }
 
-export function generateMetadata({ params }) {
-  return generateMetadataForLocale({ params });
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  return generateMetadataForLocale({ params: resolvedParams });
 }
 
 export default async function CountryProviderPage({ params }) {
-  const graph = buildProviderGraph(params.city, params.providerSlug);
+  const { city: cityParam, providerSlug } = await params;
+  const graph = buildProviderGraph(cityParam, providerSlug);
   if (!graph) notFound();
 
   if (graph.needsCountryRedirect) {

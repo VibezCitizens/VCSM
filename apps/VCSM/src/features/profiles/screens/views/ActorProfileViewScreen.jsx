@@ -11,7 +11,6 @@ import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
 import { useActorProfileActions } from "@/features/profiles/hooks/useActorProfileActions";
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
 import {
-  useBlockStatus,
   PrivateProfileNotice,
   ShareModal,
   PostActionsMenu,
@@ -75,16 +74,11 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
 
   const canViewContent = gate.loading ? undefined : gate.canView;
 
-  const { loading: blockLoading, canViewProfile } = useBlockStatus(
-    viewerActorId,
-    profileActorId
-  );
-
   useEffect(() => {
-    if (!blockLoading && canViewProfile === false) {
+    if (!gate.loading && gate.isBlocked) {
       navigate("/feed", { replace: true });
     }
-  }, [blockLoading, canViewProfile, navigate]);
+  }, [gate.loading, gate.isBlocked, navigate]);
 
   // ── Profile data (React Query) ─────────────────────────────────────────────
   const { loading, error, profile } = useProfileView({
@@ -134,7 +128,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
 
   // ── Render gates ──────────────────────────────────────────────────────────
   // No seed data at all — full skeleton
-  if (!displayProfile && (loading || blockLoading || gate.loading)) {
+  if (!displayProfile && (loading || gate.loading)) {
     return (
       <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">
         <ActorProfileHeader loading />
@@ -159,7 +153,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
     viewerActorId === resolvedProfile.actorId;
 
   // Content area waits for security checks regardless of seed availability.
-  const contentReady = !blockLoading && !gate.loading;
+  const contentReady = !gate.loading;
 
   return (
     <div className="profiles-modern h-full w-full overflow-y-auto touch-pan-y">

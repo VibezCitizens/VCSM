@@ -15,7 +15,7 @@ const STATUS_FILTERS = [
   { key: "cancelled", label: "Cancelled" },
 ];
 
-export default function useBookingHistory({ resourceId, enabled = true } = {}) {
+export default function useBookingHistory({ callerActorId, ownerActorId, resourceId, enabled = true } = {}) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -36,7 +36,7 @@ export default function useBookingHistory({ resourceId, enabled = true } = {}) {
   }, [statusFilter]);
 
   const load = useCallback(async () => {
-    if (!enabled || !resourceId) return;
+    if (!enabled || !resourceId || !callerActorId || !ownerActorId) return;
 
     setLoading(true);
     setError(null);
@@ -44,6 +44,8 @@ export default function useBookingHistory({ resourceId, enabled = true } = {}) {
 
     try {
       const result = await listBookingHistoryController({
+        callerActorId,
+        ownerActorId,
         resourceId,
         statuses,
         limit: PAGE_SIZE,
@@ -60,15 +62,17 @@ export default function useBookingHistory({ resourceId, enabled = true } = {}) {
     } finally {
       if (mountedRef.current) setLoading(false);
     }
-  }, [resourceId, statuses, enabled]);
+  }, [callerActorId, ownerActorId, resourceId, statuses, enabled]);
 
   const loadMore = useCallback(async () => {
-    if (!resourceId || !hasMore || loadingMore) return;
+    if (!resourceId || !callerActorId || !ownerActorId || !hasMore || loadingMore) return;
 
     setLoadingMore(true);
 
     try {
       const result = await listBookingHistoryController({
+        callerActorId,
+        ownerActorId,
         resourceId,
         statuses,
         limit: PAGE_SIZE,
@@ -85,7 +89,7 @@ export default function useBookingHistory({ resourceId, enabled = true } = {}) {
     } finally {
       if (mountedRef.current) setLoadingMore(false);
     }
-  }, [resourceId, statuses, hasMore, loadingMore]);
+  }, [callerActorId, ownerActorId, resourceId, statuses, hasMore, loadingMore]);
 
   useEffect(() => {
     load();

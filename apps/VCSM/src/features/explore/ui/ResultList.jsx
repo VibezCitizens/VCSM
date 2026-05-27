@@ -1,5 +1,3 @@
-import { useSearchTabsActor } from '@/features/explore/hooks/useSearchTabsActor'
-import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { useTranslation } from '@i18n'
 import ActorSearchResultRow from './ActorSearchResultRow'
 import PostCard from './PostCard'
@@ -8,11 +6,8 @@ import EmptyState from '@/features/explore/ui/EmptyState'
 import FeaturedResultCard from './FeaturedResultCard'
 import { SkeletonRow } from '@/shared/components/Skeleton'
 
-export default function ResultList({ query, filter }) {
+export default function ResultList({ query, filter, items = [], loading = false }) {
   const { t } = useTranslation()
-  const { identity } = useIdentity()
-  const viewerActorId = identity?.actorId ?? null
-  const { items, loading } = useSearchTabsActor({ query, filter, viewerActorId })
 
   if (!query) return null
   if (loading) return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={`sr:${i}`} />)}</div>

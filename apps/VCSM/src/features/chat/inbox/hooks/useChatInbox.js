@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getInboxEntries, InboxEntryModel } from '@chat'
 import { queryKeys } from '@/queries/queryKeys'
+import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 
 const CHAT_INBOX_REFETCH_MS = 30_000
 
@@ -33,10 +34,11 @@ function modelRow(row, actorId) {
     actorId
   )
   if (!entry) return null
-  const preview =
-    (entry.lastMessageBody && String(entry.lastMessageBody).trim()) ||
-    (entry.unreadCount > 0 ? 'New message' : '')
-  return { ...entry, preview }
+  const preview = buildInboxPreview({ entry, currentActorId: actorId })
+  if (!preview) return null
+  // Merge: keep all InboxEntryModel fields (needed by domain filters like isRequestEntry)
+  // then overlay the richer preview shape from buildInboxPreview.
+  return { ...entry, ...preview }
 }
 
 export function useChatInbox(actorId, { folder = 'inbox', includeArchived = false } = {}) {

@@ -9,18 +9,11 @@ export async function dalCountSubscribers({ actorId }) {
   const cached = followerCountCache.get(actorId)
   if (cached != null) return cached
 
-  const { count, error } = await supabase
-    .schema('vc')
-    .from('actor_follows')
-    .select('follower_actor_id', {
-      count: 'exact',
-      head: true,
-    })
-    .eq('followed_actor_id', actorId)
-    .eq('is_active', true)
+  const { data, error } = await supabase
+    .rpc('get_follower_count', { p_actor_id: actorId })
 
   if (error) throw error
-  const result = count ?? 0
+  const result = Number(data ?? 0)
   followerCountCache.set(actorId, result)
   return result
 }

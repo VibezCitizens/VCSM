@@ -40,7 +40,7 @@ export function useBarberTeamRequests(barberVportActorId) {
     setWorking(true);
     setWorkError("");
     try {
-      await acceptTeamRequestController(resourceId);
+      await acceptTeamRequestController(barberVportActorId, resourceId);
       setRequests((prev) => prev.filter((r) => r.id !== resourceId));
     } catch (e) {
       setWorkError(e?.message || "Failed to accept.");
@@ -48,13 +48,13 @@ export function useBarberTeamRequests(barberVportActorId) {
     } finally {
       setWorking(false);
     }
-  }, []);
+  }, [barberVportActorId]);
 
   const decline = useCallback(async (resourceId) => {
     setWorking(true);
     setWorkError("");
     try {
-      await declineTeamRequestController(resourceId);
+      await declineTeamRequestController(barberVportActorId, resourceId);
       setRequests((prev) => prev.filter((r) => r.id !== resourceId));
     } catch (e) {
       setWorkError(e?.message || "Failed to decline.");
@@ -62,7 +62,7 @@ export function useBarberTeamRequests(barberVportActorId) {
     } finally {
       setWorking(false);
     }
-  }, []);
+  }, [barberVportActorId]);
 
   return { requests, loading, error, working, workError, accept, decline };
 }

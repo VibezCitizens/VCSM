@@ -10,8 +10,12 @@ import { supabase } from '@/services/supabase/supabaseClient'
 let _cachedAppId = null
 
 export async function resolveVcsmAppIdDAL() {
-  if (_cachedAppId) return _cachedAppId
+  if (_cachedAppId) {
+    if (import.meta.env?.DEV) console.log('[resolveVcsmAppId] cache hit')
+    return _cachedAppId
+  }
 
+  if (import.meta.env?.DEV) console.log('[resolveVcsmAppId] DB query (cold)')
   const { data, error } = await supabase
     .schema('platform')
     .from('apps')

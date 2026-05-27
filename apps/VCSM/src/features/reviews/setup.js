@@ -24,18 +24,31 @@ export function setupVcsmReviewsEngine() {
 
     /**
      * Client-side actor ownership pre-check.
-     * Real enforcement is DB-level: vc.is_actor_owner() in RLS policies
-     * and inside reviews.upsert_neutral_review() SECURITY DEFINER.
+     *
+     * Queries vc.actor_owners, not vc.actors.
+     * The actor_owners_read_own RLS policy enforces user_id = auth.uid() at the
+     * DB layer — no explicit user_id filter is needed here. If a row is returned,
+     * the authenticated session user owns the actor. If not (RLS blocks it),
+     * they don't.
+     *
+     * Real enforcement is also DB-level inside reviews.upsert_neutral_review()
+     * SECURITY DEFINER — this is a defense-in-depth pre-guard, not the sole gate.
+     *
+     * REV-V-001: fixed — previous version checked actor existence (vc.actors),
+     * not actor ownership (vc.actor_owners), allowing any authenticated user
+     * to pass the check for any non-void actor.
      */
     isActorOwner: async (actorId) => {
+      if (!actorId) return false
+
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user?.id) return false
 
       const { data, error } = await supabase
         .schema('vc')
-        .from('actors')
-        .select('id')
-        .eq('id', actorId)
+        .from('actor_owners')
+        .select('actor_id')
+        .eq('actor_id', actorId)
         .eq('is_void', false)
         .limit(1)
 

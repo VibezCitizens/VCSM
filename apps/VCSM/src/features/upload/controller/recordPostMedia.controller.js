@@ -1,5 +1,5 @@
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
-import { resolveVcsmAppIdDAL } from '@/features/media/dal/resolveAppId.read.dal'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
+import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
 import { updatePostMediaAssetIdDAL } from '@/features/upload/dal/updatePostMediaAssetId.write.dal'
 import { bugBunnyUploadStep, bugBunnyUploadError } from '@debuggers/media/bugBunnyUploadDebugger'
 
@@ -30,7 +30,7 @@ export async function recordPostMediaController({ actorId, mode, postId, uploadR
 
   bugBunnyUploadStep(scope, 'writeback:start', { actorId, postId, count: uploadResults.length, postMediaIds })
 
-  const appId = await resolveVcsmAppIdDAL()
+  const appId = await resolveVcsmAppId()
 
   await Promise.allSettled(
     uploadResults.map((result, i) =>

@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   SNAP, CELL_H, TIME_COL_W, WEEKDAYS, DAY_LABELS, MONTH_SHORT,
-  gridOf, minsToTime, rulesToBlocks, detectMode, dayHoursSummary,
+  gridOf, minsToTime, rulesToBlocks, detectMode,
   getWeekStart, addDays, tBtn, uid,
 } from "./calendarUtils";
 import TimeLabelsColumn from "./TimeLabelsColumn";
 import DayHeader from "./DayHeader";
-import DayBody, { DayPills } from "./DayBody";
+import DayBody from "./DayBody";
 import RangeToggle from "./RangeToggle";
-import WorkingHoursDayCard from "./WorkingHoursDayCard";
+import WeeklyAvailabilityMobileGrid from "./WeeklyAvailabilityMobileGrid";
 
 export default function WeeklyAvailabilityGrid({
   resourceId,
@@ -174,145 +174,21 @@ export default function WeeklyAvailabilityGrid({
   const tzRow = <div style={{ fontSize: 10, color: "rgba(148,163,184,.5)", fontWeight: 600, letterSpacing: ".04em" }}>Timezone: {tz}</div>;
 
   if (isMobile) {
-    const todayWd = new Date().getDay();
-    const tz      = resourceTz || Intl.DateTimeFormat().resolvedOptions().timeZone;
-
     return (
-      <div style={{ display: "grid", gap: 8 }}>
-        {/* Stacked day cards */}
-        {[0, 1, 2, 3, 4, 5, 6].map(wd => (
-          <WorkingHoursDayCard
-            key={wd}
-            weekday={wd}
-            isToday={wd === todayWd}
-            isOpen={!closedDays.has(wd)}
-            blocks={blocks.filter(b => b.weekday === wd)}
-            onToggle={() => toggleDay(wd)}
-            onBlocksChange={dbs => setDayBlocks(wd, dbs)}
-          />
-        ))}
-
-        {/* Quick actions */}
-        <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button
-              type="button"
-              onClick={applyMonToWeekdays}
-              disabled={saving}
-              style={{
-                flex: 1,
-                minHeight: 44,
-                borderRadius: 10,
-                border: "1px solid rgba(148,163,184,.16)",
-                background: "rgba(15,23,42,.6)",
-                color: "rgba(203,213,225,.75)",
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: saving ? "default" : "pointer",
-                padding: "10px 8px",
-                WebkitTapHighlightColor: "transparent",
-              }}
-            >
-              Apply Mon → Weekdays
-            </button>
-            <button
-              type="button"
-              onClick={set9to5}
-              disabled={saving}
-              style={{
-                flex: 1,
-                minHeight: 44,
-                borderRadius: 10,
-                border: "1px solid rgba(148,163,184,.16)",
-                background: "rgba(15,23,42,.6)",
-                color: "rgba(203,213,225,.75)",
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: saving ? "default" : "pointer",
-                padding: "10px 8px",
-                WebkitTapHighlightColor: "transparent",
-              }}
-            >
-              Set 9–5 Weekdays
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={clearAll}
-            disabled={saving}
-            style={{
-              minHeight: 44,
-              borderRadius: 10,
-              border: "1px solid rgba(239,68,68,.13)",
-              background: "none",
-              color: "rgba(252,165,165,.38)",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: saving ? "default" : "pointer",
-              padding: "10px 12px",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            Clear All
-          </button>
-          {applyMsg && (
-            <div style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: applyMsg.ok ? "rgba(134,239,172,.8)" : "rgba(252,165,165,.75)",
-              textAlign: "center",
-              padding: "2px 0",
-            }}>
-              {applyMsg.text}
-            </div>
-          )}
-        </div>
-
-        {/* Save */}
-        <div style={{ display: "grid", gap: 8, marginTop: 4 }}>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={save}
-            style={{
-              width: "100%",
-              minHeight: 52,
-              borderRadius: 12,
-              border: saving ? "1px solid rgba(139,92,246,.3)" : "1px solid rgba(139,92,246,.5)",
-              background: saving
-                ? "rgba(109,40,217,.2)"
-                : "linear-gradient(135deg, rgba(109,40,217,.65) 0%, rgba(139,92,246,.5) 100%)",
-              color: "#f8fafc",
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: saving ? "wait" : "pointer",
-              letterSpacing: ".01em",
-              transition: "background .15s",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            {saving ? "Saving…" : "Save Working Hours"}
-          </button>
-          {saveMsg && (
-            <div style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: saveMsg.ok ? "rgba(134,239,172,.8)" : "rgba(252,165,165,.75)",
-              textAlign: "center",
-            }}>
-              {saveMsg.text}
-            </div>
-          )}
-          <div style={{
-            fontSize: 11,
-            color: "rgba(148,163,184,.3)",
-            textAlign: "center",
-            fontWeight: 500,
-          }}>
-            {tz}
-          </div>
-        </div>
-      </div>
+      <WeeklyAvailabilityMobileGrid
+        closedDays={closedDays}
+        blocks={blocks}
+        saving={saving}
+        applyMsg={applyMsg}
+        saveMsg={saveMsg}
+        tz={tz}
+        onToggleDay={toggleDay}
+        onDayBlocksChange={setDayBlocks}
+        onApplyMonToWeekdays={applyMonToWeekdays}
+        onSet9to5={set9to5}
+        onClearAll={clearAll}
+        onSave={save}
+      />
     );
   }
 

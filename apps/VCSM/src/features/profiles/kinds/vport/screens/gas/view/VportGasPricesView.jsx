@@ -28,13 +28,17 @@ export function VportGasPricesView({
   } = useVportGasPrices({ actorId });
 
   const {
-    loading: submitting,
     error: submitError,
     submit,
   } = useSubmitFuelPriceSuggestion({
     targetActorId: actorId,
-    identity,
+    identity,  // identity still required by the submit hook internally
   });
+
+  // Derive canSubmit from the identity shape the screen provides.
+  // identity may be a flat { actorId } object or a nested { identity: { actorId } }
+  // shape depending on the caller context — normalise before reading actorId.
+  const canSubmit = !!(identity?.identity ?? identity)?.actorId;
 
   return (
     <div className="profiles-card space-y-6 p-5">
@@ -45,9 +49,8 @@ export function VportGasPricesView({
         officialByFuelKey={officialByFuelKey}
         communitySuggestionByFuelKey={communitySuggestionByFuelKey}
         settings={settings}
-        identity={identity}
+        canSubmit={canSubmit}
         isStationOwner={isOwner}
-        submitting={submitting}
         submitSuggestion={async (payload) => {
           const res = await submit(payload);
 

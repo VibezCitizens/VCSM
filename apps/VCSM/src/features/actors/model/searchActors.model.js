@@ -1,12 +1,12 @@
 function mapSearchActorRow(row) {
-  if (!row) return null;
+  if (!row || !row.actor_id) return null;
 
   return {
-    actorId: row.actor_id ?? null,
-    kind: row.kind ?? null,
-    displayName: row.vport_name ?? row.display_name ?? row.username ?? "Unknown",
-    username: row.vport_slug ?? row.username ?? null,
-    avatarUrl: row.vport_avatar_url ?? row.photo_url ?? null,
+    actorId: row.actor_id,
+    kind: row.actor_kind ?? null,
+    displayName: row.display_name ?? row.username ?? 'Unknown',
+    username: row.username ?? null,
+    avatarUrl: row.avatar_url ?? null,
   };
 }
 

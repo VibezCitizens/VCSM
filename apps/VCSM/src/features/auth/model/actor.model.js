@@ -4,7 +4,7 @@ export function ActorModel(row) {
   return {
     id: row.id,
     kind: row.kind,
-    profileId: row.profile_id,
     isVoid: Boolean(row.is_void),
+    // profileId omitted — identity contract: only actorId + kind on public surfaces
   }
 }

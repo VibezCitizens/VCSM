@@ -9,7 +9,6 @@ import useVexSettings from '@/features/chat/inbox/hooks/useVexSettings'
 
 import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
-import buildInboxPreview from '@/features/chat/inbox/lib/buildInboxPreview'
 import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
 import Spinner from '@/shared/components/Spinner'
 import '@/features/ui/modern/module-modern.css'
@@ -70,23 +69,12 @@ export default function RequestsInboxScreen() {
 
   const inboxActions = useInboxActions({ actorId })
 
-  const requestEntries = useMemo(() => {
-    if (isBlocked) return []
-    return entries.filter(isRequestEntry)
-  }, [entries, isBlocked])
-
-  const filteredEntries = useMemo(() => {
-    return requestEntries.filter((entry) =>
-      shouldShowInboxEntry(entry, { hideEmptyConversations: hideEmptyThreads })
-    )
-  }, [requestEntries, hideEmptyThreads])
-
   const previews = useMemo(() => {
     if (isBlocked) return []
-    return filteredEntries
-      .map((entry) => buildInboxPreview({ entry, currentActorId: actorId }))
-      .filter(Boolean)
-  }, [filteredEntries, actorId, isBlocked])
+    return entries
+      .filter(isRequestEntry)
+      .filter((entry) => shouldShowInboxEntry(entry, { hideEmptyConversations: hideEmptyThreads }))
+  }, [entries, isBlocked, hideEmptyThreads])
 
   if (isBlocked) return null
   if (error) return <div className="p-4 text-red-400">Failed to load Vox requests</div>

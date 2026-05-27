@@ -3,7 +3,7 @@ import {
   hasRecentLocksmithHoursPostDAL,
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { resolvePublicRealmIdDAL } from "@/features/feed/dal/resolvePublicRealm.dal";
+import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -45,7 +45,7 @@ function buildHoursText(locksmithName, blocks) {
 export async function publishLocksmithHoursUpdateAsPostController({ actorId, blocks }) {
   if (!actorId) throw new Error("publishLocksmithHoursUpdateAsPost: actorId required");
 
-  const realmId = resolvePublicRealmIdDAL();
+  const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentLocksmithHoursPostDAL({ actorId });

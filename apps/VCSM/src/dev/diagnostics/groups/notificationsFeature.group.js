@@ -21,10 +21,8 @@ import { resolveSenders } from "@/features/notifications/inbox/lib/resolveSender
 import { mapNotification } from "@/features/notifications/inbox/model/notification.model";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 import { markRead } from "@notifications";
-import {
-  subscribeInboxBadge,
-  subscribeNotificationBadge,
-} from "@/features/notifications/inbox/realtime/badgeSubscriptions";
+// badgeSubscriptions.js removed — realtime badge subscriptions are disabled (noops).
+// The realtime_channels diagnostic test now reports the disabled state directly.
 
 export const GROUP_ID = "notificationsFeature";
 export const GROUP_LABEL = "Notifications Feature";
@@ -221,14 +219,8 @@ export async function runNotificationsFeatureGroup({ onTestUpdate, shared }) {
     {
       id: buildTestId(GROUP_ID, "realtime_channels"),
       name: "notifications realtime channel lifecycle",
-      run: ({ shared: localShared }) =>
-        withActorContext(localShared, "Realtime badge channel flow unavailable.", async (context) => {
-          const unsubNoti = subscribeNotificationBadge({ actorId: context.actorId, onChange: () => {} });
-          const unsubInbox = subscribeInboxBadge({ actorId: context.actorId, onChange: () => {} });
-          unsubNoti?.();
-          unsubInbox?.();
-          return { actorId: context.actorId, notificationChannel: "created+disposed", inboxChannel: "created+disposed" };
-        }),
+      run: async () =>
+        makeSkipped("Realtime badge subscriptions are disabled. Badge freshness is owned by React Query polling and the noti:refresh custom event."),
     },
   ];
 

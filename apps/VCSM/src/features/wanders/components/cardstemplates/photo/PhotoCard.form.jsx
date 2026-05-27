@@ -86,7 +86,7 @@ export default function PhotoCardForm({ data, setData, ui }) {
               type="file"
               accept="image/*"
               onChange={onFileChange}
-              className="hidden"
+              style={{ display: 'none' }}
             />
 
             <button

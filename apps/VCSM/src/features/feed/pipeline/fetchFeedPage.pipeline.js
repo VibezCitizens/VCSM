@@ -9,7 +9,9 @@ import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows.model
 import { buildBlockedActorSetModel } from "@/features/feed/model/feedBlockVisibility.model";
 import { buildFollowedActorSetModel } from "@/features/feed/model/feedFollowVisibility.model";
 
-import { fetchPostMentionRows as _fetchPostMentionRows } from "@/features/feed/dal/feed.mentions.dal";
+import { fetchRawPostMentionEdgesDAL as _fetchRawPostMentionEdgesDAL } from "@/features/feed/dal/feed.mentions.dal";
+import { hydrateAndReturnSummaries } from "@hydration";
+import { enrichMentionRows } from "@/features/feed/model/enrichMentionRows.model";
 import { buildMentionMaps } from "@/features/feed/model/buildMentionMaps.model";
 
 import { readCommentCountsBatch as _readCommentCountsBatch } from "@/features/feed/dal/feed.read.commentCounts.dal";
@@ -43,9 +45,9 @@ const readFeedFollowRowsDAL = import.meta.env.DEV
   ? wrapDAL("readFeedFollowRowsDAL", "vc.actor_follows", _readFeedFollowRowsDAL)
   : _readFeedFollowRowsDAL;
 
-const fetchPostMentionRows = import.meta.env.DEV
-  ? wrapDAL("fetchPostMentionRows", "vc.post_mentions+identity.actor_directory", _fetchPostMentionRows)
-  : _fetchPostMentionRows;
+const fetchRawPostMentionEdgesDAL = import.meta.env.DEV
+  ? wrapDAL("fetchRawPostMentionEdgesDAL", "vc.post_mentions", _fetchRawPostMentionEdgesDAL)
+  : _fetchRawPostMentionEdgesDAL;
 
 const readCommentCountsBatch = import.meta.env.DEV
   ? wrapDAL("readCommentCountsBatch", "vc.post_comments", _readCommentCountsBatch)
@@ -81,7 +83,7 @@ export async function fetchFeedPagePipeline({
 
   const [
     mediaMap,
-    mentionRows,
+    mentionEdges,
     hiddenByMeSet,
     { actors, actorMap, profileMap, vportMap },
     blockRows,
@@ -91,7 +93,7 @@ export async function fetchFeedPagePipeline({
     reactionCountsMap,
   ] = await Promise.all([
     readPostMediaMap(pagePostIds),
-    hasPotentialMentions ? fetchPostMentionRows(pagePostIds) : Promise.resolve([]),
+    hasPotentialMentions ? fetchRawPostMentionEdgesDAL(pagePostIds) : Promise.resolve([]),
     readHiddenPostsForViewer({
       viewerActorId,
       postIds: pagePostIds,
@@ -120,7 +122,17 @@ export async function fetchFeedPagePipeline({
     followRows,
   });
 
-  // ✅ mentions
+  // enrich raw mention edges — hydration lives at pipeline level, not DAL
+  let enrichedMentionRows = [];
+  if (mentionEdges.length > 0) {
+    const mentionedActorIds = [...new Set(mentionEdges.map((e) => e.mentioned_actor_id).filter(Boolean))];
+    if (mentionedActorIds.length > 0) {
+      const { rows: presentations, error: presErr } = await hydrateAndReturnSummaries({ actorIds: mentionedActorIds });
+      if (presErr) throw presErr;
+      enrichedMentionRows = enrichMentionRows(mentionEdges, presentations ?? []);
+    }
+  }
+
   if (debugPostId && pagePostIds.includes(debugPostId)) {
     console.log("[useFeed][mentions][DBG] debugPostId is on this page", {
       debugPostId,
@@ -128,7 +140,7 @@ export async function fetchFeedPagePipeline({
     });
   }
 
-  const mentionMapsByPostId = buildMentionMaps(mentionRows);
+  const mentionMapsByPostId = buildMentionMaps(enrichedMentionRows);
 
   if (import.meta.env.DEV) recordStep("normalize_start", { rowCount: pageRows.length });
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   ctrlGetWelcomeCardVisible,
   ctrlMarkWelcomeCardSeen,
-} from '../controller/feedWelcomeCard.controller'
+} from '@/features/feed/controllers/feedWelcomeCard.controller'
 
 function lsKey(actorId) {
   return actorId ? `vcsm_wfc_${actorId}` : null

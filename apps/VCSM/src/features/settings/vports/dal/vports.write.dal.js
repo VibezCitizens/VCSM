@@ -53,10 +53,12 @@ export async function setVportBusinessCardSettingsDAL(vportId, settings) {
 
 /**
  * Set directory_visible on a vport.profiles row.
- * Also syncs directory_visible to profile_public_details so the TRAZE view
- * stays consistent across both tables.
  * Ownership enforced via owner_user_id = auth.uid() in the WHERE clause.
  * Never touches directory_status — that is admin-only.
+ *
+ * VPD-V-FIX-002: Secondary table sync removed from this DAL.
+ * The controller (ctrlSetVportDirectoryVisible) now orchestrates the sync
+ * to profile_public_details via syncDirectoryVisibleToPublicDetailsDAL.
  */
 export async function setVportDirectoryVisibleDAL(vportId, visible) {
   if (!vportId) throw new Error("setVportDirectoryVisibleDAL: vportId required");
@@ -77,16 +79,25 @@ export async function setVportDirectoryVisibleDAL(vportId, visible) {
   if (error) throw error;
   if (!data) throw new Error("VPORT not found or not owned by you");
 
-  // Sync to profile_public_details — non-critical, vport.profiles is authoritative.
-  // Uses UPDATE-only (not upsert) to avoid violating NOT NULL constraints on insert.
-  try {
-    await vportSchema
-      .from("profile_public_details")
-      .update({ directory_visible: Boolean(visible) })
-      .eq("profile_id", vportId);
-  } catch {
-    // sync failure is safe to ignore
-  }
-
   return data;
+}
+
+/**
+ * Sync directory_visible to profile_public_details.
+ * Non-critical secondary write — vport.profiles is the authoritative source.
+ * Uses UPDATE-only (not upsert) to avoid violating NOT NULL constraints on insert.
+ * Called by the controller layer after the primary write succeeds.
+ *
+ * VPD-V-FIX-002: Extracted from setVportDirectoryVisibleDAL so the controller
+ * can orchestrate this as a non-blocking step with proper observability.
+ */
+export async function syncDirectoryVisibleToPublicDetailsDAL(vportId, visible) {
+  if (!vportId) throw new Error("syncDirectoryVisibleToPublicDetailsDAL: vportId required");
+
+  const { error } = await vportSchema
+    .from("profile_public_details")
+    .update({ directory_visible: Boolean(visible) })
+    .eq("profile_id", vportId);
+
+  if (error) throw error;
 }

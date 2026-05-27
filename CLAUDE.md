@@ -187,16 +187,24 @@ Always render modals as **fragment siblings**, not children of styled card conta
 |---|---|---|
 | `/Wolverine` | Main planning, routing, and execution orchestrator | `.claude/commands/Wolverine.md` |
 | `/Logan` | Documentation review, drift detection, sync | `.claude/commands/Logan.md` |
-| `/BUGSBUNNY` | Root cause debug command | `.claude/commands/BUGSBUNNY.md` |
+| `/Deadpool` | Root cause debug command | `.claude/commands/Deadpool.md` |
 | `/CAPTAIN` | Next-session order capture (ideas only) | `.claude/commands/CAPTAIN.md` |
 | `/DB` | Database reviewer and analyst | `.claude/commands/DB.md` |
 | `/ARCHITECT` | Repository architecture mapping & DB read audit | `.claude/commands/ARCHITECT.md` |
 | `/Loki` | Runtime observability and request trace | `.claude/commands/Loki.md` |
 | `/Kraven` | Performance hunter and bottleneck analysis | `.claude/commands/Kraven.md` |
 | `/Venom` | Security sheriff and trust boundary review | `.claude/commands/Venom.md` |
+| `/BlackWidow` | Ethical red team — adversarial runtime verification | `.claude/commands/BlackWidow.md` |
+| `/ELEKTRA` | Precision security scanner and patch advisor | `.claude/commands/ELEKTRA.md` |
+| `/HAWKEYE` | Precision endpoint and API contract verification commander | `.claude/commands/HAWKEYE.md` |
+| `/SPIDER-MAN` | Regression safety net and test coverage commander | `.claude/commands/SPIDER-MAN.md` |
+| `/WATCHER` | Session change provenance commander | `.claude/commands/WATCHER.md` |
 | `/Carnage` | Database migration architect | `.claude/commands/Carnage.md` |
 | `/Ironman` | Feature ownership and system responsibility | `.claude/commands/Ironman.md` |
 | `/Thor` | Release commander | `.claude/commands/Thor.md` |
+| `/NickFury` | Parallel build orchestrator — isolated side-missions | `.claude/commands/NickFury.md` |
+| `/Falcon` | iOS parity governance — PWA → Native transfer | `.claude/commands/Falcon.md` |
+| `/Vision` | Analytics intelligence — telemetry, funnels, attribution | `.claude/commands/Vision.md` |
 | `/review-contract` | Architecture contract compliance check | `.claude/commands/review-contract.md` |
 | `/session-summary` | End-of-session audit log | `.claude/commands/session-summary.md` |
 

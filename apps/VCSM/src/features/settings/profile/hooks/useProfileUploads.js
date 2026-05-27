@@ -12,7 +12,7 @@
 import { uploadMediaController } from '@media'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { ctrlGetCurrentAuthUserId } from '@/features/settings/profile/controller/authSession.controller'
-import { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
+import { createMediaAssetController } from '@/features/media/adapters/media.adapter'
 import { recordProfileMediaAssetController } from '@/features/settings/profile/controller/recordProfileMediaAsset.controller'
 
 const DEV = import.meta.env?.DEV

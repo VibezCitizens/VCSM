@@ -4,6 +4,7 @@ import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.d
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
+import { getVportSlugByActorIdDAL } from "@/features/booking/dal/getVportSlugByActorId.dal";
 
 export async function cancelBookingController({
   bookingId,
@@ -61,15 +62,31 @@ export async function cancelBookingController({
     : booking.customer_actor_id;
 
   if (recipientActorId && String(requestActorId) !== String(recipientActorId)) {
+    // VPD-V-020: construct linkPath without raw UUID exposure.
+    //
+    // Owner notification (customer cancels): the owner receives a link to their
+    // own dashboard. Their actorId is not sensitive to themselves, but we omit it
+    // from the stored notification row to avoid UUID enumeration via DB reads.
+    //
+    // Customer notification (owner cancels): the customer receives a link to the
+    // VPORT's public profile using its slug. If the slug is unavailable, the
+    // linkPath is omitted rather than falling back to the raw UUID.
+    let linkPath = null;
+    if (!isCustomer && resource?.owner_actor_id) {
+      // Owner cancelled — recipient is the customer. Fetch slug to avoid UUID in linkPath.
+      const ownerSlug = await getVportSlugByActorIdDAL({ actorId: resource.owner_actor_id });
+      linkPath = ownerSlug ? `/profile/${ownerSlug}?tab=book` : null;
+    }
+    // isCustomer case: owner is the recipient and knows their own actorId.
+    // We omit the dashboard path to avoid storing UUIDs in notification rows.
+
     publishVcsmNotification({
       recipientActorId,
       actorId: requestActorId,
       kind: "booking_cancelled",
       objectType: "booking",
       objectId: bookingId,
-      linkPath: isCustomer
-        ? `/actor/${resource.owner_actor_id}/dashboard/booking-history`
-        : `/profile/${resource?.owner_actor_id ?? ""}?tab=book`,
+      linkPath,
       context: {
         serviceLabelSnapshot: booking.service_label_snapshot ?? null,
         startsAt: booking.starts_at ?? null,

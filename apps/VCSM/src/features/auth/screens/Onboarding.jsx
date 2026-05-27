@@ -8,20 +8,7 @@
 import '@/features/auth/styles/registerFormCard.css'
 
 import { useAuthOnboarding } from '@/features/auth/hooks/useAuthOnboarding'
-
-function inputClass(disabled) {
-  return [
-    'auth-register-input w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white',
-    'placeholder:text-[#9ca3af] outline-none transition duration-200',
-    'focus:border-[#6C4DF6]/80 focus:ring-2 focus:ring-[#6C4DF6]/40',
-    'shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
-    disabled ? 'cursor-not-allowed' : '',
-  ].join(' ')
-}
-
-function selectClass(disabled) {
-  return `${inputClass(disabled)} auth-register-select`
-}
+import { authInputClass, authSelectClass } from '@/features/auth/styles/authInputClasses'
 
 export default function Onboarding() {
   const {
@@ -92,7 +79,7 @@ export default function Onboarding() {
                 </label>
                 <input
                   id="onboarding-display-name"
-                  className={inputClass(loading)}
+                  className={authInputClass(loading)}
                   name="display_name"
                   placeholder="Name shown on your profile"
                   value={form.display_name}
@@ -111,7 +98,7 @@ export default function Onboarding() {
                 </label>
                 <input
                   id="onboarding-username-base"
-                  className={inputClass(loading)}
+                  className={authInputClass(loading)}
                   name="username_base"
                   placeholder="Username base"
                   value={form.username_base}
@@ -128,7 +115,7 @@ export default function Onboarding() {
                 </label>
                 <input
                   id="onboarding-birthdate"
-                  className={inputClass(loading)}
+                  className={authInputClass(loading)}
                   type="date"
                   name="birthdate"
                   value={form.birthdate}
@@ -145,7 +132,7 @@ export default function Onboarding() {
                 </label>
                 <select
                   id="onboarding-sex"
-                  className={selectClass(loading)}
+                  className={authSelectClass(loading)}
                   name="sex"
                   value={form.sex}
                   onChange={handleChange}

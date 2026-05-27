@@ -13,11 +13,17 @@ import {
   groupVportServiceAddonsByParent,
 } from "@/features/profiles/kinds/vport/model/services/vportService.model.js";
 
+// Approved §5.3 exception: shared cross-feature ownership assertion primitive.
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+
 /**
  * Controller (DB via DAL only):
  * - Accepts optional vportType
  * - If vportType is missing, resolves it from DB using actor_id -> vport_id -> vport_type
- * - "asOwner" is a caller-provided lane (UI already knows actor-first ownership)
+ * - asOwner=true REQUIRES callerActorId and server-side ownership verification via
+ *   assertActorOwnsVportActorController before returning disabled services.
+ *   Trusting asOwner from the UI without a server check allows any authenticated
+ *   actor to enumerate disabled rows via a crafted API call.
  * - No Supabase import
  */
 const cache = createTTLCache(60_000) // 60 seconds
@@ -26,10 +32,27 @@ export default async function getVportServicesController({
   targetActorId,
   vportType,
   asOwner = false,
+  callerActorId = null,
 } = {}) {
   if (!targetActorId) {
     throw new Error("getVportServicesController: targetActorId is required");
   }
+
+  // ── Server-side ownership gate ──────────────────────────────────────────────
+  // asOwner=true returns disabled services. That gate must be verified here,
+  // not trusted from the UI layer. callerActorId is required.
+  if (asOwner) {
+    if (!callerActorId) {
+      throw new Error(
+        "getVportServicesController: callerActorId is required when asOwner=true"
+      );
+    }
+    await assertActorOwnsVportActorController({
+      requestActorId: callerActorId,
+      targetActorId,
+    });
+  }
+  // ────────────────────────────────────────────────────────────────────────────
 
   // Only cache viewer mode (owner needs fresh data for editing)
   const cacheKey = asOwner ? null : `${targetActorId}:${vportType ?? '_'}`

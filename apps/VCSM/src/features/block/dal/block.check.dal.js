@@ -61,26 +61,3 @@ export async function checkBlockStatus(actorA, actorB) {
   };
 }
 
-/**
- * Lightweight boolean check
- */
-export async function isBlocked(actorA, actorB) {
-  if (!actorA || !actorB || actorA === actorB || !isUuid(actorA) || !isUuid(actorB)) return false;
-
-  const { data, error } = await supabase
-    .schema("moderation")
-    .from("blocks")
-    .select("blocker_actor_id")
-    .eq("status", "active")
-    .or(
-      `and(blocker_actor_id.eq.${actorA},blocked_actor_id.eq.${actorB}),and(blocker_actor_id.eq.${actorB},blocked_actor_id.eq.${actorA})`
-    )
-    .limit(1);
-
-  if (error) {
-    console.error("[isBlocked] failed:", error);
-    throw error;
-  }
-
-  return !!(data && data.length > 0);
-}

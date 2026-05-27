@@ -23,14 +23,9 @@ export function useAuthCallback() {
           return
         }
 
-        // Password recovery link landed on /auth/callback — redirect to the correct screen.
-        if (result.isRecovery) {
-          navigate('/reset-password', { replace: true })
-          return
-        }
-
         // Email verification: session established.
-        // ProtectedRoute and CompleteProfileGate take over from here.
+        // Recovery links are handled exclusively by AuthProvider's PASSWORD_RECOVERY
+        // event handler — not from this callback. This path is email confirmation only.
         navigate('/explore', { replace: true })
       } catch {
         if (!alive) return

@@ -1,16 +1,8 @@
 import vportSchema from "@/services/supabase/vportClient";
+import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
 
 const ITEM_SELECT =
   "id,profile_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";
-
-async function resolveProfileId(actorId) {
-  const { data } = await vportSchema
-    .from("profiles")
-    .select("id")
-    .eq("actor_id", actorId)
-    .maybeSingle();
-  return data?.id ?? null;
-}
 
 export async function listVportActorMenuItemsDAL({
   actorId,
@@ -19,7 +11,7 @@ export async function listVportActorMenuItemsDAL({
 } = {}) {
   if (!actorId) throw new Error("listVportActorMenuItemsDAL: actorId is required");
 
-  const profileId = await resolveProfileId(actorId);
+  const profileId = await resolveVportProfileId(actorId);
   if (!profileId) return [];
 
   let query = vportSchema

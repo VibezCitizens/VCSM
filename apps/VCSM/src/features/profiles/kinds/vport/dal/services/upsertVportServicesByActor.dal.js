@@ -1,18 +1,10 @@
 // src/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
+import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
 
 const SERVICES_SELECT =
   "id,profile_id,key,label,description,service_group,sort_order,enabled,meta,created_at,updated_at";
-
-async function resolveProfileId(actorId) {
-  const { data } = await vportSchema
-    .from("profiles")
-    .select("id")
-    .eq("actor_id", actorId)
-    .maybeSingle();
-  return data?.id ?? null;
-}
 
 /**
  * DAL: Upsert vport services for an actor.
@@ -30,7 +22,7 @@ export async function upsertVportServicesByActorDal({ actorId, rows } = {}) {
   const list = Array.isArray(rows) ? rows.filter(Boolean) : [];
   if (!list.length) return [];
 
-  const profileId = await resolveProfileId(actorId);
+  const profileId = await resolveVportProfileId(actorId);
   if (!profileId) return [];
 
   const mapped = list.map((r) => ({

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatTimestamp } from "@/shared/lib/formatTimestamp";
 import useMyAppointments from "@/features/notifications/screen/hooks/useMyAppointments";
 import { useActorSummary } from "@/state/actors/useActorSummary";
-import { hydrateActorsByIds } from "@hydration";
 
 const TABS = [
   { key: "upcoming", label: "Upcoming" },
@@ -49,11 +48,6 @@ function AppointmentSkeleton() {
 
 function VportCell({ vportActorId, vportName }) {
   const summary = useActorSummary(vportActorId);
-  useEffect(() => {
-    if (summary.missing && vportActorId) {
-      hydrateActorsByIds([vportActorId]).catch(() => {});
-    }
-  }, [vportActorId, summary.missing]);
 
   // vportName from the DB join is the instant fallback — no flash
   const name = (!summary.missing && summary.displayName !== "User")
@@ -90,11 +84,6 @@ function VportCell({ vportActorId, vportName }) {
 
 function MemberLine({ memberActorId, memberName }) {
   const summary = useActorSummary(memberActorId);
-  useEffect(() => {
-    if (summary.missing && memberActorId) {
-      hydrateActorsByIds([memberActorId]).catch(() => {});
-    }
-  }, [memberActorId, summary.missing]);
 
   const name = (!summary.missing && summary.displayName !== "User")
     ? summary.displayName

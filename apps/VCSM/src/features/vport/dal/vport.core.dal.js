@@ -3,6 +3,7 @@
 
 import supabase from "@/services/supabase/supabaseClient";
 import vportSchema from "@/services/supabase/vportClient";
+import { refreshVcActorDirectory } from "@/features/identity/adapters/identityOps.adapter";
 
 function ensureString(x) {
   return typeof x === "string" ? x : "";
@@ -97,10 +98,7 @@ export async function createVport({
   // createVport() returns, otherwise switchToVport races against a missing link.
   if (row.actor_id) {
     try {
-      await supabase.schema('identity').rpc('refresh_actor_directory_row', {
-        p_actor_domain: 'vc',
-        p_actor_id: row.actor_id,
-      });
+      await refreshVcActorDirectory(row.actor_id);
     } catch { /* non-fatal */ }
   }
 
@@ -224,10 +222,7 @@ export async function updateVport(
   if (error) raise("Failed to update Vport", { error });
 
   if (data?.actor_id) {
-    Promise.resolve(supabase.schema('identity').rpc('refresh_actor_directory_row', {
-      p_actor_domain: 'vc',
-      p_actor_id: data.actor_id,
-    })).catch(() => {})
+    Promise.resolve(refreshVcActorDirectory(data.actor_id)).catch(() => {})
   }
 
   return data;
