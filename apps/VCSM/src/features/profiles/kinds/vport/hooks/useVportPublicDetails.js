@@ -1,4 +1,17 @@
 // src/features/profiles/kinds/vport/hooks/useVportPublicDetails.js
+//
+// @deprecated — This hook serves authenticated VPORT dashboard surfaces
+// (VportDashboardScreen, VportSettingsScreen, VportActorMenuFlyerView) via the
+// profiles adapter. The returned `details` shape is dashboard-specific and uses
+// the profiles controller + DAL chain, not the public vportMenu module.
+//
+// For PUBLIC-facing surfaces (online menu, QR views, reviews page) use the
+// canonical hook instead:
+//   import { useVportPublicDetails } from
+//     '@/features/public/vportMenu/adapters/vportMenu.adapter';
+//
+// Do NOT add new consumers to this hook. New authenticated dashboard reads
+// should be evaluated to use the canonical hook or a purpose-built controller.
 
 import { useEffect, useState } from 'react'
 import { getVportPublicDetailsController } from '@/features/profiles/kinds/vport/controller/getVportPublicDetails.controller'
@@ -10,8 +23,6 @@ export function useVportPublicDetails(actorId) {
 
   useEffect(() => {
     let alive = true
-
-    const dev = Boolean(import.meta?.env?.DEV)
 
     async function run() {
       if (!actorId) {
@@ -26,34 +37,14 @@ export function useVportPublicDetails(actorId) {
         setLoading(true)
         setError(null)
 
-        if (dev) {
-          console.groupCollapsed("[useVportPublicDetails] fetch start")
-          console.log("actorId:", actorId)
-          console.groupEnd()
-        }
-
         const d = await getVportPublicDetailsController(actorId)
         if (!alive) return
-
-        if (dev) {
-          console.groupCollapsed("[useVportPublicDetails] fetch done")
-          console.log("actorId:", actorId)
-          console.log("details:", d)
-          console.groupEnd()
-        }
 
         setDetails(d ?? null)
       } catch (e) {
         if (!alive) return
         setError(e)
         setDetails(null)
-
-        if (dev) {
-          console.groupCollapsed("[useVportPublicDetails] fetch error")
-          console.log("actorId:", actorId)
-          console.error(e)
-          console.groupEnd()
-        }
       } finally {
         if (alive) setLoading(false)
       }
