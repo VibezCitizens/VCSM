@@ -6,16 +6,11 @@ import { useQrLinks } from "@/features/booking/adapters/booking.adapter";
  * Displays QR links for a VPORT actor's booking experience.
  *
  * Identity Contract:
- * - Accepts actorId only. Never profileId, organizationId, or any banned identity surface.
- * - The @booking engine requires profileId/organizationId internally.
+ * - Accepts actorId only. profileId and organizationId are never accepted as props.
+ * - useQrLinks now resolves actorId → profileId internally via getVportProfileIdByActorIdDAL.
+ *   The translation is invisible to this caller — actorId is the only identity surface here.
  *
- * TODO [P1 — ADAPTER REQUIRED]:
- *   The @booking engine's listQrLinksByProfile / listQrLinksByOrganization requires
- *   an internal booking profileId or organizationId, NOT an actorId.
- *   A dedicated booking adapter must be built to resolve actorId → booking profile internally.
- *   Until that adapter exists, this component renders an empty state.
- *   Do NOT restore profileId or organizationId as component props — the resolution
- *   must happen inside the adapter boundary, invisible to callers.
+ * (VENOM V-003 — identity surface adapter implemented in useQrLinks; TODO resolved)
  *
  * @param {string|null} actorId — VCSM actor ID (kind='vport')
  */
@@ -55,13 +50,10 @@ function QrLinkCard({ qrLink }) {
 }
 
 export function BookingQrLinksPanel({ actorId = null }) {
-  // profileId and organizationId are intentionally NOT exposed at this boundary.
-  // When the booking adapter is built, it will resolve them from actorId internally.
-  // Until then, enabled=false renders an empty state without a contract violation.
+  // actorId is the only identity surface. useQrLinks resolves actorId → profileId internally.
   const { qrLinks, isLoading, error } = useQrLinks({
-    organizationId: null, // resolved by adapter — not from props
-    profileId: null,       // resolved by adapter — not from props
-    enabled: false,        // disabled until actorId → booking profile adapter is implemented
+    actorId,
+    enabled: !!actorId,
   });
 
   if (!actorId) return null;
