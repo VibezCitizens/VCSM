@@ -7,7 +7,7 @@ import Card from "@/features/settings/adapters/ui/Card.adapter";
 import VportAboutDetailsView from "@/features/settings/adapters/profile/ui/VportAboutDetails.view.adapter";
 
 import { useIdentity } from "@/state/identity/identityContext";
-import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
+import { useVportDashboardDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
 import { useSaveVportSettings } from "@/features/dashboard/vport/hooks/useSaveVportSettings";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
@@ -39,7 +39,7 @@ import { getDashboardCardMetaByKey } from "@/features/dashboard/vport/model/buil
 export default function VportSettingsScreen({ actorId, isOwner }) {
   const navigate = useNavigate();
   const { identity } = useIdentity();
-  const { loading: loadingData, details: publicDetails } = useVportPublicDetails(actorId);
+  const { loading: loadingData, details: publicDetails } = useVportDashboardDetails(actorId);
   const { getVportTabsByType } = useProfilesOps();
 
   const { ads } = useVportAds(actorId);

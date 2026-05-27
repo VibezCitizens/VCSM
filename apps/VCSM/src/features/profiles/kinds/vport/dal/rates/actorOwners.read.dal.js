@@ -2,10 +2,6 @@ import supabase from "@/services/supabase/supabaseClient";
 
 // DAL: “What does the database say?”
 export async function dalReadActorOwnerRow({ actorId, userId } = {}) {
-  if (import.meta.env?.DEV) {
-    console.log("[dalReadActorOwnerRow] actorId=", actorId, "userId=", userId);
-  }
-
   if (!actorId || !userId) return null;
 
   const { data, error } = await supabase

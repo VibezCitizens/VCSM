@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { PrintableQrSheet } from "@/features/dashboard/flyerBuilder/components/printableQr/PrintableQrSheet";
 import { ClassicFlyer, PosterFlyer } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
 import { VportBackButton, useDesktopBreakpoint } from "@/features/dashboard/vport/adapters/vport.adapter";
-import { useVportPublicDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
+import { useVportDashboardDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
 import {
   asTextValue,
@@ -13,6 +13,7 @@ import {
   createFlyerViewStyles,
 } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerView.model";
 import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
+import { buildMenuShortDisplayUrl } from "@/lib/qrUrlBuilders";
 
 const PRINTABLE_VARIANTS = Object.freeze(["table", "half", "full", "sticker"]);
 
@@ -20,18 +21,12 @@ function isPrintableVariant(value) {
   return PRINTABLE_VARIANTS.includes(String(value || "").toLowerCase());
 }
 
-function buildShortUrl(menuUrl, slug) {
-  const cleanSlug = String(slug || "").trim();
-  if (cleanSlug) return `vibezcitizens.com/menu/${cleanSlug}`;
-  return String(menuUrl || "").replace(/^https?:\/\//i, "");
-}
-
 export function VportActorMenuFlyerView({
   actorId,
   variant: initialVariant = "classic",
 }) {
   const navigate = useNavigate();
-  const { loading, details: publicDetails } = useVportPublicDetails(actorId);
+  const { loading, details: publicDetails } = useVportDashboardDetails(actorId);
   const [variant, setVariant] = useState(initialVariant);
   const isDesktop = useDesktopBreakpoint();
   const dashboardDetails = useMemo(
@@ -39,6 +34,11 @@ export function VportActorMenuFlyerView({
     [publicDetails]
   );
   const { canonicalSlug } = useActorCanonicalSlug(actorId);
+
+  // UUID guard — QR code and Print must not be available until slug resolves to a safe non-UUID value.
+  // Mirrors the isQrSafeSlug pattern in VportPublicMenuQrView and VportPublicReviewsQrView (VENOM V-004).
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const isQrSafe = !!canonicalSlug && !UUID_RE.test(canonicalSlug);
 
   const menuUrl = useMemo(() => {
     if (!actorId) return "";
@@ -50,10 +50,12 @@ export function VportActorMenuFlyerView({
   const actions = useMemo(() => buildFlyerActions(dashboardDetails), [dashboardDetails]);
   const styles = useMemo(() => createFlyerViewStyles(), []);
   const printableVariant = isPrintableVariant(variant);
-  const shortUrl = useMemo(
-    () => buildShortUrl(menuUrl, dashboardDetails.slug),
-    [menuUrl, dashboardDetails.slug]
-  );
+  const shortUrl = useMemo(() => {
+    const slug = dashboardDetails.slug;
+    if (slug) return buildMenuShortDisplayUrl(slug);
+    // Fallback: strip protocol from full URL when slug is not yet resolved.
+    return String(menuUrl || "").replace(/^https?:\/\//i, "");
+  }, [menuUrl, dashboardDetails.slug]);
 
   const onPrint = useCallback(() => {
     try {
@@ -68,12 +70,15 @@ export function VportActorMenuFlyerView({
       navigate(-1);
       return;
     }
-    if (actorId) {
-      navigate(`/vport/${actorId}`, { replace: true });
-      return;
+    // Never navigate to /vport/${actorId} — raw UUIDs must not appear in public-facing URL paths (VENOM V-005).
+    // canonicalSlug is already resolved in this view (used for menuUrl).
+    // Fall back to the internal /actor/:id/menu redirect route when slug is not yet available.
+    if (canonicalSlug) {
+      navigate(`/profile/${canonicalSlug}`, { replace: true });
+    } else {
+      navigate(`/actor/${actorId}/menu`, { replace: true });
     }
-    navigate(`/feed`, { replace: true });
-  }, [navigate, actorId]);
+  }, [navigate, actorId, canonicalSlug]);
 
   if (!actorId) return null;
 
@@ -170,14 +175,20 @@ export function VportActorMenuFlyerView({
           </div>
 
           <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-            <button type="button" onClick={onPrint} style={styles.pillBtn(false, "accent")}>
-              Print
+            {/* Print disabled until slug resolves — prevents UUID from being encoded in printed QR (VENOM V-004). */}
+            <button type="button" onClick={onPrint} disabled={!isQrSafe} style={styles.pillBtn(false, isQrSafe ? "accent" : "soft")}>
+              {isQrSafe ? "Print" : "Preparing…"}
             </button>
           </div>
         </div>
       </div>
 
-      {printableVariant ? (
+      {/* Flyer body gated on isQrSafe — slug must resolve before QR is rendered or printed (VENOM V-004). */}
+      {!isQrSafe ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 320, color: "rgba(255,255,255,0.4)", fontSize: 14 }}>
+          Preparing flyer…
+        </div>
+      ) : printableVariant ? (
         <PrintableQrSheet
           layout={variant}
           businessName={profile.displayName || "Restaurant"}

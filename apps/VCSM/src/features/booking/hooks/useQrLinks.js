@@ -1,30 +1,59 @@
-import { useCallback, useEffect, useState } from "react";
-import { listQrLinksByOrganization, listQrLinksByProfile, createQrLink } from "@booking";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { listQrLinksByProfile, createQrLink } from "@booking";
+import { resolveVportProfileIdController } from "@/features/booking/controller/resolveVportProfileId.controller";
 
-export default function useQrLinks({ organizationId = null, profileId = null, enabled = true } = {}) {
+/**
+ * Hook: load and manage QR links for a VPORT actor.
+ *
+ * Accepts actorId (canonical identity surface) and resolves to the booking
+ * engine's internal profileId via getVportProfileIdByActorIdDAL — the
+ * translation is internal and invisible to callers. organizationId and
+ * profileId must never be accepted as caller-provided parameters.
+ *
+ * (VENOM V-003 — identity surface remediation)
+ *
+ * @param {string|null} actorId  — VCSM actor ID (kind='vport')
+ * @param {boolean}     enabled  — set false to defer loading
+ */
+export default function useQrLinks({ actorId = null, enabled = true } = {}) {
   const [qrLinks, setQrLinks]   = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [error, setError]        = useState(null);
 
+  // Resolved internal profileId — derived from actorId at load time.
+  // Never surfaced to callers; used only to satisfy the booking engine API.
+  const resolvedProfileId = useRef(null);
+
   const load = useCallback(async () => {
-    if (!enabled || (!organizationId && !profileId)) {
+    if (!enabled || !actorId) {
       setQrLinks([]);
       return;
     }
     setIsLoading(true);
     setError(null);
     try {
-      const result = organizationId
-        ? await listQrLinksByOrganization({ organizationId })
-        : await listQrLinksByProfile({ profileId });
+      // Resolve actorId → profileId via controller (not DAL directly — architecture compliance).
+      if (!resolvedProfileId.current) {
+        resolvedProfileId.current = await resolveVportProfileIdController({ actorId });
+      }
+      if (!resolvedProfileId.current) {
+        setQrLinks([]);
+        return;
+      }
+      // requestActorId = actorId: the VPORT actor is authorizing access to its own QR links.
+      // The engine validates ownership via assertActorOwnsVportActor before the DAL read (V-002 fix).
+      const result = await listQrLinksByProfile({ requestActorId: actorId, profileId: resolvedProfileId.current });
       setQrLinks(Array.isArray(result) ? result : []);
     } catch (e) {
       setError(e);
     } finally {
       setIsLoading(false);
     }
-  }, [organizationId, profileId, enabled]);
+  }, [actorId, enabled]);
+
+  // Reset cached profileId when actorId changes so a new actor gets a fresh resolution.
+  useEffect(() => { resolvedProfileId.current = null; }, [actorId]);
 
   useEffect(() => { load(); }, [load]);
 

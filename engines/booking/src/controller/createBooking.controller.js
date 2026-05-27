@@ -1,6 +1,6 @@
 import { dalGetBookingResourceById } from '../dal/resource.read.dal.js'
 import { dalGetVportResourceById, dalListVportResourcesByLocationId } from '../dal/vportResource.read.dal.js'
-import { dalGetActorById } from '../dal/actor.read.dal.js'
+import { dalGetActorById, dalGetVportProfileSlugByActorId } from '../dal/actor.read.dal.js'
 import { dalInsertBooking } from '../dal/booking.write.dal.js'
 import { dalInsertVportBooking } from '../dal/vportBooking.write.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
@@ -37,6 +37,23 @@ export async function createBooking({
   if (!timezone)              throw new Error('[BookingEngine] timezone is required')
   if (!serviceLabelSnapshot)  throw new Error('[BookingEngine] serviceLabelSnapshot is required')
   if (!durationMinutes)       throw new Error('[BookingEngine] durationMinutes is required')
+
+  // durationMinutes bounds — checked before any DB call so validation fails fast.
+  if (typeof durationMinutes !== 'number' || durationMinutes <= 0) {
+    throw new Error('[BookingEngine] durationMinutes must be greater than 0')
+  }
+  if (durationMinutes > 1440) {
+    throw new Error('[BookingEngine] durationMinutes cannot exceed 1440 (24 hours)')
+  }
+
+  // Source allowlist — unknown sources are rejected immediately before any resource lookup
+  // or ownership check to prevent unaudited booking paths.
+  const ALL_SOURCES = new Set([...MANAGEMENT_SOURCES, ...CITIZEN_SOURCES])
+  if (!ALL_SOURCES.has(String(source))) {
+    throw new Error(
+      `[BookingEngine] Unknown booking source: "${source}". Allowed: ${[...ALL_SOURCES].join(', ')}`
+    )
+  }
 
   // Resolve resourceId from locationId (any_available mode) when not explicitly given.
   // Location-based resolution always points to vport.resources.
@@ -104,13 +121,15 @@ export async function createBooking({
 
     if (source === 'public' && vportResource.owner_actor_id && requestActorId) {
       if (String(requestActorId) !== String(vportResource.owner_actor_id)) {
+        // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
+        const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: vportResource.owner_actor_id })
         getNotifyFn()?.({
           recipientActorId: vportResource.owner_actor_id,
           actorId:          requestActorId,
           kind:             BOOKING_EVENTS.CREATED,
           objectType:       'booking',
           objectId:         mapped.id,
-          linkPath:         `/actor/${vportResource.owner_actor_id}/dashboard/booking-history`,
+          linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
           context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
         })
       }
@@ -161,13 +180,15 @@ export async function createBooking({
 
   if (source === 'public' && resource?.owner_actor_id && requestActorId) {
     if (String(requestActorId) !== String(resource.owner_actor_id)) {
+      // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
+      const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: resource.owner_actor_id })
       getNotifyFn()?.({
         recipientActorId: resource.owner_actor_id,
         actorId:          requestActorId,
         kind:             BOOKING_EVENTS.CREATED,
         objectType:       'booking',
         objectId:         mapped.id,
-        linkPath:         `/actor/${resource.owner_actor_id}/dashboard/booking-history`,
+        linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
         context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
       })
     }

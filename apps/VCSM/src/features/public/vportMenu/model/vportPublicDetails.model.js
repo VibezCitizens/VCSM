@@ -203,7 +203,8 @@ export function mapVportPublicDetailsRpcResult(raw) {
       reviewUrl,
       directionsUrl,
       websiteUrl: toSafeUrl(row.website_url ?? row.websiteUrl),
-      raw: row,
+      // raw: row intentionally removed — consumers must use explicit fields only (VENOM V-001).
+      // All public-facing fields are mapped above. profile_id, lat, lng are not returned.
     },
   };
 }
