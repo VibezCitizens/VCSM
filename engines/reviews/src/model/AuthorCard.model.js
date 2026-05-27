@@ -3,7 +3,7 @@
 // ============================================================
 
 /**
- * @param {Object} raw - get_review_author_card RPC result or snapshot data
+ * @param {Object} raw - snapshot columns from reviews.reviews row (author_*_snapshot fields)
  * @returns {import('../types/index.js').DomainAuthorCard}
  */
 export function AuthorCardModel(raw) {
