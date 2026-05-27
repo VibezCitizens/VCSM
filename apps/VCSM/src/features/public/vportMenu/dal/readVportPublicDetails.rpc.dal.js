@@ -14,7 +14,9 @@ export async function readVportPublicDetailsRpcDAL({ actorId } = {}) {
     .schema("vport")
     .from("public_menu_read_model_v")
     .select(
-      "profile_id,actor_id,profile_slug,profile_name,profile_bio,profile_avatar_url,profile_banner_url,public_menu_url,location_text,logo_url,website_url,phone_public,email_public,address,lat,lng,social_links,hours,booking_url"
+      // profile_id intentionally excluded — internal UUID, banned from public surfaces (VENOM V-001).
+      // actor_id is the canonical identity reference. lat/lng/social_links consumed internally by model.
+      "actor_id,profile_slug,profile_name,profile_bio,profile_avatar_url,profile_banner_url,public_menu_url,location_text,logo_url,website_url,phone_public,email_public,address,lat,lng,social_links,hours,booking_url"
     )
     .eq("actor_id", actorId)
     .limit(1)

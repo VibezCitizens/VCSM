@@ -8,6 +8,7 @@ import { useVportPublicReviews } from "@/features/public/vportMenu/hooks/useVpor
 import VportPublicMenuPanel from "@/features/public/vportMenu/components/VportPublicMenuPanel";
 import VportPublicReviewsPanel from "@/features/public/vportMenu/components/VportPublicReviewsPanel";
 import { hasDirectionsAddress, openDirections } from "@/features/vport/adapters/vport.public.adapter";
+import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
 import {
   actionButtonStyle,
   tabStyle,
@@ -19,6 +20,11 @@ export function VportPublicMenuView({ actorId }) {
   const isDesktop = useDesktopBreakpoint();
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("menu");
+
+  // Slug resolution for safe back-navigation fallback.
+  // A raw actorId (UUID) must never appear in a /profile/ URL.
+  // This mirrors the pattern used in VportPublicMenuQrView.
+  const { canonicalSlug } = useActorCanonicalSlug(actorId);
 
   const {
     categories,
@@ -43,7 +49,7 @@ export function VportPublicMenuView({ actorId }) {
       bannerUrl: details?.bannerUrl || "",
       avatarUrl: details?.avatarUrl || "",
       reviewUrl: details?.reviewUrl || "",
-      address: details?.address ?? details?.raw?.address ?? null,
+      address: details?.address ?? null, // model now maps address explicitly — raw fallback removed (VENOM V-001)
       phone: details?.phone || "",
     }),
     [details]
@@ -55,7 +61,15 @@ export function VportPublicMenuView({ actorId }) {
       navigate(-1);
       return;
     }
-    navigate(`/profile/${actorId}`, { replace: true });
+    // Never navigate to /profile/${actorId} — raw UUIDs must not appear in
+    // public-facing /profile/ URLs. Use the canonical slug route when resolved;
+    // fall back to the internal /actor/:id/menu redirect route (which itself
+    // resolves to the canonical slug URL server-side).
+    if (canonicalSlug) {
+      navigate(`/profile/${canonicalSlug}/menu`, { replace: true });
+    } else {
+      navigate(`/actor/${actorId}/menu`, { replace: true });
+    }
   };
 
   if (!actorId) return null;
