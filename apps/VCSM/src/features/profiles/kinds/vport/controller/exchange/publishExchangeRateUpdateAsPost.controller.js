@@ -4,6 +4,7 @@ import {
 } from "@/features/profiles/kinds/vport/dal/exchange/vportExchangeRatePost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 function formatRate(v) {
   const n = Number(v);
@@ -18,6 +19,7 @@ function buildPostText({ exchangeName, baseCurrency, quoteCurrency, buyRate, sel
 }
 
 export async function publishExchangeRateUpdateAsPostController({
+  identityActorId,
   actorId,
   baseCurrency,
   quoteCurrency,
@@ -25,7 +27,13 @@ export async function publishExchangeRateUpdateAsPostController({
   sellRate,
 }) {
   if (!actorId) throw new Error("publishExchangeRateUpdateAsPost: actorId required");
+  if (!identityActorId) throw new Error("publishExchangeRateUpdateAsPost: identityActorId required");
   if (!baseCurrency || !quoteCurrency) return { published: false, reason: "missing_currencies" };
+
+  await assertActorOwnsVportActorController({
+    requestActorId: identityActorId,
+    targetActorId: actorId,
+  });
 
   const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, reason: "missing_public_realm" };
