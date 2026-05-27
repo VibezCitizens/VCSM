@@ -12,7 +12,7 @@ import useVportBookingActions from "@/features/dashboard/vport/hooks/useVportBoo
 import BookingCard from "@/features/dashboard/vport/components/bookingHistory/BookingCard";
 import TodayView from "@/features/dashboard/vport/components/bookingHistory/TodayView";
 import QuickBookingModal from "@/features/dashboard/vport/components/bookingHistory/QuickBookingModal";
-import { filterBookings, groupByDate } from "@/features/dashboard/vport/screens/model/vportBookingHistoryView.model";
+import { filterBookings, groupByDate } from "@/features/dashboard/vport/model/vportBookingHistoryView.model";
 
 const HISTORY_TABS = [
   { key: "past",      label: "Past"      },

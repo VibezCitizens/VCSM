@@ -9,12 +9,12 @@ import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
 import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
 import { DashboardCard, VportBannerHeader } from "@/features/dashboard/vport/screens/components/VportDashboardParts";
 import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
-import { buildDashboardCards } from "@/features/dashboard/vport/screens/model/buildDashboardCards.model";
+import { buildDashboardCards } from "@/features/dashboard/vport/model/buildDashboardCards.model";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import {
   getDashboardViewByVportType,
   normalizeVportType,
-} from "@/features/dashboard/vport/screens/model/dashboardViewByVportType.model";
+} from "@/features/dashboard/vport/model/dashboardViewByVportType.model";
 import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
 import { useVportOwnership } from "@/features/dashboard/vport/hooks/useVportOwnership";
 
