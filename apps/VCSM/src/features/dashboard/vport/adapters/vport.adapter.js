@@ -6,3 +6,5 @@ export { default as VportDashboardScheduleScreen } from "@/features/dashboard/vp
 export { useVportTeam } from "@/features/dashboard/vport/hooks/useVportTeam";
 export { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 export { mapAvailabilityRule } from "@/features/dashboard/vport/model/vportAvailabilityRule.model";
+// Global layout chip — exposed through adapter to prevent direct layout→component coupling
+export { VportLeadsChip } from "@/features/dashboard/vport/components/VportLeadsChip";

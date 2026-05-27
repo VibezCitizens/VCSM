@@ -4,7 +4,7 @@ import TopNav from "@/shared/components/TopNav";
 import BottomNavBar from "@/shared/components/BottomNavBar";
 import PageContainer from "@/shared/components/PageContainer";
 import { IOSDebugHUD, IOSProdRouteDebugger } from "@/app/platform/ios";
-import { VportLeadsChip } from "@/features/dashboard/vport/components/VportLeadsChip";
+import { VportLeadsChip } from "@/features/dashboard/vport/adapters/vport.adapter";
 import { hideLaunchSplash } from "@/shared/lib/hideLaunchSplash";
 import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
 import { useIdentity } from "@/state/identity/identityContext";

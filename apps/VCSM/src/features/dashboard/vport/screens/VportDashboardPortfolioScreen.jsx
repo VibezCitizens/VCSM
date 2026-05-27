@@ -11,7 +11,7 @@ import VportBackButton from "@/features/dashboard/vport/screens/components/Vport
 
 import { deleteItem } from "@portfolio";
 import { useVportPortfolio } from "@/features/profiles/adapters/profiles.adapter";
-import { PortfolioBugsBunnyPanel } from "./components/PortfolioBugsBunnyPanel";
+import { PortfolioDevDiagnosticPanel } from "./components/PortfolioDevDiagnosticPanel";
 import PortfolioItemForm from "./components/portfolio/PortfolioItemForm";
 import PortfolioManagerCard from "./components/portfolio/PortfolioManagerCard";
 import { usePublishBarbershopPortfolioPost } from "@/features/profiles/adapters/profiles.adapter";
@@ -139,7 +139,7 @@ export default function VportDashboardPortfolioScreen() {
 
           <div style={{ padding: 16 }}>
             {import.meta.env.DEV && (
-              <PortfolioBugsBunnyPanel actorId={targetActorId} identity={identity} />
+              <PortfolioDevDiagnosticPanel actorId={targetActorId} identity={identity} />
             )}
 
             {!showCreate && !editingItem ? (

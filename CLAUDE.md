@@ -195,6 +195,10 @@ Always render modals as **fragment siblings**, not children of styled card conta
 | `/Kraven` | Performance hunter and bottleneck analysis | `.claude/commands/Kraven.md` |
 | `/Venom` | Security sheriff and trust boundary review | `.claude/commands/Venom.md` |
 | `/BlackWidow` | Ethical red team — adversarial runtime verification | `.claude/commands/BlackWidow.md` |
+| `/ELEKTRA` | Precision security scanner and patch advisor | `.claude/commands/ELEKTRA.md` |
+| `/HAWKEYE` | Precision endpoint and API contract verification commander | `.claude/commands/HAWKEYE.md` |
+| `/SPIDER-MAN` | Regression safety net and test coverage commander | `.claude/commands/SPIDER-MAN.md` |
+| `/WATCHER` | Session change provenance commander | `.claude/commands/WATCHER.md` |
 | `/Carnage` | Database migration architect | `.claude/commands/Carnage.md` |
 | `/Ironman` | Feature ownership and system responsibility | `.claude/commands/Ironman.md` |
 | `/Thor` | Release commander | `.claude/commands/Thor.md` |
