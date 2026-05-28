@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { loadOwnerQuickStatsController } from "@/features/dashboard/vport/controller/vportOwnerStats.controller";
+import { captureMonitoringError } from "@/services/monitoring/monitoring";
 
 export function useOwnerQuickStats(actorId) {
   const [stats, setStats] = useState(null);
@@ -11,7 +12,7 @@ export function useOwnerQuickStats(actorId) {
     setLoading(true);
     loadOwnerQuickStatsController({ actorId })
       .then((data) => { if (!cancelled) setStats(data); })
-      .catch(() => {})
+      .catch((err) => { captureMonitoringError(err, { context: "useOwnerQuickStats", actorId }); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [actorId]);

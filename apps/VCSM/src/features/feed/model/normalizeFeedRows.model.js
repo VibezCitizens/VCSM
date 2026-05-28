@@ -72,8 +72,8 @@ export function normalizeFeedRows({
         post_type: r.post_type || "post",
         actor_id: r.actor_id,
 
-        // ✅ ADD THIS (so PostCardView can show 📍)
         location_text: r.location_text ?? null,
+        payload: r.payload ?? null,
 
         is_hidden_for_viewer: hiddenByMeSet.has(r.id),
 

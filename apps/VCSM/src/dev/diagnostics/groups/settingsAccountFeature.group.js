@@ -11,7 +11,6 @@ import { dalReadVportIdByActorId } from "@/features/settings/account/dal/account
 import {
   dalSoftDeleteCitizenAccount,
   dalDeleteMyVport,
-  dalDeleteOwnedVportById,
 } from "@/features/settings/account/dal/account.write.dal";
 import AccountTabView from "@/features/settings/account/ui/AccountTab.view";
 import { useAccountController } from "@/features/settings/account/hooks/useAccountController";
@@ -105,7 +104,6 @@ export async function runSettingsAccountFeatureGroup({ onTestUpdate, shared }) {
         hasDalReadVportIdByActorId: typeof dalReadVportIdByActorId === "function",
         hasDalSoftDeleteCitizenAccount: typeof dalSoftDeleteCitizenAccount === "function",
         hasDalDeleteMyVport: typeof dalDeleteMyVport === "function",
-        hasDalDeleteOwnedVportById: typeof dalDeleteOwnedVportById === "function",
       }),
     },
     {

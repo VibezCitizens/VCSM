@@ -169,17 +169,19 @@ export function useJoinBarbershop(token) {
 
   const acceptQr = useCallback(async () => {
     if (!barberVport?.actor_id) return;
+    const callerActorId = identity?.actorId ?? null;
+    if (!callerActorId) return;
     setWorking(true);
     setError("");
     try {
-      await acceptQrJoin(token, barberVport.actor_id);
+      await acceptQrJoin(token, barberVport.actor_id, callerActorId);
       setView(VIEWS.ACCEPTED);
     } catch (e) {
       setError(e?.message || "Failed to accept invite.");
     } finally {
       setWorking(false);
     }
-  }, [token, barberVport]);
+  }, [token, barberVport, identity]);
 
   const createVportAndAcceptQr = useCallback(async (vportName) => {
     setWorking(true);
@@ -237,17 +239,19 @@ export function useJoinBarbershop(token) {
 
   const acceptWithExisting = useCallback(async () => {
     if (!existingVport?.actor_id) return;
+    const callerActorId = identity?.actorId ?? null;
+    if (!callerActorId) return;
     setWorking(true);
     setError("");
     try {
-      await useExistingBarberVportAndAccept(token, existingVport.actor_id);
+      await useExistingBarberVportAndAccept(token, existingVport.actor_id, { readCurrentAuthUserDAL, callerActorId });
       setView(VIEWS.ACCEPTED);
     } catch (e) {
       setError(e?.message || "Failed to accept invite.");
     } finally {
       setWorking(false);
     }
-  }, [token, existingVport]);
+  }, [token, existingVport, identity, readCurrentAuthUserDAL]);
 
   return {
     view,

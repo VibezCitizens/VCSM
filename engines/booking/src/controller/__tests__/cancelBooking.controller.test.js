@@ -14,6 +14,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('../../dal/actor.read.dal.js', () => ({
+  dalGetActorById: vi.fn(),
   dalGetVportProfileSlugByActorId: vi.fn(),
 }))
 vi.mock('../../dal/booking.read.dal.js', () => ({
@@ -44,7 +45,7 @@ import { dalGetBookingResourceById } from '../../dal/resource.read.dal.js'
 import { dalUpdateBookingStatus } from '../../dal/booking.write.dal.js'
 import { assertActorOwnsVportActor } from '../assertActorOwnsVportActor.controller.js'
 import { getNotifyFn } from '../../config.js'
-import { dalGetVportProfileSlugByActorId } from '../../dal/actor.read.dal.js'
+import { dalGetActorById, dalGetVportProfileSlugByActorId } from '../../dal/actor.read.dal.js'
 
 // UUID pattern — any path segment matching this is a raw-ID violation
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -53,6 +54,9 @@ const CUSTOMER_ID  = 'actor-customer-111'
 const OWNER_UUID   = 'aabbccdd-0011-2233-4455-667788990011' // raw UUID in DB
 const OWNER_SLUG   = 'my-barbershop-vport'                  // canonical slug — fix must use this
 const ATTACKER_ID  = 'actor-attacker-999'
+
+// A valid non-void actor — returned by the ELEK-001 requesting-actor validation check.
+const fakeActor = { id: 'actor-xxx', kind: 'user', is_void: false }
 
 const fakeBooking = {
   id:                    'booking-abc',
@@ -80,6 +84,7 @@ describe('cancelBooking — authorization', () => {
     dalGetBookingById.mockResolvedValue(fakeBooking)
     dalGetBookingResourceById.mockResolvedValue(fakeResource)
     dalUpdateBookingStatus.mockResolvedValue(fakeUpdated)
+    dalGetActorById.mockResolvedValue(fakeActor)
     dalGetVportProfileSlugByActorId.mockResolvedValue(OWNER_SLUG)
     getNotifyFn.mockReturnValue(null) // no notification side-effects in auth tests
   })
@@ -131,6 +136,7 @@ describe('cancelBooking — notification linkPath must not expose raw UUIDs', ()
     dalGetBookingResourceById.mockResolvedValue(fakeResource)
     dalUpdateBookingStatus.mockResolvedValue(fakeUpdated)
     assertActorOwnsVportActor.mockResolvedValue({ ok: true })
+    dalGetActorById.mockResolvedValue(fakeActor)
     dalGetVportProfileSlugByActorId.mockResolvedValue(OWNER_SLUG) // default: slug available
     capturedPayload = null
     getNotifyFn.mockReturnValue((payload) => { capturedPayload = payload })

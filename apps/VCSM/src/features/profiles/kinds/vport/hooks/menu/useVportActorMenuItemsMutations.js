@@ -1,41 +1,21 @@
 // src/features/profiles/kinds/vport/hooks/menu/useVportActorMenuItemsMutations.js
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import saveVportActorMenuItemController from "@/features/profiles/kinds/vport/controller/menu/saveVportActorMenuItem.controller";
 import deleteVportActorMenuItemController from "@/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuItem.controller";
+import { useIdentity } from "@/state/identity/identityContext";
 
-/**
- * Hook Contract:
- * - Owns timing + UI state
- * - Calls controllers only
- * - No DAL
- * - No business logic
- *
- * saveItem(payload) forwards payload directly to controller.
- * Expected payload shape (examples):
- * {
- *   itemId?: string | null,
- *   categoryId: string,
- *   key?: string | null,
- *   name: string,
- *   description?: string | null,
- *   sortOrder?: number,
- *   isActive?: boolean,
- *
- *   // ✅ prices
- *   price?: number | null,        // optional (dollars)
- *   priceCents?: number | null,   // optional (cents)
- *
- *   // ✅ pictures
- *   imageUrl?: string | null,     // optional primary image URL
- *   // media?: Array<{ url, sortOrder?, isActive? }>  // optional if you add gallery support later
- * }
- */
 export function useVportActorMenuItemsMutations({ actorId, onSuccess }) {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
+
+  const { identity, availableActors } = useIdentity();
+  const identityActorId = useMemo(() => {
+    if (identity?.kind === "user") return identity.actorId ?? null;
+    return availableActors?.find((a) => a.kind === "user")?.actorId ?? null;
+  }, [identity, availableActors]);
 
   const saveItem = useCallback(
     async (payload) => {
@@ -74,6 +54,7 @@ export function useVportActorMenuItemsMutations({ actorId, onSuccess }) {
 
       try {
         const result = await deleteVportActorMenuItemController({
+          callerActorId: identityActorId,
           actorId,
           itemId,
         });
@@ -90,7 +71,7 @@ export function useVportActorMenuItemsMutations({ actorId, onSuccess }) {
         setDeleting(false);
       }
     },
-    [actorId, onSuccess]
+    [actorId, identityActorId, onSuccess]
   );
 
   return {

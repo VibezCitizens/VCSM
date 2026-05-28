@@ -5,8 +5,11 @@ import {
 } from "@/features/settings/vports/dal/vports.write.dal";
 import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
-export async function ctrlGetVportDirectoryState({ vportId }) {
+export async function ctrlGetVportDirectoryState({ vportId, callerActorId, vportActorId }) {
   if (!vportId) return null;
+  if (!callerActorId) throw new Error("ctrlGetVportDirectoryState: callerActorId required");
+  if (!vportActorId)  throw new Error("ctrlGetVportDirectoryState: vportActorId required");
+  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
   return readVportDirectoryStateDAL(vportId);
 }
 

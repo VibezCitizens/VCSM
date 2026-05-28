@@ -5,6 +5,7 @@ import {
   getProviderLeadPrefill,
   submitProviderLead
 } from "@/features/conversion/controller/submitProviderLead.controller";
+import { trackProviderLeadSubmitted } from "@/lib/analytics";
 const DEFAULT_MESSAGE = "Hi, I'm interested in your services.";
 
 function createInitialValues() {
@@ -120,6 +121,12 @@ export function useProviderLeadCapture({
 
       setFieldErrors({});
       setStatus("success");
+      trackProviderLeadSubmitted({
+        providerSlug,
+        surface: "provider",
+        hasEmail: Boolean(values.email),
+        hasPhone: Boolean(values.phone)
+      });
     } catch (error) {
       console.error("[providerLeadCapture] submit failed", error);
       setFormError("Something went wrong. Try again.");

@@ -12,7 +12,7 @@ import VportBarberShopTeamView from "@/features/profiles/kinds/vport/screens/bar
 import VportBarberShopBookingView from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopBookingView";
 import VportOwnerView from "@/features/profiles/kinds/vport/screens/owner/VportOwnerView";
 import VportRatesView from "@/features/profiles/kinds/vport/screens/rates/view/VportRatesView";
-import { VportGasPricesView } from "@/features/profiles/kinds/vport/screens/gas/view/VportGasPricesView";
+import { VportGasPricesView } from "@/features/dashboard/vport/dashboard/cards/gasprices/screens/VportGasPricesView";
 
 export default function VportProfileTabContent({
   tab,
@@ -72,7 +72,7 @@ export default function VportProfileTabContent({
         <VportBookingView profile={profile} isOwner={isOwner} />
       )}
 
-      {tab === "team" && (
+      {tab === "team" && vportType === "barbershop" && (
         <VportBarberShopTeamView profile={profile} isOwner={isOwner} />
       )}
 

@@ -20,7 +20,8 @@ export async function readFeedPostsPage({
       realm_id,
       edited_at,
       deleted_at,
-      location_text
+      location_text,
+      payload
     `)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })

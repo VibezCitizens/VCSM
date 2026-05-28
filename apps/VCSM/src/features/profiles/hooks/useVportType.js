@@ -1,7 +1,7 @@
 // src/features/profiles/hooks/useVportType.js
 
 import { useEffect, useState } from "react";
-import { getVportTypeController } from "@/features/profiles/controller/getVportType.controller";
+import { getVportTypeController } from "@/features/profiles/kinds/vport/controller/getVportType.controller";
 
 export function useVportType(actorId) {
   const [loading, setLoading] = useState(true);

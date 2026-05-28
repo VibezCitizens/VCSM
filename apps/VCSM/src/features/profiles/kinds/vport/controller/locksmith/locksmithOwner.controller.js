@@ -16,7 +16,7 @@ import {
 import {
   dalUpsertLocksmithPortfolioDetail,
 } from '@/features/profiles/kinds/vport/dal/locksmith/locksmithPortfolioDetails.write.dal'
-import vport from '@/services/supabase/vportClient'
+import { assertActorOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
 
 // ── Service Areas ──
 
@@ -102,22 +102,10 @@ export async function ctrlDeleteServiceDetail(actorId, serviceId) {
 
 // ── Portfolio Details ──
 
-export async function ctrlSavePortfolioDetail(actorId, portfolioItemId, detail) {
-  if (!actorId || !portfolioItemId) throw new Error('[Locksmith] actorId and portfolioItemId required')
+export async function ctrlSavePortfolioDetail(identityActorId, actorId, portfolioItemId, detail) {
+  if (!identityActorId || !actorId || !portfolioItemId) throw new Error('[Locksmith] identityActorId, actorId, and portfolioItemId required')
 
-  // PORT-V-004: verify the caller owns the portfolio item before writing.
-  // Parallel lookup: resolve callerProfileId from actor_id, and itemProfileId from the item row.
-  // vportClient is pre-configured for the vport schema — no .schema() call needed.
-  const [{ data: profileRow, error: profileErr }, { data: itemRow, error: itemErr }] = await Promise.all([
-    vport.from('profiles').select('id').eq('actor_id', actorId).maybeSingle(),
-    vport.from('portfolio_items').select('profile_id').eq('id', portfolioItemId).maybeSingle(),
-  ])
-  if (profileErr || itemErr) throw new Error('[Locksmith] ownership lookup failed')
-
-  const callerProfileId = profileRow?.id ?? null
-  const itemProfileId = itemRow?.profile_id ?? null
-  if (!callerProfileId || !itemProfileId) throw new Error('[Locksmith] portfolio item or profile not found')
-  if (callerProfileId !== itemProfileId) throw new Error('[Locksmith] not authorized to save portfolio detail for this item')
+  await assertActorOwnsVportActorController({ requestActorId: identityActorId, targetActorId: actorId })
 
   return dalUpsertLocksmithPortfolioDetail({
     portfolio_item_id: portfolioItemId,

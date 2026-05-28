@@ -1,6 +1,9 @@
 import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { runDiagnosticsTests } from "@/dev/diagnostics/helpers/timedTest";
 import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegistry";
+// ⚠️ DIAGNOSTICS-ONLY: vportTypeRegistry is a legacy/deprecated file (DTAB-001).
+// Production code must import from: features/profiles/kinds/vport/model/getVportTabsByType.model.js
+// TODO DTAB-001: update this import to the canonical model when vportTypeRegistry.js is deleted.
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/vportTypeRegistry";
 import {
   getAllVportTypes,
@@ -11,7 +14,7 @@ import getVportServicesController from "@/features/profiles/kinds/vport/controll
 import getVportRatesController from "@/features/profiles/kinds/vport/controller/rates/getVportRates.controller";
 import { getSubscribersController } from "@/features/profiles/kinds/vport/controller/subscribers/getSubscribers.controller";
 import { getVportActorMenuController } from "@/features/profiles/kinds/vport/controller/menu/getVportActorMenu.controller";
-import { getVportGasPricesController } from "@/features/profiles/kinds/vport/controller/gas/getVportGasPrices.controller";
+import { getVportGasPricesController } from "@/features/dashboard/vport/dashboard/cards/gasprices/controller/getVportGasPrices.controller";
 import {
   ctrlGetOfficialStats,
   ctrlGetReviewFormConfig,

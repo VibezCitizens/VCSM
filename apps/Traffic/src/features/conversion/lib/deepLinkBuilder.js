@@ -52,10 +52,18 @@ export function buildPlatformExploreLink(context, surface = "directory") {
   });
 }
 
-export function buildPlatformProviderLink(providerSlug, vcsmSlug, surface = "provider") {
+export function buildPlatformProviderLink(providerSlug, vcsmSlug, surface = "provider", context = {}) {
   const slug = vcsmSlug || providerSlug;
   return buildUrl(`/profile/${slug}`, {
-    ...withTrafficAttribution({}, surface)
+    ...withTrafficAttribution(
+      {
+        country: context?.countrySlug,
+        city: context?.citySlug,
+        locality: getLocalitySlug(context),
+        service: context?.serviceSlug
+      },
+      surface
+    )
   });
 }
 
@@ -94,7 +102,7 @@ export function buildPlatformFollowLink(providerSlug, vcsmSlug, surface = "provi
  * @param {string|null} [vcsmActorId]
  * @returns {string|null}
  */
-export function buildPlatformClaimLink(providerSlug, vcsmActorId, surface = "provider") {
+export function buildPlatformClaimLink(providerSlug, vcsmActorId, surface = "provider", context = {}) {
   if (vcsmActorId) {
     return null;
   }
@@ -102,7 +110,11 @@ export function buildPlatformClaimLink(providerSlug, vcsmActorId, surface = "pro
   return buildUrl("/claim-profile", {
     ...withTrafficAttribution(
       {
-        provider: providerSlug
+        provider: providerSlug,
+        country: context?.countrySlug,
+        city: context?.citySlug,
+        locality: getLocalitySlug(context),
+        service: context?.serviceSlug
       },
       surface
     )

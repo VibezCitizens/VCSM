@@ -3,6 +3,7 @@ import { readBarberVportByOwnerUserIdDAL } from "@/features/join/dal/barberVport
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from "@/features/join/dal/joinInvite.dal";
 import { recordSignupConsent } from "@/features/legal/adapters/legal.adapter";
 import { bootstrapJoinOnboardingController } from "@/features/auth/adapters/auth.adapter";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const BARBER_CATEGORY = "barber";
 
@@ -119,14 +120,16 @@ export async function createBarberVportAndAccept(token, vportName, { readCurrent
   return { barberVportActorId: vportResult.actorId };
 }
 
-export async function useExistingBarberVportAndAccept(token, vportActorId, { readCurrentAuthUserDAL } = {}) {
+export async function useExistingBarberVportAndAccept(token, vportActorId, { readCurrentAuthUserDAL, callerActorId } = {}) {
+  if (!callerActorId) throw new Error("useExistingBarberVportAndAccept: callerActorId required");
+
   const user = await readCurrentAuthUserDAL?.();
   if (!user) throw new Error("Not signed in.");
 
-  const existingVport = await readBarberVportByOwnerUserIdDAL(user.id);
-  if (!existingVport || String(existingVport.actor_id) !== String(vportActorId)) {
-    throw new Error("Caller does not own this barber vport.");
-  }
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: vportActorId,
+  });
 
   await acceptJoinResourceDAL(token, vportActorId);
   return { barberVportActorId: vportActorId };

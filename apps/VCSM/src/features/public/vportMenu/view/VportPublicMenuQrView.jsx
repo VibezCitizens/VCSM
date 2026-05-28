@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
 import { QrCode } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
-import { buildMenuQrUrl } from "@/lib/qrUrlBuilders";
+import { buildMenuQrUrl, isQrSafeSlug as isQrSafe } from "@/shared/lib/qrUrlBuilders";
 
 export function VportPublicMenuQrView({ actorId }) {
   const navigate = useNavigate();
@@ -16,8 +16,7 @@ export function VportPublicMenuQrView({ actorId }) {
   //   2. No-slug-data path — controller fallback when actor has no name/slug in DB
   // Both cases produce a truthy canonicalSlug that would bypass the loading gate.
   // isQrSafeSlug = true only when the slug is a real human-readable canonical slug.
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const isQrSafeSlug = !!canonicalSlug && !UUID_RE.test(canonicalSlug);
+  const isQrSafeSlug = isQrSafe(canonicalSlug);
 
   // Only build URL from a QR-safe canonical slug — never from a raw UUID.
   const menuUrl = isQrSafeSlug ? buildMenuQrUrl(canonicalSlug) : "";

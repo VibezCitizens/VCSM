@@ -11,4 +11,4 @@ export {
   getAddressValidationError,
   normalizePhoneDigits,
   US_PHONE_DIGITS,
-} from "@/features/dashboard/vport/model/vportSettingsValidation.model";
+} from "@/features/dashboard/vport/dashboard/cards/settings/model/vportSettingsValidation.model";

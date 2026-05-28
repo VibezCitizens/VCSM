@@ -2,6 +2,7 @@
 
 import { useProviderLeadCapture } from "@/features/conversion/hooks/useProviderLeadCapture";
 import { useTrafficLanguage } from "@/lib/language";
+import { trackProviderAction } from "@/lib/analytics";
 
 function toPhoneHref(value) {
   const digits = String(value ?? "").replace(/[^\d+]/g, "");
@@ -16,6 +17,7 @@ export default function ProviderLeadCaptureCard({
   profileHref,
   claimStatus,
   claimLink,
+  providerSource,
   supabaseUrl,
   supabaseAnonKey
 }) {
@@ -52,7 +54,11 @@ export default function ProviderLeadCaptureCard({
 
       <div className="pro-lead-quick-actions">
         {phoneHref ? (
-          <a className="btn btn--ghost" href={phoneHref}>
+          <a
+            className="btn btn--ghost"
+            href={phoneHref}
+            onClick={() => trackProviderAction({ action: "call_click", providerSlug, providerSource })}
+          >
             {t("leadCapture.callNow")}
           </a>
         ) : (
@@ -61,7 +67,15 @@ export default function ProviderLeadCaptureCard({
           </button>
         )}
         {profileHref ? (
-          <a className="btn btn--primary" href={profileHref} target="_blank" rel="noreferrer">
+          <a
+            className="btn btn--primary"
+            href={profileHref}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() =>
+              trackProviderAction({ action: "full_profile_click", providerSlug, providerSource })
+            }
+          >
             {t("leadCapture.viewFullProfile")}
           </a>
         ) : null}
@@ -164,7 +178,13 @@ export default function ProviderLeadCaptureCard({
       )}
 
       {claimStatus !== "claimed" && claimLink ? (
-        <a className="btn btn--claim" href={claimLink} target="_blank" rel="noreferrer">
+        <a
+          className="btn btn--claim"
+          href={claimLink}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => trackProviderAction({ action: "claim_click", providerSlug, providerSource })}
+        >
           {t("leadCapture.claimThisProfile")}
         </a>
       ) : null}

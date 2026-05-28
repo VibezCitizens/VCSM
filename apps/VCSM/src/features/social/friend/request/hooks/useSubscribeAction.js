@@ -89,6 +89,7 @@ export function useSubscribeAction({
         await unsubscribe({
           followerActorId: actionActorId,
           followedActorId: targetActorId,
+          assertingActorId: actionActorId,
         })
 
         setLocalIsFollowing(false)
@@ -116,6 +117,7 @@ export function useSubscribeAction({
       const result = await ctrlSubscribe({
         followerActorId: actionActorId,
         followedActorId: targetActorId,
+        assertingActorId: actionActorId,
       })
 
       if (result?.status === 'pending') {

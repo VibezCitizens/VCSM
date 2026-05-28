@@ -4,6 +4,7 @@ import {
 } from "@/features/profiles/kinds/vport/dal/barbershop/vportBarbershopPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -42,14 +43,20 @@ function buildHoursText(barbershopName, blocks) {
   return `${header}\n\n${lines.join("\n")}`;
 }
 
-export async function publishBarbershopHoursUpdateAsPostController({ actorId, blocks }) {
+export async function publishBarbershopHoursUpdateAsPostController({ actorId, blocks, callerActorId }) {
   if (!actorId) throw new Error("publishBarbershopHoursUpdateAsPost: actorId required");
+  if (!callerActorId) throw new Error("publishBarbershopHoursUpdateAsPost: callerActorId required");
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: actorId,
+  });
 
   const realmId = PUBLIC_REALM_ID;
-  if (!realmId) return { published: false, reason: "missing_public_realm" };
+  if (!realmId) return { published: false, status: "skipped", reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentBarbershopHoursPostDAL({ actorId });
-  if (alreadyPosted) return { published: false, reason: "throttled" };
+  if (alreadyPosted) return { published: false, status: "skipped", reason: "throttled" };
 
   const barbershopName = await resolveVportBarbershopNameDAL(actorId);
   const text = buildHoursText(barbershopName, blocks);
@@ -60,7 +67,8 @@ export async function publishBarbershopHoursUpdateAsPostController({ actorId, bl
     post_type: "barbershop_hours_update",
     realm_id: realmId,
     media_url: null,
+    payload: { blocks: blocks ?? [] },
   });
 
-  return { published: true, postId: created?.id ?? null };
+  return { published: true, status: "published", postId: created?.id ?? null };
 }

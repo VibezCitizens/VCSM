@@ -1,6 +1,6 @@
 import vportSchema from "@/services/supabase/vportClient";
 
-const RESOURCE_COLS = "id, name, resource_type, is_active, member_actor_id, meta, barbershop:profiles!profile_id(id, name, actor_id)";
+const RESOURCE_COLS = "id, name, resource_type, is_active, member_actor_id, meta, barbershop:profiles!profile_id(name, actor_id)";
 
 export async function fetchJoinResourceByIdDAL(resourceId) {
   if (!resourceId) return null;
@@ -28,6 +28,9 @@ export async function acceptJoinResourceDAL(resourceId, barberVportActorId, extr
 
   if (readError) throw readError;
 
+  // ELEK-001: atomic state guard — update only fires when the resource is still in
+  // pending_onboarding state and the slot is unclaimed. Prevents mutation replay:
+  // a reused or race-concurrent token cannot overwrite an already-linked member_actor_id.
   const { data, error } = await vportSchema
     .from("resources")
     .update({
@@ -41,9 +44,12 @@ export async function acceptJoinResourceDAL(resourceId, barberVportActorId, extr
       },
     })
     .eq("id", resourceId)
+    .eq("meta->>status", "pending_onboarding")
+    .is("member_actor_id", null)
     .select(RESOURCE_COLS)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new Error("join resource is no longer available");
   return data;
 }

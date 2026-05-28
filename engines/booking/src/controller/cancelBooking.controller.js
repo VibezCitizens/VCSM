@@ -5,7 +5,7 @@ import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controlle
 import { mapBookingRow } from '../model/Booking.model.js'
 import { getNotifyFn } from '../config.js'
 import { BOOKING_EVENTS } from '../events.js'
-import { dalGetVportProfileSlugByActorId } from '../dal/actor.read.dal.js'
+import { dalGetActorById, dalGetVportProfileSlugByActorId } from '../dal/actor.read.dal.js'
 
 export async function cancelBooking({ bookingId, requestActorId, cancelNote = undefined } = {}) {
   if (!bookingId)      throw new Error('[BookingEngine] bookingId is required')
@@ -13,6 +13,19 @@ export async function cancelBooking({ bookingId, requestActorId, cancelNote = un
 
   const booking = await dalGetBookingById({ bookingId })
   if (!booking) throw new Error('Booking not found.')
+
+  // BW-001 — Prevent mutation replay on finalized bookings.
+  const TERMINAL_STATUSES = new Set(['cancelled', 'completed', 'no_show'])
+  if (TERMINAL_STATUSES.has(booking.status)) {
+    throw new Error('This booking has already been finalized and cannot be cancelled.')
+  }
+
+  // ELEK-001 — Validate requesting actor before isCustomer shortcut is evaluated.
+  // A void or non-existent actor must not cancel via the customer-match path.
+  const requestingActor = await dalGetActorById({ actorId: requestActorId })
+  if (!requestingActor || requestingActor.is_void === true) {
+    throw new Error('[BookingEngine] Only valid actors may cancel bookings.')
+  }
 
   const isCustomer = booking.customer_actor_id &&
     String(booking.customer_actor_id) === String(requestActorId)

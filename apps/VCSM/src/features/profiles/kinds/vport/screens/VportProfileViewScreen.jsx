@@ -22,9 +22,8 @@ import { queryKeys } from "@/queries/queryKeys";
 import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/getVportTabsByType.model";
 import { useVportProfileBySlug } from "@/features/profiles/kinds/vport/hooks/useVportProfileBySlug";
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
-import { isDeletedProfileActor } from "@/features/profiles/model/isDeletedProfileActor.model";
 import UnavailableProfileGate from "@/features/profiles/adapters/ui/UnavailableProfileGate.adapter";
-import { useIsActorOwner } from "@/features/profiles/hooks/useIsActorOwner";
+import { deriveVportIsOwner } from "@/features/profiles/kinds/vport/model/vportOwnership.model";
 import { useVportProfileActions } from "@/features/profiles/kinds/vport/hooks/useVportProfileActions";
 import VportProfileTabContent from "./components/VportProfileTabContent";
 
@@ -76,17 +75,13 @@ export default function VportProfileViewScreen({
 
   useActorSeoMeta(profile ?? null, publicDetails ?? null);
 
-  const isDirectMatch = useMemo(() => {
-    if (!viewerActorId || !profileActorId) return false;
-    return String(viewerActorId) === String(profileActorId);
-  }, [viewerActorId, profileActorId]);
-
-  const userId = identity?.userId ?? null;
-  const { ownsViaAccount } = useIsActorOwner({ userId, actorId: profileActorId, directMatch: isDirectMatch });
-  const isOwner = isDirectMatch || ownsViaAccount;
+  const isOwner = useMemo(
+    () => deriveVportIsOwner({ viewerActorId, profileActorId }),
+    [viewerActorId, profileActorId]
+  );
 
   const vportType = useMemo(() => (
-    publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? profile?.category ?? null
+    publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? null
   ), [publicDetails, profile]);
 
   const handleTabSelect = useCallback((key) => {
@@ -100,7 +95,7 @@ export default function VportProfileViewScreen({
 
   const effectiveTabs = useMemo(() => {
     const fallbackTabs = Array.isArray(tabs) && tabs.length ? tabs : VPORT_TABS;
-    const type = publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? profile?.category ?? null;
+    const type = publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? null;
     const baseTabs = type ? getVportTabsByType(type) : fallbackTabs;
     if (isOwner) {
       if (baseTabs.some((t) => t.key === "owner")) return baseTabs;
@@ -154,12 +149,9 @@ export default function VportProfileViewScreen({
     return <div className="profiles-modern flex justify-center py-20 text-rose-300">Failed to load profile.</div>;
   }
 
-  const isVportUnavailable =
-    !publicDetailsLoading &&
-    (
-      publicDetails === null ||
-      isDeletedProfileActor({ isDeleted: publicDetails?.isDeleted, isActive: publicDetails?.isActive })
-    );
+  // Deleted and inactive VPORTs are filtered at the DAL query layer — they return null.
+  // Any non-null publicDetails is guaranteed to be active and non-deleted.
+  const isVportUnavailable = !publicDetailsLoading && publicDetails === null;
 
   if (isVportUnavailable) {
     return (

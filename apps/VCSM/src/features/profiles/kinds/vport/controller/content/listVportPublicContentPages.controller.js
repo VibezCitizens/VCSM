@@ -8,7 +8,7 @@ export async function listVportPublicContentPagesController({ actorId } = {}) {
   if (!actorId) throw new Error("listVportPublicContentPagesController: actorId is required");
 
   const rows = await listVportPublicContentPagesDAL({ actorId });
-  return VportContentPageModel.fromRows(rows);
+  return VportContentPageModel.fromPublicRows(rows);
 }
 
 export default listVportPublicContentPagesController;

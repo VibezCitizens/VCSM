@@ -76,7 +76,6 @@ export function ActorProfileDevProbe(p) {
           </div>
           <R label="rq.isLoading"           value={String(p.rqIsLoading)} />
           <R label="rq.actorId"             value={p.rqActorId} isBad={!p.rqActorId && !p.rqIsLoading && !!p.slugToResolve} />
-          <R label="rq.profileId"           value={p.rqProfileId} />
           <R label="rq.name"                value={p.rqName} />
           <R label="rq.canonicalSlug"       value={p.rqCanonicalSlug} />
           <R label="rq.error"               value={p.rqError} isBad={!!p.rqError} />

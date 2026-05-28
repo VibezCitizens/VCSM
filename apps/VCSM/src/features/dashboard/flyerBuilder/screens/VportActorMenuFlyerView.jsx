@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { PrintableQrSheet } from "@/features/dashboard/flyerBuilder/components/printableQr/PrintableQrSheet";
 import { ClassicFlyer, PosterFlyer } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
-import { VportBackButton, useDesktopBreakpoint } from "@/features/dashboard/vport/adapters/vport.adapter";
+import VportBackButton from "@/features/dashboard/shared/components/BackButton";
+import useDesktopBreakpoint from "@/shared/hooks/useDesktopBreakpoint";
 import { useVportDashboardDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import { normalizeDashboardVportDetails } from "@/features/dashboard/vport/model/dashboardVportDetails.model";
 import {
@@ -13,7 +14,7 @@ import {
   createFlyerViewStyles,
 } from "@/features/dashboard/flyerBuilder/model/vportActorMenuFlyerView.model";
 import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
-import { buildMenuShortDisplayUrl } from "@/lib/qrUrlBuilders";
+import { buildMenuShortDisplayUrl, isQrSafeSlug } from "@/shared/lib/qrUrlBuilders";
 
 const PRINTABLE_VARIANTS = Object.freeze(["table", "half", "full", "sticker"]);
 
@@ -36,9 +37,8 @@ export function VportActorMenuFlyerView({
   const { canonicalSlug } = useActorCanonicalSlug(actorId);
 
   // UUID guard — QR code and Print must not be available until slug resolves to a safe non-UUID value.
-  // Mirrors the isQrSafeSlug pattern in VportPublicMenuQrView and VportPublicReviewsQrView (VENOM V-004).
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const isQrSafe = !!canonicalSlug && !UUID_RE.test(canonicalSlug);
+  // Uses the canonical isQrSafeSlug from qrUrlBuilders (single source of truth — VENOM V-004, ELEK-008).
+  const isQrSafe = isQrSafeSlug(canonicalSlug);
 
   const menuUrl = useMemo(() => {
     if (!actorId) return "";

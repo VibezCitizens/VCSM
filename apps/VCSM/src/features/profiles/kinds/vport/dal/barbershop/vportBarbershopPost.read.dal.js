@@ -9,6 +9,7 @@ export async function resolveVportBarbershopNameDAL(actorId) {
     .from("profiles")
     .select("name")
     .eq("actor_id", actorId)
+    .eq("is_deleted", false)
     .maybeSingle();
   return data?.name ?? null;
 }

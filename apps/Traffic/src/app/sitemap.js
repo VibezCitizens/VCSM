@@ -1,10 +1,11 @@
 import { getSiteOrigin } from "@/lib/env";
-import { listPageCandidates } from "@/data/repositories/pageCandidate.repo";
+import { listPageCandidatesWithAnswers } from "@/data/repositories/pageCandidate.repo";
 import { buildLocalizedAlternates } from "@/seo/locale";
 
 export const dynamic = "force-static";
 
 const PRIORITY = {
+  answer: 0.7,
   country_provider: 0.9,
   country_city_service: 0.8,
   country_locality_service: 0.75,
@@ -15,6 +16,7 @@ const PRIORITY = {
 };
 
 const CHANGE_FREQ = {
+  answer: "monthly",
   country_provider: "weekly",
   country_city_service: "weekly",
   country_locality_service: "monthly",
@@ -24,10 +26,12 @@ const CHANGE_FREQ = {
   country: "monthly"
 };
 
-export default function sitemap() {
+export default async function sitemap() {
   const siteOrigin = getSiteOrigin();
 
-  return listPageCandidates().map((page) => ({
+  const pages = await listPageCandidatesWithAnswers();
+
+  return pages.map((page) => ({
     url: `${siteOrigin}${page.path}`,
     lastModified: new Date(page.updatedAt),
     changeFrequency: CHANGE_FREQ[page.pageType] ?? "monthly",

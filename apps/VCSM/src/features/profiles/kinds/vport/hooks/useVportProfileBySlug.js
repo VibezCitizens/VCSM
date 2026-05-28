@@ -27,8 +27,7 @@ const STALE_MS = 5 * 60 * 1000
 /**
  * @param {string|null} slug  — canonical route param (:actorId) from the profile URL
  * @returns {{
- *   profileId:    string|null,   — vport.profiles.id, stable key for tab sub-queries
- *   actorId:      string|null,   — vc.actors.id
+ *   actorId:      string|null,   — vc.actors.id — canonical public identity
  *   slug:         string|null,   — stored slug from vport.profiles
  *   canonicalSlug: string|null,  — full canonical SEO slug (may equal actorId as fallback)
  *   name:         string|null,
@@ -94,7 +93,6 @@ export function useVportProfileBySlug(slug) {
   const error = slugQuery.error ?? profileQuery.error ?? detailsQuery.error ?? null
 
   return {
-    profileId:     details?.profileId ?? null,
     actorId,
     slug:          details?.slug ?? null,
     canonicalSlug,

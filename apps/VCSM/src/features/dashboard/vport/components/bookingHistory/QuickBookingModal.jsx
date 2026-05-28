@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
-import { useQuickBookingModal } from "@/features/dashboard/vport/hooks/useQuickBookingModal";
+import { useQuickBookingModal } from "@/features/dashboard/vport/dashboard/cards/bookings/hooks/useQuickBookingModal";
 
 const DURATIONS = [15, 20, 30, 45, 60, 75, 90, 120];
 

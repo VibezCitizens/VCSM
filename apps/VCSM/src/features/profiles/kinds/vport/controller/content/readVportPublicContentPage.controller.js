@@ -9,7 +9,7 @@ export async function readVportPublicContentPageController({ id } = {}) {
 
   const row = await readVportPublicContentPageDAL({ id });
   if (!row) return null;
-  return VportContentPageModel.fromRow(row);
+  return VportContentPageModel.fromPublicRow(row);
 }
 
 export default readVportPublicContentPageController;

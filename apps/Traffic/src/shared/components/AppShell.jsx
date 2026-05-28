@@ -28,6 +28,7 @@ const NAV_LINKS = [
   { labelKey: "shell.nav.home", key: "home" },
   { labelKey: "shell.nav.directory", key: "directory" },
   { labelKey: "shell.nav.categories", key: "categories" },
+  { labelKey: "shell.nav.answers", key: "answers" },
 ];
 
 // ─── Inner shell — consumes LanguageContext ────────────────────────────────────
@@ -39,6 +40,7 @@ function ShellInner({ children, countryOptions = [] }) {
   const [navHrefs, setNavHrefs] = useState({
     directory: "/directory",
     categories: "/categories",
+    answers: "/answers",
     "top-providers": "/top-providers"
   });
 
@@ -70,6 +72,7 @@ function ShellInner({ children, countryOptions = [] }) {
       setNavHrefs({
         directory: cs ? `/${cs}` : "/directory",
         categories: cs ? `/${cs}/categories` : "/categories",
+        answers: "/answers",
         "top-providers": cs ? `/${cs}/top-providers` : "/top-providers"
       });
     }

@@ -1,1 +1,1 @@
-export * from "@/features/profiles/kinds/vport/screens/gas/components/GasStates";
+export * from "@/features/dashboard/vport/dashboard/cards/gasprices/components/GasStates";

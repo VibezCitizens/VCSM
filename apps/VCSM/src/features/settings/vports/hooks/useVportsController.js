@@ -95,7 +95,8 @@ export function useVportsController() {
     setErrHardDelete('');
     try {
       if (!targetVportId) throw new Error('No VPORT selected.');
-      await ctrlHardDeleteVport({ vportId: targetVportId });
+      const callerActorId = identity?.actorId ?? null;
+      await ctrlHardDeleteVport({ vportId: targetVportId, callerActorId });
       return true;
     } catch (error) {
       setErrHardDelete(error?.message || 'Could not permanently delete the VPORT.');
@@ -103,7 +104,7 @@ export function useVportsController() {
     } finally {
       setBusyHardDelete(false);
     }
-  }, []);
+  }, [identity?.actorId]);
 
   const setBusinessCardPublished = useCallback(async (vportId, published) => {
     setBusyCardPublishId(vportId);

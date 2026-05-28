@@ -1,0 +1,11 @@
+.post-modern .barbershop-portfolio-module .post-module-surface {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.18), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
+}
+
+.post-modern .barber-portfolio-module .post-module-surface {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.2), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
+}

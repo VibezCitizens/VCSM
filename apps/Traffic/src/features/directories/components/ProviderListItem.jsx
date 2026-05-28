@@ -175,6 +175,8 @@ export async function ProviderListItem({ item, rank }) {
           reviewCount={reviewCount}
           responseTime={responseTime}
           serviceCount={providerServices.length}
+          providerSlug={provider.slug}
+          serviceSlug={primaryService?.slug ?? null}
         />
 
       </div>

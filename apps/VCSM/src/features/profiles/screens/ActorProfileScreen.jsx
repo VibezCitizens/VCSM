@@ -131,7 +131,6 @@ export default function ActorProfileScreen() {
       kind={kind}
       rqIsLoading={vportProfile.isLoading}
       rqActorId={vportProfile.actorId}
-      rqProfileId={vportProfile.profileId}
       rqName={vportProfile.name}
       rqCanonicalSlug={vportProfile.canonicalSlug}
       rqError={vportProfile.error ? (vportProfile.error?.message ?? String(vportProfile.error)) : null}

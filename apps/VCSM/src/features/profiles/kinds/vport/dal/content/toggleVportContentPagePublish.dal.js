@@ -5,8 +5,9 @@ import vportSchema from "@/services/supabase/vportClient";
 const PUBLISH_SELECT =
   "id,actor_id,profile_id,title,slug,is_published,is_indexable,published_at,updated_at";
 
-export async function toggleVportContentPagePublishDAL({ id, isPublished } = {}) {
+export async function toggleVportContentPagePublishDAL({ id, actorId, isPublished } = {}) {
   if (!id) throw new Error("toggleVportContentPagePublishDAL: id is required");
+  if (!actorId) throw new Error("toggleVportContentPagePublishDAL: actorId is required");
   if (typeof isPublished !== "boolean") {
     throw new Error("toggleVportContentPagePublishDAL: isPublished must be a boolean");
   }
@@ -20,10 +21,12 @@ export async function toggleVportContentPagePublishDAL({ id, isPublished } = {})
     .from("content_pages")
     .update(patch)
     .eq("id", id)
+    .eq("actor_id", actorId)
     .select(PUBLISH_SELECT)
     .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new Error("toggleVportContentPagePublishDAL: content page not found or not owned by actor");
   return data;
 }
 

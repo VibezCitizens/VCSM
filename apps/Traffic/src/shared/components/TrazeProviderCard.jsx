@@ -16,6 +16,7 @@ import {
 import { withLocale } from "@/lib/i18n";
 import { useTrafficLanguage } from "@/lib/language";
 import { translate } from "@/i18n";
+import { trackProviderCardClick } from "@/lib/analytics";
 
 const CATEGORY_STYLES = {
   locksmith:      { bg: "#4c1d95", icon: ShieldCheck },
@@ -90,7 +91,19 @@ export default function TrazeProviderCard({ provider, lang }) {
   const avatarSrc = provider.avatarUrl || provider.logoUrl || null;
 
   return (
-    <Link className="hp-provider-card" href={withLocale(provider.href, resolvedLang)}>
+    <Link
+      className="hp-provider-card"
+      href={withLocale(provider.href, resolvedLang)}
+      onClick={() =>
+        trackProviderCardClick({
+          providerSlug: provider.slug,
+          surface: "provider-card",
+          countrySlug: provider.countrySlug,
+          citySlug: provider.primaryCitySlug,
+          serviceSlug: provider.categoryKey
+        })
+      }
+    >
       <div className="hp-provider-card-head">
         <div className="hp-provider-icon" style={avatarSrc ? undefined : { background: bg }}>
           {avatarSrc ? (

@@ -1,0 +1,70 @@
+.post-modern .menu-module .post-module-surface {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 105, 198, 0.16), transparent 34%),
+    radial-gradient(circle at 100% 10%, rgba(245, 158, 11, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
+}
+
+.post-modern .menu-module-hero,
+.post-modern .menu-module-media {
+  position: relative;
+  z-index: 1;
+}
+
+.post-modern .menu-module-hero {
+  margin: 0 0.75rem 0.75rem;
+  padding: 0.78rem 0.82rem;
+  border-radius: 0.82rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.035);
+}
+
+.post-modern .menu-module-subject {
+  color: var(--vc-warning);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.post-modern .menu-module-hero h3 {
+  margin: 0.35rem 0 0;
+  color: var(--vc-text);
+  font-size: clamp(1.35rem, 6vw, 2.1rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.post-modern .menu-module-category {
+  display: inline-flex;
+  margin-top: 0.62rem;
+  padding: 0.32rem 0.52rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.075);
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.post-modern .menu-module-media {
+  margin: 0 0.75rem 0.6rem;
+}
+
+.post-modern .menu-module-media .relative.w-full.overflow-hidden {
+  border-radius: 0.9rem;
+}
+
+.post-modern .menu-module-media .relative.w-full.max-h-\[450px\] {
+  max-height: 34rem;
+  aspect-ratio: 16 / 11;
+}
+
+@media (max-width: 390px) {
+  .post-modern .menu-module-media .relative.w-full.max-h-\[450px\] {
+    aspect-ratio: 4 / 3;
+  }
+}

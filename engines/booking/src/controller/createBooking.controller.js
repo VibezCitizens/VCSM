@@ -55,9 +55,26 @@ export async function createBooking({
     )
   }
 
+  // ELEK-002 — Booking status allowlist.
+  // Citizens are always forced to 'pending' — the status field must never be caller-controlled on public paths.
+  // Management sources may supply a status but it must be an allowed value.
+  const VALID_BOOKING_STATUSES = new Set(['pending', 'confirmed', 'cancelled', 'completed', 'no_show'])
+  let resolvedStatus
+  if (CITIZEN_SOURCES.has(String(source))) {
+    resolvedStatus = 'pending'
+  } else {
+    if (status !== null && status !== undefined && !VALID_BOOKING_STATUSES.has(String(status))) {
+      throw new Error(
+        `[BookingEngine] Invalid booking status: "${status}". Allowed: ${[...VALID_BOOKING_STATUSES].join(', ')}`
+      )
+    }
+    resolvedStatus = status ?? null
+  }
+
   // Resolve resourceId from locationId (any_available mode) when not explicitly given.
   // Location-based resolution always points to vport.resources.
   let resolvedResourceId = resourceId
+  let resolvedResourceRow = null
   if (!resolvedResourceId && locationId) {
     const locationResources = await dalListVportResourcesByLocationId({ locationId, includeInactive: false })
     if (!locationResources.length) throw new Error('No available resources at this location.')
@@ -65,6 +82,7 @@ export async function createBooking({
       if (a.sort_order !== b.sort_order) return (a.sort_order ?? 0) - (b.sort_order ?? 0)
       return new Date(a.created_at) - new Date(b.created_at)
     })
+    resolvedResourceRow = sorted[0]
     resolvedResourceId = sorted[0].id
   }
 
@@ -76,7 +94,7 @@ export async function createBooking({
   }
 
   // ── Detect resource source ─────────────────────────────────────────────────
-  const vportResource = await dalGetVportResourceById({ resourceId: resolvedResourceId }).catch(() => null)
+  const vportResource = resolvedResourceRow ?? await dalGetVportResourceById({ resourceId: resolvedResourceId }).catch(() => null)
 
   if (vportResource) {
     // ── VPORT FLOW: resource lives in vport.resources → insert into vport.bookings ──
@@ -93,6 +111,12 @@ export async function createBooking({
       const actor = await dalGetActorById({ actorId: requestActorId })
       if (!actor || actor.is_void === true) throw new Error('Only citizens can book appointments.')
       if (actor.kind !== 'user') throw new Error('Only citizens can book appointments. Switch to your citizen profile to reserve.')
+      // ELEK-003 — Pin customerActorId to requestActorId on citizen/public path.
+      // Client-supplied customerActorId must not differ from the authenticated requester.
+      if (customerActorId && String(customerActorId) !== String(requestActorId)) {
+        throw new Error('[BookingEngine] customerActorId must match requestActorId for public bookings.')
+      }
+      customerActorId = requestActorId
     }
 
     const inserted = await dalInsertVportBooking({
@@ -101,7 +125,7 @@ export async function createBooking({
         profile_id:             vportResource.profile_id,
         service_id:             serviceId,
         customer_actor_id:      customerActorId,
-        status,
+        status:                 resolvedStatus,
         source,
         starts_at:              startsAt,
         ends_at:                endsAt,
@@ -121,17 +145,21 @@ export async function createBooking({
 
     if (source === 'public' && vportResource.owner_actor_id && requestActorId) {
       if (String(requestActorId) !== String(vportResource.owner_actor_id)) {
-        // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
-        const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: vportResource.owner_actor_id })
-        getNotifyFn()?.({
-          recipientActorId: vportResource.owner_actor_id,
-          actorId:          requestActorId,
-          kind:             BOOKING_EVENTS.CREATED,
-          objectType:       'booking',
-          objectId:         mapped.id,
-          linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
-          context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
-        })
+        try {
+          // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
+          const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: vportResource.owner_actor_id })
+          await getNotifyFn()?.({
+            recipientActorId: vportResource.owner_actor_id,
+            actorId:          requestActorId,
+            kind:             BOOKING_EVENTS.CREATED,
+            objectType:       'booking',
+            objectId:         mapped.id,
+            linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
+            context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
+          })
+        } catch {
+          // notification failure must not abort a completed booking
+        }
       }
     }
 
@@ -152,6 +180,11 @@ export async function createBooking({
     const actor = await dalGetActorById({ actorId: requestActorId })
     if (!actor || actor.is_void === true)  throw new Error('Only citizens can book appointments.')
     if (actor.kind !== 'user') throw new Error('Only citizens can book appointments. Switch to your citizen profile to reserve.')
+    // ELEK-003 — Pin customerActorId to requestActorId on citizen/public path.
+    if (customerActorId && String(customerActorId) !== String(requestActorId)) {
+      throw new Error('[BookingEngine] customerActorId must match requestActorId for public bookings.')
+    }
+    customerActorId = requestActorId
   }
 
   const inserted = await dalInsertBooking({
@@ -160,7 +193,7 @@ export async function createBooking({
       service_id:             serviceId,
       customer_actor_id:      customerActorId,
       customer_profile_id:    customerProfileId,
-      status,
+      status:                 resolvedStatus,
       source,
       starts_at:              startsAt,
       ends_at:                endsAt,
@@ -180,17 +213,21 @@ export async function createBooking({
 
   if (source === 'public' && resource?.owner_actor_id && requestActorId) {
     if (String(requestActorId) !== String(resource.owner_actor_id)) {
-      // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
-      const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: resource.owner_actor_id })
-      getNotifyFn()?.({
-        recipientActorId: resource.owner_actor_id,
-        actorId:          requestActorId,
-        kind:             BOOKING_EVENTS.CREATED,
-        objectType:       'booking',
-        objectId:         mapped.id,
-        linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
-        context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
-      })
+      try {
+        // Resolve canonical slug — raw owner_actor_id UUID must never appear in notification linkPath (VENOM V-006).
+        const ownerSlug = await dalGetVportProfileSlugByActorId({ actorId: resource.owner_actor_id })
+        await getNotifyFn()?.({
+          recipientActorId: resource.owner_actor_id,
+          actorId:          requestActorId,
+          kind:             BOOKING_EVENTS.CREATED,
+          objectType:       'booking',
+          objectId:         mapped.id,
+          linkPath:         ownerSlug ? `/profile/${ownerSlug}` : null,
+          context:          { serviceLabelSnapshot, startsAt, customerName, status: mapped.status },
+        })
+      } catch {
+        // notification failure must not abort a completed booking
+      }
     }
   }
 

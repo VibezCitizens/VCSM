@@ -1,0 +1,116 @@
+.post-modern .exchange-module .post-module-surface {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(34, 197, 94, 0.18), transparent 34%),
+    radial-gradient(circle at 100% 15%, rgba(245, 158, 11, 0.13), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
+}
+
+.post-modern .exchange-module-market,
+.post-modern .exchange-module-grid,
+.post-modern .post-module-fallback {
+  position: relative;
+  z-index: 1;
+}
+
+.post-modern .exchange-module-market {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.85rem 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.post-modern .exchange-module-market span {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.post-modern .exchange-module-market strong {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.82rem;
+}
+
+.post-modern .exchange-module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: 0.25rem 0.75rem 0.6rem;
+}
+
+.post-modern .exchange-module-rate {
+  min-width: 0;
+  padding: 0.7rem 0.35rem 0.75rem;
+  text-align: center;
+}
+
+.post-modern .exchange-module-rate + .exchange-module-rate {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.post-modern .exchange-module-rate-label {
+  display: inline-flex;
+  min-height: 1.65rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  color: #06120c;
+  font-size: 0.68rem;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.post-modern .exchange-module-buy .exchange-module-rate-label {
+  background: linear-gradient(180deg, #54f39f, #20b96c);
+}
+
+.post-modern .exchange-module-sell .exchange-module-rate-label {
+  background: linear-gradient(180deg, #ffd96a, #f0a822);
+}
+
+.post-modern .exchange-module-rate-value {
+  margin-top: 0.62rem;
+  color: var(--vc-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: clamp(1.72rem, 9vw, 2.5rem);
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  line-height: 0.95;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+}
+
+.post-modern .exchange-module-rate-caption {
+  margin-top: 0.35rem;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.66rem;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+
+.post-modern .post-module-fallback {
+  padding: 0 1rem 0.875rem;
+  color: var(--vc-text);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+@media (max-width: 390px) {
+  .post-modern .exchange-module-market,
+  .post-modern .exchange-module-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .post-modern .exchange-module-rate + .exchange-module-rate {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 0;
+  }
+}

@@ -44,7 +44,7 @@ export function useVportDirectoryVisibility(actorId, vportId = null) {
 
     async function load() {
       try {
-        const state = await ctrlGetVportDirectoryState({ vportId });
+        const state = await ctrlGetVportDirectoryState({ vportId, callerActorId, vportActorId: actorId });
         if (!alive) return;
         setDirectoryVisible(state?.directory_visible ?? true);
         setDirectoryStatus(state?.directory_status ?? "pending");

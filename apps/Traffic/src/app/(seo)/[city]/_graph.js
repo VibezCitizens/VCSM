@@ -11,6 +11,7 @@ import {
   listStructuredCitiesByCountryCode
 } from "@/data/repositories/provider.repo";
 import { buildDirectoryMetadata } from "@/seo/metadata";
+import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import { countryPath, countryCityPath } from "@/lib/paths";
 
 export const LEGACY_TRANSITION_ROBOTS = {
@@ -70,13 +71,19 @@ export function resolvePage(params) {
 export function buildCountryMetadata(graph, options = {}) {
   const providers = listProvidersByCountry(graph.country.code);
   const cities = listStructuredCitiesByCountryCode(graph.country.code);
+  const title = `Top Local Service Providers in ${graph.country.name}`;
+  const description = `Explore ${providers.length} verified and discoverable providers across ${cities.length} cities in ${graph.country.name}.`;
 
   return buildDirectoryMetadata({
-    title: `Top Local Service Providers in ${graph.country.name}`,
-    description: `Explore ${providers.length} verified and discoverable providers across ${cities.length} cities in ${graph.country.name}.`,
+    title,
+    description,
     path: countryPath(graph.country.slug),
     locale: getLocaleForCountryCode(graph.country.code),
-    routeLocale: options.routeLocale
+    routeLocale: options.routeLocale,
+    robots: getDirectoryRobotsForQuality("country", {
+      providerCount: providers.length,
+      hasMeaningfulMetadata: true
+    })
   });
 }
 

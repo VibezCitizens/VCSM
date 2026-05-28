@@ -6,6 +6,20 @@ import { assertActorCanManageResource } from './assertActorCanManageResource.con
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
 import { dalGetActorByProfileId } from '../dal/actor.read.dal.js'
 
+// ELEK-006 — qrType allowlist. Only known QR link types may be persisted.
+// Extending this list requires an explicit engineering decision — do not accept freeform input.
+const QR_TYPE_ALLOWLIST = new Set(['menu', 'reviews', 'business_card'])
+
+// ELEK-006 — destinationPath validator. Ensures the path is site-relative only.
+// Rejects absolute URLs (any protocol), external hosts, and path traversal sequences.
+function isRelativeDestinationPath(path) {
+  if (typeof path !== 'string' || !path) return false
+  if (!path.startsWith('/'))              return false  // must be path-relative
+  if (path.includes('://'))              return false  // no absolute URLs
+  if (path.includes('..'))               return false  // no path traversal
+  return true
+}
+
 export async function createQrLink({
   requestActorId,
   organizationId = null,
@@ -22,6 +36,20 @@ export async function createQrLink({
   if (!qrType)          throw new Error('[BookingEngine] qrType is required')
   if (!slug)            throw new Error('[BookingEngine] slug is required')
   if (!destinationPath) throw new Error('[BookingEngine] destinationPath is required')
+
+  // ELEK-006 — Validate qrType against the allowlist.
+  if (!QR_TYPE_ALLOWLIST.has(String(qrType))) {
+    throw new Error(
+      `[BookingEngine] Unknown qrType: "${qrType}". Allowed: ${[...QR_TYPE_ALLOWLIST].join(', ')}`
+    )
+  }
+
+  // ELEK-006 — Validate destinationPath is site-relative only.
+  if (!isRelativeDestinationPath(destinationPath)) {
+    throw new Error(
+      '[BookingEngine] destinationPath must be a relative path starting with "/" — external URLs are not permitted.'
+    )
+  }
 
   if (organizationId) {
     await assertActorCanManageOrganization({ requestActorId, organizationId })

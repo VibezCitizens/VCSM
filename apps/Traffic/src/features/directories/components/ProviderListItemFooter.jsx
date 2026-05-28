@@ -2,8 +2,17 @@
 
 import Link from "next/link";
 import { useTrafficLanguage } from "@/lib/language";
+import { trackProviderCardClick } from "@/lib/analytics";
 
-export function ProviderListItemFooter({ href, rank, reviewCount, responseTime, serviceCount }) {
+export function ProviderListItemFooter({
+  href,
+  rank,
+  reviewCount,
+  responseTime,
+  serviceCount,
+  providerSlug,
+  serviceSlug
+}) {
   const { t } = useTrafficLanguage();
 
   const reviewLabel =
@@ -42,7 +51,20 @@ export function ProviderListItemFooter({ href, rank, reviewCount, responseTime, 
           </>
         )}
       </div>
-      <Link className="dir-card-cta" href={href}>{viewProfileLabel}</Link>
+      <Link
+        className="dir-card-cta"
+        href={href}
+        onClick={() =>
+          trackProviderCardClick({
+            providerSlug,
+            surface: "directory-list",
+            rank,
+            serviceSlug
+          })
+        }
+      >
+        {viewProfileLabel}
+      </Link>
     </div>
   );
 }

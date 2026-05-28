@@ -6,9 +6,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
 import { useVportDashboardDetails } from "@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter";
 import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
-import useDesktopBreakpoint from "@/features/dashboard/vport/screens/useDesktopBreakpoint";
+import useDesktopBreakpoint from "@/shared/hooks/useDesktopBreakpoint";
 import { DashboardCard, VportBannerHeader } from "@/features/dashboard/vport/screens/components/VportDashboardParts";
-import VportBackButton from "@/features/dashboard/vport/screens/components/VportBackButton";
+import VportBackButton from "@/features/dashboard/shared/components/BackButton";
 import { buildDashboardCards } from "@/features/dashboard/vport/model/buildDashboardCards.model";
 import { createVportDashboardShellStyles } from "@/features/dashboard/vport/screens/styles/vportDashboardShellStyles";
 import {

@@ -89,6 +89,12 @@ function normalizeSender(sender, ctx = {}, actorId = null) {
       ctx?.username ??
       null
 
+    const handle =
+      ctx?.senderUsername ??
+      ctx?.actorUsername ??
+      ctx?.username ??
+      null
+
     const avatar =
       ctx?.senderAvatar ??
       ctx?.actorAvatar ??
@@ -104,7 +110,7 @@ function normalizeSender(sender, ctx = {}, actorId = null) {
       displayName: displayName || 'Someone',
       username: null,
       avatar,
-      route: actorId ? `/profile/${actorId}` : '#',
+      route: handle ? `/profile/${handle}` : '#',
     }
   }
 
@@ -118,7 +124,7 @@ function normalizeSender(sender, ctx = {}, actorId = null) {
       displayName: sender.display_name || username || 'User',
       username,
       avatar: sender.photo_url || '/avatar.jpg',
-      route: id ? `/profile/${username ?? id}` : '#',
+      route: username ? `/profile/${username}` : '#',
     }
   }
 
@@ -132,7 +138,7 @@ function normalizeSender(sender, ctx = {}, actorId = null) {
       displayName: sender.display_name || 'VPORT',
       slug,
       avatar: sender.photo_url || '/avatar.jpg',
-      route: id ? `/profile/${slug ?? id}` : '#',
+      route: slug ? `/profile/${slug}` : '#',
     }
   }
 

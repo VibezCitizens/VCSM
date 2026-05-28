@@ -60,7 +60,7 @@ export async function ctrlSendFollowRequest({
     kind: 'follow_request',
     objectType: 'actor',
     objectId: requesterActorId,
-    linkPath: `/profile/${requesterActorId}`,
+    linkPath: `/feed`,
     context: {},
   })
 
@@ -110,7 +110,7 @@ export async function ctrlAcceptFollowRequest({
     kind: 'follow_request_accepted',
     objectType: 'actor',
     objectId: targetActorId,
-    linkPath: `/profile/${targetActorId}`,
+    linkPath: `/feed`,
     context: {},
   })
 
@@ -185,8 +185,14 @@ export async function ctrlCancelFollowRequest({
  */
 export async function ctrlListIncomingRequests({
   targetActorId,
+  assertingActorId,
 }) {
   if (!targetActorId) return []
+
+  // 🔒 OWNERSHIP GATE (V-SUB-003): session actor must own this inbox.
+  if (!assertingActorId || assertingActorId !== targetActorId) {
+    throw new Error('session actor does not own this inbox')
+  }
 
   return dalListIncomingPendingRequests({
     targetActorId,

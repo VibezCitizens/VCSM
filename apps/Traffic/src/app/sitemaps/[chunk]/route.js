@@ -1,4 +1,8 @@
-import { getSitemapChunk, listSitemapChunks, listPageCandidates } from "@/data/repositories/pageCandidate.repo";
+import {
+  getSitemapChunk,
+  listPageCandidatesWithAnswers,
+  listSitemapChunks
+} from "@/data/repositories/pageCandidate.repo";
 import { buildCanonical } from "@/seo/canonical";
 import { buildLocalizedAlternates, listLocalizedSitemapPaths } from "@/seo/locale";
 
@@ -6,10 +10,8 @@ export const dynamic = "force-static";
 
 const CHUNK_SIZE = 5000;
 
-// Sync — uses only static in-memory data so the build never depends on Supabase availability.
-// The GET handler still includes content pages when they are available at render time.
-export function generateStaticParams() {
-  const pages = listPageCandidates({ includeLegacy: false });
+export async function generateStaticParams() {
+  const pages = await listPageCandidatesWithAnswers({ includeLegacy: false });
   const chunkCount = Math.max(1, Math.ceil(pages.length / CHUNK_SIZE));
   return Array.from({ length: chunkCount }, (_, i) => ({ chunk: `chunk-${i + 1}.xml` }));
 }

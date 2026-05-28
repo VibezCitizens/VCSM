@@ -1,11 +1,11 @@
 import { AnswerDetailScreen } from "@/features/answers/adapters/answers.adapter";
-import { readAnswerPage } from "@/features/answers/controller/readAnswerPage.controller";
+import { listAnswerStaticParams, readAnswerPage } from "@/features/answers/controller/readAnswerPage.controller";
 import { buildLocalizedAlternates } from "@/seo/locale";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return [{ slug: "schema-pending" }];
+export async function generateStaticParams() {
+  return listAnswerStaticParams();
 }
 
 export async function generateMetadataForLocale({ params }, routeLocale = null) {

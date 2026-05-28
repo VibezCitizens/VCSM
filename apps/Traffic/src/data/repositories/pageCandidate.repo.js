@@ -3,6 +3,7 @@ import { getCountryByCode, listCountries } from "@/data/repositories/geo.repo";
 import { listServices, listSpecialtiesByService } from "@/data/repositories/service.repo";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { getAllPublicContentPages } from "@/data/repositories/content.repo";
+import { listAnswerPageCandidates } from "@/features/answers/controller/readAnswerPage.controller";
 import {
   listProviders,
   listProvidersByCity,
@@ -21,6 +22,7 @@ import {
   isCityServiceIndexable,
   isCountryIndexable,
   isCountryServiceIndexable,
+  isDirectoryPageQualityEligible,
   isNeighborhoodServiceIndexable,
   isNeighborhoodSpecialtyIndexable,
   isProviderIndexable
@@ -41,7 +43,7 @@ import {
 
 /**
  * @typedef {Object} PageCandidate
- * @property {"country"|"country_service"|"country_city"|"country_city_service"|"country_locality_service"|"country_locality_service_specialty"|"country_provider"|"content_guide"|"city"|"city_service"|"neighborhood_service"|"provider"} pageType
+ * @property {"answer"|"country"|"country_service"|"country_city"|"country_city_service"|"country_locality_service"|"country_locality_service_specialty"|"country_provider"|"content_guide"|"city"|"city_service"|"neighborhood_service"|"provider"} pageType
  * @property {string} path
  * @property {string} updatedAt
  */
@@ -96,6 +98,23 @@ function getCountryServiceCityCount(providers) {
   ).size;
 }
 
+function pushDirectoryCandidate(pages, pageType, path, items, extra = {}) {
+  if (!isDirectoryPageQualityEligible(pageType, {
+    providerCount: items.length,
+    cityCount: extra.cityCount,
+    hasRealProviderData: items.length > 0,
+    hasMeaningfulMetadata: true
+  })) {
+    return;
+  }
+
+  pages.push({
+    pageType,
+    path,
+    updatedAt: getPageUpdatedAtFromDirectoryItems(items, extra.updatedAtValues ?? [])
+  });
+}
+
 const STABLE_FALLBACK_UPDATED_AT =
   pickLatestUpdatedAt(
     listProviders()
@@ -109,11 +128,7 @@ function listGlobalPageCandidates() {
   for (const country of listCountries()) {
     const countryProviders = listProvidersByCountry(country.code);
     if (isCountryIndexable(countryProviders.length)) {
-      pages.push({
-        pageType: "country",
-        path: countryPath(country.slug),
-        updatedAt: getPageUpdatedAtFromDirectoryItems(countryProviders)
-      });
+      pushDirectoryCandidate(pages, "country", countryPath(country.slug), countryProviders);
     }
 
     for (const service of listServices()) {
@@ -124,11 +139,13 @@ function listGlobalPageCandidates() {
         continue;
       }
 
-      pages.push({
-        pageType: "country_service",
-        path: countryServiceHubPath(country.slug, service.slug),
-        updatedAt: getPageUpdatedAtFromDirectoryItems(countryServiceProviders)
-      });
+      pushDirectoryCandidate(
+        pages,
+        "country_service",
+        countryServiceHubPath(country.slug, service.slug),
+        countryServiceProviders,
+        { cityCount }
+      );
     }
 
     const structuredCities = listStructuredCitiesByCountryCode(country.code);
@@ -136,11 +153,12 @@ function listGlobalPageCandidates() {
     for (const city of structuredCities) {
       const cityProviders = listProvidersByCountryCitySlug(country.code, city.slug);
       if (isCityIndexable(cityProviders.length)) {
-        pages.push({
-          pageType: "country_city",
-          path: countryCityPath(country.slug, city.slug),
-          updatedAt: getPageUpdatedAtFromDirectoryItems(cityProviders)
-        });
+        pushDirectoryCandidate(
+          pages,
+          "country_city",
+          countryCityPath(country.slug, city.slug),
+          cityProviders
+        );
       }
 
       for (const service of listServices()) {
@@ -151,22 +169,24 @@ function listGlobalPageCandidates() {
         );
 
         if (isCityServiceIndexable(cityServiceProviders.length)) {
-          pages.push({
-            pageType: "country_city_service",
-            path: countryCityServicePath(country.slug, city.slug, service.slug),
-            updatedAt: getPageUpdatedAtFromDirectoryItems(cityServiceProviders)
-          });
+          pushDirectoryCandidate(
+            pages,
+            "country_city_service",
+            countryCityServicePath(country.slug, city.slug, service.slug),
+            cityServiceProviders
+          );
         }
 
         for (const locality of listLocalitiesByCity(city.id)) {
           const localityServiceProviders = listProvidersByLocalityAndService(locality.id, service.id);
 
           if (isNeighborhoodServiceIndexable(localityServiceProviders.length)) {
-            pages.push({
-              pageType: "country_locality_service",
-              path: countryCityLocalityServicePath(country.slug, city.slug, locality.slug, service.slug),
-              updatedAt: getPageUpdatedAtFromDirectoryItems(localityServiceProviders)
-            });
+            pushDirectoryCandidate(
+              pages,
+              "country_locality_service",
+              countryCityLocalityServicePath(country.slug, city.slug, locality.slug, service.slug),
+              localityServiceProviders
+            );
           }
 
           for (const specialty of listSpecialtiesByService(service.id)) {
@@ -180,17 +200,18 @@ function listGlobalPageCandidates() {
               continue;
             }
 
-            pages.push({
-              pageType: "country_locality_service_specialty",
-              path: countryCityLocalityServiceSpecialtyPath(
+            pushDirectoryCandidate(
+              pages,
+              "country_locality_service_specialty",
+              countryCityLocalityServiceSpecialtyPath(
                 country.slug,
                 city.slug,
                 locality.slug,
                 service.slug,
                 specialty.slug
               ),
-              updatedAt: getPageUpdatedAtFromDirectoryItems(localitySpecialtyProviders)
-            });
+              localitySpecialtyProviders
+            );
           }
         }
       }
@@ -223,21 +244,18 @@ function listLegacyPageCandidates() {
   for (const city of listCities()) {
     const cityProviders = listProvidersByCity(city.id);
     if (isCityIndexable(cityProviders.length)) {
-      pages.push({
-        pageType: "city",
-        path: cityPath(city.slug),
-        updatedAt: getPageUpdatedAtFromDirectoryItems(cityProviders)
-      });
+      pushDirectoryCandidate(pages, "city", cityPath(city.slug), cityProviders);
     }
 
     for (const service of listServices()) {
       const cityServiceProviders = listProvidersByCityAndService(city.id, service.id);
       if (isCityServiceIndexable(cityServiceProviders.length)) {
-        pages.push({
-          pageType: "city_service",
-          path: cityServicePath(city.slug, service.slug),
-          updatedAt: getPageUpdatedAtFromDirectoryItems(cityServiceProviders)
-        });
+        pushDirectoryCandidate(
+          pages,
+          "city_service",
+          cityServicePath(city.slug, service.slug),
+          cityServiceProviders
+        );
       }
 
       for (const neighborhood of listNeighborhoodsByCity(city.id)) {
@@ -247,11 +265,12 @@ function listLegacyPageCandidates() {
         );
 
         if (isNeighborhoodServiceIndexable(neighborhoodServiceProviders.length)) {
-          pages.push({
-            pageType: "neighborhood_service",
-            path: neighborhoodServicePath(city.slug, neighborhood.slug, service.slug),
-            updatedAt: getPageUpdatedAtFromDirectoryItems(neighborhoodServiceProviders)
-          });
+          pushDirectoryCandidate(
+            pages,
+            "neighborhood_service",
+            neighborhoodServicePath(city.slug, neighborhood.slug, service.slug),
+            neighborhoodServiceProviders
+          );
         }
       }
     }
@@ -280,6 +299,11 @@ export function listPageCandidates(options = {}) {
   return [...listGlobalPageCandidates(), ...listLegacyPageCandidates()];
 }
 
+export async function listPageCandidatesWithAnswers(options = {}) {
+  const answers = await listAnswerPageCandidates();
+  return [...listPageCandidates(options), ...answers];
+}
+
 /**
  * @typedef {Object} SitemapChunk
  * @property {string} chunk
@@ -289,7 +313,10 @@ export function listPageCandidates(options = {}) {
 
 export async function listSitemapChunks(chunkSize = 5000) {
   const contentPages = await getAllPublicContentPages();
-  const pages = [...listPageCandidates(), ...listContentPageCandidates(contentPages)];
+  const pages = [
+    ...(await listPageCandidatesWithAnswers()),
+    ...listContentPageCandidates(contentPages)
+  ];
   const chunks = [];
 
   for (let index = 0; index < pages.length; index += chunkSize) {

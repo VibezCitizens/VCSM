@@ -28,6 +28,27 @@ export const VportContentPageModel = {
     if (!Array.isArray(rows)) return [];
     return rows.map((r) => VportContentPageModel.fromRow(r)).filter(Boolean);
   },
+
+  // Public paths only — actorId and profileId intentionally excluded from public surfaces.
+  fromPublicRow(row) {
+    if (!row) return null;
+    return {
+      id: row.id ?? null,
+      title: str(row.title),
+      slug: str(row.slug),
+      excerpt: row.excerpt ?? null,
+      body: row.body ?? null,
+      category: row.category ?? null,
+      serviceKeys: Array.isArray(row.service_keys) ? row.service_keys : [],
+      publishedAt: row.published_at ?? null,
+      createdAt: row.created_at ?? null,
+    };
+  },
+
+  fromPublicRows(rows) {
+    if (!Array.isArray(rows)) return [];
+    return rows.map((r) => VportContentPageModel.fromPublicRow(r)).filter(Boolean);
+  },
 };
 
 export default VportContentPageModel;

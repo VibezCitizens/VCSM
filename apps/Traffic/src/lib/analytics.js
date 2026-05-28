@@ -27,6 +27,54 @@ function beacon(payload) {
   }
 }
 
+function cleanString(value, maxLength = 160) {
+  if (typeof value !== "string") return null;
+  const cleaned = value.replace(/\s+/g, " ").trim();
+  return cleaned ? cleaned.slice(0, maxLength) : null;
+}
+
+function cleanNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function compactPayload(payload = {}) {
+  const output = {};
+
+  for (const [key, value] of Object.entries(payload)) {
+    if (value == null || value === "") continue;
+    if (typeof value === "string") {
+      const cleaned = cleanString(value);
+      if (cleaned) output[key] = cleaned;
+      continue;
+    }
+    if (typeof value === "number") {
+      const cleaned = cleanNumber(value);
+      if (cleaned != null) output[key] = cleaned;
+      continue;
+    }
+    if (typeof value === "boolean") {
+      output[key] = value;
+    }
+  }
+
+  return output;
+}
+
+export function trackEvent(event, payload = {}) {
+  if (typeof window === "undefined") return;
+  const eventName = cleanString(event, 64);
+  if (!eventName) return;
+
+  const safePayload = compactPayload({
+    path: window.location?.pathname ?? null,
+    ...payload
+  });
+
+  if (GA_ID) gtag("event", eventName, safePayload);
+  beacon({ event: eventName, ...safePayload });
+}
+
 /**
  * Injects the GA4 script and initializes dataLayer.
  * Safe to call multiple times — idempotent.
@@ -51,8 +99,7 @@ export function initAnalytics() {
  */
 export function trackPageView(path) {
   if (typeof window === "undefined") return;
-  if (GA_ID) gtag("event", "page_view", { page_path: path });
-  beacon({ event: "page_view", path });
+  trackEvent("page_view", { page_path: path, path });
 }
 
 /**
@@ -61,12 +108,76 @@ export function trackPageView(path) {
  */
 export function trackSearch({ query = "", citySlug = null, serviceSlug = null } = {}) {
   if (typeof window === "undefined") return;
-  if (GA_ID) {
-    gtag("event", "search", {
-      search_term: query || serviceSlug || citySlug || "",
-      city_slug: citySlug,
-      service_slug: serviceSlug
-    });
-  }
-  beacon({ event: "search", query, citySlug, serviceSlug });
+  trackEvent("search", {
+    search_term: query || serviceSlug || citySlug || "",
+    query,
+    citySlug,
+    serviceSlug
+  });
+}
+
+export function trackProviderCardClick({
+  providerSlug = null,
+  surface = "directory",
+  rank = null,
+  countrySlug = null,
+  citySlug = null,
+  serviceSlug = null
+} = {}) {
+  trackEvent("provider_card_click", {
+    providerSlug,
+    surface,
+    rank,
+    countrySlug,
+    citySlug,
+    serviceSlug
+  });
+}
+
+export function trackProviderAction({
+  action,
+  providerSlug = null,
+  surface = "provider",
+  providerSource = null
+} = {}) {
+  trackEvent("provider_action", {
+    action,
+    providerSlug,
+    surface,
+    providerSource
+  });
+}
+
+export function trackProviderLeadSubmitted({
+  providerSlug = null,
+  surface = "provider",
+  hasEmail = false,
+  hasPhone = false
+} = {}) {
+  trackEvent("provider_lead_submitted", {
+    providerSlug,
+    surface,
+    hasEmail,
+    hasPhone
+  });
+}
+
+export function trackAnswerSearch({ query = "" } = {}) {
+  trackEvent("answer_search", {
+    query,
+    search_term: query
+  });
+}
+
+export function trackAnswerRead({ answerSlug = null, topicSlug = null } = {}) {
+  trackEvent("answer_read", {
+    answerSlug,
+    topicSlug
+  });
+}
+
+export function trackQuestionSubmitted({ hasBody = false } = {}) {
+  trackEvent("question_submitted", {
+    hasBody
+  });
 }

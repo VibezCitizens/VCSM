@@ -15,6 +15,11 @@ export async function updateProfile(subjectId, mode, data) {
   // VPORT UPDATE (vport.profiles)
   // ------------------------------------------------------------
   if (mode === 'vport') {
+    const { data: authSession, error: authError } = await supabase.auth.getUser()
+    if (authError) throw authError
+    const userId = authSession?.user?.id
+    if (!userId) throw new Error('Not authenticated')
+
     const payload = {
       ...(data.name !== undefined && { name: data.name }),
       ...(data.bio !== undefined && { bio: data.bio }),
@@ -22,13 +27,17 @@ export async function updateProfile(subjectId, mode, data) {
       ...(data.banner_url !== undefined && { banner_url: data.banner_url }),
     }
 
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .schema('vport')
       .from('profiles')
       .update(payload)
       .eq('id', subjectId)
+      .eq('owner_user_id', userId)
+      .select('id')
+      .maybeSingle()
 
     if (error) throw error
+    if (!updated) throw new Error('VPORT not found or not owned by you')
     return true
   }
 

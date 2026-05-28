@@ -33,6 +33,7 @@ export default async function upsertVportRateDal({
         buy_rate: buyRate,
         sell_rate: sellRate,
         meta: meta ?? {},
+        updated_at: new Date().toISOString(),
       },
       { onConflict: "profile_id,rate_type,base_currency,quote_currency" }
     )
