@@ -5,7 +5,7 @@ import { Home, Plus, User, Compass, MessageCircle, Bell, Settings } from 'lucide
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { useBootstrapHydration } from '@/bootstrap/bootstrap.hydrate.controller'
 import { useNotificationUnread, useChatUnread } from '@/bootstrap/bootstrap.selectors'
-import { useOneSignalPush } from '@/hooks/useOneSignalPush'
+import { useOneSignalPush } from '@/shared/hooks/useOneSignalPush'
 import { getCachedActorCanonicalSlug } from '@/features/profiles/controller/buildActorCanonicalSlug.controller'
 import { useTranslation } from '@i18n'
 

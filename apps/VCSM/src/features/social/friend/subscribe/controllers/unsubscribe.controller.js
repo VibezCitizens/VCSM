@@ -8,9 +8,16 @@ import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.ad
 export async function ctrlUnsubscribe({
   followerActorId,
   followedActorId,
+  assertingActorId,
 }) {
   if (!followerActorId || !followedActorId) {
     throw new Error('Missing actor ids')
+  }
+
+  // 🔒 OWNERSHIP GATE (V-SUB-002): session actor must match claimed follower.
+  // Privacy-critical: prevents forcing invalidateFeedFollowCache on a victim's actorId.
+  if (!assertingActorId || assertingActorId !== followerActorId) {
+    throw new Error('session actor does not match follower')
   }
 
   // Both writes are independent — run in parallel to save one round-trip

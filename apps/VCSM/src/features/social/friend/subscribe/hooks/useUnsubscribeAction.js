@@ -3,7 +3,7 @@ import { ctrlUnsubscribe } from '@/features/social/friend/subscribe/controllers/
 
 
 export function useUnsubscribeAction() {
-  return async ({ followerActorId, followedActorId }) => {
-    return ctrlUnsubscribe({ followerActorId, followedActorId })
+  return async ({ followerActorId, followedActorId, assertingActorId }) => {
+    return ctrlUnsubscribe({ followerActorId, followedActorId, assertingActorId })
   }
 }

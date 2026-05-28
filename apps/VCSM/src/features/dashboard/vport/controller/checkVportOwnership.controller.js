@@ -3,7 +3,8 @@ import { assertActorOwnsVportActorController, getActorByIdDAL } from "@/features
 export async function checkVportOwnershipController({ callerActorId, targetActorId } = {}) {
   if (!callerActorId || !targetActorId) return false;
   try {
-    // If the caller IS the vport actor (acting-as mode), self-ownership is immediate.
+    // Dashboard access: a VPORT actor viewing its own dashboard is granted access.
+    // This is a navigation/visibility gate only — mutations require a user-kind actor.
     if (callerActorId === targetActorId) {
       const actor = await getActorByIdDAL({ actorId: callerActorId });
       if (actor && actor.kind === "vport" && !actor.is_void) return true;

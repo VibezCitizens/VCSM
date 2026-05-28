@@ -22,6 +22,7 @@ import {
 } from "@/data/repositories/provider.repo";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { buildDirectoryMetadata, buildProviderMetadata } from "@/seo/metadata";
+import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import {
   countryCityLocalityServicePath,
   countryCityServicePath,
@@ -182,7 +183,12 @@ export function buildCountryServiceHubMetadata(graph, options = {}) {
     description: `Compare ${graph.service.name.toLowerCase()} providers across ${graph.activeCities.length} active cities in ${graph.country.name}.`,
     path: countryServiceHubPath(graph.country.slug, graph.service.slug),
     locale: getLocaleForCountryCode(graph.country.code),
-    routeLocale: options.routeLocale
+    routeLocale: options.routeLocale,
+    robots: getDirectoryRobotsForQuality("country_service", {
+      providerCount: graph.providers.length,
+      cityCount: graph.activeCities.length,
+      hasMeaningfulMetadata: true
+    })
   });
 }
 
@@ -190,13 +196,22 @@ export function buildCountryCityServiceMetadata(graph, options = {}) {
   const locationTail = [graph.city.name, graph.region?.code ?? graph.city.stateCode, graph.country.code]
     .filter(Boolean)
     .join(", ");
+  const providers = listProvidersByCountryCitySlugAndService(
+    graph.country.code,
+    graph.city.slug,
+    graph.service.id
+  );
 
   return buildDirectoryMetadata({
     title: `Best ${graph.service.name} in ${locationTail}`,
     description: `Find top-rated ${graph.service.name.toLowerCase()} providers in ${graph.city.name}, ${graph.country.name}. Compare pricing, read reviews, and book directly.`,
     path: countryCityServicePath(graph.country.slug, graph.city.slug, graph.service.slug),
     locale: getLocaleForCountryCode(graph.country.code),
-    routeLocale: options.routeLocale
+    routeLocale: options.routeLocale,
+    robots: getDirectoryRobotsForQuality("country_city_service", {
+      providerCount: providers.length,
+      hasMeaningfulMetadata: true
+    })
   });
 }
 

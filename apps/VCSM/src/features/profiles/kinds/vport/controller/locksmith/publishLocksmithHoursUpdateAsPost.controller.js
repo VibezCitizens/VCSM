@@ -4,8 +4,31 @@ import {
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function sanitizeBlocks(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((b) => {
+      if (!b || typeof b !== "object") return false;
+      const wd    = Number(b.weekday);
+      const start = Number(b.startMinutes);
+      const end   = Number(b.endMinutes);
+      return (
+        Number.isInteger(wd)    && wd >= 0    && wd <= 6   &&
+        Number.isInteger(start) && start >= 0 && start < 1440 &&
+        Number.isInteger(end)   && end > 0    && end <= 1440 &&
+        end > start
+      );
+    })
+    .map((b) => ({
+      weekday:      Number(b.weekday),
+      startMinutes: Number(b.startMinutes),
+      endMinutes:   Number(b.endMinutes),
+    }));
+}
 
 function fmtMinutes(m) {
   const h = Math.floor(m / 60) % 24;
@@ -42,17 +65,24 @@ function buildHoursText(locksmithName, blocks) {
   return `${header}\n\n${lines.join("\n")}`;
 }
 
-export async function publishLocksmithHoursUpdateAsPostController({ actorId, blocks }) {
+export async function publishLocksmithHoursUpdateAsPostController({ identityActorId, actorId, blocks }) {
   if (!actorId) throw new Error("publishLocksmithHoursUpdateAsPost: actorId required");
+  if (!identityActorId) throw new Error("publishLocksmithHoursUpdateAsPost: identityActorId required");
+
+  await assertActorOwnsVportActorController({
+    requestActorId: identityActorId,
+    targetActorId: actorId,
+  });
 
   const realmId = PUBLIC_REALM_ID;
-  if (!realmId) return { published: false, reason: "missing_public_realm" };
+  if (!realmId) return { published: false, status: "skipped", reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentLocksmithHoursPostDAL({ actorId });
-  if (alreadyPosted) return { published: false, reason: "throttled" };
+  if (alreadyPosted) return { published: false, status: "skipped", reason: "throttled" };
 
   const locksmithName = await resolveVportLocksmithNameDAL(actorId);
-  const text = buildHoursText(locksmithName, blocks);
+  const sanitizedBlocks = sanitizeBlocks(blocks);
+  const text = buildHoursText(locksmithName, sanitizedBlocks);
 
   const created = await createSystemPost({
     actorId,
@@ -60,7 +90,8 @@ export async function publishLocksmithHoursUpdateAsPostController({ actorId, blo
     post_type: "locksmith_hours_update",
     realm_id: realmId,
     media_url: null,
+    payload: { blocks: sanitizedBlocks },
   });
 
-  return { published: true, postId: created?.id ?? null };
+  return { published: true, status: "published", postId: created?.id ?? null };
 }

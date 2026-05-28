@@ -11,13 +11,11 @@ function buildSubscriberActor(row) {
 
   const route =
     kind === "vport"
-      ? id
-        ? `/vport/${encodeURIComponent(id)}`
+      ? handle
+        ? `/vport/${encodeURIComponent(handle)}`
         : "/feed"
       : handle
       ? `/u/${encodeURIComponent(handle)}`
-      : id
-      ? `/profile/${encodeURIComponent(id)}`
       : "/feed";
 
   return {

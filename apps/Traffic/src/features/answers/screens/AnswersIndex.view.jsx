@@ -1,14 +1,8 @@
 import { fetchAnswersIndex } from "@/features/answers/hooks/useAnswerPage";
-import { AnswerIndexHero, AnswerIndexTopics, AnswerIndexList } from "@/features/answers/components/AnswerIndexHero";
+import { AnswerIndexClient } from "@/features/answers/components/AnswerIndexClient";
 
 export async function AnswersIndexView() {
   const { pages, topics } = await fetchAnswersIndex();
 
-  return (
-    <section className="answers-index">
-      <AnswerIndexHero />
-      <AnswerIndexTopics topics={topics} />
-      <AnswerIndexList pages={pages} />
-    </section>
-  );
+  return <AnswerIndexClient pages={pages} topics={topics} />;
 }

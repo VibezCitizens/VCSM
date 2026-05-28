@@ -3,9 +3,13 @@
 // ============================================================
 
 let _config = {}
+// ELEK-007 — one-call guard: configureBookingEngine must be called exactly once.
+// Prevents a rogue module loaded after app startup from swapping the DB clients.
+let _frozen = false
 
 /**
  * Configure the booking engine.
+ * May only be called once — subsequent calls throw.
  *
  * @param {Object} config
  * @param {import('@supabase/supabase-js').SupabaseClient} config.supabaseClient
@@ -13,7 +17,13 @@ let _config = {}
  * @param {(payload: Object) => void} [config.notifyFn]  — fire-and-forget notification publisher
  */
 export function configureBookingEngine(config) {
-  _config = { ..._config, ...config }
+  if (_frozen) {
+    throw new Error(
+      '[BookingEngine] already configured — configureBookingEngine may only be called once per process.'
+    )
+  }
+  _config = Object.freeze({ ..._config, ...config })
+  _frozen = true
 }
 
 export function getSupabaseClient() {

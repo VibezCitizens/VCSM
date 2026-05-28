@@ -35,7 +35,8 @@ async function filterResolvedFollowRequestRows({ rows, targetActorId, listIncomi
   if (typeof listIncomingRequests !== 'function') return safeRows
 
   try {
-    const pendingRows = await listIncomingRequests({ targetActorId })
+    // 🔒 assertingActorId = targetActorId: inbox owner reads their own requests (V-SUB-003)
+    const pendingRows = await listIncomingRequests({ targetActorId, assertingActorId: targetActorId })
     const pendingRequesterIds = new Set(
       (pendingRows ?? [])
         .map((row) => row?.requester_actor_id ?? row?.requesterActorId ?? null)

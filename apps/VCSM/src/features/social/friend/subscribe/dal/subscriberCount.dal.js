@@ -10,6 +10,7 @@ export async function dalCountSubscribers({ actorId }) {
   if (cached != null) return cached
 
   const { data, error } = await supabase
+    .schema('vc')
     .rpc('get_follower_count', { p_actor_id: actorId })
 
   if (error) throw error

@@ -38,7 +38,13 @@ export async function dalInsertVportBooking({ row } = {}) {
     .select(BOOKING_SELECT)
     .single()
 
-  if (error) throw error
+  if (error) {
+    // 23505 = PostgreSQL unique_violation — slot collision on (resource_id, starts_at)
+    if (error.code === '23505') {
+      throw new Error('This time slot is no longer available. Please choose another time.')
+    }
+    throw error
+  }
   return data ?? null
 }
 

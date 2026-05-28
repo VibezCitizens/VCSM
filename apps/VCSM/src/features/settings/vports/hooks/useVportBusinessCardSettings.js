@@ -51,7 +51,7 @@ export function useVportBusinessCardSettings(actorId, cardType, vportId = null) 
 
     async function load() {
       try {
-        const row = await ctrlGetVportBusinessCardSettings({ vportId });
+        const row = await ctrlGetVportBusinessCardSettings({ vportId, callerActorId: identity?.actorId ?? null, vportActorId: actorId });
         if (!alive) return;
         const raw = row?.business_card_settings;
         setRawSettings(raw && typeof raw === "object" ? raw : {});

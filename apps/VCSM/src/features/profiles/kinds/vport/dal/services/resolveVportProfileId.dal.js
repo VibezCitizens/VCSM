@@ -29,7 +29,7 @@ export async function resolveVportProfileId(actorId) {
   if (!actorId) return null;
 
   const cached = cache.get(actorId);
-  if (cached !== undefined) return cached;
+  if (cached !== null) return cached;
 
   const { data } = await vportSchema
     .from("profiles")
@@ -38,7 +38,16 @@ export async function resolveVportProfileId(actorId) {
     .maybeSingle();
 
   const profileId = data?.id ?? null;
-  cache.set(actorId, profileId);
+
+  // Only cache successful lookups. Caching null would poison the cache for up
+  // to 30 s if the profile is temporarily inaccessible (auth not yet established,
+  // transient RLS gap, etc.) — causing every subsequent write attempt within
+  // that window to fail with "profile not found for actor" even when the profile
+  // is present and accessible by the time the user tries to save.
+  if (profileId) {
+    cache.set(actorId, profileId);
+  }
+
   return profileId;
 }
 

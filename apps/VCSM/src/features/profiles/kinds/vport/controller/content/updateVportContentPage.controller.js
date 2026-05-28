@@ -4,11 +4,13 @@
 import readVportContentPageDAL from "@/features/profiles/kinds/vport/dal/content/readVportContentPage.dal";
 import updateVportContentPageDAL from "@/features/profiles/kinds/vport/dal/content/updateVportContentPage.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
+import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const VALID_CATEGORIES = ["guide", "faq", "emergency", "tips", "educational"];
 
 export async function updateVportContentPageController({
   actorId,
+  callerActorId,
   id,
   title,
   excerpt,
@@ -17,7 +19,10 @@ export async function updateVportContentPageController({
   serviceKeys,
 } = {}) {
   if (!actorId) throw new Error("updateVportContentPageController: actorId is required");
+  if (!callerActorId) throw new Error("updateVportContentPageController: callerActorId is required");
   if (!id) throw new Error("updateVportContentPageController: id is required");
+
+  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: actorId });
 
   const existing = await readVportContentPageDAL({ id });
   if (!existing) throw new Error("Content page not found.");
@@ -48,7 +53,7 @@ export async function updateVportContentPageController({
     return VportContentPageModel.fromRow(existing);
   }
 
-  const updated = await updateVportContentPageDAL({ id, patch });
+  const updated = await updateVportContentPageDAL({ id, actorId, patch });
   return VportContentPageModel.fromRow(updated);
 }
 

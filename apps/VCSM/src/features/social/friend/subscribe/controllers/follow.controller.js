@@ -12,6 +12,7 @@ import { ctrlGetBlockStatus } from '@/features/block'
 export async function ctrlSubscribe({
   followerActorId,
   followedActorId,
+  assertingActorId,
 }) {
   if (!followerActorId || !followedActorId) {
     throw new Error('Missing actor ids')
@@ -19,6 +20,11 @@ export async function ctrlSubscribe({
 
   if (followerActorId === followedActorId) {
     throw new Error('Cannot follow yourself')
+  }
+
+  // 🔒 OWNERSHIP GATE (V-SUB-001): session actor must match claimed follower
+  if (!assertingActorId || assertingActorId !== followerActorId) {
+    throw new Error('session actor does not match follower')
   }
 
   const { isBlocked } = await ctrlGetBlockStatus({
@@ -45,6 +51,10 @@ export async function ctrlSubscribe({
         relation,
       },
     }
+  }
+
+  if (relation.followPolicy === 'closed') {
+    throw new Error('Actor does not accept new followers')
   }
 
   if (relation.isPrivate) {
@@ -90,7 +100,7 @@ export async function ctrlSubscribe({
     kind: 'follow',
     objectType: 'actor',
     objectId: followerActorId,
-    linkPath: `/profile/${followerActorId}`,
+    linkPath: `/feed`,
     context: {},
   })
 

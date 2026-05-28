@@ -5,15 +5,15 @@ import { mapAvailabilityRule, useVportBookingOps } from "@/features/dashboard/vp
 import {
   buildOccupiedIntervalsByDate,
   buildSlotsByDate,
-} from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarAvailability.model";
+} from "@/features/booking/model/bookingCalendarAvailability.model";
 import {
   endOfMonth,
   groupSlotsBySegment,
   shiftMonth,
   startOfMonth,
   toDateKey,
-} from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
-import { buildBookingPayload } from "@/features/profiles/kinds/vport/screens/booking/model/buildBookingPayload.model";
+} from "@/features/booking/model/bookingCalendarDate.model";
+import { buildBookingPayload } from "@/features/booking/model/buildBookingPayload.model";
 import { canAdvanceBookingStep } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.helpers";
 
 const FALLBACK_DURATION = 30;

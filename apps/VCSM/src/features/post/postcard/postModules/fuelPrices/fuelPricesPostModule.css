@@ -1,0 +1,184 @@
+.post-modern .fuel-module .post-module-surface {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(78, 164, 255, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
+}
+
+.post-modern .fuel-module-grades {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.56rem;
+  padding: 0.1rem 0.75rem 0.55rem;
+}
+
+.post-modern .fuel-module-grade {
+  --fuel-panel: rgba(255, 255, 255, 0.92);
+  --fuel-panel-soft: rgba(255, 255, 255, 0.72);
+  --fuel-ink: #09111d;
+  --fuel-accent: var(--vc-accent-secondary);
+  --fuel-glow: rgba(78, 164, 255, 0.2);
+  position: relative;
+  display: grid;
+  min-height: 13.7rem;
+  grid-template-rows: auto auto 1fr;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--fuel-accent) 80%, white 10%);
+  border-radius: 0.82rem;
+  background: linear-gradient(180deg, var(--fuel-panel), var(--fuel-panel-soft));
+  box-shadow: 0 8px 18px var(--fuel-glow), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+}
+
+.post-modern .fuel-module-grade::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 3px);
+  opacity: 0.7;
+}
+
+.post-modern .fuel-module-regular {
+  --fuel-panel: #d81935;
+  --fuel-panel-soft: #a80f27;
+  --fuel-ink: #ffffff;
+  --fuel-accent: #ff3953;
+  --fuel-glow: rgba(216, 25, 53, 0.24);
+}
+
+.post-modern .fuel-module-plus {
+  --fuel-panel: #f7fbff;
+  --fuel-panel-soft: #dceeff;
+  --fuel-ink: #075ca8;
+  --fuel-accent: #1672c8;
+}
+
+.post-modern .fuel-module-premium {
+  --fuel-panel: #f8fafc;
+  --fuel-panel-soft: #b9c2cc;
+  --fuel-ink: #27313d;
+  --fuel-accent: #d8dee6;
+  --fuel-glow: rgba(216, 222, 230, 0.28);
+}
+
+.post-modern .fuel-module-diesel,
+.post-modern .fuel-module-e85 {
+  --fuel-panel: #08735f;
+  --fuel-panel-soft: #075041;
+  --fuel-ink: #ffffff;
+  --fuel-accent: #f3c623;
+  --fuel-glow: rgba(34, 197, 94, 0.22);
+}
+
+.post-modern .fuel-module-kerosene,
+.post-modern .fuel-module-custom {
+  --fuel-panel: #f7d447;
+  --fuel-panel-soft: #d9a915;
+  --fuel-ink: #17120a;
+  --fuel-accent: var(--vc-warning);
+}
+
+.post-modern .fuel-module-grade-head,
+.post-modern .fuel-module-price-window,
+.post-modern .fuel-module-octane {
+  position: relative;
+  z-index: 1;
+}
+
+.post-modern .fuel-module-grade-head {
+  min-height: 4rem;
+  padding: 0.85rem 0.55rem 0.55rem;
+  color: var(--fuel-ink);
+  text-align: center;
+}
+
+.post-modern .fuel-module-grade-name {
+  font-size: 1.18rem;
+  font-weight: 950;
+  line-height: 0.98;
+}
+
+.post-modern .fuel-module-grade-sub {
+  margin-top: 0.18rem;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  opacity: 0.78;
+  text-transform: uppercase;
+}
+
+.post-modern .fuel-module-price-window {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 3.45rem;
+  margin: 0 0.45rem;
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(221, 239, 235, 0.72));
+  color: #071018;
+}
+
+.post-modern .fuel-module-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  width: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: clamp(1.38rem, 5.8vw, 1.56rem);
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+.post-modern .fuel-module-octane {
+  align-self: end;
+  margin: 0.75rem 0.55rem 0.62rem;
+  padding: 0.42rem 0.35rem;
+  border-radius: 0.62rem;
+  background: linear-gradient(180deg, rgba(255, 229, 79, 0.96), rgba(223, 179, 35, 0.94));
+  color: #102033;
+  text-align: center;
+}
+
+.post-modern .fuel-module-octane span {
+  display: block;
+  font-size: 0.48rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.post-modern .fuel-module-octane strong {
+  display: block;
+  font-size: 3.05rem;
+  font-weight: 1000;
+  letter-spacing: 0;
+  line-height: 0.9;
+}
+
+.post-modern .fuel-module-diesel .fuel-module-octane strong,
+.post-modern .fuel-module-e85 .fuel-module-octane strong,
+.post-modern .fuel-module-kerosene .fuel-module-octane strong,
+.post-modern .fuel-module-custom .fuel-module-octane strong {
+  font-size: 2.05rem;
+  line-height: 1;
+}
+
+@media (min-width: 620px) {
+  .post-modern .fuel-module-grades {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 390px) {
+  .post-modern .fuel-module-grades {
+    grid-template-columns: 1fr;
+  }
+}

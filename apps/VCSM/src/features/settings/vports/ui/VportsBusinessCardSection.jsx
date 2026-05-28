@@ -2,7 +2,7 @@ import { Check, Copy, ExternalLink, QrCode as QrIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from '@i18n'
 import Card from '@/features/settings/ui/Card'
-import { buildBusinessCardQrUrl } from '@/lib/qrUrlBuilders'
+import { buildBusinessCardQrUrl } from '@/shared/lib/qrUrlBuilders'
 
 function handleCopyLink(v, setCopiedId) {
   const url = buildBusinessCardQrUrl(v.slug)

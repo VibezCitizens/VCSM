@@ -7,7 +7,7 @@ import {
   ctrlUnblockActor,
 } from '@/features/settings/privacy/controller/Blocks.controller'
 import { hydrateActorsFromRows } from '@/state/actors/hydrateActors'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
 export function useBlockedCitizens(actorId, scope) {
   const { identity } = useIdentity()

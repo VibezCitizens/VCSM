@@ -5,6 +5,7 @@ import {
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
 import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertValidRate } from "./exchangeRateValidation.js";
 
 function formatRate(v) {
   const n = Number(v);
@@ -28,7 +29,9 @@ export async function publishExchangeRateUpdateAsPostController({
 }) {
   if (!actorId) throw new Error("publishExchangeRateUpdateAsPost: actorId required");
   if (!identityActorId) throw new Error("publishExchangeRateUpdateAsPost: identityActorId required");
-  if (!baseCurrency || !quoteCurrency) return { published: false, reason: "missing_currencies" };
+  if (!baseCurrency || !quoteCurrency) {
+    return { published: false, status: "skipped", reason: "missing_currencies" };
+  }
 
   await assertActorOwnsVportActorController({
     requestActorId: identityActorId,
@@ -36,13 +39,21 @@ export async function publishExchangeRateUpdateAsPostController({
   });
 
   const realmId = PUBLIC_REALM_ID;
-  if (!realmId) return { published: false, reason: "missing_public_realm" };
+  if (!realmId) return { published: false, status: "skipped", reason: "missing_public_realm" };
 
   const alreadyPosted = await hasRecentExchangeRatePostDAL({ actorId });
-  if (alreadyPosted) return { published: false, reason: "dedup_throttle" };
+  if (alreadyPosted) return { published: false, status: "skipped", reason: "dedup_throttle" };
+
+  let validatedBuy, validatedSell;
+  try {
+    validatedBuy  = assertValidRate("buyRate", buyRate);
+    validatedSell = assertValidRate("sellRate", sellRate);
+  } catch {
+    return { published: false, status: "skipped", reason: "invalid_rates" };
+  }
 
   const exchangeName = await resolveVportExchangeNameDAL(actorId);
-  const text = buildPostText({ exchangeName, baseCurrency, quoteCurrency, buyRate, sellRate });
+  const text = buildPostText({ exchangeName, baseCurrency, quoteCurrency, buyRate: validatedBuy, sellRate: validatedSell });
 
   const created = await createSystemPost({
     actorId,
@@ -50,7 +61,13 @@ export async function publishExchangeRateUpdateAsPostController({
     post_type: "exchange_rate_update",
     realm_id: realmId,
     media_url: null,
+    payload: {
+      baseCurrency,
+      quoteCurrency,
+      buyRate: validatedBuy,
+      sellRate: validatedSell,
+    },
   });
 
-  return { published: true, postId: created?.id ?? null };
+  return { published: true, status: "published", postId: created?.id ?? null };
 }

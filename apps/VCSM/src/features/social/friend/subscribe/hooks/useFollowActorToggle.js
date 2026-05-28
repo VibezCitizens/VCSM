@@ -16,7 +16,7 @@ export function useFollowActorToggle() {
     const relationState = state ?? (isFollowing ? FOLLOW_RELATION_STATES.FOLLOWING : FOLLOW_RELATION_STATES.NOT_FOLLOWING);
 
     if (relationState === FOLLOW_RELATION_STATES.FOLLOWING) {
-      await ctrlUnsubscribe({ followerActorId, followedActorId });
+      await ctrlUnsubscribe({ followerActorId, followedActorId, assertingActorId: followerActorId });
       return {
         isFollowing: false,
         status: FOLLOW_RELATION_STATES.NOT_FOLLOWING,
@@ -37,7 +37,7 @@ export function useFollowActorToggle() {
       };
     }
 
-    const result = await ctrlSubscribe({ followerActorId, followedActorId });
+    const result = await ctrlSubscribe({ followerActorId, followedActorId, assertingActorId: followerActorId });
     return {
       isFollowing: Boolean(result?.isFollowing),
       status: result?.status ?? FOLLOW_RELATION_STATES.FOLLOWING,

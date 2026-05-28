@@ -5,7 +5,7 @@ import vportSchema from "@/services/supabase/vportClient";
 import { createTTLCache } from "@/shared/lib/ttlCache";
 
 const PUBLIC_SELECT =
-  "id,actor_id,profile_id,title,slug,excerpt,category,service_keys,published_at,created_at";
+  "id,title,slug,excerpt,category,service_keys,published_at,created_at";
 
 // 5-minute TTL — invalidated on publish/unpublish via invalidateVportPublicContentCache
 const publicContentCache = createTTLCache(5 * 60_000);

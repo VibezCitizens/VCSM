@@ -94,6 +94,20 @@ export async function setVportDirectoryVisibleDAL(vportId, visible) {
 export async function syncDirectoryVisibleToPublicDetailsDAL(vportId, visible) {
   if (!vportId) throw new Error("syncDirectoryVisibleToPublicDetailsDAL: vportId required");
 
+  const { data: auth, error: authError } = await supabase.auth.getUser();
+  if (authError) throw authError;
+  const userId = auth?.user?.id;
+  if (!userId) throw new Error("Not authenticated");
+
+  const { data: owned, error: ownerError } = await vportSchema
+    .from("profiles")
+    .select("id")
+    .eq("id", vportId)
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+  if (ownerError) throw ownerError;
+  if (!owned) throw new Error("VPORT not found or not owned by you");
+
   const { error } = await vportSchema
     .from("profile_public_details")
     .update({ directory_visible: Boolean(visible) })

@@ -13,11 +13,14 @@ export default function useUpsertVportRate({
   actorId = null,
   rateType = "fx",
 } = {}) {
-  const { identity } = useIdentity();
+  const { identity, availableActors } = useIdentity();
 
   const identityActorId = useMemo(() => {
-    return identity?.actorId ?? null;
-  }, [identity]);
+    if (identity?.kind === "user") return identity.actorId ?? null;
+    // Acting-as-VPORT: resolve the owning user-kind actor to satisfy the ownership gate.
+    const userActor = availableActors?.find((a) => a.actorKind === "user");
+    return userActor?.actorId ?? null;
+  }, [identity, availableActors]);
 
   const [state, setState] = useState({
     isLoading: false,

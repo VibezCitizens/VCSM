@@ -1,6 +1,6 @@
 import Card from "@/features/settings/ui/Card";
 import HoursEditor from "@/features/settings/profile/ui/HoursEditor";
-import useDesktopBreakpoint from "@/features/dashboard/adapters/vport/screens/useDesktopBreakpoint.adapter";
+import useDesktopBreakpoint from "@/shared/hooks/useDesktopBreakpoint";
 import {
   sanitizeCityInput,
   sanitizeStateInput,

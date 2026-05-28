@@ -1,6 +1,6 @@
 import { useVportType } from "@/features/profiles/hooks/useVportType";
 import VportProfileViewScreen from "@/features/profiles/kinds/vport/screens/VportProfileViewScreen";
-import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/gas/getVportTabsByType.model";
+import { getVportTabsByType } from "@/features/profiles/kinds/vport/model/getVportTabsByType.model";
 import "@/features/profiles/styles/profiles-modern.css";
 
 export default function VportProfileKindScreen({

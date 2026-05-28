@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { fromDateKey } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
+import { fromDateKey } from "@/features/booking/model/bookingCalendarDate.model";
 
 export function useVportBookingMutations({
   isOwner,

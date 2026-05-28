@@ -98,7 +98,7 @@ describe("publishExchangeRateUpdateAsPostController — guard: missing currencie
       ...BASE_ARGS,
       baseCurrency: undefined,
     });
-    expect(result).toEqual({ published: false, reason: "missing_currencies" });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "missing_currencies" });
   });
 
   it("returns {published:false, reason:'missing_currencies'} when quoteCurrency is missing", async () => {
@@ -106,7 +106,7 @@ describe("publishExchangeRateUpdateAsPostController — guard: missing currencie
       ...BASE_ARGS,
       quoteCurrency: undefined,
     });
-    expect(result).toEqual({ published: false, reason: "missing_currencies" });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "missing_currencies" });
   });
 });
 
@@ -154,12 +154,56 @@ describe("publishExchangeRateUpdateAsPostController — dedup throttle", () => {
   it("returns {published:false, reason:'dedup_throttle'} when hasRecentExchangeRatePostDAL returns true", async () => {
     hasRecentExchangeRatePostDAL.mockResolvedValue(true);
     const result = await publishExchangeRateUpdateAsPostController(BASE_ARGS);
-    expect(result).toEqual({ published: false, reason: "dedup_throttle" });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "dedup_throttle" });
   });
 
   it("does NOT call createSystemPost when dedup fires", async () => {
     hasRecentExchangeRatePostDAL.mockResolvedValue(true);
     await publishExchangeRateUpdateAsPostController(BASE_ARGS);
+    expect(createSystemPost).not.toHaveBeenCalled();
+  });
+});
+
+// ─── rate validation ──────────────────────────────────────────────────────────
+
+describe("publishExchangeRateUpdateAsPostController — rate validation", () => {
+  it("returns {published:false, reason:'invalid_rates'} when buyRate is 0", async () => {
+    const result = await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, buyRate: 0 });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "invalid_rates" });
+  });
+
+  it("returns {published:false, reason:'invalid_rates'} when buyRate is negative", async () => {
+    const result = await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, buyRate: -1 });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "invalid_rates" });
+  });
+
+  it("returns {published:false, reason:'invalid_rates'} when buyRate is NaN", async () => {
+    const result = await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, buyRate: NaN });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "invalid_rates" });
+  });
+
+  it("returns {published:false, reason:'invalid_rates'} when buyRate is a non-numeric string", async () => {
+    const result = await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, buyRate: "bad" });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "invalid_rates" });
+  });
+
+  it("returns {published:false, reason:'invalid_rates'} when sellRate is 0", async () => {
+    const result = await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, sellRate: 0 });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "invalid_rates" });
+  });
+
+  it("returns {published:false, reason:'invalid_rates'} when sellRate is negative", async () => {
+    const result = await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, sellRate: -0.5 });
+    expect(result).toMatchObject({ published: false, status: "skipped", reason: "invalid_rates" });
+  });
+
+  it("does not call resolveVportExchangeNameDAL when rates are invalid", async () => {
+    await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, buyRate: 0 });
+    expect(resolveVportExchangeNameDAL).not.toHaveBeenCalled();
+  });
+
+  it("does not call createSystemPost when rates are invalid", async () => {
+    await publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, buyRate: NaN });
     expect(createSystemPost).not.toHaveBeenCalled();
   });
 });
@@ -191,12 +235,12 @@ describe("publishExchangeRateUpdateAsPostController — success path", () => {
 
   it("returns {published:true, postId} on success", async () => {
     const result = await publishExchangeRateUpdateAsPostController(BASE_ARGS);
-    expect(result).toEqual({ published: true, postId: "post-id-999" });
+    expect(result).toEqual({ published: true, status: "published", postId: "post-id-999" });
   });
 
   it("returns {published:true, postId:null} when createSystemPost returns no id", async () => {
     createSystemPost.mockResolvedValue(null);
     const result = await publishExchangeRateUpdateAsPostController(BASE_ARGS);
-    expect(result).toEqual({ published: true, postId: null });
+    expect(result).toEqual({ published: true, status: "published", postId: null });
   });
 });

@@ -163,11 +163,14 @@ export async function ProviderPageTemplate({
             vcsmActorId={provider.vcsmActorId}
             vcsmSlug={provider.vcsmSlug}
             providerSource={provider.source}
+            context={context}
           />
         </aside>
 
         <div className="pro-main">
           <ContactSection
+            providerSlug={provider.slug}
+            providerSource={provider.source}
             phone={provider.phoneE164}
             address={provider.addressLine1
               ? { street: provider.addressLine1, postal_code: provider.postalCode }

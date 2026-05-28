@@ -4,7 +4,7 @@
 import vportSchema from "@/services/supabase/vportClient";
 
 const PUBLIC_FULL_SELECT =
-  "id,actor_id,profile_id,title,slug,excerpt,body,category,service_keys,published_at,created_at";
+  "id,title,slug,excerpt,body,category,service_keys,published_at,created_at";
 
 export async function readVportPublicContentPageDAL({ id } = {}) {
   if (!id) throw new Error("readVportPublicContentPageDAL: id is required");

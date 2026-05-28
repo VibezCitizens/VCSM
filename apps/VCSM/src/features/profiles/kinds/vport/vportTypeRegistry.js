@@ -1,11 +1,32 @@
 // src/features/profiles/kinds/vport/vportTypeTabs.registry.js
 
+// =============================================================================
+// ⚠️  DEPRECATED — DO NOT USE IN PRODUCTION CODE
+// =============================================================================
+//
+// This file is a legacy registry that has diverged from the canonical model.
+//
+// CANONICAL SOURCE OF TRUTH:
+//   features/profiles/kinds/vport/model/getVportTabsByType.model.js
+//
+// This file is DIAGNOSTICS-ONLY. It is imported by:
+//   apps/VCSM/src/dev/diagnostics/groups/profilesKindsFeature.group.js
+//
+// DO NOT add new callers to this file.
+// DO NOT update this file to add new type overrides — update the canonical model instead.
+//
+// Pending deletion approval: DTAB-001
+// Governance doc: zNOTFORPRODUCTION/_CANONICAL/logan/marvel/architect/VPORT/TABS/
+//                 governance/architect/2026-05-27_architect_vport-dtab-001-duplicate-registry.md
+//
+// =============================================================================
+
 import {
   VPORT_TABS,
-  VPORT_SERVICE_TABS,
+  VPORT_SERVICE_BOOK_TABS, // DTAB-001: replaced VPORT_SERVICE_TABS — now aligned with canonical model
   VPORT_FOOD_TABS,
   VPORT_GAS_TABS,
-  VPORT_RATES_TABS, // ✅ add
+  VPORT_RATES_TABS,
 } from "@/features/profiles/config/profileTabs.config";
 
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
@@ -38,9 +59,13 @@ function resolveGroup(type) {
  * GROUP DEFAULTS
  * --------------
  * Maps a group name to its default tab layout.
+ *
+ * DTAB-001 fix (2026-05-27): "Beauty & Wellness" aligned with canonical model.
+ * Was: VPORT_SERVICE_TABS (missing book tab — incorrect for hairstylists, fitness instructors, etc.)
+ * Now: VPORT_SERVICE_BOOK_TABS (matches getVportTabsByType.model.js)
  */
 const GROUP_TABS = Object.freeze({
-  "Beauty & Wellness": VPORT_SERVICE_TABS,
+  "Beauty & Wellness": VPORT_SERVICE_BOOK_TABS, // DTAB-001: was VPORT_SERVICE_TABS (diverged) — now aligned with canonical
   "Food, Hospitality & Events": VPORT_FOOD_TABS,
   Other: VPORT_TABS,
 });

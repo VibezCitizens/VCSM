@@ -12,6 +12,7 @@ import {
   listProvidersByCountryCitySlug
 } from "@/data/repositories/provider.repo";
 import { buildDirectoryMetadata } from "@/seo/metadata";
+import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import { countryCityPath, countryCityServicePath } from "@/lib/paths";
 
 export const LEGACY_TRANSITION_ROBOTS = {
@@ -87,13 +88,18 @@ export function buildCountryCityMetadata(graph, options = {}) {
   const locationTail = [graph.region?.code ?? graph.city.stateCode, graph.country.code]
     .filter(Boolean)
     .join(", ");
+  const providers = listProvidersByCountryCitySlug(graph.country.code, graph.city.slug);
 
   return buildDirectoryMetadata({
     title: `Top Service Providers in ${graph.city.name}${locationTail ? `, ${locationTail}` : ""}`,
     description: `Browse rated providers across all service categories in ${graph.city.name}, ${graph.country.name}. Compare pricing, reviews, and book directly.`,
     path: countryCityPath(graph.country.slug, graph.city.slug),
     locale: getLocaleForCountryCode(graph.country.code),
-    routeLocale: options.routeLocale
+    routeLocale: options.routeLocale,
+    robots: getDirectoryRobotsForQuality("country_city", {
+      providerCount: providers.length,
+      hasMeaningfulMetadata: true
+    })
   });
 }
 

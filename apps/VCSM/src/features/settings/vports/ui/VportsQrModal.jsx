@@ -1,6 +1,6 @@
 import { Check, Copy, ExternalLink, QrCode as QrIcon, X } from 'lucide-react'
 import { QrCode } from '@/features/dashboard/qrcode/adapters/qrcode.adapter'
-import { buildBusinessCardQrUrl } from '@/lib/qrUrlBuilders'
+import { buildBusinessCardQrUrl } from '@/shared/lib/qrUrlBuilders'
 
 export function VportsQrModal({ target, onClose, qrCopied, setQrCopied }) {
   // Centralized URL — no hardcoded domains. Uses window.location.origin for env parity.

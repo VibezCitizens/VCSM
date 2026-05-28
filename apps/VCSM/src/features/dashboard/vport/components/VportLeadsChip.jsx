@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useIdentity } from "@/state/identity/identityContext";
-import { useVportNewLeadsCount } from "@/features/dashboard/vport/hooks/useVportNewLeadsCount";
+import { useVportNewLeadsCount } from "@/features/dashboard/vport/dashboard/cards/leads/hooks/useVportNewLeadsCount";
 
 export function VportLeadsChip() {
   const navigate = useNavigate();

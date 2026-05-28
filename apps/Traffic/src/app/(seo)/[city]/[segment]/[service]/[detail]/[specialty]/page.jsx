@@ -14,6 +14,7 @@ import { getPriceAggregate } from "@/data/repositories/aggregate.repo";
 import { listLocalityServiceSpecialtyTaxonomyParams } from "@/data/repositories/taxonomyParams.repo";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { buildDirectoryMetadata } from "@/seo/metadata";
+import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
 import {
@@ -82,6 +83,12 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
     return {};
   }
 
+  const providers = listProvidersByLocalityServiceAndSpecialty(
+    graph.locality.id,
+    graph.service.id,
+    graph.specialty.id
+  );
+
   return buildDirectoryMetadata({
     title: `${graph.specialty.name} ${graph.service.name} in ${graph.locality.name}, ${graph.city.name}, ${graph.country.name}`,
     description: `Find ${graph.specialty.name.toLowerCase()} ${graph.service.name.toLowerCase()} providers in ${graph.locality.name}, ${graph.city.name}. Compare ratings, response times, and availability.`,
@@ -93,7 +100,11 @@ export function generateMetadataForLocale({ params }, routeLocale = null) {
       graph.specialty.slug
     ),
     locale: getLocaleForCountryCode(graph.country.code),
-    routeLocale
+    routeLocale,
+    robots: getDirectoryRobotsForQuality("country_locality_service_specialty", {
+      providerCount: providers.length,
+      hasMeaningfulMetadata: true
+    })
   });
 }
 

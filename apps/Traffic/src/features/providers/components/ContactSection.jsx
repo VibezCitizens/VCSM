@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrafficLanguage } from "@/lib/language";
+import { trackProviderAction } from "@/lib/analytics";
 
 function formatPhone(raw) {
   const digits = String(raw ?? "").replace(/\D/g, "");
@@ -47,6 +48,8 @@ function buildDirectionsUrl(lat, lng, address, locationText) {
 }
 
 export function ContactSection({
+  providerSlug,
+  providerSource,
   phone,
   address,
   locationText,
@@ -86,7 +89,13 @@ export function ContactSection({
             <span className="pro-contact-label">
               {t("common.phone")}
             </span>
-            <a href={`tel:${phone}`} className="pro-contact-value pro-contact-link">
+            <a
+              href={`tel:${phone}`}
+              className="pro-contact-value pro-contact-link"
+              onClick={() =>
+                trackProviderAction({ action: "contact_phone_click", providerSlug, providerSource })
+              }
+            >
               {formatPhone(phone)}
             </a>
           </li>
@@ -96,7 +105,13 @@ export function ContactSection({
             <span className="pro-contact-label">
               {t("common.email")}
             </span>
-            <a href={`mailto:${email}`} className="pro-contact-value pro-contact-link">
+            <a
+              href={`mailto:${email}`}
+              className="pro-contact-value pro-contact-link"
+              onClick={() =>
+                trackProviderAction({ action: "contact_email_click", providerSlug, providerSource })
+              }
+            >
               {email}
             </a>
           </li>
@@ -111,6 +126,7 @@ export function ContactSection({
               className="pro-contact-value pro-contact-link"
               target="_blank"
               rel="noreferrer noopener"
+              onClick={() => trackProviderAction({ action: "website_click", providerSlug, providerSource })}
             >
               {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
             </a>
@@ -126,6 +142,7 @@ export function ContactSection({
               className="pro-contact-value pro-contact-link"
               target="_blank"
               rel="noreferrer noopener"
+              onClick={() => trackProviderAction({ action: "booking_click", providerSlug, providerSource })}
             >
               {t("providerProfile.bookOnline")}
             </a>
@@ -151,6 +168,7 @@ export function ContactSection({
               className="pro-contact-value pro-contact-link pro-contact-directions"
               target="_blank"
               rel="noreferrer noopener"
+              onClick={() => trackProviderAction({ action: "directions_click", providerSlug, providerSource })}
             >
               {t("providerProfile.getDirections")}
             </a>

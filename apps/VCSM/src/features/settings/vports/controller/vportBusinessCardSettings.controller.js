@@ -2,8 +2,11 @@ import { readVportBusinessCardSettingsDAL } from "@/features/settings/vports/dal
 import { setVportBusinessCardSettingsDAL } from "@/features/settings/vports/dal/vports.write.dal";
 import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
 
-export async function ctrlGetVportBusinessCardSettings({ vportId }) {
+export async function ctrlGetVportBusinessCardSettings({ vportId, callerActorId, vportActorId }) {
   if (!vportId) return null;
+  if (!callerActorId) throw new Error("ctrlGetVportBusinessCardSettings: callerActorId required");
+  if (!vportActorId)  throw new Error("ctrlGetVportBusinessCardSettings: vportActorId required");
+  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
   return readVportBusinessCardSettingsDAL(vportId);
 }
 

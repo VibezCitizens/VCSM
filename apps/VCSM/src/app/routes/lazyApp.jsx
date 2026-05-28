@@ -85,61 +85,61 @@ export const VportDashboardScreen = lazyWithLog("VportDashboardScreen", () =>
   import("@/features/dashboard/vport/screens/VportDashboardScreen"),
 );
 export const VportDashboardGasScreen = lazyWithLog("VportDashboardGasScreen", () =>
-  import("@/features/dashboard/vport/screens/VportDashboardGasScreen"),
+  import("@/features/dashboard/vport/dashboard/cards/gasprices/screens/VportDashboardGasScreen"),
 );
 export const VportDashboardReviewScreen = lazyWithLog(
   "VportDashboardReviewScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardReviewScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/reviews/VportDashboardReviewScreen"),
 );
 export const VportDashboardLeadsScreen = lazyWithLog(
   "VportDashboardLeadsScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardLeadsScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/leads/VportDashboardLeadsScreen"),
 );
 export const VportDashboardServicesScreen = lazyWithLog(
   "VportDashboardServicesScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardServicesScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/services/VportDashboardServicesScreen"),
 );
 export const VportDashboardExchangeScreen = lazyWithLog(
   "VportDashboardExchangeScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardExchangeScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/exchange/VportDashboardExchangeScreen"),
 );
 export const VportDashboardCalendarScreen = lazyWithLog(
   "VportDashboardCalendarScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardCalendarScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/calendar/VportDashboardCalendarScreen"),
 );
 export const VportDashboardPortfolioScreen = lazyWithLog(
   "VportDashboardPortfolioScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardPortfolioScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/portfolio/VportDashboardPortfolioScreen"),
 );
 export const VportDashboardLocksmithScreen = lazyWithLog(
   "VportDashboardLocksmithScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardLocksmithScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/locksmith/VportDashboardLocksmithScreen"),
 );
 export const VportDashboardBookingHistoryScreen = lazyWithLog(
   "VportDashboardBookingHistoryScreen",
   () =>
-    import("@/features/dashboard/vport/screens/VportDashboardBookingHistoryScreen"),
+    import("@/features/dashboard/vport/dashboard/cards/bookings/VportDashboardBookingHistoryScreen"),
 );
 export const VportDashboardTeamScreen = lazyWithLog(
   "VportDashboardTeamScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardTeamScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/team/VportDashboardTeamScreen"),
 );
 export const BarberTeamRequestsScreen = lazyWithLog(
   "BarberTeamRequestsScreen",
-  () => import("@/features/dashboard/vport/screens/BarberTeamRequestsScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/team/BarberTeamRequestsScreen"),
 );
 export const VportDashboardScheduleScreen = lazyWithLog(
   "VportDashboardScheduleScreen",
-  () => import("@/features/dashboard/vport/screens/VportDashboardScheduleScreen"),
+  () => import("@/features/dashboard/vport/dashboard/cards/schedule/VportDashboardScheduleScreen"),
 );
 export const VportSettingsScreen = lazyWithLog("VportSettingsFinalScreen", () =>
-  import("@/features/dashboard/vport/screens/VportSettingsFinalScreen"),
+  import("@/features/dashboard/vport/dashboard/cards/settings/VportSettingsFinalScreen"),
 );
 
 // ── Gas ───────────────────────────────────────────────────────────────────────
 export const VportGasPricesScreen = lazyWithLog("VportGasPricesScreen", () =>
   import(
-    "@/features/profiles/kinds/vport/screens/gas/screens/VportGasPricesScreen"
+    "@/features/dashboard/vport/dashboard/cards/gasprices/screens/VportGasPricesScreen"
   ),
 );
 

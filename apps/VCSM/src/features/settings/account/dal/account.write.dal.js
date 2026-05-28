@@ -90,8 +90,8 @@ export async function dalHardDeleteVport(vportId) {
 }
 
 // Deprecated — use dalDeleteMyVport (RPC) instead.
-// Kept for backward compatibility; does not set deleted_at or fire actor chain logic.
-export async function dalDeleteOwnedVportById({ vportId, userId }) {
+// Not exported — internal tombstone only. Does not set deleted_at or fire actor chain.
+async function dalDeleteOwnedVportById({ vportId, userId }) {
   if (!vportId) throw new Error('dalDeleteOwnedVportById: vportId required')
   if (!userId) throw new Error('dalDeleteOwnedVportById: userId required')
 

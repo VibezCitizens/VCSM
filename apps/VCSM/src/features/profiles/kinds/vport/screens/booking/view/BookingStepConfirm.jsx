@@ -1,4 +1,4 @@
-import { VISITOR_SLOT_DURATION_MINUTES } from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
+import { VISITOR_SLOT_DURATION_MINUTES } from "@/features/booking/model/bookingCalendarDate.model";
 import { StepHeader } from "@/features/profiles/kinds/vport/screens/booking/view/BookingFlowShared";
 import { formatSlot, formatDateFull } from "@/features/profiles/kinds/vport/screens/booking/view/bookingFlowHelpers";
 

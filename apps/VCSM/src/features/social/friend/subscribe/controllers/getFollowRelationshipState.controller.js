@@ -1,6 +1,6 @@
 import { ctrlGetFollowRequestStatus } from "@/features/social/friend/request/controllers/followRequests.controller";
 import { ctrlGetFollowStatus } from "@/features/social/friend/subscribe/controllers/getFollowStatus.controller";
-import { ctrlGetActorPrivacy } from "@/features/social/privacy/controllers/getActorPrivacy.controller";
+import { dalGetActorSocialPublicPolicy } from "@/features/social/privacy/dal/actorSocialPublicPolicy.dal";
 import {
   FOLLOW_RELATION_STATES,
   resolveFollowRelationStateModel,
@@ -13,14 +13,15 @@ export async function ctrlGetFollowRelationshipState({
   if (!requesterActorId || !targetActorId || requesterActorId === targetActorId) {
     return {
       state: FOLLOW_RELATION_STATES.NOT_FOLLOWING,
-      isPrivate: false,
+      followPolicy: 'approval_required',
+      isPrivate: true,
       isFollowing: false,
       requestStatus: null,
     };
   }
 
-  const [{ isPrivate }, isFollowing, requestStatus] = await Promise.all([
-    ctrlGetActorPrivacy({ actorId: targetActorId }),
+  const [policy, isFollowing, requestStatus] = await Promise.all([
+    dalGetActorSocialPublicPolicy(targetActorId),
     ctrlGetFollowStatus({
       followerActorId: requesterActorId,
       followedActorId: targetActorId,
@@ -38,7 +39,8 @@ export async function ctrlGetFollowRelationshipState({
 
   return {
     state,
-    isPrivate: Boolean(isPrivate),
+    followPolicy: policy.followPolicy,
+    isPrivate: policy.followPolicy !== 'open',
     isFollowing: Boolean(isFollowing),
     requestStatus: requestStatus ?? null,
   };

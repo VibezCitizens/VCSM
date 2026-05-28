@@ -3,6 +3,7 @@ import { dalGetVportResourceById } from '../dal/vportResource.read.dal.js'
 import { dalGetOrganizationById, dalGetOrganizationMember } from '../dal/organization.read.dal.js'
 import { dalGetLocationMember } from '../dal/location.read.dal.js'
 import { assertActorOwnsVportActor } from './assertActorOwnsVportActor.controller.js'
+import { dalGetActorById } from '../dal/actor.read.dal.js'
 
 const ORG_MANAGE_ROLES      = ['owner', 'manager']
 const LOCATION_MANAGE_ROLES = ['manager']
@@ -10,6 +11,15 @@ const LOCATION_MANAGE_ROLES = ['manager']
 export async function assertActorCanManageResource({ requestActorId, resourceId }) {
   if (!requestActorId) throw new Error('[BookingEngine] requestActorId is required')
   if (!resourceId) throw new Error('[BookingEngine] resourceId is required')
+
+  // BW-001 — Validate requesting actor is active before any ownership check.
+  // Prevents void actors from passing direct string-match gates (direct_owner, org_owner,
+  // resource_staff) that do not individually enforce is_void. Mirrors ELEK-001 pattern
+  // from cancelBooking.
+  const requestingActor = await dalGetActorById({ actorId: requestActorId })
+  if (!requestingActor || requestingActor.is_void === true) {
+    throw new Error('[BookingEngine] Only valid actors may manage booking resources.')
+  }
 
   // Try vport.resources first (new org/location system), fall back to vc.booking_resources (legacy)
   const resource = await dalGetVportResourceById({ resourceId }).catch(() => null)

@@ -1,21 +1,21 @@
 // src/features/profiles/kinds/vport/hooks/menu/useVportActorMenuCategoriesMutations.js
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import saveVportActorMenuCategoryController from "@/features/profiles/kinds/vport/controller/menu/saveVportActorMenuCategory.controller";
 import deleteVportActorMenuCategoryController from "@/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuCategory.controller";
+import { useIdentity } from "@/state/identity/identityContext";
 
-/**
- * Hook Contract:
- * - Owns timing + UI state
- * - Calls controllers only
- * - No DAL
- * - No business logic
- */
 export function useVportActorMenuCategoriesMutations({ actorId, onSuccess }) {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
+
+  const { identity, availableActors } = useIdentity();
+  const identityActorId = useMemo(() => {
+    if (identity?.kind === "user") return identity.actorId ?? null;
+    return availableActors?.find((a) => a.kind === "user")?.actorId ?? null;
+  }, [identity, availableActors]);
 
   const saveCategory = useCallback(
     async (payload) => {
@@ -54,6 +54,7 @@ export function useVportActorMenuCategoriesMutations({ actorId, onSuccess }) {
 
       try {
         const result = await deleteVportActorMenuCategoryController({
+          callerActorId: identityActorId,
           actorId,
           categoryId,
         });
@@ -70,7 +71,7 @@ export function useVportActorMenuCategoriesMutations({ actorId, onSuccess }) {
         setDeleting(false);
       }
     },
-    [actorId, onSuccess]
+    [actorId, identityActorId, onSuccess]
   );
 
   return {

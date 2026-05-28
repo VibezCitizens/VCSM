@@ -175,3 +175,52 @@ describe('createBooking — management source requires ownership (VPORT flow)', 
     expect(dalInsertVportBooking).not.toHaveBeenCalled()
   })
 })
+
+// ─── BOOK-001 slot collision error propagation ────────────────────────────────
+
+describe('createBooking — BOOK-001 slot collision error propagation (VPORT flow)', () => {
+  /**
+   * The DAL layer translates PostgreSQL error code 23505 into a clean
+   * user-facing error. These tests verify the engine controller propagates
+   * that translated message without swallowing or re-wrapping it.
+   */
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    dalGetVportResourceById.mockResolvedValue(ACTIVE_VPORT_RESOURCE)
+    dalGetActorById.mockResolvedValue({ id: 'actor-citizen', kind: 'user', is_void: false })
+  })
+
+  it('propagates slot-unavailable message when DAL throws translated 23505 error', async () => {
+    dalInsertVportBooking.mockRejectedValue(
+      new Error('This time slot is no longer available. Please choose another time.')
+    )
+
+    await expect(
+      createBooking({ ...BASE_PARAMS, source: 'public', requestActorId: 'actor-citizen' })
+    ).rejects.toThrow('This time slot is no longer available. Please choose another time.')
+  })
+
+  it('does not suppress or re-wrap the slot-unavailable error', async () => {
+    const slotError = new Error('This time slot is no longer available. Please choose another time.')
+    dalInsertVportBooking.mockRejectedValue(slotError)
+
+    let caught = null
+    try {
+      await createBooking({ ...BASE_PARAMS, source: 'public', requestActorId: 'actor-citizen' })
+    } catch (e) {
+      caught = e
+    }
+
+    expect(caught).toBe(slotError)
+  })
+
+  it('propagates an unrelated DB error unchanged', async () => {
+    const dbErr = Object.assign(new Error('connection timeout'), { code: 'ECONNRESET' })
+    dalInsertVportBooking.mockRejectedValue(dbErr)
+
+    await expect(
+      createBooking({ ...BASE_PARAMS, source: 'public', requestActorId: 'actor-citizen' })
+    ).rejects.toThrow('connection timeout')
+  })
+})

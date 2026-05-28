@@ -15,7 +15,7 @@ import {
   buildMonthCells,
   buildOccupiedIntervalsByDate,
   buildSlotsByDate,
-} from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarAvailability.model";
+} from "@/features/booking/model/bookingCalendarAvailability.model";
 import {
   endOfMonth,
   formatDateLabel,
@@ -28,7 +28,7 @@ import {
   shiftMonth,
   startOfMonth,
   VISITOR_SLOT_DURATION_MINUTES,
-} from "@/features/profiles/kinds/vport/screens/booking/model/bookingCalendarDate.model";
+} from "@/features/booking/model/bookingCalendarDate.model";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { canCitizenBook } from "@/state/identity/identitySelectors";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";

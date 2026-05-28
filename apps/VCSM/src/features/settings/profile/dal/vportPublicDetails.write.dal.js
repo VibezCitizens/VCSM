@@ -52,6 +52,21 @@ function mapPayloadToRow(payload) {
 export async function upsertVportPublicDetails(profileId, payload) {
   if (!profileId) throw new Error("upsertVportPublicDetails: profileId required");
 
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError) throw authError;
+  const userId = authData?.user?.id;
+  if (!userId) throw new Error("upsertVportPublicDetails: not authenticated");
+
+  const { data: owned, error: ownerError } = await supabase
+    .schema("vport")
+    .from("profiles")
+    .select("id")
+    .eq("id", profileId)
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+  if (ownerError) throw ownerError;
+  if (!owned) throw new Error("upsertVportPublicDetails: profile not found or not owned by you");
+
   const row = {
     profile_id: profileId,
     ...mapPayloadToRow(payload),
