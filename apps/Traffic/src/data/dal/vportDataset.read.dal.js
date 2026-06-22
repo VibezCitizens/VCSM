@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "@/data/connectors/supabase.client";
+import { shouldRequireLiveProviderIndex } from "@/lib/env";
 
 const PROVIDER_INDEX_PROJECTION = [
   "id",
@@ -43,7 +44,14 @@ function normalizeCountryCode(value) {
 
 export async function readPublicTrazeProviderIndexRows(options = {}) {
   const client = getSupabaseClient();
-  if (!client) return null;
+  if (!client) {
+    if (shouldRequireLiveProviderIndex()) {
+      throw new Error(
+        "Traffic build requires Supabase provider index access. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true."
+      );
+    }
+    return null;
+  }
 
   let query = client
     .schema("vport")
@@ -64,6 +72,9 @@ export async function readPublicTrazeProviderIndexRows(options = {}) {
     if (!loggedVportDatasetError) {
       loggedVportDatasetError = true;
       console.error("[vportDataset] public_traze_provider_index_v query failed:", error.message);
+    }
+    if (shouldRequireLiveProviderIndex()) {
+      throw new Error(`Traffic build could not read public_traze_provider_index_v: ${error.message}`);
     }
     return null;
   }

@@ -4,12 +4,9 @@ let _client = null;
 let _adminClient = null;
 
 /**
- * Returns a Supabase anon client for build-time / server-side reads.
- * Returns null if SUPABASE_URL or SUPABASE_ANON_KEY are not set —
- * callers receive empty arrays and degrade to notFound().
- *
- * Never call this in client components — the anon key is fine for public
- * reads but env vars without NEXT_PUBLIC_ prefix are server-only.
+ * Server-only Supabase client for Traffic build-time reads.
+ * Prefer service role in production static exports because public directory
+ * views can depend on underlying tables that are not readable by anon.
  *
  * @returns {import("@supabase/supabase-js").SupabaseClient | null}
  */
@@ -17,7 +14,7 @@ export function getSupabaseClient() {
   if (_client) return _client;
 
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
   if (!url || !key) return null;
 

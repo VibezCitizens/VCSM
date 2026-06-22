@@ -95,7 +95,8 @@ jobs:
 
   # ─────────────────────────────────────────────────────────────────────────────
   # Traffic — Next.js 15 static site (programmatic SEO directory engine)
-  # No env vars required — all have hard-coded defaults in src/lib/env.js.
+  # CI does not receive production Supabase secrets. The Traffic production
+  # deploy still requires a live provider index on main/production branches.
   # No typecheck step — Traffic source is .jsx/.js only (no .ts/.tsx files).
   # ─────────────────────────────────────────────────────────────────────────────
   traffic:
@@ -117,6 +118,8 @@ jobs:
 
       - name: Build
         working-directory: apps/Traffic
+        env:
+          TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX: "true"
         run: npm run build
 
       - name: Lint
