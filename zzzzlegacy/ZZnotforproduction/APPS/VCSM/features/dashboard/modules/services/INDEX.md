@@ -1,6 +1,0 @@
-# INDEX — VCSM / dashboard / modules / services
-
-Status: PLACEHOLDER
-
-Created by:
-TICKET-ZZ-SCANNER-MAPPED-FOLDERS-0001

@@ -1,8 +1,0 @@
-# Dev Monitor Report
-Command : Claude: /Venom — trust boundary review
-ID      : claude:venom
-Exit    : 1
-Date    : 2026-06-07T11:23:14.693Z
-
-Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
-Error: When using --print, --output-format=stream-json requires --verbose
