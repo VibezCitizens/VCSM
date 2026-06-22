@@ -4,9 +4,7 @@ let _client = null;
 let _adminClient = null;
 
 /**
- * Server-only Supabase client for Traffic build-time reads.
- * Prefer service role in production static exports because public directory
- * views can depend on underlying tables that are not readable by anon.
+ * Public Supabase client for Traffic reads and writes that must respect RLS.
  *
  * @returns {import("@supabase/supabase-js").SupabaseClient | null}
  */
@@ -14,7 +12,7 @@ export function getSupabaseClient() {
   if (_client) return _client;
 
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_ANON_KEY;
 
   if (!url || !key) return null;
 
@@ -29,6 +27,13 @@ export function getSupabaseClient() {
   return _client;
 }
 
+/**
+ * Server-only Supabase client for production static provider exports.
+ * This is intentionally separate from getSupabaseClient() so public API DALs
+ * cannot accidentally bypass RLS with the service role key.
+ *
+ * @returns {import("@supabase/supabase-js").SupabaseClient | null}
+ */
 export function getSupabaseAdminClient() {
   if (_adminClient) return _adminClient;
 

@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "@/data/connectors/supabase.client";
+import { getSupabaseAdminClient } from "@/data/connectors/supabase.client";
 import { shouldRequireLiveProviderIndex } from "@/lib/env";
 
 const PROVIDER_INDEX_PROJECTION = [
@@ -43,7 +43,7 @@ function normalizeCountryCode(value) {
 }
 
 export async function readPublicTrazeProviderIndexRows(options = {}) {
-  const client = getSupabaseClient();
+  const client = getSupabaseAdminClient();
   if (!client) {
     if (shouldRequireLiveProviderIndex()) {
       throw new Error(
