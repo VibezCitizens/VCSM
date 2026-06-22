@@ -13,7 +13,12 @@ logan/
 /docs/
 db_snapshot/
 contract/
-scripts/
+# Dev/private script tooling — anchored to the four known dirs so the rule
+# can never silently swallow a future build-reachable apps/*/src/**/scripts dir.
+/scripts/
+/apps/VCSM/scripts/
+/apps/VCSM/src/scripts/
+/apps/Traffic/src/scripts/
 zcontract/
 planning/
 session-summaries/
@@ -56,3 +61,13 @@ npm-debug.log*
 # Never ship dev/private artifacts
 ZZnotforproduction/
 zzzzlegacy/ZZnotforproduction/
+
+# Owner "never to production" list (explicit lock)
+#   ZZnotforproduction/        -> covered above
+#   supabase/migrations/       -> covered by **/supabase/migrations/ above
+#   scripts/                   -> covered above (now anchored: /scripts/, /apps/VCSM/scripts/, /apps/VCSM/src/scripts/, /apps/Traffic/src/scripts/)
+#   apps/WT/                   -> covered at top of file
+#   .claude/                   -> covered above
+# Gaps closed here:
+supabase/CLOUD.md
+apps/Traffic/docs/
