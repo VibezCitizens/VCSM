@@ -68,7 +68,7 @@ function resolveAliasEntry(entry, importPath, appRoot, repoRoot) {
     const prefix = find.slice(0, -1);
     if (!importPath.startsWith(prefix)) return null;
     const suffix = importPath.slice(prefix.length);
-    return resolveReplacement(replacement.replace("*", suffix), appRoot, repoRoot);
+    return resolveReplacement(replacement.replace(/\*/g, suffix), appRoot, repoRoot);
   }
 
   if (importPath === find) return resolveReplacement(replacement, appRoot, repoRoot);
