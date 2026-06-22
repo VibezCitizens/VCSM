@@ -1,7 +1,7 @@
 "use client";
 
 import { MapPin, Scissors, Key, Utensils, Fuel } from "lucide-react";
-import TrazeSearchBar from "@/components/TrazeSearchBar";
+import TrazeSearchBar from "@/shared/components/TrazeSearchBar";
 import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
 import { useTrafficLanguage } from "@/lib/language";
 

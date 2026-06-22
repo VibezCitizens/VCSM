@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/app/providers/AuthProvider";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 import { useVportsList } from "@/features/settings/vports/hooks/useVportsList";
 import { useProfileActor } from "@/features/settings/vports/hooks/useProfileActor";
@@ -107,11 +107,13 @@ export function useVportsController() {
   }, [identity?.actorId]);
 
   const setBusinessCardPublished = useCallback(async (vportId, published) => {
+    const callerActorId = identity?.actorId ?? null;
+    const vportActorId = items?.find(v => v.id === vportId)?.actor_id ?? null;
     setBusyCardPublishId(vportId);
     setErrCardPublish('');
     setErrCardPublishId(null);
     try {
-      await ctrlSetVportBusinessCardPublishState({ vportId, published });
+      await ctrlSetVportBusinessCardPublishState({ vportId, published, callerActorId, vportActorId });
       setItems(prev => prev.map(v => v.id === vportId ? { ...v, business_card_published: published } : v));
       return true;
     } catch (err) {
@@ -121,7 +123,7 @@ export function useVportsController() {
     } finally {
       setBusyCardPublishId(null);
     }
-  }, [setItems]);
+  }, [setItems, items, identity?.actorId]);
 
   return {
     items,

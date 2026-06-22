@@ -1,16 +1,16 @@
 // src/features/post/commentcard/hooks/useCommentThread.js
 
 import { useCallback, useEffect, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { hydrateActorsFromRows } from "@/state/actors/hydrateActors";
 import {
   loadCommentThread,
   createRootComment,
   createReplyComment, // ✅ ADD
   buildTree, // ✅ REQUIRED — fixes “no default export” crash
-} from "@/features/post/commentcard/controller/postComments.controller";
+} from "@/features/post/commentcard/controllers/postComments.controller";
 import { hydrateCommentReactions } from
-  "@/features/post/commentcard/controller/commentReactions.hydrator.controller";
+  "@/features/post/commentcard/controllers/commentReactions.hydrator.controller";
 
 /* ============================================================
    HELPERS

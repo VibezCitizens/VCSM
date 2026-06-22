@@ -1,6 +1,6 @@
 import { buildTestId } from "@/dev/diagnostics/helpers/testResult";
 import { ensureActorContext } from "@/dev/diagnostics/helpers/ensureActorContext";
-import setResourceSlotDurationController from "@/features/booking/controller/setResourceSlotDuration.controller";
+import setResourceSlotDurationController from "@/features/booking/controllers/setResourceSlotDuration.controller";
 import {
   isMissingColumn,
   isMissingRelation,

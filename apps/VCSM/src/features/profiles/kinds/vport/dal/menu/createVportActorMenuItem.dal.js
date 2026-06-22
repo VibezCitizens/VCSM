@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/dal/menu/createVportActorMenuItem.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 const ITEM_SELECT =
   "id,profile_id,category_id,key,name,description,is_active,sort_order,created_at,updated_at,price_cents,currency_code,image_url";

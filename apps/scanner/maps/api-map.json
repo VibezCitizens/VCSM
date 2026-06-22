@@ -1,0 +1,1375 @@
+{
+  "generatedAt": "SCANNER-API-DISCOVERY-001",
+  "schema": "1.0.0",
+  "summary": {
+    "totalRpcs": 45,
+    "totalUniqueTables": 76,
+    "totalEdgeFunctions": 8,
+    "totalHttpEndpoints": 7,
+    "totalAdapters": 97,
+    "totalControllers": 163,
+    "totalCrossFeatureImports": 402,
+    "totalCrossFeatureViolations": 13,
+    "monitoringCoveragePercent": 11.11,
+    "securityFindingsCritical": 0,
+    "securityFindingsHigh": 1,
+    "securityFindingsMedium": 4,
+    "securityFindingsLow": 2
+  },
+  "features": {
+    "actors": {
+      "controllers": ["searchActors"],
+      "adapters": [
+        "apps/VCSM/src/features/actors/adapters/actors.adapter.js"
+      ],
+      "rpcs": ["search_actor_directory"],
+      "tables": ["actors", "actor_directory"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": [
+          { "source": "identity", "type": "adapter", "file": "features/identity/adapters/identity.adapter.js" },
+          { "source": "identity", "type": "adapter", "file": "features/identity/hooks/useIdentityBoot.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" },
+          { "source": "settings", "type": "adapter", "file": "features/settings/privacy/controller/Blocks.controller.js" },
+          { "source": "vportDashboard", "type": "adapter", "file": "features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "ads": {
+      "controllers": [],
+      "adapters": [
+        "apps/VCSM/src/features/ads/adapters/hooks/useVportAds.adapter.js",
+        "apps/VCSM/src/features/ads/adapters/widgets/OnemoredaysAd.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/ads/screens/VportAdsSettingsScreen.jsx" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "auth": {
+      "controllers": [
+        "resolveAuthCallbackController",
+        "readCurrentAuthUser",
+        "hydrateAuthSession",
+        "evaluateCompleteProfileGateController",
+        "createUserActorForProfile",
+        "signInWithPassword/getAuthUser/signOut",
+        "getOnboardingBootstrapController/completeOnboardingController/bootstrapJoinOnboardingController",
+        "ensureProfileDiscoverable",
+        "ensureProfileShell",
+        "ctrlRegisterAccount/ctrlRecordSignupConsent",
+        "resendVerificationEmailController",
+        "ctrlSendResetPasswordEmail",
+        "resolveRecoverySessionController/watchPasswordRecoveryController/updatePasswordController/clearRecoveryFlag"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/auth/adapters/auth.adapter.js"
+      ],
+      "rpcs": ["generate_username", "create_actor_for_user"],
+      "tables": ["profiles", "actors", "actor_owners"],
+      "edgeFunctions": ["auth-register-recovery", "auth-reset-password-secure"],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": true,
+        "count": 7,
+        "types": ["debugLoginEvent"]
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "initiation", "type": "adapter", "file": "features/auth/controllers/__tests__/onboarding.controller.test.js" },
+          { "target": "initiation", "type": "adapter", "file": "features/auth/controllers/onboarding.controller.js" },
+          { "target": "wanders", "type": "adapter", "file": "features/auth/controllers/register.controller.js" },
+          { "target": "identity", "type": "adapter", "file": "features/auth/hooks/useAuthOnboarding.js" },
+          { "target": "legal", "type": "adapter", "file": "features/auth/hooks/useRegister.js" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "block": {
+      "controllers": [
+        "blockActorController/unblockActorController/toggleBlockActorController",
+        "ctrlGetBlockStatus",
+        "ctrlGetBlockedActorSet"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/block/adapters/hooks/useBlockActorAction.adapter.js",
+        "apps/VCSM/src/features/block/adapters/hooks/useBlockStatus.adapter.js",
+        "apps/VCSM/src/features/block/adapters/ui/BlockConfirmModal.adapter.js"
+      ],
+      "rpcs": ["block_actor", "unblock_actor"],
+      "tables": ["blocks"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "feed", "type": "adapter", "file": "features/block/hooks/useBlockActions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/block/hooks/useBlockActions.js" }
+        ],
+        "asTarget": [
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/controller/friends/getFriendLists.controller.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/controller/friends/getTopFriendActorIds.controller.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/controller/friends/getTopFriendCandidates.controller.js" },
+          { "source": "social", "type": "adapter", "file": "features/social/friend/request/controllers/followRequests.controller.js" },
+          { "source": "social", "type": "adapter", "file": "features/social/friend/subscribe/controllers/follow.controller.js" },
+          { "source": "upload", "type": "adapter", "file": "features/upload/controllers/createPost.controller.js" },
+          { "source": "settings", "type": "adapter", "file": "features/settings/privacy/controller/Blocks.controller.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "booking": {
+      "controllers": [
+        "assertActorOwnsVportActorController",
+        "assertSessionOwnsVportActorController",
+        "readVportServicesByActor/listBookingServiceProfilesByServiceIds",
+        "cancelBookingController",
+        "confirmBookingController",
+        "createBookingController",
+        "ensureOwnerBookingResourceController",
+        "getBookingServiceProfilesController",
+        "getResourceAvailabilityController/invalidateBookingAvailability",
+        "listMyBookingsController",
+        "listOwnerBookingResourcesController",
+        "resolveVportProfileIdController",
+        "setAvailabilityExceptionController",
+        "setAvailabilityRuleController",
+        "setResourceSlotDurationController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/booking/adapters/booking.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [
+        "bookings",
+        "availability_rules",
+        "availability_exceptions",
+        "resource_services",
+        "service_booking_profiles",
+        "booking_service_profiles",
+        "resources",
+        "services",
+        "actor_owners",
+        "profiles"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": true,
+        "count": 15,
+        "types": ["captureVcsmError"]
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "notifications", "type": "adapter", "file": "features/booking/controllers/bookingCancellation.controller.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/booking/controllers/bookingCheckout.controller.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/booking/controllers/bookingReschedule.controller.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/booking/controllers/bookingStatusUpdate.controller.js" },
+          { "target": "identity", "type": "adapter", "file": "features/booking/adapters/booking.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/booking/adapters/bookingAvailability.adapter.js" }
+        ],
+        "asTarget": [
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.js" },
+          { "source": "profiles", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useAgendaCalendarValues.js" },
+          { "source": "profiles", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations.js" },
+          { "source": "profiles", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js" },
+          { "source": "profiles", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.js" },
+          { "source": "profiles", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/view/BookingStepConfirm.jsx" },
+          { "source": "profiles", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/view/VportBookingView.jsx" },
+          { "source": "join", "type": "adapter", "file": "features/join/controllers/joinBarbershopAccount.controller.js" },
+          { "source": "join", "type": "adapter", "file": "features/join/controllers/joinBarbershopQr.controller.js" }
+        ]
+      },
+      "securityFlags": ["MISSING_ACTOR_CHECK"]
+    },
+    "chat": {
+      "controllers": [
+        "recordChatAttachmentController",
+        "getChatInboxUnreadBadgeCount"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/chat/adapters/chat.adapter.js",
+        "apps/VCSM/src/features/chat/adapters/start/hooks/useStartConversation.adapter.js"
+      ],
+      "rpcs": ["search_actor_directory"],
+      "tables": ["actors", "blocks", "inbox_entries", "message_attachments"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/chat/adapters/chatEnrichment.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/adapters/chatSearch.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/components/ChatSearchResult.jsx" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/components/MessageItem.jsx" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/hooks/useChatConversation.js" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/hooks/useChatMessages.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/chat/hooks/useChatMessages.js" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/hooks/useChatRoom.js" },
+          { "target": "identity", "type": "adapter", "file": "features/chat/screens/ChatScreen.jsx" },
+          { "target": "notifications", "type": "adapter", "file": "features/chat/screens/ChatScreen.jsx" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "explore": {
+      "controllers": ["ctrlSearchResults", "ctrlSearchTabs"],
+      "adapters": [],
+      "rpcs": ["search_actor_directory"],
+      "tables": ["posts"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/explore/adapters/explore.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/explore/hooks/useExploreSearch.js" },
+          { "target": "identity", "type": "adapter", "file": "features/explore/screens/ExploreScreen.jsx" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "feed": {
+      "controllers": [
+        "ctrlGetWelcomeCardVisible/ctrlMarkWelcomeCardSeen",
+        "getDebugPrivacyRowsController",
+        "getFeedViewerIsAdult",
+        "listActorPosts"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/feed/adapters/feedCache.adapter.js",
+        "apps/VCSM/src/features/feed/adapters/hooks/useFeed.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": ["actor_onboarding_steps", "posts"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/feed/adapters/feed.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/feed/components/FeedCard.jsx" },
+          { "target": "profiles", "type": "adapter", "file": "features/feed/components/FeedCard.jsx" },
+          { "target": "identity", "type": "adapter", "file": "features/feed/hooks/useFeedActions.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/feed/hooks/useFeedActions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/feed/hooks/useFeedReactions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/feed/screens/FeedScreen.jsx" },
+          { "target": "notifications", "type": "adapter", "file": "features/feed/screens/FeedScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "block", "type": "adapter", "file": "features/block/hooks/useBlockActions.js" },
+          { "source": "social", "type": "adapter", "file": "features/social/friend/request/controllers/followRequests.controller.js" },
+          { "source": "social", "type": "adapter", "file": "features/social/friend/subscribe/controllers/follow.controller.js" },
+          { "source": "social", "type": "adapter", "file": "features/social/friend/subscribe/controllers/unsubscribe.controller.js" },
+          { "source": "settings", "type": "adapter", "file": "features/settings/privacy/controller/actorPrivacy.controller.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "flyerBuilder": {
+      "controllers": [
+        "uploadFlyerImageCtrl/saveFlyerPublicDetailsCtrl",
+        "ctrlUploadDesignAsset/ctrlQueueDesignExport/ctrlRefreshDesignExports",
+        "designStudio (re-exports)",
+        "ctrlLoadDesignStudio",
+        "ctrlSaveDesignPageScene/ctrlCreateDesignPage/ctrlDeleteDesignPage",
+        "requireOwnerActorAccess/requireDesignDocumentOwnerAccess"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/flyerBuilder/adapters/flyerBuilder.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [
+        "design_documents",
+        "design_pages",
+        "design_page_versions",
+        "design_assets",
+        "design_render_jobs",
+        "design_exports",
+        "profiles"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "hydration": {
+      "controllers": [],
+      "adapters": [],
+      "rpcs": [],
+      "tables": ["profile_actor_access"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "identity": {
+      "controllers": [
+        "ensureVcsmPlatformBootstrap",
+        "refreshVcActorDirectory/refreshActorDirectoryRow"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+        "apps/VCSM/src/features/identity/adapters/identityOps.adapter.js"
+      ],
+      "rpcs": ["provision_vcsm_identity", "refresh_actor_directory_row"],
+      "tables": ["user_app_actor_links"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": true,
+        "count": 9,
+        "types": ["captureVcsmError", "debugLoginEvent"]
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "actors", "type": "adapter", "file": "features/identity/adapters/identity.adapter.js" },
+          { "target": "profiles", "type": "adapter", "file": "features/identity/adapters/identity.adapter.js" },
+          { "target": "actors", "type": "adapter", "file": "features/identity/hooks/useIdentityBoot.js" }
+        ],
+        "asTarget": [
+          { "source": "ads", "type": "adapter", "file": "features/ads/screens/VportAdsSettingsScreen.jsx" },
+          { "source": "auth", "type": "adapter", "file": "features/auth/hooks/useAuthOnboarding.js" },
+          { "source": "block", "type": "adapter", "file": "features/block/hooks/useBlockActions.js" },
+          { "source": "booking", "type": "adapter", "file": "features/booking/adapters/booking.adapter.js" },
+          { "source": "booking", "type": "adapter", "file": "features/booking/adapters/bookingAvailability.adapter.js" },
+          { "source": "chat", "type": "adapter", "file": "features/chat/adapters/chatEnrichment.adapter.js" },
+          { "source": "explore", "type": "adapter", "file": "features/explore/adapters/explore.adapter.js" },
+          { "source": "feed", "type": "adapter", "file": "features/feed/adapters/feed.adapter.js" },
+          { "source": "initiation", "type": "adapter", "file": "features/initiation/adapters/initiation.adapter.js" },
+          { "source": "notifications", "type": "adapter", "file": "features/notifications/adapters/notifications.adapter.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" },
+          { "source": "settings", "type": "adapter", "file": "features/settings/account/hooks/useAccountSettings.js" },
+          { "source": "social", "type": "adapter", "file": "features/social/adapters/social.adapter.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "initiation": {
+      "controllers": [
+        "acceptCitizenInviteAttribution",
+        "getOnboardingCardsController",
+        "getVibeTagsOnboardingController/saveVibeTagsOnboardingController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/initiation/adapters/initiation.adapter.js",
+        "apps/VCSM/src/features/initiation/adapters/onboarding.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [
+        "vibe_invites",
+        "vibe_tags",
+        "vibe_actor_tags",
+        "actor_onboarding_steps",
+        "onboarding_steps",
+        "actors",
+        "profiles"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/initiation/adapters/initiation.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/initiation/controllers/inviteAttribution.controller.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/initiation/controllers/inviteAttribution.controller.js" },
+          { "target": "identity", "type": "adapter", "file": "features/initiation/screens/InitiationOnboardingScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "auth", "type": "adapter", "file": "features/auth/controllers/__tests__/onboarding.controller.test.js" },
+          { "source": "auth", "type": "adapter", "file": "features/auth/controllers/onboarding.controller.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "invite": {
+      "controllers": ["ctrlSendCitizenInvite"],
+      "adapters": [],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": ["send-citizen-invite"],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "join": {
+      "controllers": [
+        "loadInviteForJoin/signUpForBarbershopInvite/loginForInvite/checkJoinAuthState/getExistingBarberVport/autoResumeInviteOnboarding/createBarberVportAndAccept/useExistingBarberVportAndAccept",
+        "loadQrJoin/findCurrentUserBarberVport/acceptQrJoin/createBarberVportAndAcceptQr"
+      ],
+      "adapters": [],
+      "rpcs": [],
+      "tables": ["profile_categories", "profiles", "resources"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "legal", "type": "adapter", "file": "features/join/controllers/joinBarbershopAccount.controller.js" },
+          { "target": "booking", "type": "adapter", "file": "features/join/controllers/joinBarbershopAccount.controller.js" },
+          { "target": "booking", "type": "adapter", "file": "features/join/controllers/joinBarbershopQr.controller.js" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "legal": {
+      "controllers": [
+        "getActiveLegalDocuments/getUserConsentStatus/recordLegalAcceptance/recordSignupConsent/resolveLegalGateForSession/acceptRequiredConsents",
+        "getLegalDocumentController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/legal/adapters/legal.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": ["user_consents"],
+      "edgeFunctions": [],
+      "httpEndpoints": ["https://api.ipify.org?format=json"],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": [
+          { "source": "auth", "type": "adapter", "file": "features/auth/hooks/useRegister.js" },
+          { "source": "content", "type": "adapter", "file": "features/content/adapters/content.adapter.js" },
+          { "source": "join", "type": "adapter", "file": "features/join/controllers/joinBarbershopAccount.controller.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "media": {
+      "controllers": [
+        "createMediaAssetController",
+        "softDeleteMediaAssetController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/media/adapters/media.adapter.js",
+        "apps/VCSM/src/features/media/adapters/mediaAppId.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": ["media_assets", "apps"],
+      "edgeFunctions": [],
+      "httpEndpoints": ["https://upload.vibezcitizens.com"],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "moderation": {
+      "controllers": [
+        "assertModerationAccessController",
+        "computeHiddenCommentIdsFromActions/expandHiddenRootsToDescendants/getHiddenCommentIdsForActor/hideCommentForActor/unhideCommentForActor",
+        "getConversationCoverStatus",
+        "hideReportedObjectController/dismissReportController",
+        "computeHiddenPostIdsFromActions/getHiddenPostIdsForActor/hidePostForActor/unhidePostForActor",
+        "createReportController",
+        "undoConversationCover"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/moderation/adapters/components/ChatSpamCover.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/components/ReportModal.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/components/ReportThanksOverlay.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/components/ReportedObjectCover.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/hooks/useCommentVisibility.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/hooks/useConversationCover.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/hooks/useHidePostForActor.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/hooks/usePostVisibility.adapter.js",
+        "apps/VCSM/src/features/moderation/adapters/hooks/useReportFlow.adapter.js"
+      ],
+      "rpcs": ["is_current_user_moderator"],
+      "tables": ["reports", "report_events", "inbox_entries", "actions", "posts", "messages"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "notifications": {
+      "controllers": [
+        "getNotifications",
+        "loadNotificationHeader/markAllNotificationsSeen",
+        "getUnreadNotificationCount",
+        "resolveVportOwnerActorId"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js"
+      ],
+      "rpcs": ["create_event", "insert_recipients", "upsert_rendered", "insert_inbox_item", "update_recipient_status"],
+      "tables": ["events", "rendered", "inbox_items", "recipients", "notifications"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/notifications/adapters/notifications.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/notifications/hooks/useNotificationActions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/notifications/screens/NotificationsScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "booking", "type": "adapter", "file": "features/booking/controllers/bookingCancellation.controller.js" },
+          { "source": "chat", "type": "adapter", "file": "features/chat/hooks/useChatMessages.js" },
+          { "source": "feed", "type": "adapter", "file": "features/feed/hooks/useFeedActions.js" },
+          { "source": "initiation", "type": "adapter", "file": "features/initiation/controllers/inviteAttribution.controller.js" },
+          { "source": "settings", "type": "adapter", "file": "features/settings/notifications/hooks/useNotificationSettings.js" }
+        ]
+      },
+      "securityFlags": ["DIRECT_TABLE_WRITE"]
+    },
+    "portfolio": {
+      "controllers": ["ctrlListPortfolio/ctrlGetPortfolioItem"],
+      "adapters": [
+        "apps/VCSM/src/features/portfolio/adapters/portfolioTrace.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": ["actor_owners"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/portfolio/adapters/portfolio.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/portfolio/hooks/usePortfolioActions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/portfolio/screens/PortfolioScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "post": {
+      "controllers": [
+        "toggleCommentLike",
+        "hydrateCommentReactions",
+        "softDeleteCommentController",
+        "editCommentController",
+        "loadCommentThread/createRootComment/createReplyComment",
+        "getPostCommentCount",
+        "softDeletePostController",
+        "editPostController",
+        "getPostById",
+        "getPostMentionMap",
+        "getPostReactionsController",
+        "sendRoseController",
+        "togglePostReactionController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/post/adapters/commentcard/components/CommentCard.container.adapter.js",
+        "apps/VCSM/src/features/post/adapters/commentcard/hooks/useCommentThread.adapter.js",
+        "apps/VCSM/src/features/post/adapters/post.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postCard.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/components/BinaryReactionButton.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/components/CommentButton.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/components/PostActionsMenu.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/components/RoseReactionButton.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/components/ShareModal.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/components/ShareReactionButton.adapter.js",
+        "apps/VCSM/src/features/post/adapters/postcard/hooks/useDeletePostAction.adapter.js",
+        "apps/VCSM/src/features/post/adapters/screens/PostDetail.view.adapter.js"
+      ],
+      "rpcs": ["post_reactors_summary_one"],
+      "tables": [
+        "posts",
+        "post_mentions",
+        "post_rose_gifts",
+        "post_reactions",
+        "post_comments",
+        "comment_likes",
+        "actor_directory",
+        "blocks",
+        "actor_privacy_settings",
+        "actor_follows"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "professional": {
+      "controllers": ["ctrlListProfessionalBriefings/ctrlMarkProfessionalBriefingsSeen"],
+      "adapters": [],
+      "rpcs": [],
+      "tables": ["notifications"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": ["MISSING_ACTOR_CHECK"]
+    },
+    "profiles": {
+      "controllers": [
+        "buildActorCanonicalSlugController",
+        "getFriendListsController",
+        "getTopFriendActorIdsController",
+        "getTopFriendCandidatesController",
+        "hydrateActorsIntoStore",
+        "saveTopFriendRanksController",
+        "getActorKindController",
+        "getProfileView",
+        "enrichPhotoPostsController",
+        "getActorPostsController",
+        "invalidateActorProfileCache",
+        "resolveActorBySlugController",
+        "resolveUsernameToActor",
+        "getActorVibeTagsController",
+        "publishBarbershopHoursUpdateAsPostController",
+        "publishBarbershopPortfolioUpdateAsPostController",
+        "createVportContentPageController",
+        "deleteVportContentPageController",
+        "listVportContentPagesController",
+        "listVportPublicContentPagesController",
+        "readVportPublicContentPageController",
+        "toggleVportContentPagePublishController",
+        "updateVportContentPageController",
+        "publishExchangeRateUpdateAsPostController",
+        "getVportActorIdByVportIdController",
+        "getVportPublicDetailsController",
+        "getVportTypeController",
+        "getLocksmithProfileController",
+        "ctrlAddServiceArea/ctrlUpdateServiceArea/ctrlDeleteServiceArea/ctrlSaveServiceDetail/ctrlDeleteServiceDetail/ctrlSavePortfolioDetail",
+        "publishLocksmithHoursUpdateAsPostController",
+        "publishLocksmithPortfolioUpdateAsPostController",
+        "publishLocksmithServiceAreaUpdateAsPostController",
+        "deleteVportActorMenuCategoryController",
+        "deleteVportActorMenuItemController",
+        "getVportActorMenuController",
+        "publishMenuUpdateAsPostController",
+        "saveVportActorMenuCategoryController",
+        "saveVportActorMenuItemController",
+        "ctrlListPortfolio/ctrlGetPortfolioItem",
+        "getVportRatesController",
+        "upsertVportRateController",
+        "ctrlGetReviewFormConfig/ctrlAssertReviewTargetActor/ctrlGetOfficialStats/ctrlListReviews/ctrlSubmitReview/ctrlGetMyActiveReview/ctrlDeleteMyReview",
+        "ctrlListReviewServices/ctrlListServiceReviews",
+        "createOrUpdateVportServiceAddonController",
+        "deleteVportServiceAddonController",
+        "getVportServicesController",
+        "reorderVportServiceAddonController",
+        "upsertVportServicesController",
+        "getSubscribersController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/exchange.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/hooks/gas/useOwnerPendingSuggestions.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/hooks/gas/useSubmitFuelPriceSuggestion.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/hooks/gas/useVportGasPrices.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/hooks/rates/useUpsertVportRate.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/hooks/services/useUpsertVportServices.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/locksmith.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/ownership.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/gas/VportGasPricesView.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/gas/components/GasPricesPanel.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/gas/components/GasStates.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/gas/components/OwnerPendingSuggestionsList.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/rates/components/VportRateEditorCard.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/rates/view/VportRatesView.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/review/VportReviewsView.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/services/view/VportServicesView.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/services.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/kinds/vport/vportProfiles.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/photos/photoReactions.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/profiles.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/tags/tagsData.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/ui/PrivateProfileGate.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/ui/UnavailableProfileGate.adapter.js",
+        "apps/VCSM/src/features/profiles/adapters/ui/actorProfileScreenDependencies.adapter.js"
+      ],
+      "rpcs": [
+        "save_friend_ranks",
+        "get_friend_ranks",
+        "count_vport_subscribers",
+        "list_vport_subscribers",
+        "can_view_actor_signal"
+      ],
+      "tables": [
+        "actors",
+        "profiles",
+        "actor_directory",
+        "actor_follows",
+        "vibe_actor_tags",
+        "vibe_tags",
+        "public_actor_seo_v",
+        "profile_categories",
+        "profile_public_details",
+        "resources",
+        "availability_rules",
+        "public_vport_reviews_v",
+        "public_vport_review_summary_v",
+        "public_traze_profiles_v",
+        "content_pages",
+        "locksmith_service_details",
+        "locksmith_service_areas",
+        "locksmith_portfolio_details",
+        "menu_items",
+        "menu_categories",
+        "menu_item_media",
+        "public_menu_read_model_v",
+        "public_vport_review_dimensions_v",
+        "rates",
+        "service_addons",
+        "services"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "actors", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" },
+          { "target": "booking", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" },
+          { "target": "content", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" },
+          { "target": "booking", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useAgendaCalendarValues.js" },
+          { "target": "booking", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations.js" },
+          { "target": "booking", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js" },
+          { "target": "booking", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.js" },
+          { "target": "booking", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/view/BookingStepConfirm.jsx" },
+          { "target": "booking", "type": "violation", "file": "features/profiles/kinds/vport/screens/booking/view/VportBookingView.jsx" }
+        ],
+        "asTarget": [
+          { "source": "identity", "type": "adapter", "file": "features/identity/adapters/identity.adapter.js" },
+          { "source": "feed", "type": "adapter", "file": "features/feed/components/FeedCard.jsx" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "public": {
+      "controllers": [
+        "getVportBusinessCardPublicController/submitVportBusinessCardLeadController/getVportBusinessCardSectionsController",
+        "getVportPublicDetailsController",
+        "getVportPublicMenuController",
+        "getVportPublicReviewsController/getVportPublicReviewsPageController",
+        "resolveMenuSlugController",
+        "resolveVportSlugController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/public/vportMenu/adapters/vportMenu.adapter.js"
+      ],
+      "rpcs": [
+        "read_business_card_public",
+        "submit_business_card_lead",
+        "get_business_card_sections"
+      ],
+      "tables": [],
+      "edgeFunctions": ["send-lead-confirmation"],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/public/screens/PublicProfileScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "wanders", "type": "violation", "file": "features/wanders/core/hooks/useWandersBusinessCardOps.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "qrcode": {
+      "controllers": [],
+      "adapters": [
+        "apps/VCSM/src/features/qrcode/adapters/qrcode.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "reviews": {
+      "controllers": [],
+      "adapters": [],
+      "rpcs": [],
+      "tables": ["actor_owners"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/reviews/adapters/reviews.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/reviews/hooks/useReviewActions.js" },
+          { "target": "notifications", "type": "adapter", "file": "features/reviews/hooks/useReviewActions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/reviews/screens/ReviewsScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "settings": {
+      "controllers": [
+        "ctrlResolveVportIdByActorId/ctrlDeleteAccount/ctrlSoftDeleteVport/ctrlHardDeleteVport/ctrlRestoreVport",
+        "ctrlListMyBlocks/ctrlSearchActors/ctrlBlockActor/ctrlUnblockActor",
+        "ctrlGetActorPrivacy/ctrlSetActorPrivacy",
+        "ctrlGetCurrentAuthUserId",
+        "loadProfileCore/saveProfileCore",
+        "recordProfileMediaAssetController",
+        "ctrlResolveVportIdByActorId (profile)",
+        "saveProfile",
+        "ctrlGetAuthedUserId",
+        "ctrlGetProfileActorId",
+        "listMyVportsController",
+        "ctrlSetVportBusinessCardPublishState",
+        "ctrlGetVportBusinessCardSettings/ctrlSetVportBusinessCardSettings",
+        "ctrlGetVportDirectoryState/ctrlSetVportDirectoryVisible",
+        "ctrlGetVportSocialSettings/ctrlUpdateVportSocialSettings"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/settings/adapters/privacy/hooks/useMyBlocks.adapter.js",
+        "apps/VCSM/src/features/settings/adapters/profile/ui/VportAboutDetails.view.adapter.js",
+        "apps/VCSM/src/features/settings/adapters/settings.adapter.js",
+        "apps/VCSM/src/features/settings/adapters/ui/Card.adapter.js"
+      ],
+      "rpcs": [
+        "block_actor",
+        "unblock_actor",
+        "soft_delete_citizen_account",
+        "soft_delete_vport",
+        "hard_delete_vport",
+        "restore_vport",
+        "set_business_card_publish_state",
+        "get_actor_social_public_policy"
+      ],
+      "tables": [
+        "profiles",
+        "actors",
+        "actor_privacy_settings",
+        "blocks",
+        "actor_owners",
+        "profile_public_details"
+      ],
+      "edgeFunctions": ["delete-citizen-account"],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/settings/account/hooks/useAccountSettings.js" },
+          { "target": "identity", "type": "adapter", "file": "features/settings/account/screens/AccountSettingsScreen.jsx" },
+          { "target": "social", "type": "violation", "file": "features/settings/vports/controller/vportSocialSettings.controller.js" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": ["DAL_BYPASS"]
+    },
+    "shell": {
+      "controllers": [],
+      "adapters": [
+        "apps/VCSM/src/features/shell/adapters/shell.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "social": {
+      "controllers": [
+        "ctrlSendFollowRequest/ctrlAcceptFollowRequest/ctrlDeclineFollowRequest/ctrlCancelFollowRequest/ctrlListIncomingRequests/ctrlGetFollowRequestStatus",
+        "ctrlSubscribe",
+        "ctrlGetFollowRelationshipState",
+        "ctrlGetFollowStatus",
+        "ctrlGetFollowerCount",
+        "ctrlUnsubscribe",
+        "ctrlGetActorPrivacy/ctrlInvalidateActorPrivacyCache"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/social/adapters/components/PrivateProfileNotice.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/request/hooks/useFollowRequestActions.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/request/hooks/useIncomingFollowRequests.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/request/hooks/useSendFollowRequest.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/request/hooks/useSubscribeAction.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/subscribe/components/SubscribeDebugPanel.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/subscribe/hooks/useFollowActorToggle.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/subscribe/hooks/useFollowStatus.adapter.js",
+        "apps/VCSM/src/features/social/adapters/friend/subscribe/hooks/useFollowerCount.adapter.js",
+        "apps/VCSM/src/features/social/adapters/privacy/actorPrivacy.adapter.js",
+        "apps/VCSM/src/features/social/adapters/privacy/actorSignalVisibility.adapter.js",
+        "apps/VCSM/src/features/social/adapters/privacy/hooks/useActorPrivacy.adapter.js",
+        "apps/VCSM/src/features/social/adapters/social.adapter.js"
+      ],
+      "rpcs": [
+        "get_follower_count",
+        "get_actor_social_public_policy",
+        "can_view_actor_signal"
+      ],
+      "tables": [
+        "actor_follows",
+        "social_follow_requests",
+        "actor_social_settings"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "identity", "type": "adapter", "file": "features/social/adapters/social.adapter.js" },
+          { "target": "identity", "type": "adapter", "file": "features/social/hooks/useSocialActions.js" },
+          { "target": "identity", "type": "adapter", "file": "features/social/screens/SocialScreen.jsx" }
+        ],
+        "asTarget": [
+          { "source": "settings", "type": "violation", "file": "features/settings/vports/controller/vportSocialSettings.controller.js" },
+          { "source": "settings", "type": "adapter", "file": "features/settings/privacy/hooks/usePrivacySettings.js" },
+          { "source": "profiles", "type": "adapter", "file": "features/profiles/adapters/profiles.adapter.js" }
+        ]
+      },
+      "securityFlags": []
+    },
+    "upload": {
+      "controllers": [
+        "recordPostMediaController",
+        "ctrlSearchMentionSuggestions",
+        "createPostController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/upload/adapters/posts.adapter.js",
+        "apps/VCSM/src/features/upload/adapters/ui/LinkifiedMentions.adapter.js"
+      ],
+      "rpcs": ["search_actor_directory"],
+      "tables": ["posts", "post_media", "post_mentions"],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "notifications", "type": "adapter", "file": "features/upload/controllers/createPost.controller.js" },
+          { "target": "block", "type": "adapter", "file": "features/upload/controllers/createPost.controller.js" }
+        ],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "vgrid": {
+      "controllers": [],
+      "adapters": [
+        "apps/VCSM/src/features/vgrid/adapters/index.js"
+      ],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "void": {
+      "controllers": [],
+      "adapters": [
+        "apps/VCSM/src/features/void/adapters/index.js"
+      ],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "vport": {
+      "controllers": [
+        "getVportServiceCatalogController",
+        "submitCreateVportController",
+        "createVport/restoreVport (re-exports)"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/vport/adapters/CreateVportForm.jsx.adapter.js",
+        "apps/VCSM/src/features/vport/adapters/vport.adapter.js",
+        "apps/VCSM/src/features/vport/adapters/vport.public.adapter.js"
+      ],
+      "rpcs": ["create_vport", "soft_delete_vport", "hard_delete_vport", "restore_vport"],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": ["MISSING_ACTOR_CHECK"]
+    },
+    "vportDashboard": {
+      "controllers": [
+        "checkVportOwnershipController",
+        "loadOwnerQuickStatsController",
+        "createOwnerBookingController",
+        "updateBookingStatusController/rescheduleBookingController",
+        "getVportResourceAvailabilityController/listVportBookingResourcesController/createVportPublicBookingController",
+        "getVportGasPricesController",
+        "publishFuelPriceUpdateAsPostController",
+        "reviewFuelPriceSuggestionController",
+        "submitCitizenFuelPriceSuggestionController",
+        "submitFuelPriceSuggestionController",
+        "submitOwnerFuelPriceUpdateController",
+        "updateStationFuelUnitController",
+        "listVportLeadsController/markVportLeadContactedController/countNewVportLeadsController/fastCountNewVportLeadsController/deleteVportLeadController",
+        "addPortfolioMediaWithRecord",
+        "probeVportPortfolioController",
+        "loadDayScheduleController",
+        "createScheduleBooking/updateScheduleBookingStatus/rescheduleScheduleBooking",
+        "saveVportPublicDetailsByActorIdController",
+        "settingsSaveCoordinator",
+        "getTeamMembersController/addTeamMemberController/findEligibleBarbersController/sendTeamRequestController/removeTeamMemberController",
+        "getTeamAccessController/addTeamMemberController/updateTeamMemberRoleController/setTeamMemberStatusController/removeTeamMemberController/searchTeamCandidatesController",
+        "acceptTeamRequestController/declineTeamRequestController/getBarberTeamRequestsController/fetchBarbershopInviteController/acceptBarbershopInviteController"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [
+        "bookings",
+        "business_card_leads",
+        "resources",
+        "fuel_price_submissions",
+        "fuel_price_submission_reviews",
+        "fuel_prices",
+        "fuel_price_history",
+        "portfolio_media",
+        "profiles",
+        "profile_public_details",
+        "actor_follows",
+        "actors",
+        "actor_owners",
+        "service_catalog",
+        "station_price_settings",
+        "cities",
+        "profile_actor_access"
+      ],
+      "edgeFunctions": [],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": ["DIRECT_TABLE_WRITE"]
+    },
+    "wanders": {
+      "controllers": [
+        "upsertWandersCardKey/readWandersCardKey",
+        "getWandersAuthStatus",
+        "upsertWandersCardKey/readWandersCardKey (core)",
+        "readWandersCardById/readWandersCardByPublicId/listCardsForInbox/markWandersCardOpened/trackWandersCardCtaClicked/publishWandersFromBuilder",
+        "createWandersCard",
+        "ensureGuestUser",
+        "listMyMailboxAsGuest/markMailboxItemRead/updateMailboxItem",
+        "publishWandersFromBuilder",
+        "createReplyAsAnon/listRepliesForCard/softDeleteReply",
+        "createAnonWandersInbox/readWandersInboxById/readWandersInboxByPublicId/listMyWandersInboxesAsAnon/updateMyWandersInbox"
+      ],
+      "adapters": [
+        "apps/VCSM/src/features/wanders/adapters/services/wandersSupabaseClient.adapter.js",
+        "apps/VCSM/src/features/wanders/core/adapters/wanders.adapter.js"
+      ],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "httpEndpoints": ["${VITE_SUPABASE_URL} (wanders Supabase client interceptor)"],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [
+          { "target": "public", "type": "violation", "file": "features/wanders/core/hooks/useWandersBusinessCardOps.js" }
+        ],
+        "asTarget": [
+          { "source": "auth", "type": "adapter", "file": "features/auth/controllers/register.controller.js" }
+        ]
+      },
+      "securityFlags": ["CONTROLLER_BYPASS"]
+    },
+    "monitoring": {
+      "controllers": [],
+      "adapters": [],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": ["monitoring-ingest-error"],
+      "httpEndpoints": [],
+      "monitoring": {
+        "present": true,
+        "count": 1,
+        "types": ["captureVcsmError"]
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    },
+    "shared/location": {
+      "controllers": [],
+      "adapters": [],
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": ["reverse-geocode"],
+      "httpEndpoints": [
+        "${VITE_SUPABASE_URL}/functions/v1/reverse-geocode?lat={lat}&lon={lon}",
+        "${VITE_SUPABASE_URL}/functions/v1/reverse-geocode?search={query}"
+      ],
+      "monitoring": {
+        "present": false,
+        "count": 0,
+        "types": []
+      },
+      "crossFeatureImports": {
+        "asSource": [],
+        "asTarget": []
+      },
+      "securityFlags": []
+    }
+  },
+  "allRpcs": [
+    { "name": "block_actor", "feature": "settings", "file": "apps/VCSM/src/features/settings/privacy/dal/blocks.dal.js", "layer": "dal", "calledBy": "dalInsertBlock", "purpose": "Block an actor via moderation schema RPC" },
+    { "name": "unblock_actor", "feature": "settings", "file": "apps/VCSM/src/features/settings/privacy/dal/blocks.dal.js", "layer": "dal", "calledBy": "dalDeleteBlockByTarget", "purpose": "Unblock a previously blocked actor via moderation schema RPC" },
+    { "name": "soft_delete_citizen_account", "feature": "settings", "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js", "layer": "dal", "calledBy": "dalSoftDeleteCitizenAccount", "purpose": "Soft-delete the authenticated citizen's account" },
+    { "name": "soft_delete_vport", "feature": "settings", "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js", "layer": "dal", "calledBy": "dalDeleteMyVport", "purpose": "Soft-delete a specific vport by ID via vport schema" },
+    { "name": "restore_vport", "feature": "settings", "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js", "layer": "dal", "calledBy": "dalRestoreVport", "purpose": "Restore a soft-deleted vport by ID via vport schema" },
+    { "name": "hard_delete_vport", "feature": "settings", "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js", "layer": "dal", "calledBy": "dalHardDeleteVport", "purpose": "Permanently hard-delete a vport by ID via vport schema" },
+    { "name": "set_business_card_publish_state", "feature": "settings", "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js", "layer": "dal", "calledBy": "setVportBusinessCardPublishStateDAL", "purpose": "Toggle published/unpublished state of a vport business card" },
+    { "name": "post_reactors_summary_one", "feature": "post", "file": "apps/VCSM/src/features/post/postcard/dal/postReactions.read.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Read a summary of reactors for a single post via vc schema" },
+    { "name": "provision_vcsm_identity", "feature": "identity", "file": "apps/VCSM/src/features/identity/dal/provision.rpc.dal.js", "layer": "dal", "calledBy": "dalProvisionVcsmIdentity", "purpose": "Provision a full VCSM identity row for a user+actor pair" },
+    { "name": "refresh_actor_directory_row", "feature": "identity", "file": "apps/VCSM/src/features/identity/dal/refreshActorDirectory.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Refresh a single actor's row in the identity directory" },
+    { "name": "search_actor_directory", "feature": "chat", "file": "apps/VCSM/src/features/chat/setup.js", "layer": "other", "calledBy": "UNKNOWN", "purpose": "Search the actor directory for chat recipient lookup" },
+    { "name": "generate_username", "feature": "auth", "file": "apps/VCSM/src/features/auth/dal/onboarding.dal.js", "layer": "dal", "calledBy": "generateUsernameDAL", "purpose": "Generate a unique username from a display name during onboarding" },
+    { "name": "create_actor_for_user", "feature": "auth", "file": "apps/VCSM/src/features/auth/dal/actorCreate.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Create an actor record for a user profile via vc schema" },
+    { "name": "create_vport", "feature": "vport", "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Create a new vport with a generated slug via vport schema" },
+    { "name": "soft_delete_vport", "feature": "vport", "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js", "layer": "dal", "calledBy": "softDeleteVport", "purpose": "Soft-delete a vport by ID via vport schema" },
+    { "name": "hard_delete_vport", "feature": "vport", "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js", "layer": "dal", "calledBy": "hardDeleteVport", "purpose": "Permanently hard-delete a vport by ID via vport schema" },
+    { "name": "restore_vport", "feature": "vport", "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js", "layer": "dal", "calledBy": "restoreVport", "purpose": "Restore a soft-deleted vport by ID via vport schema" },
+    { "name": "search_actor_directory", "feature": "explore", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Search the actor directory for explore/discovery feature" },
+    { "name": "get_follower_count", "feature": "social", "file": "apps/VCSM/src/features/social/friend/subscribe/dal/subscriberCount.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Get follower count for an actor from vc schema with in-memory cache" },
+    { "name": "get_actor_social_public_policy", "feature": "social", "file": "apps/VCSM/src/features/social/privacy/dal/actorSocialPublicPolicy.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Fetch an actor's social public policy via vc schema" },
+    { "name": "can_view_actor_signal", "feature": "social", "file": "apps/VCSM/src/features/social/privacy/dal/actorSignalVisibility.dal.js", "layer": "dal", "calledBy": "dalCanViewActorSignal", "purpose": "Check whether the viewer can see a specific signal for a target actor" },
+    { "name": "get_business_card_sections", "feature": "public", "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/businessCardSections.read.dal.js", "layer": "dal", "calledBy": "readBusinessCardSectionsDAL", "purpose": "Read the ordered sections of a vport business card" },
+    { "name": "submit_business_card_lead", "feature": "public", "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCardLead.write.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Submit a lead from a public vport business card page" },
+    { "name": "read_business_card_public", "feature": "public", "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCard.read.dal.js", "layer": "dal", "calledBy": "readVportBusinessCardPublicBySlugDAL", "purpose": "Read a vport business card by slug for public display" },
+    { "name": "search_actor_directory", "feature": "actors", "file": "apps/VCSM/src/features/actors/dal/searchActors.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Search actor directory with public/all filter" },
+    { "name": "list_vport_subscribers", "feature": "profiles", "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersList.dal.js", "layer": "dal", "calledBy": "dalListVportSubscribers", "purpose": "List paginated subscribers for a vport actor" },
+    { "name": "count_vport_subscribers", "feature": "profiles", "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersCount.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Count subscribers for a vport actor with in-memory cache" },
+    { "name": "save_friend_ranks", "feature": "profiles", "file": "apps/VCSM/src/features/profiles/dal/friends/friendRanks.write.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Save ordered friend rank list for an actor" },
+    { "name": "get_friend_ranks", "feature": "profiles", "file": "apps/VCSM/src/features/profiles/dal/friends/friendRanks.reconcile.dal.js", "layer": "dal", "calledBy": "reconcileFriendRanks", "purpose": "Fetch current friend ranks as part of reconciliation logic" },
+    { "name": "save_friend_ranks", "feature": "profiles", "file": "apps/VCSM/src/features/profiles/dal/friends/friendRanks.reconcile.dal.js", "layer": "dal", "calledBy": "reconcileFriendRanks", "purpose": "Persist reconciled/pruned friend ranks back to DB" },
+    { "name": "get_friend_ranks", "feature": "profiles", "file": "apps/VCSM/src/features/profiles/dal/friends/friends.read.dal.js", "layer": "dal", "calledBy": "readFriendRankRows", "purpose": "Read ordered friend rank rows for a profile owner" },
+    { "name": "create_event", "feature": "notifications", "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js", "layer": "dal", "calledBy": "insertNotificationEventDAL", "purpose": "Create a notification event record via notification schema RPC" },
+    { "name": "insert_recipients", "feature": "notifications", "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js", "layer": "dal", "calledBy": "insertNotificationRecipientsDAL", "purpose": "Insert recipient rows for a notification event" },
+    { "name": "upsert_rendered", "feature": "notifications", "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js", "layer": "dal", "calledBy": "upsertNotificationRenderedDAL", "purpose": "Upsert rendered notification content for a recipient" },
+    { "name": "insert_inbox_item", "feature": "notifications", "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js", "layer": "dal", "calledBy": "insertNotificationInboxItemDAL", "purpose": "Insert an inbox item for a notification recipient" },
+    { "name": "update_recipient_status", "feature": "notifications", "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js", "layer": "dal", "calledBy": "updateNotificationRecipientStatusDAL", "purpose": "Update the delivery status of a notification recipient" },
+    { "name": "search_actor_directory", "feature": "upload", "file": "apps/VCSM/src/features/upload/dal/searchMentionSuggestions.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Search actor directory to suggest @mention completions" },
+    { "name": "block_actor", "feature": "block", "file": "apps/VCSM/src/features/block/dal/block.write.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Block an actor via moderation schema RPC with self-block guard" },
+    { "name": "unblock_actor", "feature": "block", "file": "apps/VCSM/src/features/block/dal/block.write.dal.js", "layer": "dal", "calledBy": "UNKNOWN", "purpose": "Unblock a previously blocked actor via moderation schema RPC" },
+    { "name": "is_current_user_moderator", "feature": "moderation", "file": "apps/VCSM/src/features/moderation/dal/assertModerationAccess.dal.js", "layer": "dal", "calledBy": "isModerationAuthorizedDAL", "purpose": "Check whether the current auth.uid() is a moderator" },
+    { "name": "create_vport", "feature": "dev", "file": "apps/VCSM/src/dev/diagnostics/groups/vports.group.js", "layer": "other", "calledBy": "UNKNOWN", "purpose": "Diagnostics: create a test vport via vport schema for dev seeding" },
+    { "name": "save_friend_ranks", "feature": "dev", "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js", "layer": "other", "calledBy": "UNKNOWN", "purpose": "Diagnostics: save friend ranks as part of block test setup" },
+    { "name": "save_friend_ranks", "feature": "dev", "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js", "layer": "other", "calledBy": "UNKNOWN", "purpose": "Diagnostics: test save_friend_ranks RPC directly" },
+    { "name": "create_actor_for_user", "feature": "dev", "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js", "layer": "other", "calledBy": "createUserActorViaLegacyRpc", "purpose": "Diagnostics: create an actor for a user via vc schema (legacy RPC path)" },
+    { "name": "create_vport", "feature": "dev", "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureVportSeed.js", "layer": "other", "calledBy": "UNKNOWN", "purpose": "Diagnostics: seed a vport for dev test setup" }
+  ],
+  "allEdgeFunctions": [
+    { "name": "delete-citizen-account", "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js", "feature": "settings/account", "callerContext": "Deletes a citizen account", "method": "invoke" },
+    { "name": "auth-register-recovery", "file": "apps/VCSM/src/features/auth/dal/resetPasswordSecure.dal.js", "feature": "auth", "callerContext": "Registers a recovery token during password reset flow", "method": "invoke" },
+    { "name": "auth-reset-password-secure", "file": "apps/VCSM/src/features/auth/dal/resetPasswordSecure.dal.js", "feature": "auth", "callerContext": "Executes the secure password reset operation", "method": "invoke" },
+    { "name": "send-citizen-invite", "file": "apps/VCSM/src/features/invite/dal/invite.dal.js", "feature": "invite", "callerContext": "Sends a citizen invite", "method": "invoke" },
+    { "name": "send-lead-confirmation", "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/sendLeadConfirmationEmail.edge.dal.js", "feature": "public/vportBusinessCard", "callerContext": "Fire-and-forget lead confirmation email for vport business card lead submissions", "method": "invoke" },
+    { "name": "monitoring-ingest-error", "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js", "feature": "monitoring", "callerContext": "Ingests error events into the monitoring system", "method": "invoke" },
+    { "name": "monitoring-ingest-error", "file": "apps/VCSM/src/services/monitoring/monitoringClient.js", "feature": "monitoring", "callerContext": "Ingests error events into the monitoring system via monitoring client", "method": "invoke" },
+    { "name": "reverse-geocode", "file": "apps/VCSM/src/shared/hooks/useUserLocation.js", "feature": "shared/location", "callerContext": "Reverse geocodes lat/lon coordinates and search strings", "method": "fetch" }
+  ],
+  "allHttpEndpoints": [
+    { "endpoint": "https://api.ipify.org?format=json", "type": "external", "feature": "legal", "file": "apps/VCSM/src/features/legal/dal/getPublicIp.dal.js", "method": "fetch", "httpMethod": "GET" },
+    { "endpoint": "${VITE_SUPABASE_URL}/functions/v1/reverse-geocode?lat={lat}&lon={lon}", "type": "internal", "feature": "shared/location", "file": "apps/VCSM/src/shared/hooks/useUserLocation.js", "method": "fetch", "httpMethod": "GET" },
+    { "endpoint": "${VITE_SUPABASE_URL}/functions/v1/reverse-geocode?search={query}", "type": "internal", "feature": "shared/location", "file": "apps/VCSM/src/shared/hooks/useUserLocation.js", "method": "fetch", "httpMethod": "GET" },
+    { "endpoint": "https://upload.vibezcitizens.com", "type": "external", "feature": "cloudflare/media-upload", "file": "apps/VCSM/src/services/cloudflare/uploadToCloudflare.js", "method": "fetch", "httpMethod": "POST" },
+    { "endpoint": "${VITE_SUPABASE_URL} (wanders Supabase client interceptor)", "type": "internal", "feature": "wanders", "file": "apps/VCSM/src/features/wanders/services/wandersSupabaseClient.js", "method": "fetch", "httpMethod": "UNKNOWN" },
+    { "endpoint": "${VITE_SUPABASE_URL} (debug Supabase client interceptor)", "type": "internal", "feature": "supabase/debug", "file": "apps/VCSM/src/services/supabase/supabaseClient.debug.js", "method": "fetch", "httpMethod": "UNKNOWN" },
+    { "endpoint": "same-origin request passthrough", "type": "internal", "feature": "service-worker", "file": "apps/VCSM/src/sw.js", "method": "fetch", "httpMethod": "UNKNOWN" }
+  ],
+  "allSecurityFindings": [
+    { "riskType": "MISSING_ACTOR_CHECK", "severity": "HIGH", "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js", "feature": "vport", "description": "updateVport() calls requireUser() to confirm a session exists, but the UPDATE query filters only on .eq('id', vportId) with no ownership clause. Any authenticated user who knows a target vportId can overwrite another user's VPORT fields." },
+    { "riskType": "MISSING_ACTOR_CHECK", "severity": "MEDIUM", "file": "apps/VCSM/src/features/booking/controller/createBooking.controller.js", "feature": "booking", "description": "createBookingController accepts customerActorId as an independent caller-supplied parameter. The controller validates requestActorId but customer_actor_id is written as whatever customerActorId the caller passes — not enforced to equal requestActorId." },
+    { "riskType": "DAL_BYPASS_WRITE", "severity": "MEDIUM", "file": "apps/VCSM/src/learning/controller/teachers/gradeSubmission.controller.js", "feature": "learning", "description": "gradeSubmission controller performs direct Supabase table writes against learning.grades inside the controller layer, bypassing the DAL tier." },
+    { "riskType": "DAL_BYPASS_WRITE", "severity": "MEDIUM", "file": "apps/VCSM/src/learning/controller/administration/adminAccess.controller.js", "feature": "learning", "description": "saveCourseMembership() and saveOrganizationMembership() perform raw Supabase writes directly inside the adminAccess controller file rather than a dedicated DAL." },
+    { "riskType": "DIRECT_TABLE_WRITE", "severity": "MEDIUM", "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js", "feature": "notifications", "description": "markNotificationRecipientsSeenDAL filters by recipient_id but not by recipient_actor_id. If an attacker can enumerate recipient_id values, they can mark arbitrary notifications as seen." },
+    { "riskType": "DIRECT_TABLE_WRITE", "severity": "LOW", "file": "apps/VCSM/src/features/vportDashboard/dal/write/updateVportBooking.write.dal.js", "feature": "vportDashboard/booking", "description": "UPDATABLE_COLS includes 'resource_id', 'service_id', and 'service_label_snapshot' — fields that could allow unauthorized rebooking manipulation if the controller's ownership check is bypassed." },
+    { "riskType": "MISSING_ACTOR_CHECK", "severity": "LOW", "file": "apps/VCSM/src/features/professional/briefings/dal/professionalBriefings.read.dal.js", "feature": "professional/briefings", "description": "dalMarkProfessionalBriefingsSeen reads/writes to vc.notifications (legacy schema) while the platform has migrated to notification.recipients + notification.inbox_items — creating dual-write drift." },
+    { "riskType": "HARDCODED_CONFIG", "severity": "INFO", "file": "apps/VCSM/src/learning/utils/realmDebug.js", "feature": "learning", "description": "VITE_LEARNING_DEBUG_REALMS and VITE_LEARNING_DEBUG_REALMS_BREAK are debug flags. If set to '1' in a production build, debug realm output could be rendered to end users." }
+  ]
+}

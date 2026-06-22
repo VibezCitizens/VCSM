@@ -48,9 +48,24 @@ export async function upsertAvailabilityExceptionDAL({ row } = {}) {
 
   const payload = pickDefined(row, EXCEPTION_WRITE_COLUMNS);
 
+  if (payload.id) {
+    // Update existing exception — scope to both id AND resource_id to prevent
+    // cross-resource hijack via a known foreign exceptionId (ELEK-2026-06-04-002).
+    const { data, error } = await vportClient
+      .from("availability_exceptions")
+      .update(payload)
+      .eq("id", payload.id)
+      .eq("resource_id", payload.resource_id)
+      .select(BOOKING_AVAILABILITY_EXCEPTION_SELECT)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error("upsertAvailabilityExceptionDAL: exception not found or does not belong to this resource");
+    return data;
+  }
+
   const { data, error } = await vportClient
     .from("availability_exceptions")
-    .upsert(payload, { onConflict: "id" })
+    .insert(payload)
     .select(BOOKING_AVAILABILITY_EXCEPTION_SELECT)
     .single();
 

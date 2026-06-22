@@ -9,7 +9,6 @@ export function VportReviewComposeForm({
   isEditing,
   reviewAuthorActorId,
   sessionActorId,
-  targetActorId,
   dynamicDimensions,
   activeDimKey,
   setActiveDimKey,

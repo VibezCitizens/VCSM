@@ -21,7 +21,7 @@ export async function upsertBookingResourceServicesDAL({ rows } = {}) {
   const payload = normalizeRows(rows);
   if (!payload.length) return [];
 
-  const { data, error } = await supabase
+  const { data, error } = await vportClient
     .schema("vc")
     .from("resource_services")
     .upsert(payload, { onConflict: "resource_id,service_id" })

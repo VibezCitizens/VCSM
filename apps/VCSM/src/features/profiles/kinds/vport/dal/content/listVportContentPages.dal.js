@@ -4,7 +4,7 @@
 import vportSchema from "@/services/supabase/vportClient";
 
 const CONTENT_SELECT =
-  "id,actor_id,profile_id,title,slug,excerpt,category,service_keys,is_published,is_indexable,published_at,created_at,updated_at";
+  "id,title,slug,excerpt,category,service_keys,is_published,is_indexable,published_at,created_at,updated_at";
 
 export async function listVportContentPagesDAL({ actorId } = {}) {
   if (!actorId) throw new Error("listVportContentPagesDAL: actorId is required");

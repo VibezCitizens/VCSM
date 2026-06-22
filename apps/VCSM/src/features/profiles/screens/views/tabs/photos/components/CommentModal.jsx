@@ -1,8 +1,7 @@
 // src/features/profiles/screens/views/tabs/photos/components/CommentModal.jsx
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import useCommentThread from "@/features/post/adapters/commentcard/hooks/useCommentThread.adapter";
-import CommentCard from "@/features/post/adapters/commentcard/components/CommentCard.container.adapter";
+import { useCommentThread, CommentCard } from "@/features/post/adapters/post.adapter";
 import CommentComposeModal from "./CommentComposeModal";
 
 function detectIOS() {

@@ -3,12 +3,10 @@ import {
   addDays,
   fromDateKey,
   startOfWeek,
-} from "@/features/booking/model/bookingCalendarDate.model";
-import {
   buildWeeklyAvailabilityDays,
   buildUpcomingAppointments,
   buildMonthStats,
-} from "@/features/booking/model/bookingCalendarAvailability.model";
+} from "@/features/booking/adapters/booking.adapter";
 
 export function useAgendaCalendarValues({
   selectedDateKey,

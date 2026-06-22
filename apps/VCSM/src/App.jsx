@@ -5,6 +5,7 @@ import { ActorSwitchDebugPanel } from "@debuggers/actor-switch";
 import { GlobalDebugPanel } from "@debuggers/global";
 import { PerfOverlay } from "@debuggers/performance";
 import { FeedProfilerOverlay } from "@debuggers/feed";
+import { DevMonitorOverlay } from "@debuggers/dev-monitor";
 
 // DEV-ONLY: Initialize fetch proxy and client metrics (Supabase proxy is installed in supabaseClient.js)
 if (import.meta.env.DEV) {
@@ -24,6 +25,7 @@ export default function App() {
       {import.meta.env.DEV && <ActorSwitchDebugPanel />}
       {import.meta.env.DEV && <PerfOverlay />}
       {import.meta.env.DEV && <FeedProfilerOverlay />}
+      {import.meta.env.DEV && <DevMonitorOverlay />}
     </div>
   );
 }

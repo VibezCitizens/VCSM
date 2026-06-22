@@ -52,9 +52,24 @@ export async function upsertAvailabilityRuleDAL({ row } = {}) {
 
   const payload = pickDefined(row, RULE_WRITE_COLUMNS);
 
+  if (payload.id) {
+    // Update existing rule — scope to both id AND resource_id to prevent
+    // cross-resource hijack via a known foreign ruleId (ELEK-2026-06-04-001).
+    const { data, error } = await vportClient
+      .from("availability_rules")
+      .update(payload)
+      .eq("id", payload.id)
+      .eq("resource_id", payload.resource_id)
+      .select(BOOKING_AVAILABILITY_RULE_SELECT)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error("upsertAvailabilityRuleDAL: rule not found or does not belong to this resource");
+    return data;
+  }
+
   const { data, error } = await vportClient
     .from("availability_rules")
-    .upsert(payload, { onConflict: "id" })
+    .insert(payload)
     .select(BOOKING_AVAILABILITY_RULE_SELECT)
     .single();
 

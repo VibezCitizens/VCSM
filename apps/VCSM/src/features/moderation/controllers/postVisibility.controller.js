@@ -4,6 +4,7 @@ import {
   insertModerationActionDAL,
   listModerationActionsForActorOnObjectsDAL,
 } from "@/features/moderation/dal/moderationActions.dal";
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 /**
  * "Latest action wins" per object_id.
@@ -59,17 +60,22 @@ export async function hidePostForActor({
   if (!actorId) throw new Error("hidePostForActor: actorId required");
   if (!postId) throw new Error("hidePostForActor: postId required");
 
-  await insertModerationActionDAL({
-    actorId,
-    actorDomain: 'vc',
-    reportId,
-    targetDomain: 'vc',
-    targetType: "post",
-    targetId: postId,
-    actionType: "hide",
-    reason,
-    meta: { source: 'reporter_local_hide' },
-  });
+  try {
+    await insertModerationActionDAL({
+      actorId,
+      actorDomain: 'vc',
+      reportId,
+      targetDomain: 'vc',
+      targetType: "post",
+      targetId: postId,
+      actionType: "hide",
+      reason,
+      meta: { source: 'reporter_local_hide' },
+    });
+  } catch (error) {
+    captureVcsmError({ feature: 'moderation', module: 'postVisibility.controller', severity: 'error', message: `hidePostForActor: insertModerationActionDAL failed — ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'insertModerationActionDAL', is_handled: false, context: { postId, actorId: actorId ?? null } })
+    throw error
+  }
 
   return { ok: true };
 }
@@ -86,16 +92,21 @@ export async function unhidePostForActor({
   if (!actorId) throw new Error("unhidePostForActor: actorId required");
   if (!postId) throw new Error("unhidePostForActor: postId required");
 
-  await insertModerationActionDAL({
-    actorId,
-    actorDomain: 'vc',
-    reportId,
-    targetDomain: 'vc',
-    targetType: "post",
-    targetId: postId,
-    actionType: "unhide",
-    reason,
-  });
+  try {
+    await insertModerationActionDAL({
+      actorId,
+      actorDomain: 'vc',
+      reportId,
+      targetDomain: 'vc',
+      targetType: "post",
+      targetId: postId,
+      actionType: "unhide",
+      reason,
+    });
+  } catch (error) {
+    captureVcsmError({ feature: 'moderation', module: 'postVisibility.controller', severity: 'error', message: `unhidePostForActor: insertModerationActionDAL failed — ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'insertModerationActionDAL', is_handled: false, context: { postId, actorId: actorId ?? null } })
+    throw error
+  }
 
   return { ok: true };
 }

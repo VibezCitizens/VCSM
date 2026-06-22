@@ -1,8 +1,9 @@
+// [SHARED_ACTOR_PRIMITIVE] — privacy and access gate for both citizen and vport actors
 import { useCallback, useMemo } from "react";
 import { useFollowStatus } from "@/features/social/adapters/friend/subscribe/hooks/useFollowStatus.adapter";
 import { useSendFollowRequest } from "@/features/social/adapters/friend/request/hooks/useSendFollowRequest.adapter";
 import { useActorPrivacy } from "@/features/social/adapters/privacy/hooks/useActorPrivacy.adapter";
-import { useBlockStatus } from "@/features/block";
+import { useBlockStatus } from "@/features/block/adapters/hooks/useBlockStatus.adapter";
 
 export function useProfileGate({
   viewerActorId,

@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/dal/rates/upsertVportRate.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 const RATES_SELECT =
   "id,profile_id,rate_type,base_currency,quote_currency,buy_rate,sell_rate,meta,updated_at,created_at";

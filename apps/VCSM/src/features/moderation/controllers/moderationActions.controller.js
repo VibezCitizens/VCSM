@@ -18,21 +18,34 @@ import {
 
 import { toDomainReport } from '@/features/moderation/models/report.model'
 import { assertModerationAccessController } from '@/features/moderation/controllers/assertModerationAccess.controller'
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
 
 export async function hideReportedObjectController({
   moderatorActorId,
   reportId,
 }) {
-  // 0) Authorization: verify caller holds a moderation role before any read or write.
+  // 0a) Session presence: reject unauthenticated callers before any DB access.
+  const sessionUser = await readCurrentAuthUser()
+  if (!sessionUser) {
+    const err = new Error('hideReportedObjectController: unauthenticated')
+    err.code = 'FORBIDDEN'
+    throw err
+  }
+
+  // 0b) Authorization: verify caller holds a moderation role before any read or write.
   await assertModerationAccessController(moderatorActorId)
 
   // 1) read report (raw)
   const { row: reportRow, error: readErr } = await getReportRowById({ reportId })
-  if (readErr) return { ok: false, error: readErr }
+  if (readErr) {
+    captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `hideReportedObjectController: getReportRowById failed — ${readErr?.message ?? 'unknown'}`, error_name: readErr?.name, operation: 'getReportRowById', is_handled: true, context: { reportId } })
+    return { ok: false, error: readErr }
+  }
   if (!reportRow) return { ok: false, error: new Error('Report not found') }
 
-  // 2) idempotency: if already actioned/dismissed, no-op domain result
-  if (reportRow.status === 'actioned') {
+  // 2) idempotency: if already actioned or dismissed, no-op domain result
+  if (reportRow.status === 'actioned' || reportRow.status === 'dismissed') {
     return {
       ok: true,
       report: toDomainReport(reportRow),
@@ -50,13 +63,19 @@ export async function hideReportedObjectController({
       moderatorActorId,
       postId: targetId,
     })
-    if (error) return { ok: false, error }
+    if (error) {
+      captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `hideReportedObjectController: hidePostRow failed — ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'hidePostRow', is_handled: true, context: { reportId, targetId } })
+      return { ok: false, error }
+    }
   } else if (targetType === 'message') {
     const { error } = await hideMessageRow({
       moderatorActorId,
       messageId: targetId,
     })
-    if (error) return { ok: false, error }
+    if (error) {
+      captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `hideReportedObjectController: hideMessageRow failed — ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'hideMessageRow', is_handled: true, context: { reportId, targetId } })
+      return { ok: false, error }
+    }
   } else {
     return {
       ok: false,
@@ -76,7 +95,10 @@ export async function hideReportedObjectController({
     reason: 'moderation_hide',
     expiresAt: null,
   })
-  if (actionErr) return { ok: false, error: actionErr }
+  if (actionErr) {
+    captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `hideReportedObjectController: insertModerationActionRow failed — ${actionErr?.message ?? 'unknown'}`, error_name: actionErr?.name, operation: 'insertModerationActionRow', is_handled: true, context: { reportId } })
+    return { ok: false, error: actionErr }
+  }
 
   // 5) update report state
   const { row: updatedReportRow, error: updErr } = await updateReportRowStatus({
@@ -87,7 +109,10 @@ export async function hideReportedObjectController({
     reviewedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   })
-  if (updErr) return { ok: false, error: updErr }
+  if (updErr) {
+    captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `hideReportedObjectController: updateReportRowStatus failed — ${updErr?.message ?? 'unknown'}`, error_name: updErr?.name, operation: 'updateReportRowStatus', is_handled: true, context: { reportId } })
+    return { ok: false, error: updErr }
+  }
 
   // 6) event log
   await insertReportEventRow({
@@ -110,11 +135,22 @@ export async function dismissReportController({
   reportId,
   note = null,
 }) {
-  // 0) Authorization: verify caller holds a moderation role before any read or write.
+  // 0a) Session presence: reject unauthenticated callers before any DB access.
+  const sessionUser = await readCurrentAuthUser()
+  if (!sessionUser) {
+    const err = new Error('dismissReportController: unauthenticated')
+    err.code = 'FORBIDDEN'
+    throw err
+  }
+
+  // 0b) Authorization: verify caller holds a moderation role before any read or write.
   await assertModerationAccessController(moderatorActorId)
 
   const { row: reportRow, error: readErr } = await getReportRowById({ reportId })
-  if (readErr) return { ok: false, error: readErr }
+  if (readErr) {
+    captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `dismissReportController: getReportRowById failed — ${readErr?.message ?? 'unknown'}`, error_name: readErr?.name, operation: 'getReportRowById', is_handled: true, context: { reportId } })
+    return { ok: false, error: readErr }
+  }
   if (!reportRow) return { ok: false, error: new Error('Report not found') }
 
   if (reportRow.status === 'dismissed' || reportRow.status === 'actioned') {
@@ -132,7 +168,10 @@ export async function dismissReportController({
     updatedAt: now,
     internalNote: note,
   })
-  if (updErr) return { ok: false, error: updErr }
+  if (updErr) {
+    captureVcsmError({ feature: 'moderation', module: 'moderationActions.controller', severity: 'error', message: `dismissReportController: updateReportRowStatus failed — ${updErr?.message ?? 'unknown'}`, error_name: updErr?.name, operation: 'updateReportRowStatus', is_handled: true, context: { reportId } })
+    return { ok: false, error: updErr }
+  }
 
   await insertReportEventRow({
     reportId,

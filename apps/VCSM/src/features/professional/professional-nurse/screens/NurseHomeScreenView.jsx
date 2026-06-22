@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import AddForm from '@/features/professional/professional-nurse/housing/ui/AddForm'
-import CitySelector from '@/features/professional/professional-nurse/housing/ui/CitySelector'
+import AddForm from '@/features/professional/professional-nurse/housing/components/AddForm'
+import CitySelector from '@/features/professional/professional-nurse/housing/components/CitySelector'
 import FacilityInsightsTabView from './views/FacilityInsightsTabView'
 import HousingTabView from './views/HousingTabView'
 import NurseAddMenu from './views/NurseAddMenu'

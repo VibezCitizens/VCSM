@@ -145,7 +145,7 @@ export default function PublicNavbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: isWide ? 0 : 'auto' }}>
             {isLoggedIn ? (
               <Link
-                to="/feed"
+                to="/CentralFeed"
                 style={{
                   fontSize: 13, fontWeight: 600, color: '#c4b5fd',
                   textDecoration: 'none', padding: '8px 18px',

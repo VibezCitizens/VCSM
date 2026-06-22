@@ -156,7 +156,7 @@ export async function runSettingsPrivacyFeatureGroup({ onTestUpdate, shared }) {
       run: ({ shared: localShared }) =>
         withSettingsPrivacyContext(localShared, "Privacy write path blocked by policy.", async (context) => {
           const before = await ctrlGetActorPrivacy(context.actorId);
-          await ctrlSetActorPrivacy({ actorId: context.actorId, isPrivate: before });
+          await ctrlSetActorPrivacy({ actorId: context.actorId, callerActorId: context.actorId, isPrivate: before });
           const after = await ctrlGetActorPrivacy(context.actorId);
           return { actorId: context.actorId, before, after, match: before === after };
         }),

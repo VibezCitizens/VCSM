@@ -3,7 +3,7 @@ import {
   listLiveProviderCountries,
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
-import CategoriesDiscoveryClient from "@/features/categories/components/CategoriesDiscoveryClient";
+import { CategoriesDiscoveryClient } from "@/features/categories/adapters/categories.adapter";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 

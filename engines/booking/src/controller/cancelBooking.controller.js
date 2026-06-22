@@ -60,7 +60,7 @@ export async function cancelBooking({ bookingId, requestActorId, cancelNote = un
       kind: BOOKING_EVENTS.CANCELLED,
       objectType: 'booking',
       objectId: bookingId,
-      linkPath: ownerSlug ? `/profile/${ownerSlug}?tab=book` : undefined,
+      linkPath: ownerSlug ? `/profile/${ownerSlug}?tab=book` : null,
       context: {
         serviceLabelSnapshot: booking.service_label_snapshot,
         startsAt: booking.starts_at,

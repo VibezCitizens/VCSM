@@ -18,6 +18,8 @@ import BookingCreatedNotificationItem from '@/features/notifications/types/booki
 import BookingConfirmedNotificationItem from '@/features/notifications/types/booking/BookingConfirmedNotificationItem.view'
 import BookingCancelledNotificationItem from '@/features/notifications/types/booking/BookingCancelledNotificationItem.view'
 import ReviewCreatedNotificationItem from '@/features/notifications/types/review/ReviewCreatedNotificationItem.view'
+import VportLeadReceivedNotificationItem from '@/features/notifications/types/leads/VportLeadReceivedNotificationItem.view'
+import GasPriceSuggestionNotificationItem from '@/features/notifications/types/gasprices/GasPriceSuggestionNotificationItem.view'
 
 function DefaultNotification({ notification }) {
   return (
@@ -78,6 +80,14 @@ export default function NotificationItem({ notification }) {
     // 👥 TEAM
     case 'team_invite':
       return <TeamInviteNotificationItem notification={notification} />
+
+    // 📋 LEADS
+    case 'lead_received':
+      return <VportLeadReceivedNotificationItem notification={notification} />
+
+    // ⛽ GAS PRICE SUGGESTIONS
+    case 'vport_gas_price_suggestion':
+      return <GasPriceSuggestionNotificationItem notification={notification} />
 
     default:
       return <DefaultNotification notification={notification} />

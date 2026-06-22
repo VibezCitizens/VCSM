@@ -1,5 +1,5 @@
 import vportSchema from "@/services/supabase/vportClient";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 const CATEGORY_SELECT =
   "id,profile_id,key,name,description,sort_order,is_active,created_at,updated_at";

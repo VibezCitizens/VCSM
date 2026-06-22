@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BehaviorTestCoverageMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "data"],
+  "properties": { "data": { "type": "object", "required": ["behaviorTestCoverage"], "properties": { "behaviorTestCoverage": { "type": "array" } } } }
+}

@@ -14,7 +14,7 @@ import {
 } from "@/features/profiles/kinds/vport/model/services/vportService.model.js";
 
 // Approved §5.3 exception: shared cross-feature ownership assertion primitive.
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 /**
  * Controller (DB via DAL only):
@@ -47,10 +47,10 @@ export default async function getVportServicesController({
         "getVportServicesController: callerActorId is required when asOwner=true"
       );
     }
-    await assertActorOwnsVportActorController({
-      requestActorId: callerActorId,
-      targetActorId,
-    });
+    // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor is
+    // the VPORT itself when switched in, so the actor gate's user-kind requirement cannot
+    // be satisfied. Ownership is resolved from the auth session via actor_owners.
+    await assertSessionOwnsVportActorController({ targetActorId });
   }
   // ────────────────────────────────────────────────────────────────────────────
 
@@ -121,6 +121,6 @@ export default async function getVportServicesController({
   return result
 }
 
-export function invalidateVportServices(actorId) {
+export function invalidateVportServices(_actorId) {
   cache.invalidateAll() // services are keyed by actorId:type, simpler to clear all
 }

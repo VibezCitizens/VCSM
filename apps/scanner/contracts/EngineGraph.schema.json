@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineGraph",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "engineGraphNodeCount", "engineGraphEdgeCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "engineGraphNodeCount": { "type": "number" },
+    "engineGraphEdgeCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": { "type": "array", "items": { "type": "object", "required": ["id", "type"] } },
+        "edges": { "type": "array", "items": { "type": "object", "required": ["from", "to", "type"] } }
+      }
+    }
+  }
+}

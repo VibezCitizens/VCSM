@@ -133,17 +133,6 @@ export function VportContentPageViewer({ pageId, onClose, onPrev, onNext, positi
 
           {page && !loading && (
             <>
-              {page.coverImageUrl && (
-                <div className="mb-6 rounded-2xl overflow-hidden">
-                  <img
-                    src={page.coverImageUrl}
-                    alt={page.title}
-                    className="w-full h-[200px] object-cover"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
-                </div>
-              )}
-
               <h1 className="text-white text-[22px] font-bold leading-snug mb-2">
                 {page.title}
               </h1>

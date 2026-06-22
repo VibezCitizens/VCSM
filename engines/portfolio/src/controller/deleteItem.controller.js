@@ -43,7 +43,7 @@ export async function deleteItem({ itemId, actorId }) {
     return PortfolioItemModel(existing)
   }
 
-  const row = await dalSoftDeletePortfolioItem({ itemId })
+  const row = await dalSoftDeletePortfolioItem({ itemId, callerProfileId })
 
   emit(EVENTS.ITEM_DELETED, { itemId, actorId })
 

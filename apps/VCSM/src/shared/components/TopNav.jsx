@@ -26,7 +26,7 @@ export default function TopNav() {
         <div className="min-w-[84px] flex justify-end">
           {inVoid ? (
             <button
-              onClick={() => navigate('/feed')}
+              onClick={() => navigate('/CentralFeed')}
               title={t('nav.exitVoid')}
               className="text-white opacity-80 hover:opacity-100 transition focus:outline-none"
               aria-label={t('nav.exitVoid')}

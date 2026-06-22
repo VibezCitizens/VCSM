@@ -3,7 +3,6 @@ import { vport as vportClient } from "@/services/supabase/vportClient";
 const BOOKING_SELECT = [
   "id",
   "resource_id",
-  "profile_id",
   "service_id",
   "customer_actor_id",
   "status",

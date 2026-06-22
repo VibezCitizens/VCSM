@@ -1,4 +1,5 @@
 // features/profiles/hooks/useActorSeoMeta.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 // ─────────────────────────────────────────────────────────────
 // Sets document.title, <meta name="description">, and injects a
 // JSON-LD <script> for actor profile pages.
@@ -130,5 +131,5 @@ export function useActorSeoMeta(profile, details = null) {
       if (ldScript) ldScript.remove()
     }
   // profile reference is stable per render cycle; actorId change = new profile load
-  }, [profile, details]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [profile, details])
 }

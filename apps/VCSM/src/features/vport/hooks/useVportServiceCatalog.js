@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import getVportServiceCatalogController from "@/features/vport/controller/getVportServiceCatalog.controller.js";
-import { useProfilesOps } from "@/features/profiles/adapters/profiles.adapter";
+import getVportServiceCatalogController from "@/features/vport/controllers/getVportServiceCatalog.controller.js";
+import { useVportProfileOps } from "@/features/profiles/kinds/vport/adapters/vportProfiles.adapter";
 
 export default function useVportServiceCatalog({ vportType } = {}) {
   const [data, setData] = useState({ vportType: null, services: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { getFallbackServiceCatalogRows } = useProfilesOps();
+  const { getFallbackServiceCatalogRows } = useVportProfileOps();
 
   const safeVportType = useMemo(
     () => (vportType ?? "").toString().trim().toLowerCase(),

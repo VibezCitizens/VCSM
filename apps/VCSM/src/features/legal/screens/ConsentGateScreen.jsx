@@ -7,7 +7,7 @@ import { authTheme, ConsentCheckbox } from '@/features/auth/adapters/auth.adapte
  * Also handles the "gate error" state when the compliance check itself fails,
  * showing a recoverable error UI with a retry affordance instead of silently admitting the user.
  */
-export default function ConsentGateScreen({ requiredActions, accepting, error, onAccept, gateError, onRetry, loading }) {
+export default function ConsentGateScreen({ requiredActions, accepting, error, onAccept, gateError, onRetry, loading, onLogout }) {
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   // Gate error: the compliance check failed. Fail closed — block entry with retry.
@@ -45,6 +45,16 @@ export default function ConsentGateScreen({ requiredActions, accepting, error, o
           >
             {loading ? 'Checking…' : 'Try Again'}
           </button>
+
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              className="mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-medium text-[#9ca3af] transition hover:text-white"
+            >
+              Log out
+            </button>
+          )}
         </div>
       </div>
     )
@@ -53,7 +63,9 @@ export default function ConsentGateScreen({ requiredActions, accepting, error, o
   const hasOutdated = requiredActions.some((a) => a.current_version != null)
 
   function getDocRoute(action) {
-    if (action.content_url) return action.content_url
+    // Only accept relative paths from content_url — reject external URLs to prevent open redirect
+    const url = action.content_url
+    if (url && url.startsWith('/')) return url
     if (action.consent_type === 'privacy_policy') return '/legal/privacy-policy'
     if (action.consent_type === 'terms_of_service') return '/legal/terms-of-service'
     if (action.consent_type === 'age_verification') return '/legal/age-verification'
@@ -97,6 +109,7 @@ export default function ConsentGateScreen({ requiredActions, accepting, error, o
                 <Link
                   to={getDocRoute(action)}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
                 >
                   {action.title}
@@ -122,6 +135,7 @@ export default function ConsentGateScreen({ requiredActions, accepting, error, o
               <Link
                 to={getDocRoute(tosAction)}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
               >
                 Terms of Service
@@ -134,6 +148,7 @@ export default function ConsentGateScreen({ requiredActions, accepting, error, o
               <Link
                 to={getDocRoute(ppAction)}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="font-medium text-[#c4b5fd] underline decoration-[#c4b5fd]/40 transition hover:text-[#ddd6fe] hover:decoration-[#ddd6fe]/60"
               >
                 Privacy Policy
@@ -163,6 +178,16 @@ export default function ConsentGateScreen({ requiredActions, accepting, error, o
         >
           {accepting ? 'Saving...' : 'Continue'}
         </button>
+
+        {onLogout && (
+          <button
+            type="button"
+            onClick={onLogout}
+            className="mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-medium text-[#9ca3af] transition hover:text-white"
+          >
+            Log out
+          </button>
+        )}
       </div>
     </div>
   )

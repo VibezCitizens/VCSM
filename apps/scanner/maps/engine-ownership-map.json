@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "engineOwnershipCount": 9,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "engines": [
+      {
+        "engine": "booking",
+        "path": "engines/booking",
+        "hasClaude": true,
+        "ownership": "Booking Engine",
+        "responsibility": null,
+        "allowedConsumers": [
+          "Import in VCSM via the `@booking` alias"
+        ],
+        "boundaryRules": [
+          "No React imports — this engine is framework-agnostic",
+          "No app-specific imports — all dependencies are injected via `configureBookingEngine()`",
+          "Import in VCSM via the `@booking` alias"
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      },
+      {
+        "engine": "chat",
+        "path": "engines/chat",
+        "hasClaude": true,
+        "ownership": "Engine: Chat",
+        "responsibility": "*Conversation lifecycle** createConversation, archiveConversation, addMember, removeMember, updateConversation *Message lifecycle** sendMessage, editMessage, deleteMessage, hideMessage, replyToMessage *Receipts** markDelivered, markRead *Inbox projection** updateInboxEntries, computeUnreadCounts *Moderation** moderateMessage, removeMember, muteConversation *Realtime events** emitOutboxEvent *Typing state** startTyping, stopTyping *Attachments** attachFileToMessage *Reactions** addReaction, removeReaction *Pins** pinMessage, unpinMessage *Saved messages** saveMessage, unsaveMessage --",
+        "allowedConsumers": [],
+        "boundaryRules": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      },
+      {
+        "engine": "hydration",
+        "path": "engines/hydration",
+        "hasClaude": false,
+        "ownership": null,
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [],
+        "confidence": "LOW",
+        "evidence": [
+          "CLAUDE.md missing"
+        ]
+      },
+      {
+        "engine": "i18n",
+        "path": "engines/i18n",
+        "hasClaude": true,
+        "ownership": "Engine: i18n",
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [
+          "**User-generated content is never translated in code**"
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      },
+      {
+        "engine": "identity",
+        "path": "engines/identity",
+        "hasClaude": true,
+        "ownership": "Engine: Identity",
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [
+          "**DAL**: database queries only — no business logic",
+          "**Model**: row -> domain object — pure functions only",
+          "**Adapters**: public surface only — never re-export internals"
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      },
+      {
+        "engine": "media",
+        "path": "engines/media",
+        "hasClaude": false,
+        "ownership": null,
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [],
+        "confidence": "LOW",
+        "evidence": [
+          "CLAUDE.md missing"
+        ]
+      },
+      {
+        "engine": "notifications",
+        "path": "engines/notifications",
+        "hasClaude": true,
+        "ownership": "Notifications Engine — Scope Rules",
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [
+          "NEVER import from `apps/VCSM/` or `apps/wentrex/`",
+          "NEVER import from other engines (`engines/identity/`, `engines/chat/`, `engines/reviews/`, `engines/hydration/`)",
+          "NEVER import from `shared/`",
+          "NEVER query schemas other than `notification.*`",
+          "NEVER add app-specific logic — use dependency injection",
+          "**DAL:** Database queries only. No business logic. Explicit column selection. Schema: `notification`.",
+          "**Adapters:** Re-exports only. No logic."
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      },
+      {
+        "engine": "portfolio",
+        "path": "engines/portfolio",
+        "hasClaude": true,
+        "ownership": "Portfolio Engine — Scope Rules",
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [
+          "NEVER import from `apps/VCSM/` or `apps/wentrex/`",
+          "NEVER import from other engines",
+          "NEVER import from `shared/`",
+          "NEVER add app-specific logic — use dependency injection",
+          "**DAL:** Database queries only. Explicit column selection.",
+          "**Adapters:** Re-exports only."
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      },
+      {
+        "engine": "reviews",
+        "path": "engines/reviews",
+        "hasClaude": true,
+        "ownership": "Reviews Engine — Scope Rules",
+        "responsibility": null,
+        "allowedConsumers": [],
+        "boundaryRules": [
+          "NEVER import from `apps/VCSM/` or `apps/wentrex/`",
+          "NEVER import from other engines (`engines/identity/`, `engines/chat/`, `engines/hydration/`)",
+          "NEVER import from `shared/`",
+          "NEVER query schemas other than `reviews.*`",
+          "NEVER add app-specific logic — use dependency injection",
+          "**DAL:** Database queries only. No business logic. Explicit column selection.",
+          "**Adapters:** Re-exports only. No logic."
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "CLAUDE.md parsed"
+        ]
+      }
+    ]
+  }
+}

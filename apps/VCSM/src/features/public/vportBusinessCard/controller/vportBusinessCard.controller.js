@@ -5,7 +5,7 @@ import {
   validateVportBusinessCardLeadInput,
 } from "@/features/public/vportBusinessCard/model/vportBusinessCard.model";
 import { sendLeadConfirmationEmailDAL } from "@/features/public/vportBusinessCard/dal/sendLeadConfirmationEmail.edge.dal";
-import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
+import { publishLeadNotificationDAL } from "@/features/public/vportBusinessCard/dal/publishLeadNotification.edge.dal";
 import { readBusinessCardSectionsDAL } from "@/features/public/vportBusinessCard/dal/businessCardSections.read.dal";
 
 export async function getVportBusinessCardPublicController({ slug } = {}) {
@@ -24,23 +24,17 @@ function toLeadError(message, fieldErrors = null) {
   return err;
 }
 
-function fireLeadOwnerNotification({ result, leadName, source }) {
-  const recipientActorId = result?.actor_id ?? null;
+function fireLeadOwnerNotification({ result }) {
+  // Anonymous business-card visitors have no session, so the session-guarded
+  // app publisher cannot fire here. Route through the server-side bridge, which
+  // derives the recipient and safe payload from the lead row (forgery-resistant)
+  // and uses the same notification engine RPCs as every other VCSM notification.
   const leadId = result?.lead_id ?? null;
-  if (!recipientActorId) return;
+  if (!leadId) {
+    return { ok: false, fn: "publish-lead-notification", leadId: null, error: "MISSING_LEAD_ID" };
+  }
 
-  publishVcsmNotification({
-    recipientActorId,
-    actorId: null,
-    kind: "lead_received",
-    objectType: "lead",
-    objectId: leadId ? String(leadId) : null,
-    linkPath: `/actor/${recipientActorId}/dashboard/leads`,
-    context: {
-      leadName: leadName ?? null,
-      source: source ?? "business_card",
-    },
-  });
+  return publishLeadNotificationDAL({ leadId });
 }
 
 function fireLeadConfirmationEmail({ email, name, vportName, providerProfileUrl, source }) {
@@ -91,15 +85,14 @@ export async function submitVportBusinessCardLeadController({
       source,
     });
 
-    fireLeadOwnerNotification({
-      result,
-      leadName: validation.payload.name,
-      source,
-    });
+    // Lead row is already committed above, so awaiting this does not block lead
+    // creation — it lets us surface a structured diagnostic (never thrown).
+    const notification = await fireLeadOwnerNotification({ result });
 
     return {
       ok: true,
       result,
+      notification,
     };
   } catch (error) {
     const raw = String(error?.message || error || "");
@@ -116,7 +109,11 @@ export async function submitVportBusinessCardLeadController({
   }
 }
 
-export async function getVportBusinessCardSectionsController({ profileId } = {}) {
-  if (!profileId) return null;
-  return readBusinessCardSectionsDAL(profileId);
+export async function getVportBusinessCardSectionsController({ slug } = {}) {
+  const key = String(slug || "").trim().toLowerCase();
+  if (!key) return null;
+  // Derive profileId server-side from slug — never accept from public caller (PUBLIC-002).
+  const row = await readVportBusinessCardPublicBySlugDAL({ slug: key });
+  if (!row || !row.profile_id) return null;
+  return readBusinessCardSectionsDAL(row.profile_id);
 }

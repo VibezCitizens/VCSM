@@ -1,7 +1,7 @@
 import {
   readVportServicesByActor,
   listBookingServiceProfilesByServiceIds,
-} from '@/features/booking/controller/bookingServices.controller'
+} from '@/features/booking/controllers/bookingServices.controller'
 
 export function useBookingServices() {
   return {

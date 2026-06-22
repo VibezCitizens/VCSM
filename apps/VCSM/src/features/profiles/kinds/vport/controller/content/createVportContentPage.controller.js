@@ -2,7 +2,6 @@
 
 import createVportContentPageDAL, { readContentPageSlugsByPrefixDAL } from "@/features/profiles/kinds/vport/dal/content/createVportContentPage.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const VALID_CATEGORIES = ["guide", "faq", "emergency", "tips", "educational"];
 
@@ -43,7 +42,9 @@ export async function createVportContentPageController({
   if (!callerActorId) throw new Error("createVportContentPageController: callerActorId is required");
   if (!title?.trim()) throw new Error("Title is required.");
 
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: actorId });
+  if (String(callerActorId) !== String(actorId)) {
+    throw new Error("Only the actor owner can manage this content.");
+  }
 
   const baseSlug = slugify(title.trim());
   if (!baseSlug) throw new Error("Could not generate a valid slug from this title. Please use letters or numbers.");

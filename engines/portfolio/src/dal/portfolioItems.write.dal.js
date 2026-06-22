@@ -47,7 +47,8 @@ export async function dalInsertPortfolioItem({ profileId, title, description, po
 /**
  * Update a portfolio item.
  */
-export async function dalUpdatePortfolioItem({ itemId, updates, trace = null }) {
+export async function dalUpdatePortfolioItem({ itemId, callerProfileId, updates, trace = null }) {
+  if (!callerProfileId) throw new Error('[dalUpdatePortfolioItem] callerProfileId required')
   const supabase = getSupabaseClient()
 
   trace?.report?.({ step: 'ITEM_UPDATE_START', status: 'start' })
@@ -67,6 +68,7 @@ export async function dalUpdatePortfolioItem({ itemId, updates, trace = null }) 
     .from('portfolio_items')
     .update(row)
     .eq('id', itemId)
+    .eq('profile_id', callerProfileId)
     .select(ITEM_RETURN_COLUMNS)
 
   if (error) {
@@ -81,7 +83,8 @@ export async function dalUpdatePortfolioItem({ itemId, updates, trace = null }) 
 /**
  * Soft-delete a portfolio item.
  */
-export async function dalSoftDeletePortfolioItem({ itemId, trace = null }) {
+export async function dalSoftDeletePortfolioItem({ itemId, callerProfileId, trace = null }) {
+  if (!callerProfileId) throw new Error('[dalSoftDeletePortfolioItem] callerProfileId required')
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
@@ -92,6 +95,7 @@ export async function dalSoftDeletePortfolioItem({ itemId, trace = null }) {
       deleted_at: new Date().toISOString(),
     })
     .eq('id', itemId)
+    .eq('profile_id', callerProfileId)
     .select(ITEM_RETURN_COLUMNS)
 
   if (error) {

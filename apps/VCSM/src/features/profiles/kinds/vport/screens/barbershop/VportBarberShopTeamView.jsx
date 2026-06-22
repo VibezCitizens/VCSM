@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useActorSummary } from "@hydration";
-import { useVportTeam } from "@/features/dashboard/vport/adapters/vport.adapter";
+import { useVportTeam } from "@/features/vportDashboard/adapters/vportDashboard.adapter";
 import "@/features/profiles/styles/profiles-team-modern.css";
 import "@/features/profiles/styles/barbershop-owner-mode.css";
 

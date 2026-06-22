@@ -1,2 +1,2 @@
-export { ensureVcsmPlatformBootstrap } from '@/features/identity/controller/ensureVcsmPlatformBootstrap.controller.js'
-export { refreshVcActorDirectory } from '@/features/identity/controller/refreshActorDirectory.controller'
+export { ensureVcsmPlatformBootstrap } from '@/features/identity/controllers/ensureVcsmPlatformBootstrap.controller.js'
+export { refreshVcActorDirectory } from '@/features/identity/controllers/refreshActorDirectory.controller'

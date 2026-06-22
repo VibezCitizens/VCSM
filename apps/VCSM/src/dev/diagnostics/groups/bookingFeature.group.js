@@ -7,15 +7,15 @@ import {
   ensureBookingFeatureContext,
   getBookingFeatureState,
 } from "@/dev/diagnostics/groups/bookingFeature.group.helpers";
-import ensureOwnerBookingResourceController from "@/features/booking/controller/ensureOwnerBookingResource.controller";
-import listOwnerBookingResourcesController from "@/features/booking/controller/listOwnerBookingResources.controller";
-import setResourceSlotDurationController from "@/features/booking/controller/setResourceSlotDuration.controller";
-import setAvailabilityRuleController from "@/features/booking/controller/setAvailabilityRule.controller";
-import setAvailabilityExceptionController from "@/features/booking/controller/setAvailabilityException.controller";
-import createBookingController from "@/features/booking/controller/createBooking.controller";
-import getResourceAvailabilityController from "@/features/booking/controller/getResourceAvailability.controller";
-import confirmBookingController from "@/features/booking/controller/confirmBooking.controller";
-import cancelBookingController from "@/features/booking/controller/cancelBooking.controller";
+import ensureOwnerBookingResourceController from "@/features/booking/controllers/ensureOwnerBookingResource.controller";
+import listOwnerBookingResourcesController from "@/features/booking/controllers/listOwnerBookingResources.controller";
+import setResourceSlotDurationController from "@/features/booking/controllers/setResourceSlotDuration.controller";
+import setAvailabilityRuleController from "@/features/booking/controllers/setAvailabilityRule.controller";
+import setAvailabilityExceptionController from "@/features/booking/controllers/setAvailabilityException.controller";
+import createBookingController from "@/features/booking/controllers/createBooking.controller";
+import getResourceAvailabilityController from "@/features/booking/controllers/getResourceAvailability.controller";
+import confirmBookingController from "@/features/booking/controllers/confirmBooking.controller";
+import cancelBookingController from "@/features/booking/controllers/cancelBooking.controller";
 export { getBookingFeatureTests } from "@/dev/diagnostics/groups/bookingFeature.group.helpers";
 
 export const GROUP_ID = "bookingFeature";
@@ -58,6 +58,7 @@ export async function runBookingFeatureGroup({ onTestUpdate, shared }) {
         try {
           context = await ensureBookingFeatureContext(localShared);
           const resources = await listOwnerBookingResourcesController({
+            requestActorId: context.requestActorId,
             ownerActorId: context.ownerActorId,
             includeInactive: true,
           });

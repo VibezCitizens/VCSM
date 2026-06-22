@@ -1,4 +1,4 @@
-import { submitQuestion } from "@/features/answers/controller/submitQuestion.controller";
+import { submitQuestion } from "@/features/answers/adapters/answers.adapter";
 
 export async function POST(request) {
   let body = {};

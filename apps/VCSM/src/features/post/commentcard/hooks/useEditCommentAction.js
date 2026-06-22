@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { editCommentController } from "@/features/post/commentcard/controller/editComment.controller";
+import { editCommentController } from "@/features/post/commentcard/controllers/editComment.controller";
 
 export function useEditCommentAction({ actorId }) {
   return useCallback(

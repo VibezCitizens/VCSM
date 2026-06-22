@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Navigate, useRoutes } from "react-router-dom";
+import { Navigate, useRoutes, useLocation } from "react-router-dom";
 import { RouteErrorBoundary } from "@/app/routes/RouteErrorBoundary";
 
 import ProtectedRoute from "@/app/guards/ProtectedRoute";
@@ -86,7 +86,6 @@ import {
   BarberTeamRequestsScreen,
   VportDashboardScheduleScreen,
   VportSettingsScreen,
-  VportGasPricesScreen,
   PostFeedScreen,
   PostDetailScreen,
   EditPostScreen,
@@ -115,6 +114,11 @@ import {
   LearningOrganizationScreen,
   LearningCourseRosterScreen,
 } from "@/app/routes/lazyApp";
+
+function CatchAllRedirect() {
+  const { pathname, search } = useLocation()
+  return <Navigate to="/login" replace state={{ from: pathname + search }} />
+}
 
 export default function AppRoutes() {
   const baseUrl = window.location.origin;
@@ -214,8 +218,6 @@ export default function AppRoutes() {
                 ActorProfileScreen,
                 TopFriendsRankEditor,
 
-                VportGasPricesScreen,
-
                 VportActorMenuFlyerEditorScreen,
                 RestoreVportScreen,
                 VportDashboardScreen,
@@ -258,7 +260,9 @@ export default function AppRoutes() {
     { path: "robots.txt", element: <Navigate to="/" replace /> },
     { path: "sitemaps/*", element: <Navigate to="/" replace /> },
 
-    { path: "*", element: <Navigate to="/login" replace /> },
+    // HAWKEYE HE-LOGIN-004: preserve the attempted route so login can return
+    // the user to their intended destination after authenticating.
+    { path: "*", element: <CatchAllRedirect /> },
   ];
 
   const element = useRoutes(routes);

@@ -19,7 +19,7 @@ export default function ActorSearchResultRow({ actor }) {
   return (
     <button
       type="button"
-      onClick={() => navigate(`/profile/${actor.username ?? actor.actor_id}`)}
+      onClick={() => actor.username && navigate(`/profile/${actor.username}`)}
       className="explore-result-row"
     >
       <img

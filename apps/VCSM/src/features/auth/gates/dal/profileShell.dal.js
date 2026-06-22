@@ -1,0 +1,30 @@
+import { supabase } from '@/services/supabase/supabaseClient'
+
+export async function readProfileShellDAL(profileId) {
+  if (!profileId) return null
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id,display_name,username,birthdate,age,sex')
+    .eq('id', profileId)
+    .maybeSingle()
+
+  if (error) throw error
+  return data ?? null
+}
+
+export async function upsertProfileShellDAL({
+  id,
+  email,
+  createdAt,
+  updatedAt,
+}) {
+  const { error } = await supabase.from('profiles').upsert({
+    id,
+    email,
+    created_at: createdAt,
+    updated_at: updatedAt,
+  })
+
+  if (error) throw error
+}

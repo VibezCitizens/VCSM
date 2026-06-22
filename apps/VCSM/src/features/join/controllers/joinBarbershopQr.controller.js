@@ -35,19 +35,28 @@ export async function acceptQrJoin(token, barberVportActorId, callerActorId) {
   if (resource.member_actor_id) {
     throw new Error("join resource is no longer available");
   }
+  if (resource.meta?.join_expires_at && new Date(resource.meta.join_expires_at) < new Date()) {
+    throw new Error("QR join link has expired");
+  }
 
   return acceptJoinResourceDAL(token, barberVportActorId, {
     join_token_used_at: new Date().toISOString(),
   });
 }
 
-export async function createBarberVportAndAcceptQr(token, vportName, { createVport } = {}) {
+export async function createBarberVportAndAcceptQr(token, vportName, { createVport, callerActorId } = {}) {
   if (!vportName || !String(vportName).trim()) throw new Error("VPORT name is required.");
+  if (!callerActorId) throw new Error("createBarberVportAndAcceptQr: callerActorId required");
 
   const vportResult = await createVport?.({
     name: String(vportName).trim(),
     vportType: "barber",
     directoryVisible: true,
+  });
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: vportResult.actorId,
   });
 
   await acceptJoinResourceDAL(token, vportResult.actorId, {

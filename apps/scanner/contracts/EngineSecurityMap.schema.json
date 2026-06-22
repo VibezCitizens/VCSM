@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineSecurityMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "engineSecurityCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "engineSecurityCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["engines"],
+      "properties": {
+        "engines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["engine", "writes", "rpcs", "edgeFunctions", "externalApis", "riskTier", "surfaces", "confidence"],
+            "properties": {
+              "engine": { "type": "string" },
+              "writes": { "type": "number" },
+              "rpcs": { "type": "number" },
+              "edgeFunctions": { "type": "number" },
+              "externalApis": { "type": "number" },
+              "riskTier": { "enum": ["LOW", "MEDIUM", "HIGH"] },
+              "surfaces": { "type": "object" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

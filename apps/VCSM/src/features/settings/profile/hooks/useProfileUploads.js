@@ -18,7 +18,7 @@ import { recordProfileMediaAssetController } from '@/features/settings/profile/c
 const DEV = import.meta.env?.DEV
 
 export function useProfileUploads({ mode, subjectId }) {
-  const { identity, setIdentity } = useIdentity()
+  const { identity, patchIdentityDisplayFields } = useIdentity()
 
   // ── user avatar ──────────────────────────────────────────────
   async function uploadAvatar(file) {
@@ -50,10 +50,10 @@ export function useProfileUploads({ mode, subjectId }) {
 
           await recordProfileMediaAssetController({ scope: 'user_avatar', mediaAssetId: mediaAsset?.id ?? null, actorId })
 
-          // Patch identityDetails.avatar so nav/header consumers (useIdentityDisplayDeprecated)
-          // reflect the new avatar without waiting for the next identity engine re-resolution.
+          // Patch identityDetails.avatar so nav/header consumers reflect the new avatar
+          // without waiting for the next identity engine re-resolution.
           if (identity?.kind === 'user') {
-            setIdentity(prev => prev ? { ...prev, avatar: result.publicUrl } : prev)
+            patchIdentityDisplayFields({ avatar: result.publicUrl })
           }
         } catch (e) {
           if (DEV) console.warn('[useProfileUploads] user_avatar media record failed:', e?.code, e?.message, e)
@@ -83,7 +83,7 @@ export function useProfileUploads({ mode, subjectId }) {
 
         // Patch identityDetails.avatar only if this vport is the currently active actor.
         if (identity?.kind === 'vport') {
-          setIdentity(prev => prev ? { ...prev, avatar: result.publicUrl } : prev)
+          patchIdentityDisplayFields({ avatar: result.publicUrl })
         }
       } catch (e) {
         if (DEV) console.warn('[useProfileUploads] vport_avatar media record failed:', e?.code, e?.message, e)
@@ -121,7 +121,7 @@ export function useProfileUploads({ mode, subjectId }) {
 
           // Patch identityDetails.banner only if this vport is the currently active actor.
           if (identity?.kind === 'vport') {
-            setIdentity(prev => prev ? { ...prev, banner: result.publicUrl } : prev)
+            patchIdentityDisplayFields({ banner: result.publicUrl })
           }
         } catch (e) {
           if (DEV) console.warn('[useProfileUploads] vport_banner media record failed:', e?.code, e?.message, e)
@@ -153,10 +153,10 @@ export function useProfileUploads({ mode, subjectId }) {
 
         await recordProfileMediaAssetController({ scope: 'user_banner', mediaAssetId: mediaAsset?.id ?? null, actorId })
 
-        // Patch identityDetails.banner so nav/header consumers (useIdentityDisplayDeprecated)
-        // reflect the new banner without waiting for the next identity engine re-resolution.
+        // Patch identityDetails.banner so nav/header consumers reflect the new banner
+        // without waiting for the next identity engine re-resolution.
         if (identity?.kind === 'user') {
-          setIdentity(prev => prev ? { ...prev, banner: result.publicUrl } : prev)
+          patchIdentityDisplayFields({ banner: result.publicUrl })
         }
       } catch (e) {
         if (DEV) console.warn('[useProfileUploads] user_banner media record failed:', e?.code, e?.message, e)

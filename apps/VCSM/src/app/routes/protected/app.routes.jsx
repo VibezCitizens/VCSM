@@ -58,7 +58,6 @@ export function protectedAppRoutes({
   TopFriendsRankEditor,
 
   VportScreen,
-  VportGasPricesScreen,
 
   VportActorMenuFlyerEditorScreen,
   RestoreVportScreen,
@@ -97,7 +96,7 @@ export function protectedAppRoutes({
   LearningCourseRosterScreen,
 }) {
   return [
-    { path: "/feed", element: <CentralFeed /> },
+    { path: "/CentralFeed", element: <CentralFeed /> },
     { path: "/explore", element: <ExploreScreen /> },
     { path: "/citizen/vibes", element: <CitizenVibesScreen /> },
 
@@ -155,7 +154,7 @@ export function protectedAppRoutes({
       element: releaseFlags.vportAdsPipeline ? (
         <VportAdsSettingsScreen />
       ) : (
-        <Navigate to="/feed" replace />
+        <Navigate to="/CentralFeed" replace />
       ),
     },
     { path: "/void", element: <VoidScreen /> },
@@ -164,7 +163,7 @@ export function protectedAppRoutes({
       element: devDiagnosticsEnabled ? (
         <DevDiagnosticsScreen />
       ) : (
-        <Navigate to="/feed" replace />
+        <Navigate to="/CentralFeed" replace />
       ),
     },
     {
@@ -172,7 +171,7 @@ export function protectedAppRoutes({
       element: devDiagnosticsEnabled ? (
         <PerfDashboardScreen />
       ) : (
-        <Navigate to="/feed" replace />
+        <Navigate to="/CentralFeed" replace />
       ),
     },
 
@@ -181,7 +180,8 @@ export function protectedAppRoutes({
 
     { path: "/profile/:actorId", element: <ActorProfileScreen /> },
 
-    { path: "/actor/:actorId/gas", element: <VportGasPricesScreen /> },
+    // FROZEN — /actor/:actorId/gas (VportGasPricesScreen) unwired 2026-06-08.
+    // Future feature; see freeze notice in VportGasPricesScreen.jsx to re-enable.
 
     { path: "/profile/:id/friends/top/edit", element: <TopFriendsRankEditor /> },
 
@@ -190,7 +190,7 @@ export function protectedAppRoutes({
       element: releaseFlags.vportFlyerEditor ? (
         <VportActorMenuFlyerEditorScreen />
       ) : (
-        <Navigate to="/feed" replace />
+        <Navigate to="/CentralFeed" replace />
       ),
     },
 
@@ -280,8 +280,8 @@ export function protectedAppRoutes({
       LearningCourseRosterScreen,
     }),
 
-    { path: "/", element: <Navigate to="/feed" replace /> },
-    { path: "*", element: <Navigate to="/feed" replace /> },
+    { path: "/", element: <Navigate to="/CentralFeed" replace /> },
+    { path: "*", element: <Navigate to="/CentralFeed" replace /> },
   ];
 }
 

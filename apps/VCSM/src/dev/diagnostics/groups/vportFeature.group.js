@@ -19,7 +19,7 @@ import {
   withVportFeatureContext,
 } from "@/dev/diagnostics/groups/vportFeature.group.helpers";
 import CreateVportForm from "@/features/vport/CreateVportForm";
-import getVportServiceCatalogController from "@/features/vport/controller/getVportServiceCatalog.controller";
+import getVportServiceCatalogController from "@/features/vport/controllers/getVportServiceCatalog.controller";
 import useVportServiceCatalog from "@/features/vport/hooks/useVportServiceCatalog";
 import vportModel, {
   createVport,

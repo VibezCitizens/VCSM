@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WriteSurfaceMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "writeSurfaceCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "writeSurfaceCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["writeSurfaces"],
+      "properties": {
+        "writeSurfaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["operation", "owner", "ownerKind", "layer", "file", "confidence"],
+            "properties": {
+              "operation": { "enum": ["insert", "update", "delete", "upsert", "rpc", "edge_function", "edge_function_file"] },
+              "schema": { "type": ["string", "null"] },
+              "table": { "type": ["string", "null"] },
+              "rpc": { "type": ["string", "null"] },
+              "functionName": { "type": ["string", "null"] },
+              "owner": { "type": "string" },
+              "ownerKind": { "type": "string" },
+              "layer": { "type": "string" },
+              "file": { "type": "string" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+              "evidence": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

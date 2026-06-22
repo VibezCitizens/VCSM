@@ -29,7 +29,7 @@ import { useUploadSubmit } from "@/features/upload/hooks/useUploadSubmit";
 import { useMentionAutocomplete } from "@/features/upload/hooks/useMentionAutocomplete";
 import { useMediaSelection, MAX_VIBES_PHOTOS } from "@/features/upload/hooks/useMediaSelection";
 import { useResolvedActor } from "@/features/upload/hooks/useResolvedActor";
-import { ctrlSearchMentionSuggestions } from "@/features/upload/controller/searchMentionSuggestions.controller";
+import { ctrlSearchMentionSuggestions } from "@/features/upload/controllers/searchMentionSuggestions.controller";
 import { createPostController } from "@/features/upload/controllers/createPost.controller";
 import { searchMentionSuggestions } from "@/features/upload/dal/searchMentionSuggestions.dal";
 import { findActorsByHandles } from "@/features/upload/dal/findActorsByHandles.dal";

@@ -27,6 +27,7 @@ const BOOKING_SELECT = [
 
 export async function updateBookingStatusDAL({
   bookingId,
+  resourceId,
   status,
   cancelledAt,
   completedAt,
@@ -34,6 +35,9 @@ export async function updateBookingStatusDAL({
 } = {}) {
   if (!bookingId) {
     throw new Error("updateBookingStatusDAL: bookingId is required");
+  }
+  if (!resourceId) {
+    throw new Error("updateBookingStatusDAL: resourceId is required");
   }
   if (!status) {
     throw new Error("updateBookingStatusDAL: status is required");
@@ -48,6 +52,7 @@ export async function updateBookingStatusDAL({
     .from("bookings")
     .update(patch)
     .eq("id", bookingId)
+    .eq("resource_id", resourceId)
     .select(BOOKING_SELECT)
     .maybeSingle();
 

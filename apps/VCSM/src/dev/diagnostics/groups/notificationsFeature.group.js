@@ -21,6 +21,7 @@ import { resolveSenders } from "@/features/notifications/inbox/lib/resolveSender
 import { mapNotification } from "@/features/notifications/inbox/model/notification.model";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 import { markRead } from "@notifications";
+import { supabase } from "@/services/supabase/supabaseClient";
 // badgeSubscriptions.js removed — realtime badge subscriptions are disabled (noops).
 // The realtime_channels diagnostic test now reports the disabled state directly.
 
@@ -131,7 +132,7 @@ export async function runNotificationsFeatureGroup({ onTestUpdate, shared }) {
       run: ({ shared: localShared }) =>
         withActorContext(localShared, "Identity context unavailable for resolveInboxActor.", async (context) => ({
           identity: buildIdentity(context),
-          resolved: resolveInboxActor(buildIdentity(context)),
+          resolved: await resolveInboxActor(buildIdentity(context)),
         })),
     },
     {
@@ -180,10 +181,24 @@ export async function runNotificationsFeatureGroup({ onTestUpdate, shared }) {
             return makeSkipped("Notification publish returned false — engine may have filtered it.");
           }
 
-          // Mark the recipient's inbox as read via the engine.
-          await markRead({ recipientId: context.actorId });
+          // Fetch the actual notification.recipients row ID for this actor.
+          // context.actorId is an actor UUID; markRead requires a notification.recipients.id UUID.
+          const { data: recipientRow } = await supabase
+            .schema('notification')
+            .from('recipients')
+            .select('id')
+            .eq('recipient_actor_id', context.actorId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
 
-          return { published, actorId: context.actorId };
+          const recipientId = recipientRow?.id ?? null
+
+          const markReadResult = recipientId
+            ? await markRead({ recipientId, actorId: context.actorId })
+            : null
+
+          return { published, actorId: context.actorId, recipientId, markReadResult };
         }),
     },
     {

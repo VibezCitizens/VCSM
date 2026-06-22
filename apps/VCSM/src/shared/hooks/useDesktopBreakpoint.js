@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
  * the viewport matches.
  *
  * This is the canonical source. The three prior feature-local copies
- * (features/public/vportMenu, features/dashboard/vport/screens, features/ads)
+ * (features/public/vportMenu, features/vportDashboard/screens, features/ads)
  * are now thin re-exports of this file. Do not edit those copies — edit here.
  *
  * @param {string} query  — CSS media query string (default: min-width 821px)

@@ -3,7 +3,7 @@ import { getCountryByCode, listCountries } from "@/data/repositories/geo.repo";
 import { listServices, listSpecialtiesByService } from "@/data/repositories/service.repo";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { getAllPublicContentPages } from "@/data/repositories/content.repo";
-import { listAnswerPageCandidates } from "@/features/answers/controller/readAnswerPage.controller";
+import { listAnswerPageCandidates } from "@/features/answers/controllers/readAnswerPage.controller";
 import {
   listProviders,
   listProvidersByCity,

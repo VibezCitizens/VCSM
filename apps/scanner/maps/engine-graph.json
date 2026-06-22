@@ -1,0 +1,2004 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "engineGraphNodeCount": 201,
+  "engineGraphEdgeCount": 192,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.724Z",
+    "nodes": [
+      {
+        "id": "engine:booking",
+        "type": "EngineNode",
+        "engine": "booking",
+        "path": "engines/booking"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/__tests__/assertActorCanManageResource.controller.test.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/__tests__/assertActorCanManageResource.controller.test.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/__tests__/cancelBooking.controller.test.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/__tests__/cancelBooking.controller.test.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/__tests__/createBooking.controller.test.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/__tests__/createBooking.controller.test.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/assertActorCanManageLocation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/assertActorCanManageLocation.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/assertActorCanManageOrganization.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/assertActorCanManageOrganization.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/assertActorCanManageResource.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/assertActorCanManageResource.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/assertActorOwnsVportActor.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/assertActorOwnsVportActor.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/cancelBooking.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/cancelBooking.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/completeBooking.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/completeBooking.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/confirmBooking.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/confirmBooking.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/createBooking.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/createBooking.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/createLocationResource.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/createLocationResource.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/createOrganizationLocationWorkspace.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/createOrganizationLocationWorkspace.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/createQrLink.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/createQrLink.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/dismissBooking.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/dismissBooking.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/ensureOwnerBookingResource.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/ensureOwnerBookingResource.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/getBookingServiceProfiles.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/getBookingServiceProfiles.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/getLocationAvailability.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/getLocationAvailability.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/getResourceAvailability.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/getResourceAvailability.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listBookingHistory.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listBookingHistory.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listBookingResourcesByLocation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listBookingResourcesByLocation.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listLocationsByOrganization.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listLocationsByOrganization.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listOrganizationsByOwnerActor.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listOrganizationsByOwnerActor.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listOwnerBookingResources.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listOwnerBookingResources.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listQrLinks.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listQrLinks.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/listResourceServiceOverrides.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/listResourceServiceOverrides.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/markNoShow.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/markNoShow.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/resolveBookingContext.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/resolveBookingContext.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/resolveQrScan.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/resolveQrScan.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/setAvailabilityException.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/setAvailabilityException.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/setAvailabilityRule.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/setAvailabilityRule.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/setResourceSlotDuration.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/setResourceSlotDuration.controller.js"
+      },
+      {
+        "id": "controller:engines/booking/src/controller/upsertResourceServiceOverride.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/booking/src/controller/upsertResourceServiceOverride.controller.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/actor.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/actor.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/availability.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/availability.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/availability.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/availability.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/booking.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/booking.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/booking.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/booking.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/location.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/location.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/location.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/location.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/organization.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/organization.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/organization.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/organization.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/qrLink.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/qrLink.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/qrLink.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/qrLink.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/resource.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/resource.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/resource.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/resource.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/resourceServiceOverride.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/resourceServiceOverride.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/resourceServiceOverride.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/resourceServiceOverride.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/serviceProfile.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/serviceProfile.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/serviceProfile.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/serviceProfile.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/vportAvailability.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/vportAvailability.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/vportAvailability.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/vportAvailability.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/vportBooking.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/vportBooking.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/vportBooking.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/vportBooking.write.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/vportResource.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/vportResource.read.dal.js"
+      },
+      {
+        "id": "dal:engines/booking/src/dal/vportResource.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/booking/src/dal/vportResource.write.dal.js"
+      },
+      {
+        "id": "engine:chat",
+        "type": "EngineNode",
+        "engine": "chat",
+        "path": "engines/chat"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/createAllowedConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/createAllowedConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/createAnnouncementConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/createAnnouncementConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/deleteMessage.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/deleteMessage.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/deleteMessageForMe.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/deleteMessageForMe.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/deleteThreadForMe.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/deleteThreadForMe.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/editMessage.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/editMessage.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/ensureConversationMembership.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/ensureConversationMembership.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/evaluateConversationPolicy.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/evaluateConversationPolicy.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/getConversationMembers.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/getConversationMembers.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/getConversationMessages.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/getConversationMessages.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/getInboxEntries.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/getInboxEntries.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/getInboxEntryForConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/getInboxEntryForConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/getOrCreateDirectConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/getOrCreateDirectConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/inboxActions.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/inboxActions.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/leaveConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/leaveConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/markConversationRead.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/markConversationRead.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/markConversationSpam.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/markConversationSpam.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/openConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/openConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/permissions.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/permissions.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/readConversationMembers.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/readConversationMembers.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/resolvePickedToActorId.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/resolvePickedToActorId.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/searchDirectory.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/searchDirectory.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/sendMessage.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/sendMessage.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/startDirectConversation.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/startDirectConversation.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/typingPresence.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/typingPresence.controller.js"
+      },
+      {
+        "id": "controller:engines/chat/src/controller/unsendMessage.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/chat/src/controller/unsendMessage.controller.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/actorRealm.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/actorRealm.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/attachments.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/attachments.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/blockRelations.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/blockRelations.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversationMembers.partner.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversationMembers.partner.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversationMembers.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversationMembers.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversationMembership.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversationMembership.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversationMembership.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversationMembership.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversationRead.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversationRead.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversationRead.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversationRead.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/conversations.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/conversations.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/deleteThreadForMe.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/deleteThreadForMe.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/editMessage.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/editMessage.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/getOrCreateDirectConversation.rpc.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/inbox.entry.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/inbox.entry.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/inbox.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/inbox.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/inbox.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/inbox.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/inbox_entries.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/inbox_entries.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/legacyMappings.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/legacyMappings.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messageForEdit.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messageForEdit.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messageReactions.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messageReactions.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messageReceipts.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messageReceipts.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messageVisibility.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messageVisibility.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messages.last.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messages.last.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messages.timeline.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messages.timeline.read.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/messages.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/messages.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/moderationActions.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/moderationActions.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/openConversation.rpc.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/openConversation.rpc.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/outbox.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/outbox.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/pins.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/pins.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/savedMessages.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/savedMessages.write.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/searchActors.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/searchActors.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/sendMessageAtomic.rpc.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/subscribeToConversation.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/subscribeToConversation.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/subscribeToInbox.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/subscribeToInbox.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/typingPresence.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/typingPresence.dal.js"
+      },
+      {
+        "id": "dal:engines/chat/src/dal/typingStates.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/chat/src/dal/typingStates.write.dal.js"
+      },
+      {
+        "id": "rpc:get_or_create_direct_conversation:engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "type": "RpcNode",
+        "file": "engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "rpc": "get_or_create_direct_conversation"
+      },
+      {
+        "id": "rpc:send_message_atomic:engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "type": "RpcNode",
+        "file": "engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "rpc": "send_message_atomic"
+      },
+      {
+        "id": "engine:hydration",
+        "type": "EngineNode",
+        "engine": "hydration",
+        "path": "engines/hydration"
+      },
+      {
+        "id": "controller:engines/hydration/src/controller/hydrateActor.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/hydration/src/controller/hydrateActor.controller.js"
+      },
+      {
+        "id": "rpc:get_actor_summaries:engines/hydration/src/dal.js",
+        "type": "RpcNode",
+        "file": "engines/hydration/src/dal.js",
+        "rpc": "get_actor_summaries"
+      },
+      {
+        "id": "engine:i18n",
+        "type": "EngineNode",
+        "engine": "i18n",
+        "path": "engines/i18n"
+      },
+      {
+        "id": "engine:identity",
+        "type": "EngineNode",
+        "engine": "identity",
+        "path": "engines/identity"
+      },
+      {
+        "id": "controller:engines/identity/src/controller/logoutCleanup.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/identity/src/controller/logoutCleanup.controller.js"
+      },
+      {
+        "id": "controller:engines/identity/src/controller/resolveAuthenticatedContext.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/identity/src/controller/resolveAuthenticatedContext.controller.js"
+      },
+      {
+        "id": "controller:engines/identity/src/controller/switchActiveActor.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/identity/src/controller/switchActiveActor.controller.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/access.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/access.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/account.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/account.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/actorLinks.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/actorLinks.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/actorLinks.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/actorLinks.write.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/app.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/app.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/capabilities.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/capabilities.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/preferences.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/preferences.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/roles.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/roles.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/session.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/session.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/state.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/state.read.dal.js"
+      },
+      {
+        "id": "dal:engines/identity/src/dal/state.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/identity/src/dal/state.write.dal.js"
+      },
+      {
+        "id": "engine:media",
+        "type": "EngineNode",
+        "engine": "media",
+        "path": "engines/media"
+      },
+      {
+        "id": "controller:engines/media/src/controller/uploadMedia.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/media/src/controller/uploadMedia.controller.js"
+      },
+      {
+        "id": "dal:engines/media/src/dal/r2Upload.dal.js",
+        "type": "DALNode",
+        "file": "engines/media/src/dal/r2Upload.dal.js"
+      },
+      {
+        "id": "engine:notifications",
+        "type": "EngineNode",
+        "engine": "notifications",
+        "path": "engines/notifications"
+      },
+      {
+        "id": "controller:engines/notifications/src/controller/countUnread.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/notifications/src/controller/countUnread.controller.js"
+      },
+      {
+        "id": "controller:engines/notifications/src/controller/getInbox.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/notifications/src/controller/getInbox.controller.js"
+      },
+      {
+        "id": "controller:engines/notifications/src/controller/inboxState.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/notifications/src/controller/inboxState.controller.js"
+      },
+      {
+        "id": "controller:engines/notifications/src/controller/publishEvent.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/notifications/src/controller/publishEvent.controller.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/eventTypes.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/eventTypes.read.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/events.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/events.read.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/events.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/events.write.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/inbox.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/inbox.read.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/inbox.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/inbox.write.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/preferences.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/preferences.read.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/recipients.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/recipients.read.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/recipients.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/rendered.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/rendered.write.dal.js"
+      },
+      {
+        "id": "dal:engines/notifications/src/dal/templates.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/notifications/src/dal/templates.read.dal.js"
+      },
+      {
+        "id": "rpc:create_event:engines/notifications/src/dal/events.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/events.write.dal.js",
+        "rpc": "create_event"
+      },
+      {
+        "id": "rpc:insert_delivery_attempt:engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "rpc": "insert_delivery_attempt"
+      },
+      {
+        "id": "rpc:insert_inbox_item:engines/notifications/src/dal/inbox.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/inbox.write.dal.js",
+        "rpc": "insert_inbox_item"
+      },
+      {
+        "id": "rpc:insert_recipients:engines/notifications/src/dal/recipients.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js",
+        "rpc": "insert_recipients"
+      },
+      {
+        "id": "rpc:update_delivery_attempt:engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "rpc": "update_delivery_attempt"
+      },
+      {
+        "id": "rpc:update_recipient_status:engines/notifications/src/dal/recipients.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js",
+        "rpc": "update_recipient_status"
+      },
+      {
+        "id": "rpc:upsert_rendered:engines/notifications/src/dal/rendered.write.dal.js",
+        "type": "RpcNode",
+        "file": "engines/notifications/src/dal/rendered.write.dal.js",
+        "rpc": "upsert_rendered"
+      },
+      {
+        "id": "engine:portfolio",
+        "type": "EngineNode",
+        "engine": "portfolio",
+        "path": "engines/portfolio"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/__tests__/updateItem.controller.test.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/__tests__/updateItem.controller.test.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/addMedia.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/addMedia.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/createItem.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/createItem.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/deleteItem.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/deleteItem.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/getPortfolioItem.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/getPortfolioItem.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/listPortfolio.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/listPortfolio.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/manageTags.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/manageTags.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/removeMedia.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/removeMedia.controller.js"
+      },
+      {
+        "id": "controller:engines/portfolio/src/controller/updateItem.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/portfolio/src/controller/updateItem.controller.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/__tests__/portfolioTags.write.dal.test.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/__tests__/portfolioTags.write.dal.test.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/barberDetails.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/barberDetails.read.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/locksmithDetails.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/locksmithDetails.read.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/portfolioItems.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/portfolioItems.read.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/portfolioItems.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/portfolioItems.write.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/portfolioMedia.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/portfolioMedia.read.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/portfolioMedia.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/portfolioMedia.write.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/portfolioTags.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/portfolioTags.read.dal.js"
+      },
+      {
+        "id": "dal:engines/portfolio/src/dal/portfolioTags.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/portfolio/src/dal/portfolioTags.write.dal.js"
+      },
+      {
+        "id": "engine:reviews",
+        "type": "EngineNode",
+        "engine": "reviews",
+        "path": "engines/reviews"
+      },
+      {
+        "id": "controller:engines/reviews/src/controller/deleteReview.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/reviews/src/controller/deleteReview.controller.js"
+      },
+      {
+        "id": "controller:engines/reviews/src/controller/getMyActiveReview.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/reviews/src/controller/getMyActiveReview.controller.js"
+      },
+      {
+        "id": "controller:engines/reviews/src/controller/getReviewFormConfig.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/reviews/src/controller/getReviewFormConfig.controller.js"
+      },
+      {
+        "id": "controller:engines/reviews/src/controller/getReviewStats.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/reviews/src/controller/getReviewStats.controller.js"
+      },
+      {
+        "id": "controller:engines/reviews/src/controller/listReviews.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/reviews/src/controller/listReviews.controller.js"
+      },
+      {
+        "id": "controller:engines/reviews/src/controller/submitReview.controller.js",
+        "type": "ControllerNode",
+        "file": "engines/reviews/src/controller/submitReview.controller.js"
+      },
+      {
+        "id": "dal:engines/reviews/src/dal/dimensionRatings.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/reviews/src/dal/dimensionRatings.read.dal.js"
+      },
+      {
+        "id": "dal:engines/reviews/src/dal/dimensionRatings.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/reviews/src/dal/dimensionRatings.write.dal.js"
+      },
+      {
+        "id": "dal:engines/reviews/src/dal/dimensions.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/reviews/src/dal/dimensions.read.dal.js"
+      },
+      {
+        "id": "dal:engines/reviews/src/dal/reviews.read.dal.js",
+        "type": "DALNode",
+        "file": "engines/reviews/src/dal/reviews.read.dal.js"
+      },
+      {
+        "id": "dal:engines/reviews/src/dal/reviews.rpc.dal.js",
+        "type": "DALNode",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js"
+      },
+      {
+        "id": "dal:engines/reviews/src/dal/reviews.write.dal.js",
+        "type": "DALNode",
+        "file": "engines/reviews/src/dal/reviews.write.dal.js"
+      },
+      {
+        "id": "rpc:get_target_overall_stats:engines/reviews/src/dal/reviews.rpc.dal.js",
+        "type": "RpcNode",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+        "rpc": "get_target_overall_stats"
+      },
+      {
+        "id": "rpc:upsert_neutral_review:engines/reviews/src/dal/reviews.rpc.dal.js",
+        "type": "RpcNode",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+        "rpc": "upsert_neutral_review"
+      }
+    ],
+    "edges": [
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/__tests__/assertActorCanManageResource.controller.test.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/__tests__/cancelBooking.controller.test.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/__tests__/createBooking.controller.test.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/assertActorCanManageLocation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/assertActorCanManageOrganization.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/assertActorCanManageResource.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/assertActorOwnsVportActor.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/cancelBooking.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/completeBooking.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/confirmBooking.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/createBooking.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/createLocationResource.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/createOrganizationLocationWorkspace.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/createQrLink.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/dismissBooking.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/ensureOwnerBookingResource.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/getBookingServiceProfiles.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/getLocationAvailability.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/getResourceAvailability.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listBookingHistory.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listBookingResourcesByLocation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listLocationsByOrganization.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listOrganizationsByOwnerActor.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listOwnerBookingResources.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listQrLinks.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/listResourceServiceOverrides.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/markNoShow.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/resolveBookingContext.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/resolveQrScan.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/setAvailabilityException.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/setAvailabilityRule.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/setResourceSlotDuration.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "controller:engines/booking/src/controller/upsertResourceServiceOverride.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/actor.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/availability.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/availability.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/booking.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/booking.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/location.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/location.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/organization.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/organization.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/qrLink.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/qrLink.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/resource.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/resource.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/resourceServiceOverride.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/resourceServiceOverride.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/serviceProfile.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/serviceProfile.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/vportAvailability.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/vportAvailability.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/vportBooking.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/vportBooking.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/vportResource.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:booking",
+        "to": "dal:engines/booking/src/dal/vportResource.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/createAllowedConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/createAnnouncementConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/deleteMessage.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/deleteMessageForMe.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/deleteThreadForMe.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/editMessage.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/ensureConversationMembership.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/evaluateConversationPolicy.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/getConversationMembers.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/getConversationMessages.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/getInboxEntries.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/getInboxEntryForConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/getOrCreateDirectConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/inboxActions.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/leaveConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/markConversationRead.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/markConversationSpam.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/openConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/permissions.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/readConversationMembers.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/resolvePickedToActorId.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/searchDirectory.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/sendMessage.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/startDirectConversation.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/typingPresence.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "controller:engines/chat/src/controller/unsendMessage.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/actorRealm.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/attachments.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/blockRelations.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversationMembers.partner.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversationMembers.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversationMembership.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversationMembership.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversationRead.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversationRead.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/conversations.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/deleteThreadForMe.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/editMessage.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/inbox.entry.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/inbox.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/inbox.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/inbox_entries.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/legacyMappings.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messageForEdit.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messageReactions.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messageReceipts.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messageVisibility.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messages.last.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messages.timeline.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/messages.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/moderationActions.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/openConversation.rpc.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/outbox.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/pins.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/savedMessages.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/searchActors.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/subscribeToConversation.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/subscribeToInbox.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/typingPresence.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "dal:engines/chat/src/dal/typingStates.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:chat",
+        "to": "rpc:get_or_create_direct_conversation:engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:chat",
+        "to": "rpc:send_message_atomic:engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:hydration",
+        "to": "controller:engines/hydration/src/controller/hydrateActor.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:hydration",
+        "to": "rpc:get_actor_summaries:engines/hydration/src/dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:identity",
+        "to": "controller:engines/identity/src/controller/logoutCleanup.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:identity",
+        "to": "controller:engines/identity/src/controller/resolveAuthenticatedContext.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:identity",
+        "to": "controller:engines/identity/src/controller/switchActiveActor.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/access.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/account.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/actorLinks.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/actorLinks.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/app.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/capabilities.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/preferences.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/roles.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/session.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/state.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:identity",
+        "to": "dal:engines/identity/src/dal/state.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:media",
+        "to": "controller:engines/media/src/controller/uploadMedia.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:media",
+        "to": "dal:engines/media/src/dal/r2Upload.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "controller:engines/notifications/src/controller/countUnread.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "controller:engines/notifications/src/controller/getInbox.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "controller:engines/notifications/src/controller/inboxState.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "controller:engines/notifications/src/controller/publishEvent.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/eventTypes.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/events.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/events.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/inbox.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/inbox.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/preferences.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/recipients.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/recipients.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/rendered.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "dal:engines/notifications/src/dal/templates.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:create_event:engines/notifications/src/dal/events.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:insert_delivery_attempt:engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:insert_inbox_item:engines/notifications/src/dal/inbox.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:insert_recipients:engines/notifications/src/dal/recipients.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:update_delivery_attempt:engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:update_recipient_status:engines/notifications/src/dal/recipients.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:notifications",
+        "to": "rpc:upsert_rendered:engines/notifications/src/dal/rendered.write.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/__tests__/updateItem.controller.test.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/addMedia.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/createItem.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/deleteItem.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/getPortfolioItem.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/listPortfolio.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/manageTags.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/removeMedia.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "controller:engines/portfolio/src/controller/updateItem.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/__tests__/portfolioTags.write.dal.test.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/barberDetails.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/locksmithDetails.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/portfolioItems.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/portfolioItems.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/portfolioMedia.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/portfolioMedia.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/portfolioTags.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:portfolio",
+        "to": "dal:engines/portfolio/src/dal/portfolioTags.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "controller:engines/reviews/src/controller/deleteReview.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "controller:engines/reviews/src/controller/getMyActiveReview.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "controller:engines/reviews/src/controller/getReviewFormConfig.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "controller:engines/reviews/src/controller/getReviewStats.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "controller:engines/reviews/src/controller/listReviews.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "controller:engines/reviews/src/controller/submitReview.controller.js",
+        "type": "OWNS_CONTROLLER"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "dal:engines/reviews/src/dal/dimensionRatings.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "dal:engines/reviews/src/dal/dimensionRatings.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "dal:engines/reviews/src/dal/dimensions.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "dal:engines/reviews/src/dal/reviews.read.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "dal:engines/reviews/src/dal/reviews.rpc.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "dal:engines/reviews/src/dal/reviews.write.dal.js",
+        "type": "OWNS_DAL"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "rpc:get_target_overall_stats:engines/reviews/src/dal/reviews.rpc.dal.js",
+        "type": "USES_RPC"
+      },
+      {
+        "from": "engine:reviews",
+        "to": "rpc:upsert_neutral_review:engines/reviews/src/dal/reviews.rpc.dal.js",
+        "type": "USES_RPC"
+      }
+    ]
+  }
+}

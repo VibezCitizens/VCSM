@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useVportBusinessCardExperience } from "@/features/public/vportBusinessCard/hooks/useVportBusinessCardExperience";
 import { useVportBusinessCardLeadForm } from "@/features/public/vportBusinessCard/hooks/useVportBusinessCardLeadForm";
 import { useVportBusinessCardSections } from "@/features/public/vportBusinessCard/hooks/useVportBusinessCardSections";
-import { getBusinessCardSettings } from "@/features/public/vportBusinessCard/model/businessCardSettings.model";
+import { getBusinessCardSettings } from "@/shared/lib/businessCard/businessCardSettings.model";
 import {
   HoursSection,
   ReviewsSummarySection,
@@ -20,6 +20,7 @@ import FS from "@/features/public/vportBusinessCard/view/businessCardFormStyles"
 import { upsertMetaTag, composeAddressLabel, UnavailableState } from "@/features/public/vportBusinessCard/view/businessCardHelpers.jsx";
 import BusinessCardMainCard from "@/features/public/vportBusinessCard/view/BusinessCardMainCard";
 import BusinessCardLeadForm from "@/features/public/vportBusinessCard/view/BusinessCardLeadForm";
+import { LeadNotificationDebugPanel } from "@debuggers/lead-notification";
 
 export default function VportBusinessCardPublicView({ slug, fromSettings = false }) {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export default function VportBusinessCardPublicView({ slug, fromSettings = false
     submitted,
     submit,
     reset,
+    notificationDiagnostics,
   } = useVportBusinessCardLeadForm({
     slug,
     vportName: card?.businessName ?? null,
@@ -59,7 +61,7 @@ export default function VportBusinessCardPublicView({ slug, fromSettings = false
   }, [cs]);
 
   const { sections } = useVportBusinessCardSections({
-    profileId: card?.profileId ?? null,
+    slug,
     enabled: anySectionEnabled,
   });
 
@@ -256,6 +258,10 @@ export default function VportBusinessCardPublicView({ slug, fromSettings = false
             submit={submit}
           />
         )}
+
+        {import.meta.env.DEV && notificationDiagnostics ? (
+          <LeadNotificationDebugPanel diagnostics={notificationDiagnostics} />
+        ) : null}
 
       </div>
     </div>

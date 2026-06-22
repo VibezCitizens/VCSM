@@ -3,7 +3,7 @@
 import vportSchema from "@/services/supabase/vportClient";
 
 const PUBLISH_SELECT =
-  "id,actor_id,profile_id,title,slug,is_published,is_indexable,published_at,updated_at";
+  "id,title,slug,is_published,is_indexable,published_at,updated_at";
 
 export async function toggleVportContentPagePublishDAL({ id, actorId, isPublished } = {}) {
   if (!id) throw new Error("toggleVportContentPagePublishDAL: id is required");

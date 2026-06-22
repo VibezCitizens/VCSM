@@ -12,11 +12,11 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
-import { MyBlocksProvider, useMyBlocks } from '@/features/settings/adapters/privacy/hooks/useMyBlocks.adapter'
+import { MyBlocksProvider, useMyBlocks } from '@/features/settings/adapters/settings.adapter'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import BlockConfirmModal from '@/features/block/adapters/ui/BlockConfirmModal.adapter'
 import { useTranslation } from '@i18n'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 function BlockedRow({ blockedActorId, onUnblock }) {

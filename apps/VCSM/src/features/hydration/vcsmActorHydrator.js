@@ -1,18 +1,28 @@
 import {
   readActorOwnerUserDAL,
   readActorPrivacyDAL,
-  readIdentityActorByIdDAL,
   readProfileIdentityDAL,
-  readUserActorByProfileIdDAL,
   readVportIdentityDAL,
-} from "@/state/identity/identity.read.dal";
+} from "./dal/vcsmActorHydration.read.dal";
 import {
   mapProfileActor,
   mapVportActor,
-} from "@/state/identity/identity.model";
+} from "./model/vcsmActorMappers.model";
+// Identity-runtime reads owned by features/identity (post IDENTITY-BOUNDARY-006;
+// shared with the identity controller / self-heal). The adapter contract forbids
+// exporting DALs/controllers, so these cannot route through the identity adapter.
+// IDENTITY-BOUNDARY-007 decision (C5): sanctioned boundary exception. The proper
+// fix is to source the actor-row reads from features/actors' public surface during
+// the actor-row consolidation program; realm resolution stays identity-runtime.
+// eslint-disable-next-line vcsm-architecture/adapter-boundary -- IB-007 C5: identity-runtime actor-row reads; fix in actors-consolidation program
+import {
+  readIdentityActorByIdDAL,
+  readUserActorByProfileIdDAL,
+} from "@/features/identity/identity.read.dal";
+// eslint-disable-next-line vcsm-architecture/adapter-boundary -- IB-007 C5: identity-runtime realm resolution
 import {
   resolveRealmId,
-} from "@/state/identity/identity.controller";
+} from "@/features/identity/identity.controller";
 import { supabase as supabaseClient } from "@/services/supabase/supabaseClient";
 
 export async function hydrateVcsmActor({

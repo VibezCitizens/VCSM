@@ -3,7 +3,6 @@
 import React from "react";
 import {
   labelStyle,
-  helperStyle,
   imageCard,
   imageRow,
   imagePreview,
@@ -13,7 +12,6 @@ import {
 
 export function VportActorMenuItemFormPhotoField({
   imagePreviewUrl,
-  imageUrlValue,
   uploadingImage = false,
   disabled = false,
   onPickImage,

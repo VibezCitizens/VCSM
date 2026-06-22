@@ -1,4 +1,4 @@
-import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPageTemplate";
+import { ProviderPageTemplate } from "@/features/providers/adapters/providers.adapter";
 import { buildProviderPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
 import { buildBreadcrumbSchema, buildProviderSchema } from "@/seo/schemaOrg";

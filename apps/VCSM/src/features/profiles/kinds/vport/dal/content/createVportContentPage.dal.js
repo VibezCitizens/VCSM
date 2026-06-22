@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/dal/content/createVportContentPage.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 export async function readContentPageSlugsByPrefixDAL({ actorId, slugPrefix }) {
   const { data } = await vportSchema

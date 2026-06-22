@@ -1,7 +1,7 @@
 // src/features/post/commentcard/components/CommentCard.container.jsx
 
 import useCommentCard from "../hooks/useCommentCard";
-import CommentCardView from "../ui/CommentCard.view";
+import CommentCardView from "../components/CommentCard.view";
 
 export default function CommentCardContainer({
   rawComment,

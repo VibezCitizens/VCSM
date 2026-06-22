@@ -7,7 +7,7 @@
 //
 // For DASHBOARD surfaces import:
 //   import { useVportDashboardDetails } from
-//     '@/features/profiles/adapters/kinds/vport/hooks/useVportPublicDetails.adapter';
+//     '@/features/profiles/kinds/vport/adapters/hooks/useVportPublicDetails.adapter';
 //
 // For PUBLIC-facing surfaces (online menu, QR views, reviews page) use:
 //   import { useVportPublicDetails } from

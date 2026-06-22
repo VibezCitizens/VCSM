@@ -1,4 +1,4 @@
-import { toPhoneDigits, formatPhoneDisplay } from "@/features/settings/profile/ui/vportAboutDetails.model";
+import { toPhoneDigits, formatPhoneDisplay } from "@/features/settings/profile/model/vportAboutDetails.model";
 
 export function Field({
   label,

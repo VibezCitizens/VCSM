@@ -36,8 +36,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+  "Access-Control-Allow-Origin": "https://vibezcitizens.com",
+  "Access-Control-Allow-Headers": "authorization, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -51,6 +51,15 @@ function json(body: unknown, status = 200): Response {
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  if (req.method !== "POST") {
+    return json({ ok: false, code: "METHOD_NOT_ALLOWED" }, 405);
+  }
+
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return json({ ok: false, code: "UNAUTHORIZED" }, 401);
   }
 
   // TODO: Remove this stub and implement the full function above.

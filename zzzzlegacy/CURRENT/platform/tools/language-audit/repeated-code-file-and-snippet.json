@@ -1,0 +1,4428 @@
+{
+  "generatedAt": "2026-03-08T09:09:16.262Z",
+  "sourceRoot": "src",
+  "filesScanned": 1207,
+  "summary": {
+    "duplicateGroups": 187
+  },
+  "duplicates": [
+    {
+      "id": 1,
+      "fileCount": 22,
+      "occurrenceCount": 22,
+      "repeatedCode": "  return runDiagnosticsTests({\n    group: GROUP_ID,\n    tests,\n    onTestUpdate,\n    shared,\n  });\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\actorSystem.group.js",
+          "fileName": "actorSystem.group.js",
+          "startLine": 218,
+          "endLine": 224
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\bookingFeature.group.js",
+          "fileName": "bookingFeature.group.js",
+          "startLine": 328,
+          "endLine": 334
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\design.group.js",
+          "fileName": "design.group.js",
+          "startLine": 315,
+          "endLine": 321
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\featureCoverage.group.js",
+          "fileName": "featureCoverage.group.js",
+          "startLine": 184,
+          "endLine": 190
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.js",
+          "fileName": "feedFeature.group.js",
+          "startLine": 288,
+          "endLine": 294
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\messaging.group.js",
+          "fileName": "messaging.group.js",
+          "startLine": 355,
+          "endLine": 361
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\notifications.group.js",
+          "fileName": "notifications.group.js",
+          "startLine": 208,
+          "endLine": 214
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\notificationsFeature.group.js",
+          "fileName": "notificationsFeature.group.js",
+          "startLine": 270,
+          "endLine": 276
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\onboarding.group.js",
+          "fileName": "onboarding.group.js",
+          "startLine": 305,
+          "endLine": 311
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\profilesFeature.group.js",
+          "fileName": "profilesFeature.group.js",
+          "startLine": 305,
+          "endLine": 311
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\profilesKindsFeature.group.js",
+          "fileName": "profilesKindsFeature.group.js",
+          "startLine": 267,
+          "endLine": 273
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\publicFeature.group.js",
+          "fileName": "publicFeature.group.js",
+          "startLine": 188,
+          "endLine": 194
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\reports.group.js",
+          "fileName": "reports.group.js",
+          "startLine": 408,
+          "endLine": 414
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\schemaIntegrity.group.js",
+          "fileName": "schemaIntegrity.group.js",
+          "startLine": 233,
+          "endLine": 239
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsAccountFeature.group.js",
+          "fileName": "settingsAccountFeature.group.js",
+          "startLine": 198,
+          "endLine": 204
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsFeature.group.js",
+          "fileName": "settingsFeature.group.js",
+          "startLine": 267,
+          "endLine": 273
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsPrivacyFeature.group.js",
+          "fileName": "settingsPrivacyFeature.group.js",
+          "startLine": 255,
+          "endLine": 261
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsProfileFeature.group.js",
+          "fileName": "settingsProfileFeature.group.js",
+          "startLine": 287,
+          "endLine": 293
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\social.group.js",
+          "fileName": "social.group.js",
+          "startLine": 425,
+          "endLine": 431
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.js",
+          "fileName": "uploadFeature.group.js",
+          "startLine": 299,
+          "endLine": 305
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.js",
+          "fileName": "vportFeature.group.js",
+          "startLine": 263,
+          "endLine": 269
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vports.group.js",
+          "fileName": "vports.group.js",
+          "startLine": 334,
+          "endLine": 340
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "fileCount": 8,
+      "occurrenceCount": 8,
+      "repeatedCode": "function safeParseJson(value) {\n  if (!value) return null;\n  if (typeof value === \"object\") return value;\n  if (typeof value !== \"string\") return null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\WandersCardPreview.jsx",
+          "fileName": "WandersCardPreview.jsx",
+          "startLine": 59,
+          "endLine": 62
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 141,
+          "endLine": 144
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 28,
+          "endLine": 31
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersCard.model.js",
+          "fileName": "wandersCard.model.js",
+          "startLine": 8,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersInbox.model.js",
+          "fileName": "wandersInbox.model.js",
+          "startLine": 8,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersMailboxItem.model.js",
+          "fileName": "wandersMailboxItem.model.js",
+          "startLine": 8,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersReply.model.js",
+          "fileName": "wandersReply.model.js",
+          "startLine": 8,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersOutbox.screen.jsx",
+          "fileName": "WandersOutbox.screen.jsx",
+          "startLine": 19,
+          "endLine": 22
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "fileCount": 7,
+      "occurrenceCount": 7,
+      "repeatedCode": "  if (isDesktop && typeof document !== \"undefined\") {\n    return createPortal(\n      <div\n        style={{\n          position: \"fixed\",\n          inset: 0,\n          zIndex: 9999,\n          overflow: \"auto\",\n          background: \"#000\",\n        }}\n      >\n        {content}\n      </div>,\n      document.body\n    );\n  }",
+      "files": [
+        {
+          "path": "src\\features\\ads\\screens\\VportAdsSettingsScreen.jsx",
+          "fileName": "VportAdsSettingsScreen.jsx",
+          "startLine": 145,
+          "endLine": 160
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardCalendarScreen.jsx",
+          "fileName": "VportDashboardCalendarScreen.jsx",
+          "startLine": 795,
+          "endLine": 810
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardExchangeScreen.jsx",
+          "fileName": "VportDashboardExchangeScreen.jsx",
+          "startLine": 239,
+          "endLine": 254
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardGasScreen.jsx",
+          "fileName": "VportDashboardGasScreen.jsx",
+          "startLine": 162,
+          "endLine": 177
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardReviewScreen.jsx",
+          "fileName": "VportDashboardReviewScreen.jsx",
+          "startLine": 60,
+          "endLine": 75
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardServicesScreen.jsx",
+          "fileName": "VportDashboardServicesScreen.jsx",
+          "startLine": 80,
+          "endLine": 95
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportSettingsScreen.jsx",
+          "fileName": "VportSettingsScreen.jsx",
+          "startLine": 207,
+          "endLine": 222
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "fileCount": 7,
+      "occurrenceCount": 7,
+      "repeatedCode": "      if (typeof parsed === \"string\") {\n        s = parsed.trim();\n        if (!s) return null;\n        continue;\n      }",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\WandersCardPreview.jsx",
+          "fileName": "WandersCardPreview.jsx",
+          "startLine": 74,
+          "endLine": 78
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 156,
+          "endLine": 160
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 43,
+          "endLine": 47
+        },
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\mailboxExperience\\mailboxExperience.helpers.js",
+          "fileName": "mailboxExperience.helpers.js",
+          "startLine": 27,
+          "endLine": 31
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersCard.model.js",
+          "fileName": "wandersCard.model.js",
+          "startLine": 23,
+          "endLine": 27
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersInbox.model.js",
+          "fileName": "wandersInbox.model.js",
+          "startLine": 26,
+          "endLine": 30
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersMailboxItem.model.js",
+          "fileName": "wandersMailboxItem.model.js",
+          "startLine": 26,
+          "endLine": 30
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "fileCount": 6,
+      "occurrenceCount": 6,
+      "repeatedCode": "  Form({ data, setData, ui }) {\n    const label =\n      ui?.labelBase ||\n      \"block text-[13px] font-semibold tracking-[0.01em] text-gray-900 mb-1.5\";\n    const input =\n      ui?.inputBase ||\n      \"w-full rounded-2xl border px-4 py-3 text-[15px] leading-6 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 shadow-[0_1px_0_0_rgba(0,0,0,0.04)] transition duration-150 hover:border-gray-300 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-black/10\";\n    const textarea =\n      ui?.textareaBase || `${input} align-top resize-none min-h-[120px]`;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\business.professional.jsx",
+          "fileName": "business.professional.jsx",
+          "startLine": 35,
+          "endLine": 43
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\generic.minimal.jsx",
+          "fileName": "generic.minimal.jsx",
+          "startLine": 32,
+          "endLine": 40
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.bold.jsx",
+          "fileName": "valentines.bold.jsx",
+          "startLine": 15,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.classic.jsx",
+          "fileName": "valentines.classic.jsx",
+          "startLine": 15,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.cute.jsx",
+          "fileName": "valentines.cute.jsx",
+          "startLine": 15,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.minimal.jsx",
+          "fileName": "valentines.minimal.jsx",
+          "startLine": 15,
+          "endLine": 23
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "fileCount": 6,
+      "occurrenceCount": 6,
+      "repeatedCode": "        <label className=\"flex items-center gap-2 cursor-pointer select-none\">\n          <input\n            type=\"checkbox\"\n            checked={data.sendAnonymously}\n            onChange={(e) => setData((p) => ({ ...p, sendAnonymously: e.target.checked }))}\n          />\n          <span className=\"text-sm text-gray-800\">Send anonymously</span>\n        </label>\n      </div>\n    );\n  },",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.bold.jsx",
+          "fileName": "valentines.bold.jsx",
+          "startLine": 61,
+          "endLine": 71
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.classic.jsx",
+          "fileName": "valentines.classic.jsx",
+          "startLine": 61,
+          "endLine": 71
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.cute.jsx",
+          "fileName": "valentines.cute.jsx",
+          "startLine": 61,
+          "endLine": 71
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.minimal.jsx",
+          "fileName": "valentines.minimal.jsx",
+          "startLine": 61,
+          "endLine": 71
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.poem.jsx",
+          "fileName": "valentines.poem.jsx",
+          "startLine": 61,
+          "endLine": 71
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.romantic.jsx",
+          "fileName": "valentines.romantic.jsx",
+          "startLine": 56,
+          "endLine": 66
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "fileCount": 6,
+      "occurrenceCount": 6,
+      "repeatedCode": "        {!data.sendAnonymously ? (\n          <div>\n            <label className={label}>From</label>\n            <input\n              type=\"text\"\n              placeholder=\"Your name\"\n              className={input}\n              value={data.fromName}\n              onChange={(e) => setData((p) => ({ ...p, fromName: e.target.value }))}\n            />\n          </div>\n        ) : null}",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.bold.jsx",
+          "fileName": "valentines.bold.jsx",
+          "startLine": 38,
+          "endLine": 49
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.classic.jsx",
+          "fileName": "valentines.classic.jsx",
+          "startLine": 38,
+          "endLine": 49
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.cute.jsx",
+          "fileName": "valentines.cute.jsx",
+          "startLine": 38,
+          "endLine": 49
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.minimal.jsx",
+          "fileName": "valentines.minimal.jsx",
+          "startLine": 38,
+          "endLine": 49
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.poem.jsx",
+          "fileName": "valentines.poem.jsx",
+          "startLine": 38,
+          "endLine": 49
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.romantic.jsx",
+          "fileName": "valentines.romantic.jsx",
+          "startLine": 33,
+          "endLine": 44
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "fileCount": 6,
+      "occurrenceCount": 6,
+      "repeatedCode": "    return (\n      <div className=\"space-y-5\">\n        <div>\n          <label className={label}>To</label>\n          <input\n            type=\"text\"\n            placeholder=\"Recipient name\"\n            className={input}\n            value={data.toName}\n            onChange={(e) => setData((p) => ({ ...p, toName: e.target.value }))}\n          />\n        </div>",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.bold.jsx",
+          "fileName": "valentines.bold.jsx",
+          "startLine": 25,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.classic.jsx",
+          "fileName": "valentines.classic.jsx",
+          "startLine": 25,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.cute.jsx",
+          "fileName": "valentines.cute.jsx",
+          "startLine": 25,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.minimal.jsx",
+          "fileName": "valentines.minimal.jsx",
+          "startLine": 25,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.poem.jsx",
+          "fileName": "valentines.poem.jsx",
+          "startLine": 25,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.romantic.jsx",
+          "fileName": "valentines.romantic.jsx",
+          "startLine": 20,
+          "endLine": 31
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "fileCount": 6,
+      "occurrenceCount": 6,
+      "repeatedCode": "  const { data, error } = await supabase\n    .schema(SCHEMA)\n    .from(TABLE)\n    .insert(payload)\n    .select(COLS)\n    .maybeSingle();",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\cardKeys.write.dal.js",
+          "fileName": "cardKeys.write.dal.js",
+          "startLine": 27,
+          "endLine": 32
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\cards.write.dal.js",
+          "fileName": "cards.write.dal.js",
+          "startLine": 59,
+          "endLine": 64
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\droplinks.write.dal.js",
+          "fileName": "droplinks.write.dal.js",
+          "startLine": 31,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\events.write.dal.js",
+          "fileName": "events.write.dal.js",
+          "startLine": 42,
+          "endLine": 47
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\replies.write.dal.js",
+          "fileName": "replies.write.dal.js",
+          "startLine": 51,
+          "endLine": 56
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\userFingerprints.write.dal.js",
+          "fileName": "userFingerprints.write.dal.js",
+          "startLine": 46,
+          "endLine": 51
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "fileCount": 5,
+      "occurrenceCount": 5,
+      "repeatedCode": "    const prevOverflow = body.style.overflow;\n    const prevPosition = body.style.position;\n    const prevTop = body.style.top;\n    const prevWidth = body.style.width;",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 45,
+          "endLine": 48
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 53,
+          "endLine": 56
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 59,
+          "endLine": 62
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentModal.jsx",
+          "fileName": "CommentModal.jsx",
+          "startLine": 51,
+          "endLine": 54
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\ImageViewerModal.jsx",
+          "fileName": "ImageViewerModal.jsx",
+          "startLine": 63,
+          "endLine": 66
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "fileCount": 5,
+      "occurrenceCount": 5,
+      "repeatedCode": "  const mountedRef = useRef(true);\n  useEffect(() => {\n    mountedRef.current = true;\n    return () => {\n      mountedRef.current = false;\n    };\n  }, []);",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\services\\useVportServicesQuery.js",
+          "fileName": "useVportServicesQuery.js",
+          "startLine": 25,
+          "endLine": 31
+        },
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersCards.hook.js",
+          "fileName": "useWandersCards.hook.js",
+          "startLine": 23,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersGuest.js",
+          "fileName": "useWandersGuest.js",
+          "startLine": 17,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersMailbox.hook.js",
+          "fileName": "useWandersMailbox.hook.js",
+          "startLine": 21,
+          "endLine": 27
+        },
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersReplies.hook.js",
+          "fileName": "useWandersReplies.hook.js",
+          "startLine": 24,
+          "endLine": 30
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "fileCount": 5,
+      "occurrenceCount": 5,
+      "repeatedCode": "    body.style.overflow = \"hidden\";\n    body.style.position = \"fixed\";\n    body.style.top = `-${scrollY}px`;\n    body.style.width = \"100%\";",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 50,
+          "endLine": 53
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 58,
+          "endLine": 61
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 64,
+          "endLine": 67
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentModal.jsx",
+          "fileName": "CommentModal.jsx",
+          "startLine": 56,
+          "endLine": 59
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\ImageViewerModal.jsx",
+          "fileName": "ImageViewerModal.jsx",
+          "startLine": 68,
+          "endLine": 71
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "fileCount": 5,
+      "occurrenceCount": 5,
+      "repeatedCode": "  const goBack = useCallback(() => {\n    if (!actorId) return;\n    navigate(`/actor/${actorId}/dashboard`);\n  }, [navigate, actorId]);",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\screens\\VportActorMenuFlyerEditorScreen.jsx",
+          "fileName": "VportActorMenuFlyerEditorScreen.jsx",
+          "startLine": 26,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardCalendarScreen.jsx",
+          "fileName": "VportDashboardCalendarScreen.jsx",
+          "startLine": 271,
+          "endLine": 274
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardExchangeScreen.jsx",
+          "fileName": "VportDashboardExchangeScreen.jsx",
+          "startLine": 67,
+          "endLine": 70
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardGasScreen.jsx",
+          "fileName": "VportDashboardGasScreen.jsx",
+          "startLine": 33,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardServicesScreen.jsx",
+          "fileName": "VportDashboardServicesScreen.jsx",
+          "startLine": 26,
+          "endLine": 29
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "export function trimAudit(audit, maxItems = 30) {\n  return {\n    ...audit,\n    issues: {\n      ...audit.issues,\n      oversizedFiles: audit.issues.oversizedFiles.slice(0, maxItems),\n      depthViolations: audit.issues.depthViolations.slice(0, maxItems),\n      relativeImports: audit.issues.relativeImports.slice(0, maxItems),\n      crossFeatureImports: audit.issues.crossFeatureImports.slice(0, maxItems),\n      namingViolations: audit.issues.namingViolations.slice(0, maxItems),\n    },\n  };\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.helpers.js",
+          "fileName": "feedFeature.group.helpers.js",
+          "startLine": 48,
+          "endLine": 60
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsFeature.group.helpers.js",
+          "fileName": "settingsFeature.group.helpers.js",
+          "startLine": 32,
+          "endLine": 44
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.helpers.js",
+          "fileName": "uploadFeature.group.helpers.js",
+          "startLine": 47,
+          "endLine": 59
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 45,
+          "endLine": 57
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "const BOOKING_SELECT = [\n  \"id\",\n  \"resource_id\",\n  \"service_id\",\n  \"customer_actor_id\",\n  \"customer_profile_id\",\n  \"status\",\n  \"source\",\n  \"starts_at\",\n  \"ends_at\",\n  \"timezone\",\n  \"service_label_snapshot\",\n  \"duration_minutes\",\n  \"customer_name\",\n  \"customer_phone\",\n  \"customer_email\",\n  \"customer_note\",\n  \"internal_note\",\n  \"cancelled_at\",\n  \"completed_at\",\n  \"created_by_actor_id\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\getBookingById.dal.js",
+          "fileName": "getBookingById.dal.js",
+          "startLine": 3,
+          "endLine": 26
+        },
+        {
+          "path": "src\\features\\booking\\dal\\insertBooking.dal.js",
+          "fileName": "insertBooking.dal.js",
+          "startLine": 3,
+          "endLine": 26
+        },
+        {
+          "path": "src\\features\\booking\\dal\\listBookingsInRange.dal.js",
+          "fileName": "listBookingsInRange.dal.js",
+          "startLine": 3,
+          "endLine": 26
+        },
+        {
+          "path": "src\\features\\booking\\dal\\updateBookingStatus.dal.js",
+          "fileName": "updateBookingStatus.dal.js",
+          "startLine": 3,
+          "endLine": 26
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "export function isCrossFeatureBoundaryViolation(currentFeature, specifier) {\n  if (!specifier?.startsWith(\"@/features/\")) return false;\n  const rest = specifier.replace(\"@/features/\", \"\");\n  const targetFeature = rest.split(\"/\")[0] ?? null;\n  if (!targetFeature || targetFeature === currentFeature) return false;",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.helpers.js",
+          "fileName": "feedFeature.group.helpers.js",
+          "startLine": 78,
+          "endLine": 82
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsFeature.group.helpers.js",
+          "fileName": "settingsFeature.group.helpers.js",
+          "startLine": 62,
+          "endLine": 66
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.helpers.js",
+          "fileName": "uploadFeature.group.helpers.js",
+          "startLine": 77,
+          "endLine": 81
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 75,
+          "endLine": 79
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "export function extractImportSpecifiers(source) {\n  const pattern = /(?:import\\s+[^\"']*from\\s+|import\\s*\\()\\s*[\"']([^\"']+)[\"']/g;\n  const rows = [];\n  let match = pattern.exec(source ?? \"\");\n  while (match) {\n    rows.push(match[1]);\n    match = pattern.exec(source ?? \"\");\n  }\n  return rows;\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.helpers.js",
+          "fileName": "feedFeature.group.helpers.js",
+          "startLine": 62,
+          "endLine": 71
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsFeature.group.helpers.js",
+          "fileName": "settingsFeature.group.helpers.js",
+          "startLine": 46,
+          "endLine": 55
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.helpers.js",
+          "fileName": "uploadFeature.group.helpers.js",
+          "startLine": 61,
+          "endLine": 70
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 59,
+          "endLine": 68
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "  const actorId = useMemo(() => params?.actorId ?? null, [params]);\n  const isDesktop = useDesktopBreakpoint();\n  const viewerActorId = identity?.actorId ?? null;\n  const isOwner =\n    Boolean(actorId) &&\n    Boolean(viewerActorId) &&\n    String(viewerActorId) === String(actorId);",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\screens\\VportActorMenuFlyerEditorScreen.jsx",
+          "fileName": "VportActorMenuFlyerEditorScreen.jsx",
+          "startLine": 16,
+          "endLine": 22
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardExchangeScreen.jsx",
+          "fileName": "VportDashboardExchangeScreen.jsx",
+          "startLine": 59,
+          "endLine": 65
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardGasScreen.jsx",
+          "fileName": "VportDashboardGasScreen.jsx",
+          "startLine": 25,
+          "endLine": 31
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardServicesScreen.jsx",
+          "fileName": "VportDashboardServicesScreen.jsx",
+          "startLine": 18,
+          "endLine": 24
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "  if (\n    rest === targetFeature ||\n    rest === `${targetFeature}/index` ||\n    rest === `${targetFeature}/index.js` ||\n    rest.startsWith(`${targetFeature}/adapter/`) ||\n    rest.startsWith(`${targetFeature}/adapters/`)\n  ) {\n    return false;\n  }",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.helpers.js",
+          "fileName": "feedFeature.group.helpers.js",
+          "startLine": 84,
+          "endLine": 92
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsFeature.group.helpers.js",
+          "fileName": "settingsFeature.group.helpers.js",
+          "startLine": 68,
+          "endLine": 76
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.helpers.js",
+          "fileName": "uploadFeature.group.helpers.js",
+          "startLine": 83,
+          "endLine": 91
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 81,
+          "endLine": 89
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "function makeActorRoute({ kind, username, actorId, vportId }) {\n  if (kind === \"user\" && username) return `/u/${username}`;\n  if (kind === \"vport\" && vportId) return `/vport/${vportId}`;\n  if (actorId) return `/profile/${actorId}`;\n  return \"/feed\";\n}",
+      "files": [
+        {
+          "path": "src\\features\\feed\\model\\buildMentionMaps.js",
+          "fileName": "buildMentionMaps.js",
+          "startLine": 3,
+          "endLine": 8
+        },
+        {
+          "path": "src\\features\\post\\bridge\\profilePosts.bridge.js",
+          "fileName": "profilePosts.bridge.js",
+          "startLine": 15,
+          "endLine": 20
+        },
+        {
+          "path": "src\\features\\post\\postcard\\controller\\getPostMentionMap.controller.js",
+          "fileName": "getPostMentionMap.controller.js",
+          "startLine": 6,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\post\\dal\\fetchPostsForActor.dal.js",
+          "fileName": "fetchPostsForActor.dal.js",
+          "startLine": 3,
+          "endLine": 8
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "  const handleKeyDown = useCallback(\n    (e) => {\n      if (e.key === \"Enter\" && !e.shiftKey) {\n        e.preventDefault();\n        handleSubmit();\n      }\n    },\n    [handleSubmit]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 76,
+          "endLine": 84
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyInput.jsx",
+          "fileName": "CommentReplyInput.jsx",
+          "startLine": 30,
+          "endLine": 38
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 95,
+          "endLine": 103
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 90,
+          "endLine": 98
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "function pickDefined(input, columns) {\n  return columns.reduce((acc, key) => {\n    if (input[key] !== undefined) acc[key] = input[key];\n    return acc;\n  }, {});\n}",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\insertBooking.dal.js",
+          "fileName": "insertBooking.dal.js",
+          "startLine": 50,
+          "endLine": 55
+        },
+        {
+          "path": "src\\features\\booking\\dal\\insertBookingResource.dal.js",
+          "fileName": "insertBookingResource.dal.js",
+          "startLine": 24,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\booking\\dal\\upsertAvailabilityException.dal.js",
+          "fileName": "upsertAvailabilityException.dal.js",
+          "startLine": 25,
+          "endLine": 30
+        },
+        {
+          "path": "src\\features\\booking\\dal\\upsertAvailabilityRule.dal.js",
+          "fileName": "upsertAvailabilityRule.dal.js",
+          "startLine": 29,
+          "endLine": 34
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "  const { data, error } = await supabase\n    .schema(SCHEMA)\n    .from(TABLE)\n    .insert(payload)\n    .select(COLS)\n    .maybeSingle()",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\dal\\wandersCardKeys.dal.js",
+          "fileName": "wandersCardKeys.dal.js",
+          "startLine": 36,
+          "endLine": 41
+        },
+        {
+          "path": "src\\features\\wanders\\dal\\wandersCards.dal.js",
+          "fileName": "wandersCards.dal.js",
+          "startLine": 62,
+          "endLine": 67
+        },
+        {
+          "path": "src\\features\\wanders\\dal\\wandersClaims.dal.js",
+          "fileName": "wandersClaims.dal.js",
+          "startLine": 40,
+          "endLine": 45
+        },
+        {
+          "path": "src\\features\\wanders\\dal\\wandersEvents.dal.js",
+          "fileName": "wandersEvents.dal.js",
+          "startLine": 31,
+          "endLine": 36
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "  await assertActorOwnsVportActorController({\n    requestActorId,\n    targetActorId: resource.owner_actor_id,\n  });",
+      "files": [
+        {
+          "path": "src\\features\\booking\\controller\\confirmBooking.controller.js",
+          "fileName": "confirmBooking.controller.js",
+          "startLine": 31,
+          "endLine": 34
+        },
+        {
+          "path": "src\\features\\booking\\controller\\setAvailabilityException.controller.js",
+          "fileName": "setAvailabilityException.controller.js",
+          "startLine": 36,
+          "endLine": 39
+        },
+        {
+          "path": "src\\features\\booking\\controller\\setAvailabilityRule.controller.js",
+          "fileName": "setAvailabilityRule.controller.js",
+          "startLine": 39,
+          "endLine": 42
+        },
+        {
+          "path": "src\\features\\booking\\controller\\setResourceSlotDuration.controller.js",
+          "fileName": "setResourceSlotDuration.controller.js",
+          "startLine": 33,
+          "endLine": 36
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "fileCount": 4,
+      "occurrenceCount": 4,
+      "repeatedCode": "export function getRootDomain(path) {\n  const parts = path.split(\"/\");\n  return parts[3] ?? \"(root)\";\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.helpers.js",
+          "fileName": "feedFeature.group.helpers.js",
+          "startLine": 73,
+          "endLine": 76
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsFeature.group.helpers.js",
+          "fileName": "settingsFeature.group.helpers.js",
+          "startLine": 57,
+          "endLine": 60
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.helpers.js",
+          "fileName": "uploadFeature.group.helpers.js",
+          "startLine": 72,
+          "endLine": 75
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 70,
+          "endLine": 73
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "        <textarea\n          ref={textareaRef}\n          value={value}\n          placeholder={placeholder}\n          disabled={submitting}\n          onChange={(e) => setValue(e.target.value)}\n          onKeyDown={handleKeyDown}\n          rows={3}\n          className=\"\n            w-full resize-none rounded-xl\n            bg-neutral-900 border border-neutral-800\n            px-3 py-2 text-sm text-neutral-100\n            placeholder:text-neutral-500\n            focus:outline-none focus:ring-2 focus:ring-purple-500\n            focus:border-purple-500\n          \"\n        />",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 122,
+          "endLine": 138
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 141,
+          "endLine": 157
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 136,
+          "endLine": 152
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "        {/* Anonymous toggle */}\n        <label className=\"flex items-center gap-2 cursor-pointer select-none\">\n          <input\n            type=\"checkbox\"\n            checked={data.sendAnonymously}\n            onChange={(e) =>\n              setData((prev) => ({\n                ...prev,\n                sendAnonymously: e.target.checked,\n              }))\n            }\n          />\n          <span className=\"text-sm text-gray-800\">Send anonymously</span>\n        </label>\n      </div>\n    );\n  },",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\birthday.modern.jsx",
+          "fileName": "birthday.modern.jsx",
+          "startLine": 107,
+          "endLine": 123
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\business.professional.jsx",
+          "fileName": "business.professional.jsx",
+          "startLine": 105,
+          "endLine": 121
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\generic.minimal.jsx",
+          "fileName": "generic.minimal.jsx",
+          "startLine": 73,
+          "endLine": 89
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "        <div className=\"flex items-center justify-end gap-3 mt-3\">\n          <button\n            type=\"button\"\n            onClick={onClose}\n            disabled={submitting}\n            className=\"\n              text-xs text-neutral-300\n              px-3 py-2 rounded-lg\n              bg-neutral-800 hover:bg-neutral-700\n              disabled:opacity-50\n            \"\n          >\n            Cancel\n          </button>",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 140,
+          "endLine": 153
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 159,
+          "endLine": 172
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 154,
+          "endLine": 167
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "import { supabase } from \"@/services/supabase/supabaseClient\";\nimport { ensureActorContext } from \"@/dev/diagnostics/helpers/ensureActorContext\";\nimport {\n  isMissingRpc,\n  isPermissionDenied,\n  isRlsDenied,\n  makeSkipped,\n} from \"@/dev/diagnostics/helpers/supabaseAssert\";\nimport { getFeatureSourceEntries } from \"@/dev/diagnostics/helpers/featureSourceIndex\";",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\profilesKindsFeature.group.helpers.js",
+          "fileName": "profilesKindsFeature.group.helpers.js",
+          "startLine": 1,
+          "endLine": 9
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\publicFeature.group.helpers.js",
+          "fileName": "publicFeature.group.helpers.js",
+          "startLine": 1,
+          "endLine": 9
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\settingsAccountFeature.group.helpers.js",
+          "fileName": "settingsAccountFeature.group.helpers.js",
+          "startLine": 1,
+          "endLine": 9
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "async function withContext(localShared, reason, run) {\n  let context;\n  try {\n    context = await ensureContext(localShared);\n    return await run(context);\n  } catch (error) {\n    if (error?.skipped) return error;\n    return toSkip(error, reason, { context });\n  }\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatFeature.group.js",
+          "fileName": "chatFeature.group.js",
+          "startLine": 168,
+          "endLine": 177
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatInboxFeature.group.js",
+          "fileName": "chatInboxFeature.group.js",
+          "startLine": 158,
+          "endLine": 167
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatStartFeature.group.js",
+          "fileName": "chatStartFeature.group.js",
+          "startLine": 141,
+          "endLine": 150
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "function toSkip(error, reason, extra = null) {\n  if (\n    isPermissionDenied(error) ||\n    isMissingRpc(error) ||\n    isSeedMissingError(error) ||\n    isBlockedRelationshipError(error)\n  ) {\n    return makeSkipped(reason, { ...extra, error });\n  }\n  throw error;\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatConversationFeature.group.js",
+          "fileName": "chatConversationFeature.group.js",
+          "startLine": 53,
+          "endLine": 63
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatInboxFeature.group.js",
+          "fileName": "chatInboxFeature.group.js",
+          "startLine": 49,
+          "endLine": 59
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatStartFeature.group.js",
+          "fileName": "chatStartFeature.group.js",
+          "startLine": 43,
+          "endLine": 53
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "    reportFlow.start({\n      objectType: \"post\",\n      objectId: postMenu.postId,\n      postId: postMenu.postId,\n      dedupeKey: `report:post:${postMenu.postId}`,\n      title: \"Report Vibe\",\n      subtitle: \"Tell us what’s wrong with this Vibe.\",\n    });",
+      "files": [
+        {
+          "path": "src\\features\\post\\screens\\PostFeed.screen.jsx",
+          "fileName": "PostFeed.screen.jsx",
+          "startLine": 66,
+          "endLine": 73
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 231,
+          "endLine": 238
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 139,
+          "endLine": 146
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "        if (typeof onSuccess === \"function\") await onSuccess(res);\n        return res;\n      } catch (e) {\n        setError(e);\n        throw e;\n      } finally {\n        setIsPending(false);\n      }\n    },\n    [targetActorId, onSuccess]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\services\\useCreateOrUpdateVportServiceAddon.js",
+          "fileName": "useCreateOrUpdateVportServiceAddon.js",
+          "startLine": 24,
+          "endLine": 34
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\services\\useDeleteVportServiceAddon.js",
+          "fileName": "useDeleteVportServiceAddon.js",
+          "startLine": 25,
+          "endLine": 35
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\services\\useReorderVportServiceAddon.js",
+          "fileName": "useReorderVportServiceAddon.js",
+          "startLine": 26,
+          "endLine": 36
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "      try {\n        const res = await reviewFuelPriceSuggestionController({\n          submissionId,\n          decision,\n          decidedByActorId: identity.actorId,\n          reason,\n          applyToOfficialOnApprove,\n        });",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useGasPricesPanel.js",
+          "fileName": "useGasPricesPanel.js",
+          "startLine": 104,
+          "endLine": 111
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useOwnerPendingSuggestions.js",
+          "fileName": "useOwnerPendingSuggestions.js",
+          "startLine": 77,
+          "endLine": 84
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useReviewFuelPriceSuggestion.js",
+          "fileName": "useReviewFuelPriceSuggestion.js",
+          "startLine": 28,
+          "endLine": 35
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "          <button\n            type=\"button\"\n            onClick={onClose}\n            className=\"text-sm text-neutral-400 hover:text-white\"\n          >\n            Close\n          </button>\n        </div>",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 113,
+          "endLine": 120
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 132,
+          "endLine": 139
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 127,
+          "endLine": 134
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "  const handleSubmit = useCallback(() => {\n    const trimmed = value.trim();\n    if (!trimmed || submitting) return;\n    onSubmit?.(trimmed);\n    setValue(\"\");\n  }, [value, submitting, onSubmit]);",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 69,
+          "endLine": 74
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 88,
+          "endLine": 93
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 83,
+          "endLine": 88
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "  const [settings, setSettings] = useState(null);\n  const [official, setOfficial] = useState([]);\n  const [communitySuggestionByFuelKey, setCommunitySuggestionByFuelKey] =\n    useState({});",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useGasPricesPanel.js",
+          "fileName": "useGasPricesPanel.js",
+          "startLine": 24,
+          "endLine": 27
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useOwnerPendingSuggestions.js",
+          "fileName": "useOwnerPendingSuggestions.js",
+          "startLine": 13,
+          "endLine": 16
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useVportGasPrices.js",
+          "fileName": "useVportGasPrices.js",
+          "startLine": 20,
+          "endLine": 23
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "const BOOKING_RESOURCE_SELECT = [\n  \"id\",\n  \"owner_actor_id\",\n  \"resource_type\",\n  \"name\",\n  \"is_active\",\n  \"timezone\",\n  \"sort_order\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\getBookingResourceById.dal.js",
+          "fileName": "getBookingResourceById.dal.js",
+          "startLine": 3,
+          "endLine": 13
+        },
+        {
+          "path": "src\\features\\booking\\dal\\insertBookingResource.dal.js",
+          "fileName": "insertBookingResource.dal.js",
+          "startLine": 3,
+          "endLine": 13
+        },
+        {
+          "path": "src\\features\\booking\\dal\\listBookingResourcesByOwnerActorId.dal.js",
+          "fileName": "listBookingResourcesByOwnerActorId.dal.js",
+          "startLine": 3,
+          "endLine": 13
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "    return () => {\n      document.removeEventListener('mousedown', handleClick)\n      document.removeEventListener('keydown', handleEsc)\n    }\n  }, [open, onClose])",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\components\\ConversationActionsMenu.jsx",
+          "fileName": "ConversationActionsMenu.jsx",
+          "startLine": 33,
+          "endLine": 37
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\components\\MessageActionsMenu.jsx",
+          "fileName": "MessageActionsMenu.jsx",
+          "startLine": 46,
+          "endLine": 50
+        },
+        {
+          "path": "src\\features\\post\\postcard\\components\\PostActionsMenu.jsx",
+          "fileName": "PostActionsMenu.jsx",
+          "startLine": 41,
+          "endLine": 45
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "  const mountedRef = useRef(true)\n  useEffect(() => {\n    mountedRef.current = true\n    return () => {\n      mountedRef.current = false\n    }\n  }, [])",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersInboxes.js",
+          "fileName": "useWandersInboxes.js",
+          "startLine": 23,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\wanders\\hooks\\useWandersActorIntegration.js",
+          "fileName": "useWandersActorIntegration.js",
+          "startLine": 16,
+          "endLine": 22
+        },
+        {
+          "path": "src\\features\\wanders\\hooks\\useWandersCardKey.js",
+          "fileName": "useWandersCardKey.js",
+          "startLine": 17,
+          "endLine": 23
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "  const resource = await getBookingResourceByIdDAL({ resourceId });\n  if (!resource) {\n    throw new Error(\"Booking resource not found.\");\n  }",
+      "files": [
+        {
+          "path": "src\\features\\booking\\controller\\getResourceAvailability.controller.js",
+          "fileName": "getResourceAvailability.controller.js",
+          "startLine": 26,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\booking\\controller\\setAvailabilityException.controller.js",
+          "fileName": "setAvailabilityException.controller.js",
+          "startLine": 31,
+          "endLine": 34
+        },
+        {
+          "path": "src\\features\\booking\\controller\\setAvailabilityRule.controller.js",
+          "fileName": "setAvailabilityRule.controller.js",
+          "startLine": 34,
+          "endLine": 37
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "const toNumber = (v, fallback = 0) => {\n  const n = typeof v === \"number\" ? v : Number(v);\n  return Number.isFinite(n) ? n : fallback;\n};",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\model\\menu\\VportActorMenu.model.js",
+          "fileName": "VportActorMenu.model.js",
+          "startLine": 28,
+          "endLine": 31
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\model\\menu\\VportActorMenuCategory.model.js",
+          "fileName": "VportActorMenuCategory.model.js",
+          "startLine": 26,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\model\\menu\\VportActorMenuItem.model.js",
+          "fileName": "VportActorMenuItem.model.js",
+          "startLine": 3,
+          "endLine": 6
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "function useQuery() {\n  const { search } = useLocation();\n  return useMemo(() => new URLSearchParams(search), [search]);\n}",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\screens\\WandersIntegrateActor.screen.jsx",
+          "fileName": "WandersIntegrateActor.screen.jsx",
+          "startLine": 11,
+          "endLine": 14
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersMailbox.screen.jsx",
+          "fileName": "WandersMailbox.screen.jsx",
+          "startLine": 14,
+          "endLine": 17
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersSent.screen.jsx",
+          "fileName": "WandersSent.screen.jsx",
+          "startLine": 17,
+          "endLine": 20
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "import React, {\n  useEffect,\n  useRef,\n  useState,\n  useCallback,\n  forwardRef,\n  useImperativeHandle,\n} from \"react\";",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 9,
+          "endLine": 16
+        },
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentReplyModal.jsx",
+          "fileName": "CommentReplyModal.jsx",
+          "startLine": 10,
+          "endLine": 17
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 11,
+          "endLine": 18
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "    if (!res.ok) {\n      window.alert(res.error?.message ?? \"Failed to delete Vibe\");\n      return;\n    }",
+      "files": [
+        {
+          "path": "src\\features\\post\\screens\\PostFeed.screen.jsx",
+          "fileName": "PostFeed.screen.jsx",
+          "startLine": 99,
+          "endLine": 102
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 260,
+          "endLine": 263
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 169,
+          "endLine": 172
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "fileCount": 3,
+      "occurrenceCount": 3,
+      "repeatedCode": "/**\n * Helpers\n * ------------------------------------------------------------\n */",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\constants\\conversationRoles.js",
+          "fileName": "conversationRoles.js",
+          "startLine": 25,
+          "endLine": 28
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\constants\\messageTypes.js",
+          "fileName": "messageTypes.js",
+          "startLine": 46,
+          "endLine": 49
+        },
+        {
+          "path": "src\\features\\chat\\inbox\\constants\\inboxFlags.js",
+          "fileName": "inboxFlags.js",
+          "startLine": 34,
+          "endLine": 37
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "                          {item?.description ? (\n                            <div\n                              style={{\n                                marginTop: 6,\n                                color: \"rgba(255,255,255,0.60)\",\n                                fontSize: 13,\n                                lineHeight: \"18px\",\n                              }}\n                            >\n                              {item.description}\n                            </div>\n                          ) : null}\n                        </div>\n                      </div>\n                    </div>\n                  );\n                })\n              ) : (\n                <div style={{ color: \"rgba(255,255,255,0.55)\", fontSize: 13 }}>No items yet.</div>\n              )}\n            </div>\n          </div>\n        );\n      })}\n    </div>\n  );\n}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\menu\\components\\VportActorMenuPublicPanel.jsx",
+          "fileName": "VportActorMenuPublicPanel.jsx",
+          "startLine": 147,
+          "endLine": 173
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\components\\VportPublicMenuPanel.jsx",
+          "fileName": "VportPublicMenuPanel.jsx",
+          "startLine": 143,
+          "endLine": 169
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "        return (\n          <div key={category?.id ?? category?.key ?? `cat-${category?.name || \"x\"}`} style={PANEL_STYLE}>\n            <div style={{ display: \"flex\", flexDirection: \"column\", gap: 6 }}>\n              <div style={{ color: \"rgba(255,255,255,0.92)\", fontWeight: 800, fontSize: 16 }}>\n                {category?.name || \"Untitled Category\"}\n              </div>\n              {category?.description ? (\n                <div style={{ color: \"rgba(255,255,255,0.60)\", fontSize: 13, lineHeight: \"18px\" }}>\n                  {category.description}\n                </div>\n              ) : null}\n            </div>",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\menu\\components\\VportActorMenuPublicPanel.jsx",
+          "fileName": "VportActorMenuPublicPanel.jsx",
+          "startLine": 73,
+          "endLine": 84
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\components\\VportPublicMenuPanel.jsx",
+          "fileName": "VportPublicMenuPanel.jsx",
+          "startLine": 80,
+          "endLine": 91
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const MODERN_SWATCHES = [\n  \"#ffffff\", \"#f9fafb\", \"#f3f4f6\", \"#e5e7eb\", \"#d1d5db\", \"#9ca3af\", \"#6b7280\", \"#4b5563\", \"#374151\", \"#111827\",\n  \"#eff6ff\", \"#dbeafe\", \"#bfdbfe\", \"#93c5fd\", \"#60a5fa\", \"#3b82f6\", \"#2563eb\", \"#1d4ed8\", \"#22d3ee\", \"#06b6d4\",\n  \"#ecfdf5\", \"#d1fae5\", \"#a7f3d0\", \"#6ee7b7\", \"#34d399\", \"#10b981\", \"#22c55e\", \"#84cc16\", \"#a3e635\", \"#facc15\",\n  \"#fde68a\", \"#f59e0b\", \"#f97316\", \"#fb7185\", \"#f43f5e\", \"#ef4444\", \"#dc2626\", \"#f472b6\", \"#ec4899\", \"#db2777\",\n  \"#ede9fe\", \"#d8b4fe\", \"#c084fc\", \"#a855f7\", \"#9333ea\", \"#818cf8\", \"#6366f1\", \"#4f46e5\", \"#312e81\", \"#000000\",\n];",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 185,
+          "endLine": 191
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 158,
+          "endLine": 164
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const CARD_COLS = [\n  \"id\",\n  \"public_id\",\n  \"realm_id\",\n  \"inbox_id\",\n  \"drop_link_id\",\n  \"status\",\n  \"sent_at\",\n  \"expires_at\",\n  \"sender_actor_id\",\n  \"sender_user_id\",\n  \"recipient_actor_id\",\n  \"recipient_user_id\",\n  \"recipient_channel\",\n  \"recipient_email\",\n  \"recipient_phone\",\n  \"is_anonymous\",\n  \"message_text\",\n  \"message_ciphertext\",\n  \"message_nonce\",\n  \"message_alg\",\n  \"template_key\",\n  \"customization\",\n  \"opened_at\",\n  \"last_opened_at\",\n  \"open_count\",\n  \"is_void\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\mailbox.read.dal.js",
+          "fileName": "mailbox.read.dal.js",
+          "startLine": 27,
+          "endLine": 56
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\mailbox.write.dal.js",
+          "fileName": "mailbox.write.dal.js",
+          "startLine": 27,
+          "endLine": 56
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function trimAudit(audit, maxItems = 25) {\n  return {\n    ...audit,\n    issues: {\n      ...audit.issues,\n      oversizedFiles: audit.issues.oversizedFiles.slice(0, maxItems),\n      depthViolations: audit.issues.depthViolations.slice(0, maxItems),\n      relativeImports: audit.issues.relativeImports.slice(0, maxItems),\n      crossFeatureImports: audit.issues.crossFeatureImports.slice(0, maxItems),\n      namingViolations: audit.issues.namingViolations.slice(0, maxItems),\n    },\n  };\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\notificationsFeature.group.js",
+          "fileName": "notificationsFeature.group.js",
+          "startLine": 54,
+          "endLine": 66
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\profilesFeature.group.js",
+          "fileName": "profilesFeature.group.js",
+          "startLine": 52,
+          "endLine": 64
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "          <button\n            type=\"button\"\n            onClick={handleSubmit}\n            disabled={submitting || !value.trim()}\n            className=\"\n              text-xs font-medium\n              px-4 py-2 rounded-lg\n              bg-purple-600 hover:bg-purple-700\n              text-white\n              disabled:opacity-50 disabled:cursor-not-allowed\n            \"\n          >\n            Spark\n          </button>\n        </div>\n      </div>\n    </div>\n  );\n});",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 155,
+          "endLine": 173
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 169,
+          "endLine": 187
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "          <div\n            style={{\n              marginTop: 18,\n              padding: \"10px 12px\",\n              borderRadius: 14,\n              border: \"1px solid rgba(255,255,255,0.08)\",\n              background: \"rgba(255,255,255,0.03)\",\n              fontSize: 12,\n              color: \"rgba(255,255,255,0.55)\",\n              wordBreak: \"break-all\",\n              textAlign: \"center\",\n            }}\n          >\n            {menuUrl}\n          </div>",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\qrcode\\menu\\VportActorMenuQrView.jsx",
+          "fileName": "VportActorMenuQrView.jsx",
+          "startLine": 166,
+          "endLine": 180
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\view\\VportPublicMenuQrView.jsx",
+          "fileName": "VportPublicMenuQrView.jsx",
+          "startLine": 108,
+          "endLine": 122
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    return (\n      <div className=\"space-y-5\">\n        {/* To */}\n        <div>\n          <label className={label}>To</label>\n          <input\n            type=\"text\"\n            placeholder=\"Recipient name\"\n            className={input}\n            value={data.toName}\n            onChange={(e) =>\n              setData((prev) => ({ ...prev, toName: e.target.value }))\n            }\n          />\n        </div>",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\birthday.modern.jsx",
+          "fileName": "birthday.modern.jsx",
+          "startLine": 46,
+          "endLine": 60
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\business.professional.jsx",
+          "fileName": "business.professional.jsx",
+          "startLine": 45,
+          "endLine": 59
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      {saved && (\n        <div\n          className=\"\n            fixed bottom-24 left-1/2 -translate-x-1/2\n            z-50\n            px-4 py-2 rounded-full\n            settings-card-surface border border-emerald-300/30\n            text-emerald-200 text-sm font-medium\n            shadow-lg animate-fade-in\n          \"\n        >\n          Saved\n        </div>\n      )}\n    </>\n  );\n}",
+      "files": [
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\UserProfileTab.jsx",
+          "fileName": "UserProfileTab.jsx",
+          "startLine": 111,
+          "endLine": 127
+        },
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\VportProfileTab.jsx",
+          "fileName": "VportProfileTab.jsx",
+          "startLine": 109,
+          "endLine": 125
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function inputClass() {\n  return [\n    'auth-register-input w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white',\n    'placeholder:text-[#9ca3af] outline-none transition duration-200',\n    'focus:border-[#6C4DF6]/80 focus:ring-2 focus:ring-[#6C4DF6]/40',\n    'shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',\n  ].join(' ')\n}",
+      "files": [
+        {
+          "path": "src\\features\\auth\\components\\RegisterFormCard.jsx",
+          "fileName": "RegisterFormCard.jsx",
+          "startLine": 4,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\auth\\screens\\Onboarding.jsx",
+          "fileName": "Onboarding.jsx",
+          "startLine": 12,
+          "endLine": 19
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const baseUrl = useMemo(() => {\n    if (baseUrlProp) return baseUrlProp;\n    if (location?.state?.baseUrl) return location.state.baseUrl;\n    try {\n      if (typeof window !== \"undefined\" && window.location?.origin) return window.location.origin;\n    } catch (_ERR) {\n      void _ERR;\n    }\n    return \"\";\n  }, [baseUrlProp, location?.state?.baseUrl]);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\screens\\view\\WandersCreate.view.jsx",
+          "fileName": "WandersCreate.view.jsx",
+          "startLine": 20,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersCreate.screen.jsx",
+          "fileName": "WandersCreate.screen.jsx",
+          "startLine": 21,
+          "endLine": 30
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  return (\n    <div className=\"profiles-card relative overflow-hidden rounded-2xl p-6 space-y-5\">\n      <div className=\"pointer-events-none absolute -top-28 right-[-56px] h-52 w-52 rounded-full bg-sky-400/10 blur-3xl\" />\n      <div className=\"pointer-events-none absolute -bottom-28 left-[-56px] h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl\" />",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\owner\\VportServicesOwnerPanel.jsx",
+          "fileName": "VportServicesOwnerPanel.jsx",
+          "startLine": 56,
+          "endLine": 59
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\VportServicesPanel.jsx",
+          "fileName": "VportServicesPanel.jsx",
+          "startLine": 43,
+          "endLine": 46
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    logo_url: pd?.logo_url ?? null,\n    flyer_food_image_1: pd?.flyer_food_image_1 ?? null,\n    flyer_food_image_2: pd?.flyer_food_image_2 ?? null,\n    flyer_headline: pd?.flyer_headline ?? null,\n    flyer_subheadline: pd?.flyer_subheadline ?? null,\n    flyer_note: pd?.flyer_note ?? null,\n    accent_color: pd?.accent_color ?? null,\n  };\n}",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\dal\\flyer.read.dal.js",
+          "fileName": "flyer.read.dal.js",
+          "startLine": 64,
+          "endLine": 72
+        },
+        {
+          "path": "src\\features\\profiles\\dal\\vportPublicDetails.read.dal.js",
+          "fileName": "vportPublicDetails.read.dal.js",
+          "startLine": 87,
+          "endLine": 95
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "        <div className=\"mt-6\">\n          {!data.sendAnonymously && data.fromName?.trim() ? (\n            <p className=\"text-sm text-gray-500\">— {data.fromName.trim()}</p>\n          ) : (\n            <p className=\"text-sm text-gray-400\">— Secret admirer</p>\n          )}\n        </div>\n      </div>\n    );\n  },\n};",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.poem.jsx",
+          "fileName": "valentines.poem.jsx",
+          "startLine": 92,
+          "endLine": 102
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\lovedrop\\valentines.romantic.jsx",
+          "fileName": "valentines.romantic.jsx",
+          "startLine": 84,
+          "endLine": 94
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "          {errorMessage ? (\n            <div\n              className=\"mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-3 py-2 text-sm text-[#fecaca]\"\n              role=\"alert\"\n              aria-live=\"polite\"\n            >\n              {errorMessage}\n            </div>\n          ) : null}",
+      "files": [
+        {
+          "path": "src\\features\\auth\\components\\RegisterFormCard.jsx",
+          "fileName": "RegisterFormCard.jsx",
+          "startLine": 87,
+          "endLine": 95
+        },
+        {
+          "path": "src\\features\\auth\\screens\\Onboarding.jsx",
+          "fileName": "Onboarding.jsx",
+          "startLine": 74,
+          "endLine": 82
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "import { ensureActorContext } from \"@/dev/diagnostics/helpers/ensureActorContext\";\nimport {\n  isMissingRpc,\n  isPermissionDenied,\n  isRlsDenied,\n  makeSkipped,\n} from \"@/dev/diagnostics/helpers/supabaseAssert\";\nimport { getFeatureSourceEntries } from \"@/dev/diagnostics/helpers/featureSourceIndex\";",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\uploadFeature.group.helpers.js",
+          "fileName": "uploadFeature.group.helpers.js",
+          "startLine": 1,
+          "endLine": 8
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 1,
+          "endLine": 8
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function groupByCategory(services) {\n  const groups = new Map();\n  (services ?? []).forEach((s) => {\n    if (!s) return;\n    const cat = normalizeCategory(s.category ?? s.group ?? s.section);\n    if (!groups.has(cat)) groups.set(cat, []);\n    groups.get(cat).push(s);\n  });\n  return groups;\n}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\owner\\VportServicesOwnerPanel.jsx",
+          "fileName": "VportServicesOwnerPanel.jsx",
+          "startLine": 14,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\VportServicesPanel.jsx",
+          "fileName": "VportServicesPanel.jsx",
+          "startLine": 12,
+          "endLine": 21
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function fmtTs(ts) {\n  if (!ts) return \"None yet\";\n  const d = new Date(ts);\n  if (Number.isNaN(d.getTime())) return \"None yet\";\n  return d.toLocaleString(undefined, {\n    month: \"short\",\n    day: \"numeric\",\n    year: \"numeric\",\n    hour: \"numeric\",\n    minute: \"2-digit\",\n  });\n}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\rates\\components\\VportRateCard.jsx",
+          "fileName": "VportRateCard.jsx",
+          "startLine": 10,
+          "endLine": 21
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\rates\\view\\VportRatesView.jsx",
+          "fileName": "VportRatesView.jsx",
+          "startLine": 6,
+          "endLine": 17
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function safeJson(v) {\n  if (!v) return {};\n  if (typeof v === \"object\") return v;\n  if (typeof v === \"string\") {\n    try {\n      const parsed = JSON.parse(v);\n      return parsed && typeof parsed === \"object\" ? parsed : {};\n    } catch {\n      return {};\n    }\n  }\n  return {};\n}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\views\\tabs\\VportAboutView.jsx",
+          "fileName": "VportAboutView.jsx",
+          "startLine": 18,
+          "endLine": 30
+        },
+        {
+          "path": "src\\features\\settings\\profile\\model\\vportPublicDetails.mapper.js",
+          "fileName": "vportPublicDetails.mapper.js",
+          "startLine": 15,
+          "endLine": 27
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const applyBtn = {\n  height: 34,\n  borderRadius: 10,\n  border: \"1px solid rgba(0,255,240,0.28)\",\n  background: \"linear-gradient(135deg, rgba(0,255,240,0.16), rgba(124,58,237,0.14))\",\n  color: \"#fff\",\n  fontSize: 12,\n  fontWeight: 800,\n  padding: \"0 10px\",\n  cursor: \"pointer\",\n};",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 173,
+          "endLine": 183
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 146,
+          "endLine": 156
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  // Unwrap up to 2 layers:\n  // - jsonb object -> returned as object\n  // - jsonb stored as JSON string -> parse once yields object OR yields string\n  // - double-encoded -> parse twice yields object\n  for (let i = 0; i < 2; i++) {\n    try {\n      const parsed = JSON.parse(s);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\models\\wandersInbox.model.js",
+          "fileName": "wandersInbox.model.js",
+          "startLine": 16,
+          "endLine": 22
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersMailboxItem.model.js",
+          "fileName": "wandersMailboxItem.model.js",
+          "startLine": 16,
+          "endLine": 22
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const CommentComposeModal = forwardRef(function CommentComposeModal(\n  {\n    open = false,\n    submitting = false,\n    placeholder = \"Write a Spark…\",\n    onSubmit,\n    onClose,\n  },\n  ref\n) {\n  const [value, setValue] = useState(\"\");\n  const textareaRef = useRef(null);",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 18,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 20,
+          "endLine": 31
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const BOOKING_SERVICE_PROFILE_SELECT = [\n  \"service_id\",\n  \"duration_minutes\",\n  \"padding_before_minutes\",\n  \"padding_after_minutes\",\n  \"booking_mode\",\n  \"max_concurrent\",\n  \"is_bookable\",\n  \"price_cents\",\n  \"currency_code\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\listBookingServiceProfilesByServiceIds.dal.js",
+          "fileName": "listBookingServiceProfilesByServiceIds.dal.js",
+          "startLine": 3,
+          "endLine": 15
+        },
+        {
+          "path": "src\\features\\booking\\dal\\saveBookingServiceProfileDurationsByServiceIds.dal.js",
+          "fileName": "saveBookingServiceProfileDurationsByServiceIds.dal.js",
+          "startLine": 3,
+          "endLine": 15
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  return (\n    <div className=\"fixed inset-0 z-[9999]\" aria-modal=\"true\" role=\"dialog\">\n      {/* Backdrop */}\n      <button\n        type=\"button\"\n        onClick={onClose}\n        className=\"absolute inset-0 bg-black/70\"\n        aria-label=\"Close\"\n      />",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 88,
+          "endLine": 96
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 102,
+          "endLine": 110
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  // Upload if needed\n  if (!imageUrl && imageFile) {\n    const key = buildWandersImageKey({ publicId, file: imageFile });\n    const up = await uploadToCloudflare(imageFile, key);\n    if (up?.error) throw new Error(up.error);\n    imageUrl = up?.url || null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 244,
+          "endLine": 249
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 127,
+          "endLine": 132
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "/**\n * @param {{\n *  realmId: string,\n *  baseUrl?: string,\n *  payload: any\n * }} input\n */\nexport async function publishWandersFromBuilder({ realmId, baseUrl, payload }) {\n  if (!realmId) throw new Error(\"publishWandersFromBuilder requires realmId\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 171,
+          "endLine": 179
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 58,
+          "endLine": 66
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    // images (urls)\n    logo_url: pd.logo_url ?? \"\",\n    banner_url: pd.banner_url ?? \"\", // if you also expose banner in publicDetails\n    flyer_food_image_1: pd.flyer_food_image_1 ?? \"\",\n    flyer_food_image_2: pd.flyer_food_image_2 ?? \"\",\n  };\n}",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\dal\\flyerDraft.model.js",
+          "fileName": "flyerDraft.model.js",
+          "startLine": 20,
+          "endLine": 26
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\model\\flyerDraft.model.js",
+          "fileName": "flyerDraft.model.js",
+          "startLine": 14,
+          "endLine": 20
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "export default function useDesktopBreakpoint(query = DESKTOP_QUERY) {\n  const [isDesktop, setIsDesktop] = useState(() => {\n    if (typeof window === \"undefined\" || !window.matchMedia) return false;\n    return window.matchMedia(query).matches;\n  });",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\useDesktopBreakpoint.js",
+          "fileName": "useDesktopBreakpoint.js",
+          "startLine": 5,
+          "endLine": 9
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\hooks\\useDesktopBreakpoint.js",
+          "fileName": "useDesktopBreakpoint.js",
+          "startLine": 5,
+          "endLine": 9
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      setSettings(res.settings);\n      setOfficial(res.official);\n      setCommunitySuggestionByFuelKey(res.communitySuggestionByFuelKey);\n    } catch (e) {\n      setError(e);\n    } finally {\n      setLoading(false);\n    }\n  }, [actorId, fuelKey]);",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useGasPricesPanel.js",
+          "fileName": "useGasPricesPanel.js",
+          "startLine": 38,
+          "endLine": 46
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useVportGasPrices.js",
+          "fileName": "useVportGasPrices.js",
+          "startLine": 37,
+          "endLine": 45
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "async function resolveTargetActor({ actorId, userId }) {\n  const { data: ownedActors } = await supabase\n    .schema(\"vc\")\n    .from(\"actor_owners\")\n    .select(\"actor_id\")\n    .eq(\"user_id\", userId)\n    .neq(\"actor_id\", actorId)\n    .limit(5);",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatFeature.group.js",
+          "fileName": "chatFeature.group.js",
+          "startLine": 94,
+          "endLine": 101
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatStartFeature.group.js",
+          "fileName": "chatStartFeature.group.js",
+          "startLine": 55,
+          "endLine": 62
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  // NOTE: allow existing base64 preview (optional) pre-upload\n  let imageDataUrl =\n    payload?.imageDataUrl ??\n    payload?.image_data_url ??\n    customizationObj?.imageDataUrl ??\n    customizationObj?.image_data_url ??\n    null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 236,
+          "endLine": 242
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 119,
+          "endLine": 125
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const actorContext = await ensureActorContext(shared);\n  state.ready = true;\n  state.userId = actorContext.userId;\n  state.actorId = actorContext.actorId;\n  state.actorKind = actorContext.actor?.kind ?? null;\n  return state;\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\feedFeature.group.helpers.js",
+          "fileName": "feedFeature.group.helpers.js",
+          "startLine": 117,
+          "endLine": 123
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\vportFeature.group.helpers.js",
+          "fileName": "vportFeature.group.helpers.js",
+          "startLine": 109,
+          "endLine": 115
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function extFromFile(file) {\n  const name = String(file?.name || '')\n  const dot = name.lastIndexOf('.')\n  if (dot > -1 && dot < name.length - 1) {\n    return name.slice(dot + 1).toLowerCase().replace(/[^\\w]+/g, '') || 'bin'\n  }",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\hooks\\conversation\\useSendMessageActions.js",
+          "fileName": "useSendMessageActions.js",
+          "startLine": 26,
+          "endLine": 31
+        },
+        {
+          "path": "src\\services\\cloudflare\\buildR2Key.js",
+          "fileName": "buildR2Key.js",
+          "startLine": 12,
+          "endLine": 17
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    return () => {\n      body.style.overflow = prevOverflow;\n      body.style.position = prevPosition;\n      body.style.top = prevTop;\n      body.style.width = prevWidth;\n      window.scrollTo(0, scrollY);\n    };\n  }, [open]);",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 55,
+          "endLine": 62
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 69,
+          "endLine": 76
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  /* ============================================================\n     Mount / conversation switch\n     ============================================================ */\n  useEffect(() => {\n    loadInitial()\n  }, [loadInitial])",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\hooks\\conversation\\useConversation.js",
+          "fileName": "useConversation.js",
+          "startLine": 126,
+          "endLine": 131
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\hooks\\conversation\\useConversationMessages.js",
+          "fileName": "useConversationMessages.js",
+          "startLine": 373,
+          "endLine": 378
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const actorId = identity?.actorId ?? null\n  const actorKind = identity?.kind ?? 'citizen'\n  const hideEmptyThreads = settings?.hideEmptyConversations ?? false\n  const showThreadPreview = settings?.showThreadPreview ?? true",
+      "files": [
+        {
+          "path": "src\\features\\chat\\inbox\\screens\\ArchivedInboxScreen.jsx",
+          "fileName": "ArchivedInboxScreen.jsx",
+          "startLine": 22,
+          "endLine": 25
+        },
+        {
+          "path": "src\\features\\chat\\inbox\\screens\\SpamInboxScreen.jsx",
+          "fileName": "SpamInboxScreen.jsx",
+          "startLine": 23,
+          "endLine": 26
+        }
+      ]
+    },
+    {
+      "id": 83,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      <div className=\"flex gap-2 mt-4\">\n        <button\n          onClick={handleSave}\n          disabled={loading}\n          className=\"bg-purple-600 px-4 py-2 rounded text-white\"\n        >\n          Save\n        </button>",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\ui\\EditComment.jsx",
+          "fileName": "EditComment.jsx",
+          "startLine": 54,
+          "endLine": 61
+        },
+        {
+          "path": "src\\features\\post\\postcard\\ui\\EditPost.jsx",
+          "fileName": "EditPost.jsx",
+          "startLine": 57,
+          "endLine": 64
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    return () => {\n      body.style.overflow = prevOverflow;\n      body.style.position = prevPosition;\n      body.style.top = prevTop;\n      body.style.width = prevWidth;\n      window.scrollTo(0, scrollY);\n    };\n  }, []);",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentModal.jsx",
+          "fileName": "CommentModal.jsx",
+          "startLine": 61,
+          "endLine": 68
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\ImageViewerModal.jsx",
+          "fileName": "ImageViewerModal.jsx",
+          "startLine": 73,
+          "endLine": 80
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const BOOKING_AVAILABILITY_RULE_SELECT = [\n  \"id\",\n  \"resource_id\",\n  \"rule_type\",\n  \"weekday\",\n  \"start_time\",\n  \"end_time\",\n  \"valid_from\",\n  \"valid_until\",\n  \"is_active\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\listAvailabilityRulesByResourceId.dal.js",
+          "fileName": "listAvailabilityRulesByResourceId.dal.js",
+          "startLine": 3,
+          "endLine": 15
+        },
+        {
+          "path": "src\\features\\booking\\dal\\upsertAvailabilityRule.dal.js",
+          "fileName": "upsertAvailabilityRule.dal.js",
+          "startLine": 3,
+          "endLine": 15
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  /* ============================================================\n     Unsubscribe helper\n     ============================================================ */\n  return () => {\n    supabase.removeChannel(channel)\n  }\n}",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\realtime\\subscribeToConversation.js",
+          "fileName": "subscribeToConversation.js",
+          "startLine": 100,
+          "endLine": 106
+        },
+        {
+          "path": "src\\features\\chat\\inbox\\realtime\\subscribeToInbox.js",
+          "fileName": "subscribeToInbox.js",
+          "startLine": 89,
+          "endLine": 95
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const hexInput = {\n  height: 34,\n  borderRadius: 10,\n  border: \"1px solid rgba(255,255,255,0.2)\",\n  background: \"rgba(255,255,255,0.06)\",\n  color: \"#fff\",\n  padding: \"0 10px\",\n  fontSize: 12,\n  fontWeight: 700,\n};",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 162,
+          "endLine": 171
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 135,
+          "endLine": 144
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function parseArgs(argv) {\n  const out = {}\n  for (const raw of argv) {\n    if (!raw.startsWith('--')) continue\n    const [k, v] = raw.slice(2).split('=')\n    out[k] = v === undefined ? true : v\n  }\n  return out\n}",
+      "files": [
+        {
+          "path": "src\\scripts\\load\\simulateAppUsers.mjs",
+          "fileName": "simulateAppUsers.mjs",
+          "startLine": 11,
+          "endLine": 19
+        },
+        {
+          "path": "src\\scripts\\load\\simulateAuthenticatedActors.mjs",
+          "fileName": "simulateAuthenticatedActors.mjs",
+          "startLine": 13,
+          "endLine": 21
+        }
+      ]
+    },
+    {
+      "id": 89,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const reviewSuggestion = useCallback(\n    async ({ submissionId, decision, reason, applyToOfficialOnApprove }) => {\n      if (!identity?.actorId) {\n        return { ok: false, reason: \"no_identity\" };\n      }",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useGasPricesPanel.js",
+          "fileName": "useGasPricesPanel.js",
+          "startLine": 95,
+          "endLine": 99
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useOwnerPendingSuggestions.js",
+          "fileName": "useOwnerPendingSuggestions.js",
+          "startLine": 68,
+          "endLine": 72
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      if (!currentGroup || currentGroup.senderActorId !== senderId) {\n        currentGroup = {\n          senderActorId: senderId,\n          messages: [],\n        }\n        result.push(currentGroup)\n      }",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\adapters\\MessageList.adapter.jsx",
+          "fileName": "MessageList.adapter.jsx",
+          "startLine": 40,
+          "endLine": 46
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\components\\MessageList.jsx",
+          "fileName": "MessageList.jsx",
+          "startLine": 31,
+          "endLine": 37
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      setPostMenu({\n        postId,\n        postActorId: postActorId ?? null,\n        isOwn: (postActorId ?? null) === (viewerActorId ?? null),\n        anchorRect,\n      });\n    },\n    [viewerActorId]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 215,
+          "endLine": 223
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 118,
+          "endLine": 126
+        }
+      ]
+    },
+    {
+      "id": 92,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function normalizeDurationMinutes(value, fallback = 30) {\n  const minutes = Math.floor(Number(value));\n  if (!Number.isFinite(minutes) || minutes < 5) return fallback;\n  return Math.min(240, minutes);\n}",
+      "files": [
+        {
+          "path": "src\\features\\booking\\controller\\setResourceSlotDuration.controller.js",
+          "fileName": "setResourceSlotDuration.controller.js",
+          "startLine": 9,
+          "endLine": 13
+        },
+        {
+          "path": "src\\features\\booking\\dal\\saveBookingServiceProfileDurationsByServiceIds.dal.js",
+          "fileName": "saveBookingServiceProfileDurationsByServiceIds.dal.js",
+          "startLine": 21,
+          "endLine": 25
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function toSafeHex(input) {\n  const value = String(input || \"\").trim();\n  const six = /^#?[0-9a-fA-F]{6}$/.test(value)\n    ? `#${value.replace(\"#\", \"\").toLowerCase()}`\n    : null;\n  if (six) return six;",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 193,
+          "endLine": 198
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 166,
+          "endLine": 171
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const BOOKING_AVAILABILITY_EXCEPTION_SELECT = [\n  \"id\",\n  \"resource_id\",\n  \"exception_type\",\n  \"starts_at\",\n  \"ends_at\",\n  \"note\",\n  \"created_by_actor_id\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\listAvailabilityExceptionsInRange.dal.js",
+          "fileName": "listAvailabilityExceptionsInRange.dal.js",
+          "startLine": 3,
+          "endLine": 13
+        },
+        {
+          "path": "src\\features\\booking\\dal\\upsertAvailabilityException.dal.js",
+          "fileName": "upsertAvailabilityException.dal.js",
+          "startLine": 3,
+          "endLine": 13
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      {loading ? (\n        <div className=\"profiles-subcard rounded-3xl border border-white/12 bg-white/[0.02] p-5 text-sm profiles-muted\">\n          Loading services...\n        </div>\n      ) : null}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\owner\\VportServicesOwnerPanel.jsx",
+          "fileName": "VportServicesOwnerPanel.jsx",
+          "startLine": 72,
+          "endLine": 76
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\VportServicesPanel.jsx",
+          "fileName": "VportServicesPanel.jsx",
+          "startLine": 55,
+          "endLine": 59
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const three = /^#?[0-9a-fA-F]{3}$/.test(value)\n    ? value\n        .replace(\"#\", \"\")\n        .toLowerCase()\n        .split(\"\")\n        .map((char) => `${char}${char}`)\n        .join(\"\")\n    : null;",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 200,
+          "endLine": 207
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 173,
+          "endLine": 180
+        }
+      ]
+    },
+    {
+      "id": 97,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const COLS = [\n  \"id\",\n  \"card_id\",\n  \"owner_actor_id\",\n  \"owner_user_id\",\n  \"owner_role\",\n  \"folder\",\n  \"pinned\",\n  \"archived\",\n  \"is_read\",\n  \"read_at\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\mailbox.read.dal.js",
+          "fileName": "mailbox.read.dal.js",
+          "startLine": 12,
+          "endLine": 25
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\mailbox.write.dal.js",
+          "fileName": "mailbox.write.dal.js",
+          "startLine": 12,
+          "endLine": 25
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    const isUnread =\n      typeof selectedItem.is_read === \"boolean\"\n        ? !selectedItem.is_read\n        : typeof selectedItem.isRead === \"boolean\"\n        ? !selectedItem.isRead\n        : false;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersMailboxExperience.hook.js",
+          "fileName": "useWandersMailboxExperience.hook.js",
+          "startLine": 129,
+          "endLine": 134
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersOutbox.screen.jsx",
+          "fileName": "WandersOutbox.screen.jsx",
+          "startLine": 215,
+          "endLine": 220
+        }
+      ]
+    },
+    {
+      "id": 99,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { error } = await supabase\n    .schema('vc')\n    .from('conversations')\n    .update({\n      last_message_id: messageId,\n      last_message_at: createdAt,\n    })\n    .eq('id', conversationId)",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\dal\\conversations.write.dal.js",
+          "fileName": "conversations.write.dal.js",
+          "startLine": 156,
+          "endLine": 163
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\dal\\messages.write.dal.js",
+          "fileName": "messages.write.dal.js",
+          "startLine": 75,
+          "endLine": 82
+        }
+      ]
+    },
+    {
+      "id": 100,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const filteredEntries = useMemo(() => {\n    return entries.filter((entry) =>\n      shouldShowInboxEntry(entry, { hideEmptyConversations: hideEmptyThreads })\n    )\n  }, [entries, hideEmptyThreads])",
+      "files": [
+        {
+          "path": "src\\features\\chat\\inbox\\screens\\ArchivedInboxScreen.jsx",
+          "fileName": "ArchivedInboxScreen.jsx",
+          "startLine": 32,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\chat\\inbox\\screens\\SpamInboxScreen.jsx",
+          "fileName": "SpamInboxScreen.jsx",
+          "startLine": 35,
+          "endLine": 39
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  // Convert template form state into backend payload shape\n  toPayload(data) {\n    const fromName = data?.sendAnonymously ? \"\" : (data?.fromName || \"\");\n    const messageText = data?.message || \"\";",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\birthday.modern.jsx",
+          "fileName": "birthday.modern.jsx",
+          "startLine": 17,
+          "endLine": 20
+        },
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\business.professional.jsx",
+          "fileName": "business.professional.jsx",
+          "startLine": 17,
+          "endLine": 20
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const COLS = [\n  \"id\",\n  \"card_id\",\n  \"created_at\",\n  \"deleted_at\",\n  \"is_deleted\",\n  \"author_actor_id\",\n  \"author_user_id\",\n  \"body\",\n  \"body_ciphertext\",\n  \"body_nonce\",\n  \"body_alg\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\replies.read.dal.js",
+          "fileName": "replies.read.dal.js",
+          "startLine": 12,
+          "endLine": 24
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\replies.write.dal.js",
+          "fileName": "replies.write.dal.js",
+          "startLine": 12,
+          "endLine": 24
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "        <button\n          onClick={() => navigate(-1)}\n          className=\"border border-neutral-600 px-4 py-2 rounded\"\n        >\n          Cancel\n        </button>\n      </div>\n    </div>\n  );\n}",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\ui\\EditComment.jsx",
+          "fileName": "EditComment.jsx",
+          "startLine": 63,
+          "endLine": 72
+        },
+        {
+          "path": "src\\features\\post\\postcard\\ui\\EditPost.jsx",
+          "fileName": "EditPost.jsx",
+          "startLine": 66,
+          "endLine": 75
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const selectedItem = useMemo(() => {\n    if (!selectedId) return null;\n    return filteredItems.find((it) => String(it.id) === String(selectedId)) || null;\n  }, [filteredItems, selectedId]);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersMailboxExperience.hook.js",
+          "fileName": "useWandersMailboxExperience.hook.js",
+          "startLine": 92,
+          "endLine": 95
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersOutbox.screen.jsx",
+          "fileName": "WandersOutbox.screen.jsx",
+          "startLine": 117,
+          "endLine": 120
+        }
+      ]
+    },
+    {
+      "id": 105,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { data: rows, error } = await supabase\n    .schema(\"vc\")\n    .from(\"actor_presentation\")\n    .select(\"actor_id,display_name,username\")\n    .neq(\"actor_id\", actorId)\n    .limit(20);",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatFeature.group.js",
+          "fileName": "chatFeature.group.js",
+          "startLine": 118,
+          "endLine": 123
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatStartFeature.group.js",
+          "fileName": "chatStartFeature.group.js",
+          "startLine": 82,
+          "endLine": 87
+        }
+      ]
+    },
+    {
+      "id": 106,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const messageText =\n    payload?.messageText ??\n    payload?.message_text ??\n    payload?.message?.messageText ??\n    payload?.message ?? // allow templates using data.message\n    null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 192,
+          "endLine": 197
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 76,
+          "endLine": 81
+        }
+      ]
+    },
+    {
+      "id": 107,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const selectedCardId = useMemo(() => {\n    if (!selectedItem) return null;\n    return selectedItem.card_id || selectedItem.cardId || selectedItem.card?.id || null;\n  }, [selectedItem]);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersMailboxExperience.hook.js",
+          "fileName": "useWandersMailboxExperience.hook.js",
+          "startLine": 97,
+          "endLine": 100
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersOutbox.screen.jsx",
+          "fileName": "WandersOutbox.screen.jsx",
+          "startLine": 122,
+          "endLine": 125
+        }
+      ]
+    },
+    {
+      "id": 108,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  if (failRate > failRateThreshold) {\n    console.error(\n      `Fail rate ${failRate.toFixed(4)} exceeded threshold ${failRateThreshold.toFixed(4)}`\n    )\n    process.exit(2)\n  }\n}",
+      "files": [
+        {
+          "path": "src\\scripts\\load\\simulateAppUsers.mjs",
+          "fileName": "simulateAppUsers.mjs",
+          "startLine": 342,
+          "endLine": 348
+        },
+        {
+          "path": "src\\scripts\\load\\simulateAuthenticatedActors.mjs",
+          "fileName": "simulateAuthenticatedActors.mjs",
+          "startLine": 703,
+          "endLine": 709
+        }
+      ]
+    },
+    {
+      "id": 109,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const templateKey =\n    payload?.template_key ??\n    payload?.templateKey ??\n    payload?.templateId ??\n    payload?.template?.id ??\n    payload?.template?.key ??\n    \"classic\";",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 199,
+          "endLine": 205
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 83,
+          "endLine": 89
+        }
+      ]
+    },
+    {
+      "id": 110,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "        return result;\n      } catch (err) {\n        setError(err);\n        throw err;\n      } finally {\n        setDeleting(false);\n      }\n    },\n    [actorId, onSuccess]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\menu\\useVportActorMenuCategoriesMutations.js",
+          "fileName": "useVportActorMenuCategoriesMutations.js",
+          "startLine": 65,
+          "endLine": 74
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\menu\\useVportActorMenuItemsMutations.js",
+          "fileName": "useVportActorMenuItemsMutations.js",
+          "startLine": 85,
+          "endLine": 94
+        }
+      ]
+    },
+    {
+      "id": 111,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const COLS = [\n  \"id\",\n  \"inbox_id\",\n  \"owner_user_id\",\n  \"public_id\",\n  \"is_active\",\n  \"accepts_guests\",\n  \"title\",\n  \"expires_at\",\n  \"created_at\",\n  \"updated_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\droplinks.read.dal.js",
+          "fileName": "droplinks.read.dal.js",
+          "startLine": 11,
+          "endLine": 22
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\droplinks.write.dal.js",
+          "fileName": "droplinks.write.dal.js",
+          "startLine": 11,
+          "endLine": 22
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "        return result;\n      } catch (err) {\n        setError(err);\n        throw err;\n      } finally {\n        setSaving(false);\n      }\n    },\n    [actorId, onSuccess]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\menu\\useVportActorMenuCategoriesMutations.js",
+          "fileName": "useVportActorMenuCategoriesMutations.js",
+          "startLine": 37,
+          "endLine": 46
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\menu\\useVportActorMenuItemsMutations.js",
+          "fileName": "useVportActorMenuItemsMutations.js",
+          "startLine": 57,
+          "endLine": 66
+        }
+      ]
+    },
+    {
+      "id": 113,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  if (error || !profile) {\n    return (\n      <div className=\"profiles-modern flex justify-center py-20 text-rose-300\">\n        Failed to load profile.\n      </div>\n    );\n  }",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 278,
+          "endLine": 284
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 195,
+          "endLine": 201
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "export async function ctrlUnsubscribe({\n  followerActorId,\n  followedActorId,\n}) {\n  if (!followerActorId || !followedActorId) {\n    throw new Error('Missing actor ids')\n  }",
+      "files": [
+        {
+          "path": "src\\features\\social\\friend\\subscribe\\controllers\\follow.controller.js",
+          "fileName": "follow.controller.js",
+          "startLine": 86,
+          "endLine": 92
+        },
+        {
+          "path": "src\\features\\social\\friend\\subscribe\\controllers\\unsubscribe.controller.js",
+          "fileName": "unsubscribe.controller.js",
+          "startLine": 6,
+          "endLine": 12
+        }
+      ]
+    },
+    {
+      "id": 115,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      // ✅ also keep both keys for preview workflows (usually null after upload)\n      image_data_url: imageDataUrl || null,\n      imageDataUrl: imageDataUrl || null,\n    },",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 281,
+          "endLine": 284
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 161,
+          "endLine": 164
+        }
+      ]
+    },
+    {
+      "id": 116,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function detectIOS() {\n  if (typeof navigator === \"undefined\") return false;\n  const ua = navigator.userAgent || \"\";\n  const isIPhoneIPadIPod = /iPad|iPhone|iPod/.test(ua);",
+      "files": [
+        {
+          "path": "src\\features\\post\\screens\\PostDetail.view.jsx",
+          "fileName": "PostDetail.view.jsx",
+          "startLine": 38,
+          "endLine": 41
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentModal.jsx",
+          "fileName": "CommentModal.jsx",
+          "startLine": 8,
+          "endLine": 11
+        }
+      ]
+    },
+    {
+      "id": 117,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  useEffect(() => {\n    if (!blockLoading && canViewProfile === false) {\n      navigate(\"/feed\", { replace: true });\n    }\n  }, [blockLoading, canViewProfile, navigate]);",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 98,
+          "endLine": 102
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 59,
+          "endLine": 63
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "        return res;\n      } catch (e) {\n        setError(e);\n        throw e;\n      } finally {\n        setReviewing(false);\n      }\n    },\n    [identity, refresh]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useGasPricesPanel.js",
+          "fileName": "useGasPricesPanel.js",
+          "startLine": 117,
+          "endLine": 126
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useOwnerPendingSuggestions.js",
+          "fileName": "useOwnerPendingSuggestions.js",
+          "startLine": 90,
+          "endLine": 99
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      {!loading && error ? (\n        <div className=\"profiles-error rounded-2xl p-4 text-sm\">\n          {String(error?.message ?? error)}\n        </div>\n      ) : null}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\owner\\VportServicesOwnerPanel.jsx",
+          "fileName": "VportServicesOwnerPanel.jsx",
+          "startLine": 78,
+          "endLine": 82
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\VportServicesPanel.jsx",
+          "fileName": "VportServicesPanel.jsx",
+          "startLine": 61,
+          "endLine": 65
+        }
+      ]
+    },
+    {
+      "id": 120,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { data: rows, error } = await supabase\n    .schema(\"vc\")\n    .from(\"actor_presentation\")\n    .select(\"actor_id\")\n    .neq(\"actor_id\", actorId)\n    .limit(20);",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatConversationFeature.group.js",
+          "fileName": "chatConversationFeature.group.js",
+          "startLine": 78,
+          "endLine": 83
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\chatInboxFeature.group.js",
+          "fileName": "chatInboxFeature.group.js",
+          "startLine": 74,
+          "endLine": 79
+        }
+      ]
+    },
+    {
+      "id": 121,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function nowMs() {\n  if (typeof performance !== \"undefined\" && typeof performance.now === \"function\") {\n    return performance.now();\n  }\n  return Date.now();\n}",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\helpers\\timedTest.js",
+          "fileName": "timedTest.js",
+          "startLine": 4,
+          "endLine": 9
+        },
+        {
+          "path": "src\\dev\\diagnostics\\runAllDiagnostics.js",
+          "fileName": "runAllDiagnostics.js",
+          "startLine": 354,
+          "endLine": 359
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { data, error } = await supabase\n    .schema(\"vc\")\n    .from(\"actor_presentation\")\n    .select(\"actor_id\")\n    .neq(\"actor_id\", actorId)\n    .limit(1);",
+      "files": [
+        {
+          "path": "src\\dev\\diagnostics\\groups\\messaging.group.js",
+          "fileName": "messaging.group.js",
+          "startLine": 50,
+          "endLine": 55
+        },
+        {
+          "path": "src\\dev\\diagnostics\\groups\\posts.group.helpers.js",
+          "fileName": "posts.group.helpers.js",
+          "startLine": 45,
+          "endLine": 50
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    return () => {\n      if (mq.removeEventListener) mq.removeEventListener(\"change\", onChange);\n      else mq.removeListener(onChange);\n    };\n  }, [query]);",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\useDesktopBreakpoint.js",
+          "fileName": "useDesktopBreakpoint.js",
+          "startLine": 22,
+          "endLine": 26
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\hooks\\useDesktopBreakpoint.js",
+          "fileName": "useDesktopBreakpoint.js",
+          "startLine": 20,
+          "endLine": 24
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const COLS = [\n  \"id\",\n  \"public_id\",\n  \"realm_id\",\n  \"inbox_id\",\n  \"drop_link_id\",\n  \"created_at\",\n  \"updated_at\",\n  \"status\",\n  \"sent_at\",\n  \"expires_at\",",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\cards.read.dal.js",
+          "fileName": "cards.read.dal.js",
+          "startLine": 12,
+          "endLine": 22
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\cards.write.dal.js",
+          "fileName": "cards.write.dal.js",
+          "startLine": 12,
+          "endLine": 22
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "/**\n * @param {any} row DB row from wanders.mailbox_items (often joined with cards)\n */\nexport function toWandersMailboxItem(row) {\n  if (!row) return null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\models\\wandersInbox.model.js",
+          "fileName": "wandersInbox.model.js",
+          "startLine": 41,
+          "endLine": 45
+        },
+        {
+          "path": "src\\features\\wanders\\models\\wandersMailboxItem.model.js",
+          "fileName": "wandersMailboxItem.model.js",
+          "startLine": 41,
+          "endLine": 45
+        }
+      ]
+    },
+    {
+      "id": 126,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const {\n    loading: submitting,\n    error: submitError,\n    submit,\n  } = useSubmitFuelPriceSuggestion({\n    targetActorId: actorId,\n    identity,\n  });",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardGasScreen.jsx",
+          "fileName": "VportDashboardGasScreen.jsx",
+          "startLine": 48,
+          "endLine": 55
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\gas\\view\\VportGasPricesView.jsx",
+          "fileName": "VportGasPricesView.jsx",
+          "startLine": 28,
+          "endLine": 35
+        }
+      ]
+    },
+    {
+      "id": 127,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const imageFile =\n    payload?.imageFile ??\n    payload?.image_file ??\n    customizationObj?.imageFile ??\n    customizationObj?.image_file ??\n    null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 222,
+          "endLine": 227
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 105,
+          "endLine": 110
+        }
+      ]
+    },
+    {
+      "id": 128,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const swatchBtn = {\n  width: \"100%\",\n  aspectRatio: \"1 / 1\",\n  borderRadius: 6,\n  border: \"1px solid rgba(255,255,255,0.24)\",\n  cursor: \"pointer\",\n};",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 147,
+          "endLine": 153
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 120,
+          "endLine": 126
+        }
+      ]
+    },
+    {
+      "id": 129,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  useEffect(() => {\n    if (!saved) return;\n    const t = setTimeout(() => setSaved(false), 2000);\n    return () => clearTimeout(t);\n  }, [saved]);",
+      "files": [
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\UserProfileTab.jsx",
+          "fileName": "UserProfileTab.jsx",
+          "startLine": 34,
+          "endLine": 38
+        },
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\VportProfileTab.jsx",
+          "fileName": "VportProfileTab.jsx",
+          "startLine": 33,
+          "endLine": 37
+        }
+      ]
+    },
+    {
+      "id": 130,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    is_anonymous: isAnonymous,\n    message_text: messageText,\n    template_key: templateKey,\n    customization,\n    recipient_channel: \"link\",\n  };",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\controllers\\createWandersCard.controller.js",
+          "fileName": "createWandersCard.controller.js",
+          "startLine": 60,
+          "endLine": 65
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\createWandersCard.controller.js",
+          "fileName": "createWandersCard.controller.js",
+          "startLine": 61,
+          "endLine": 66
+        }
+      ]
+    },
+    {
+      "id": 131,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  let imageUrl =\n    payload?.imageUrl ??\n    payload?.image_url ??\n    customizationObj?.imageUrl ??\n    customizationObj?.image_url ??\n    null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 229,
+          "endLine": 234
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 112,
+          "endLine": 117
+        }
+      ]
+    },
+    {
+      "id": 132,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      vport: {\n        id: vport?.id,\n        name: vport?.name,\n        slug: vport?.slug,\n        isActive: vport?.is_active ?? false,\n      },",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\controller\\getProfileView.controller.js",
+          "fileName": "getProfileView.controller.js",
+          "startLine": 75,
+          "endLine": 80
+        },
+        {
+          "path": "src\\features\\profiles\\model\\ActorProfileViewModel.js",
+          "fileName": "ActorProfileViewModel.js",
+          "startLine": 19,
+          "endLine": 24
+        }
+      ]
+    },
+    {
+      "id": 133,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    const maxBytes = 2 * 1024 * 1024;\n    if (file.size > maxBytes) {\n      setImageError(\"Image is too large (max 2MB).\");\n      return;\n    }",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\photo\\PhotoCard.form.jsx",
+          "fileName": "PhotoCard.form.jsx",
+          "startLine": 25,
+          "endLine": 29
+        },
+        {
+          "path": "src\\features\\wanders\\components\\WandersSendCardForm.jsx",
+          "fileName": "WandersSendCardForm.jsx",
+          "startLine": 67,
+          "endLine": 71
+        }
+      ]
+    },
+    {
+      "id": 134,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    customization: {\n      ...customizationObj,\n      toName,\n      fromName,\n      kind: payload?.kind || customizationObj?.kind || \"wanders\",",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 271,
+          "endLine": 275
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 151,
+          "endLine": 155
+        }
+      ]
+    },
+    {
+      "id": 135,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const [isWide, setIsWide] = useState(() => {\n    if (typeof window === \"undefined\") return false;\n    return window.innerWidth >= 980;\n  });",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\screens\\WandersInboxPublic.screen.jsx",
+          "fileName": "WandersInboxPublic.screen.jsx",
+          "startLine": 33,
+          "endLine": 36
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersOutbox.screen.jsx",
+          "fileName": "WandersOutbox.screen.jsx",
+          "startLine": 46,
+          "endLine": 49
+        }
+      ]
+    },
+    {
+      "id": 136,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const COLS = [\n  \"user_id\",\n  \"created_at\",\n  \"last_seen_at\",\n  \"user_agent_hash\",\n  \"ip_hash\",\n  \"device_hash\",\n  \"client_key\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\userFingerprints.read.dal.js",
+          "fileName": "userFingerprints.read.dal.js",
+          "startLine": 12,
+          "endLine": 20
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\userFingerprints.write.dal.js",
+          "fileName": "userFingerprints.write.dal.js",
+          "startLine": 12,
+          "endLine": 20
+        }
+      ]
+    },
+    {
+      "id": 137,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "import {\n  insertModerationActionDAL,\n  listModerationActionsForActorOnObjectsDAL,\n} from \"@/features/moderation/dal/moderationActions.dal\";",
+      "files": [
+        {
+          "path": "src\\features\\moderation\\controllers\\commentVisibility.controller.js",
+          "fileName": "commentVisibility.controller.js",
+          "startLine": 3,
+          "endLine": 6
+        },
+        {
+          "path": "src\\features\\moderation\\controllers\\postVisibility.controller.js",
+          "fileName": "postVisibility.controller.js",
+          "startLine": 3,
+          "endLine": 6
+        }
+      ]
+    },
+    {
+      "id": 138,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { loading, error, profile, posts, loadingPosts } = useProfileView({\n    viewerActorId,\n    profileActorId,\n    canViewContent,\n  });",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 72,
+          "endLine": 76
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 48,
+          "endLine": 52
+        }
+      ]
+    },
+    {
+      "id": 139,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const onRemoveBanner = () =>\n    setDraft((d) => ({\n      ...d,\n      __bannerFile: null,\n      bannerUrl: \"/default-banner.jpg\",\n    }));",
+      "files": [
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\UserProfileTab.jsx",
+          "fileName": "UserProfileTab.jsx",
+          "startLine": 73,
+          "endLine": 78
+        },
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\VportProfileTab.jsx",
+          "fileName": "VportProfileTab.jsx",
+          "startLine": 69,
+          "endLine": 74
+        }
+      ]
+    },
+    {
+      "id": 140,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      <ShareModal\n        open={shareState.open}\n        title=\"Spread\"\n        url={shareState.url}\n        onClose={closeShare}\n      />",
+      "files": [
+        {
+          "path": "src\\features\\feed\\screens\\CentralFeed.jsx",
+          "fileName": "CentralFeed.jsx",
+          "startLine": 413,
+          "endLine": 418
+        },
+        {
+          "path": "src\\features\\post\\screens\\PostFeed.screen.jsx",
+          "fileName": "PostFeed.screen.jsx",
+          "startLine": 220,
+          "endLine": 225
+        }
+      ]
+    },
+    {
+      "id": 141,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const rawCustomization =\n    payload?.customization ??\n    payload?.customization_json ??\n    payload?.customizationJson ??\n    null;",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 210,
+          "endLine": 214
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 94,
+          "endLine": 98
+        }
+      ]
+    },
+    {
+      "id": 142,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  // Unwrap up to 2 layers (matches your other helpers)\n  for (let i = 0; i < 2; i++) {\n    try {\n      const parsed = JSON.parse(s);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 149,
+          "endLine": 152
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 36,
+          "endLine": 39
+        }
+      ]
+    },
+    {
+      "id": 143,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const menuUrl = useMemo(() => {\n    if (!actorId) return \"\";\n    return `${window.location.origin}/m/${actorId}`;\n  }, [actorId]);",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\screens\\VportActorMenuFlyerView.jsx",
+          "fileName": "VportActorMenuFlyerView.jsx",
+          "startLine": 25,
+          "endLine": 28
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\view\\VportPublicMenuQrView.jsx",
+          "fileName": "VportPublicMenuQrView.jsx",
+          "startLine": 9,
+          "endLine": 12
+        }
+      ]
+    },
+    {
+      "id": 144,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const insertPayload = {\n    public_id: publicId,\n    realm_id: realmId,\n    status: \"sent\",\n    sent_at: new Date().toISOString(),",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 255,
+          "endLine": 259
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 138,
+          "endLine": 142
+        }
+      ]
+    },
+    {
+      "id": 145,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    const onPointerDown = (event) => {\n      if (!hostRef.current?.contains(event.target)) {\n        setOpen(false);\n      }\n    };",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 15,
+          "endLine": 19
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 15,
+          "endLine": 19
+        }
+      ]
+    },
+    {
+      "id": 146,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    if (unsubscribeRealtimeRef.current) {\n      unsubscribeRealtimeRef.current()\n      unsubscribeRealtimeRef.current = null\n    }",
+      "files": [
+        {
+          "path": "src\\features\\notifications\\inbox\\hooks\\useNotiCount.js",
+          "fileName": "useNotiCount.js",
+          "startLine": 103,
+          "endLine": 106
+        },
+        {
+          "path": "src\\features\\notifications\\inbox\\hooks\\useUnreadBadge.js",
+          "fileName": "useUnreadBadge.js",
+          "startLine": 86,
+          "endLine": 89
+        }
+      ]
+    },
+    {
+      "id": 147,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    await assertActorOwnsVportActorController({\n      requestActorId,\n      targetActorId: resource.owner_actor_id,\n    });\n  }",
+      "files": [
+        {
+          "path": "src\\features\\booking\\controller\\cancelBooking.controller.js",
+          "fileName": "cancelBooking.controller.js",
+          "startLine": 37,
+          "endLine": 41
+        },
+        {
+          "path": "src\\features\\booking\\controller\\createBooking.controller.js",
+          "fileName": "createBooking.controller.js",
+          "startLine": 56,
+          "endLine": 60
+        }
+      ]
+    },
+    {
+      "id": 148,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function safeTrim(v) {\n  if (v === null || v === undefined) return null;\n  const s = String(v).trim();\n  return s ? s : null;\n}",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\cards.controller.js",
+          "fileName": "cards.controller.js",
+          "startLine": 135,
+          "endLine": 139
+        },
+        {
+          "path": "src\\features\\wanders\\core\\controllers\\publishWandersFromBuilder.controller.js",
+          "fileName": "publishWandersFromBuilder.controller.js",
+          "startLine": 22,
+          "endLine": 26
+        }
+      ]
+    },
+    {
+      "id": 149,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    const handleClick = (e) => {\n      if (ref.current && !ref.current.contains(e.target)) {\n        onClose?.()\n      }\n    }",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\components\\ConversationActionsMenu.jsx",
+          "fileName": "ConversationActionsMenu.jsx",
+          "startLine": 20,
+          "endLine": 24
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\components\\MessageActionsMenu.jsx",
+          "fileName": "MessageActionsMenu.jsx",
+          "startLine": 33,
+          "endLine": 37
+        }
+      ]
+    },
+    {
+      "id": 150,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  if (!identity) {\n    return (\n      <div className=\"p-10 text-center text-neutral-400\">Sign in required.</div>\n    );\n  }",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardServicesScreen.jsx",
+          "fileName": "VportDashboardServicesScreen.jsx",
+          "startLine": 35,
+          "endLine": 39
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportSettingsScreen.jsx",
+          "fileName": "VportSettingsScreen.jsx",
+          "startLine": 109,
+          "endLine": 113
+        }
+      ]
+    },
+    {
+      "id": 151,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const booking = await getBookingByIdDAL({ bookingId });\n  if (!booking) {\n    throw new Error(\"Booking not found.\");\n  }",
+      "files": [
+        {
+          "path": "src\\features\\booking\\controller\\cancelBooking.controller.js",
+          "fileName": "cancelBooking.controller.js",
+          "startLine": 19,
+          "endLine": 22
+        },
+        {
+          "path": "src\\features\\booking\\controller\\confirmBooking.controller.js",
+          "fileName": "confirmBooking.controller.js",
+          "startLine": 19,
+          "endLine": 22
+        }
+      ]
+    },
+    {
+      "id": 152,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  return new Set(\n    Array.from(latest.entries())\n      .filter(([, t]) => t === \"hide\")\n      .map(([id]) => id)\n  );\n}",
+      "files": [
+        {
+          "path": "src\\features\\moderation\\controllers\\commentVisibility.controller.js",
+          "fileName": "commentVisibility.controller.js",
+          "startLine": 32,
+          "endLine": 37
+        },
+        {
+          "path": "src\\features\\moderation\\controllers\\postVisibility.controller.js",
+          "fileName": "postVisibility.controller.js",
+          "startLine": 24,
+          "endLine": 29
+        }
+      ]
+    },
+    {
+      "id": 153,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const isIPadOS13Plus =\n    /Macintosh/.test(ua) &&\n    typeof document !== \"undefined\" &&\n    \"ontouchend\" in document;",
+      "files": [
+        {
+          "path": "src\\features\\post\\screens\\PostDetail.view.jsx",
+          "fileName": "PostDetail.view.jsx",
+          "startLine": 43,
+          "endLine": 46
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentModal.jsx",
+          "fileName": "CommentModal.jsx",
+          "startLine": 13,
+          "endLine": 16
+        }
+      ]
+    },
+    {
+      "id": 154,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { data, error } = await vc\n    .from('actors')\n    .select('vport_id')\n    .eq('id', actorId)\n    .maybeSingle()",
+      "files": [
+        {
+          "path": "src\\features\\settings\\account\\dal\\account.read.dal.js",
+          "fileName": "account.read.dal.js",
+          "startLine": 6,
+          "endLine": 10
+        },
+        {
+          "path": "src\\features\\settings\\profile\\dal\\actors.read.dal.js",
+          "fileName": "actors.read.dal.js",
+          "startLine": 6,
+          "endLine": 10
+        }
+      ]
+    },
+    {
+      "id": 155,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const readByPublicIdStable = useCallback(\n    (id) => Promise.resolve(readByPublicId?.(id)),\n    [readByPublicId]\n  );",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersPublicCardExperience.hook.js",
+          "fileName": "useWandersPublicCardExperience.hook.js",
+          "startLine": 20,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersInboxPublic.screen.jsx",
+          "fileName": "WandersInboxPublic.screen.jsx",
+          "startLine": 64,
+          "endLine": 67
+        }
+      ]
+    },
+    {
+      "id": 156,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      <div className=\"mt-4 text-xs profiles-muted\">Vport: @{profile?.username || \"unknown\"}</div>\n    </section>\n  );\n}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\portfolio\\view\\VportPortfolioView.jsx",
+          "fileName": "VportPortfolioView.jsx",
+          "startLine": 35,
+          "endLine": 38
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\views\\tabs\\VportSubscribersView.jsx",
+          "fileName": "VportSubscribersView.jsx",
+          "startLine": 87,
+          "endLine": 90
+        }
+      ]
+    },
+    {
+      "id": 157,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const BOOKING_RESOURCE_SERVICE_SELECT = [\n  \"resource_id\",\n  \"service_id\",\n  \"is_active\",\n  \"created_at\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\booking\\dal\\listBookingResourceServicesByResourceId.dal.js",
+          "fileName": "listBookingResourceServicesByResourceId.dal.js",
+          "startLine": 3,
+          "endLine": 8
+        },
+        {
+          "path": "src\\features\\booking\\dal\\upsertBookingResourceServices.dal.js",
+          "fileName": "upsertBookingResourceServices.dal.js",
+          "startLine": 3,
+          "endLine": 8
+        }
+      ]
+    },
+    {
+      "id": 158,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    setDraft((d) => ({\n      ...d,\n      __bannerFile: file,\n      bannerUrl: URL.createObjectURL(file),\n    }));\n  };",
+      "files": [
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\UserProfileTab.jsx",
+          "fileName": "UserProfileTab.jsx",
+          "startLine": 66,
+          "endLine": 71
+        },
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\VportProfileTab.jsx",
+          "fileName": "VportProfileTab.jsx",
+          "startLine": 62,
+          "endLine": 67
+        }
+      ]
+    },
+    {
+      "id": 159,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const gate = useProfileGate({\n    viewerActorId,\n    targetActorId: profileActorId,\n    version: gateVersion,\n  });",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 64,
+          "endLine": 68
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 40,
+          "endLine": 44
+        }
+      ]
+    },
+    {
+      "id": 160,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    setDraft((d) => ({\n      ...d,\n      __avatarFile: file,\n      photoUrl: URL.createObjectURL(file),\n    }));\n  };",
+      "files": [
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\UserProfileTab.jsx",
+          "fileName": "UserProfileTab.jsx",
+          "startLine": 48,
+          "endLine": 53
+        },
+        {
+          "path": "src\\features\\settings\\profile\\adapter\\VportProfileTab.jsx",
+          "fileName": "VportProfileTab.jsx",
+          "startLine": 48,
+          "endLine": 53
+        }
+      ]
+    },
+    {
+      "id": 161,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const COLS = [\n  \"id\",\n  \"card_id\",\n  \"created_at\",\n  \"actor_id\",\n  \"user_id\",\n  \"event_type\",\n  \"meta\",\n].join(\",\");",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\events.read.dal.js",
+          "fileName": "events.read.dal.js",
+          "startLine": 11,
+          "endLine": 19
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\events.write.dal.js",
+          "fileName": "events.write.dal.js",
+          "startLine": 11,
+          "endLine": 19
+        }
+      ]
+    },
+    {
+      "id": 162,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function toInt(v, fallback) {\n  const n = Number.parseInt(String(v), 10)\n  return Number.isFinite(n) ? n : fallback\n}",
+      "files": [
+        {
+          "path": "src\\scripts\\load\\simulateAppUsers.mjs",
+          "fileName": "simulateAppUsers.mjs",
+          "startLine": 21,
+          "endLine": 24
+        },
+        {
+          "path": "src\\scripts\\load\\simulateAuthenticatedActors.mjs",
+          "fileName": "simulateAuthenticatedActors.mjs",
+          "startLine": 23,
+          "endLine": 26
+        }
+      ]
+    },
+    {
+      "id": 163,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function toFloat(v, fallback) {\n  const n = Number.parseFloat(String(v))\n  return Number.isFinite(n) ? n : fallback\n}",
+      "files": [
+        {
+          "path": "src\\scripts\\load\\simulateAppUsers.mjs",
+          "fileName": "simulateAppUsers.mjs",
+          "startLine": 26,
+          "endLine": 29
+        },
+        {
+          "path": "src\\scripts\\load\\simulateAuthenticatedActors.mjs",
+          "fileName": "simulateAuthenticatedActors.mjs",
+          "startLine": 28,
+          "endLine": 31
+        }
+      ]
+    },
+    {
+      "id": 164,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    if (!file.type?.startsWith(\"image/\")) {\n      setImageError(\"Please choose an image file.\");\n      return;\n    }",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\photo\\PhotoCard.form.jsx",
+          "fileName": "PhotoCard.form.jsx",
+          "startLine": 20,
+          "endLine": 23
+        },
+        {
+          "path": "src\\features\\wanders\\components\\WandersSendCardForm.jsx",
+          "fileName": "WandersSendCardForm.jsx",
+          "startLine": 62,
+          "endLine": 65
+        }
+      ]
+    },
+    {
+      "id": 165,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const left = Math.min(\n    Math.max(8, anchorRect.right - MENU_WIDTH),\n    viewportWidth - MENU_WIDTH - 8\n  )",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\components\\ConversationActionsMenu.jsx",
+          "fileName": "ConversationActionsMenu.jsx",
+          "startLine": 104,
+          "endLine": 107
+        },
+        {
+          "path": "src\\features\\post\\postcard\\components\\PostActionsMenu.jsx",
+          "fileName": "PostActionsMenu.jsx",
+          "startLine": 93,
+          "endLine": 96
+        }
+      ]
+    },
+    {
+      "id": 166,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const refresh = useCallback(async () => {\n    if (!actorId) return;\n    setLoading(true);\n    setError(null);",
+      "files": [
+        {
+          "path": "src\\features\\public\\vportMenu\\hooks\\useVportPublicDetails.js",
+          "fileName": "useVportPublicDetails.js",
+          "startLine": 16,
+          "endLine": 19
+        },
+        {
+          "path": "src\\features\\public\\vportMenu\\hooks\\useVportPublicMenu.js",
+          "fileName": "useVportPublicMenu.js",
+          "startLine": 17,
+          "endLine": 20
+        }
+      ]
+    },
+    {
+      "id": 167,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const handleSubmit = useCallback(\n    async (e) => {\n      e?.preventDefault?.();\n      if (!onSave) return;",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\menu\\components\\VportActorMenuCategoryFormModal.jsx",
+          "fileName": "VportActorMenuCategoryFormModal.jsx",
+          "startLine": 60,
+          "endLine": 63
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\menu\\components\\VportActorMenuItemFormModal.jsx",
+          "fileName": "VportActorMenuItemFormModal.jsx",
+          "startLine": 215,
+          "endLine": 218
+        }
+      ]
+    },
+    {
+      "id": 168,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const { loading: blockLoading, canViewProfile } = useBlockStatus(\n    viewerActorId,\n    profileActorId\n  );",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 78,
+          "endLine": 81
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 54,
+          "endLine": 57
+        }
+      ]
+    },
+    {
+      "id": 169,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "import {\n  getConversationMembersDAL,\n  getConversationMemberDAL,\n} from '../../dal/read/members.read.dal'",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\controllers\\message-actions\\getConversationMembers.controller.js",
+          "fileName": "getConversationMembers.controller.js",
+          "startLine": 27,
+          "endLine": 30
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\controllers\\message-actions\\readConversationMembers.controller.js",
+          "fileName": "readConversationMembers.controller.js",
+          "startLine": 4,
+          "endLine": 7
+        }
+      ]
+    },
+    {
+      "id": 170,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function normalizeCategory(v) {\n  const raw = (v ?? \"\").toString().trim();\n  return raw || \"Other\";\n}",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\owner\\VportServicesOwnerPanel.jsx",
+          "fileName": "VportServicesOwnerPanel.jsx",
+          "startLine": 9,
+          "endLine": 12
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\services\\components\\VportServicesPanel.jsx",
+          "fileName": "VportServicesPanel.jsx",
+          "startLine": 7,
+          "endLine": 10
+        }
+      ]
+    },
+    {
+      "id": 171,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "const hexRow = {\n  marginTop: 10,\n  display: \"grid\",\n  gridTemplateColumns: \"1fr auto\",\n  gap: 6,\n};",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\sidebarRight\\DesignStudioInlineColorPicker.jsx",
+          "fileName": "DesignStudioInlineColorPicker.jsx",
+          "startLine": 155,
+          "endLine": 160
+        },
+        {
+          "path": "src\\features\\dashboard\\flyerBuilder\\designStudio\\components\\topBar\\DesignStudioTextColorPicker.jsx",
+          "fileName": "DesignStudioTextColorPicker.jsx",
+          "startLine": 128,
+          "endLine": 133
+        }
+      ]
+    },
+    {
+      "id": 172,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "import {\n  fetchActorReactionDAL,\n  fetchReactionSummaryDAL,\n} from \"../dal/postReactions.read.dal\";",
+      "files": [
+        {
+          "path": "src\\features\\post\\postcard\\controller\\getPostReactions.controller.js",
+          "fileName": "getPostReactions.controller.js",
+          "startLine": 10,
+          "endLine": 13
+        },
+        {
+          "path": "src\\features\\post\\postcard\\controller\\togglePostReaction.controller.js",
+          "fileName": "togglePostReaction.controller.js",
+          "startLine": 11,
+          "endLine": 14
+        }
+      ]
+    },
+    {
+      "id": 173,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      if (!payload.name) {\n        setError(new Error(\"Name is required\"));\n        return;\n      }",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\menu\\components\\VportActorMenuCategoryFormModal.jsx",
+          "fileName": "VportActorMenuCategoryFormModal.jsx",
+          "startLine": 78,
+          "endLine": 81
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\menu\\components\\VportActorMenuItemFormModal.jsx",
+          "fileName": "VportActorMenuItemFormModal.jsx",
+          "startLine": 269,
+          "endLine": 272
+        }
+      ]
+    },
+    {
+      "id": 174,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "function safeTrim(v) {\n  if (v === null || v === undefined) return \"\";\n  return String(v).trim();\n}",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersReplies.hook.js",
+          "fileName": "useWandersReplies.hook.js",
+          "startLine": 10,
+          "endLine": 13
+        },
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersReplies.js",
+          "fileName": "useWandersReplies.js",
+          "startLine": 18,
+          "endLine": 21
+        }
+      ]
+    },
+    {
+      "id": 175,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const shell = createVportDashboardShellStyles({\n    isDesktop,\n    maxWidthDesktop: 1140,\n  });",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardCalendarScreen.jsx",
+          "fileName": "VportDashboardCalendarScreen.jsx",
+          "startLine": 505,
+          "endLine": 508
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardScreen.jsx",
+          "fileName": "VportDashboardScreen.jsx",
+          "startLine": 98,
+          "endLine": 101
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const shell = createVportDashboardShellStyles({\n    isDesktop,\n    maxWidthDesktop: 1100,\n  });",
+      "files": [
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportDashboardServicesScreen.jsx",
+          "fileName": "VportDashboardServicesScreen.jsx",
+          "startLine": 53,
+          "endLine": 56
+        },
+        {
+          "path": "src\\features\\dashboard\\vport\\screens\\VportSettingsScreen.jsx",
+          "fileName": "VportSettingsScreen.jsx",
+          "startLine": 123,
+          "endLine": 126
+        }
+      ]
+    },
+    {
+      "id": 177,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      createdAt: row.created_at ?? null,\n      updatedAt: row.updated_at ?? null,\n    };\n  },",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\model\\menu\\VportActorMenuCategory.model.js",
+          "fileName": "VportActorMenuCategory.model.js",
+          "startLine": 49,
+          "endLine": 52
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\model\\menu\\VportActorMenuItem.model.js",
+          "fileName": "VportActorMenuItem.model.js",
+          "startLine": 29,
+          "endLine": 32
+        }
+      ]
+    },
+    {
+      "id": 178,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    const res = await shareNative({\n      title: \"Spread\",\n      text: \"\",\n      url,\n    });",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 196,
+          "endLine": 200
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 92,
+          "endLine": 96
+        }
+      ]
+    },
+    {
+      "id": 179,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      if (trimmed === editing.initialBody) {\n        setEditing(null)\n        return\n      }",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\hooks\\conversation\\useMessageActionsMenu.js",
+          "fileName": "useMessageActionsMenu.js",
+          "startLine": 74,
+          "endLine": 77
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\screen\\handlers\\conversationView.handlers.js",
+          "fileName": "conversationView.handlers.js",
+          "startLine": 136,
+          "endLine": 139
+        }
+      ]
+    },
+    {
+      "id": 180,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "      onEditMessage({\n        messageId: editing.messageId,\n        body: trimmed,\n      })",
+      "files": [
+        {
+          "path": "src\\features\\chat\\conversation\\hooks\\conversation\\useMessageActionsMenu.js",
+          "fileName": "useMessageActionsMenu.js",
+          "startLine": 79,
+          "endLine": 82
+        },
+        {
+          "path": "src\\features\\chat\\conversation\\screen\\handlers\\conversationView.handlers.js",
+          "fileName": "conversationView.handlers.js",
+          "startLine": 141,
+          "endLine": 144
+        }
+      ]
+    },
+    {
+      "id": 181,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  const onPickImage = () => {\n    setImageError(null);\n    fileRef.current?.click?.();\n  };",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\components\\cardstemplates\\photo\\PhotoCard.form.jsx",
+          "fileName": "PhotoCard.form.jsx",
+          "startLine": 8,
+          "endLine": 11
+        },
+        {
+          "path": "src\\features\\wanders\\components\\WandersSendCardForm.jsx",
+          "fileName": "WandersSendCardForm.jsx",
+          "startLine": 52,
+          "endLine": 55
+        }
+      ]
+    },
+    {
+      "id": 182,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    return () => {\n      cancelled = true;\n    };\n  }, [publicId, readByPublicIdStable]);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersPublicCardExperience.hook.js",
+          "fileName": "useWandersPublicCardExperience.hook.js",
+          "startLine": 54,
+          "endLine": 57
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\WandersInboxPublic.screen.jsx",
+          "fileName": "WandersInboxPublic.screen.jsx",
+          "startLine": 91,
+          "endLine": 94
+        }
+      ]
+    },
+    {
+      "id": 183,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  \"sender_actor_id\",\n  \"sender_user_id\",\n  \"recipient_actor_id\",\n  \"recipient_user_id\",",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\dal\\read\\cards.read.dal.js",
+          "fileName": "cards.read.dal.js",
+          "startLine": 24,
+          "endLine": 27
+        },
+        {
+          "path": "src\\features\\wanders\\core\\dal\\write\\cards.write.dal.js",
+          "fileName": "cards.write.dal.js",
+          "startLine": 24,
+          "endLine": 27
+        }
+      ]
+    },
+    {
+      "id": 184,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    return () => {\n      cancelled = true;\n    };\n  }, [cardPublicId, readByPublicId]);",
+      "files": [
+        {
+          "path": "src\\features\\wanders\\core\\hooks\\useWandersSentExperience.hook.js",
+          "fileName": "useWandersSentExperience.hook.js",
+          "startLine": 45,
+          "endLine": 48
+        },
+        {
+          "path": "src\\features\\wanders\\screens\\view\\WandersSent.view.jsx",
+          "fileName": "WandersSent.view.jsx",
+          "startLine": 72,
+          "endLine": 75
+        }
+      ]
+    },
+    {
+      "id": 185,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "  // Reset when closing\n  useEffect(() => {\n    if (!open) setValue(\"\");\n  }, [open]);",
+      "files": [
+        {
+          "path": "src\\features\\post\\commentcard\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 64,
+          "endLine": 67
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\tabs\\photos\\components\\CommentComposeModal.jsx",
+          "fileName": "CommentComposeModal.jsx",
+          "startLine": 78,
+          "endLine": 81
+        }
+      ]
+    },
+    {
+      "id": 186,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    settings,\n    official,\n    officialByFuelKey,\n    communitySuggestionByFuelKey,",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useGasPricesPanel.js",
+          "fileName": "useGasPricesPanel.js",
+          "startLine": 134,
+          "endLine": 137
+        },
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\hooks\\gas\\useVportGasPrices.js",
+          "fileName": "useVportGasPrices.js",
+          "startLine": 65,
+          "endLine": 68
+        }
+      ]
+    },
+    {
+      "id": 187,
+      "fileCount": 2,
+      "occurrenceCount": 2,
+      "repeatedCode": "    if (!res.ok) {\n      setShareState({ open: true, url, postId });\n    }\n  }, []);",
+      "files": [
+        {
+          "path": "src\\features\\profiles\\kinds\\vport\\screens\\VportProfileViewScreen.jsx",
+          "fileName": "VportProfileViewScreen.jsx",
+          "startLine": 202,
+          "endLine": 205
+        },
+        {
+          "path": "src\\features\\profiles\\screens\\views\\ActorProfileViewScreen.jsx",
+          "fileName": "ActorProfileViewScreen.jsx",
+          "startLine": 98,
+          "endLine": 101
+        }
+      ]
+    }
+  ]
+}

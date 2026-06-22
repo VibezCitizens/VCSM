@@ -41,7 +41,7 @@ vi.mock('@/features/social/friend/subscribe/dal/subscriberCount.dal', () => ({
   invalidateFollowerCount: vi.fn(),
 }))
 
-vi.mock('@/features/feed/adapters/feedCache.adapter', () => ({
+vi.mock('@/features/CentralFeed/adapters/feedCache.adapter', () => ({
   invalidateFeedFollowCache: vi.fn(),
 }))
 
@@ -55,7 +55,7 @@ import { ctrlGetFollowRelationshipState } from '@/features/social/friend/subscri
 import { ctrlSendFollowRequest } from '@/features/social/friend/request/controllers/followRequests.controller'
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
-import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.adapter'
+import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────

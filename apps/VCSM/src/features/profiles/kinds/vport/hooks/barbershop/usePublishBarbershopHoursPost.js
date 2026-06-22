@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { publishBarbershopHoursUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/barbershop/publishBarbershopHoursUpdateAsPost.controller";
 
 export function usePublishBarbershopHoursPost({ actorId }) {

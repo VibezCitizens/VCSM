@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RpcMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "rpcCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "rpcCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["rpcs"],
+      "properties": {
+        "rpcs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["rpc", "file", "caller", "confidence"],
+            "properties": {
+              "rpc": { "type": "string" },
+              "schema": { "type": ["string", "null"] },
+              "file": { "type": "string" },
+              "feature": { "type": ["string", "null"] },
+              "engine": { "type": ["string", "null"] },
+              "caller": { "type": ["string", "null"] },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

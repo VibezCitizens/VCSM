@@ -75,3 +75,25 @@ export async function dalListBookingsByResource({ resourceId, statuses = null, l
   if (error) throw error
   return Array.isArray(data) ? data : []
 }
+
+// Multi-resource history — used by owner dashboards that aggregate bookings across all
+// of a vport's resources (e.g. one resource per barber). RLS still scopes returned rows
+// to resources the caller owns, so a stray resourceId cannot leak another vport's data.
+export async function dalListBookingsByResources({ resourceIds, statuses = null, limit = 100, offset = 0 }) {
+  const ids = Array.isArray(resourceIds) ? resourceIds.filter(Boolean) : []
+  if (ids.length === 0) return []
+
+  let query = getVportClient()
+    .from('bookings')
+    .select(BOOKING_SELECT)
+    .in('resource_id', ids)
+    .order('starts_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  const statusList = Array.isArray(statuses) ? statuses.filter(Boolean) : []
+  if (statusList.length) query = query.in('status', statusList)
+
+  const { data, error } = await query
+  if (error) throw error
+  return Array.isArray(data) ? data : []
+}

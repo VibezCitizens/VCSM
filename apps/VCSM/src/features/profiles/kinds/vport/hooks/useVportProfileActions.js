@@ -2,12 +2,12 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { shareNative } from "@/shared/lib/shareNative";
 import useReportFlow from "@/features/moderation/adapters/hooks/useReportFlow.adapter";
-import { useDeletePostAction } from "@/features/post/adapters/postcard/hooks/useDeletePostAction.adapter";
+import { useDeletePostAction } from "@/features/post/adapters/post.adapter";
 
 export function useVportProfileActions({ viewerActorId, onPostDeleted }) {
   const navigate = useNavigate();
   const deletePost = useDeletePostAction({ actorId: viewerActorId });
-  const reportFlow = useReportFlow({ reporterActorId: viewerActorId });
+  const reportFlow = useReportFlow();
 
   const [shareState, setShareState] = useState({ open: false, url: "", postId: null });
   const [postMenu, setPostMenu] = useState(null);

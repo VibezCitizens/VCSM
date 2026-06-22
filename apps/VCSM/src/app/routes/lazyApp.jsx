@@ -4,13 +4,13 @@ const devDiagnosticsEnabled = import.meta.env.DEV;
 
 // ── Main App ──────────────────────────────────────────────────────────────────
 export const CentralFeed = lazyWithLog("CentralFeed", () =>
-  import("@/features/feed/screens/CentralFeedScreen"),
+  import("@/features/CentralFeed/screens/CentralFeedScreen"),
 );
 export const ExploreScreen = lazyWithLog("Explore", () =>
   import("@/features/explore/screens/ExploreScreen"),
 );
 export const CitizenVibesScreen = lazyWithLog("CitizenVibesScreen", () =>
-  import("@/features/onboarding/adapters/onboarding.adapter").then((m) => ({
+  import("@/features/initiation/adapters/onboarding.adapter").then((m) => ({
     default: m.CitizenVibesScreen,
   })),
 );
@@ -66,7 +66,7 @@ export const ActorProfileScreen = lazyWithLog("ActorProfileScreen", () =>
 );
 export const TopFriendsRankEditor = lazyWithLog("TopFriendsRankEditor", () =>
   import(
-    "@/features/profiles/screens/views/tabs/friends/components/TopFriendsRankEditor"
+    "@/features/profiles/kinds/citizen/tabs/friends/components/TopFriendsRankEditor"
   ),
 );
 
@@ -75,83 +75,81 @@ export const VportActorMenuFlyerEditorScreen = lazyWithLog(
   "VportActorMenuFlyerEditorScreen",
   () =>
     import(
-      "@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerEditorScreen"
+      "@/features/flyerBuilder/screens/VportActorMenuFlyerEditorScreen"
     ),
 );
 export const RestoreVportScreen = lazyWithLog("RestoreVportScreen", () =>
   import("@/features/vport/screens/RestoreVportScreen"),
 );
 export const VportDashboardScreen = lazyWithLog("VportDashboardScreen", () =>
-  import("@/features/dashboard/vport/screens/VportDashboardScreen"),
+  import("@/features/vportDashboard/screens/VportDashboardScreen"),
 );
 export const VportDashboardGasScreen = lazyWithLog("VportDashboardGasScreen", () =>
-  import("@/features/dashboard/vport/dashboard/cards/gasprices/screens/VportDashboardGasScreen"),
+  import("@/features/vportDashboard/dashboard/cards/gasprices/screens/VportDashboardGasScreen"),
 );
 export const VportDashboardReviewScreen = lazyWithLog(
   "VportDashboardReviewScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/reviews/VportDashboardReviewScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/reviews/VportDashboardReviewScreen"),
 );
 export const VportDashboardLeadsScreen = lazyWithLog(
   "VportDashboardLeadsScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/leads/VportDashboardLeadsScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsScreen"),
 );
 export const VportDashboardServicesScreen = lazyWithLog(
   "VportDashboardServicesScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/services/VportDashboardServicesScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/services/VportDashboardServicesScreen"),
 );
 export const VportDashboardExchangeScreen = lazyWithLog(
   "VportDashboardExchangeScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/exchange/VportDashboardExchangeScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/exchange/VportDashboardExchangeScreen"),
 );
 export const VportDashboardCalendarScreen = lazyWithLog(
   "VportDashboardCalendarScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/calendar/VportDashboardCalendarScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/calendar/VportDashboardCalendarScreen"),
 );
 export const VportDashboardPortfolioScreen = lazyWithLog(
   "VportDashboardPortfolioScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/portfolio/VportDashboardPortfolioScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/portfolio/VportDashboardPortfolioScreen"),
 );
 export const VportDashboardLocksmithScreen = lazyWithLog(
   "VportDashboardLocksmithScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/locksmith/VportDashboardLocksmithScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/locksmith/VportDashboardLocksmithScreen"),
 );
 export const VportDashboardBookingHistoryScreen = lazyWithLog(
   "VportDashboardBookingHistoryScreen",
   () =>
-    import("@/features/dashboard/vport/dashboard/cards/bookings/VportDashboardBookingHistoryScreen"),
+    import("@/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryScreen"),
 );
 export const VportDashboardTeamScreen = lazyWithLog(
   "VportDashboardTeamScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/team/VportDashboardTeamScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/team/VportDashboardTeamScreen"),
 );
 export const BarberTeamRequestsScreen = lazyWithLog(
   "BarberTeamRequestsScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/team/BarberTeamRequestsScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/team/BarberTeamRequestsScreen"),
 );
 export const VportDashboardScheduleScreen = lazyWithLog(
   "VportDashboardScheduleScreen",
-  () => import("@/features/dashboard/vport/dashboard/cards/schedule/VportDashboardScheduleScreen"),
+  () => import("@/features/vportDashboard/dashboard/cards/schedule/VportDashboardScheduleScreen"),
 );
 export const VportSettingsScreen = lazyWithLog("VportSettingsFinalScreen", () =>
-  import("@/features/dashboard/vport/dashboard/cards/settings/VportSettingsFinalScreen"),
+  import("@/features/vportDashboard/dashboard/cards/settings/VportSettingsFinalScreen"),
 );
 
 // ── Gas ───────────────────────────────────────────────────────────────────────
-export const VportGasPricesScreen = lazyWithLog("VportGasPricesScreen", () =>
-  import(
-    "@/features/dashboard/vport/dashboard/cards/gasprices/screens/VportGasPricesScreen"
-  ),
-);
+// FROZEN — VportGasPricesScreen (/actor/:actorId/gas) unwired 2026-06-08.
+// Future feature; lazy export intentionally removed. See freeze notice in
+// VportGasPricesScreen.jsx to re-enable.
 
 // ── Posts ─────────────────────────────────────────────────────────────────────
 export const PostFeedScreen = lazyWithLog("PostFeedScreen", () =>
-  import("@/features/post/screens/PostFeed.screen"),
+  import("@/features/post/postcard/screens/PostFeed.screen"),
 );
 export const PostDetailScreen = lazyWithLog("PostDetailScreen", () =>
-  import("@/features/post/screens/PostDetail.screen"),
+  import("@/features/post/postcard/screens/PostDetail.screen"),
 );
 export const EditPostScreen = lazyWithLog("EditPostScreen", () =>
-  import("@/features/post/postcard/ui/EditPost"),
+  import("@/features/post/postcard/components/EditPost"),
 );
 
 // ── Chat ──────────────────────────────────────────────────────────────────────

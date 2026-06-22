@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { setFunnelSource } from '@/shared/lib/funnelSource'
 import PublicNavbar, { PUBLIC_NAV_HEIGHT } from '@/shared/components/PublicNavbar'
 import { VportPreviewShowcase } from '@/features/vport/adapters/vport.public.adapter'
 
@@ -58,7 +59,7 @@ export default function HowToCreateVportScreen() {
       setMeta('og:description', PAGE_DESCRIPTION),
       setMeta('og:url', PAGE_URL),
     ]
-    try { sessionStorage.setItem('vcsm_funnel_source', 'how_to_vport') } catch { /* ignore */ }
+    setFunnelSource('how_to_vport')
     return () => {
       document.title = prevTitle
       cleanups.forEach((fn) => fn())

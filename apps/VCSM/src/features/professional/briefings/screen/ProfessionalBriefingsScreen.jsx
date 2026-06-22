@@ -7,7 +7,7 @@ export default function ProfessionalBriefingsScreen() {
   const { identity } = useIdentity()
   const actorId = identity?.actorId ?? null
 
-  if (!actorId) return <Navigate to="/feed" replace />
+  if (!actorId) return <Navigate to="/CentralFeed" replace />
 
   return <ProfessionalBriefingsScreenView actorId={actorId} />
 }

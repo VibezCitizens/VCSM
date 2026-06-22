@@ -1,5 +1,8 @@
-import { AnswerDetailScreen } from "@/features/answers/adapters/answers.adapter";
-import { listAnswerStaticParams, readAnswerPage } from "@/features/answers/controller/readAnswerPage.controller";
+import {
+  AnswerDetailScreen,
+  listAnswerStaticParams,
+  readAnswerPage
+} from "@/features/answers/adapters/answers.adapter";
 import { buildLocalizedAlternates } from "@/seo/locale";
 
 export const dynamicParams = false;

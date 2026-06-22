@@ -4,6 +4,7 @@ import {
   insertModerationActionDAL,
   listModerationActionsForActorOnObjectsDAL,
 } from "@/features/moderation/dal/moderationActions.dal";
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 /* ============================================================
    CONTROLLER: commentVisibility
@@ -93,16 +94,21 @@ export async function hideCommentForActor({
   if (!actorId) throw new Error("hideCommentForActor: actorId required");
   if (!commentId) throw new Error("hideCommentForActor: commentId required");
 
-  await insertModerationActionDAL({
-    actorId,
-    actorDomain: 'vc',
-    reportId,
-    targetDomain: 'vc',
-    targetType: "comment",
-    targetId: commentId,
-    actionType: "hide",
-    reason,
-  });
+  try {
+    await insertModerationActionDAL({
+      actorId,
+      actorDomain: 'vc',
+      reportId,
+      targetDomain: 'vc',
+      targetType: "comment",
+      targetId: commentId,
+      actionType: "hide",
+      reason,
+    });
+  } catch (error) {
+    captureVcsmError({ feature: 'moderation', module: 'commentVisibility.controller', severity: 'error', message: `hideCommentForActor: insertModerationActionDAL failed — ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'insertModerationActionDAL', is_handled: false, context: { commentId, actorId: actorId ?? null } })
+    throw error
+  }
 
   return { ok: true };
 }
@@ -119,16 +125,21 @@ export async function unhideCommentForActor({
   if (!actorId) throw new Error("unhideCommentForActor: actorId required");
   if (!commentId) throw new Error("unhideCommentForActor: commentId required");
 
-  await insertModerationActionDAL({
-    actorId,
-    actorDomain: 'vc',
-    reportId,
-    targetDomain: 'vc',
-    targetType: "comment",
-    targetId: commentId,
-    actionType: "unhide",
-    reason,
-  });
+  try {
+    await insertModerationActionDAL({
+      actorId,
+      actorDomain: 'vc',
+      reportId,
+      targetDomain: 'vc',
+      targetType: "comment",
+      targetId: commentId,
+      actionType: "unhide",
+      reason,
+    });
+  } catch (error) {
+    captureVcsmError({ feature: 'moderation', module: 'commentVisibility.controller', severity: 'error', message: `unhideCommentForActor: insertModerationActionDAL failed — ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'insertModerationActionDAL', is_handled: false, context: { commentId, actorId: actorId ?? null } })
+    throw error
+  }
 
   return { ok: true };
 }

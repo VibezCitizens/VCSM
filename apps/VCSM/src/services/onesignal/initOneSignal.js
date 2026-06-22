@@ -44,5 +44,17 @@ export function initOneSignal() {
       // Required for http://localhost dev and LAN testing.
       allowLocalhostAsSecureOrigin: true,
     })
+
+    // Eagerly freeze window.OneSignal post-init to close the XSS race window
+    // that exists between SDK initialization and the first onesignalClient.os() call.
+    try {
+      Object.defineProperty(window, 'OneSignal', {
+        value: window.OneSignal,
+        writable: false,
+        configurable: false,
+      })
+    } catch {
+      // Already frozen by SDK or running in SSR — safe to ignore
+    }
   })
 }

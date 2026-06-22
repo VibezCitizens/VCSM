@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { supabase } from '@/services/supabase/supabaseClient'
 import { isUuid } from '@/services/supabase/postgrestSafe'
 

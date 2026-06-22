@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { blockActorController } from "@/features/block/controllers/blockActor.controller";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
-import { invalidateFeedBlockCache } from "@/features/feed/adapters/feedCache.adapter";
+import { invalidateFeedBlockCache } from "@/features/CentralFeed/adapters/feedCache.adapter";
 
 export function useBlockActorAction() {
   const { identity } = useIdentity();

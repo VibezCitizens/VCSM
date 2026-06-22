@@ -1,5 +1,5 @@
 import ActorLink from '@/shared/components/ActorLink'
-import { formatTimestamp } from '@/shared/lib/formatTimestamp'
+import { formatRelativeTime, formatExactTimestamp, toISOStringSafe } from '@/shared/lib/formatRelativeTime'
 
 export default function NotificationCard({
   actor,
@@ -10,7 +10,9 @@ export default function NotificationCard({
   unread = false,
   className = '',
 }) {
-  const time = formatTimestamp(timestamp)
+  const relativeTime = formatRelativeTime(timestamp)
+  const exactTime = formatExactTimestamp(timestamp)
+  const isoTime = toISOStringSafe(timestamp)
   const isClickable = typeof onClick === 'function'
 
   return (
@@ -45,10 +47,18 @@ export default function NotificationCard({
             {message}
           </span>
 
-          {time && (
-            <span style={{ fontSize: 11, color: "var(--vc-text-muted)", marginTop: 2 }}>
-              {time}
-            </span>
+          {relativeTime && (
+            // Relative label is shown; the exact timestamp stays available via the
+            // native tooltip (desktop hover / mobile long-press) and aria-label
+            // (screen readers). dateTime gives a machine-readable value.
+            <time
+              dateTime={isoTime}
+              title={exactTime || undefined}
+              aria-label={exactTime || undefined}
+              style={{ fontSize: 11, color: "var(--vc-text-muted)", marginTop: 2 }}
+            >
+              {relativeTime}
+            </time>
           )}
         </div>
       </div>

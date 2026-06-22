@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { setFunnelSource } from '@/shared/lib/funnelSource'
 import PublicNavbar, { PUBLIC_NAV_HEIGHT } from "@/shared/components/PublicNavbar";
 import ProfilePhonePreview from "./components/ProfilePhonePreview";
 import {
@@ -27,7 +28,7 @@ export default function HowToCreateProfileScreen() {
       setMeta("og:description", PAGE_DESCRIPTION),
       setMeta("og:url", PAGE_URL),
     ];
-    try { sessionStorage.setItem("vcsm_funnel_source", "how_to_profile"); } catch { /* ignore */ }
+    setFunnelSource('how_to_profile')
     return () => { document.title = prevTitle; cleanups.forEach((fn) => fn()); };
   }, []);
 

@@ -1,5 +1,5 @@
-import { readVportTypeDAL } from "@/features/profiles/dal/readVportType.dal";
-import { toVportType } from "@/features/profiles/model/vportType.model";
+import { readVportTypeDAL } from "@/features/profiles/kinds/vport/dal/readVportType.dal";
+import { toVportType } from "@/features/profiles/kinds/vport/model/vportType.model";
 
 /**
  * Returns null for non-vport actors.

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { DirectoryBreadcrumbs } from "@/features/directories/components/DirectoryBreadcrumbs";
 import { DirectoryFilterRow } from "@/features/directories/components/DirectoryFilterRow";
-import { DirectoryCtaModules } from "@/features/conversion/components/CtaModules";
+import { DirectoryCtaModules } from "@/features/conversion/adapters/conversion.adapter";
 import TrazeProviderCard from "@/shared/components/TrazeProviderCard";
 import { TrazeSection } from "@/shared/components/TrazeSection";
 import TrazeGeoExplorer from "@/shared/components/TrazeGeoExplorer";

@@ -4,7 +4,7 @@ import {
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -69,10 +69,9 @@ export async function publishLocksmithHoursUpdateAsPostController({ identityActo
   if (!actorId) throw new Error("publishLocksmithHoursUpdateAsPost: actorId required");
   if (!identityActorId) throw new Error("publishLocksmithHoursUpdateAsPost: identityActorId required");
 
-  await assertActorOwnsVportActorController({
-    requestActorId: identityActorId,
-    targetActorId: actorId,
-  });
+  // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): resolved from the auth
+  // session via actor_owners — holds whether acting as the user or as the VPORT.
+  await assertSessionOwnsVportActorController({ targetActorId: actorId });
 
   const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, status: "skipped", reason: "missing_public_realm" };

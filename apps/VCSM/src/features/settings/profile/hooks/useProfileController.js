@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -12,7 +12,7 @@ import {
   loadProfileCore,
   saveProfileCore,
 } from '@/features/settings/profile/controller/profile.controller'
-import { useProfilesOps } from '@/features/profiles/adapters/profiles.adapter'
+import { useProfileOps } from '@/features/profiles/adapters/profiles.adapter'
 import { useIdentityOps } from '@/features/identity/adapters/identity.adapter'
 
 const UUID_RX =
@@ -20,9 +20,9 @@ const UUID_RX =
 
 export function useProfileController() {
   const { user } = useAuth()
-  const { identity, setIdentity } = useIdentity()
+  const { identity, patchIdentityDisplayFields } = useIdentity()
   const qc = useQueryClient()
-  const { invalidateActorProfileCache } = useProfilesOps()
+  const { invalidateActorProfileCache } = useProfileOps()
   const { refreshVcActorDirectory } = useIdentityOps()
 
   const location = useLocation()
@@ -83,11 +83,10 @@ export function useProfileController() {
 
       // Always patch identity with confirmed URLs — don't rely on draft.actorId
       // being populated (it's not a form field, can be null on first save).
-      setIdentity((prev) =>
-        prev
-          ? { ...prev, avatar: updatedUi.photoUrl, banner: updatedUi.bannerUrl }
-          : prev
-      )
+      patchIdentityDisplayFields({
+        avatar: updatedUi.photoUrl,
+        banner: updatedUi.bannerUrl,
+      })
 
       // Invalidate the public profile React Query cache so the profile view
       // reflects the save without waiting for the 60s staleTime to expire.

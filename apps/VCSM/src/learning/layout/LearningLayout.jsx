@@ -6,7 +6,8 @@ import "@/learning/styles/learning.css";
 import { resetLearningTheme, setLearningTheme } from "@/learning/utils/setLearningTheme";
 import { logRealmDebug } from "@/learning/utils/realmDebug";
 import { supabase } from "@/services/supabase/supabaseClient";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/identityContext";
+import { useActiveActorState } from "@/features/identity/adapters/identity.adapter";
 
 const INITIAL_STATE = {
   realm: null,
@@ -18,10 +19,10 @@ const INITIAL_STATE = {
 export default function LearningLayout() {
   const { user, loading: authLoading } = useAuth();
   const { identity, identityLoading } = useIdentity();
+  const { realmId: vcRealmId } = useActiveActorState();
   const [state, setState] = useState(INITIAL_STATE);
 
   const actorId = identity?.actorId ?? null;
-  const vcRealmId = identity?.realmId ?? null;
 
   const reload = useCallback(async () => {
     logRealmDebug("LearningLayout", "reload:start", {

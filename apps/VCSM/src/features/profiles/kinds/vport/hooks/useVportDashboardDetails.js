@@ -14,50 +14,24 @@
 //   import { useVportPublicDetails } from
 //     '@/features/public/vportMenu/adapters/vportMenu.adapter';
 
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { queryKeys } from '@/queries/queryKeys'
 import { getVportPublicDetailsController } from '@/features/profiles/kinds/vport/controller/getVportPublicDetails.controller'
 
 export function useVportDashboardDetails(actorId) {
-  const [loading, setLoading] = useState(true)
-  const [details, setDetails] = useState(null)
-  const [error, setError] = useState(null)
+  const query = useQuery({
+    queryKey: queryKeys.vportPublicDetails(actorId),
+    queryFn: () => getVportPublicDetailsController(actorId),
+    enabled: !!actorId,
+    staleTime: 60_000,
+    gcTime: 300_000,
+  })
 
-  useEffect(() => {
-    let alive = true
-
-    async function run() {
-      if (!actorId) {
-        if (!alive) return
-        setDetails(null)
-        setError(null)
-        setLoading(false)
-        return
-      }
-
-      try {
-        setLoading(true)
-        setError(null)
-
-        const d = await getVportPublicDetailsController(actorId)
-        if (!alive) return
-
-        setDetails(d ?? null)
-      } catch (e) {
-        if (!alive) return
-        setError(e)
-        setDetails(null)
-      } finally {
-        if (alive) setLoading(false)
-      }
-    }
-
-    run()
-    return () => {
-      alive = false
-    }
-  }, [actorId])
-
-  return { loading, details, error }
+  return {
+    loading: query.isLoading,
+    details: query.data ?? null,
+    error: query.error ?? null,
+  }
 }
 
 export default useVportDashboardDetails

@@ -10,4 +10,8 @@ export {
   publishVcsmNotificationBatch,
 } from '@/features/notifications/publish'
 
-export { getUnreadNotificationCount } from '@/features/notifications/inbox/controller/notificationsCount.controller'
+export {
+  getUnreadNotificationCount,
+  getUnreadNotificationCountBatch,
+} from '@/features/notifications/inbox/controller/notificationsCount.controller'
+export { getNotificationUnreadCount } from '@/features/notifications/hooks/useNotificationCount'

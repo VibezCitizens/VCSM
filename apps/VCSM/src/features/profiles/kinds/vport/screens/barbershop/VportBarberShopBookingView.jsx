@@ -1,5 +1,5 @@
 import VportPublicBookingFlow from "@/features/profiles/kinds/vport/screens/booking/view/VportPublicBookingFlow";
-import { VportDashboardScheduleScreen } from "@/features/dashboard/vport/adapters/vport.adapter";
+import { VportDashboardScheduleScreen } from "@/features/vportDashboard/adapters/vportDashboard.adapter";
 
 export default function VportBarberShopBookingView({ profile, isOwner = false }) {
   if (isOwner) {

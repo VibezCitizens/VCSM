@@ -32,14 +32,14 @@ vi.mock('@/features/profiles/kinds/vport/dal/subscribersList.dal', () => ({
   dalListVportSubscribers: vi.fn(),
 }))
 
-vi.mock('@/features/social/privacy/dal/actorSignalVisibility.dal', () => ({
+vi.mock('@/features/social/adapters/privacy/actorSignalVisibility.adapter', () => ({
   dalCanViewActorSignal: vi.fn(),
 }))
 
 import { getSubscribersController } from '../getSubscribers.controller'
 import { dalCountVportSubscribers } from '@/features/profiles/kinds/vport/dal/subscribersCount.dal'
 import { dalListVportSubscribers } from '@/features/profiles/kinds/vport/dal/subscribersList.dal'
-import { dalCanViewActorSignal } from '@/features/social/privacy/dal/actorSignalVisibility.dal'
+import { dalCanViewActorSignal } from '@/features/social/adapters/privacy/actorSignalVisibility.adapter'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 

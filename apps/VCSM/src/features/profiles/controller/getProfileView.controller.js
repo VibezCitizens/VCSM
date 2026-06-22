@@ -1,4 +1,5 @@
-import { ProfileModel } from '@/features/profiles/model/profile.model'
+// [SHARED_ACTOR_PRIMITIVE] — kind-aware polymorphic profile view (user vs vport branch)
+import { ProfileModel } from '@/features/profiles/model/userProfile.model'
 
 import { readActorProfileDAL } from '@/features/profiles/dal/readActorProfile.dal'
 import { useActorStore } from '@hydration'

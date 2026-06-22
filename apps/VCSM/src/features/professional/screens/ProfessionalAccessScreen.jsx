@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 import NurseHomeScreen from '@/features/professional/professional-nurse/screens/NurseHomeScreen'
-import '@/features/settings/styles/settings-modern.css'
+import '@/shared/styles/settings-modern.css'
 
 export default function ProfessionalAccessScreen() {
   const navigate = useNavigate()

@@ -16,7 +16,7 @@ vi.mock("@/shared/utils/resolveRealm", () => ({
 }));
 
 vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertActorOwnsVportActorController: vi.fn(),
+  assertSessionOwnsVportActorController: vi.fn(),
 }));
 
 import { publishLocksmithServiceAreaUpdateAsPostController } from "../publishLocksmithServiceAreaUpdateAsPost.controller";
@@ -29,14 +29,14 @@ import {
   hasRecentLocksmithPortfolioPostDAL,
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const identityActorId = "actor-user-owner-1";
 const actorId = "actor-vport-locksmith-1";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  assertActorOwnsVportActorController.mockResolvedValue({ ok: true });
+  assertSessionOwnsVportActorController.mockResolvedValue({ ok: true });
   resolveVportLocksmithNameDAL.mockResolvedValue("Locksmith Vport");
   hasRecentLocksmithServiceAreaPostDAL.mockResolvedValue(false);
   hasRecentLocksmithHoursPostDAL.mockResolvedValue(false);
@@ -56,8 +56,7 @@ describe("locksmith publish controllers", () => {
       area: { label: "Austin" },
     });
 
-    expect(assertActorOwnsVportActorController).toHaveBeenCalledWith({
-      requestActorId: identityActorId,
+    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
       targetActorId: actorId,
     });
     expect(createSystemPost).toHaveBeenCalledWith(
@@ -66,7 +65,7 @@ describe("locksmith publish controllers", () => {
   });
 
   it("hours publish does not create a post when ownership fails", async () => {
-    assertActorOwnsVportActorController.mockRejectedValue(new Error("not owner"));
+    assertSessionOwnsVportActorController.mockRejectedValue(new Error("not owner"));
     await expect(
       publishLocksmithHoursUpdateAsPostController({
         identityActorId,

@@ -1,9 +1,9 @@
-import { submitVportBusinessCardLeadController } from '@/features/public/vportBusinessCard/controller/vportBusinessCard.controller'
-import { getBusinessCardSettings, deepMergeSettings } from '@/features/public/vportBusinessCard/model/businessCardSettings.model'
+import { submitVportBusinessCardLead } from '@/features/public/adapters/public.adapter'
+import { getBusinessCardSettings, deepMergeSettings } from '@/shared/lib/businessCard/businessCardSettings.model'
 
 export function useWandersBusinessCardOps() {
   return {
-    submitLead: submitVportBusinessCardLeadController,
+    submitLead: submitVportBusinessCardLead,
     getBusinessCardSettings,
     deepMergeSettings,
   }

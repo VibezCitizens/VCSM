@@ -6,8 +6,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/AuthProvider";
-import useUpsertVportServices from "@/features/profiles/adapters/kinds/vport/hooks/services/useUpsertVportServices.adapter";
-import { submitCreateVportController } from "@/features/vport/controller/submitCreateVport.controller";
+import useUpsertVportServices from "@/features/profiles/kinds/vport/adapters/hooks/services/useUpsertVportServices.adapter";
+import { submitCreateVportController } from "@/features/vport/controllers/submitCreateVport.controller";
 
 export function useCreateVport({ onCreated } = {}) {
   const navigate = useNavigate();

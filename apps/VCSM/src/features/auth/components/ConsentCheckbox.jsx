@@ -45,7 +45,7 @@ export default function ConsentCheckbox({ checked, onChange, children }) {
           className={[
             'relative h-[20px] w-[20px] rounded-[5px] border-2 transition-all duration-150 ease-out',
             checked
-              ? 'border-[#8b5cf6] bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] shadow-[0_0_10px_rgba(139,92,246,0.4)]'
+              ? 'border-[var(--vc-accent-primary)] bg-gradient-to-br from-[var(--vc-accent-primary)] to-[var(--vc-accent-primary-deep)] shadow-[var(--vc-accent-glow-sm)]'
               : 'border-white/40 bg-white/8 hover:border-white/55 hover:bg-white/12',
           ].join(' ')}
           style={{ willChange: 'transform, box-shadow' }}
@@ -63,7 +63,7 @@ export default function ConsentCheckbox({ checked, onChange, children }) {
       </div>
 
       {/* Label text */}
-      <span className="text-xs leading-relaxed text-[#d1d5db]">
+      <span className="text-xs leading-relaxed text-[var(--vc-text-soft)]">
         {children}
       </span>
     </div>

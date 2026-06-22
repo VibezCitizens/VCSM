@@ -11,8 +11,13 @@
 
 export { initOneSignal } from './initOneSignal'
 
+let _frozenSdk = null
 function os() {
-  return typeof window !== 'undefined' ? (window.OneSignal ?? null) : null
+  if (_frozenSdk) return _frozenSdk
+  if (typeof window === 'undefined') return null
+  const sdk = window.OneSignal ?? null
+  if (sdk) _frozenSdk = sdk
+  return sdk
 }
 
 /**

@@ -5,7 +5,7 @@ import {
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
 import { getCountryBySlug, listCountries } from "@/data/repositories/geo.repo";
-import TopProvidersDiscoveryClient from "@/features/providers/components/TopProvidersDiscoveryClient";
+import { TopProvidersDiscoveryClient } from "@/features/providers/adapters/providers.adapter";
 import { getPlatformOrigin } from "@/lib/env";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { buildDirectoryMetadata } from "@/seo/metadata";

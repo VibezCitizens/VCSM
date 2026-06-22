@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DependencyMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "dependencyCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "dependencyCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["dependencies"],
+      "properties": {
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "fromKind", "to", "toKind", "relationship", "confidence", "imports"],
+            "properties": {
+              "from": { "type": "string" },
+              "fromKind": { "type": "string" },
+              "to": { "type": "string" },
+              "toKind": { "type": "string" },
+              "relationship": { "type": "string" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+              "evidence": { "type": "array", "items": { "type": "string" } },
+              "imports": { "type": "array" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

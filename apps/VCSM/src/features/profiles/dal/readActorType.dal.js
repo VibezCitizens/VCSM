@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { supabase } from "@/services/supabase/supabaseClient";
 import vportSchema from "@/services/supabase/vportClient";
 import { createTTLCache } from "@/shared/lib/ttlCache";

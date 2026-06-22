@@ -52,3 +52,7 @@ serviceAccountKey.json
 # Logs
 *.log
 npm-debug.log*
+
+# Never ship dev/private artifacts
+ZZnotforproduction/
+zzzzlegacy/ZZnotforproduction/

@@ -11,7 +11,7 @@ import { useParams, Navigate } from 'react-router-dom'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
 import ConversationView from '@/features/chat/conversation/screen/ConversationView'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 export default function ConversationScreen() {

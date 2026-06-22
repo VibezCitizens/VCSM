@@ -1,0 +1,284 @@
+{
+  "metadata": {
+    "graph": "upload",
+    "title": "Bottom Navigation — Upload / Create",
+    "name": "Upload / Create",
+    "version": "1.0.0",
+    "generatedBy": "ARCHITECT",
+    "scope": "VCSM",
+    "graphType": "bottom-navigation-screen",
+    "feature": "upload",
+    "button": "Upload (Center)",
+    "route": "/upload",
+    "screen": "UploadScreenModern",
+    "generatedAt": "2026-05-11",
+    "source": "ARCHITECT",
+    "confidence": "NEEDS_LOKI_VERIFICATION",
+    "notes": "Upload chain mostly INFERRED. Post-media atomicity risk: post inserted first, media uploaded second — failure window exists. Legacy UploadScreen.jsx may be dead code. controller/ vs controllers/ folder naming inconsistency detected. FFmpeg WASM compression runs client-side."
+  },
+  "nodes": [
+    {
+      "id": "bottomnavbar",
+      "position": { "x": 400, "y": 0 },
+      "data": {
+        "nodeType": "nav",
+        "label": "BottomNavBar",
+        "layer": "Platform UI",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "none",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["btn-upload"],
+        "notes": "Entry point.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "btn-upload",
+      "position": { "x": 400, "y": 150 },
+      "data": {
+        "nodeType": "button",
+        "label": "Upload Center Button",
+        "layer": "Nav Button",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["route-upload"],
+        "notes": "Programmatic navigate() — not a NavLink. Gradient glow styling. LOKI: confirm navigation works from all bottom-nav states and doesn't interrupt in-progress uploads.",
+        "meta": { "icon": "Plus", "i18nKey": "nav.newUpload", "navType": "navigate() programmatic" }
+      }
+    },
+    {
+      "id": "route-upload",
+      "position": { "x": 400, "y": 300 },
+      "data": {
+        "nodeType": "route",
+        "label": "/upload",
+        "layer": "Route",
+        "filePath": "app/routes/protected/app.routes.jsx",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["upload-screen-modern"],
+        "notes": "Protected route. Navigated to programmatically from center button.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "upload-screen-modern",
+      "position": { "x": 400, "y": 450 },
+      "data": {
+        "nodeType": "screen",
+        "label": "UploadScreenModern",
+        "layer": "Screen",
+        "filePath": "features/upload/screens/UploadScreenModern.jsx (INFERRED)",
+        "riskLevel": "medium",
+        "confidence": "INFERRED",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": [],
+        "dependencies": ["upload-hooks","ffmpeg-wasm","mention-typeahead"],
+        "notes": "INFERRED: UploadScreenModern is the active screen. Legacy UploadScreen.jsx may also exist — possible dead code. LOKI: confirm which file is mounted by route.",
+        "meta": { "legacyRisk": "UploadScreen.jsx may be dead code — LOKI verify" }
+      }
+    },
+    {
+      "id": "upload-legacy-screen",
+      "position": { "x": 720, "y": 450 },
+      "data": {
+        "nodeType": "screen",
+        "label": "UploadScreen (LEGACY?)",
+        "layer": "Screen (Legacy)",
+        "filePath": "features/upload/screens/UploadScreen.jsx",
+        "riskLevel": "medium",
+        "confidence": "INFERRED",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "BLOCKED",
+        "pendingReviews": ["LOKI","LOGAN"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "May be dead code. LOKI: confirm if this file is still imported by any route. LOGAN: candidate for removal if confirmed dead.",
+        "meta": { "status": "POSSIBLY_DEAD" }
+      }
+    },
+    {
+      "id": "upload-hooks",
+      "position": { "x": 200, "y": 620 },
+      "data": {
+        "nodeType": "hook",
+        "label": "Upload Hooks (INFERRED)",
+        "layer": "Hook",
+        "filePath": "features/upload/hooks/ (INFERRED)",
+        "riskLevel": "medium",
+        "confidence": "NEEDS_LOKI_VERIFICATION",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["upload-controller"],
+        "notes": "NEEDS_LOKI_VERIFICATION: Upload hook chain not fully traced. Likely manages file selection, compression state, mention parsing, submission flow.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "ffmpeg-wasm",
+      "position": { "x": 500, "y": 620 },
+      "data": {
+        "nodeType": "engine",
+        "label": "FFmpeg WASM",
+        "layer": "Client Engine",
+        "filePath": "features/upload/ or shared/lib/ (INFERRED)",
+        "riskLevel": "medium",
+        "confidence": "INFERRED",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","KRAVEN"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INFERRED: Client-side video/image compression before upload. KRAVEN: WASM load time adds to upload initiation latency. LOKI: confirm FFmpeg version and browser compatibility handling.",
+        "meta": { "runLocation": "client-side WASM", "concern": "cold-start latency" }
+      }
+    },
+    {
+      "id": "mention-typeahead",
+      "position": { "x": 780, "y": 620 },
+      "data": {
+        "nodeType": "component",
+        "label": "Mention Typeahead",
+        "layer": "Component",
+        "filePath": "features/upload/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INFERRED: @mention typeahead in post caption. Likely searches vc.actors.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "upload-controller",
+      "position": { "x": 200, "y": 800 },
+      "data": {
+        "nodeType": "controller",
+        "label": "Upload Controller (INFERRED)",
+        "layer": "Controller",
+        "filePath": "features/upload/controller/ or controllers/ (NAMING INCONSISTENCY)",
+        "riskLevel": "high",
+        "confidence": "NEEDS_LOKI_VERIFICATION",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": ["vc.posts","vc.post_media"],
+        "dependencies": ["dal-upload-post","dal-upload-media"],
+        "notes": "NEEDS_LOKI_VERIFICATION: controller/ vs controllers/ folder naming inconsistency detected — architecture contract violation. SENTRY: review folder structure. Post-media atomicity risk: post inserted before media upload — if media fails, orphaned post exists.",
+        "meta": {
+          "folderNamingViolation": "controller/ vs controllers/ inconsistency",
+          "atomicityRisk": "post inserted first — media failure leaves orphaned post"
+        }
+      }
+    },
+    {
+      "id": "dal-upload-post",
+      "position": { "x": 100, "y": 970 },
+      "data": {
+        "nodeType": "dal",
+        "label": "post insert DAL",
+        "layer": "DAL",
+        "filePath": "features/upload/dal/ (INFERRED)",
+        "riskLevel": "high",
+        "confidence": "NEEDS_LOKI_VERIFICATION",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": ["vc.posts"],
+        "dependencies": ["table-vc-posts"],
+        "notes": "NEEDS_LOKI_VERIFICATION: Inserts post row. Runs before media upload — atomicity gap.",
+        "meta": { "operation": "INSERT", "atomicityRisk": "runs before media upload" }
+      }
+    },
+    {
+      "id": "dal-upload-media",
+      "position": { "x": 370, "y": 970 },
+      "data": {
+        "nodeType": "dal",
+        "label": "media upload DAL",
+        "layer": "DAL",
+        "filePath": "features/upload/dal/ (INFERRED)",
+        "riskLevel": "high",
+        "confidence": "NEEDS_LOKI_VERIFICATION",
+        "ownership": "Upload Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": ["vc.post_media"],
+        "dependencies": ["table-vc-post-media"],
+        "notes": "NEEDS_LOKI_VERIFICATION: Uploads media to Supabase storage + inserts vc.post_media row. Runs after post insert — failure here leaves orphaned post.",
+        "meta": { "operation": "INSERT + storage", "atomicityRisk": "post already inserted if this fails" }
+      }
+    },
+    {
+      "id": "table-vc-posts",
+      "position": { "x": 100, "y": 1140 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.posts",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "high",
+        "confidence": "INFERRED",
+        "ownership": "vc schema",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["SENTRY"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INSERT target. Orphaned post risk if media upload fails after post insert.",
+        "meta": { "schema": "vc", "rls": "enforced", "operation": "INSERT" }
+      }
+    },
+    {
+      "id": "table-vc-post-media",
+      "position": { "x": 370, "y": 1140 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.post_media",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "high",
+        "confidence": "INFERRED",
+        "ownership": "vc schema",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["SENTRY"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INSERT target for media metadata. Post row exists before this insert — atomicity gap.",
+        "meta": { "schema": "vc", "rls": "enforced", "operation": "INSERT" }
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e-nav-btn", "source": "bottomnavbar", "target": "btn-upload", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-btn-route", "source": "btn-upload", "target": "route-upload", "type": "smoothstep", "animated": true, "label": "navigate()", "data": { "edgeType": "navigates_to" } },
+    { "id": "e-route-screen", "source": "route-upload", "target": "upload-screen-modern", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-screen-hooks", "source": "upload-screen-modern", "target": "upload-hooks", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-ffmpeg", "source": "upload-screen-modern", "target": "ffmpeg-wasm", "type": "smoothstep", "label": "uses", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-mention", "source": "upload-screen-modern", "target": "mention-typeahead", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-hooks-ctrl", "source": "upload-hooks", "target": "upload-controller", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-ctrl-post-dal", "source": "upload-controller", "target": "dal-upload-post", "type": "smoothstep", "label": "writes (step 1)", "data": { "edgeType": "calls" } },
+    { "id": "e-ctrl-media-dal", "source": "upload-controller", "target": "dal-upload-media", "type": "smoothstep", "label": "writes (step 2)", "data": { "edgeType": "calls" } },
+    { "id": "e-post-dal-table", "source": "dal-upload-post", "target": "table-vc-posts", "type": "smoothstep", "label": "inserts", "data": { "edgeType": "reads" } },
+    { "id": "e-media-dal-table", "source": "dal-upload-media", "target": "table-vc-post-media", "type": "smoothstep", "label": "inserts", "data": { "edgeType": "reads" } }
+  ]
+}

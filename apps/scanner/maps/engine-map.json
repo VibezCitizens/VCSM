@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "engineCount": 9,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.724Z",
+    "engines": [
+      {
+        "engine": "booking",
+        "path": "engines/booking",
+        "hasClaude": true,
+        "exports": 61,
+        "entrypoints": 61,
+        "controllers": 33,
+        "dals": 23,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "tests": 3,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "chat",
+        "path": "engines/chat",
+        "hasClaude": true,
+        "exports": 95,
+        "entrypoints": 95,
+        "controllers": 26,
+        "dals": 36,
+        "rpcs": 2,
+        "edgeFunctions": 0,
+        "tests": 1,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "hydration",
+        "path": "engines/hydration",
+        "hasClaude": false,
+        "exports": 11,
+        "entrypoints": 11,
+        "controllers": 1,
+        "dals": 0,
+        "rpcs": 1,
+        "edgeFunctions": 0,
+        "tests": 0,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "i18n",
+        "path": "engines/i18n",
+        "hasClaude": true,
+        "exports": 5,
+        "entrypoints": 5,
+        "controllers": 0,
+        "dals": 0,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "tests": 0,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "identity",
+        "path": "engines/identity",
+        "hasClaude": true,
+        "exports": 17,
+        "entrypoints": 17,
+        "controllers": 3,
+        "dals": 11,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "tests": 0,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "media",
+        "path": "engines/media",
+        "hasClaude": false,
+        "exports": 10,
+        "entrypoints": 10,
+        "controllers": 1,
+        "dals": 1,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "tests": 0,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "notifications",
+        "path": "engines/notifications",
+        "hasClaude": true,
+        "exports": 30,
+        "entrypoints": 30,
+        "controllers": 4,
+        "dals": 11,
+        "rpcs": 7,
+        "edgeFunctions": 0,
+        "tests": 0,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "portfolio",
+        "path": "engines/portfolio",
+        "hasClaude": true,
+        "exports": 16,
+        "entrypoints": 16,
+        "controllers": 9,
+        "dals": 9,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "tests": 2,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      },
+      {
+        "engine": "reviews",
+        "path": "engines/reviews",
+        "hasClaude": true,
+        "exports": 15,
+        "entrypoints": 15,
+        "controllers": 6,
+        "dals": 6,
+        "rpcs": 2,
+        "edgeFunctions": 0,
+        "tests": 0,
+        "confidence": "HIGH",
+        "evidence": [
+          "engine root scanned directly"
+        ]
+      }
+    ]
+  }
+}

@@ -23,7 +23,7 @@ import { useParams, Navigate } from "react-router-dom";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 import { useActorKind } from "@/features/profiles/hooks/useActorKind";
-import { useVportType } from "@/features/profiles/hooks/useVportType";
+import { useVportType } from "@/features/profiles/kinds/vport/hooks/useVportType";
 import { useActorCanonicalSlug } from "@/features/profiles/hooks/useActorCanonicalSlug";
 import { useActorSlugRedirect } from "@/features/profiles/hooks/useActorSlugRedirect";
 import { useResolveActorBySlug } from "@/features/profiles/hooks/useResolveActorBySlug";
@@ -33,7 +33,7 @@ import { PROFILE_KIND_REGISTRY } from "@/features/profiles/kinds/profileKindRegi
 import { SkeletonCardList } from "@/shared/components/Skeleton";
 import { extractActorIdFromSlug } from "@/shared/lib/actorSlug";
 import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
-import "@/features/profiles/styles/profiles-modern.css";
+import "@/shared/styles/profiles-modern.css";
 
 import { ActorProfileDevProbe } from "@/features/profiles/screens/components/ActorProfileDevProbe";
 import { ActorProfileProdDebugPanel } from "@/features/profiles/screens/components/ActorProfileProdDebugPanel";
@@ -177,7 +177,7 @@ export default function ActorProfileScreen() {
       slugResolveLoading={slugResolveLoading} actorIdFromSlug={actorIdFromSlug}
       slugNotFound={slugNotFound} resolvedActorId={resolvedActorId}
       canonicalSlug={canonicalSlug} slugLoading={slugLoading} />;
-    return <Navigate to="/feed" replace />;
+    return <Navigate to="/CentralFeed" replace />;
   }
 
   if (slugLoading) return <>{probe}{SKELETON}</>;
@@ -192,7 +192,7 @@ export default function ActorProfileScreen() {
       slugResolveLoading={slugResolveLoading} actorIdFromSlug={actorIdFromSlug}
       slugNotFound={slugNotFound} resolvedActorId={resolvedActorId}
       canonicalSlug={canonicalSlug} slugLoading={slugLoading} />;
-    return <Navigate to="/feed" replace />;
+    return <Navigate to="/CentralFeed" replace />;
   }
 
   if (routeParam !== canonicalSlug) {

@@ -1,5 +1,7 @@
-import { AnswerDetailScreen } from "@/features/answers/adapters/answers.adapter";
-import { listAnswerStaticParams } from "@/features/answers/controller/readAnswerPage.controller";
+import {
+  AnswerDetailScreen,
+  listAnswerStaticParams
+} from "@/features/answers/adapters/answers.adapter";
 import { generateMetadataForLocale } from "../../../answers/[slug]/page";
 
 export const dynamicParams = false;

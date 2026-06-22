@@ -16,12 +16,13 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useIdentity, useActiveActorState } from '@/features/identity/adapters/identity.adapter'
 import { startDirectConversation } from '@chat'
 import { resolveRealm } from '@/shared/utils/resolveRealm'
 
 export function useStartConversation() {
   const { identity } = useIdentity()
+  const { realmId, isVoid } = useActiveActorState()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
@@ -32,7 +33,7 @@ export function useStartConversation() {
     }
 
     if (!picked) return
-    const effectiveRealmId = identity?.realmId ?? resolveRealm(Boolean(identity?.isVoid))
+    const effectiveRealmId = realmId ?? resolveRealm(Boolean(isVoid))
 
     try {
       setLoading(true)
@@ -50,7 +51,7 @@ export function useStartConversation() {
     } finally {
       setLoading(false)
     }
-  }, [identity, navigate])
+  }, [identity, realmId, isVoid, navigate])
 
   return { start, loading }
 }

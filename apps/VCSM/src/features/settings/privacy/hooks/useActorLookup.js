@@ -25,7 +25,7 @@ export function useActorLookup() {
 
   const { data: results = [], isFetching: searching, error } = useQuery({
     queryKey: queryKeys.settingsCitizenSearch(actorId, normalized),
-    queryFn: () => ctrlSearchActors({ query: normalized }),
+    queryFn: () => ctrlSearchActors({ query: normalized, viewerActorId: actorId }),
     enabled: !!actorId && enabled,
     staleTime: 60 * 1000,
     placeholderData: (prev) => prev ?? [],

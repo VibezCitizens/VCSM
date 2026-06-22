@@ -22,7 +22,7 @@ import {
   countryServiceHubPath,
   neighborhoodServicePath
 } from "@/lib/paths";
-import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
+import { DirectoryPageTemplate } from "@/features/directories/adapters/directories.adapter";
 import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 
 export function renderCountryCityPage(graph) {

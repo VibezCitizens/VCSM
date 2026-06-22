@@ -1,4 +1,4 @@
-import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
+import { DirectoryPageTemplate } from "@/features/directories/adapters/directories.adapter";
 import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";

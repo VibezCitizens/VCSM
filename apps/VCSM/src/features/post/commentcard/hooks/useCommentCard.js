@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
-import { Comment } from "../model/Comment.model";
-import { toggleCommentLike } from "../controller/commentReactions.controller";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
+import { Comment } from "../models/Comment.model";
+import { toggleCommentLike } from "../controllers/commentReactions.controller";
 
 export default function useCommentCard(rawComment) {
   const { identity } = useIdentity();

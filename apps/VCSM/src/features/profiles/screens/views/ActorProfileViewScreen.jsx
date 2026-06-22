@@ -19,11 +19,8 @@ import {
 
 import ActorProfileHeader from "@/features/profiles/screens/views/ActorProfileHeader";
 import ActorProfileTabs from "@/features/profiles/screens/views/ActorProfileTabs";
-import ActorProfilePostsView from "@/features/profiles/screens/views/ActorProfilePostsView";
-import ActorProfileFriendsView from "@/features/profiles/screens/views/ActorProfileFriendsView";
-import ActorProfilePhotosView from "@/features/profiles/screens/views/ActorProfilePhotosView";
-import ActorProfileTagsView from "@/features/profiles/screens/views/ActorProfileTagsView";
-import "@/features/profiles/styles/profiles-modern.css";
+import CitizenTabRouter from "@/features/profiles/kinds/citizen/tabs/CitizenTabRouter";
+import "@/shared/styles/profiles-modern.css";
 
 export default function ActorProfileViewScreen({ viewerActorId, profileActorId, identity }) {
   const { t } = useTranslation();
@@ -76,7 +73,7 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
 
   useEffect(() => {
     if (!gate.loading && gate.isBlocked) {
-      navigate("/feed", { replace: true });
+      navigate("/CentralFeed", { replace: true });
     }
   }, [gate.loading, gate.isBlocked, navigate]);
 
@@ -185,46 +182,17 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
           )}
 
           {gate.canView && (
-            <div className="profiles-shell px-4 pb-24">
-              <div
-                style={{ display: tab === "posts" ? undefined : "none" }}
-                aria-hidden={tab !== "posts"}
-              >
-                <ActorProfilePostsView
-                  profileActorId={resolvedProfile.actorId}
-                  canViewContent={gate.canView}
-                  onShare={handleShare}
-                  onOpenMenu={openPostMenu}
-                />
-              </div>
-
-              {tab === "photos" && (
-                <ActorProfilePhotosView
-                  actorId={resolvedProfile.actorId}
-                  viewerActorId={viewerActorId}
-                  canViewContent={gate.canView}
-                  handleShare={handleShare}
-                />
-              )}
-
-              {tab === "videos" && (
-                <div className="flex items-center justify-center py-10 text-white/40">
-                  {t('profile.header.videosSoon')}
-                </div>
-              )}
-
-              {isCitizenProfile && tab === "tags" && (
-                <ActorProfileTagsView actorId={resolvedProfile.actorId} canAddTag={isProfileOwner} />
-              )}
-
-              {tab === "friends" && (
-                <ActorProfileFriendsView
-                  profileActorId={resolvedProfile.actorId}
-                  canViewContent={gate.canView}
-                  version={gateVersion}
-                />
-              )}
-            </div>
+            <CitizenTabRouter
+              tab={tab}
+              profileActorId={resolvedProfile.actorId}
+              viewerActorId={viewerActorId}
+              canViewContent={gate.canView}
+              isCitizenProfile={isCitizenProfile}
+              isProfileOwner={isProfileOwner}
+              gateVersion={gateVersion}
+              onShare={handleShare}
+              onOpenMenu={openPostMenu}
+            />
           )}
         </>
       )}

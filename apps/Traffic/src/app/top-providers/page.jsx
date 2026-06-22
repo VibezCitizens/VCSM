@@ -1,5 +1,5 @@
 import { listLiveProviderCountries } from "@/data/repositories/provider.repo";
-import CountrySelectorClient from "@/features/home/components/CountrySelectorClient";
+import { CountrySelectorClient } from "@/features/home/adapters/home.adapter";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 

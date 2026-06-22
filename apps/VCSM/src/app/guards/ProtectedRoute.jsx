@@ -9,12 +9,13 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
 import { useLegalConsent, ConsentGateScreen } from '@/features/legal/adapters/legal.adapter'
-import { isEmailVerifiedModel, VerifyEmailRequiredScreen } from '@/features/auth/adapters/auth.adapter'
+import { useEmailVerified, VerifyEmailRequiredScreen } from '@/features/auth/adapters/auth.adapter'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 export default function ProtectedRoute() {
-  const { user, loading } = useAuth()
+  const { user, loading, logout } = useAuth()
   const { loading: consentLoading, requiresConsent, requiredActions, accepting, error, acceptAll, gateError, retryConsent } = useLegalConsent()
+  const isEmailVerified = useEmailVerified(user)
 
   useEffect(() => {
     appendIOSProdDebugLog('protected_route_state', {
@@ -38,7 +39,7 @@ export default function ProtectedRoute() {
     return <Navigate to="/login" replace />
   }
 
-  if (!isEmailVerifiedModel(user)) {
+  if (!isEmailVerified) {
     appendIOSProdDebugLog('protected_route_email_unverified', {
       userId: user.id ?? null,
     })
@@ -60,6 +61,7 @@ export default function ProtectedRoute() {
         gateError={gateError}
         onRetry={retryConsent}
         loading={consentLoading}
+        onLogout={logout}
       />
     )
   }

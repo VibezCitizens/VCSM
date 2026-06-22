@@ -1,6 +1,6 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\postcard\adapters\PostCard.jsx
 
-import PostCardView from "../ui/PostCard.view";
+import PostCardView from "../components/PostCard.view";
 
 export default function PostCard({
   post,

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { publishExchangeRateUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/exchange/publishExchangeRateUpdateAsPost.controller";
 
 export function usePublishExchangeRatePost({ actorId }) {

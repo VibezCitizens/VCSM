@@ -6,7 +6,7 @@ import { ctrlSendFollowRequest } from '@/features/social/friend/request/controll
 import { FOLLOW_RELATION_STATES } from '@/features/social/friend/subscribe/model/followRelationState.model'
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
-import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.adapter'
+import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
 
 export async function ctrlSubscribe({

@@ -11,18 +11,6 @@ const RETURN_COLUMNS = `
   is_active, sort_order, notes, created_at, updated_at
 `
 
-export async function dalUpsertLocksmithServiceArea(row) {
-  if (!row?.actor_id) throw new Error('actor_id required')
-
-  const { data, error } = await vportSchema
-    .from('locksmith_service_areas')
-    .upsert(row, { onConflict: 'id' })
-    .select(RETURN_COLUMNS)
-
-  if (error) throw error
-  return data?.[0] ?? null
-}
-
 export async function dalInsertLocksmithServiceArea(row) {
   if (!row?.actor_id) throw new Error('actor_id required')
 

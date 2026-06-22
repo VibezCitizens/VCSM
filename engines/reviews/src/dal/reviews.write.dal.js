@@ -62,7 +62,9 @@ export async function dalInsertReview({ targetActorId, authorActorId, body, trac
  * @param {Object} [params.trace]
  * @returns {Promise<Object>}
  */
-export async function dalUpdateReviewBody({ reviewId, body, trace = null }) {
+export async function dalUpdateReviewBody({ reviewId, authorActorId, body, trace = null }) {
+  if (!authorActorId) throw new Error('dalUpdateReviewBody: authorActorId required')
+
   const supabase = getSupabaseClient()
 
   trace?.report?.({
@@ -79,6 +81,7 @@ export async function dalUpdateReviewBody({ reviewId, body, trace = null }) {
       review_activity_at: new Date().toISOString(),
     })
     .eq('id', reviewId)
+    .eq('author_actor_id', authorActorId)
     .select(REVIEW_RETURN_COLUMNS)
 
   if (error) {
@@ -98,7 +101,9 @@ export async function dalUpdateReviewBody({ reviewId, body, trace = null }) {
  * @param {Object} [params.trace]
  * @returns {Promise<Object>}
  */
-export async function dalSoftDeleteReview({ reviewId, trace = null }) {
+export async function dalSoftDeleteReview({ reviewId, authorActorId, trace = null }) {
+  if (!authorActorId) throw new Error('dalSoftDeleteReview: authorActorId required')
+
   const supabase = getSupabaseClient()
 
   trace?.report?.({
@@ -115,6 +120,7 @@ export async function dalSoftDeleteReview({ reviewId, trace = null }) {
       deleted_at: new Date().toISOString(),
     })
     .eq('id', reviewId)
+    .eq('author_actor_id', authorActorId)
     .select(REVIEW_RETURN_COLUMNS)
 
   if (error) {

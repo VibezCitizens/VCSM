@@ -1,0 +1,639 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "edgeExecutionPathCount": 52,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.246Z",
+    "edgeExecutionPaths": [
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared/securityHeaders",
+        "file": "apps/VCSM/functions/_shared/securityHeaders.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "edgeFunction": "/api/answers/questions",
+        "file": "apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js",
+        "caller": "submitQuestion",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "edgeFunction": "auth-register-recovery",
+        "file": "apps/VCSM/src/features/auth/password-recovery/dal/resetPasswordSecure.dal.js",
+        "caller": "dalRegisterRecoveryPermit",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "auth-register-recovery",
+        "file": "apps/VCSM/supabase/functions/auth-register-recovery/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "edgeFunction": "auth-reset-password-secure",
+        "file": "apps/VCSM/src/features/auth/password-recovery/dal/resetPasswordSecure.dal.js",
+        "caller": "dalUpdatePasswordSecure",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "auth-reset-password-secure",
+        "file": "apps/VCSM/supabase/functions/auth-reset-password-secure/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "edgeFunction": "create-org-member",
+        "file": "apps/wentrex/src/features/services/supabase/createOrgMember.js",
+        "caller": "createOrgMember",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "create-org-member",
+        "file": "apps/wentrex/supabase/functions/create-org-member/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "edgeFunction": "create-parent",
+        "file": "apps/wentrex/src/features/services/supabase/createParent.js",
+        "caller": "createParent",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "create-parent",
+        "file": "apps/wentrex/src/learning/parent/createParent.js",
+        "caller": "createParent",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "create-parent",
+        "file": "apps/wentrex/supabase/functions/create-parent/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "edgeFunction": "create-student",
+        "file": "apps/wentrex/src/features/services/supabase/createStudent.js",
+        "caller": "createStudent",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "create-student",
+        "file": "apps/wentrex/supabase/functions/create-student/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "create-tenant",
+        "file": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "edgeFunction": "delete-citizen-account",
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "caller": "dalDeleteCitizenAccountFull",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "delete-citizen-account",
+        "file": "apps/VCSM/supabase/functions/delete-citizen-account/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "edgeFunction": "fetch",
+        "file": "apps/Traffic/src/lib/revalidateClient.js",
+        "caller": "triggerTrafficRevalidation",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "fetch",
+        "file": "apps/VCSM/functions/vport/[slug]/card.js",
+        "caller": "onRequest",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "fetch",
+        "file": "apps/VCSM/src/services/cloudflare/uploadToCloudflare.js",
+        "caller": "uploadToCloudflare",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "edgeFunction": "fetch",
+        "file": "apps/wentrex/src/features/services/cloudflare/uploadToCloudflare.js",
+        "caller": "doUpload",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "how-to/[slug]",
+        "file": "apps/VCSM/functions/how-to/[slug].js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "lovedrop/v/[id]",
+        "file": "apps/VCSM/functions/lovedrop/v/[id].js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "m/[actorId]",
+        "file": "apps/VCSM/functions/m/[actorId].js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/monitoringClient.js",
+        "caller": "captureFrontendError",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/supabase/functions/monitoring-ingest-error/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "p/[slug]",
+        "file": "apps/VCSM/functions/p/[slug].js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "p/[slug]/book",
+        "file": "apps/VCSM/functions/p/[slug]/book.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "edgeFunction": "parent-reset-student-password",
+        "file": "apps/wentrex/src/features/services/supabase/parentResetStudentPassword.js",
+        "caller": "parentResetStudentPassword",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "parent-reset-student-password",
+        "file": "apps/wentrex/supabase/functions/parent-reset-student-password/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "profile/[slug]/menu",
+        "file": "apps/VCSM/functions/profile/[slug]/menu.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "profile/[slug]/reviews",
+        "file": "apps/VCSM/functions/profile/[slug]/reviews.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "edgeFunction": "reset-student-password",
+        "file": "apps/wentrex/src/features/services/supabase/resetStudentPassword.js",
+        "caller": "resetStudentPassword",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "reset-student-password",
+        "file": "apps/wentrex/supabase/functions/reset-student-password/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "reverse-geocode",
+        "file": "apps/VCSM/supabase/functions/reverse-geocode/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "invite",
+        "edgeFunction": "send-citizen-invite",
+        "file": "apps/VCSM/src/features/invite/dal/invite.dal.js",
+        "caller": "sendCitizenInviteDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "send-citizen-invite",
+        "file": "apps/VCSM/supabase/functions/send-citizen-invite/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "conversion",
+        "edgeFunction": "send-lead-confirmation",
+        "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
+        "caller": "invokeProviderLeadConfirmation",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "edgeFunction": "send-lead-confirmation",
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/sendLeadConfirmationEmail.edge.dal.js",
+        "caller": "sendLeadConfirmationEmailDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "send-lead-confirmation",
+        "file": "apps/VCSM/supabase/functions/send-lead-confirmation/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "send-push-notification",
+        "file": "apps/VCSM/supabase/functions/send-push-notification/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "sitemap.xml",
+        "file": "apps/VCSM/functions/sitemap.xml.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "sitemaps/static.xml",
+        "file": "apps/VCSM/functions/sitemaps/static.xml.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "sitemaps/vport-cards.xml",
+        "file": "apps/VCSM/functions/sitemaps/vport-cards.xml.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "sitemaps/vport-menu.xml",
+        "file": "apps/VCSM/functions/sitemaps/vport-menu.xml.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "sitemaps/vport-reviews.xml",
+        "file": "apps/VCSM/functions/sitemaps/vport-reviews.xml.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "sitemaps/wanderex-profiles.xml",
+        "file": "apps/VCSM/functions/sitemaps/wanderex-profiles.xml.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "student-login",
+        "file": "apps/wentrex/src/learning/screens/StudentLoginScreen.jsx",
+        "caller": "handleSubmit",
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "edgeFunction": "student-login",
+        "file": "apps/wentrex/supabase/functions/student-login/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "vport/[slug]/card",
+        "file": "apps/VCSM/functions/vport/[slug]/card.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "wanders/c/[publicId]",
+        "file": "apps/VCSM/functions/wanders/c/[publicId].js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "wanders/i/[publicId]",
+        "file": "apps/VCSM/functions/wanders/i/[publicId].js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      }
+    ]
+  }
+}

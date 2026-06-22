@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
-import { codeToInviteMessage, ctrlSendCitizenInvite } from '../controller/invite.controller'
+import { codeToInviteMessage, ctrlSendCitizenInvite } from '../controllers/invite.controller'
 
 export function useInvite() {
   const { identity } = useIdentity()

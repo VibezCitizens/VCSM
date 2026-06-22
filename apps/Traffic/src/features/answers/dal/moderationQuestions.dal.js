@@ -46,6 +46,7 @@ export async function updateQuestionModerationRow({ id, values }) {
     .from("questions")
     .update(values)
     .eq("id", id)
+    .eq("moderation_status", "pending")
     .select(QUESTION_PROJECTION)
     .single();
 

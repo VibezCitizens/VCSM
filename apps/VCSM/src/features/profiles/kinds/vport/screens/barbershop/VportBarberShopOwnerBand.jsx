@@ -10,9 +10,9 @@ function StatPill({ value, label, loading }) {
   );
 }
 
-export default function VportBarberShopOwnerBand({ actorId, onNewBooking, hideBookingButton = false }) {
+export default function VportBarberShopOwnerBand({ actorId, callerActorId, onNewBooking, hideBookingButton = false }) {
   const navigate           = useNavigate();
-  const { stats, loading } = useVportOwnerQuickStats(actorId);
+  const { stats, loading } = useVportOwnerQuickStats(actorId, callerActorId);
 
   return (
     <div className="bs-owner-band">

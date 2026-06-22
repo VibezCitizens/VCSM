@@ -15,7 +15,7 @@ const STATUS_FILTERS = [
   { key: "cancelled", label: "Cancelled" },
 ];
 
-export default function useBookingHistory({ callerActorId, ownerActorId, resourceId, enabled = true } = {}) {
+export default function useBookingHistory({ callerActorId, ownerActorId, resourceId, resourceIds = null, enabled = true } = {}) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -35,8 +35,16 @@ export default function useBookingHistory({ callerActorId, ownerActorId, resourc
     return [statusFilter];
   }, [statusFilter]);
 
+  // Stable dependency key for the (possibly array) resource target.
+  const resourceKey = useMemo(() => {
+    const ids = Array.isArray(resourceIds) ? resourceIds.filter(Boolean).slice().sort() : [];
+    return ids.length ? ids.join(",") : (resourceId ?? "");
+  }, [resourceIds, resourceId]);
+
+  const hasTarget = resourceKey.length > 0;
+
   const load = useCallback(async () => {
-    if (!enabled || !resourceId || !callerActorId || !ownerActorId) return;
+    if (!enabled || !hasTarget || !callerActorId || !ownerActorId) return;
 
     setLoading(true);
     setError(null);
@@ -47,6 +55,7 @@ export default function useBookingHistory({ callerActorId, ownerActorId, resourc
         callerActorId,
         ownerActorId,
         resourceId,
+        resourceIds,
         statuses,
         limit: PAGE_SIZE,
         offset: 0,
@@ -62,10 +71,10 @@ export default function useBookingHistory({ callerActorId, ownerActorId, resourc
     } finally {
       if (mountedRef.current) setLoading(false);
     }
-  }, [callerActorId, ownerActorId, resourceId, statuses, enabled]);
+  }, [callerActorId, ownerActorId, resourceKey, statuses, enabled]);
 
   const loadMore = useCallback(async () => {
-    if (!resourceId || !callerActorId || !ownerActorId || !hasMore || loadingMore) return;
+    if (!hasTarget || !callerActorId || !ownerActorId || !hasMore || loadingMore) return;
 
     setLoadingMore(true);
 
@@ -74,6 +83,7 @@ export default function useBookingHistory({ callerActorId, ownerActorId, resourc
         callerActorId,
         ownerActorId,
         resourceId,
+        resourceIds,
         statuses,
         limit: PAGE_SIZE,
         offset: offsetRef.current,
@@ -89,7 +99,7 @@ export default function useBookingHistory({ callerActorId, ownerActorId, resourc
     } finally {
       if (mountedRef.current) setLoadingMore(false);
     }
-  }, [callerActorId, ownerActorId, resourceId, statuses, hasMore, loadingMore]);
+  }, [callerActorId, ownerActorId, resourceKey, statuses, hasMore, loadingMore]);
 
   useEffect(() => {
     load();

@@ -27,7 +27,7 @@ import {
   countryServiceHubPath,
   neighborhoodServiceSpecialtyPath
 } from "@/lib/paths";
-import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
+import { DirectoryPageTemplate } from "@/features/directories/adapters/directories.adapter";
 // Static pages never have live VPORT data — unifiedDataset uses top-level await
 // which makes it an async module incompatible with generateStaticParams detection.
 const LIVE_DATA_STATUS = "unavailable";

@@ -3,7 +3,7 @@
 // All data fetching is delegated to useBlockedCitizens (React Query).
 
 import React, { createContext, useContext, useMemo } from 'react'
-import { useBlockedCitizens } from '@/features/settings/queries/useBlockedCitizens'
+import { useBlockedCitizens } from '@/features/settings/privacy/hooks/useBlockedCitizens'
 
 const Ctx = createContext(null)
 

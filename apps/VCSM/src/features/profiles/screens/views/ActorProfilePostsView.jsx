@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import PostCard from "@/features/post/adapters/postCard.adapter";
+import { PostCard } from "@/features/post/adapters/post.adapter";
 import { useActorPosts } from "@/features/profiles/screens/views/tabs/post/hooks/useActorPosts";
 
 function VibesTabSkeleton({ count = 2 }) {

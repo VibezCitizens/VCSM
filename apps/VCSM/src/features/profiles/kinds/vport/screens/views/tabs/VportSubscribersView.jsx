@@ -13,10 +13,10 @@ function buildSubscriberActor(row) {
     kind === "vport"
       ? handle
         ? `/vport/${encodeURIComponent(handle)}`
-        : "/feed"
+        : "/CentralFeed"
       : handle
       ? `/u/${encodeURIComponent(handle)}`
-      : "/feed";
+      : "/CentralFeed";
 
   return {
     id,

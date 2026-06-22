@@ -1,18 +1,18 @@
 import { useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import TopNav from "@/shared/components/TopNav";
-import BottomNavBar from "@/shared/components/BottomNavBar";
+import { BottomNavBar, useBottomNavVisibility } from "@/features/shell/adapters/shell.adapter";
 import PageContainer from "@/shared/components/PageContainer";
 import { IOSDebugHUD, IOSProdRouteDebugger } from "@/app/platform/ios";
-import { VportLeadsChip } from "@/features/dashboard/vport/adapters/vport.adapter";
 import { hideLaunchSplash } from "@/shared/lib/hideLaunchSplash";
 import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 export default function RootLayout() {
   const { pathname } = useLocation();
   const prevPathRef = useRef(null);
   const { identityLoading } = useIdentity();
+  const { hideBottomNav } = useBottomNavVisibility();
 
   const isLearningRoute = /^\/learning(\/.*)?$/.test(pathname);
 
@@ -29,7 +29,6 @@ export default function RootLayout() {
 
   // Hide social app nav on chat sub-screens, auth, learning, and dev/performance
   const hideTopNav = isChatSubScreen || isAuthRoute || isLearningRoute || isDevPerfRoute;
-  const hideBottomNav = isChatSubScreen || isAuthRoute || isLearningRoute || isDevPerfRoute;
 
   /**
    * SCROLL CONTRACT
@@ -57,14 +56,14 @@ export default function RootLayout() {
   }, [pathname, isAuthRoute, isLearningRoute, isChatSubScreen, hideTopNav, hideBottomNav]);
 
   useEffect(() => {
-    if (pathname === "/feed") return;
+    if (pathname === "/CentralFeed") return;
     appendIOSProdDebugLog('root_layout_hide_launch_splash', { pathname });
     hideLaunchSplash();
   }, [pathname]);
 
   // /feed defers hideLaunchSplash until identity resolves to prevent flash of null-identity content.
   useEffect(() => {
-    if (pathname !== "/feed") return;
+    if (pathname !== "/CentralFeed") return;
     if (identityLoading) return;
     appendIOSProdDebugLog('root_layout_feed_identity_ready', { pathname });
     hideLaunchSplash();
@@ -96,9 +95,7 @@ export default function RootLayout() {
         <BottomNavBar />
       </div>
 
-      {!hideBottomNav && <VportLeadsChip />}
-
-      {import.meta.env.DEV && <IOSDebugHUD />}
+{import.meta.env.DEV && <IOSDebugHUD />}
       {import.meta.env.DEV && <IOSProdRouteDebugger />}
     </div>
   );

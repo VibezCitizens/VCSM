@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { editPostController } from "@/features/post/postcard/controller/editPost.controller"
+import { editPostController } from "@/features/post/postcard/controllers/editPost.controller"
 
 export function useEditPost() {
   const [loading, setLoading] = useState(false)

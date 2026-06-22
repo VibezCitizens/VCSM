@@ -6,7 +6,7 @@ import { useCommentVisibility } from "@/features/moderation/adapters/hooks/useCo
 import { usePostVisibility } from "@/features/moderation/adapters/hooks/usePostVisibility.adapter";
 
 export default function usePostDetailReporting({ actorId, postId, commentCovers }) {
-  const reportFlow = useReportFlow({ reporterActorId: actorId });
+  const reportFlow = useReportFlow();
   const { hideCommentForActor } = useCommentVisibility();
   const { hidePostForActor } = usePostVisibility();
 

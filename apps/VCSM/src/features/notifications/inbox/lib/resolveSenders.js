@@ -1,6 +1,5 @@
 import {
   listActorIdentityRowsByIdsDAL,
-  listActorPresentationRowsByIdsDAL,
   listActorSummaryRowsByIdsDAL,
   listProfileRowsByIdsDAL,
   listVportRowsByIdsDAL,
@@ -67,7 +66,7 @@ export async function resolveSenders(actorIds) {
     return out;
   }
 
-  const presentationRows = await listActorPresentationRowsByIdsDAL({
+  const presentationRows = await listActorSummaryRowsByIdsDAL({
     actorIds: unresolvedAfterSummary,
   }).catch(() => []);
 

@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useIdentity } from "@/state/identity/identityContext";
-import useNotifications from "../../inbox/hooks/useNotifications";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
+import { useNotificationInbox } from "../../inbox/hooks/useNotificationInbox";
 import { useNotificationsHeader } from "../../inbox/hooks/useNotificationsHeader";
 import NotificationsView from "../../inbox/ui/Notifications.view";
 import NotificationsHeader from "../../inbox/ui/NotificationsHeader.view";
 import MyAppointmentsView from "./MyAppointmentsView";
-import "@/features/ui/modern/module-modern.css";
-import "@/features/profiles/styles/profiles-modern.css";
+import "@/shared/styles/modern/module-modern.css";
+import "@/shared/styles/profiles-modern.css";
 import "@/features/notifications/styles/notifications-modern.css";
 
 const VALID_VIEWS = new Set(["notifications", "appointments"]);
@@ -30,7 +30,7 @@ export default function NotificationsScreenView() {
     setSearchParams(key === "notifications" ? {} : { view: key }, { replace: true });
   }
 
-  const listState = useNotifications();
+  const listState = useNotificationInbox();
   const headerState = useNotificationsHeader(identity?.actorId ?? null);
 
   return (

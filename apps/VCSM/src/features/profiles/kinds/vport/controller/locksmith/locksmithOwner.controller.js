@@ -16,12 +16,14 @@ import {
 import {
   dalUpsertLocksmithPortfolioDetail,
 } from '@/features/profiles/kinds/vport/dal/locksmith/locksmithPortfolioDetails.write.dal'
-import { assertActorOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
+import { assertSessionOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
 
 // ── Service Areas ──
 
-export async function ctrlAddServiceArea(actorId, area) {
+export async function ctrlAddServiceArea(identityActorId, actorId, area) {
+  if (!identityActorId) throw new Error('[Locksmith] identityActorId required')
   if (!actorId) throw new Error('[Locksmith] actorId required')
+  await assertSessionOwnsVportActorController({ targetActorId: actorId })
   return dalInsertLocksmithServiceArea({
     actor_id: actorId,
     area_type: area.areaType ?? 'city',
@@ -43,9 +45,11 @@ export async function ctrlAddServiceArea(actorId, area) {
   })
 }
 
-export async function ctrlUpdateServiceArea(actorId, areaId, updates) {
+export async function ctrlUpdateServiceArea(identityActorId, actorId, areaId, updates) {
+  if (!identityActorId) throw new Error('[Locksmith] identityActorId required')
   if (!actorId) throw new Error('[Locksmith] actorId required')
   if (!areaId) throw new Error('[Locksmith] areaId required')
+  await assertSessionOwnsVportActorController({ targetActorId: actorId })
   const row = {}
   if (updates.label !== undefined) row.label = updates.label
   if (updates.areaType !== undefined) row.area_type = updates.areaType
@@ -62,16 +66,20 @@ export async function ctrlUpdateServiceArea(actorId, areaId, updates) {
   return dalUpdateLocksmithServiceArea(areaId, actorId, row)
 }
 
-export async function ctrlDeleteServiceArea(actorId, areaId) {
+export async function ctrlDeleteServiceArea(identityActorId, actorId, areaId) {
+  if (!identityActorId) throw new Error('[Locksmith] identityActorId required')
   if (!actorId) throw new Error('[Locksmith] actorId required')
   if (!areaId) throw new Error('[Locksmith] areaId required')
+  await assertSessionOwnsVportActorController({ targetActorId: actorId })
   return dalDeleteLocksmithServiceArea(areaId, actorId)
 }
 
 // ── Service Details ──
 
-export async function ctrlSaveServiceDetail(actorId, serviceId, detail) {
+export async function ctrlSaveServiceDetail(identityActorId, actorId, serviceId, detail) {
+  if (!identityActorId) throw new Error('[Locksmith] identityActorId required')
   if (!actorId || !serviceId) throw new Error('[Locksmith] actorId and serviceId required')
+  await assertSessionOwnsVportActorController({ targetActorId: actorId })
   return dalUpsertLocksmithServiceDetail({
     service_id: serviceId,
     actor_id: actorId,
@@ -94,9 +102,11 @@ export async function ctrlSaveServiceDetail(actorId, serviceId, detail) {
   })
 }
 
-export async function ctrlDeleteServiceDetail(actorId, serviceId) {
+export async function ctrlDeleteServiceDetail(identityActorId, actorId, serviceId) {
+  if (!identityActorId) throw new Error('[Locksmith] identityActorId required')
   if (!actorId) throw new Error('[Locksmith] actorId required')
   if (!serviceId) throw new Error('[Locksmith] serviceId required')
+  await assertSessionOwnsVportActorController({ targetActorId: actorId })
   return dalDeleteLocksmithServiceDetail(serviceId, actorId)
 }
 
@@ -105,7 +115,7 @@ export async function ctrlDeleteServiceDetail(actorId, serviceId) {
 export async function ctrlSavePortfolioDetail(identityActorId, actorId, portfolioItemId, detail) {
   if (!identityActorId || !actorId || !portfolioItemId) throw new Error('[Locksmith] identityActorId, actorId, and portfolioItemId required')
 
-  await assertActorOwnsVportActorController({ requestActorId: identityActorId, targetActorId: actorId })
+  await assertSessionOwnsVportActorController({ targetActorId: actorId })
 
   return dalUpsertLocksmithPortfolioDetail({
     portfolio_item_id: portfolioItemId,

@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — polymorphic slug resolution (vport slug → user username → legacy)
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createTTLCache } from '@/shared/lib/ttlCache'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'

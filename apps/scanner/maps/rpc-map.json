@@ -1,0 +1,1037 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "rpcCount": 73,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:02.623Z",
+    "rpcs": [
+      {
+        "rpc": "block_actor",
+        "schema": "moderation",
+        "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "block",
+        "engine": null,
+        "caller": "blockActor",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "block_actor",
+        "schema": "moderation",
+        "file": "apps/VCSM/src/features/settings/privacy/dal/blocks.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "dalInsertBlock",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "can_view_actor_signal",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/social/privacy/dal/actorSignalVisibility.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "social",
+        "engine": null,
+        "caller": "dalCanViewActorSignal",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "count_unread_batch",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "countUnreadBatchDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "count_unread_for_actor",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "countUnreadForActorDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "count_vport_subscribers",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersCount.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "engine": null,
+        "caller": "dalCountVportSubscribers",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_actor_for_user",
+        "schema": "vc",
+        "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "createUserActorViaLegacyRpc",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_actor_for_user",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/auth/onboarding/dal/actorCreate.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "engine": null,
+        "caller": "dalCreateUserActor",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_actor_for_user",
+        "schema": "vc",
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "resolveOrCreateActor",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_event",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "insertNotificationEventDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_event",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/events.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalInsertEvent",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_tenant_bootstrap",
+        "schema": "learning",
+        "file": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_vport",
+        "schema": "vport",
+        "file": "apps/VCSM/src/dev/diagnostics/groups/vports.group.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "runVportsGroup",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_vport",
+        "schema": "vport",
+        "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureVportSeed.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "createVportViaRpc",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "create_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "engine": null,
+        "caller": "createVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "ensure_org_member_account",
+        "schema": "learning",
+        "file": "apps/wentrex/supabase/functions/create-org-member/index.ts",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "ensure_parent_account",
+        "schema": "learning",
+        "file": "apps/wentrex/supabase/functions/create-parent/index.ts",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "generate_student_login_id",
+        "schema": "learning",
+        "file": "apps/wentrex/supabase/functions/create-student/index.ts",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "generate_username",
+        "schema": null,
+        "file": "apps/VCSM/src/features/auth/onboarding/dal/onboarding.read.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "engine": null,
+        "caller": "generateUsernameDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "generate_username",
+        "schema": null,
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "ensureProfile",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_actor_social_public_policy",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/social/privacy/dal/actorSocialPublicPolicy.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "social",
+        "engine": null,
+        "caller": "dalGetActorSocialPublicPolicy",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_actor_summaries",
+        "schema": "vc",
+        "file": "engines/hydration/src/dal.js",
+        "appId": null,
+        "root": "engines/hydration",
+        "feature": null,
+        "engine": "hydration",
+        "caller": "getActorSummariesByIdsDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_business_card_sections",
+        "schema": null,
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/businessCardSections.read.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "engine": null,
+        "caller": "readBusinessCardSectionsDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_follower_count",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/social/friend/subscribe/dal/subscriberCount.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "social",
+        "engine": null,
+        "caller": "dalCountSubscribers",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_friend_ranks",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friendRanks.reconcile.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "engine": null,
+        "caller": "reconcileFriendRanks",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_friend_ranks",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friends.read.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "engine": null,
+        "caller": "readFriendRankRows",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_messageable_contacts",
+        "schema": "learning",
+        "file": "apps/wentrex/src/features/communication/inbox/screens/InboxScreen.jsx",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "communication",
+        "engine": null,
+        "caller": "ContactPickerModal",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_or_create_direct_conversation",
+        "schema": "chat",
+        "file": "engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "appId": null,
+        "root": "engines/chat",
+        "feature": null,
+        "engine": "chat",
+        "caller": "getOrCreateDirectConversationRPC",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "get_target_overall_stats",
+        "schema": "reviews",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+        "appId": null,
+        "root": "engines/reviews",
+        "feature": null,
+        "engine": "reviews",
+        "caller": "dalRpcGetTargetOverallStats",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "hard_delete_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "dalHardDeleteVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "hard_delete_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "engine": null,
+        "caller": "hardDeleteVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "insert_delivery_attempt",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalInsertDeliveryAttempt",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "insert_inbox_item",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "insertNotificationInboxItemDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "insert_inbox_item",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/inbox.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalInsertInboxItem",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "insert_recipients",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "insertNotificationRecipientsDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "insert_recipients",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalInsertRecipients",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "is_current_user_moderator",
+        "schema": "moderation",
+        "file": "apps/VCSM/src/features/moderation/dal/assertModerationAccess.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "moderation",
+        "engine": null,
+        "caller": "isModerationAuthorizedDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "is_platform_owner",
+        "schema": "learning",
+        "file": "apps/wentrex/src/learning/administration/dal/platformOwners/getPlatformOwnerByUserId.dal.js",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "caller": "getPlatformOwnerByUserIdDal",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "is_platform_owner",
+        "schema": "learning",
+        "file": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "list_vport_subscribers",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersList.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "engine": null,
+        "caller": "dalListVportSubscribers",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "post_reactors_summary_one",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/post/postcard/dal/postReactions.read.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "post",
+        "engine": null,
+        "caller": "fetchReactionSummaryDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "provision_vcsm_identity",
+        "schema": "platform",
+        "file": "apps/VCSM/src/features/identity/dal/provision.rpc.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "identity",
+        "engine": null,
+        "caller": "dalProvisionVcsmIdentity",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "provision_wentrex_identity",
+        "schema": "platform",
+        "file": "apps/wentrex/src/features/identity/dal/provision.rpc.dal.js",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "identity",
+        "engine": null,
+        "caller": "dalProvisionWentrexIdentity",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "read_business_card_public",
+        "schema": null,
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCard.read.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "engine": null,
+        "caller": "readVportBusinessCardPublicBySlugDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "refresh_actor_directory_row",
+        "schema": "identity",
+        "file": "apps/VCSM/src/features/identity/dal/refreshActorDirectory.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "identity",
+        "engine": null,
+        "caller": "refreshActorDirectoryRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "refresh_actor_directory_row",
+        "schema": "identity",
+        "file": "apps/wentrex/src/features/identity/dal/refreshActorDirectory.dal.js",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "identity",
+        "engine": null,
+        "caller": "refreshActorDirectoryRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "restore_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "dalRestoreVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "restore_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "engine": null,
+        "caller": "restoreVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "save_friend_ranks",
+        "schema": "vc",
+        "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "ensureFriendRankRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "save_friend_ranks",
+        "schema": "vc",
+        "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "save_friend_ranks",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friendRanks.reconcile.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "engine": null,
+        "caller": "reconcileFriendRanks",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "save_friend_ranks",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friendRanks.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "engine": null,
+        "caller": "saveFriendRanks",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "search_actor_directory",
+        "schema": "identity",
+        "file": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "actors",
+        "engine": null,
+        "caller": "searchActorsDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "search_actor_directory",
+        "schema": "identity",
+        "file": "apps/VCSM/src/features/chat/setup.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "chat",
+        "engine": null,
+        "caller": "searchActors",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "search_actor_directory",
+        "schema": "identity",
+        "file": "apps/VCSM/src/features/explore/dal/search.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "explore",
+        "engine": null,
+        "caller": "searchActors",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "search_actor_directory",
+        "schema": "identity",
+        "file": "apps/VCSM/src/features/upload/dal/searchMentionSuggestions.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "upload",
+        "engine": null,
+        "caller": "searchMentionSuggestions",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "send_message_atomic",
+        "schema": "chat",
+        "file": "engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "appId": null,
+        "root": "engines/chat",
+        "feature": null,
+        "engine": "chat",
+        "caller": "sendMessageAtomicDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "set_business_card_publish_state",
+        "schema": null,
+        "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "setVportBusinessCardPublishStateDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "soft_delete_citizen_account",
+        "schema": null,
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "dalSoftDeleteCitizenAccount",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "soft_delete_citizen_account",
+        "schema": null,
+        "file": "apps/VCSM/supabase/functions/delete-citizen-account/index.ts",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": null,
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "soft_delete_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "dalDeleteMyVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "soft_delete_vport",
+        "schema": null,
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "engine": null,
+        "caller": "softDeleteVport",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "submit_business_card_lead",
+        "schema": "vport",
+        "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "conversion",
+        "engine": null,
+        "caller": "submitProviderLeadRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "submit_business_card_lead",
+        "schema": null,
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCardLead.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "engine": null,
+        "caller": "createVportBusinessCardLeadDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "unblock_actor",
+        "schema": "moderation",
+        "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "block",
+        "engine": null,
+        "caller": "unblockActor",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "unblock_actor",
+        "schema": "moderation",
+        "file": "apps/VCSM/src/features/settings/privacy/dal/blocks.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "caller": "dalDeleteBlockByTarget",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "update_delivery_attempt",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalUpdateDeliveryAttempt",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "update_recipient_status",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "updateNotificationRecipientStatusDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "update_recipient_status",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalUpdateRecipientStatus",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "upsert_neutral_review",
+        "schema": "reviews",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+        "appId": null,
+        "root": "engines/reviews",
+        "feature": null,
+        "engine": "reviews",
+        "caller": "dalRpcUpsertNeutralReview",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "upsert_rendered",
+        "schema": "notification",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "engine": null,
+        "caller": "upsertNotificationRenderedDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "upsert_rendered",
+        "schema": "notification",
+        "file": "engines/notifications/src/dal/rendered.write.dal.js",
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "engine": "notifications",
+        "caller": "dalUpsertRendered",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "vc_get_or_create_one_to_one",
+        "schema": "vc",
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "caller": "opDmMessage",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      }
+    ]
+  }
+}

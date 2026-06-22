@@ -1,15 +1,18 @@
 import { useCallback } from 'react'
 import { useAuth } from '@/app/providers/AuthProvider'
-import { usePrivacySettings } from '@/features/settings/queries/usePrivacySettings'
-import { useUpdateVportVisibility } from '@/features/settings/queries/useUpdateVportVisibility'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { usePrivacySettings } from '@/features/settings/privacy/hooks/usePrivacySettings'
+import { useUpdateVportVisibility } from '@/features/settings/privacy/hooks/useUpdateVportVisibility'
 
 export function useActorPrivacy(actorId) {
   const { user } = useAuth() || {}
   const userId = user?.id
+  const { identity } = useIdentity()
+  const callerActorId = identity?.actorId ?? null
 
   const { data: isPrivate = false, isLoading, error: queryError } = usePrivacySettings(actorId)
 
-  const mutation = useUpdateVportVisibility({ actorId, userId })
+  const mutation = useUpdateVportVisibility({ actorId, userId, callerActorId })
 
   const togglePrivacy = useCallback(() => {
     if (!actorId || mutation.isPending) return

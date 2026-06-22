@@ -34,6 +34,7 @@
   /* ── Accents ── */
   --vc-accent-primary: #8b5cf6;                 /* primary purple */
   --vc-accent-primary-hover: #a78bfa;           /* purple hover */
+  --vc-accent-primary-deep: #7c3aed;            /* deeper purple — gradients, checkbox fill */
   --vc-accent-secondary: #4ea4ff;               /* blue accent */
   --vc-accent-tertiary: #42d3ff;                /* cyan accent */
   --vc-accent-pink: #ff69c6;                    /* pink accent */
@@ -45,10 +46,36 @@
   --vc-danger-a: rgba(190, 24, 93, 0.7);
   --vc-danger-b: rgba(220, 38, 38, 0.72);
 
+  /* ── Semantic surface tints ── */
+  --vc-error-border: rgba(239, 68, 68, 0.30);
+  --vc-error-bg: rgba(239, 68, 68, 0.10);
+  --vc-error-text: #fecaca;
+  --vc-success-border: rgba(34, 197, 94, 0.30);
+  --vc-success-bg: rgba(34, 197, 94, 0.10);
+  --vc-success-text: #86efac;
+  --vc-success-text-soft: rgba(134, 239, 172, 0.75);
+  --vc-warning-border: rgba(245, 158, 11, 0.30);
+  --vc-warning-bg: rgba(245, 158, 11, 0.10);
+  --vc-warning-text: #fde68a;
+  --vc-warning-text-soft: rgba(253, 230, 138, 0.75);
+
+  /* ── CTA (call-to-action) ── */
+  --vc-cta: #6C4DF6;
+  --vc-cta-hover: #7657ff;
+  --vc-cta-border: rgba(108, 77, 246, 0.80);
+  --vc-cta-ring: rgba(108, 77, 246, 0.40);
+  --vc-cta-shadow: 0 10px 30px rgba(108, 77, 246, 0.35);
+  --vc-badge-beta-glow: 0 0 16px rgba(244, 63, 94, 0.60);
+
+  /* ── Links ── */
+  --vc-link: #c4b5fd;
+  --vc-link-hover: #ddd6fe;
+
   /* ── Card shadows ── */
   --vc-shadow-card: 0 12px 30px rgba(0, 0, 0, 0.35);
   --vc-shadow-elevated: 0 24px 45px rgba(0, 0, 0, 0.36), 0 0 22px rgba(139, 92, 246, 0.1);
   --vc-shadow-glow: 0 10px 30px rgba(139, 92, 246, 0.35);
+  --vc-accent-glow-sm: 0 0 10px rgba(139, 92, 246, 0.40); /* tight accent glow — checkbox, pill */
 
   /* ── Card backgrounds (gradient presets) ── */
   --vc-card-bg: linear-gradient(180deg, rgba(20, 20, 26, 0.98) 0%, rgba(20, 20, 26, 0.90) 100%);

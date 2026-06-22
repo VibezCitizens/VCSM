@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useCallback, useMemo, useState } from 'react'
-import { useIdentity } from '@/state/identity/identityContext'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import {
   ctrlAddServiceArea,
   ctrlUpdateServiceArea,
@@ -11,6 +11,7 @@ import {
   ctrlSaveServiceDetail,
   ctrlSavePortfolioDetail,
 } from '@/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller'
+import { invalidateLocksmithProfileCache } from '@/features/profiles/kinds/vport/hooks/locksmith/useLocksmithProfile'
 
 /**
  * Hook for locksmith owner CRUD operations.
@@ -31,6 +32,7 @@ export function useLocksmithOwner(actorId, { onSuccess } = {}) {
     setError(null)
     try {
       const result = await fn()
+      invalidateLocksmithProfileCache(actorId)
       onSuccess?.()
       return result
     } catch (e) {
@@ -39,12 +41,12 @@ export function useLocksmithOwner(actorId, { onSuccess } = {}) {
     } finally {
       setSaving(false)
     }
-  }, [onSuccess])
+  }, [actorId, onSuccess])
 
-  const addArea = useCallback((area) => wrap(() => ctrlAddServiceArea(actorId, area)), [actorId, wrap])
-  const updateArea = useCallback((areaId, updates) => wrap(() => ctrlUpdateServiceArea(actorId, areaId, updates)), [actorId, wrap])
-  const deleteArea = useCallback((areaId) => wrap(() => ctrlDeleteServiceArea(actorId, areaId)), [actorId, wrap])
-  const saveServiceDetail = useCallback((serviceId, detail) => wrap(() => ctrlSaveServiceDetail(actorId, serviceId, detail)), [actorId, wrap])
+  const addArea = useCallback((area) => wrap(() => ctrlAddServiceArea(identityActorId, actorId, area)), [identityActorId, actorId, wrap])
+  const updateArea = useCallback((areaId, updates) => wrap(() => ctrlUpdateServiceArea(identityActorId, actorId, areaId, updates)), [identityActorId, actorId, wrap])
+  const deleteArea = useCallback((areaId) => wrap(() => ctrlDeleteServiceArea(identityActorId, actorId, areaId)), [identityActorId, actorId, wrap])
+  const saveServiceDetail = useCallback((serviceId, detail) => wrap(() => ctrlSaveServiceDetail(identityActorId, actorId, serviceId, detail)), [identityActorId, actorId, wrap])
   const savePortfolioDetail = useCallback(
     (portfolioItemId, detail) => wrap(() => ctrlSavePortfolioDetail(identityActorId, actorId, portfolioItemId, detail)),
     [identityActorId, actorId, wrap]

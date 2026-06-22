@@ -1,10 +1,10 @@
 // src/features/upload/hooks/useResolvedActor.js
-import { useIdentity } from "@/state/identity/identityContext";
+import { useActiveActorState } from "@/features/identity/adapters/identity.adapter";
 
 export function useResolvedActor() {
-  const { identity } = useIdentity();
+  const { actorId, isVoid } = useActiveActorState();
 
-  if (!identity || !identity.actorId) {
+  if (!actorId) {
     return {
       ready: false,
       actorId: null,
@@ -14,7 +14,7 @@ export function useResolvedActor() {
 
   return {
     ready: true,
-    actorId: identity.actorId,
-    isVoid: identity.isVoid,
+    actorId,
+    isVoid,
   };
 }

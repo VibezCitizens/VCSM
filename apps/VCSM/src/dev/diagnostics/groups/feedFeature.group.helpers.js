@@ -36,7 +36,7 @@ export function failWithData(message, data) {
 
 export function getFeedEntries() {
   return getFeatureSourceEntries().filter((entry) =>
-    entry.path.startsWith("src/features/feed/")
+    entry.path.startsWith("src/features/CentralFeed/")
   );
 }
 

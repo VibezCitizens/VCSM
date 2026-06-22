@@ -1,0 +1,463 @@
+{
+  "metadata": {
+    "graph": "profile",
+    "title": "Bottom Navigation — Citizen / Profile",
+    "name": "Citizen / Profile",
+    "version": "1.0.0",
+    "generatedBy": "ARCHITECT",
+    "scope": "VCSM",
+    "graphType": "bottom-navigation-screen",
+    "feature": "profiles",
+    "button": "Citizen",
+    "route": "/profile/:actorId",
+    "screen": "ActorProfileScreen",
+    "generatedAt": "2026-05-11",
+    "source": "ARCHITECT",
+    "confidence": "STATICALLY_TRACED",
+    "notes": "Complex slug resolution chain. 4 URL pattern variants. PROFILE_KIND_REGISTRY routes to kind-specific sub-screen. isActive check in BottomNavBar uses /profile prefix — broken for /u/:username. Slug cache 10min TTL."
+  },
+  "nodes": [
+    {
+      "id": "bottomnavbar",
+      "position": { "x": 400, "y": 0 },
+      "data": {
+        "nodeType": "nav",
+        "label": "BottomNavBar",
+        "layer": "Platform UI",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "none",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["btn-citizen"],
+        "notes": "Entry point.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "btn-citizen",
+      "position": { "x": 400, "y": 150 },
+      "data": {
+        "nodeType": "button",
+        "label": "Citizen Button (ProfileNavTab)",
+        "layer": "Nav Button",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["LOKI","FALCON"],
+        "tablesTouched": [],
+        "dependencies": ["route-profile"],
+        "notes": "Custom ProfileNavTab component. Caches actor canonical slug (10min TTL in-memory). Falls back to /profile/self on cache miss. isActive check uses /profile prefix — broken for /u/:username routes. LOKI: verify slug cache invalidation on actor switch. FALCON: iOS PWA deep link behavior.",
+        "meta": { "component": "ProfileNavTab", "slugCacheTTL": "10min", "isActiveRisk": "/u/:username routes show tab as inactive" }
+      }
+    },
+    {
+      "id": "route-profile",
+      "position": { "x": 400, "y": 300 },
+      "data": {
+        "nodeType": "route",
+        "label": "/profile/:actorId",
+        "layer": "Route",
+        "filePath": "app/routes/protected/app.routes.jsx",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["actor-profile-screen"],
+        "notes": "Ambiguous family: /profile/self, /profile/:uuid, /profile/:slug, /u/:username, /v/:slug. All resolve to ActorProfileScreen.",
+        "meta": { "variants": ["/profile/self", "/profile/:uuid", "/profile/:slug", "/u/:username", "/v/:slug"] }
+      }
+    },
+    {
+      "id": "actor-profile-screen",
+      "position": { "x": 400, "y": 450 },
+      "data": {
+        "nodeType": "screen",
+        "label": "ActorProfileScreen",
+        "layer": "Final Screen",
+        "filePath": "features/profiles/screens/ActorProfileScreen.jsx",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": [],
+        "dependencies": ["use-actor-kind","use-actor-canonical-slug","use-resolve-actor-slug","use-actor-slug-redirect","use-vport-type","use-profile-telemetry"],
+        "notes": "Complex routing + resolution logic. Handles 4 URL pattern variants. Routes to kind-specific screen via PROFILE_KIND_REGISTRY. 7 skeleton return paths — risk of incorrect loading state. Auth gate present.",
+        "meta": { "resolutionPaths": 4, "skeletonPaths": 7, "authGate": "yes" }
+      }
+    },
+    {
+      "id": "use-actor-kind",
+      "position": { "x": 0, "y": 640 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useActorKind",
+        "layer": "Hook",
+        "filePath": "features/profiles/hooks/useActorKind.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["ctrl-get-actor-kind"],
+        "notes": "Fetches actor kind (user/vport) from getActorKind controller. React Query.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-actor-canonical-slug",
+      "position": { "x": 200, "y": 640 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useActorCanonicalSlug",
+        "layer": "Hook",
+        "filePath": "features/profiles/hooks/useActorCanonicalSlug.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["ctrl-build-canonical-slug","slug-cache"],
+        "notes": "Builds canonical SEO slug. 10min TTL cache in controller. Includes iOS debug logging. LOKI: verify stale cache on actor switch.",
+        "meta": { "cacheTTL": "10min (in controller)" }
+      }
+    },
+    {
+      "id": "use-resolve-actor-slug",
+      "position": { "x": 420, "y": 640 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useResolveActorBySlug",
+        "layer": "Hook",
+        "filePath": "features/profiles/hooks/useResolveActorBySlug.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["ctrl-resolve-actor-slug"],
+        "notes": "Resolves UUID-free slug (username/vport-slug) to actorId.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-actor-slug-redirect",
+      "position": { "x": 620, "y": 640 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useActorSlugRedirect",
+        "layer": "Hook",
+        "filePath": "features/profiles/hooks/useActorSlugRedirect.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Navigation hook enforcing canonical URL. Redirects non-canonical to canonical slug.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-vport-type",
+      "position": { "x": 820, "y": 640 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useVportType",
+        "layer": "Hook",
+        "filePath": "features/profiles/hooks/useVportType.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Prefetches vport type (barbershop, locksmith, etc.) for kind-registry routing.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-profile-telemetry",
+      "position": { "x": 1020, "y": 640 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useProfileRouteTelemetry",
+        "layer": "Hook",
+        "filePath": "features/profiles/screens/hooks/useProfileRouteTelemetry.js (INFERRED)",
+        "riskLevel": "none",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Route debugging and logging. No DB access.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "slug-cache",
+      "position": { "x": 200, "y": 800 },
+      "data": {
+        "nodeType": "cache",
+        "label": "Slug Cache (10min TTL)",
+        "layer": "Cache",
+        "filePath": "features/profiles/hooks/useActorCanonicalSlug.js or controller",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "10min TTL for actor canonical slug. BottomNavBar ProfileNavTab also caches slug independently. LOKI: confirm cache invalidation path on actor switch.",
+        "meta": { "ttl": "10min", "invalidationRisk": "stale slug after actor switch" }
+      }
+    },
+    {
+      "id": "ctrl-get-actor-kind",
+      "position": { "x": 0, "y": 960 },
+      "data": {
+        "nodeType": "controller",
+        "label": "getActorKind.controller",
+        "layer": "Controller",
+        "filePath": "features/profiles/controller/getActorKind.controller.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": ["vc.actors"],
+        "dependencies": ["dal-actor-kind"],
+        "notes": "Fetches actor kind from vc.actors.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "ctrl-build-canonical-slug",
+      "position": { "x": 250, "y": 960 },
+      "data": {
+        "nodeType": "controller",
+        "label": "buildActorCanonicalSlug.controller",
+        "layer": "Controller",
+        "filePath": "features/profiles/controller/buildActorCanonicalSlug.controller.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vport.public_actor_seo_v"],
+        "dependencies": ["dal-actor-seo"],
+        "notes": "Reads vport.public_actor_seo_v DB view on cache miss. 10min TTL.",
+        "meta": { "cacheTTL": "10min" }
+      }
+    },
+    {
+      "id": "ctrl-resolve-actor-slug",
+      "position": { "x": 500, "y": 960 },
+      "data": {
+        "nodeType": "controller",
+        "label": "resolveActorBySlug.controller",
+        "layer": "Controller",
+        "filePath": "features/profiles/controller/resolveActorBySlug.controller.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": ["vc.actors"],
+        "dependencies": ["dal-resolve-slug"],
+        "notes": "Resolves human-readable slug to actorId.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "kind-registry",
+      "position": { "x": 750, "y": 960 },
+      "data": {
+        "nodeType": "adapter",
+        "label": "PROFILE_KIND_REGISTRY",
+        "layer": "Registry / Adapter",
+        "filePath": "features/profiles/kinds/ (INFERRED)",
+        "riskLevel": "medium",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": [],
+        "dependencies": ["screen-user-profile","screen-vport-profile"],
+        "notes": "INFERRED: Routes to UserProfileKindScreen or VportProfileKindScreen based on actor kind. Exact implementation pattern not confirmed.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "dal-actor-kind",
+      "position": { "x": 0, "y": 1130 },
+      "data": {
+        "nodeType": "dal",
+        "label": "actor kind DAL",
+        "layer": "DAL",
+        "filePath": "features/profiles/dal/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vc.actors"],
+        "dependencies": ["table-vc-actors"],
+        "notes": "INFERRED: Reads vc.actors for kind field.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "dal-actor-seo",
+      "position": { "x": 250, "y": 1130 },
+      "data": {
+        "nodeType": "dal",
+        "label": "actor SEO slug DAL",
+        "layer": "DAL",
+        "filePath": "features/profiles/dal/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vport.public_actor_seo_v"],
+        "dependencies": ["view-public-actor-seo"],
+        "notes": "INFERRED: Reads vport.public_actor_seo_v view for canonical slug on cache miss.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "dal-resolve-slug",
+      "position": { "x": 500, "y": 1130 },
+      "data": {
+        "nodeType": "dal",
+        "label": "resolve actor by slug DAL",
+        "layer": "DAL",
+        "filePath": "features/profiles/dal/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vc.actors"],
+        "dependencies": ["table-vc-actors"],
+        "notes": "INFERRED: Queries vc.actors or slug index to resolve slug → actorId.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "screen-user-profile",
+      "position": { "x": 700, "y": 1130 },
+      "data": {
+        "nodeType": "screen",
+        "label": "UserProfileKindScreen",
+        "layer": "Screen (kind-specific)",
+        "filePath": "features/profiles/kinds/user/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INFERRED: User (non-vport) profile view. Full chain not traced here.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "screen-vport-profile",
+      "position": { "x": 900, "y": 1130 },
+      "data": {
+        "nodeType": "screen",
+        "label": "VportProfileKindScreen",
+        "layer": "Screen (kind-specific)",
+        "filePath": "features/profiles/kinds/vport/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Profiles Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INFERRED: Vport profile view. Large subsystem (gas, rates, services, portfolio, menu, review, booking). Full chain outside scope of this graph.",
+        "meta": { "subsystems": ["gas","rates","services","portfolio","menu","review","booking"] }
+      }
+    },
+    {
+      "id": "table-vc-actors",
+      "position": { "x": 150, "y": 1300 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.actors",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vc schema",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Actor directory. Source for kind, slug, display data.",
+        "meta": { "schema": "vc", "rls": "enforced" }
+      }
+    },
+    {
+      "id": "view-public-actor-seo",
+      "position": { "x": 430, "y": 1300 },
+      "data": {
+        "nodeType": "table",
+        "label": "vport.public_actor_seo_v",
+        "layer": "Database View",
+        "filePath": "supabase / vport schema",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vport schema",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "DB view. Used for canonical SEO slug resolution on cache miss.",
+        "meta": { "schema": "vport", "type": "view" }
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e-nav-btn", "source": "bottomnavbar", "target": "btn-citizen", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-btn-route", "source": "btn-citizen", "target": "route-profile", "type": "smoothstep", "animated": true, "label": "nav", "data": { "edgeType": "navigates_to" } },
+    { "id": "e-route-screen", "source": "route-profile", "target": "actor-profile-screen", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-screen-kind", "source": "actor-profile-screen", "target": "use-actor-kind", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-slug", "source": "actor-profile-screen", "target": "use-actor-canonical-slug", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-resolve", "source": "actor-profile-screen", "target": "use-resolve-actor-slug", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-redirect", "source": "actor-profile-screen", "target": "use-actor-slug-redirect", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-vport-type", "source": "actor-profile-screen", "target": "use-vport-type", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-telemetry", "source": "actor-profile-screen", "target": "use-profile-telemetry", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-slug-cache", "source": "use-actor-canonical-slug", "target": "slug-cache", "type": "smoothstep", "label": "caches", "data": { "edgeType": "calls" } },
+    { "id": "e-kind-ctrl", "source": "use-actor-kind", "target": "ctrl-get-actor-kind", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-slug-ctrl", "source": "use-actor-canonical-slug", "target": "ctrl-build-canonical-slug", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-resolve-ctrl", "source": "use-resolve-actor-slug", "target": "ctrl-resolve-actor-slug", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-registry", "source": "actor-profile-screen", "target": "kind-registry", "type": "smoothstep", "label": "routes via", "data": { "edgeType": "calls" } },
+    { "id": "e-registry-user", "source": "kind-registry", "target": "screen-user-profile", "type": "smoothstep", "label": "user kind", "data": { "edgeType": "renders" } },
+    { "id": "e-registry-vport", "source": "kind-registry", "target": "screen-vport-profile", "type": "smoothstep", "label": "vport kind", "data": { "edgeType": "renders" } },
+    { "id": "e-kind-ctrl-dal", "source": "ctrl-get-actor-kind", "target": "dal-actor-kind", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-slug-ctrl-dal", "source": "ctrl-build-canonical-slug", "target": "dal-actor-seo", "type": "smoothstep", "label": "calls (on miss)", "data": { "edgeType": "calls" } },
+    { "id": "e-resolve-ctrl-dal", "source": "ctrl-resolve-actor-slug", "target": "dal-resolve-slug", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-kind-dal-table", "source": "dal-actor-kind", "target": "table-vc-actors", "type": "smoothstep", "label": "reads", "data": { "edgeType": "reads" } },
+    { "id": "e-seo-dal-view", "source": "dal-actor-seo", "target": "view-public-actor-seo", "type": "smoothstep", "label": "reads", "data": { "edgeType": "reads" } },
+    { "id": "e-resolve-dal-table", "source": "dal-resolve-slug", "target": "table-vc-actors", "type": "smoothstep", "label": "reads", "data": { "edgeType": "reads" } }
+  ]
+}

@@ -5,11 +5,13 @@ const CATEGORY_SELECT =
 
 export async function updateVportActorMenuCategoryDAL({
   categoryId,
+  profileId,
   patch,
 } = {}) {
   if (!categoryId)
     throw new Error("updateVportActorMenuCategoryDAL: categoryId is required");
-
+  if (!profileId)
+    throw new Error("updateVportActorMenuCategoryDAL: profileId is required");
   if (!patch || typeof patch !== "object")
     throw new Error("updateVportActorMenuCategoryDAL: patch is required");
 
@@ -20,6 +22,7 @@ export async function updateVportActorMenuCategoryDAL({
       updated_at: new Date().toISOString(),
     })
     .eq("id", categoryId)
+    .eq("profile_id", profileId)
     .select(CATEGORY_SELECT)
     .maybeSingle();
 

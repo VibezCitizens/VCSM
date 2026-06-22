@@ -6,7 +6,7 @@ import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/m
 import { dalInsertLocksmithServiceDetailDefaults } from "@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal";
 import { getLocksmithServiceDefaults } from "@/features/profiles/kinds/vport/model/locksmith/locksmithServiceDefaults.model";
 import { resolveVportServiceCatalogType } from "@/features/profiles/kinds/vport/config/vportTypes.config";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 /**
  * Controller:
@@ -39,8 +39,10 @@ export default async function upsertVportServicesController({
     throw new Error("upsertVportServicesController: vportType is required");
   }
 
-  // Named-parameter form — positional call was a bug (would throw "requestActorId is required").
-  await assertActorOwnsVportActorController({ requestActorId: identityActorId, targetActorId });
+  // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the saving actor is the
+  // VPORT itself when switched in, so ownership is resolved from the auth session via
+  // actor_owners rather than trusting the UI-passed identity actor id.
+  await assertSessionOwnsVportActorController({ targetActorId });
 
   const resolvedCatalogType = resolveVportServiceCatalogType(vportType);
 

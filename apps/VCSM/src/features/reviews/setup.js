@@ -9,6 +9,9 @@
 //   - the Supabase client singleton
 //   - actor ownership check (session-based pre-guard; DB enforces real ownership)
 // ============================================================
+// STUB: Engine setup — this file IS the entire features/reviews/ feature (1 file total in the feature)
+// STATUS: engine setup — single consumer: main.jsx; has idempotency guard (_configured)
+// PLANNED FATE: move to app/setup/reviews.setup.js (ARCH-ENGINESETUP-001); features/reviews/ folder becomes empty and should be deleted after the move
 
 import { configureReviewsEngine } from '@reviews'
 import { supabase } from '@/services/supabase/supabaseClient'

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { publishMenuUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/menu/publishMenuUpdateAsPost.controller";
 
 export function usePublishMenuPost({ actorId }) {

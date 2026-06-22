@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 /**
  * Build photo reaction metadata for profile photo posts.
  */

@@ -1,0 +1,4829 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "routeCount": 243,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:02.615Z",
+    "routes": [
+      {
+        "route": "/",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/page.jsx",
+        "file": "apps/Traffic/src/app/page.jsx"
+      },
+      {
+        "route": "/[city]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/[segment]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/[segment]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/[segment]/[service]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/[segment]/[service]/[detail]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/[detail]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/[detail]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/[segment]/[service]/[detail]/[specialty]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/categories",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/categories/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/categories/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/pro/[providerSlug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/pro/[providerSlug]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/[city]/top-providers",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/[city]/top-providers/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/[city]/top-providers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/answers",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/answers/page.jsx",
+        "file": "apps/Traffic/src/app/answers/page.jsx"
+      },
+      {
+        "route": "/answers/[slug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/answers/[slug]/page.jsx",
+        "file": "apps/Traffic/src/app/answers/[slug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/answers/moderation",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/answers/moderation/page.jsx",
+        "file": "apps/Traffic/src/app/answers/moderation/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/api/answers/moderation/answers",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
+        "file": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/api/answers/moderation/questions",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
+        "file": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/api/answers/questions",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/api/answers/questions/route.js",
+        "file": "apps/Traffic/src/app/api/answers/questions/route.js",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/categories",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/categories/page.jsx",
+        "file": "apps/Traffic/src/app/categories/page.jsx"
+      },
+      {
+        "route": "/directory",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/directory/page.jsx",
+        "file": "apps/Traffic/src/app/directory/page.jsx"
+      },
+      {
+        "route": "/en",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/page.jsx",
+        "file": "apps/Traffic/src/app/en/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/[segment]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/[segment]/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/[segment]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/[segment]/[service]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/[segment]/[service]/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/[segment]/[service]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/[segment]/[service]/[detail]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/[segment]/[service]/[detail]/[specialty]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/categories",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/categories/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/categories/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/pro/[providerSlug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/pro/[providerSlug]/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/[city]/top-providers",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/[city]/top-providers/page.jsx",
+        "file": "apps/Traffic/src/app/en/[city]/top-providers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/answers",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/answers/page.jsx",
+        "file": "apps/Traffic/src/app/en/answers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/answers/[slug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/answers/[slug]/page.jsx",
+        "file": "apps/Traffic/src/app/en/answers/[slug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/categories",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/categories/page.jsx",
+        "file": "apps/Traffic/src/app/en/categories/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/directory",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/directory/page.jsx",
+        "file": "apps/Traffic/src/app/en/directory/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/pro/[providerSlug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/pro/[providerSlug]/page.jsx",
+        "file": "apps/Traffic/src/app/en/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/top-providers",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/top-providers/page.jsx",
+        "file": "apps/Traffic/src/app/en/top-providers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/page.jsx",
+        "file": "apps/Traffic/src/app/es/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/[segment]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/[segment]/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/[segment]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/[segment]/[service]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/[segment]/[service]/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/[segment]/[service]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/[segment]/[service]/[detail]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/[segment]/[service]/[detail]/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/[segment]/[service]/[detail]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/[segment]/[service]/[detail]/[specialty]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/categories",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/categories/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/categories/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/pro/[providerSlug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/pro/[providerSlug]/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/[city]/top-providers",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/[city]/top-providers/page.jsx",
+        "file": "apps/Traffic/src/app/es/[city]/top-providers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/answers",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/answers/page.jsx",
+        "file": "apps/Traffic/src/app/es/answers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/answers/[slug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/answers/[slug]/page.jsx",
+        "file": "apps/Traffic/src/app/es/answers/[slug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/categories",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/categories/page.jsx",
+        "file": "apps/Traffic/src/app/es/categories/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/directory",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/directory/page.jsx",
+        "file": "apps/Traffic/src/app/es/directory/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/pro/[providerSlug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/pro/[providerSlug]/page.jsx",
+        "file": "apps/Traffic/src/app/es/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/top-providers",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/top-providers/page.jsx",
+        "file": "apps/Traffic/src/app/es/top-providers/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/pro/[providerSlug]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/(seo)/pro/[providerSlug]/page.jsx",
+        "file": "apps/Traffic/src/app/(seo)/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/sitemap-index.xml",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/sitemap-index.xml/route.js",
+        "file": "apps/Traffic/src/app/sitemap-index.xml/route.js",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/sitemaps/[chunk]",
+        "type": "dynamic",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/sitemaps/[chunk]/route.js",
+        "file": "apps/Traffic/src/app/sitemaps/[chunk]/route.js",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/top-providers",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/top-providers/page.jsx",
+        "file": "apps/Traffic/src/app/top-providers/page.jsx"
+      },
+      {
+        "route": "*",
+        "routeType": "wildcard",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "CatchAllRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "wildcard",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/index.jsx",
+        "file": "apps/VCSM/src/app/routes/index.jsx"
+      },
+      {
+        "route": "*",
+        "routeType": "wildcard",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "wildcard",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/about",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AboutScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/about.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/about.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/booking-history",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardBookingHistoryScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/calendar",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardCalendarScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/exchange",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardExchangeScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/gas",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardGasScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/leads",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardLeadsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/locksmith",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardLocksmithScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/portfolio",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardPortfolioScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/reviews",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardReviewScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/schedule",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardScheduleScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/services",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardServicesScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/team-requests",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "BarberTeamRequestsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/dashboard/team",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportDashboardTeamScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/menu",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportActorMenuPublicScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/menu/flyer",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportActorMenuFlyerScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/menu/flyer/edit",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/menu/qr",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportActorMenuQrScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/actor/:actorId/settings",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportSettingsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/ads/vport/:actorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/auth/callback",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AuthPublicRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/CentralFeed",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "CentralFeed",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ChatInboxScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/:conversationId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ChatConversationScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/archived",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ArchivedInboxScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/new",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "NewChatScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/requests",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequestsInboxScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/settings",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "InboxChatSettingsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/settings/blocked",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "BlockedUsersScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/settings/inbox",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "InboxSettingsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/settings/privacy",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "MessagePrivacyScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/chat/spam",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "SpamInboxScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/citizen/vibes",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "CitizenVibesScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/contact",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ContactScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/contact.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/contact.routes.jsx"
+      },
+      {
+        "route": "/dev/diagnostics",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/dev/performance",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/explore",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ExploreScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/explore",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ExploreScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "explore",
+        "path": "apps/VCSM/src/features/explore/ui/index.jsx",
+        "file": "apps/VCSM/src/features/explore/ui/index.jsx"
+      },
+      {
+        "route": "/forgot-password",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AuthPublicRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/how-to/create-profile",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "HowToCreateProfileScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/howto.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/howto.routes.jsx"
+      },
+      {
+        "route": "/how-to/create-vport",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "HowToCreateVportScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/howto.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/howto.routes.jsx"
+      },
+      {
+        "route": "/invite",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "InviteScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/join/barbershop/:token",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "JoinBarbershopScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/join.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/join.routes.jsx"
+      },
+      {
+        "route": "/learning",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "LearningLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "/legal/:docType",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "LegalDocumentScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/legal.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/legal.routes.jsx"
+      },
+      {
+        "route": "/login",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AuthPublicRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/m/:actorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportMenuRedirectScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/me",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/noti/post/:postId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "NotiViewPostScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/notifications",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "NotificationsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/onboarding",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "OnboardingScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/index.jsx",
+        "file": "apps/VCSM/src/app/routes/index.jsx"
+      },
+      {
+        "route": "/post/:postId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "PostDetailScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/post/:postId/edit",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "EditPostScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/posts",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "PostFeedScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/posts/:postId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "PostDetailScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/posts/:postId/edit",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "EditPostScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/professional-access",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/professional/briefings",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/profile/:actorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ActorProfileScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/profile/:id/friends/top/edit",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "TopFriendsRankEditor",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/profile/:slug/menu",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportMenuBySlugScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/profile/:slug/menu/qr",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportMenuQrBySlugScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/profile/:slug/reviews",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportReviewsBySlugScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/profile/:slug/reviews/qr",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportReviewsQrBySlugScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/vportMenu.routes.jsx"
+      },
+      {
+        "route": "/register",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AuthPublicRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/reset-password",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ResetPasswordScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/reset",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AuthPublicRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/settings",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "SettingsScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/u/:username",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "UsernameProfileRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/upload",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "UploadScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/verify-email",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AuthPublicRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
+      },
+      {
+        "route": "/void",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VoidScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/ads",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorAdsRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/dashboard",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorDashboardRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/dashboard/calendar",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorDashboardCalendarRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/dashboard/exchange",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorDashboardExchangeRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/dashboard/leads",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorDashboardLeadsRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/dashboard/reviews",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorDashboardReviewsRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/menu/flyer",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorMenuFlyerRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/menu/flyer/edit",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorFlyerEditRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/menu/qr",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorMenuQrRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:actorId/settings",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportToActorSettingsRedirect",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/:slug/card",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportBusinessCardPublicScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/vport/:type",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "VportCategoryLandingScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/howto.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/howto.routes.jsx"
+      },
+      {
+        "route": "/vport/barber",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "legal",
+        "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx",
+        "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx"
+      },
+      {
+        "route": "/vport/barbershop",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "legal",
+        "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx",
+        "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx"
+      },
+      {
+        "route": "/vport/chat",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/chat/:conversationId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ChatConversationScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/gas-station",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "legal",
+        "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx",
+        "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx"
+      },
+      {
+        "route": "/vport/inbox",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/locksmith",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "legal",
+        "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx",
+        "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx"
+      },
+      {
+        "route": "/vport/money-exchange",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "legal",
+        "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx",
+        "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx"
+      },
+      {
+        "route": "/vport/notifications",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/vport/restaurant",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "legal",
+        "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx",
+        "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx"
+      },
+      {
+        "route": "/vport/restore",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RestoreVportScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/wanders",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersHomeScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/c/:publicId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersCardPublicScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/claim",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersIntegrateActorScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/connect",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersIntegrateActorScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/create",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersCreateScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/i/:publicId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersInboxPublicScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/mailbox",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersMailboxScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/outbox",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersOutboxScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/sent",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersSentScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/wanders/sent/:cardPublicId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WandersSentScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/wanders.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/wanders.routes.jsx"
+      },
+      {
+        "route": "/welcome",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "WelcomeScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/index.jsx",
+        "file": "apps/VCSM/src/app/routes/index.jsx"
+      },
+      {
+        "route": "admin",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "admin/courses/:courseId/roster",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "admin/organizations/:organizationId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "assignments/:assignmentId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/assignments",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/assignments/:assignmentId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/lessons/:lessonId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "lessons/:lessonId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "parent",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "parent/courses/:courseId/students/:studentActorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "robots.txt",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/index.jsx",
+        "file": "apps/VCSM/src/app/routes/index.jsx"
+      },
+      {
+        "route": "sitemap.xml",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/index.jsx",
+        "file": "apps/VCSM/src/app/routes/index.jsx"
+      },
+      {
+        "route": "sitemaps/*",
+        "routeType": "wildcard",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "Navigate",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "wildcard",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/index.jsx",
+        "file": "apps/VCSM/src/app/routes/index.jsx"
+      },
+      {
+        "route": "student",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "student/courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "teacher",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "teacher/courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "teacher/courses/:courseId/assignments/:assignmentId/submissions",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "teacher/courses/:courseId/submissions",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/learning/routes/learning.routes.jsx",
+        "file": "apps/VCSM/src/learning/routes/learning.routes.jsx"
+      },
+      {
+        "route": "*",
+        "routeType": "wildcard",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "LandingPage",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "wildcard",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "LandingPage",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/change-password",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ChangePasswordScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/courses",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/dashboard",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/forgot-password",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ResetPasswordScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/inbox",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/learning/:realmSlug",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "LearningLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "/link-parent",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/login",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "LoginScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/messages",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/messages/:conversationId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/parent",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/parent/settings",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/parent/student/:studentActorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/parent/student/:studentActorId/course/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/parents",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/register-student",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/reset-password",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "UpdatePasswordScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/reset",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "UpdatePasswordScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/setup-guide",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/staff",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/student-login",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "StudentLoginScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/student",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/student/course/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/student/course/:courseId/assignment/:assignmentId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/students",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/students/:actorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/suspended",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "div",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/teacher",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/teacher/course/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/teacher/course/:courseId/create-assignment",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "RequireAuth",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "/unauthorized",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "UnauthorizedScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/App.jsx",
+        "file": "apps/wentrex/src/App.jsx"
+      },
+      {
+        "route": "access",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "admin",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "AdminLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "assignments/:assignmentId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/student.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/student.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/staff/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/staff/teacher.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/student/student.routes.jsx",
+        "file": "apps/wentrex/src/learning/student/student.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/assignments",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/assignments/:assignmentId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/assignments/:assignmentId/submissions",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/assignments/:assignmentId/submissions",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/staff/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/staff/teacher.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/lessons/:lessonId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/roster",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/students/:studentActorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/parent.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/parent.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/students/:studentActorId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/parent/parent.routes.jsx",
+        "file": "apps/wentrex/src/learning/parent/parent.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/submissions",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx"
+      },
+      {
+        "route": "courses/:courseId/submissions",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/staff/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/staff/teacher.routes.jsx"
+      },
+      {
+        "route": "lessons/:lessonId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/learning.routes.jsx"
+      },
+      {
+        "route": "organizations/:organizationId",
+        "routeType": "dynamic",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "dynamic",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "parent",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ParentLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/parent.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/parent.routes.jsx"
+      },
+      {
+        "route": "parent",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ParentLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/parent/parent.routes.jsx",
+        "file": "apps/wentrex/src/learning/parent/parent.routes.jsx"
+      },
+      {
+        "route": "platform-admins",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "staff",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ScreenRoute",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/admin.routes.jsx"
+      },
+      {
+        "route": "student",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "StudentLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/student.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/student.routes.jsx"
+      },
+      {
+        "route": "student",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "StudentLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/student/student.routes.jsx",
+        "file": "apps/wentrex/src/learning/student/student.routes.jsx"
+      },
+      {
+        "route": "teacher",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "StaffLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/administration/routes/teacher.routes.jsx"
+      },
+      {
+        "route": "teacher",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "StaffLayout",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "wentrex",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "path": "apps/wentrex/src/learning/staff/teacher.routes.jsx",
+        "file": "apps/wentrex/src/learning/staff/teacher.routes.jsx"
+      }
+    ]
+  }
+}

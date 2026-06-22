@@ -3,13 +3,14 @@
 
 import listVportContentPagesDAL from "@/features/profiles/kinds/vport/dal/content/listVportContentPages.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 export async function listVportContentPagesController({ actorId, callerActorId } = {}) {
   if (!actorId) throw new Error("listVportContentPagesController: actorId is required");
   if (!callerActorId) throw new Error("listVportContentPagesController: callerActorId is required");
 
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: actorId });
+  if (String(callerActorId) !== String(actorId)) {
+    throw new Error("Only the actor owner can manage this content.");
+  }
 
   const rows = await listVportContentPagesDAL({ actorId });
   return VportContentPageModel.fromRows(rows);

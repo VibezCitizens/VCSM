@@ -14,6 +14,9 @@ export function useVportBusinessCardLeadForm({ slug, vportName = null, providerP
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  // Dev-only: lets a debug/capture surface show why the lead notification fired
+  // or failed. Stays null in production — raw errors are never shown to users.
+  const [notificationDiagnostics, setNotificationDiagnostics] = useState(null);
 
   const canSubmit = useMemo(() => !submitting, [submitting]);
 
@@ -48,7 +51,7 @@ export function useVportBusinessCardLeadForm({ slug, vportName = null, providerP
       setFieldErrors({});
 
       try {
-        await submitVportBusinessCardLeadController({
+        const outcome = await submitVportBusinessCardLeadController({
           slug,
           name: values.name,
           phone: values.phone,
@@ -62,6 +65,10 @@ export function useVportBusinessCardLeadForm({ slug, vportName = null, providerP
               ? navigator.userAgent
               : null,
         });
+
+        if (import.meta.env.DEV && outcome?.notification) {
+          setNotificationDiagnostics(outcome.notification);
+        }
 
         setSubmitted(true);
         setValues((prev) => ({
@@ -90,6 +97,8 @@ export function useVportBusinessCardLeadForm({ slug, vportName = null, providerP
     canSubmit,
     submit,
     reset,
+    // Dev-only diagnostics for a debug/capture surface; null in production.
+    notificationDiagnostics,
   };
 }
 

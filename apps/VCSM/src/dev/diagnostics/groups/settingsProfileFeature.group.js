@@ -19,7 +19,6 @@ import { dalReadVportIdByActorId } from "@/features/settings/profile/dal/actors.
 import { fetchProfile } from "@/features/settings/profile/dal/profile.read.dal";
 import { updateProfile } from "@/features/settings/profile/dal/profile.write.dal";
 import { fetchVportPublicDetails } from "@/features/settings/profile/dal/vportPublicDetails.read.dal";
-import { upsertVportPublicDetails } from "@/features/settings/profile/dal/vportPublicDetails.write.dal";
 import { mapProfileToView, mapProfileUpdate } from "@/features/settings/profile/model/profile.model";
 import {
   mapVportPublicDetailsToView,
@@ -47,7 +46,6 @@ const TEST_CATALOG = [
   { key: "vport_profile_read_core", name: "owned vport profile read core path" },
   { key: "vport_profile_save_noop", name: "owned vport profile save no-op probe" },
   { key: "vport_public_details_read_map", name: "vport public details read + mapper path" },
-  { key: "vport_public_details_upsert_noop", name: "vport public details upsert no-op probe" },
 ];
 
 function getSource(path) {
@@ -118,7 +116,6 @@ export async function runSettingsProfileFeatureGroup({ onTestUpdate, shared }) {
         hasFetchProfile: typeof fetchProfile === "function",
         hasUpdateProfile: typeof updateProfile === "function",
         hasFetchVportPublicDetails: typeof fetchVportPublicDetails === "function",
-        hasUpsertVportPublicDetails: typeof upsertVportPublicDetails === "function",
         hasMapProfileToView: typeof mapProfileToView === "function",
         hasMapProfileUpdate: typeof mapProfileUpdate === "function",
         hasMapVportPublicDetailsToView: typeof mapVportPublicDetailsToView === "function",
@@ -132,15 +129,16 @@ export async function runSettingsProfileFeatureGroup({ onTestUpdate, shared }) {
         const legacySource = getSource("src/features/settings/profile/controller/saveProfile.controller.js");
         const aboutSource = getSource("src/features/settings/profile/ui/VportAboutDetails.view.jsx");
         const readDalSource = getSource("src/features/settings/profile/dal/vportPublicDetails.read.dal.js");
-        const writeDalSource = getSource("src/features/settings/profile/dal/vportPublicDetails.write.dal.js");
         const indexSource = getSource("src/features/settings/profile/index.js");
 
         return {
           legacyControllerImportsSupabase: legacySource.includes("supabaseClient"),
           legacyControllerWritesProfilesDirectly: legacySource.includes(".from('profiles')"),
-          vportAboutImportsDashboardBreakpointHook: aboutSource.includes("features/dashboard/vport"),
+          vportAboutImportsDashboardBreakpointHook: aboutSource.includes("features/vportDashboard"),
           vportPublicDetailsReadDalReturnsCamelAliases: readDalSource.includes("camelCase aliases"),
-          vportPublicDetailsWriteDalMapsPayloadShape: writeDalSource.includes("mapPayloadToRow"),
+          vportPublicDetailsProfileWriteDalRemoved: !getSettingsProfileEntries().some(
+            (entry) => entry.path === "src/features/settings/profile/dal/vportPublicDetails.write.dal.js"
+          ),
           indexFileIsEmpty: indexSource.trim().length === 0,
         };
       },
@@ -261,25 +259,6 @@ export async function runSettingsProfileFeatureGroup({ onTestUpdate, shared }) {
           const view = mapVportPublicDetailsToView(row);
           const patch = mapVportPublicDetailsUpdate(view);
           return { vportId, hasView: Boolean(view), patchKeys: Object.keys(patch).sort() };
-        }),
-    },
-    {
-      id: buildTestId(GROUP_ID, "vport_public_details_upsert_noop"),
-      name: "vport public details upsert no-op probe",
-      run: ({ shared: localShared }) =>
-        withSettingsProfileContext(localShared, "Vport public details upsert blocked by policy.", async (context) => {
-          const vportId = context.ownedVportId ?? context.activeVportId;
-          if (!vportId) return makeSkipped("No owned/active vport id available for vport public details upsert.");
-
-          const before = await fetchVportPublicDetails(vportId);
-          const patch = mapVportPublicDetailsUpdate(mapVportPublicDetailsToView(before));
-          const upserted = await upsertVportPublicDetails(vportId, patch);
-          return {
-            vportId,
-            beforeWebsiteUrl: before?.website_url ?? null,
-            afterWebsiteUrl: upserted?.website_url ?? null,
-            hasRow: Boolean(upserted?.vport_id),
-          };
         }),
     },
   ];

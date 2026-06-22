@@ -16,7 +16,7 @@ import {
   VPORT_HEALTH_TABS,
   VPORT_TRADES_TABS,
   VPORT_RETAIL_TABS,
-} from "@/features/profiles/config/profileTabs.config";
+} from "@/features/profiles/kinds/vport/config/profileTabs.config";
 
 import { VPORT_TYPE_GROUPS } from "@/features/profiles/kinds/vport/config/vportTypes.config";
 

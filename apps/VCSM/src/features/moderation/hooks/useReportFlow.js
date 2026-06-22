@@ -9,6 +9,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { createReportController } from '@/features/moderation/controllers/report.controller'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
 /**
  * context shape:
@@ -24,7 +25,8 @@ import { createReportController } from '@/features/moderation/controllers/report
  * }
  */
 
-export default function useReportFlow({ reporterActorId }) {
+export default function useReportFlow() {
+  const { actorId: reporterActorId } = useIdentity() ?? {}
   const [open, setOpen] = useState(false)
   const [context, setContext] = useState(null)
   const [loading, setLoading] = useState(false)

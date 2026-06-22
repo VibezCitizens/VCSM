@@ -1,5 +1,5 @@
-import { InternalLinkGrid } from "@/features/directories/components/InternalLinkGrid";
-import { ProviderCtaModules } from "@/features/conversion/components/CtaModules";
+import { InternalLinkGrid } from "@/features/directories/adapters/directories.adapter";
+import { ProviderCtaModules } from "@/features/conversion/adapters/conversion.adapter";
 import { getProviderGuideLinks } from "@/features/providers/lib/providerGuideLinks";
 import { ContactSection } from "@/features/providers/components/ContactSection";
 import { ProviderHoursSection } from "@/features/providers/components/ProviderHoursSection";

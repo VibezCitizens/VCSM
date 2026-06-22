@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RouteMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "routeCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "routeCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["routes"],
+      "properties": {
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["route", "routeType", "access", "routeAccess", "runtime", "app", "file", "source", "confidence"],
+            "properties": {
+              "route": { "type": "string" },
+              "routeType": { "enum": ["static", "dynamic", "wildcard"] },
+              "access": { "enum": ["public", "protected"] },
+              "routeAccess": { "enum": ["public", "protected"] },
+              "runtime": { "enum": ["web", "native-aware"] },
+              "app": { "type": ["string", "null"] },
+              "file": { "type": "string" },
+              "source": { "type": "string" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+              "evidence": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

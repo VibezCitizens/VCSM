@@ -24,8 +24,10 @@ import {
   countryServiceHubPath,
   neighborhoodServicePath
 } from "@/lib/paths";
-import { DirectoryPageTemplate } from "@/features/directories/templates/DirectoryPageTemplate";
-import { CountryHubTemplate } from "@/features/directories/templates/CountryHubTemplate";
+import {
+  DirectoryPageTemplate,
+  CountryHubTemplate
+} from "@/features/directories/adapters/directories.adapter";
 import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 import {
   listLiveProviderCountries,

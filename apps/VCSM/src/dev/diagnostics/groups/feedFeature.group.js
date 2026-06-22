@@ -17,27 +17,27 @@ import {
   trimAudit,
   withFeedFeatureContext,
 } from "@/dev/diagnostics/groups/feedFeature.group.helpers";
-import { useFeed } from "@/features/feed/hooks/useFeed";
-import { fetchFeedPagePipeline } from "@/features/feed/pipeline/fetchFeedPage.pipeline";
-import { getFeedViewerIsAdult } from "@/features/feed/controllers/getFeedViewerContext.controller";
-import { listActorPosts } from "@/features/feed/controllers/listActorPosts.controller";
-import { listFeedPosts } from "@/features/feed/dal/feed.posts.dal";
-import { inferMediaType } from "@/features/feed/model/inferMediaType.model";
-import { buildMentionMaps } from "@/features/feed/model/buildMentionMaps.model";
+import { useFeed } from "@/features/CentralFeed/hooks/useFeed";
+import { fetchFeedPagePipeline } from "@/features/CentralFeed/pipeline/fetchFeedPage.pipeline";
+import { getFeedViewerIsAdult } from "@/features/CentralFeed/controllers/getFeedViewerContext.controller";
+import { listActorPosts } from "@/features/CentralFeed/controllers/listActorPosts.controller";
+import { listFeedPosts } from "@/features/CentralFeed/dal/feed.posts.dal";
+import { inferMediaType } from "@/features/CentralFeed/model/inferMediaType.model";
+import { buildMentionMaps } from "@/features/CentralFeed/model/buildMentionMaps.model";
 import {
   buildBlockedActorSetModel,
   isActorBlockedForViewerModel,
-} from "@/features/feed/model/feedBlockVisibility.model";
+} from "@/features/CentralFeed/model/feedBlockVisibility.model";
 import {
   buildFollowedActorSetModel,
   isActorFollowedByViewerModel,
-} from "@/features/feed/model/feedFollowVisibility.model";
-import { canViewPrivateFeedActorModel } from "@/features/feed/model/feedPrivateVisibility.model";
-import { resolveFeedRowVisibilityModel } from "@/features/feed/model/feedRowVisibility.model";
-import { normalizeFeedRows } from "@/features/feed/model/normalizeFeedRows.model";
-import CentralFeed from "@/features/feed/screens/CentralFeedScreen";
-import DebugFeedFilterPanel from "@/features/feed/screens/DebugFeedFilterPanel";
-import DebugPrivacyPanel from "@/features/feed/screens/DebugPrivacyPanel";
+} from "@/features/CentralFeed/model/feedFollowVisibility.model";
+import { canViewPrivateFeedActorModel } from "@/features/CentralFeed/model/feedPrivateVisibility.model";
+import { resolveFeedRowVisibilityModel } from "@/features/CentralFeed/model/feedRowVisibility.model";
+import { normalizeFeedRows } from "@/features/CentralFeed/model/normalizeFeedRows.model";
+import CentralFeed from "@/features/CentralFeed/screens/CentralFeedScreen";
+import DebugFeedFilterPanel from "@/features/CentralFeed/screens/DebugFeedFilterPanel";
+import DebugPrivacyPanel from "@/features/CentralFeed/screens/DebugPrivacyPanel";
 
 export const GROUP_ID = "feedFeature";
 export const GROUP_LABEL = "Feed Feature";
@@ -141,7 +141,7 @@ export async function runFeedFeatureGroup({ onTestUpdate, shared }) {
           hasControllers: domains.has("controllers"),
           hasPipeline: domains.has("pipeline"),
           hasUsecases: domains.has("usecases"),
-          hasIndex: entries.some((entry) => entry.path === "src/features/feed/index.js"),
+          hasIndex: entries.some((entry) => entry.path === "src/features/CentralFeed/index.js"),
         };
 
         if (!payload.hasPipeline || !payload.hasControllers || !payload.hasAdapters) {
@@ -269,10 +269,10 @@ export async function runFeedFeatureGroup({ onTestUpdate, shared }) {
       id: buildTestId(GROUP_ID, "source_contract"),
       name: "feed source contract checks",
       run: async () => {
-        const useFeedSource = getFeedSource("src/features/feed/hooks/useFeed.js");
-        const screenSource = getFeedSource("src/features/feed/screens/CentralFeedScreen.jsx");
-        const debugSource = getFeedSource("src/features/feed/screens/DebugPrivacyPanel.jsx");
-        const dalIndexSource = getFeedSource("src/features/feed/dal/index.js");
+        const useFeedSource = getFeedSource("src/features/CentralFeed/hooks/useFeed.js");
+        const screenSource = getFeedSource("src/features/CentralFeed/screens/CentralFeedScreen.jsx");
+        const debugSource = getFeedSource("src/features/CentralFeed/screens/DebugPrivacyPanel.jsx");
+        const dalIndexSource = getFeedSource("src/features/CentralFeed/dal/index.js");
         return {
           useFeedHasTimeoutGuard: useFeedSource.includes("FEED_FETCH_TIMEOUT_MS"),
           useFeedHasMediaPreload: useFeedSource.includes("preloadInitialMedia"),

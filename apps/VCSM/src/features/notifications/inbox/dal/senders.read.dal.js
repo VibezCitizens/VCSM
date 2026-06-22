@@ -20,14 +20,6 @@ export async function listActorSummaryRowsByIdsDAL({ actorIds }) {
   return rows;
 }
 
-export async function listActorPresentationRowsByIdsDAL({ actorIds }) {
-  const ids = uniqueIds(actorIds);
-  if (!ids.length) return [];
-
-  const { rows, error } = await hydrateAndReturnSummaries({ actorIds: ids });
-  if (error) throw error;
-  return rows ?? [];
-}
 
 export async function listActorIdentityRowsByIdsDAL({ actorIds }) {
   const ids = uniqueIds(actorIds);

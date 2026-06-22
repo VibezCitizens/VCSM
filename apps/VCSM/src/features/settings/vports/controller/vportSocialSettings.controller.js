@@ -1,10 +1,14 @@
-import assertActorOwnsVportActorController from '@/features/booking/controller/assertActorOwnsVportActor.controller'
+import { checkVportOwnershipController } from '@/features/vportDashboard/adapters/vportDashboard.adapter'
 import {
   dalGetActorSocialSettings,
   dalUpdateActorSocialSettings,
   invalidateActorSocialSettingsCache,
-} from '@/features/social/privacy/dal/actorSocialSettings.dal'
-import { invalidateActorSocialPublicPolicyCache } from '@/features/social/privacy/dal/actorSocialPublicPolicy.dal'
+  invalidateActorSocialPublicPolicyCache,
+} from '@/features/social/adapters/social.adapter'
+
+// VPORT-DASHBOARD-OWNERSHIP-CONSISTENCY-001: authorize the active VPORT actor through
+// the same vportDashboard ownership surface the gas dashboard uses, with VPORT-safe wording.
+const OWNERSHIP_DENIED_MESSAGE = 'Only owners or managers can manage this VPORT.'
 
 const ALLOWED_PATCH_KEYS = new Set([
   'account_visibility',
@@ -20,7 +24,8 @@ export async function ctrlGetVportSocialSettings({ vportActorId, callerActorId }
   if (!vportActorId)  throw new Error('ctrlGetVportSocialSettings: vportActorId required')
   if (!callerActorId) throw new Error('ctrlGetVportSocialSettings: callerActorId required')
 
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId })
+  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId })
+  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE)
 
   return dalGetActorSocialSettings(vportActorId)
 }
@@ -37,7 +42,8 @@ export async function ctrlUpdateVportSocialSettings({ vportActorId, patch, calle
     throw new Error(`ctrlUpdateVportSocialSettings: invalid patch keys: ${invalidKeys.join(', ')}`)
   }
 
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId })
+  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId })
+  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE)
 
   const result = await dalUpdateActorSocialSettings({ actorId: vportActorId, patch })
 

@@ -4,8 +4,8 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import ProfileHeaderQRCodeModal from '@/features/profiles/screens/views/profileheader/ProfileHeaderQRCodeModal'
-import MessageButton from '@/features/profiles/ui/header/Messagebutton'
-import SubscribeButton from '@/features/profiles/ui/header/Subscribebutton'
+import MessageButton from '@/features/profiles/components/header/Messagebutton'
+import SubscribeButton from '@/features/profiles/components/header/Subscribebutton'
 import { useProfileHeaderMessaging } from '@/features/profiles/hooks/header/useProfileHeaderMessaging'
 import ActorActionsMenu from '@/features/block/adapters/ui/ActorActionsMenu'
 
@@ -14,6 +14,7 @@ import { useFollowerCount } from '@/features/social/adapters/friend/subscribe/ho
 import SubscribeDebugPanel from '@/features/social/adapters/friend/subscribe/components/SubscribeDebugPanel.adapter'
 import { useBlockStatus } from '@/features/block/adapters/hooks/useBlockStatus.adapter'
 import { useTranslation } from '@i18n'
+import { isQrSafeSlug } from '@/shared/lib/qrUrlBuilders'
 
 // ============================================================
 // ActorProfileHeader
@@ -62,7 +63,7 @@ export default function ActorProfileHeader({
     onAfterChange: () => {
       refreshFollowerCount()
       if (isSubscribed) {
-        navigate('/feed', { replace: true })
+        navigate('/CentralFeed', { replace: true })
       }
     },
   })
@@ -72,8 +73,10 @@ export default function ActorProfileHeader({
     onSubscribeAsync()
   }, [optimisticAdjust, isSubscribed, onSubscribeAsync])
 
-  const canonicalHandle = profile?.username ?? actorId
-  const qrValue = canonicalHandle ? `${window.location.origin}/profile/${canonicalHandle}` : ''
+  const canonicalHandle = profile?.username || ''
+  const qrValue = isQrSafeSlug(canonicalHandle)
+    ? `${window.location.origin}/profile/${encodeURIComponent(canonicalHandle)}`
+    : ''
 
   if (loading) {
     return (
@@ -156,7 +159,7 @@ export default function ActorProfileHeader({
             </div>
 
             {/* ================= TOP RIGHT CONTROL ================= */}
-            {isSelf ? (
+            {isSelf && qrValue ? (
               <div className="absolute top-4 right-4">
                 <button
                   onClick={() => setShowQR(true)}
@@ -171,7 +174,7 @@ export default function ActorProfileHeader({
                   viewerActorId={viewerActorId}
                   targetActorId={actorId}
                   align="right"
-                  onBlocked={() => navigate('/feed', { replace: true })}
+                  onBlocked={() => navigate('/CentralFeed', { replace: true })}
                 />
               </div>
             )}
