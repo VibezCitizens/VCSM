@@ -26,6 +26,12 @@ const providers = [];
 const providerServices = [];
 /** @type {ProviderStats[]} */
 const providerStats = [];
+let loadedProviderRowCount = 0;
+
+function shouldRequireLiveProviderIndex() {
+  return process.env.NODE_ENV === "production" &&
+    process.env.TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX !== "true";
+}
 
 function logDatasetError(scope, error) {
   console.error(`[unifiedDataset] ${scope}:`, error?.message ?? error);
@@ -49,6 +55,7 @@ function addMappedProvider(mapped) {
 
 try {
   const rows = await loadVportRows();
+  loadedProviderRowCount = rows.length;
 
   for (const row of rows) {
     let mapped;
@@ -67,6 +74,15 @@ try {
   }
 } catch (error) {
   logDatasetError("provider index load failed", error);
+  if (shouldRequireLiveProviderIndex()) {
+    throw error;
+  }
+}
+
+if (shouldRequireLiveProviderIndex() && loadedProviderRowCount === 0) {
+  throw new Error(
+    "Traffic build produced an empty provider index. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for build-time data reads, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true."
+  );
 }
 
 // ─── Compute real price aggregates ───────────────────────────────────────────

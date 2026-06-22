@@ -36,6 +36,11 @@ const PROVIDER_INDEX_PROJECTION = [
 
 let loggedVportDatasetError = false;
 
+function shouldRequireLiveProviderIndex() {
+  return process.env.NODE_ENV === "production" &&
+    process.env.TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX !== "true";
+}
+
 function normalizeCountryCode(value) {
   const countryCode = String(value ?? "").trim().toUpperCase();
   return /^[A-Z]{2}$/.test(countryCode) ? countryCode : null;
@@ -43,7 +48,14 @@ function normalizeCountryCode(value) {
 
 export async function readPublicTrazeProviderIndexRows(options = {}) {
   const client = getSupabaseClient();
-  if (!client) return null;
+  if (!client) {
+    if (shouldRequireLiveProviderIndex()) {
+      throw new Error(
+        "Traffic build requires Supabase provider index access. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true."
+      );
+    }
+    return null;
+  }
 
   let query = client
     .schema("vport")
@@ -64,6 +76,9 @@ export async function readPublicTrazeProviderIndexRows(options = {}) {
     if (!loggedVportDatasetError) {
       loggedVportDatasetError = true;
       console.error("[vportDataset] public_traze_provider_index_v query failed:", error.message);
+    }
+    if (shouldRequireLiveProviderIndex()) {
+      throw new Error(`Traffic build could not read public_traze_provider_index_v: ${error.message}`);
     }
     return null;
   }
