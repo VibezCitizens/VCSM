@@ -13,7 +13,9 @@ import {
 } from "@/shared/lib/qrUrlBuilders";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
-const appSrcDir = join(currentDir, "../../../..");
+// __tests__ → qrcode → features → src (three levels up). The view files asserted
+// below live under src/features/..., so this base must resolve to the src dir.
+const appSrcDir = join(currentDir, "../../..");
 const qrcodeDir = join(currentDir, "..");
 const publicMenuDir = join(appSrcDir, "features/public/vportMenu/view");
 const flyerViewPath = join(appSrcDir, "features/flyerBuilder/screens/VportActorMenuFlyerView.jsx");

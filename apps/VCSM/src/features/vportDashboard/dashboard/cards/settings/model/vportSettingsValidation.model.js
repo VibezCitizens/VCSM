@@ -51,11 +51,16 @@ export function hasCompleteAddress(address) {
   );
 }
 
+// Validate against lenient-but-NON-LOSSY values: collapse whitespace, upper-case
+// state/country, and strip zip formatting — but never coerce invalid *content*
+// into a valid shape. Callers must pass the raw (un-normalized) address; passing
+// a lossily-normalized address would mask bad input (e.g. normalizeCity turns
+// "M1ami" into "M ami", and normalizeCountry truncates "USA" to "US").
 export function getAddressValidationError(address) {
-  const city = String(address?.city || "").trim();
-  const state = String(address?.state || "").trim();
-  const zip = String(address?.zip || "").trim();
-  const country = String(address?.country || "").trim();
+  const city = normalizeWhitespace(address?.city);
+  const state = String(address?.state || "").trim().toUpperCase();
+  const zip = String(address?.zip || "").replace(/\D+/g, "");
+  const country = String(address?.country || "").trim().toUpperCase();
 
   if (!CITY_REGEX.test(city)) return "Enter a valid city name.";
   if (!new RegExp(`^[A-Z]{${US_STATE_LETTERS}}$`).test(state)) return "State must be a 2-letter code (e.g. TX).";
@@ -66,9 +71,12 @@ export function getAddressValidationError(address) {
 
 export function normalizePhoneDigits(value) {
   const raw = String(value || "").replace(/\D+/g, "");
-  const withoutCountryCode =
-    raw.length > US_PHONE_DIGITS && raw.startsWith("1") ? raw.slice(1) : raw;
-  return withoutCountryCode.slice(0, US_PHONE_DIGITS);
+  // Strip a leading US country code only on an exact 11-digit number (1 + 10).
+  // Do NOT truncate longer inputs — an over-long number must stay over-long so
+  // the caller's length check rejects it instead of silently coercing it to 10.
+  return raw.length === US_PHONE_DIGITS + 1 && raw.startsWith("1")
+    ? raw.slice(1)
+    : raw;
 }
 
 export { US_PHONE_DIGITS };

@@ -12,6 +12,7 @@ const INVITE_CODE_UUID_REGEX =
 // FINDING-001: whitelist replaces blacklist for post-auth return paths.
 // Only paths under these prefixes are accepted as redirect destinations.
 const SAFE_RETURN_PREFIXES = [
+  '/feed',
   '/CentralFeed',
   '/explore',
   '/profile',

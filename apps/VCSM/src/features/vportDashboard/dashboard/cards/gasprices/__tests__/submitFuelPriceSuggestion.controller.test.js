@@ -6,9 +6,20 @@ import { submitFuelPriceSuggestionController } from "@/features/vportDashboard/d
 // ---------------------------------------------------------------------------
 
 vi.mock(
-  "@/shared/lib/vport/resolveVportProfileId",
+  "@/features/vportDashboard/dal/read/vportProfile.read.dal",
   () => ({
-    resolveVportProfileId: vi.fn(),
+    getVportProfileIdByActorDAL: vi.fn(),
+  })
+);
+
+// Owner/citizen paths run for real against the mocked DALs above; the only
+// outbound side-effect they add is the notification publish, which must be
+// stubbed so the citizen happy-path does not attempt a real network call.
+vi.mock(
+  "@/features/notifications/adapters/notifications.adapter",
+  () => ({
+    publishVcsmNotification: vi.fn(),
+    publishVcsmNotificationBatch: vi.fn(),
   })
 );
 
@@ -105,7 +116,7 @@ vi.mock(
 // Imported mocks (for assertions)
 // ---------------------------------------------------------------------------
 
-import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
+import { getVportProfileIdByActorDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { FuelPriceCacheService } from "@/features/vportDashboard/dashboard/cards/gasprices/services/fuelPriceCache.service";
 import { fetchVportStationPriceSettingsDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportStationPriceSettings.read.dal";
 import { createFuelPriceSubmissionDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmissions.write.dal";
@@ -139,7 +150,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 
   // Default: profile resolves successfully
-  resolveVportProfileId.mockResolvedValue(RESOLVED_PROFILE_ID);
+  getVportProfileIdByActorDAL.mockResolvedValue(RESOLVED_PROFILE_ID);
 
   // Default: settings fetch succeeds, no sanity gate
   fetchVportStationPriceSettingsDAL.mockResolvedValue({
@@ -221,7 +232,7 @@ describe("submitFuelPriceSuggestionController — input guards", () => {
       fuelKey: "jet_fuel",
     });
     expect(result).toEqual({ ok: false, reason: "invalid_fuel_key" });
-    expect(resolveVportProfileId).not.toHaveBeenCalled();
+    expect(getVportProfileIdByActorDAL).not.toHaveBeenCalled();
   });
 });
 
@@ -442,7 +453,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
       ownerUpdate: true,
     });
 
-    expect(resolveVportProfileId).toHaveBeenCalledWith(TARGET_ACTOR_ID);
+    expect(getVportProfileIdByActorDAL).toHaveBeenCalledWith({ actorId: TARGET_ACTOR_ID });
     // Write DAL must receive targetActorId — actor-first contract
     expect(upsertVportFuelPriceDAL).toHaveBeenCalledWith(
       expect.objectContaining({ targetActorId: TARGET_ACTOR_ID })
@@ -456,7 +467,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
   it("owner can save gas price when accessed via slug route (happy path)", async () => {
     // Full owner write success — mirrors the slug route where resolvedActorId
     // flows through VportProfileTabContent → VportGasPricesView → hook → controller.
-    resolveVportProfileId.mockResolvedValue(RESOLVED_PROFILE_ID);
+    getVportProfileIdByActorDAL.mockResolvedValue(RESOLVED_PROFILE_ID);
     checkVportOwnershipController.mockResolvedValue(true);
     upsertVportFuelPriceDAL.mockResolvedValue({
       data: { fuelKey: FUEL_KEY, price: PROPOSED_PRICE },
@@ -479,10 +490,10 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
   });
 
   it("returns { ok: false, reason: 'profile_not_found' } when profileId cannot be resolved", async () => {
-    // Simulates the stale-null-cache race: resolveVportProfileId returns null
+    // Simulates the stale-null-cache race: getVportProfileIdByActorDAL returns null
     // (e.g., cached null from a pre-auth call). Controller must surface a typed
     // error instead of throwing so the UI shows a meaningful message.
-    resolveVportProfileId.mockResolvedValue(null);
+    getVportProfileIdByActorDAL.mockResolvedValue(null);
 
     const result = await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -498,7 +509,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
   });
 
   it("returns { ok: false, reason: 'profile_not_found' } on citizen path when profile cannot be resolved", async () => {
-    resolveVportProfileId.mockResolvedValue(null);
+    getVportProfileIdByActorDAL.mockResolvedValue(null);
 
     const result = await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -511,7 +522,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
 
   it("non-owner is still blocked even when profile resolves correctly", async () => {
     // Security gate must hold: profile found, but caller is not an owner.
-    resolveVportProfileId.mockResolvedValue(RESOLVED_PROFILE_ID);
+    getVportProfileIdByActorDAL.mockResolvedValue(RESOLVED_PROFILE_ID);
     checkVportOwnershipController.mockResolvedValue(false);
 
     const result = await submitFuelPriceSuggestionController({

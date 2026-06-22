@@ -38,7 +38,10 @@ vi.mock("@/services/supabase/vportClient", () => {
 // Bypass TTL cache so the code always reaches the Supabase query.
 vi.mock("@/shared/lib/ttlCache", () => ({
   createTTLCache: () => ({
-    get: () => undefined,
+    // Real createTTLCache.get() returns null on a miss (never undefined); the DAL
+    // guards on `cached !== null`, so the mock must return null to fall through to
+    // the Supabase query instead of treating undefined as a cache hit.
+    get: () => null,
     set: () => {},
     invalidate: () => {},
   }),

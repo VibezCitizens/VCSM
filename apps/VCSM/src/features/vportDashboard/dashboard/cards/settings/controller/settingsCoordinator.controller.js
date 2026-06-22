@@ -24,7 +24,10 @@ export async function settingsSaveCoordinator({
     return { ok: false, error: "Please enter full address." };
   }
   if (addressStarted) {
-    const addressError = getAddressValidationError(normalizedAddress);
+    // Validate the RAW address, not the normalized one — normalization is lossy
+    // (strips digits from city, truncates an over-long country code) and would
+    // mask invalid input. normalizedAddress is still used for the saved payload.
+    const addressError = getAddressValidationError(draft?.address);
     if (addressError) return { ok: false, error: addressError };
   }
   if (phoneDigits && phoneDigits.length !== US_PHONE_DIGITS) {
