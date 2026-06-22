@@ -115,8 +115,8 @@ export async function runSettingsAccountFeatureGroup({ onTestUpdate, shared }) {
 
         return {
           hasSoftDeleteCitizenRpc: writeDalSource.includes("rpc('soft_delete_citizen_account'"),
-          hasDeleteMyVportRpc: writeDalSource.includes("rpc('delete_my_vport'"),
-          hasOwnedVportSoftDelete: writeDalSource.includes(".from('profiles')") && writeDalSource.includes("is_deleted"),
+          hasSoftDeleteVportRpc: writeDalSource.includes("rpc('soft_delete_vport'"),
+          hasHardDeleteVportRpc: writeDalSource.includes("rpc('hard_delete_vport'"),
           hookUsesIdentityActorFirst: hookSource.includes("identity?.actorId") && hookSource.includes("identity?.kind"),
           hookReferencesLegacyProfileKind: hookSource.includes("actor_kind', 'profile'"),
         };

@@ -40,12 +40,16 @@ export async function saveVportActorMenuCategoryController({
     }
 
     // Controller owns meaning/authorization (RLS should also enforce)
+    if (!existing.actor_id) {
+      throw new Error("Category ownership could not be verified");
+    }
     if (existing.actor_id !== actorId) {
       throw new Error("Not allowed to modify this category");
     }
 
     const updated = await updateVportActorMenuCategoryDAL({
       categoryId,
+      profileId: existing.profile_id,
       patch: {
         key: key ?? existing.key,
         name,

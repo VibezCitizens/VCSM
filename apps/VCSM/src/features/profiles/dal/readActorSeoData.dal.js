@@ -1,4 +1,5 @@
 // features/profiles/dal/readActorSeoData.dal.js
+// [SHARED_ACTOR_PRIMITIVE] — vport-heavy but includes user actor fallback
 // ─────────────────────────────────────────────────────────────
 // DAL functions that collect the fields needed to build a canonical
 // SEO slug for an actor profile URL.

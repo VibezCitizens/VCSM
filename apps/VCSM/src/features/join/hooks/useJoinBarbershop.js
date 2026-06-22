@@ -4,13 +4,13 @@ import {
   loadInviteForJoin,
   checkJoinAuthState,
   signUpForBarbershopInvite,
-  loginForInvite,
+  loginForInvite as loginController,
   autoResumeInviteOnboarding,
   createBarberVportAndAccept,
   useExistingBarberVportAndAccept,
 } from "@/features/join/controllers/joinBarbershopAccount.controller";
 import { useIdentityOps } from "@/features/identity/adapters/identity.adapter";
-import { useAuthOps } from "@/features/auth/adapters/auth.adapter";
+import { useAuthOps, useJoinOnboarding } from "@/features/auth/adapters/auth.adapter";
 import { useVportCoreOps } from "@/features/vport/adapters/vport.public.adapter";
 import {
   loadQrJoin,
@@ -18,7 +18,19 @@ import {
   acceptQrJoin,
   createBarberVportAndAcceptQr,
 } from "@/features/join/controllers/joinBarbershopQr.controller";
-import { loginForInvite as loginController } from "@/features/join/controllers/joinBarbershopAccount.controller";
+
+// Errors that cannot be recovered by retrying VPORT creation.
+// These indicate a broken identity/eligibility state — must land on ERROR view.
+function isFatalJoinError(err) {
+  const msg = String(err?.message ?? '');
+  return (
+    msg.includes('Birthdate is required') ||
+    msg.includes('You must be at least') ||
+    msg.includes('Invalid birthdate') ||
+    msg.includes('Session mismatch') ||
+    msg.includes('Not signed in')
+  );
+}
 
 export const VIEWS = {
   LOADING: "loading",
@@ -42,6 +54,7 @@ export function useJoinBarbershop(token) {
   const { refreshVcActorDirectory, ensureVcsmPlatformBootstrap } = useIdentityOps();
   const { readCurrentAuthUserDAL, signInWithPassword } = useAuthOps();
   const { createVport } = useVportCoreOps();
+  const { bootstrapJoinOnboarding } = useJoinOnboarding();
   const [view, setView] = useState(VIEWS.LOADING);
   const [flowType, setFlowType] = useState(null); // 'qr' | 'invite'
   const [resource, setResource] = useState(null);
@@ -129,11 +142,11 @@ export function useJoinBarbershop(token) {
           setView(VIEWS.SIGNUP);
         } else if (action === "auto_resume") {
           setView(VIEWS.RESUMING);
-          autoResumeInviteOnboarding(token, { ensureVcsmPlatformBootstrap, refreshActorFn: refreshVcActorDirectory, readCurrentAuthUserDAL, createVport })
+          autoResumeInviteOnboarding(token, { ensureVcsmPlatformBootstrap, refreshActorFn: refreshVcActorDirectory, readCurrentAuthUserDAL, createVport, bootstrapJoinOnboarding })
             .then(() => setView(VIEWS.ACCEPTED))
             .catch((e) => {
               setError(e?.message || "Setup failed.");
-              setView(VIEWS.CREATE_VPORT);
+              setView(isFatalJoinError(e) ? VIEWS.ERROR : VIEWS.CREATE_VPORT);
             });
         } else if (action === "use_existing") {
           setExistingVport(vport);
@@ -187,20 +200,20 @@ export function useJoinBarbershop(token) {
     setWorking(true);
     setError("");
     try {
-      await createBarberVportAndAcceptQr(token, vportName, { createVport });
+      await createBarberVportAndAcceptQr(token, vportName, { createVport, callerActorId: identity?.actorId ?? null });
       setView(VIEWS.ACCEPTED);
     } catch (e) {
       setError(e?.message || "Failed to create Barber VPORT.");
     } finally {
       setWorking(false);
     }
-  }, [token, createVport]);
+  }, [token, createVport, identity?.actorId]);
 
-  const signup = useCallback(async ({ name, username, email, password, vportName }) => {
+  const signup = useCallback(async ({ name, username, email, password, vportName, birthdate }) => {
     setWorking(true);
     setError("");
     try {
-      const result = await signUpForBarbershopInvite(token, { name, username, email, password, vportName });
+      const result = await signUpForBarbershopInvite(token, { name, username, email, password, vportName, birthdate });
       setView(result.requiresEmailConfirm ? VIEWS.CHECK_EMAIL : VIEWS.LOADING);
       if (!result.requiresEmailConfirm) authChecked.current = false;
     } catch (e) {
@@ -228,14 +241,14 @@ export function useJoinBarbershop(token) {
     setWorking(true);
     setError("");
     try {
-      await createBarberVportAndAccept(token, vportName, { readCurrentAuthUserDAL, createVport });
+      await createBarberVportAndAccept(token, vportName, { readCurrentAuthUserDAL, createVport, callerActorId: identity?.actorId ?? null });
       setView(VIEWS.ACCEPTED);
     } catch (e) {
       setError(e?.message || "Failed to create Barber VPORT.");
     } finally {
       setWorking(false);
     }
-  }, [token, readCurrentAuthUserDAL, createVport]);
+  }, [token, readCurrentAuthUserDAL, createVport, identity?.actorId]);
 
   const acceptWithExisting = useCallback(async () => {
     if (!existingVport?.actor_id) return;

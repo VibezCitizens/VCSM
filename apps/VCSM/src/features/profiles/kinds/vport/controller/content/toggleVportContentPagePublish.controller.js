@@ -3,7 +3,6 @@
 import toggleVportContentPagePublishDAL from "@/features/profiles/kinds/vport/dal/content/toggleVportContentPagePublish.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
 import { invalidateVportPublicContentCache } from "@/features/profiles/kinds/vport/dal/content/listVportPublicContentPages.dal";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 export async function toggleVportContentPagePublishController({ actorId, callerActorId, id, isPublished } = {}) {
   if (!actorId) throw new Error("toggleVportContentPagePublishController: actorId is required");
@@ -13,7 +12,9 @@ export async function toggleVportContentPagePublishController({ actorId, callerA
     throw new Error("isPublished must be a boolean.");
   }
 
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: actorId });
+  if (String(callerActorId) !== String(actorId)) {
+    throw new Error("Only the actor owner can manage this content.");
+  }
 
   const updated = await toggleVportContentPagePublishDAL({ id, actorId, isPublished });
   invalidateVportPublicContentCache(actorId);

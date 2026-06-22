@@ -5,6 +5,7 @@ import { useVportReviews } from "@/features/profiles/kinds/vport/hooks/review/us
 import { useVportReviewCompose } from "@/features/profiles/kinds/vport/hooks/review/useVportReviewCompose";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
+import { useVportProfileContextOptional } from "@/features/profiles/kinds/vport/context/VportProfileContext";
 
 import ReviewsList from "./components/ReviewsList";
 import { TabButton } from "@/features/profiles/kinds/vport/screens/review/components/VportReviewsControls";
@@ -22,10 +23,12 @@ export default function VportReviewsView({
   targetActorId: targetActorIdProp = null,
   profile = null,
   viewerActorId: _viewerActorId = null,
-  mode = "public",
+  mode: modeProp = null,
 }) {
   const { t } = useTranslation();
   const { identity } = useIdentity();
+  const profileCtx = useVportProfileContextOptional();
+  const contextMode = modeProp ?? profileCtx?.mode ?? "public";
   const targetActorId = targetActorIdProp ?? profile?.actor_id ?? profile?.actorId ?? null;
   const sessionActorId = identity?.actorId ?? null;
   useActorConsistencyCheck('reviews', sessionActorId, identity?.kind);
@@ -35,7 +38,7 @@ export default function VportReviewsView({
 
   const verifiedAvg = r.overallAverage ?? r.officialStats?.officialOverallAvg ?? r.officialStats?.official_overall_avg ?? "-";
   const verifiedCount = r.totalReviews ?? r.officialStats?.verifiedReviewCount ?? r.officialStats?.verified_review_count ?? 0;
-  const isOwnerMode = mode === "owner";
+  const isOwnerMode = contextMode === "owner";
   const formattedVerifiedAvg = formatAvg(verifiedAvg);
 
   const dynamicDimensions = useMemo(() => {

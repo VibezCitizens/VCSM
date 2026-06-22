@@ -13,19 +13,8 @@ export const R2_PUBLIC = 'https://cdn.vibezcitizens.com';
 
 async function getUploadAuthHeaders() {
   try {
-    let token = null;
-
     const { data } = await supabase.auth.getSession();
-    token = data?.session?.access_token ?? null;
-
-    if (!token) {
-      const wandersClient = globalThis?.__WANDERS_SB__;
-      if (wandersClient?.auth?.getSession) {
-        const { data: wandersData } = await wandersClient.auth.getSession();
-        token = wandersData?.session?.access_token ?? null;
-      }
-    }
-
+    const token = data?.session?.access_token ?? null;
     if (!token) return {};
     return { Authorization: `Bearer ${token}` };
   } catch {

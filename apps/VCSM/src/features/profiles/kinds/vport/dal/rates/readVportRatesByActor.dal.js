@@ -1,6 +1,6 @@
 import vportSchema from "@/services/supabase/vportClient";
 import { createTTLCache } from "@/shared/lib/ttlCache";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 const ratesCache = createTTLCache(60_000);
 

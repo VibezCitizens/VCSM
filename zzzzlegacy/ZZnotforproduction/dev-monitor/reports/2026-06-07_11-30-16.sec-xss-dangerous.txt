@@ -1,0 +1,6 @@
+# Dev Monitor Report
+Command : sec: dangerouslySetInnerHTML (XSS)
+ID      : sec:xss-dangerous
+Exit    : 1
+Date    : 2026-06-07T11:30:16.552Z
+

@@ -6,17 +6,11 @@ import {
   useCreateBooking,
   useManageAvailability,
   useOwnerBookingResources,
-} from "@/features/booking/adapters/booking.adapter";
-import { useVportBookingMutations } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations";
-import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/subscribers/useSubscribers";
-import {
   buildBookingsByDate,
   buildCustomerActorRows,
   buildMonthCells,
   buildOccupiedIntervalsByDate,
   buildSlotsByDate,
-} from "@/features/booking/model/bookingCalendarAvailability.model";
-import {
   endOfMonth,
   formatDateLabel,
   formatMonthLabel,
@@ -28,9 +22,10 @@ import {
   shiftMonth,
   startOfMonth,
   VISITOR_SLOT_DURATION_MINUTES,
-} from "@/features/booking/model/bookingCalendarDate.model";
-import { useIdentity } from "@/features/identity/adapters/identity.adapter";
-import { canCitizenBook } from "@/state/identity/identitySelectors";
+} from "@/features/booking/adapters/booking.adapter";
+import { useVportBookingMutations } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations";
+import { useSubscribers } from "@/features/profiles/kinds/vport/hooks/subscribers/useSubscribers";
+import { useIdentity, useCanCitizenBook } from "@/features/identity/adapters/identity.adapter";
 import { useActorConsistencyCheck } from "@debuggers/identity/useActorConsistencyCheck";
 import { useAvailabilityData } from "@/features/profiles/kinds/vport/screens/booking/hooks/useAvailabilityData";
 import { useOwnerFollowerSelector } from "@/features/profiles/kinds/vport/screens/booking/hooks/useOwnerFollowerSelector";
@@ -39,8 +34,9 @@ import { useAgendaCalendarValues } from "@/features/profiles/kinds/vport/screens
 export function useVportBookingView({ profile, isOwner = false }) {
   const { identity } = useIdentity();
   const viewerActorId = identity?.actorId ?? null;
+  const canBook = useCanCitizenBook();
   useActorConsistencyCheck('booking', viewerActorId, identity?.kind);
-  const viewerCanBook = isOwner || canCitizenBook(identity);
+  const viewerCanBook = isOwner || canBook;
   const ownerActorId = profile?.actorId ?? profile?.actor_id ?? null;
   const profileId = profile?.id ?? null;
   const [monthCursor, setMonthCursor] = useState(() => startOfMonth(new Date()));

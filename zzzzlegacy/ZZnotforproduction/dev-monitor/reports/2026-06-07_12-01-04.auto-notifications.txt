@@ -1,0 +1,24 @@
+# Dev Monitor Report
+Command : auto-scan: notifications
+ID      : auto:notifications
+Status  : CAUGHT — 15 results
+Matches : 15
+Exit    : 0
+Date    : 2026-06-07T12:01:04.900Z
+
+─────────────────────────────────────────
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:52:      console.log('[noti:cards:cache-hit]', { count: cached.length })
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:54:      console.log('[noti:cards:cache-miss]')
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:63:      console.log('[noti:cards:render-cached]', { count: cached.length })
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:86:      console.log('[noti:cards:server-reconciled]', {
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js:195:    .update({ is_seen: true, seen_at: now, updated_at: now })
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js:272:    .update({
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js:293:    .update({
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js:312:    .update({
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/index.js:39:    countCache.delete(key)
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/index.js:54:    if (key.startsWith(`${actorId}:`)) countCache.delete(key)
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/index.js:58:    if (key.startsWith(`${actorId}:`)) countInflight.delete(key)
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/runtime/index.js:256:      countInflight.delete(key)
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/publish.js:34: * @param {string} params.recipientActorId — who receives the notification
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/publish.js:35: * @param {string} [params.actorId] — who triggered the event (source actor)
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/notifications/publish.js:38: * @param {string} [params.objectId] — object ID

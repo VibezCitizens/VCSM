@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listQrLinksByProfile, createQrLink } from "@booking";
-import { resolveVportProfileIdController } from "@/features/booking/controller/resolveVportProfileId.controller";
+import { resolveVportProfileIdController } from "@/features/booking/controllers/resolveVportProfileId.controller";
 
 /**
  * Hook: load and manage QR links for a VPORT actor.

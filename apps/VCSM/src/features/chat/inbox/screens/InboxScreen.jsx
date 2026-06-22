@@ -18,7 +18,7 @@ import { inboxOnSearch } from '@/features/chat/inbox/constants/inboxSearchAdapte
 import { useStartConversation } from '@/features/chat/start/hooks/useStartConversation'
 import { useChatMessagePrefetch } from '@/features/chat/inbox/hooks/useChatMessagePrefetch'
 import { useTranslation } from '@i18n'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 export default function InboxScreen() {

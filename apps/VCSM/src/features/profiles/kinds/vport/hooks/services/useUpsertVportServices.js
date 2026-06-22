@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import upsertVportServicesController from "@/features/profiles/kinds/vport/controller/services/upsertVportServices.controller.js";
 
 /**

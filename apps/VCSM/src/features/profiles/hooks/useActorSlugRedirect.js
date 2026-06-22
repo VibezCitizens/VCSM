@@ -1,4 +1,5 @@
 // features/profiles/hooks/useActorSlugRedirect.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 // ─────────────────────────────────────────────────────────────
 // Enforces the one canonical SEO slug URL for an actor profile.
 //

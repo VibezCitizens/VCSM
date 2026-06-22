@@ -1,0 +1,164 @@
+You are a Principal Application Security Engineer performing a RED TEAM review of the VCSM authentication system.
+
+Your task is NOT to explain generic security concepts.
+
+Your task is to ATTEMPT TO BREAK the implementation and prove whether vulnerabilities exist.
+
+Audit only based on actual code behavior, not assumptions.
+
+Rules:
+
+1. Assume all user-controlled inputs are hostile.
+2. Trace every trust boundary.
+3. Follow data from UI → controller → service → DAL → Supabase.
+4. Look for practical exploitability, not theoretical concerns.
+5. Provide proof-of-concept attack paths.
+6. Mark findings as:
+   - CRITICAL
+   - HIGH
+   - MEDIUM
+   - LOW
+   - INFORMATIONAL
+   - FALSE POSITIVE
+7. Every finding must contain:
+   - Title
+   - Severity
+   - Attack Scenario
+   - Exploit Steps
+   - Impact
+   - Evidence
+   - Recommendation
+8. Do not report speculative vulnerabilities.
+9. If a protection exists, explain exactly why it works.
+10. If a finding is mitigated by Supabase or browser protections, explicitly state so.
+
+Perform a targeted review for:
+
+A. Credential Stuffing
+- Can attackers automate login attempts?
+- Are there application-level controls?
+- Is Supabase rate limiting relied upon?
+- Are account lockouts implemented?
+- Is CAPTCHA present?
+- Can distributed attacks bypass protections?
+
+B. Password Spraying
+- Can one password be tested against many accounts?
+- Are failed login patterns monitored?
+- Is enumeration possible during spraying?
+
+C. Session Theft
+- Trace:
+  access_token
+  refresh_token
+  session
+- Can tokens leak through:
+  - logs
+  - monitoring
+  - Sentry
+  - captureFrontendError
+  - URL parameters
+  - localStorage
+  - sessionStorage
+  - React state
+- Verify PII scrubbing effectiveness.
+- Verify token scrubbing effectiveness.
+- Attempt to identify any token disclosure path.
+
+D. Open Redirect
+Review:
+- location.state.from
+- navigation redirects
+- onboarding redirects
+- login redirects
+- verify-email redirects
+
+Attempt attacks such as:
+
+https://attacker.com
+//attacker.com
+/\attacker.com
+javascript:alert(1)
+data:text/html
+%2F%2Fattacker.com
+double encoded payloads
+path traversal payloads
+
+Determine whether isSafeAuthReturnPath() fully prevents redirect abuse.
+
+E. Email Enumeration
+Determine whether an attacker can distinguish:
+
+1. Existing account
+2. Non-existing account
+3. Unverified account
+4. Disabled account
+
+Using:
+- error messages
+- timing differences
+- UI states
+- redirect behavior
+- resend confirmation flow
+
+Attempt to enumerate users.
+
+F. Brute Force
+Review:
+- login endpoint protections
+- retry controls
+- cooldowns
+- lockouts
+- Supabase protections
+
+Determine realistic attack feasibility.
+
+G. OAuth Callback Abuse
+If OAuth exists:
+
+Review:
+- state validation
+- callback validation
+- PKCE
+- redirect_uri controls
+
+Attempt:
+- callback poisoning
+- state manipulation
+- redirect hijacking
+
+If OAuth does not exist, mark NOT APPLICABLE.
+
+H. Login CSRF
+Determine whether an attacker can:
+
+- force-login a victim
+- inject a session
+- abuse OAuth login flows
+- exploit SameSite cookie behavior
+
+Review:
+- Supabase auth flow
+- PKCE implementation
+- cookie behavior
+- browser protections
+
+Required Deliverables:
+
+1. Executive Summary
+2. Attack Surface Map
+3. Findings Table
+4. Detailed Findings
+5. False Positives Identified
+6. Verified Protections
+7. Remaining Risk Rating
+8. Production Readiness Verdict
+
+Final verdict must be one of:
+
+- FAIL
+- CONDITIONAL PASS
+- PASS
+
+Do not stop after finding one issue.
+Continue until every attack category above has been verified.

@@ -1,6 +1,6 @@
 // src/features/upload/hooks/useMentionAutocomplete.js
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { ctrlSearchMentionSuggestions } from "@/features/upload/controller/searchMentionSuggestions.controller";
+import { ctrlSearchMentionSuggestions } from "@/features/upload/controllers/searchMentionSuggestions.controller";
 
 /**
  * Autocomplete mentions like Instagram:

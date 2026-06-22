@@ -39,7 +39,7 @@ vi.mock('@/features/block', () => ({
   ctrlGetBlockStatus: vi.fn(),
 }))
 
-vi.mock('@/features/feed/adapters/feedCache.adapter', () => ({
+vi.mock('@/features/CentralFeed/adapters/feedCache.adapter', () => ({
   invalidateFeedFollowCache: vi.fn(),
 }))
 
@@ -61,7 +61,7 @@ import {
 import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
-import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.adapter'
+import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 

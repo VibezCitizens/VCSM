@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DbPolicyMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "data"],
+  "properties": { "data": { "type": "object", "required": ["tables", "rpcs", "dalDependencies", "rpcDependencies", "unverified"], "properties": { "tables": { "type": "array" }, "rpcs": { "type": "array" }, "dalDependencies": { "type": "array" }, "rpcDependencies": { "type": "array" }, "unverified": { "type": "array" } } } }
+}

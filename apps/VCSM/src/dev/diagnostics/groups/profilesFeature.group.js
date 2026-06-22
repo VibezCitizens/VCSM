@@ -8,15 +8,15 @@ import {
   trimAudit,
   withProfilesFeatureContext,
 } from "@/dev/diagnostics/groups/profilesFeature.group.helpers";
-import { resolveUsernameToActor } from "@/features/profiles/controller/resolveUsernameToActor.controller";
+import { resolveUsernameToActor } from "@/features/profiles/kinds/citizen/controller/resolveUsernameToActor.controller";
 import { getActorKindController } from "@/features/profiles/controller/getActorKind.controller";
 import { getVportTypeController } from "@/features/profiles/kinds/vport/controller/getVportType.controller";
 import { getProfileView } from "@/features/profiles/controller/getProfileView.controller";
 import { getActorPostsController } from "@/features/profiles/controller/post/getActorPosts.controller";
 import { getActorVibeTagsController } from "@/features/profiles/controller/tags/getActorVibeTags.controller";
-import { getFriendListsController } from "@/features/profiles/controller/friends/getFriendLists.controller";
-import { getTopFriendActorIdsController } from "@/features/profiles/controller/friends/getTopFriendActorIds.controller";
-import { getTopFriendCandidatesController } from "@/features/profiles/controller/friends/getTopFriendCandidates.controller";
+import { getFriendListsController } from "@/features/profiles/kinds/citizen/controller/friends/getFriendLists.controller";
+import { getTopFriendActorIdsController } from "@/features/profiles/kinds/citizen/controller/friends/getTopFriendActorIds.controller";
+import { getTopFriendCandidatesController } from "@/features/profiles/kinds/citizen/controller/friends/getTopFriendCandidates.controller";
 import { getVportPublicDetailsController } from "@/features/profiles/kinds/vport/controller/getVportPublicDetails.controller";
 import getVportServicesController from "@/features/profiles/kinds/vport/controller/services/getVportServices.controller";
 import getVportRatesController from "@/features/profiles/kinds/vport/controller/rates/getVportRates.controller";

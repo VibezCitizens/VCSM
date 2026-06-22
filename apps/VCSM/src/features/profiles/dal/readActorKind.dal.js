@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { readActorTypeDAL } from "@/features/profiles/dal/readActorType.dal";
 
 // Delegates to the shared readActorTypeDAL cache (600s TTL).

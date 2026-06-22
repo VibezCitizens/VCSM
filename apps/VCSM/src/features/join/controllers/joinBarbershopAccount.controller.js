@@ -2,7 +2,6 @@ import { signUpForInviteDAL } from "@/features/join/dal/joinAuth.dal";
 import { readBarberVportByOwnerUserIdDAL } from "@/features/join/dal/barberVport.read.dal";
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from "@/features/join/dal/joinInvite.dal";
 import { recordSignupConsent } from "@/features/legal/adapters/legal.adapter";
-import { bootstrapJoinOnboardingController } from "@/features/auth/adapters/auth.adapter";
 import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 
 const BARBER_CATEGORY = "barber";
@@ -12,7 +11,7 @@ export async function loadInviteForJoin(token) {
   return fetchJoinResourceByIdDAL(token);
 }
 
-export async function signUpForBarbershopInvite(token, { name, username, email, password, vportName }) {
+export async function signUpForBarbershopInvite(token, { name, username, email, password, vportName, birthdate }) {
   const emailRedirectTo = `${window.location.origin}/join/barbershop/${token}`;
 
   const data = await signUpForInviteDAL({
@@ -25,6 +24,7 @@ export async function signUpForBarbershopInvite(token, { name, username, email, 
       desired_username: username,
       vport_name: vportName,
       category_key: BARBER_CATEGORY,
+      birthdate: birthdate ?? null,
     },
   });
 
@@ -75,6 +75,7 @@ export async function autoResumeInviteOnboarding(token, {
   refreshActorFn,
   readCurrentAuthUserDAL,
   createVport,
+  bootstrapJoinOnboarding,
 } = {}) {
   const user = await readCurrentAuthUserDAL?.();
   if (!user) throw new Error("Not signed in.");
@@ -82,22 +83,33 @@ export async function autoResumeInviteOnboarding(token, {
   const displayName = String(meta.display_name || "").trim();
   const desiredUsername = String(meta.desired_username || displayName).trim();
   const vportName = String(meta.vport_name || displayName).trim();
+  const birthdate = String(meta.birthdate || "").trim() || null;
 
   if (!displayName) throw new Error("Missing account details. Please sign up again.");
+  if (!birthdate) throw new Error("Birthdate is required. Please sign up again.");
 
-  // Session ownership verified inside bootstrapJoinOnboardingController
-  await bootstrapJoinOnboardingController({
+  // Session ownership and age gate enforced inside bootstrapJoinOnboarding
+  const actor = await bootstrapJoinOnboarding?.({
     userId: user.id,
     displayName,
     desiredUsername,
+    birthdate,
     refreshActorFn,
     ensureVcsmPlatformBootstrap,
   });
+
+  const callerActorId = actor?.id ?? null;
+  if (!callerActorId) throw new Error("autoResumeInviteOnboarding: could not resolve callerActorId from bootstrap");
 
   const vportResult = await createVport?.({
     name: vportName,
     vportType: BARBER_CATEGORY,
     directoryVisible: true,
+  });
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: vportResult.actorId,
   });
 
   await acceptJoinResourceDAL(token, vportResult.actorId);
@@ -105,7 +117,8 @@ export async function autoResumeInviteOnboarding(token, {
   return { barberVportActorId: vportResult.actorId };
 }
 
-export async function createBarberVportAndAccept(token, vportName, { readCurrentAuthUserDAL, createVport } = {}) {
+export async function createBarberVportAndAccept(token, vportName, { readCurrentAuthUserDAL, createVport, callerActorId } = {}) {
+  if (!callerActorId) throw new Error("createBarberVportAndAccept: callerActorId required");
   const user = await readCurrentAuthUserDAL?.();
   if (!user) throw new Error("Not signed in.");
 
@@ -113,6 +126,11 @@ export async function createBarberVportAndAccept(token, vportName, { readCurrent
     name: vportName,
     vportType: BARBER_CATEGORY,
     directoryVisible: true,
+  });
+
+  await assertActorOwnsVportActorController({
+    requestActorId: callerActorId,
+    targetActorId: vportResult.actorId,
   });
 
   await acceptJoinResourceDAL(token, vportResult.actorId);

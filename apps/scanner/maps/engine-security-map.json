@@ -1,0 +1,2375 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "engineSecurityCount": 9,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "engines": [
+      {
+        "engine": "booking",
+        "writes": 30,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "HIGH",
+        "surfaces": {
+          "writes": [
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "availability_rules",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertAvailabilityRule",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/availability.write.dal.js",
+              "file": "engines/booking/src/dal/availability.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "availability_exceptions",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertAvailabilityException",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/availability.write.dal.js",
+              "file": "engines/booking/src/dal/availability.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": null,
+              "table": "bookings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeleteBooking",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/booking.write.dal.js",
+              "file": "engines/booking/src/dal/booking.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "bookings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertBooking",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/booking.write.dal.js",
+              "file": "engines/booking/src/dal/booking.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "bookings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateBookingStatus",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/booking.write.dal.js",
+              "file": "engines/booking/src/dal/booking.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": null,
+              "table": "location_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalRemoveLocationMember",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/location.write.dal.js",
+              "file": "engines/booking/src/dal/location.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "locations",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertLocation",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/location.write.dal.js",
+              "file": "engines/booking/src/dal/location.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "locations",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateLocation",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/location.write.dal.js",
+              "file": "engines/booking/src/dal/location.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "location_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertLocationMember",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/location.write.dal.js",
+              "file": "engines/booking/src/dal/location.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "organizations",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertOrganization",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/organization.write.dal.js",
+              "file": "engines/booking/src/dal/organization.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "organizations",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateOrganization",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/organization.write.dal.js",
+              "file": "engines/booking/src/dal/organization.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "organization_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateOrganizationMemberStatus",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/organization.write.dal.js",
+              "file": "engines/booking/src/dal/organization.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "organization_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertOrganizationMember",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/organization.write.dal.js",
+              "file": "engines/booking/src/dal/organization.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "organization_profiles",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertOrganizationProfile",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/organization.write.dal.js",
+              "file": "engines/booking/src/dal/organization.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": null,
+              "table": "qr_links",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeleteQrLink",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/qrLink.write.dal.js",
+              "file": "engines/booking/src/dal/qrLink.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "qr_links",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertQrLink",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/qrLink.write.dal.js",
+              "file": "engines/booking/src/dal/qrLink.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "qr_links",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalIncrementQrScanCountRaw",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/qrLink.write.dal.js",
+              "file": "engines/booking/src/dal/qrLink.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "resources",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertBookingResource",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/resource.write.dal.js",
+              "file": "engines/booking/src/dal/resource.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "resource_services",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertBookingResourceServices",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/resource.write.dal.js",
+              "file": "engines/booking/src/dal/resource.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": null,
+              "table": "resource_service_overrides",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeleteResourceServiceOverride",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/resourceServiceOverride.write.dal.js",
+              "file": "engines/booking/src/dal/resourceServiceOverride.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "resource_service_overrides",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertResourceServiceOverride",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/resourceServiceOverride.write.dal.js",
+              "file": "engines/booking/src/dal/resourceServiceOverride.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "service_booking_profiles",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalSaveServiceProfileDurationsByServiceIds",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/serviceProfile.write.dal.js",
+              "file": "engines/booking/src/dal/serviceProfile.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "service_booking_profiles",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalSaveServiceProfileDurationsByServiceIds",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/serviceProfile.write.dal.js",
+              "file": "engines/booking/src/dal/serviceProfile.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "availability_rules",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertVportAvailabilityRule",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportAvailability.write.dal.js",
+              "file": "engines/booking/src/dal/vportAvailability.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": null,
+              "table": "availability_exceptions",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertVportAvailabilityException",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportAvailability.write.dal.js",
+              "file": "engines/booking/src/dal/vportAvailability.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": null,
+              "table": "bookings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeleteVportBooking",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportBooking.write.dal.js",
+              "file": "engines/booking/src/dal/vportBooking.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "bookings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertVportBooking",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportBooking.write.dal.js",
+              "file": "engines/booking/src/dal/vportBooking.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "bookings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateVportBookingStatus",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportBooking.write.dal.js",
+              "file": "engines/booking/src/dal/vportBooking.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": null,
+              "table": "resources",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertVportResource",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportResource.write.dal.js",
+              "file": "engines/booking/src/dal/vportResource.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": null,
+              "table": "resources",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateVportResource",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:booking",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/booking",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/booking/src/dal/vportResource.write.dal.js",
+              "file": "engines/booking/src/dal/vportResource.write.dal.js"
+            }
+          ],
+          "rpcs": [],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "chat",
+        "writes": 49,
+        "rpcs": 2,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "HIGH",
+        "surfaces": {
+          "writes": [
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "message_attachments",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteAttachmentDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/attachments.write.dal.js",
+              "file": "engines/chat/src/dal/attachments.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "chat",
+              "table": "message_attachments",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertAttachmentDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/attachments.write.dal.js",
+              "file": "engines/chat/src/dal/attachments.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "message_attachments",
+              "rpc": null,
+              "functionName": null,
+              "function": "updateAttachmentStatusDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/attachments.write.dal.js",
+              "file": "engines/chat/src/dal/attachments.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertConversationMembershipDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversationMembership.write.dal.js",
+              "file": "engines/chat/src/dal/conversationMembership.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "setConversationMembershipStatusDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversationMembership.write.dal.js",
+              "file": "engines/chat/src/dal/conversationMembership.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "upsertConversationMembershipDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversationMembership.write.dal.js",
+              "file": "engines/chat/src/dal/conversationMembership.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateConversationMemberReadPointer",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversationRead.write.dal.js",
+              "file": "engines/chat/src/dal/conversationRead.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalResetInboxUnreadCount",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversationRead.write.dal.js",
+              "file": "engines/chat/src/dal/conversationRead.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "chat",
+              "table": "conversations",
+              "rpc": null,
+              "functionName": null,
+              "function": "createConversation",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversations.write.dal.js",
+              "file": "engines/chat/src/dal/conversations.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "addConversationMembers",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversations.write.dal.js",
+              "file": "engines/chat/src/dal/conversations.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversations",
+              "rpc": null,
+              "functionName": null,
+              "function": "updateConversationMetadata",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversations.write.dal.js",
+              "file": "engines/chat/src/dal/conversations.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversations",
+              "rpc": null,
+              "functionName": null,
+              "function": "updateConversationConfiguration",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversations.write.dal.js",
+              "file": "engines/chat/src/dal/conversations.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversations",
+              "rpc": null,
+              "functionName": null,
+              "function": "updateConversationLastMessage",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversations.write.dal.js",
+              "file": "engines/chat/src/dal/conversations.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "deactivateConversationMember",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/conversations.write.dal.js",
+              "file": "engines/chat/src/dal/conversations.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteThreadForMeDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/deleteThreadForMe.dal.js",
+              "file": "engines/chat/src/dal/deleteThreadForMe.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "messages",
+              "rpc": null,
+              "functionName": null,
+              "function": "editMessageDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/editMessage.write.dal.js",
+              "file": "engines/chat/src/dal/editMessage.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "resetInboxUnread",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox_entries.write.dal.js",
+              "file": "engines/chat/src/dal/inbox_entries.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "archiveInboxEntry",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox_entries.write.dal.js",
+              "file": "engines/chat/src/dal/inbox_entries.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "unarchiveInboxEntry",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox_entries.write.dal.js",
+              "file": "engines/chat/src/dal/inbox_entries.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "bumpInboxAfterSend",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox_entries.write.dal.js",
+              "file": "engines/chat/src/dal/inbox_entries.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "ensureInboxEntry",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox_entries.write.dal.js",
+              "file": "engines/chat/src/dal/inbox_entries.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "incrementUnread",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "resetUnread",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "updateInboxLastMessage",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "updateInboxFlags",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "archiveConversationForActor",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "upsertInboxEntry",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "moveConversationToFolder",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/inbox.write.dal.js",
+              "file": "engines/chat/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "message_reactions",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteReactionDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messageReactions.write.dal.js",
+              "file": "engines/chat/src/dal/messageReactions.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "message_reactions",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertReactionDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messageReactions.write.dal.js",
+              "file": "engines/chat/src/dal/messageReactions.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "message_receipts",
+              "rpc": null,
+              "functionName": null,
+              "function": "undoDeleteMessageForMeDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messageReceipts.write.dal.js",
+              "file": "engines/chat/src/dal/messageReceipts.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "message_receipts",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteMessageForMeDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messageReceipts.write.dal.js",
+              "file": "engines/chat/src/dal/messageReceipts.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "message_receipts",
+              "rpc": null,
+              "functionName": null,
+              "function": "upsertMessageReceiptDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messageReceipts.write.dal.js",
+              "file": "engines/chat/src/dal/messageReceipts.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "messages",
+              "rpc": null,
+              "functionName": null,
+              "function": "hardDeleteMessageDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messages.write.dal.js",
+              "file": "engines/chat/src/dal/messages.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "messages",
+              "rpc": null,
+              "functionName": null,
+              "function": "editMessageDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messages.write.dal.js",
+              "file": "engines/chat/src/dal/messages.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "messages",
+              "rpc": null,
+              "functionName": null,
+              "function": "softDeleteMessageDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/messages.write.dal.js",
+              "file": "engines/chat/src/dal/messages.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "moderation",
+              "table": "actions",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertConversationHideModerationActionDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/moderationActions.write.dal.js",
+              "file": "engines/chat/src/dal/moderationActions.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "chat",
+              "table": "inbox_entries",
+              "rpc": null,
+              "functionName": null,
+              "function": "openConversation",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/openConversation.rpc.js",
+              "file": "engines/chat/src/dal/openConversation.rpc.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "conversation_members",
+              "rpc": null,
+              "functionName": null,
+              "function": "openConversation",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/openConversation.rpc.js",
+              "file": "engines/chat/src/dal/openConversation.rpc.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "chat",
+              "table": "outbox_events",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertOutboxEventDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/outbox.write.dal.js",
+              "file": "engines/chat/src/dal/outbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "outbox_events",
+              "rpc": null,
+              "functionName": null,
+              "function": "markOutboxEventPublishedDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/outbox.write.dal.js",
+              "file": "engines/chat/src/dal/outbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "chat",
+              "table": "outbox_events",
+              "rpc": null,
+              "functionName": null,
+              "function": "markOutboxEventFailedDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/outbox.write.dal.js",
+              "file": "engines/chat/src/dal/outbox.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "conversation_pins",
+              "rpc": null,
+              "functionName": null,
+              "function": "deletePinDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/pins.write.dal.js",
+              "file": "engines/chat/src/dal/pins.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "conversation_pins",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertPinDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/pins.write.dal.js",
+              "file": "engines/chat/src/dal/pins.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "saved_messages",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteSavedMessageDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/savedMessages.write.dal.js",
+              "file": "engines/chat/src/dal/savedMessages.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "saved_messages",
+              "rpc": null,
+              "functionName": null,
+              "function": "insertSavedMessageDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/savedMessages.write.dal.js",
+              "file": "engines/chat/src/dal/savedMessages.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "typing_states",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteTypingStateDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/typingStates.write.dal.js",
+              "file": "engines/chat/src/dal/typingStates.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "chat",
+              "table": "typing_states",
+              "rpc": null,
+              "functionName": null,
+              "function": "deleteExpiredTypingStatesDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/typingStates.write.dal.js",
+              "file": "engines/chat/src/dal/typingStates.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "chat",
+              "table": "typing_states",
+              "rpc": null,
+              "functionName": null,
+              "function": "upsertTypingStateDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:chat",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/chat/src/dal/typingStates.write.dal.js",
+              "file": "engines/chat/src/dal/typingStates.write.dal.js"
+            }
+          ],
+          "rpcs": [
+            {
+              "rpc": "get_or_create_direct_conversation",
+              "schema": "chat",
+              "file": "engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "engine": "chat",
+              "caller": "getOrCreateDirectConversationRPC",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "send_message_atomic",
+              "schema": "chat",
+              "file": "engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+              "appId": null,
+              "root": "engines/chat",
+              "feature": null,
+              "engine": "chat",
+              "caller": "sendMessageAtomicDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            }
+          ],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "hydration",
+        "writes": 0,
+        "rpcs": 1,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "LOW",
+        "surfaces": {
+          "writes": [],
+          "rpcs": [
+            {
+              "rpc": "get_actor_summaries",
+              "schema": "vc",
+              "file": "engines/hydration/src/dal.js",
+              "appId": null,
+              "root": "engines/hydration",
+              "feature": null,
+              "engine": "hydration",
+              "caller": "getActorSummariesByIdsDAL",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            }
+          ],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "i18n",
+        "writes": 0,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "LOW",
+        "surfaces": {
+          "writes": [],
+          "rpcs": [],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "identity",
+        "writes": 5,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "MEDIUM",
+        "surfaces": {
+          "writes": [
+            {
+              "operation": "update",
+              "schema": "platform",
+              "table": "user_app_preferences",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalSetActiveActorLink",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:identity",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/identity",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/identity/src/dal/actorLinks.write.dal.js",
+              "file": "engines/identity/src/dal/actorLinks.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "platform",
+              "table": "user_app_state",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalRecordLogin",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:identity",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/identity",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/identity/src/dal/state.write.dal.js",
+              "file": "engines/identity/src/dal/state.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "platform",
+              "table": "user_app_state",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalFinalizeAccountState",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:identity",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/identity",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/identity/src/dal/state.write.dal.js",
+              "file": "engines/identity/src/dal/state.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "platform",
+              "table": "user_app_state",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalFinalizeAccountState",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:identity",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/identity",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/identity/src/dal/state.write.dal.js",
+              "file": "engines/identity/src/dal/state.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "platform",
+              "table": "user_app_state",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateLastDestination",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:identity",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/identity",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/identity/src/dal/state.write.dal.js",
+              "file": "engines/identity/src/dal/state.write.dal.js"
+            }
+          ],
+          "rpcs": [],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "media",
+        "writes": 0,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "LOW",
+        "surfaces": {
+          "writes": [],
+          "rpcs": [],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "notifications",
+        "writes": 4,
+        "rpcs": 7,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "MEDIUM",
+        "surfaces": {
+          "writes": [
+            {
+              "operation": "update",
+              "schema": "notification",
+              "table": "inbox_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalMarkInboxSeen",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:notifications",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/notifications/src/dal/inbox.write.dal.js",
+              "file": "engines/notifications/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "notification",
+              "table": "inbox_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalMarkInboxRead",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:notifications",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/notifications/src/dal/inbox.write.dal.js",
+              "file": "engines/notifications/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "notification",
+              "table": "inbox_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDismissInboxItem",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:notifications",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/notifications/src/dal/inbox.write.dal.js",
+              "file": "engines/notifications/src/dal/inbox.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "notification",
+              "table": "inbox_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalArchiveInboxItem",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:notifications",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/notifications/src/dal/inbox.write.dal.js",
+              "file": "engines/notifications/src/dal/inbox.write.dal.js"
+            }
+          ],
+          "rpcs": [
+            {
+              "rpc": "create_event",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/events.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalInsertEvent",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "insert_delivery_attempt",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalInsertDeliveryAttempt",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "insert_inbox_item",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/inbox.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalInsertInboxItem",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "insert_recipients",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/recipients.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalInsertRecipients",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "update_delivery_attempt",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalUpdateDeliveryAttempt",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "update_recipient_status",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/recipients.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalUpdateRecipientStatus",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "upsert_rendered",
+              "schema": "notification",
+              "file": "engines/notifications/src/dal/rendered.write.dal.js",
+              "appId": null,
+              "root": "engines/notifications",
+              "feature": null,
+              "engine": "notifications",
+              "caller": "dalUpsertRendered",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            }
+          ],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "portfolio",
+        "writes": 8,
+        "rpcs": 0,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "MEDIUM",
+        "surfaces": {
+          "writes": [
+            {
+              "operation": "insert",
+              "schema": "vport",
+              "table": "portfolio_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertPortfolioItem",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioItems.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioItems.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "vport",
+              "table": "portfolio_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdatePortfolioItem",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioItems.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioItems.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "vport",
+              "table": "portfolio_items",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalSoftDeletePortfolioItem",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioItems.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioItems.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "vport",
+              "table": "portfolio_media",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeletePortfolioMedia",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioMedia.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioMedia.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "vport",
+              "table": "portfolio_media",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertPortfolioMedia",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioMedia.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioMedia.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "vport",
+              "table": "portfolio_tags",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeletePortfolioTags",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioTags.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioTags.write.dal.js"
+            },
+            {
+              "operation": "delete",
+              "schema": "vport",
+              "table": "portfolio_tags",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalReplacePortfolioTags",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioTags.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioTags.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "vport",
+              "table": "portfolio_tags",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertPortfolioTags",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:portfolio",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/portfolio",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/portfolio/src/dal/portfolioTags.write.dal.js",
+              "file": "engines/portfolio/src/dal/portfolioTags.write.dal.js"
+            }
+          ],
+          "rpcs": [],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      },
+      {
+        "engine": "reviews",
+        "writes": 5,
+        "rpcs": 2,
+        "edgeFunctions": 0,
+        "externalApis": 0,
+        "riskTier": "MEDIUM",
+        "surfaces": {
+          "writes": [
+            {
+              "operation": "delete",
+              "schema": "reviews",
+              "table": "review_dimension_ratings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalDeleteDimensionRatingsForReview",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:reviews",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/reviews/src/dal/dimensionRatings.write.dal.js",
+              "file": "engines/reviews/src/dal/dimensionRatings.write.dal.js"
+            },
+            {
+              "operation": "upsert",
+              "schema": "reviews",
+              "table": "review_dimension_ratings",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpsertDimensionRatings",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:reviews",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/reviews/src/dal/dimensionRatings.write.dal.js",
+              "file": "engines/reviews/src/dal/dimensionRatings.write.dal.js"
+            },
+            {
+              "operation": "insert",
+              "schema": "reviews",
+              "table": "reviews",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalInsertReview",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:reviews",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/reviews/src/dal/reviews.write.dal.js",
+              "file": "engines/reviews/src/dal/reviews.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "reviews",
+              "table": "reviews",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalUpdateReviewBody",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:reviews",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/reviews/src/dal/reviews.write.dal.js",
+              "file": "engines/reviews/src/dal/reviews.write.dal.js"
+            },
+            {
+              "operation": "update",
+              "schema": "reviews",
+              "table": "reviews",
+              "rpc": null,
+              "functionName": null,
+              "function": "dalSoftDeleteReview",
+              "confidence": "HIGH",
+              "evidence": [
+                "Supabase write call extracted from AST"
+              ],
+              "owner": "engine:reviews",
+              "ownerKind": "engine",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "layer": "dal",
+              "path": "engines/reviews/src/dal/reviews.write.dal.js",
+              "file": "engines/reviews/src/dal/reviews.write.dal.js"
+            }
+          ],
+          "rpcs": [
+            {
+              "rpc": "get_target_overall_stats",
+              "schema": "reviews",
+              "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "engine": "reviews",
+              "caller": "dalRpcGetTargetOverallStats",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            },
+            {
+              "rpc": "upsert_neutral_review",
+              "schema": "reviews",
+              "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+              "appId": null,
+              "root": "engines/reviews",
+              "feature": null,
+              "engine": "reviews",
+              "caller": "dalRpcUpsertNeutralReview",
+              "confidence": "HIGH",
+              "evidence": [
+                "rpc() extracted from AST"
+              ]
+            }
+          ],
+          "edgeFunctions": [],
+          "externalApis": []
+        },
+        "confidence": "HIGH",
+        "evidence": [
+          "engine security surfaces discovered from AST maps"
+        ]
+      }
+    ]
+  }
+}

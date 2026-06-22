@@ -35,7 +35,7 @@ export async function dalGetPortfolioItemById({ itemId, trace = null }) {
 /**
  * Fetch all active, public items for a vport profile.
  */
-export async function dalListPortfolioItemsByProfileId({ profileId, limit = 50, offset = 0, trace = null }) {
+export async function dalListPortfolioItemsByProfileId({ profileId, limit = 50, offset = 0, publicOnly = false, trace = null }) {
   const supabase = getSupabaseClient()
 
   trace?.report?.({
@@ -44,12 +44,18 @@ export async function dalListPortfolioItemsByProfileId({ profileId, limit = 50, 
     dalName: 'dalListPortfolioItemsByProfileId',
   })
 
-  const { data, error } = await supabase
+  let query = supabase
     .schema('vport')
     .from('portfolio_items')
     .select(ITEM_COLUMNS)
     .eq('profile_id', profileId)
     .eq('is_deleted', false)
+
+  if (publicOnly) {
+    query = query.eq('visibility', 'public').eq('is_active', true)
+  }
+
+  const { data, error } = await query
     .order('is_pinned', { ascending: false })
     .order('is_featured', { ascending: false })
     .order('sort_order', { ascending: true })

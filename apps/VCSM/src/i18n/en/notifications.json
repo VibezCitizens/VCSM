@@ -44,5 +44,18 @@
   "review": {
     "reviewed": "reviewed your business",
     "reviewedRated": "reviewed your business ({{rating}}/5)"
+  },
+  "gas": {
+    "suggested": "suggested a new {{fuel}} price for your station",
+    "suggestedBatch": "suggested {{count}} new fuel prices for your station",
+    "suggestedGeneric": "submitted a gas price update for your station",
+    "fuel": {
+      "regular": "regular",
+      "midgrade": "midgrade",
+      "premium": "premium",
+      "diesel": "diesel",
+      "e85": "E85",
+      "kerosene": "kerosene"
+    }
   }
 }

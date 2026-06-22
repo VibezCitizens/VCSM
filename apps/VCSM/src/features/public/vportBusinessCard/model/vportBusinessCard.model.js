@@ -66,7 +66,6 @@ export function mapVportBusinessCardPublicRow(raw) {
   const averageRating = raw.average_rating != null ? parseFloat(raw.average_rating) : null;
 
   return {
-    profileId: raw.profile_id ?? null,
     actorId: raw.actor_id ?? null,
     slug: toText(raw.slug).toLowerCase(),
     businessName: toText(raw.business_name) || "VPORT",

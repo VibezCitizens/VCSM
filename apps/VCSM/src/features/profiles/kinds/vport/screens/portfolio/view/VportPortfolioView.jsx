@@ -8,7 +8,7 @@
 // Rendering as a sibling lets it escape.
 // ============================================================
 
-import { useMemo, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Image as ImageIcon, Sparkles } from "lucide-react";
 import { useTranslation } from "@i18n";
 import { useVportPortfolio } from "@/features/profiles/kinds/vport/hooks/portfolio/useVportPortfolio";
@@ -85,8 +85,6 @@ function PortfolioItemCard({ item, onOpen }) {
 
 export default function VportPortfolioView({
   profile,
-  posts,
-  loadingPosts = false,
   availableTabs = [],
   onSelectTab = null,
 }) {

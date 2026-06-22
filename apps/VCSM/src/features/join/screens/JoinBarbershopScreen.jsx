@@ -64,6 +64,11 @@ export default function JoinBarbershopScreen() {
     );
   }
 
+  // FROZEN: join signup is disabled. All new accounts must go through /register.
+  if (view === VIEWS.SIGNUP) {
+    return null;
+  }
+
   if (view === VIEWS.ERROR) {
     return (
       <Page>

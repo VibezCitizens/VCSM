@@ -2,6 +2,8 @@ import {
   archiveNotificationDAL,
   configureNotificationsRuntimeDAL,
   countNotificationUnreadInboxItemsDAL,
+  countUnreadBatchDAL,
+  countUnreadForActorDAL,
   dismissNotificationDAL,
   insertNotificationEventDAL,
   insertNotificationInboxItemDAL,
@@ -17,6 +19,7 @@ import {
   upsertNotificationRenderedDAL,
 } from '@/features/notifications/runtime/notificationRuntime.dal'
 import { mapNotificationInboxRows } from '@/features/notifications/runtime/notificationRuntime.model'
+import { verifyRecipientOwnership } from '@/features/notifications/inbox/lib/verifyRecipientOwnership'
 const COUNT_CACHE_TTL_MS = 5000
 
 const countCache = new Map(), countInflight = new Map()
@@ -213,6 +216,13 @@ export async function getInboxNotifications({
     if (unseenRecipientIds.length) {
       await markRecipientIdsSeen(unseenRecipientIds)
       invalidateCountUnreadCache(recipientActorId)
+
+      const seenSet = new Set(unseenRecipientIds)
+      for (const notification of notifications) {
+        if (seenSet.has(notification.recipientId)) {
+          notification.isSeen = true
+        }
+      }
     }
   }
 
@@ -220,15 +230,11 @@ export async function getInboxNotifications({
 }
 
 async function countUnreadInner({ recipientActorId, recipientDomain }) {
-  const recipients = await readNotificationRecipientIdsForUnreadDAL({
+  return countUnreadForActorDAL({
     recipientActorId,
+    deliveryChannel: 'in_app',
     recipientDomain,
   })
-
-  if (!recipients.length) return 0
-
-  const recipientIds = recipients.map((row) => row.id)
-  return countNotificationUnreadInboxItemsDAL(recipientIds)
 }
 
 export async function countUnread({ recipientActorId, recipientDomain = null } = {}) {
@@ -256,14 +262,25 @@ export async function countUnread({ recipientActorId, recipientDomain = null } =
   return pending
 }
 
-export async function markSeen({ recipientIds } = {}) {
-  const count = await markRecipientIdsSeen(recipientIds)
+export async function countUnreadBatch({ recipientActorIds = [], deliveryChannel = 'in_app' } = {}) {
+  const ids = (recipientActorIds ?? []).filter(Boolean)
+  if (!ids.length) return {}
+  return countUnreadBatchDAL({ actorIds: ids, deliveryChannel })
+}
+
+export async function markSeen({ recipientIds, actorId } = {}) {
+  if (!actorId || !Array.isArray(recipientIds) || !recipientIds.length) return 0
+  const owned = await Promise.all(recipientIds.map((id) => verifyRecipientOwnership(id, actorId)))
+  const validIds = recipientIds.filter((_, i) => owned[i])
+  if (!validIds.length) return 0
+  const count = await markRecipientIdsSeen(validIds)
   invalidateCountUnreadCache()
   return count
 }
 
-export async function markRead({ recipientId } = {}) {
-  if (!recipientId) return null
+export async function markRead({ recipientId, actorId } = {}) {
+  if (!recipientId || !actorId) return null
+  if (!(await verifyRecipientOwnership(recipientId, actorId))) return null
 
   const data = await markNotificationReadDAL({
     recipientId,
@@ -274,8 +291,9 @@ export async function markRead({ recipientId } = {}) {
   return data ?? null
 }
 
-export async function dismiss({ recipientId } = {}) {
-  if (!recipientId) return null
+export async function dismiss({ recipientId, actorId } = {}) {
+  if (!recipientId || !actorId) return null
+  if (!(await verifyRecipientOwnership(recipientId, actorId))) return null
 
   const data = await dismissNotificationDAL({
     recipientId,
@@ -286,8 +304,9 @@ export async function dismiss({ recipientId } = {}) {
   return data ?? null
 }
 
-export async function archive({ recipientId } = {}) {
-  if (!recipientId) return null
+export async function archive({ recipientId, actorId } = {}) {
+  if (!recipientId || !actorId) return null
+  if (!(await verifyRecipientOwnership(recipientId, actorId))) return null
 
   const data = await archiveNotificationDAL({
     recipientId,

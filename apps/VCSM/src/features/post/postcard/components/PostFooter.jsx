@@ -2,7 +2,7 @@
 
 import React from "react";
 import ReactionBar from "./ReactionBar";
-import CommentInput from "../../commentcard/components/CommentInput";
+import { CommentInput } from "@/features/post/commentcard/adapters/commentcard.adapter";
 
 export default function PostFooter({ postId }) {
   if (!postId) return null;

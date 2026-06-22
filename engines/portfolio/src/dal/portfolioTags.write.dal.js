@@ -54,9 +54,32 @@ export async function dalDeletePortfolioTags({ itemId, tags, trace = null }) {
 
 /**
  * Replace all tags for a portfolio item.
+ * callerProfileId is required — ownership of the parent item is verified before
+ * any mutation so this DAL cannot be used to wipe tags on an unowned item.
  */
-export async function dalReplacePortfolioTags({ itemId, tags, trace = null }) {
+export async function dalReplacePortfolioTags({ itemId, callerProfileId, tags, trace = null }) {
+  if (!callerProfileId) throw new Error('[dalReplacePortfolioTags] callerProfileId required')
+
   const supabase = getSupabaseClient()
+
+  // Verify the item exists and belongs to the caller before touching tags.
+  const { data: item, error: itemError } = await supabase
+    .schema('vport')
+    .from('portfolio_items')
+    .select('id')
+    .eq('id', itemId)
+    .eq('profile_id', callerProfileId)
+    .eq('is_deleted', false)
+    .maybeSingle()
+
+  if (itemError) {
+    trace?.report?.({ step: 'TAGS_REPLACE_OWNERSHIP_ERROR', status: 'error', error: itemError })
+    throw itemError
+  }
+
+  if (!item) {
+    throw new Error('[dalReplacePortfolioTags] item not found or not owned by caller')
+  }
 
   // Delete existing
   const { error: delError } = await supabase

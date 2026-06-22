@@ -1,7 +1,7 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\screens\hooks\usePostDetailEditing.js
 
 import { useCallback, useState } from "react";
-import { softDeleteCommentController } from "@/features/post/commentcard/controller/deleteComment.controller";
+import { softDeleteCommentController } from "@/features/post/commentcard/adapters/commentcard.adapter";
 
 export default function usePostDetailEditing({ actorId, threadComments, onReload, confirmAction }) {
   const [editingCommentId, setEditingCommentId] = useState(null);

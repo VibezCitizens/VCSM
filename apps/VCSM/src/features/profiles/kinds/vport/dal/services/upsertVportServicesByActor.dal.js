@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 const SERVICES_SELECT =
   "id,profile_id,key,label,description,service_group,sort_order,enabled,meta,created_at,updated_at";

@@ -6,7 +6,6 @@ export function mapBookingRow(row) {
     resourceId: row.resource_id ?? null,
     serviceId: row.service_id ?? null,
     customerActorId: row.customer_actor_id ?? null,
-    customerProfileId: row.customer_profile_id ?? null,
     status: row.status ?? "pending",
     source: row.source ?? "public",
     startsAt: row.starts_at ?? null,

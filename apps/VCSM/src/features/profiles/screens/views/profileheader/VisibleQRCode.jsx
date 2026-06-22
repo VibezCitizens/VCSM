@@ -1,4 +1,4 @@
-import { QrCode } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
+import { QrCode } from "@/features/qrcode/adapters/qrcode.adapter";
 
 /**
  * VisibleQRCode

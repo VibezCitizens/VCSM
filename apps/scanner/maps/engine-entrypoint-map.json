@@ -1,0 +1,2049 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "engineEntrypointCount": 9,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "engines": [
+      {
+        "engine": "booking",
+        "path": "engines/booking",
+        "entrypoints": [
+          "BOOKING_EVENTS",
+          "assertActorCanManageLocation",
+          "assertActorCanManageOrganization",
+          "assertActorCanManageResource",
+          "assertActorOwnsVportActor",
+          "buildQrDestinationPath",
+          "cancelBooking",
+          "completeBooking",
+          "configureBookingEngine",
+          "confirmBooking",
+          "createBooking",
+          "createLocationResource",
+          "createOrganizationLocationWorkspace",
+          "createQrLink",
+          "dismissBooking",
+          "ensureOwnerBookingResource",
+          "getBookingServiceProfiles",
+          "getLocationAvailability",
+          "getResourceAvailability",
+          "invalidateBookingAvailability",
+          "listBookingHistory",
+          "listBookingResourcesByLocation",
+          "listLocationsByOrganization",
+          "listOrganizationsByOwnerActor",
+          "listOwnerBookingResources",
+          "listQrLinksByLocation",
+          "listQrLinksByOrganization",
+          "listQrLinksByProfile",
+          "listResourceServiceOverrides",
+          "mapAvailabilityExceptionRow",
+          "mapAvailabilityRuleRow",
+          "mapBookingResourceRow",
+          "mapBookingResourceRows",
+          "mapBookingRow",
+          "mapBookingRows",
+          "mapBookingServiceProfileRow",
+          "mapBookingServiceProfileRows",
+          "mapLocationMemberRow",
+          "mapLocationMemberRows",
+          "mapLocationRow",
+          "mapLocationRows",
+          "mapOrganizationMemberRow",
+          "mapOrganizationMemberRows",
+          "mapOrganizationProfileRow",
+          "mapOrganizationRow",
+          "mapOrganizationRows",
+          "mapQrLinkRow",
+          "mapQrLinkRows",
+          "mapResourceAvailabilityModel",
+          "mapResourceServiceOverrideRow",
+          "mapResourceServiceOverrideRows",
+          "mapVportResourceRow",
+          "mapVportResourceRows",
+          "markNoShow",
+          "resolveBookingContext",
+          "resolveQrScan",
+          "resolveServicePricing",
+          "setAvailabilityException",
+          "setAvailabilityRule",
+          "setResourceSlotDuration",
+          "upsertResourceServiceOverride"
+        ],
+        "symbolConsumers": {
+          "BOOKING_EVENTS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "assertActorCanManageLocation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "assertActorCanManageOrganization": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "assertActorCanManageResource": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "assertActorOwnsVportActor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "buildQrDestinationPath": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "cancelBooking": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "completeBooking": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configureBookingEngine": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/setup.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "confirmBooking": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createBooking": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useCreateBooking.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "createLocationResource": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useAddStaffResource.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "createOrganizationLocationWorkspace": {
+            "consumerCount": 2,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useOrganizationWorkspace.js",
+              "apps/VCSM/src/features/vport/controllers/submitCreateVport.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "createQrLink": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useQrLinks.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "dismissBooking": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/notifications/screen/hooks/useMyAppointments.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "ensureOwnerBookingResource": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useEnsureOwnerBookingResource.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "getBookingServiceProfiles": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useBookingServiceProfiles.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "getLocationAvailability": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getResourceAvailability": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useBookingAvailability.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "invalidateBookingAvailability": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "listBookingHistory": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useBookingHistory.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listBookingResourcesByLocation": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useLocationResources.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listLocationsByOrganization": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useOrganizationLocations.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listOrganizationsByOwnerActor": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useOrganizationWorkspace.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listOwnerBookingResources": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useOwnerBookingResources.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listQrLinksByLocation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "listQrLinksByOrganization": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "listQrLinksByProfile": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useQrLinks.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listResourceServiceOverrides": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useResourceServiceOverrides.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "mapAvailabilityExceptionRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapAvailabilityRuleRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapBookingResourceRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapBookingResourceRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapBookingRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapBookingRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapBookingServiceProfileRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapBookingServiceProfileRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapLocationMemberRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapLocationMemberRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapLocationRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapLocationRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapOrganizationMemberRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapOrganizationMemberRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapOrganizationProfileRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapOrganizationRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapOrganizationRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapQrLinkRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapQrLinkRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapResourceAvailabilityModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapResourceServiceOverrideRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapResourceServiceOverrideRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapVportResourceRow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "mapVportResourceRows": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markNoShow": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveBookingContext": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useBookingContextResolver.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "resolveQrScan": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveServicePricing": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "setAvailabilityException": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "setAvailabilityRule": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "setResourceSlotDuration": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "upsertResourceServiceOverride": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/booking/hooks/useResourceServiceOverrides.js"
+            ],
+            "status": "ACTIVE"
+          }
+        },
+        "unusedExports": [
+          "BOOKING_EVENTS",
+          "assertActorCanManageLocation",
+          "assertActorCanManageOrganization",
+          "assertActorCanManageResource",
+          "assertActorOwnsVportActor",
+          "buildQrDestinationPath",
+          "cancelBooking",
+          "completeBooking",
+          "confirmBooking",
+          "getLocationAvailability",
+          "invalidateBookingAvailability",
+          "listQrLinksByLocation",
+          "listQrLinksByOrganization",
+          "mapAvailabilityExceptionRow",
+          "mapAvailabilityRuleRow",
+          "mapBookingResourceRow",
+          "mapBookingResourceRows",
+          "mapBookingRow",
+          "mapBookingRows",
+          "mapBookingServiceProfileRow",
+          "mapBookingServiceProfileRows",
+          "mapLocationMemberRow",
+          "mapLocationMemberRows",
+          "mapLocationRow",
+          "mapLocationRows",
+          "mapOrganizationMemberRow",
+          "mapOrganizationMemberRows",
+          "mapOrganizationProfileRow",
+          "mapOrganizationRow",
+          "mapOrganizationRows",
+          "mapQrLinkRow",
+          "mapQrLinkRows",
+          "mapResourceAvailabilityModel",
+          "mapResourceServiceOverrideRow",
+          "mapResourceServiceOverrideRows",
+          "mapVportResourceRow",
+          "mapVportResourceRows",
+          "markNoShow",
+          "resolveQrScan",
+          "resolveServicePricing",
+          "setAvailabilityException",
+          "setAvailabilityRule",
+          "setResourceSlotDuration"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "chat",
+        "path": "engines/chat",
+        "entrypoints": [
+          "CONVERSATION_ACCESS_MODES",
+          "CONVERSATION_ROLES",
+          "ConversationMemberModel",
+          "ConversationModel",
+          "DEFAULT_INBOX_VISIBILITY_SETTINGS",
+          "DEFAULT_PAGE_SIZE",
+          "DEFAULT_VEX_SETTINGS",
+          "EVENTS",
+          "INBOX_FLAGS",
+          "InboxEntryModel",
+          "MESSAGE_TYPES",
+          "MessageModel",
+          "addReaction",
+          "archiveConversationForActor",
+          "attachFileToMessage",
+          "buildInboxPreview",
+          "buildPageInfo",
+          "canEditConversation",
+          "canManageMembers",
+          "canReadConversation",
+          "canSendMessage",
+          "configureChatEngine",
+          "createAllowedConversation",
+          "createAnnouncementConversation",
+          "createConversation",
+          "createEventEnvelope",
+          "createPermissionSnapshot",
+          "decodeCursor",
+          "editMessage",
+          "emit",
+          "encodeCursor",
+          "ensureConversationMembership",
+          "evaluateConversationPolicy",
+          "fetchPendingOutboxEvents",
+          "generateClientId",
+          "generateMessageClientId",
+          "getAttachmentsForMessage",
+          "getConversationMembers",
+          "getConversationMessages",
+          "getInboxEntries",
+          "getInboxEntryForConversation",
+          "getOrCreateDirectConversation",
+          "getPermissionSnapshot",
+          "getUnreadCount",
+          "groupReactionsForMessage",
+          "hasAtLeastRole",
+          "hasMedia",
+          "hasText",
+          "isActorBlocked",
+          "isAnnouncementConversation",
+          "isArchived",
+          "isMuted",
+          "isPinned",
+          "isSystemMessage",
+          "isValidConversationRole",
+          "isValidMessageType",
+          "leaveConversation",
+          "markConversationRead",
+          "markConversationSpam",
+          "markDelivered",
+          "markOutboxEventFailed",
+          "markOutboxEventPublished",
+          "markRead",
+          "moveConversationToFolder",
+          "normalizeConversationAccessMode",
+          "normalizeInboxVisibilitySettings",
+          "normalizeVexSettings",
+          "on",
+          "openConversation",
+          "pruneStaleTypingStates",
+          "readConversationMembers",
+          "removeAllListeners",
+          "removeReaction",
+          "resolveLimit",
+          "resolvePartnerActor",
+          "searchDirectory",
+          "sendMessage",
+          "shouldHideFromInbox",
+          "shouldHighlight",
+          "shouldShowInboxEntry",
+          "startDirectConversation",
+          "startTyping",
+          "stopTyping",
+          "unsendMessage",
+          "updateInboxFlags",
+          "useConversation",
+          "useConversationGuards",
+          "useConversationMembers",
+          "useConversationMessages",
+          "useInbox",
+          "useInboxActions",
+          "useInboxEntryForConversation",
+          "useInboxFolder",
+          "useTypingChannel",
+          "validateAttachment"
+        ],
+        "symbolConsumers": {
+          "CONVERSATION_ACCESS_MODES": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "CONVERSATION_ROLES": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "ConversationMemberModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "ConversationModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "DEFAULT_INBOX_VISIBILITY_SETTINGS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "DEFAULT_PAGE_SIZE": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "DEFAULT_VEX_SETTINGS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "EVENTS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "INBOX_FLAGS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "InboxEntryModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "MESSAGE_TYPES": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "MessageModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "addReaction": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "archiveConversationForActor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "attachFileToMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "buildInboxPreview": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "buildPageInfo": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "canEditConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "canManageMembers": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "canReadConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "canSendMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configureChatEngine": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createAllowedConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createAnnouncementConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createEventEnvelope": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createPermissionSnapshot": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "decodeCursor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "editMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "emit": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "encodeCursor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "ensureConversationMembership": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "evaluateConversationPolicy": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "fetchPendingOutboxEvents": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "generateClientId": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "generateMessageClientId": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getAttachmentsForMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getConversationMembers": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getConversationMessages": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getInboxEntries": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getInboxEntryForConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getOrCreateDirectConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getPermissionSnapshot": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getUnreadCount": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "groupReactionsForMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "hasAtLeastRole": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "hasMedia": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "hasText": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isActorBlocked": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isAnnouncementConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isArchived": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isMuted": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isPinned": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isSystemMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isValidConversationRole": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "isValidMessageType": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "leaveConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markConversationRead": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markConversationSpam": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markDelivered": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markOutboxEventFailed": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markOutboxEventPublished": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markRead": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "moveConversationToFolder": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "normalizeConversationAccessMode": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "normalizeInboxVisibilitySettings": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "normalizeVexSettings": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "on": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "openConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "pruneStaleTypingStates": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "readConversationMembers": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "removeAllListeners": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "removeReaction": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveLimit": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolvePartnerActor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "searchDirectory": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "sendMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "shouldHideFromInbox": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "shouldHighlight": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "shouldShowInboxEntry": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "startDirectConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "startTyping": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "stopTyping": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "unsendMessage": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "updateInboxFlags": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useConversationGuards": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useConversationMembers": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useConversationMessages": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useInbox": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useInboxActions": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useInboxEntryForConversation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useInboxFolder": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useTypingChannel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "validateAttachment": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          }
+        },
+        "unusedExports": [
+          "CONVERSATION_ACCESS_MODES",
+          "CONVERSATION_ROLES",
+          "ConversationMemberModel",
+          "ConversationModel",
+          "DEFAULT_INBOX_VISIBILITY_SETTINGS",
+          "DEFAULT_PAGE_SIZE",
+          "DEFAULT_VEX_SETTINGS",
+          "EVENTS",
+          "INBOX_FLAGS",
+          "InboxEntryModel",
+          "MESSAGE_TYPES",
+          "MessageModel",
+          "addReaction",
+          "archiveConversationForActor",
+          "attachFileToMessage",
+          "buildInboxPreview",
+          "buildPageInfo",
+          "canEditConversation",
+          "canManageMembers",
+          "canReadConversation",
+          "canSendMessage",
+          "configureChatEngine",
+          "createAllowedConversation",
+          "createAnnouncementConversation",
+          "createConversation",
+          "createEventEnvelope",
+          "createPermissionSnapshot",
+          "decodeCursor",
+          "editMessage",
+          "emit",
+          "encodeCursor",
+          "ensureConversationMembership",
+          "evaluateConversationPolicy",
+          "fetchPendingOutboxEvents",
+          "generateClientId",
+          "generateMessageClientId",
+          "getAttachmentsForMessage",
+          "getConversationMembers",
+          "getConversationMessages",
+          "getInboxEntries",
+          "getInboxEntryForConversation",
+          "getOrCreateDirectConversation",
+          "getPermissionSnapshot",
+          "getUnreadCount",
+          "groupReactionsForMessage",
+          "hasAtLeastRole",
+          "hasMedia",
+          "hasText",
+          "isActorBlocked",
+          "isAnnouncementConversation",
+          "isArchived",
+          "isMuted",
+          "isPinned",
+          "isSystemMessage",
+          "isValidConversationRole",
+          "isValidMessageType",
+          "leaveConversation",
+          "markConversationRead",
+          "markConversationSpam",
+          "markDelivered",
+          "markOutboxEventFailed",
+          "markOutboxEventPublished",
+          "markRead",
+          "moveConversationToFolder",
+          "normalizeConversationAccessMode",
+          "normalizeInboxVisibilitySettings",
+          "normalizeVexSettings",
+          "on",
+          "openConversation",
+          "pruneStaleTypingStates",
+          "readConversationMembers",
+          "removeAllListeners",
+          "removeReaction",
+          "resolveLimit",
+          "resolvePartnerActor",
+          "searchDirectory",
+          "sendMessage",
+          "shouldHideFromInbox",
+          "shouldHighlight",
+          "shouldShowInboxEntry",
+          "startDirectConversation",
+          "startTyping",
+          "stopTyping",
+          "unsendMessage",
+          "updateInboxFlags",
+          "useConversation",
+          "useConversationGuards",
+          "useConversationMembers",
+          "useConversationMessages",
+          "useInbox",
+          "useInboxActions",
+          "useInboxEntryForConversation",
+          "useInboxFolder",
+          "useTypingChannel",
+          "validateAttachment"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "hydration",
+        "path": "engines/hydration",
+        "entrypoints": [
+          "configureHydrationEngine",
+          "fetchActorSummaries",
+          "getHydrationConfig",
+          "getHydrator",
+          "getSupabaseClient",
+          "hydrateActor",
+          "hydrateActorsByIds",
+          "hydrateActorsFromRows",
+          "hydrateAndReturnSummaries",
+          "useActorStore",
+          "useActorSummary"
+        ],
+        "symbolConsumers": {
+          "configureHydrationEngine": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/hydration/setup.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "fetchActorSummaries": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getHydrationConfig": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getHydrator": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getSupabaseClient": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "hydrateActor": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/identity/identity.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "hydrateActorsByIds": {
+            "consumerCount": 12,
+            "consumers": [
+              "apps/VCSM/src/features/CentralFeed/hooks/useCentralFeed.js",
+              "apps/VCSM/src/features/CentralFeed/hooks/useFeed.js",
+              "apps/VCSM/src/features/explore/controllers/searchResults.controller.js",
+              "apps/VCSM/src/features/notifications/screen/hooks/useMyAppointments.js",
+              "apps/VCSM/src/features/profiles/kinds/citizen/controller/friends/hydrateActorsIntoStore.controller.js",
+              "apps/VCSM/src/features/vportDashboard/components/bookingHistory/BookingCard.jsx",
+              "apps/VCSM/src/features/vportDashboard/components/bookingHistory/OperationalBookingCard.jsx",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryView.jsx",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/hooks/useVportOwnerSchedule.js",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/hooks/useBarberTeamRequests.js",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/hooks/useVportTeam.js",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/hooks/useVportTeamAccess.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "hydrateActorsFromRows": {
+            "consumerCount": 6,
+            "consumers": [
+              "apps/VCSM/src/features/post/commentcard/hooks/useCommentThread.js",
+              "apps/VCSM/src/features/profiles/controller/post/getActorPosts.controller.js",
+              "apps/VCSM/src/features/profiles/kinds/vport/screens/booking/components/bookingCalendarDayPanel.components.jsx",
+              "apps/VCSM/src/features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js",
+              "apps/VCSM/src/features/settings/privacy/hooks/useBlockedCitizens.js",
+              "apps/VCSM/src/features/social/friend/request/hooks/useIncomingFollowRequests.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "hydrateAndReturnSummaries": {
+            "consumerCount": 8,
+            "consumers": [
+              "apps/VCSM/src/features/CentralFeed/dal/feed.posts.dal.js",
+              "apps/VCSM/src/features/CentralFeed/pipeline/fetchFeedPage.pipeline.js",
+              "apps/VCSM/src/features/chat/setup.js",
+              "apps/VCSM/src/features/notifications/inbox/dal/senders.read.dal.js",
+              "apps/VCSM/src/features/notifications/setup.js",
+              "apps/VCSM/src/features/post/postcard/dal/post.read.dal.js",
+              "apps/VCSM/src/features/post/postcard/dal/postMentions.read.dal.js",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "useActorStore": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useActorSummary": {
+            "consumerCount": 27,
+            "consumers": [
+              "apps/VCSM/src/features/block/ui/BlockConfirmModal.jsx",
+              "apps/VCSM/src/features/block/ui/BlockedState.jsx",
+              "apps/VCSM/src/features/chat/inbox/screens/settings/BlockedUsersScreen.jsx",
+              "apps/VCSM/src/features/notifications/screen/views/MyAppointmentsView.jsx",
+              "apps/VCSM/src/features/post/commentcard/components/CommentInput.view.jsx",
+              "apps/VCSM/src/features/post/commentcard/components/cc/CommentHeader.jsx",
+              "apps/VCSM/src/features/post/postcard/components/PostCard.view.jsx",
+              "apps/VCSM/src/features/post/postcard/components/PostHeader.jsx",
+              "apps/VCSM/src/features/post/postcard/screens/PostDetail.view.jsx",
+              "apps/VCSM/src/features/profiles/kinds/citizen/tabs/friends/components/ProfileFriendItem.jsx",
+              "apps/VCSM/src/features/profiles/kinds/citizen/tabs/friends/components/RankPickerModal.jsx",
+              "apps/VCSM/src/features/profiles/kinds/citizen/tabs/friends/components/RankedFriendsPublic.jsx",
+              "apps/VCSM/src/features/profiles/kinds/citizen/tabs/friends/components/TopFriendsRankEditor.jsx",
+              "apps/VCSM/src/features/profiles/kinds/vport/screens/barbershop/VportBarberShopTeamView.jsx",
+              "apps/VCSM/src/features/profiles/kinds/vport/screens/booking/components/bookingCalendarDayPanel.components.jsx",
+              "apps/VCSM/src/features/settings/account/hooks/useAccountController.js",
+              "apps/VCSM/src/features/settings/privacy/ui/BlockedUsersSimple.jsx",
+              "apps/VCSM/src/features/settings/privacy/ui/PendingFollowRequests.jsx",
+              "apps/VCSM/src/features/settings/privacy/ui/UserLookup.jsx",
+              "apps/VCSM/src/features/upload/ui/ActorPill.jsx",
+              "apps/VCSM/src/features/vport/screens/RestoreVportScreen.jsx",
+              "apps/VCSM/src/features/vportDashboard/components/bookingHistory/BookingCard.jsx",
+              "apps/VCSM/src/features/vportDashboard/components/bookingHistory/OperationalBookingCard.jsx",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/components/schedule/BarberLaneHeader.jsx",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/BarberTeamRequestsScreen.jsx",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/components/team/AddTeamMemberSheet.jsx",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/components/team/TeamMemberCards.jsx"
+            ],
+            "status": "ACTIVE"
+          }
+        },
+        "unusedExports": [
+          "fetchActorSummaries",
+          "getHydrationConfig",
+          "getHydrator",
+          "getSupabaseClient",
+          "useActorStore"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "i18n",
+        "path": "engines/i18n",
+        "entrypoints": [
+          "I18nContext",
+          "I18nProvider",
+          "createTranslator",
+          "interpolate",
+          "useTranslation"
+        ],
+        "symbolConsumers": {
+          "I18nContext": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "I18nProvider": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createTranslator": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "interpolate": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useTranslation": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          }
+        },
+        "unusedExports": [
+          "I18nContext",
+          "I18nProvider",
+          "createTranslator",
+          "interpolate",
+          "useTranslation"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "identity",
+        "path": "engines/identity",
+        "entrypoints": [
+          "EVENTS",
+          "configureIdentityEngine",
+          "finalizeAccountState",
+          "invalidateIdentityResultCache",
+          "logoutCleanup",
+          "onAuthStateChange",
+          "onIdentityEvent",
+          "resolveActiveActor",
+          "resolveAuthenticatedContext",
+          "resolveAvailableActors",
+          "resolveCapabilityKeys",
+          "resolveDefaultDestination",
+          "resolveRoleKeys",
+          "resolveSessionUser",
+          "resolveUserAppAccess",
+          "resolveUserAppAccount",
+          "switchActiveActor"
+        ],
+        "symbolConsumers": {
+          "EVENTS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configureIdentityEngine": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "finalizeAccountState": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "invalidateIdentityResultCache": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "logoutCleanup": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "onAuthStateChange": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "onIdentityEvent": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveActiveActor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveAuthenticatedContext": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveAvailableActors": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveCapabilityKeys": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveDefaultDestination": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveRoleKeys": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveSessionUser": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveUserAppAccess": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "resolveUserAppAccount": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "switchActiveActor": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          }
+        },
+        "unusedExports": [
+          "EVENTS",
+          "configureIdentityEngine",
+          "finalizeAccountState",
+          "invalidateIdentityResultCache",
+          "logoutCleanup",
+          "onAuthStateChange",
+          "onIdentityEvent",
+          "resolveActiveActor",
+          "resolveAuthenticatedContext",
+          "resolveAvailableActors",
+          "resolveCapabilityKeys",
+          "resolveDefaultDestination",
+          "resolveRoleKeys",
+          "resolveSessionUser",
+          "resolveUserAppAccess",
+          "resolveUserAppAccount",
+          "switchActiveActor"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "media",
+        "path": "engines/media",
+        "entrypoints": [
+          "BLOCKED_MIMES",
+          "BYTES",
+          "UPLOAD_SCOPES",
+          "classifyMediaFile",
+          "configureMediaEngine",
+          "getScopeConfig",
+          "uploadMediaController",
+          "useMediaUpload",
+          "validateMediaFile",
+          "validateMediaFiles"
+        ],
+        "symbolConsumers": {
+          "BLOCKED_MIMES": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "BYTES": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "UPLOAD_SCOPES": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "classifyMediaFile": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configureMediaEngine": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getScopeConfig": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "uploadMediaController": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "useMediaUpload": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "validateMediaFile": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "validateMediaFiles": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          }
+        },
+        "unusedExports": [
+          "BLOCKED_MIMES",
+          "BYTES",
+          "UPLOAD_SCOPES",
+          "classifyMediaFile",
+          "configureMediaEngine",
+          "getScopeConfig",
+          "uploadMediaController",
+          "useMediaUpload",
+          "validateMediaFile",
+          "validateMediaFiles"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "notifications",
+        "path": "engines/notifications",
+        "entrypoints": [
+          "DeliveryAttemptModel",
+          "EVENTS",
+          "EventModel",
+          "InboxItemModel",
+          "PreferenceModel",
+          "RecipientModel",
+          "RenderedModel",
+          "TemplateModel",
+          "archive",
+          "clearPipelineTraces",
+          "configureNotificationsEngine",
+          "countUnread",
+          "createPipelineTracer",
+          "deliverToRecipient",
+          "dismiss",
+          "emit",
+          "evaluatePreference",
+          "exportTraceSnapshot",
+          "formatPipelineTrace",
+          "getInboxNotifications",
+          "getLatestPipeline",
+          "getPipelineSummaries",
+          "getPipelineTraces",
+          "invalidateCountUnreadCache",
+          "markRead",
+          "markSeen",
+          "onNotificationEvent",
+          "publishEvent",
+          "renderNotification",
+          "subscribePipelineTraces"
+        ],
+        "symbolConsumers": {
+          "DeliveryAttemptModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "EVENTS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "EventModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "InboxItemModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "PreferenceModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "RecipientModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "RenderedModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "TemplateModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "archive": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "clearPipelineTraces": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configureNotificationsEngine": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/notifications/setup.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "countUnread": {
+            "consumerCount": 2,
+            "consumers": [
+              "apps/VCSM/src/features/notifications/inbox/controller/NotificationsHeader.controller.js",
+              "apps/VCSM/src/features/notifications/inbox/controller/notificationsCount.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "createPipelineTracer": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "deliverToRecipient": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "dismiss": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "emit": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "evaluatePreference": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "exportTraceSnapshot": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "formatPipelineTrace": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getInboxNotifications": {
+            "consumerCount": 2,
+            "consumers": [
+              "apps/VCSM/src/features/notifications/inbox/controller/Notifications.controller.js",
+              "apps/VCSM/src/features/notifications/inbox/controller/NotificationsHeader.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "getLatestPipeline": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getPipelineSummaries": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getPipelineTraces": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "invalidateCountUnreadCache": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "markRead": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/dev/diagnostics/groups/notificationsFeature.group.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "markSeen": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "onNotificationEvent": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "publishEvent": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/notifications/publish.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "renderNotification": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "subscribePipelineTraces": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          }
+        },
+        "unusedExports": [
+          "DeliveryAttemptModel",
+          "EVENTS",
+          "EventModel",
+          "InboxItemModel",
+          "PreferenceModel",
+          "RecipientModel",
+          "RenderedModel",
+          "TemplateModel",
+          "archive",
+          "clearPipelineTraces",
+          "createPipelineTracer",
+          "deliverToRecipient",
+          "dismiss",
+          "emit",
+          "evaluatePreference",
+          "exportTraceSnapshot",
+          "formatPipelineTrace",
+          "getLatestPipeline",
+          "getPipelineSummaries",
+          "getPipelineTraces",
+          "invalidateCountUnreadCache",
+          "markSeen",
+          "onNotificationEvent",
+          "renderNotification",
+          "subscribePipelineTraces"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "portfolio",
+        "path": "engines/portfolio",
+        "entrypoints": [
+          "BarberDetailsModel",
+          "EVENTS",
+          "LocksmithDetailsModel",
+          "PortfolioItemModel",
+          "PortfolioMediaModel",
+          "addMedia",
+          "configurePortfolioEngine",
+          "createItem",
+          "deleteItem",
+          "emit",
+          "getPortfolioItem",
+          "listPortfolio",
+          "manageTags",
+          "onPortfolioEvent",
+          "removeMedia",
+          "updateItem"
+        ],
+        "symbolConsumers": {
+          "BarberDetailsModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "EVENTS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "LocksmithDetailsModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "PortfolioItemModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "PortfolioMediaModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "addMedia": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configurePortfolioEngine": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "createItem": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "deleteItem": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "emit": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getPortfolioItem": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "listPortfolio": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "manageTags": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "onPortfolioEvent": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "removeMedia": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "updateItem": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          }
+        },
+        "unusedExports": [
+          "BarberDetailsModel",
+          "EVENTS",
+          "LocksmithDetailsModel",
+          "PortfolioItemModel",
+          "PortfolioMediaModel",
+          "addMedia",
+          "configurePortfolioEngine",
+          "createItem",
+          "deleteItem",
+          "emit",
+          "getPortfolioItem",
+          "listPortfolio",
+          "manageTags",
+          "onPortfolioEvent",
+          "removeMedia",
+          "updateItem"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      },
+      {
+        "engine": "reviews",
+        "path": "engines/reviews",
+        "entrypoints": [
+          "AuthorCardModel",
+          "DimensionModel",
+          "DimensionRatingModel",
+          "EVENTS",
+          "ReviewModel",
+          "TargetStatsModel",
+          "configureReviewsEngine",
+          "deleteReview",
+          "emit",
+          "getMyActiveReview",
+          "getReviewFormConfig",
+          "getTargetStats",
+          "listReviews",
+          "onReviewEvent",
+          "submitReview"
+        ],
+        "symbolConsumers": {
+          "AuthorCardModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "DimensionModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "DimensionRatingModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "EVENTS": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "ReviewModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "TargetStatsModel": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "configureReviewsEngine": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/reviews/setup.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "deleteReview": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "emit": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "getMyActiveReview": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "getReviewFormConfig": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "getTargetStats": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "listReviews": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js"
+            ],
+            "status": "ACTIVE"
+          },
+          "onReviewEvent": {
+            "consumerCount": 0,
+            "consumers": [],
+            "status": "UNUSED_EXPORT"
+          },
+          "submitReview": {
+            "consumerCount": 1,
+            "consumers": [
+              "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js"
+            ],
+            "status": "ACTIVE"
+          }
+        },
+        "unusedExports": [
+          "AuthorCardModel",
+          "DimensionModel",
+          "DimensionRatingModel",
+          "EVENTS",
+          "ReviewModel",
+          "TargetStatsModel",
+          "emit",
+          "onReviewEvent"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "entrypoints extracted from engine exports"
+        ]
+      }
+    ]
+  }
+}

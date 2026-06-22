@@ -29,7 +29,7 @@ vi.mock('@/features/social/friend/subscribe/dal/subscriberCount.dal', () => ({
   invalidateFollowerCount: vi.fn(),
 }))
 
-vi.mock('@/features/feed/adapters/feedCache.adapter', () => ({
+vi.mock('@/features/CentralFeed/adapters/feedCache.adapter', () => ({
   invalidateFeedFollowCache: vi.fn(),
 }))
 
@@ -37,7 +37,7 @@ import { ctrlUnsubscribe } from '../unsubscribe.controller'
 import { dalDeactivateFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { dalUpdateRequestStatus } from '@/features/social/friend/request/dal/followRequests.dal'
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
-import { invalidateFeedFollowCache } from '@/features/feed/adapters/feedCache.adapter'
+import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 

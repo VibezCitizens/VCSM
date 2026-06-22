@@ -18,7 +18,7 @@ import { PortfolioMediaModel } from '../model/PortfolioMedia.model.js'
  * @param {number} [params.offset=0]
  * @returns {Promise<import('../types/index.js').DomainPortfolioListResult>}
  */
-export async function listPortfolio({ actorId, limit = 24, offset = 0 }) {
+export async function listPortfolio({ actorId, limit = 24, offset = 0, viewerIsOwner = false }) {
   if (!actorId) {
     throw new Error('[listPortfolio] actorId is required')
   }
@@ -28,7 +28,7 @@ export async function listPortfolio({ actorId, limit = 24, offset = 0 }) {
     return { items: [], hasMore: false }
   }
 
-  const rows = await dalListPortfolioItemsByProfileId({ profileId, limit, offset })
+  const rows = await dalListPortfolioItemsByProfileId({ profileId, limit, offset, publicOnly: !viewerIsOwner })
 
   if (!rows.length) {
     return { items: [], hasMore: false }

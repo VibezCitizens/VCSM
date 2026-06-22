@@ -57,12 +57,16 @@ export async function saveVportActorMenuItemController({
       throw new Error("Menu item not found");
     }
 
+    if (!existing.actor_id) {
+      throw new Error("Menu item ownership could not be verified");
+    }
     if (existing.actor_id !== actorId) {
       throw new Error("Not allowed to modify this menu item");
     }
 
     const updated = await updateVportActorMenuItemDAL({
       itemId,
+      profileId: existing.profile_id,
       patch: {
         category_id: categoryId,
         key: key ?? existing.key,

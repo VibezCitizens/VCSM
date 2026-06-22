@@ -1,7 +1,7 @@
 // src/features/vport/CreateVportForm.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from '@/features/profiles/adapters/kinds/vport/config/vportTypes.config.adapter';
+import { VPORT_TYPE_GROUPS as TYPE_GROUPS } from '@/features/profiles/kinds/vport/adapters/config/vportTypes.config.adapter';
 import useVportServiceCatalog from '@/features/vport/hooks/useVportServiceCatalog';
 import { useCreateVport } from '@/features/vport/hooks/useCreateVport';
 import { MAX_IMAGE_BYTES, cx, setsEqual, groupServicesByCategory } from '@/features/vport/createVportForm.model';

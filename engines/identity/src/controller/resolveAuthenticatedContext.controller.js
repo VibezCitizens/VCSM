@@ -36,24 +36,45 @@ import { createResolveTrace }     from '../resolveTrace.js'
 const _resultCache = new Map()
 const _RESULT_TTL = 120_000
 
-function _getCachedResult(userId) {
-  const entry = _resultCache.get(userId)
+/**
+ * Build the result-cache key. The cache is scoped per (user, app) — a single user
+ * can resolve different contexts across apps. Read, write, and targeted invalidation
+ * MUST all derive the key through this one helper so they stay in sync. (Previously
+ * targeted invalidation deleted the raw userId and missed the composite key.)
+ */
+function buildIdentityResultCacheKey({ userId, appKey }) {
+  return `${userId}:${appKey}`
+}
+
+function _getCachedResult(cacheKey) {
+  const entry = _resultCache.get(cacheKey)
   if (!entry) return null
   if (Date.now() - entry.at > _RESULT_TTL) {
-    _resultCache.delete(userId)
+    _resultCache.delete(cacheKey)
     return null
   }
   return entry.data
 }
 
-function _setCachedResult(userId, data) {
-  _resultCache.set(userId, { data, at: Date.now() })
+function _setCachedResult(cacheKey, data) {
+  _resultCache.set(cacheKey, { data, at: Date.now() })
 }
 
-/** Bust the identity result cache (call on actor switch, logout, etc.). */
-export function invalidateIdentityResultCache(userId) {
-  if (userId) _resultCache.delete(userId)
-  else _resultCache.clear()
+/**
+ * Bust the identity result cache.
+ *   - No args: clear all (actor switch, logout, self-heal — broad reset).
+ *   - userId + appKey: delete only that user's entry for the given app.
+ *
+ * appKey intentionally has NO default: this engine is app-agnostic and must not bake
+ * in an app name (see CLAUDE.md). If userId is passed without appKey we clear all
+ * rather than silently no-op, since a targeted key cannot be built.
+ */
+export function invalidateIdentityResultCache(userId, appKey) {
+  if (!userId || !appKey) {
+    _resultCache.clear()
+    return
+  }
+  _resultCache.delete(buildIdentityResultCacheKey({ userId, appKey }))
 }
 
 /**
@@ -100,7 +121,7 @@ export async function resolveAuthenticatedContext({ appKey, skipLoginRecord = fa
   _t('1_SESSION', 'OK', {})
 
   // ── Result cache check (before heavy platform queries) ──
-  const _cacheKey = `${userId}:${appKey}`
+  const _cacheKey = buildIdentityResultCacheKey({ userId, appKey })
   const cached = _getCachedResult(_cacheKey)
   if (cached) {
     if (_isDev) _t('CACHE_HIT', 'OK', { userId, appKey })

@@ -1,0 +1,12 @@
+# Dev Monitor Report
+Command : auto-scan: feed
+ID      : auto:feed
+Status  : CAUGHT — 3 results
+Matches : 3
+Exit    : 0
+Date    : 2026-06-07T12:00:06.230Z
+
+─────────────────────────────────────────
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/feed/pipeline/fetchFeedPage.pipeline.js:138:    console.log("[useFeed][mentions][DBG] debugPostId is on this page", {
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/feed/screens/DebugPrivacyPanel.jsx:28:    rows.forEach((row) => console.log(row));
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/feed/hooks/useFeed.js:161:          // TODO VEN-PIPE-003 DEFERRED → DB/CARNAGE: vport.profiles policy must allow

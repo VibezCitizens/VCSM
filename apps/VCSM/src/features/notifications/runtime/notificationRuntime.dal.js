@@ -201,6 +201,52 @@ export async function markNotificationRecipientsSeenDAL(recipientIds, now) {
   return data?.length ?? 0
 }
 
+export async function countUnreadBatchDAL({
+  actorIds,
+  deliveryChannel = 'in_app',
+} = {}) {
+  const ids = (actorIds ?? []).filter(Boolean)
+  if (!ids.length) return {}
+
+  const { data, error } = await getSupabaseClient()
+    .schema('notification')
+    .rpc('count_unread_batch', {
+      p_recipient_actor_ids: ids,
+      p_delivery_channel: deliveryChannel,
+    })
+
+  if (error) throw error
+
+  const result = Object.fromEntries(ids.map((id) => [id, 0]))
+  if (Array.isArray(data)) {
+    for (const row of data) {
+      if (row.actor_id) result[row.actor_id] = row.unread_count ?? 0
+    }
+  }
+  return result
+}
+
+export async function countUnreadForActorDAL({
+  recipientActorId,
+  deliveryChannel = 'in_app',
+  recipientDomain = null,
+} = {}) {
+  if (!recipientActorId) return 0
+
+  const { data, error } = await getSupabaseClient()
+    .schema('notification')
+    .rpc('count_unread_for_actor', {
+      p_recipient_actor_id: recipientActorId,
+      p_delivery_channel: deliveryChannel,
+      p_recipient_domain: recipientDomain,
+    })
+    .single()
+
+  if (error) throw error
+  return typeof data === 'number' ? data : Number(data ?? 0)
+}
+
+// legacy — superseded by countUnreadForActorDAL (NOTI-PERF-001)
 export async function readNotificationRecipientIdsForUnreadDAL({
   recipientActorId,
   recipientDomain = null,
@@ -225,6 +271,7 @@ export async function readNotificationRecipientIdsForUnreadDAL({
   return Array.isArray(data) ? data : []
 }
 
+// legacy — superseded by countUnreadForActorDAL (NOTI-PERF-001)
 export async function countNotificationUnreadInboxItemsDAL(recipientIds) {
   if (!Array.isArray(recipientIds) || recipientIds.length === 0) return 0
 
@@ -274,6 +321,7 @@ export async function dismissNotificationDAL({ recipientId, now } = {}) {
       updated_at: now,
     })
     .eq('recipient_id', recipientId)
+    .eq('is_dismissed', false)
     .select('recipient_id, is_dismissed, dismissed_at')
     .maybeSingle()
 
@@ -292,6 +340,7 @@ export async function archiveNotificationDAL({ recipientId, now } = {}) {
       updated_at: now,
     })
     .eq('recipient_id', recipientId)
+    .is('archived_at', null)
     .select('recipient_id, archived_at')
     .maybeSingle()
 

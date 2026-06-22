@@ -6,7 +6,7 @@ import UploadCard from "../ui/UploadCard";
 import SelectedThumbStrip from "../ui/SelectedThumbStrip";
 import CaptionCard from "../ui/CaptionCard";
 import PrimaryActionButton from "../ui/PrimaryActionButton";
-import "@/features/ui/modern/module-modern.css";
+import "@/shared/styles/modern/module-modern.css";
 import "@/features/upload/styles/upload-modern.css";
 
 import { useMediaSelection, MAX_VIBES_PHOTOS } from "../hooks/useMediaSelection";

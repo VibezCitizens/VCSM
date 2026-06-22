@@ -1,0 +1,258 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-07T00:00:00Z",
+  "scope": "VCSM:actors",
+  "feature": "actors",
+  "module": null,
+  "commandVersion": "ARCHITECT V2",
+  "scannerVersion": "1.1.0",
+  "architecture": {
+    "sourceFilesRead": [
+      {
+        "path": "apps/VCSM/src/features/actors/adapters/actors.adapter.js",
+        "layer": "adapter",
+        "linesRead": "1-9"
+      },
+      {
+        "path": "apps/VCSM/src/features/actors/controllers/searchActors.controller.js",
+        "layer": "controller",
+        "linesRead": "1-7"
+      },
+      {
+        "path": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+        "layer": "dal",
+        "linesRead": "1-25"
+      },
+      {
+        "path": "apps/VCSM/src/features/actors/model/searchActors.model.js",
+        "layer": "model",
+        "linesRead": "1-15"
+      },
+      {
+        "path": "apps/VCSM/src/features/settings/privacy/controller/Blocks.controller.js",
+        "layer": "controller",
+        "linesRead": "1-125",
+        "note": "consumer — ctrlSearchActors"
+      },
+      {
+        "path": "apps/VCSM/src/features/chat/setup.js",
+        "layer": "module",
+        "linesRead": "1-139",
+        "note": "bypass callsite — searchActors local function"
+      },
+      {
+        "path": "apps/VCSM/src/features/upload/dal/searchMentionSuggestions.dal.js",
+        "layer": "dal",
+        "linesRead": "1-48",
+        "note": "bypass callsite — searchMentionSuggestions"
+      },
+      {
+        "path": "apps/VCSM/src/features/explore/dal/search.dal.js",
+        "layer": "dal",
+        "linesRead": "1-149",
+        "note": "bypass callsite — searchActors local function"
+      }
+    ],
+    "routes": [],
+    "screens": [],
+    "hooks": [],
+    "controllers": [
+      {
+        "name": "searchActors",
+        "file": "apps/VCSM/src/features/actors/controllers/searchActors.controller.js",
+        "calledBy": "actors.adapter.js#searchActorsAdapter",
+        "calls": "searchActors.dal.js#searchActorsDAL",
+        "authCheck": "ABSENT"
+      },
+      {
+        "name": "ctrlSearchActors",
+        "file": "apps/VCSM/src/features/settings/privacy/controller/Blocks.controller.js",
+        "calledBy": "unknown — hook or component",
+        "calls": "actors.adapter.js#searchActorsAdapter",
+        "authCheck": "ABSENT",
+        "note": "consumer — passes no viewerActorId"
+      }
+    ],
+    "dals": [
+      {
+        "name": "searchActorsDAL",
+        "file": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+        "operation": "RPC",
+        "table": null,
+        "schema": "identity"
+      }
+    ],
+    "models": [
+      {
+        "name": "mapSearchActorRow",
+        "file": "apps/VCSM/src/features/actors/model/searchActors.model.js"
+      },
+      {
+        "name": "mapSearchActorsRows",
+        "file": "apps/VCSM/src/features/actors/model/searchActors.model.js"
+      }
+    ],
+    "services": [],
+    "adapters": [
+      {
+        "name": "searchActorsAdapter",
+        "file": "apps/VCSM/src/features/actors/adapters/actors.adapter.js",
+        "exposedSurface": "searchActorsAdapter(params) — delegates to searchActors controller"
+      }
+    ]
+  },
+  "imports": [
+    {
+      "from": "apps/VCSM/src/features/actors/adapters/actors.adapter.js",
+      "imports": "searchActors",
+      "to": "apps/VCSM/src/features/actors/controllers/searchActors.controller.js"
+    },
+    {
+      "from": "apps/VCSM/src/features/actors/controllers/searchActors.controller.js",
+      "imports": "searchActorsDAL",
+      "to": "apps/VCSM/src/features/actors/dal/searchActors.dal.js"
+    },
+    {
+      "from": "apps/VCSM/src/features/actors/controllers/searchActors.controller.js",
+      "imports": "mapSearchActorsRows",
+      "to": "apps/VCSM/src/features/actors/model/searchActors.model.js"
+    },
+    {
+      "from": "apps/VCSM/src/features/settings/privacy/controller/Blocks.controller.js",
+      "imports": "searchActorsAdapter",
+      "to": "apps/VCSM/src/features/actors/adapters/actors.adapter.js"
+    },
+    {
+      "from": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js",
+      "imports": "searchActorsAdapter",
+      "to": "apps/VCSM/src/features/actors/adapters/actors.adapter.js"
+    }
+  ],
+  "dependencies": {
+    "featureDependencies": [],
+    "engineDependencies": ["directory"],
+    "sharedDependencies": [
+      "services/supabase/supabaseClient",
+      "services/supabase/postgrestSafe"
+    ]
+  },
+  "engineUsage": [
+    {
+      "engine": "directory",
+      "usedBy": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+      "method": "identity.search_actor_directory RPC"
+    }
+  ],
+  "databaseReads": [
+    {
+      "dal": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+      "function": "searchActorsDAL",
+      "table": null,
+      "schema": "identity",
+      "caller": "searchActors (controller)"
+    }
+  ],
+  "databaseWrites": [],
+  "rpcs": [
+    {
+      "name": "search_actor_directory",
+      "schema": "identity",
+      "file": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+      "caller": "searchActorsDAL",
+      "note": "canonical callsite — filter derived from viewerActorId presence"
+    },
+    {
+      "name": "search_actor_directory",
+      "schema": "identity",
+      "file": "apps/VCSM/src/features/chat/setup.js",
+      "caller": "searchActors (local)",
+      "note": "bypass callsite — p_filter hardcoded 'all'; viewerActorId read from Zustand but filter logic broken"
+    },
+    {
+      "name": "search_actor_directory",
+      "schema": "identity",
+      "file": "apps/VCSM/src/features/upload/dal/searchMentionSuggestions.dal.js",
+      "caller": "searchMentionSuggestions",
+      "note": "bypass callsite — p_filter hardcoded 'all' regardless of viewerActorId"
+    },
+    {
+      "name": "search_actor_directory",
+      "schema": "identity",
+      "file": "apps/VCSM/src/features/explore/dal/search.dal.js",
+      "caller": "searchActors (local)",
+      "note": "bypass callsite — viewerActorId from opts (default null); filter from mapFilter"
+    }
+  ],
+  "edgeFunctions": [],
+  "behaviorIds": [],
+  "securitySensitiveSurfaces": [
+    {
+      "surface": "searchActorsDAL → identity.search_actor_directory",
+      "file": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+      "risk": "p_filter logic gates public vs all results — null viewerActorId must force 'public' filter; truthy-only check (no UUID validation)",
+      "priority": "HIGH"
+    },
+    {
+      "surface": "searchMentionSuggestions → identity.search_actor_directory",
+      "file": "apps/VCSM/src/features/upload/dal/searchMentionSuggestions.dal.js",
+      "risk": "p_filter hardcoded 'all' — canonical null-viewer guard absent; anonymous callers receive all actors",
+      "priority": "HIGH"
+    },
+    {
+      "surface": "searchActors (chat) → identity.search_actor_directory",
+      "file": "apps/VCSM/src/features/chat/setup.js",
+      "risk": "p_filter hardcoded 'all' — viewerActorId dynamically read from Zustand but filter always 'all'; auth race during hydration",
+      "priority": "HIGH"
+    },
+    {
+      "surface": "ctrlSearchActors → searchActorsAdapter (Blocks)",
+      "file": "apps/VCSM/src/features/settings/privacy/controller/Blocks.controller.js",
+      "risk": "viewerActorId not passed to searchActorsAdapter — DAL defaults to 'public' filter — private harassers cannot be blocked via search",
+      "priority": "HIGH"
+    }
+  ],
+  "callChains": [
+    {
+      "id": "CHAIN-actors-001",
+      "path": "ctrlSearchActors (Blocks.controller.js:54) → searchActorsAdapter (actors.adapter.js:7) → searchActors (searchActors.controller.js:4) → searchActorsDAL (searchActors.dal.js:4)",
+      "userControlledParams": "query",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-actors-002",
+      "path": "searchTeamCandidatesController (vportTeamAccess.controller.js) → searchActorsAdapter (actors.adapter.js:7) → searchActors (searchActors.controller.js:4) → searchActorsDAL (searchActors.dal.js:4)",
+      "userControlledParams": "query",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-actors-003",
+      "path": "searchActors (chat/setup.js:44) → identity.search_actor_directory RPC (chat/setup.js:52)",
+      "userControlledParams": "query, limit",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH",
+      "note": "bypass — does not go through actors module"
+    },
+    {
+      "id": "CHAIN-actors-004",
+      "path": "searchMentionSuggestions (upload/searchMentionSuggestions.dal.js:19) → identity.search_actor_directory RPC (upload/searchMentionSuggestions.dal.js:24)",
+      "userControlledParams": "prefix, limit, viewerActorId",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH",
+      "note": "bypass — does not go through actors module"
+    }
+  ],
+  "provenance": {
+    "sourceMaps": [
+      "feature-map",
+      "callgraph",
+      "rpc-map",
+      "write-surface-map",
+      "security-path-map",
+      "edge-function-map"
+    ],
+    "sourceFilesValidated": 8,
+    "confidence": "HIGH"
+  }
+}

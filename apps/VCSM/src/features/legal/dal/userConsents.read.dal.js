@@ -15,8 +15,8 @@ const CONSENT_SELECT = [
  * Fetch the user's latest consent records for a given app.
  * Returns all accepted (non-revoked) consent rows.
  */
-export async function dalGetUserConsents({ userId, appId }) {
-  const { data, error } = await supabase
+export async function dalGetUserConsents({ userId, appId, consentTypes }) {
+  let query = supabase
     .schema('platform')
     .from('user_consents')
     .select(CONSENT_SELECT)
@@ -27,6 +27,13 @@ export async function dalGetUserConsents({ userId, appId }) {
     .order('accepted_at', { ascending: false })
     .limit(20)
 
+  // Filter to known active consent types — prevents flooded unknown-type rows from
+  // displacing real consent entries within the limit window (ELEK-2026-06-06-003)
+  if (consentTypes?.length) {
+    query = query.in('consent_type', consentTypes)
+  }
+
+  const { data, error } = await query
   if (error) throw error
   return data ?? []
 }

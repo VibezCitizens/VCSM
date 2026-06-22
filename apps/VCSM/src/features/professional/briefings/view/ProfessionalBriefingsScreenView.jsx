@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 
-import Card from '@/features/settings/adapters/ui/Card.adapter'
+import { Card } from '@/features/settings/adapters/settings.adapter'
 import useProfessionalBriefings from '@/features/professional/briefings/hooks/useProfessionalBriefings'
 import BriefingsFilters from '@/features/professional/briefings/components/BriefingsFilters'
 import BriefingsSummaryCards from '@/features/professional/briefings/components/BriefingsSummaryCards'
 import BriefingsList from '@/features/professional/briefings/components/BriefingsList'
-import '@/features/settings/styles/settings-modern.css'
+import '@/shared/styles/settings-modern.css'
 
 export default function ProfessionalBriefingsScreenView({ actorId }) {
   const navigate = useNavigate()

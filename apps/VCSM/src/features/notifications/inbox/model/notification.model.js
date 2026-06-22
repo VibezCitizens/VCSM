@@ -71,6 +71,8 @@ function normalizeKind(kind, ctx = {}) {
 
   if (v === 'team_invite' || v === 'team_invitation') return 'team_invite'
 
+  if (v === 'lead_received') return 'lead_received'
+
   return v
 }
 

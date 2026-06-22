@@ -6,11 +6,13 @@ import {
   listLiveProviderCountries,
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
-import HomepageHeroSection from "@/features/home/components/HomepageHeroSection";
-import HomepageTopProvidersSection from "@/features/home/components/HomepageTopProvidersSection";
-import HomepageTrendingSection from "@/features/home/components/HomepageTrendingSection";
-import HomepageCategoryGrid from "@/features/home/components/HomepageCategoryGrid";
-import HomepageCtaFooter from "@/features/home/components/HomepageCtaFooter";
+import {
+  HomepageHeroSection,
+  HomepageTopProvidersSection,
+  HomepageTrendingSection,
+  HomepageCategoryGrid,
+  HomepageCtaFooter
+} from "@/features/home/adapters/home.adapter";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import TrazeGeoCoverageGlobe from "@/shared/components/TrazeGeoCoverageGlobe";
 import { buildDirectoryMetadata } from "@/seo/metadata";

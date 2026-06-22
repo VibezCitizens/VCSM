@@ -19,6 +19,8 @@
  * @param {Object} supabase - Supabase client
  * @returns {Function} resolveAppContext
  */
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
+
 export function createVcsmAppContextResolver(supabase) {
   return async function resolveAppContext({ userAppAccountId, userId, trace = null }) {
     // Read ALL active VC actor links for this account (supports multi-actor)
@@ -72,6 +74,17 @@ export function createVcsmAppContextResolver(supabase) {
         errorMessage: linkError?.message ?? null,
         failureMode: 'THROWN_ERROR',
       })
+      captureVcsmError({
+        feature: 'identity',
+        module: 'vcsmIdentity.resolver',
+        behavior_id: 'behavior.identity.actor_link_read',
+        severity: 'error',
+        message: `vcsmIdentity.resolver: platform.user_app_actor_links read failed — ${linkError?.code ?? linkError?.message ?? 'unknown'}`,
+        error_name: linkError?.name,
+        stack: linkError?.stack,
+        operation: 'resolveAppContext',
+        context: { dbErrorCode: linkError?.code ?? null, hasAccountContext: !!userAppAccountId },
+      });
       throw linkError
     }
 
@@ -90,6 +103,15 @@ export function createVcsmAppContextResolver(supabase) {
         errorMessage: null,
         failureMode: 'ZERO_ROWS',
       })
+      captureVcsmError({
+        feature: 'identity',
+        module: 'vcsmIdentity.resolver',
+        behavior_id: 'behavior.identity.actor_link_read',
+        severity: 'error',
+        message: 'vcsmIdentity.resolver: no active actor links found for account — identity cannot be resolved without self-heal',
+        operation: 'resolveAppContext',
+        context: { hasAccountContext: !!userAppAccountId, actorCount: 0, engineResolved: false },
+      });
       return {
         actorLinks:         [],
         roleKeys:           [],
@@ -120,7 +142,7 @@ export function createVcsmAppContextResolver(supabase) {
       roleKeys:           [],
       capabilityKeys:     [],
       isSuspended:        false,
-      defaultDestination: '/feed',
+      defaultDestination: '/CentralFeed',
     }
   }
 }

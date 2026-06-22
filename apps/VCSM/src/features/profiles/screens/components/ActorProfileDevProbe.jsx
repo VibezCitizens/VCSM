@@ -28,7 +28,7 @@ export function ActorProfileDevProbe(p) {
   const mismatch = p.canonicalSlug && p.routeParam !== p.canonicalSlug;
 
   const copy = () => {
-    try { navigator.clipboard.writeText(JSON.stringify(p, null, 2)); } catch (_) {}
+    try { navigator.clipboard.writeText(JSON.stringify(p, null, 2)); } catch { /* clipboard unavailable */ }
   };
 
   return createPortal(

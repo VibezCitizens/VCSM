@@ -1,4 +1,5 @@
 // src/features/profiles/hooks/useActorKind.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 
 import { useEffect, useState } from "react";
 import { getActorKindController } from "@/features/profiles/controller/getActorKind.controller";

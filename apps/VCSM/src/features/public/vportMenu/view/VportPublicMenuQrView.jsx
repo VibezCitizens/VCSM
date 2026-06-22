@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useActorCanonicalSlug } from "@/features/profiles/adapters/profiles.adapter";
-import { QrCode } from "@/features/dashboard/qrcode/adapters/qrcode.adapter";
+import { QrCode } from "@/features/qrcode/adapters/qrcode.adapter";
 import { buildMenuQrUrl, isQrSafeSlug as isQrSafe } from "@/shared/lib/qrUrlBuilders";
 
 export function VportPublicMenuQrView({ actorId }) {

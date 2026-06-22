@@ -2,7 +2,14 @@ import { useState } from "react";
 import { InputField, CheckRow, LockedVportTypeRow } from "./JoinPrimitives";
 import { s } from "./joinStyles";
 
-function validateSignupForm({ name, username, email, password, confirmPassword, vportName, ageConfirmed, termsAccepted }) {
+function getLocalTodayISO() {
+  const d = new Date()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
+
+function validateSignupForm({ name, username, email, password, confirmPassword, vportName, birthdate, termsAccepted }) {
   if (!name.trim()) return "Enter your name.";
   if (!username.trim()) return "Enter a username.";
   if (!/^[a-zA-Z0-9_]{3,30}$/.test(username.trim())) return "Username: 3–30 chars, letters/numbers/underscore only.";
@@ -11,7 +18,12 @@ function validateSignupForm({ name, username, email, password, confirmPassword, 
   if (password.length < 8) return "Password must be at least 8 characters.";
   if (password !== confirmPassword) return "Passwords don't match.";
   if (!vportName.trim()) return "Enter your Barber VPORT name.";
-  if (!ageConfirmed) return "You must confirm you are 18 or older.";
+  if (!birthdate) return "Enter your birthdate.";
+  const [by, bm, bd] = birthdate.split('-').map(Number)
+  const today = new Date()
+  let age = today.getFullYear() - by
+  if (today.getMonth() + 1 < bm || (today.getMonth() + 1 === bm && today.getDate() < bd)) age--
+  if (age < 18) return "You must be 18 or older to join as a barber.";
   if (!termsAccepted) return "You must accept the terms.";
   return null;
 }
@@ -23,15 +35,16 @@ export function JoinSignupForm({ working, onSubmit, onSwitchToLogin, formError, 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [vportName, setVportName] = useState("");
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [birthdate, setBirthdate] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const todayISO = getLocalTodayISO();
 
   function handleSubmit(e) {
     e.preventDefault();
     setFormError("");
-    const err = validateSignupForm({ name, username, email, password, confirmPassword, vportName, ageConfirmed, termsAccepted });
+    const err = validateSignupForm({ name, username, email, password, confirmPassword, vportName, birthdate, termsAccepted });
     if (err) { setFormError(err); return; }
-    onSubmit({ name: name.trim(), username: username.trim(), email: email.trim(), password, vportName: vportName.trim() });
+    onSubmit({ name: name.trim(), username: username.trim(), email: email.trim(), password, vportName: vportName.trim(), birthdate });
   }
 
   return (
@@ -49,7 +62,17 @@ export function JoinSignupForm({ working, onSubmit, onSwitchToLogin, formError, 
 
       <div style={s.divider} />
 
-      <CheckRow checked={ageConfirmed} onChange={setAgeConfirmed} label="I am 18 years of age or older." />
+      <div style={s.fieldWrap}>
+        <label style={s.label}>Birthdate</label>
+        <input
+          type="date"
+          value={birthdate}
+          onChange={(e) => setBirthdate(e.target.value)}
+          max={todayISO}
+          style={s.input}
+        />
+      </div>
+
       <CheckRow checked={termsAccepted} onChange={setTermsAccepted}>
         I agree to the{" "}
         <a href="/legal/terms-of-service" target="_blank" rel="noopener noreferrer" style={s.link}>Terms of Service</a>{" "}

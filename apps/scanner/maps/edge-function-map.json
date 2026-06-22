@@ -1,0 +1,763 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "edgeFunctionCount": 52,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:02.624Z",
+    "edgeFunctions": [
+      {
+        "function": "_shared/securityHeaders",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/_shared/securityHeaders.js",
+        "file": "apps/VCSM/functions/_shared/securityHeaders.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "/api/answers/questions",
+        "caller": "submitQuestion",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "engine": null,
+        "route": null,
+        "file": "apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js",
+        "source": "fetch-mutation",
+        "confidence": "HIGH",
+        "evidence": [
+          "mutation fetch extracted from AST"
+        ]
+      },
+      {
+        "function": "auth-register-recovery",
+        "caller": "dalRegisterRecoveryPermit",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/features/auth/password-recovery/dal/resetPasswordSecure.dal.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "auth-register-recovery",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/auth-register-recovery/index.ts",
+        "file": "apps/VCSM/supabase/functions/auth-register-recovery/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "auth-reset-password-secure",
+        "caller": "dalUpdatePasswordSecure",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/features/auth/password-recovery/dal/resetPasswordSecure.dal.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "auth-reset-password-secure",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/auth-reset-password-secure/index.ts",
+        "file": "apps/VCSM/supabase/functions/auth-reset-password-secure/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "create-org-member",
+        "caller": "createOrgMember",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/features/services/supabase/createOrgMember.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "create-org-member",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/create-org-member/index.ts",
+        "file": "apps/wentrex/supabase/functions/create-org-member/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "create-parent",
+        "caller": "createParent",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/features/services/supabase/createParent.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "create-parent",
+        "caller": "createParent",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/learning/parent/createParent.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "create-parent",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/create-parent/index.ts",
+        "file": "apps/wentrex/supabase/functions/create-parent/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "create-student",
+        "caller": "createStudent",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/features/services/supabase/createStudent.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "create-student",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/create-student/index.ts",
+        "file": "apps/wentrex/supabase/functions/create-student/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "create-tenant",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "file": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "delete-citizen-account",
+        "caller": "dalDeleteCitizenAccountFull",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "delete-citizen-account",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/delete-citizen-account/index.ts",
+        "file": "apps/VCSM/supabase/functions/delete-citizen-account/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "fetch",
+        "caller": "triggerTrafficRevalidation",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/Traffic/src/lib/revalidateClient.js",
+        "source": "fetch-mutation",
+        "confidence": "HIGH",
+        "evidence": [
+          "mutation fetch extracted from AST"
+        ]
+      },
+      {
+        "function": "fetch",
+        "caller": "onRequest",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/functions/vport/[slug]/card.js",
+        "source": "fetch-mutation",
+        "confidence": "HIGH",
+        "evidence": [
+          "mutation fetch extracted from AST"
+        ]
+      },
+      {
+        "function": "fetch",
+        "caller": "uploadToCloudflare",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/services/cloudflare/uploadToCloudflare.js",
+        "source": "fetch-mutation",
+        "confidence": "HIGH",
+        "evidence": [
+          "mutation fetch extracted from AST"
+        ]
+      },
+      {
+        "function": "fetch",
+        "caller": "doUpload",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/features/services/cloudflare/uploadToCloudflare.js",
+        "source": "fetch-mutation",
+        "confidence": "HIGH",
+        "evidence": [
+          "mutation fetch extracted from AST"
+        ]
+      },
+      {
+        "function": "how-to/[slug]",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/how-to/[slug].js",
+        "file": "apps/VCSM/functions/how-to/[slug].js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "lovedrop/v/[id]",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/lovedrop/v/[id].js",
+        "file": "apps/VCSM/functions/lovedrop/v/[id].js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "m/[actorId]",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/m/[actorId].js",
+        "file": "apps/VCSM/functions/m/[actorId].js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "monitoring-ingest-error",
+        "caller": "captureFrontendError",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/services/monitoring/monitoringClient.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "monitoring-ingest-error",
+        "caller": "_send",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "monitoring-ingest-error",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/monitoring-ingest-error/index.ts",
+        "file": "apps/VCSM/supabase/functions/monitoring-ingest-error/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "p/[slug]",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/p/[slug].js",
+        "file": "apps/VCSM/functions/p/[slug].js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "p/[slug]/book",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/p/[slug]/book.js",
+        "file": "apps/VCSM/functions/p/[slug]/book.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "parent-reset-student-password",
+        "caller": "parentResetStudentPassword",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/features/services/supabase/parentResetStudentPassword.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "parent-reset-student-password",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/parent-reset-student-password/index.ts",
+        "file": "apps/wentrex/supabase/functions/parent-reset-student-password/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "profile/[slug]/menu",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/profile/[slug]/menu.js",
+        "file": "apps/VCSM/functions/profile/[slug]/menu.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "profile/[slug]/reviews",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/profile/[slug]/reviews.js",
+        "file": "apps/VCSM/functions/profile/[slug]/reviews.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "reset-student-password",
+        "caller": "resetStudentPassword",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "services",
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/features/services/supabase/resetStudentPassword.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "reset-student-password",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/reset-student-password/index.ts",
+        "file": "apps/wentrex/supabase/functions/reset-student-password/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "reverse-geocode",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/reverse-geocode/index.ts",
+        "file": "apps/VCSM/supabase/functions/reverse-geocode/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "send-citizen-invite",
+        "caller": "sendCitizenInviteDAL",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "invite",
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/features/invite/dal/invite.dal.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "send-citizen-invite",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/send-citizen-invite/index.ts",
+        "file": "apps/VCSM/supabase/functions/send-citizen-invite/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "send-lead-confirmation",
+        "caller": "invokeProviderLeadConfirmation",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "conversion",
+        "engine": null,
+        "route": null,
+        "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "send-lead-confirmation",
+        "caller": "sendLeadConfirmationEmailDAL",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "engine": null,
+        "route": null,
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/sendLeadConfirmationEmail.edge.dal.js",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "send-lead-confirmation",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/send-lead-confirmation/index.ts",
+        "file": "apps/VCSM/supabase/functions/send-lead-confirmation/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "send-push-notification",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/send-push-notification/index.ts",
+        "file": "apps/VCSM/supabase/functions/send-push-notification/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "sitemap.xml",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/sitemap.xml.js",
+        "file": "apps/VCSM/functions/sitemap.xml.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "sitemaps/static.xml",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/sitemaps/static.xml.js",
+        "file": "apps/VCSM/functions/sitemaps/static.xml.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "sitemaps/vport-cards.xml",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/sitemaps/vport-cards.xml.js",
+        "file": "apps/VCSM/functions/sitemaps/vport-cards.xml.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "sitemaps/vport-menu.xml",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/sitemaps/vport-menu.xml.js",
+        "file": "apps/VCSM/functions/sitemaps/vport-menu.xml.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "sitemaps/vport-reviews.xml",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/sitemaps/vport-reviews.xml.js",
+        "file": "apps/VCSM/functions/sitemaps/vport-reviews.xml.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "sitemaps/wanderex-profiles.xml",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/sitemaps/wanderex-profiles.xml.js",
+        "file": "apps/VCSM/functions/sitemaps/wanderex-profiles.xml.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "student-login",
+        "caller": "handleSubmit",
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "engine": null,
+        "route": null,
+        "file": "apps/wentrex/src/learning/screens/StudentLoginScreen.jsx",
+        "source": "supabase-invoke",
+        "confidence": "HIGH",
+        "evidence": [
+          "Supabase function invoke extracted from AST"
+        ]
+      },
+      {
+        "function": "student-login",
+        "caller": null,
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "route": "apps/wentrex/supabase/functions/student-login/index.ts",
+        "file": "apps/wentrex/supabase/functions/student-login/index.ts",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "vport/[slug]/card",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/vport/[slug]/card.js",
+        "file": "apps/VCSM/functions/vport/[slug]/card.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "wanders/c/[publicId]",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/wanders/c/[publicId].js",
+        "file": "apps/VCSM/functions/wanders/c/[publicId].js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "wanders/i/[publicId]",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/functions/wanders/i/[publicId].js",
+        "file": "apps/VCSM/functions/wanders/i/[publicId].js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      }
+    ]
+  }
+}

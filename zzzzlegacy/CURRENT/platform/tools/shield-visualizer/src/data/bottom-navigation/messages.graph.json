@@ -1,0 +1,382 @@
+{
+  "metadata": {
+    "graph": "messages",
+    "title": "Bottom Navigation — Vox / Chat",
+    "name": "Vox / Chat",
+    "version": "1.0.0",
+    "generatedBy": "ARCHITECT",
+    "scope": "VCSM",
+    "graphType": "bottom-navigation-screen",
+    "feature": "chat",
+    "button": "Vox",
+    "route": "/chat",
+    "screen": "InboxScreen",
+    "generatedAt": "2026-05-11",
+    "source": "ARCHITECT",
+    "confidence": "STATICALLY_TRACED",
+    "notes": "Chat inbox chain. Realtime intentionally disabled — 30s polling by design. Block DAL duplicated locally (should use block.adapter — SENTRY boundary violation). @chat engine boundary partially INFERRED."
+  },
+  "nodes": [
+    {
+      "id": "bottomnavbar",
+      "position": { "x": 400, "y": 0 },
+      "data": {
+        "nodeType": "nav",
+        "label": "BottomNavBar",
+        "layer": "Platform UI",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "none",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["btn-vox"],
+        "notes": "Entry point.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "btn-vox",
+      "position": { "x": 400, "y": 150 },
+      "data": {
+        "nodeType": "button",
+        "label": "Vox Button",
+        "layer": "Nav Button",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["route-chat"],
+        "notes": "NavLink to /chat. Shows unread badge from useChatUnread. Poll: 30s. LOKI: verify badge count after mark-read operations.",
+        "meta": { "icon": "MessageCircle", "i18nKey": "nav.vox", "badge": "unread count", "poll": "30s" }
+      }
+    },
+    {
+      "id": "route-chat",
+      "position": { "x": 400, "y": 300 },
+      "data": {
+        "nodeType": "route",
+        "label": "/chat",
+        "layer": "Route",
+        "filePath": "app/routes/protected/app.routes.jsx",
+        "riskLevel": "none",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["inbox-screen"],
+        "notes": "Protected route. Sub-routes: /chat/new, /chat/spam, /chat/requests, /chat/archived, /chat/settings, /chat/:conversationId (hides BottomNavBar on last two).",
+        "meta": { "subRoutes": ["/chat/new","/chat/spam","/chat/requests","/chat/archived","/chat/settings","/chat/:conversationId"] }
+      }
+    },
+    {
+      "id": "inbox-screen",
+      "position": { "x": 400, "y": 450 },
+      "data": {
+        "nodeType": "screen",
+        "label": "InboxScreen",
+        "layer": "Screen",
+        "filePath": "features/chat/inbox/screens/InboxScreen.jsx",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["use-inbox","use-vex-settings","use-delete-chat","use-mark-chat-read","use-chat-prefetch","chatunread-controller"],
+        "notes": "Main inbox screen. Delegates to 5+ hooks. Shows conversation list, swipe-to-delete, mark-read gestures.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-inbox",
+      "position": { "x": 100, "y": 620 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useInbox",
+        "layer": "Hook",
+        "filePath": "features/chat/inbox/hooks/useInbox.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["use-chat-inbox"],
+        "notes": "Thin delegate → useChatInbox. Returns { entries, loading, error, refresh, hideConversation }.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-chat-inbox",
+      "position": { "x": 100, "y": 780 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useChatInbox",
+        "layer": "Hook",
+        "filePath": "features/chat/inbox/hooks/useChatInbox.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","KRAVEN"],
+        "tablesTouched": [],
+        "dependencies": ["chat-engine"],
+        "notes": "React Query owner of chat.inbox_entries data. 30s refetch interval (CHAT_INBOX_REFETCH_MS). Realtime intentionally disabled — comment in source explains design decision. Optimistic conversation hiding via ref-based tombstone map.",
+        "meta": { "poll": "30s", "realtime": "disabled by design", "optimisticHide": "ref-based tombstone" }
+      }
+    },
+    {
+      "id": "use-vex-settings",
+      "position": { "x": 350, "y": 620 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useVexSettings",
+        "layer": "Hook",
+        "filePath": "features/chat/inbox/hooks/useVexSettings.js",
+        "riskLevel": "none",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "LocalStorage-only. User prefs: hideEmptyConversations, showThreadPreview. No DB access.",
+        "meta": { "storage": "localStorage" }
+      }
+    },
+    {
+      "id": "use-delete-chat",
+      "position": { "x": 570, "y": 620 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useDeleteChat",
+        "layer": "Hook",
+        "filePath": "features/chat/inbox/hooks/useDeleteChat.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "React Query mutation with optimistic updates for conversation deletion.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-mark-chat-read",
+      "position": { "x": 770, "y": 620 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useMarkChatRead",
+        "layer": "Hook",
+        "filePath": "features/chat/inbox/hooks/useMarkChatRead.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "React Query mutation. Optimistic badge clearing with cache snapshot for rollback on error. LOKI: verify badge count sync after concurrent reads.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "use-chat-prefetch",
+      "position": { "x": 970, "y": 620 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useChatMessagePrefetch",
+        "layer": "Hook",
+        "filePath": "features/chat/inbox/hooks/useChatMessagePrefetch.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["KRAVEN"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Background prefetch of top 10 visible conversations (latest 20 messages each). Concurrency: 3. KRAVEN: up to 30 parallel message fetches on scroll.",
+        "meta": { "prefetchCount": 10, "messagesPerConvo": 20, "concurrency": 3 }
+      }
+    },
+    {
+      "id": "chatunread-controller",
+      "position": { "x": 100, "y": 940 },
+      "data": {
+        "nodeType": "controller",
+        "label": "chatUnread.controller",
+        "layer": "Controller",
+        "filePath": "features/chat/inbox/controller/chatUnread.controller.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["SENTRY"],
+        "tablesTouched": ["vc.blocks"],
+        "dependencies": ["dal-inbox-unread"],
+        "notes": "Manages unread count for badge. SENTRY: reads vc.blocks locally — this is a duplicate access pattern that should go through block.adapter instead.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "chat-engine",
+      "position": { "x": 350, "y": 940 },
+      "data": {
+        "nodeType": "engine",
+        "label": "@chat engine",
+        "layer": "Engine",
+        "filePath": "engines/chat/",
+        "riskLevel": "medium",
+        "confidence": "INFERRED",
+        "ownership": "Chat Engine",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI","SENTRY"],
+        "tablesTouched": ["vc.chat_inbox_entries","vc.chat_messages"],
+        "dependencies": ["dal-inbox-entries","dal-chat-messages"],
+        "notes": "INFERRED: Chat engine boundary. useChatInbox calls into engine for inbox data. Engine-internal table access not confirmed without LOKI trace. SENTRY: verify engine boundary not being bypassed.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "dal-inbox-unread",
+      "position": { "x": 100, "y": 1100 },
+      "data": {
+        "nodeType": "dal",
+        "label": "inboxUnread.read.dal",
+        "layer": "DAL",
+        "filePath": "features/chat/inbox/dal/inboxUnread.read.dal.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Chat Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["SENTRY"],
+        "tablesTouched": ["vc.blocks"],
+        "dependencies": ["table-vc-blocks"],
+        "notes": "Reads vc.blocks locally. SENTRY: block access should go through block.adapter, not a local DAL — boundary violation signal.",
+        "meta": { "boundaryViolation": "reads vc.blocks outside block feature" }
+      }
+    },
+    {
+      "id": "dal-inbox-entries",
+      "position": { "x": 350, "y": 1100 },
+      "data": {
+        "nodeType": "dal",
+        "label": "inbox entries DAL (engine)",
+        "layer": "DAL (engine-internal)",
+        "filePath": "engines/chat/src/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Chat Engine",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vc.chat_inbox_entries"],
+        "dependencies": ["table-chat-inbox-entries"],
+        "notes": "INFERRED: Engine-internal DAL for inbox entries. Exact file path requires LOKI trace.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "dal-chat-messages",
+      "position": { "x": 570, "y": 1100 },
+      "data": {
+        "nodeType": "dal",
+        "label": "chat messages DAL (engine)",
+        "layer": "DAL (engine-internal)",
+        "filePath": "engines/chat/src/ (INFERRED)",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "Chat Engine",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vc.chat_messages"],
+        "dependencies": ["table-chat-messages"],
+        "notes": "INFERRED: Engine-internal DAL for messages. Used by useChatMessagePrefetch.",
+        "meta": {}
+      }
+    },
+    {
+      "id": "table-vc-blocks",
+      "position": { "x": 100, "y": 1260 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.blocks",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vc schema",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["SENTRY"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Read locally by chatUnread.controller instead of going through block.adapter — SENTRY boundary signal.",
+        "meta": { "schema": "vc", "rls": "enforced" }
+      }
+    },
+    {
+      "id": "table-chat-inbox-entries",
+      "position": { "x": 350, "y": 1260 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.chat_inbox_entries",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "vc schema",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INFERRED: Table name based on feature domain naming. LOKI: confirm exact table/view name.",
+        "meta": { "schema": "vc", "rls": "enforced" }
+      }
+    },
+    {
+      "id": "table-chat-messages",
+      "position": { "x": 570, "y": 1260 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.chat_messages",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "low",
+        "confidence": "INFERRED",
+        "ownership": "vc schema",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "INFERRED: Table name. LOKI: confirm exact name. 30s message delay possible due to no Realtime.",
+        "meta": { "schema": "vc", "rls": "enforced", "realtimeDelay": "up to 30s" }
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e-nav-btn", "source": "bottomnavbar", "target": "btn-vox", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-btn-route", "source": "btn-vox", "target": "route-chat", "type": "smoothstep", "animated": true, "label": "nav", "data": { "edgeType": "navigates_to" } },
+    { "id": "e-route-screen", "source": "route-chat", "target": "inbox-screen", "type": "smoothstep", "label": "renders", "data": { "edgeType": "renders" } },
+    { "id": "e-screen-inbox", "source": "inbox-screen", "target": "use-inbox", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-vex", "source": "inbox-screen", "target": "use-vex-settings", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-delete", "source": "inbox-screen", "target": "use-delete-chat", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-mark", "source": "inbox-screen", "target": "use-mark-chat-read", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-prefetch", "source": "inbox-screen", "target": "use-chat-prefetch", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-screen-unread-ctrl", "source": "inbox-screen", "target": "chatunread-controller", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-inbox-chatinbox", "source": "use-inbox", "target": "use-chat-inbox", "type": "smoothstep", "label": "delegates", "data": { "edgeType": "calls" } },
+    { "id": "e-chatinbox-engine", "source": "use-chat-inbox", "target": "chat-engine", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-unread-dal", "source": "chatunread-controller", "target": "dal-inbox-unread", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-engine-inbox-dal", "source": "chat-engine", "target": "dal-inbox-entries", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-engine-messages-dal", "source": "chat-engine", "target": "dal-chat-messages", "type": "smoothstep", "label": "calls", "data": { "edgeType": "calls" } },
+    { "id": "e-unread-dal-blocks", "source": "dal-inbox-unread", "target": "table-vc-blocks", "type": "smoothstep", "label": "reads (BOUNDARY RISK)", "data": { "edgeType": "reads" } },
+    { "id": "e-inbox-dal-table", "source": "dal-inbox-entries", "target": "table-chat-inbox-entries", "type": "smoothstep", "label": "reads", "data": { "edgeType": "reads" } },
+    { "id": "e-messages-dal-table", "source": "dal-chat-messages", "target": "table-chat-messages", "type": "smoothstep", "label": "reads", "data": { "edgeType": "reads" } }
+  ]
+}

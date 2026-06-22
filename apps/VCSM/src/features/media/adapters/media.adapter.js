@@ -1,3 +1,3 @@
-export { createMediaAssetController } from '@/features/media/controller/createMediaAsset.controller'
+export { createMediaAssetController } from '@/features/media/controllers/createMediaAsset.controller'
 export { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
-export { softDeleteMediaAssetController } from '@/features/media/controller/softDeleteMediaAsset.controller'
+export { softDeleteMediaAssetController } from '@/features/media/controllers/softDeleteMediaAsset.controller'

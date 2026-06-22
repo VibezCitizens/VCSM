@@ -1,12 +1,12 @@
 import { supabase } from "@/services/supabase/supabaseClient";
-import { toContainsPattern } from "@/services/supabase/postgrestSafe";
+import { toContainsPattern, isUuid } from "@/services/supabase/postgrestSafe";
 
 export async function searchActorsDAL({ query, limit = 12, viewerActorId = null }) {
   const needle = (query || '').replace(/^[@#]/, '').trim();
   if (!needle) return [];
 
-  // Unauthenticated callers get public-only results regardless of DB function default behavior.
-  const filter = viewerActorId ? 'all' : 'public';
+  // Only a verified UUID elevates visibility to 'all'; truthy strings or invalid IDs stay public.
+  const filter = isUuid(viewerActorId) ? 'all' : 'public';
 
   const { data, error } = await supabase
     .schema('identity')

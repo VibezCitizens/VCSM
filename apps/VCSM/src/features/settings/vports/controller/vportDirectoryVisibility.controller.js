@@ -3,13 +3,21 @@ import {
   setVportDirectoryVisibleDAL,
   syncDirectoryVisibleToPublicDetailsDAL,
 } from "@/features/settings/vports/dal/vports.write.dal";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { checkVportOwnershipController } from "@/features/vportDashboard/adapters/vportDashboard.adapter";
+
+// VPORT-DASHBOARD-OWNERSHIP-CONSISTENCY-001: this card now authorizes the active
+// VPORT actor through the same vportDashboard ownership surface the gas dashboard
+// uses (checkVportOwnershipController), instead of the booking.adapter ownership
+// assertion. This grants the active VPORT-kind actor self-management (matching the
+// gas card) and surfaces VPORT-safe wording instead of the booking-resource error.
+const OWNERSHIP_DENIED_MESSAGE = "Only owners or managers can manage this VPORT.";
 
 export async function ctrlGetVportDirectoryState({ vportId, callerActorId, vportActorId }) {
   if (!vportId) return null;
   if (!callerActorId) throw new Error("ctrlGetVportDirectoryState: callerActorId required");
   if (!vportActorId)  throw new Error("ctrlGetVportDirectoryState: vportActorId required");
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
+  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId });
+  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
   return readVportDirectoryStateDAL(vportId);
 }
 
@@ -31,8 +39,11 @@ export async function ctrlSetVportDirectoryVisible({ vportId, visible, callerAct
   if (!callerActorId) throw new Error("ctrlSetVportDirectoryVisible: callerActorId required");
   if (!vportActorId)  throw new Error("ctrlSetVportDirectoryVisible: vportActorId required");
 
-  // Controller-layer ownership gate — verifies actor_owners link and void/kind state.
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
+  // Controller-layer ownership gate — same vportDashboard ownership surface the gas
+  // dashboard uses. Grants the active VPORT actor (self) and user-kind owners; the
+  // DAL still enforces owner_user_id = auth.uid() as defense-in-depth.
+  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId });
+  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
 
   const result = await setVportDirectoryVisibleDAL(vportId, Boolean(visible));
 

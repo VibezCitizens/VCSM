@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { setFunnelSource } from '@/shared/lib/funnelSource'
 import PublicNavbar, { PUBLIC_NAV_HEIGHT } from '@/shared/components/PublicNavbar'
 import { VportPreviewShowcase } from '@/features/vport/adapters/vport.public.adapter'
 import { VPORT_LANDING_TYPES, getVportLandingContent } from '@/features/legal/config/vportLandingContent'
@@ -63,7 +64,7 @@ export default function VportCategoryLandingScreen() {
       setMeta('twitter:title', content.seo.title, true),
       setMeta('twitter:description', content.seo.description, true),
     ]
-    try { sessionStorage.setItem('vcsm_funnel_source', `vport_${content.type}`) } catch { /* ignore */ }
+    setFunnelSource(`vport_${content.type}`)
     return () => { document.title = prevTitle; cleanups.forEach((fn) => fn()) }
   }, [content])
 

@@ -1,6 +1,6 @@
 import upsertVportRateDal from "@/features/profiles/kinds/vport/dal/rates/upsertVportRate.dal.js";
 import { invalidateRatesCache } from "@/features/profiles/kinds/vport/dal/rates/readVportRatesByActor.dal.js";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
 import { assertValidRate } from "@/features/profiles/kinds/vport/controller/exchange/exchangeRateValidation.js";
 
 const SUPPORTED_RATE_TYPES = new Set(["fx"]);
@@ -69,7 +69,7 @@ export default async function upsertVportRateController({
     throw new Error("upsertVportRateController: baseCurrency and quoteCurrency must differ");
   }
 
-  await assertActorOwnsVportActorController({ requestActorId: identityActorId, targetActorId: actorId });
+  await assertSessionOwnsVportActorController({ targetActorId: actorId });
 
   const result = await upsertVportRateDal({
     actorId,

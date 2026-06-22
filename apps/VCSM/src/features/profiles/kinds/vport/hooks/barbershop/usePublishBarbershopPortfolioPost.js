@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { publishBarbershopPortfolioUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/barbershop/publishBarbershopPortfolioUpdateAsPost.controller";
 
 export function usePublishBarbershopPortfolioPost({ actorId }) {

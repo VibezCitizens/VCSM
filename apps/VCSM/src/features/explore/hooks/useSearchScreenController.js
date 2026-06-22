@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { ctrlSearchResults } from '@/features/explore/controller/searchResults.controller'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { ctrlSearchResults } from '@/features/explore/controllers/searchResults.controller'
 
 const FILTERS = ['all', 'users', 'vports', 'posts', 'videos', 'groups']
 const LS_KEY = 'search:lastFilter'
@@ -10,8 +11,8 @@ const SEARCH_CACHE_MAX_ENTRIES = 120
 const searchResultCache = new Map()
 const searchInflight = new Map()
 
-function getSearchCacheKey(query, filter) {
-  return `${filter}:${String(query || '').trim().toLowerCase()}`
+function getSearchCacheKey(query, filter, actorId) {
+  return `${actorId ?? 'anon'}:${filter}:${String(query || '').trim().toLowerCase()}`
 }
 
 function readSearchCache(key) {
@@ -69,6 +70,9 @@ export function useSearchScreenController() {
   const [error, setError] = useState(null)
   const [results, setResults] = useState([])
 
+  const identity = useIdentity()
+  const actorId = identity?.actorId ?? null
+
   useEffect(() => {
     const id = setTimeout(() => {
       setDebounced(query.trim())
@@ -90,7 +94,7 @@ export function useSearchScreenController() {
         return
       }
 
-      const cacheKey = getSearchCacheKey(debounced, filter)
+      const cacheKey = getSearchCacheKey(debounced, filter, actorId)
       const cached = readSearchCache(cacheKey)
 
       if (cached) {
@@ -105,7 +109,7 @@ export function useSearchScreenController() {
 
       try {
         const merged = await loadSearchCached(cacheKey, () =>
-          ctrlSearchResults({ query: debounced, filter })
+          ctrlSearchResults({ query: debounced, filter, viewerActorId: actorId })
         )
 
         if (cancelled) return
@@ -123,7 +127,7 @@ export function useSearchScreenController() {
     return () => {
       cancelled = true
     }
-  }, [debounced, filter])
+  }, [debounced, filter, actorId])
 
   const canClear = useMemo(() => query.length > 0, [query])
 

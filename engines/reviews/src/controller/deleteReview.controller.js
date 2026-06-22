@@ -39,7 +39,7 @@ export async function deleteReview({ reviewId, authorActorId }) {
     return ReviewModel(existing)
   }
 
-  const row = await dalSoftDeleteReview({ reviewId })
+  const row = await dalSoftDeleteReview({ reviewId, authorActorId })
 
   emit(EVENTS.REVIEW_DELETED, {
     reviewId,

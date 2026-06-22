@@ -1,6 +1,6 @@
 "use client";
 
-import TrazeSearchBar from "@/components/TrazeSearchBar";
+import TrazeSearchBar from "@/shared/components/TrazeSearchBar";
 import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
 
 export function DirectoryFilterRow({

@@ -21,6 +21,7 @@ export default defineConfig({
     include: [
       'src/**/__tests__/*.test.js',
       '../../engines/booking/src/**/__tests__/*.test.js',
+      '../../engines/portfolio/src/**/__tests__/*.test.js',
     ],
   },
 })

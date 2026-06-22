@@ -1,4 +1,5 @@
 // features/profiles/hooks/useActorCanonicalSlug.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 // ─────────────────────────────────────────────────────────────
 // Fetches and returns the canonical SEO slug for an actor profile.
 //

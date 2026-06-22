@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "trafficFeatureCount": 7,
+  "trafficRouteCount": 51,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "app": {
+      "appId": "Traffic",
+      "root": "apps/Traffic",
+      "packageJson": true,
+      "packageName": "vcsm-traffic",
+      "sourceRoot": "apps/Traffic/src",
+      "sourceFileCount": 224,
+      "routeSystem": "next-app-router",
+      "aliases": {
+        "jsconfig": {
+          "@/*": [
+            "src/*"
+          ]
+        },
+        "tsconfig": {},
+        "scanner": [
+          {
+            "find": "@booking",
+            "replacement": "engines/booking/index.js"
+          },
+          {
+            "find": "@chat",
+            "replacement": "engines/chat/index.js"
+          },
+          {
+            "find": "@hydration",
+            "replacement": "engines/hydration/index.js"
+          },
+          {
+            "find": "@identity",
+            "replacement": "engines/identity/index.js"
+          },
+          {
+            "find": "@i18n",
+            "replacement": "engines/i18n/index.js"
+          },
+          {
+            "find": "@i18n/*",
+            "replacement": "engines/i18n/*"
+          },
+          {
+            "find": "@media",
+            "replacement": "engines/media/index.js"
+          },
+          {
+            "find": "@notifications",
+            "replacement": "engines/notifications/index.js"
+          },
+          {
+            "find": "@portfolio",
+            "replacement": "engines/portfolio/index.js"
+          },
+          {
+            "find": "@reviews",
+            "replacement": "engines/reviews/index.js"
+          },
+          {
+            "find": "@/engines/*",
+            "replacement": "engines/*"
+          },
+          {
+            "find": "@/features/*",
+            "replacement": "src/features/*"
+          },
+          {
+            "find": "@/*",
+            "replacement": "src/*"
+          }
+        ]
+      },
+      "features": 7,
+      "components": 63,
+      "hooks": 4,
+      "controllers": 5,
+      "dals": 17,
+      "models": 12,
+      "adapters": 7,
+      "tests": 10,
+      "routes": 51,
+      "writes": 6,
+      "rpcs": 1,
+      "edgeFunctions": 3,
+      "dependencies": 47,
+      "engineUsage": [],
+      "unresolvedAliases": [
+        "@/features/answers/controller/readAnswerPage.controller"
+      ],
+      "confidence": "HIGH",
+      "evidence": [
+        "Traffic source root scanned directly"
+      ]
+    }
+  }
+}

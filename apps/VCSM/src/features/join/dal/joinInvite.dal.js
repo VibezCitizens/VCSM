@@ -9,6 +9,7 @@ export async function fetchJoinResourceByIdDAL(resourceId) {
     .from("resources")
     .select(RESOURCE_COLS)
     .eq("id", resourceId)
+    .eq("resource_type", "staff")
     .maybeSingle();
 
   if (error) throw error;

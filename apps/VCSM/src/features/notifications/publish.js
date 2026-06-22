@@ -21,6 +21,8 @@
 // ============================================================
 
 import { publishEvent } from '@notifications'
+import { supabase } from '@/services/supabase/supabaseClient'
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring'
 
 /**
  * Publish a VCSM notification through the notification engine.
@@ -52,6 +54,24 @@ export async function publishVcsmNotification({
   // Skip self-notifications — actor should not notify themselves
   if (actorId && String(actorId) === String(recipientActorId)) return false
 
+  // Session guard: reject publish without an authenticated session.
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) return false
+
+  // Actor identity guard (ELEK-2026-06-07-B003): verify the caller-supplied actorId
+  // is owned by the authenticated session user. Prevents actor impersonation at the
+  // app layer — the DB trigger (TICKET-ARCH-NOTI-SESSION-001) remains the backstop.
+  if (actorId) {
+    const { data: ownerLink } = await supabase
+      .schema('vc')
+      .from('actor_owners')
+      .select('actor_id')
+      .eq('user_id', session.user.id)
+      .eq('actor_id', actorId)
+      .maybeSingle()
+    if (!ownerLink) return false
+  }
+
   try {
     await publishEvent({
       event: {
@@ -76,9 +96,12 @@ export async function publishVcsmNotification({
     })
     return true
   } catch (err) {
+    captureVcsmError(err, 'publishVcsmNotification')
+
     if (import.meta.env.DEV) {
       console.error('[publishVcsmNotification] failed:', err)
     }
+
     return false
   }
 }
@@ -101,6 +124,22 @@ export async function publishVcsmNotificationBatch({
 }) {
   const ids = (recipientActorIds || []).filter(Boolean)
   if (!ids.length || !kind) return false
+
+  // Session guard — same requirement as publishVcsmNotification.
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) return false
+
+  // Actor identity guard — verify actorId belongs to session user (ELEK-2026-06-07-B003).
+  if (actorId) {
+    const { data: ownerLink } = await supabase
+      .schema('vc')
+      .from('actor_owners')
+      .select('actor_id')
+      .eq('user_id', session.user.id)
+      .eq('actor_id', actorId)
+      .maybeSingle()
+    if (!ownerLink) return false
+  }
 
   // Filter out self-notifications
   const recipients = ids
@@ -125,7 +164,13 @@ export async function publishVcsmNotificationBatch({
       },
     })
     return true
-  } catch {
+  } catch (err) {
+    captureVcsmError(err, 'publishVcsmNotificationBatch')
+
+    if (import.meta.env.DEV) {
+      console.error('[publishVcsmNotificationBatch] failed:', err)
+    }
+
     return false
   }
 }

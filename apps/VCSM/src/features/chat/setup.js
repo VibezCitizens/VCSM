@@ -13,7 +13,7 @@ import { configureChatEngine } from '@chat'
 import { hydrateAndReturnSummaries } from '@hydration'
 import { supabase } from '@/services/supabase/supabaseClient'
 import { resolveRealm } from '@/shared/utils/resolveRealm'
-import { useIdentitySelectionStore } from '@/state/identity/identitySelection.store'
+import { useIdentitySelectionStore } from '@/features/identity/adapters/identity.adapter'
 import {
   normalizeHandleTerm,
   toContainsPattern,
@@ -53,7 +53,7 @@ async function searchActors(query, limit = 12) {
       p_viewer_domain: 'vc',
       p_viewer_actor_id: viewerActorId,
       p_query: needle,
-      p_filter: 'all',
+      p_filter: viewerActorId ? 'all' : 'public',
       p_limit: limit,
       p_offset: 0,
     })

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EdgeFunctionMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "edgeFunctionCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "edgeFunctionCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["edgeFunctions"],
+      "properties": {
+        "edgeFunctions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["function", "file", "source", "confidence"],
+            "properties": {
+              "function": { "type": "string" },
+              "caller": { "type": ["string", "null"] },
+              "feature": { "type": ["string", "null"] },
+              "engine": { "type": ["string", "null"] },
+              "route": { "type": ["string", "null"] },
+              "file": { "type": "string" },
+              "source": { "type": "string" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

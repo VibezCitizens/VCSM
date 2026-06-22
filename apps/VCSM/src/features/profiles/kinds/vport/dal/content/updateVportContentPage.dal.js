@@ -3,7 +3,7 @@
 import vportSchema from "@/services/supabase/vportClient";
 
 const CONTENT_SELECT =
-  "id,actor_id,profile_id,title,slug,excerpt,body,category,service_keys,is_published,is_indexable,published_at,created_at,updated_at";
+  "id,title,slug,excerpt,body,category,service_keys,is_published,is_indexable,published_at,created_at,updated_at";
 
 // Immutable and privilege-sensitive fields must never be accepted via this path.
 // is_published is managed exclusively by toggleVportContentPagePublishDAL.

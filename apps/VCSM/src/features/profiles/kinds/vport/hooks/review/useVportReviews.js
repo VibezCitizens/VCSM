@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import {
   ctrlAssertReviewTargetActor,
   ctrlGetOfficialStats,

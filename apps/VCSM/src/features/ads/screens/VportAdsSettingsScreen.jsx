@@ -3,13 +3,13 @@ import { useMemo, useState } from "react";
 import { Megaphone, Plus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import "@/features/settings/styles/settings-modern.css";
+import "@/shared/styles/settings-modern.css";
 import { useVportAds } from "@/features/ads/hooks/useVportAds";
 import useDesktopBreakpoint from "@/features/ads/hooks/useDesktopBreakpoint";
 import { AdEditor, AdsEmptyState, AdsList } from "@/features/ads/ui/adsPipeline.ui";
 import { createVportAdsSettingsShellStyles } from "@/features/ads/model/vportAdsSettingsShell.model";
 import VportAdsBackButton from "@/features/ads/ui/VportAdsBackButton";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 export default function VportAdsSettingsScreen() {
   const navigate = useNavigate();

@@ -1,0 +1,54 @@
+import React from "react";
+
+import DesignStudioSidebarLayersSection from "@/features/flyerBuilder/designStudio/components/sidebarRight/DesignStudioSidebarLayersSection";
+import DesignStudioSidebarPageSection from "@/features/flyerBuilder/designStudio/components/sidebarRight/DesignStudioSidebarPageSection";
+import DesignStudioSidebarSelectionSection from "@/features/flyerBuilder/designStudio/components/sidebarRight/DesignStudioSidebarSelectionSection";
+import { panelStyle } from "@/features/flyerBuilder/designStudio/components/sidebarRight/designStudioSidebarRight.styles";
+
+export default function DesignStudioSidebarRight({
+  nodes,
+  selectedNodeId,
+  activePage,
+  sceneMeta,
+  selectedNode,
+  onSelectNode,
+  onPageMetaChange,
+  onPatchNode,
+  onBringFront,
+  onSendBack,
+  onBringForward,
+  onSendBackward,
+  onDeleteSelected,
+}) {
+  const selectionLocked = !!selectedNode?.locked;
+
+  return (
+    <aside style={panelStyle}>
+      <DesignStudioSidebarPageSection
+        activePage={activePage}
+        sceneMeta={sceneMeta}
+        onPageMetaChange={onPageMetaChange}
+      />
+
+      <DesignStudioSidebarLayersSection
+        nodes={nodes}
+        selectedNodeId={selectedNodeId}
+        selectedNode={selectedNode}
+        selectionLocked={selectionLocked}
+        onSelectNode={onSelectNode}
+        onPatchNode={onPatchNode}
+        onBringFront={onBringFront}
+        onSendBack={onSendBack}
+        onBringForward={onBringForward}
+        onSendBackward={onSendBackward}
+      />
+
+      <DesignStudioSidebarSelectionSection
+        selectedNode={selectedNode}
+        selectionLocked={selectionLocked}
+        onPatchNode={onPatchNode}
+        onDeleteSelected={onDeleteSelected}
+      />
+    </aside>
+  );
+}

@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 
 import saveVportActorMenuItemController from "@/features/profiles/kinds/vport/controller/menu/saveVportActorMenuItem.controller";
 import deleteVportActorMenuItemController from "@/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuItem.controller";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 export function useVportActorMenuItemsMutations({ actorId, onSuccess }) {
   const [saving, setSaving] = useState(false);

@@ -1,0 +1,616 @@
+{
+  "metadata": {
+    "name": "VCSM Vport Reviews Dashboard",
+    "scope": "VCSM",
+    "generatedAt": "2026-05-24",
+    "source": "ARCHITECT",
+    "confidence": "STATICALLY_TRACED"
+  },
+  "nodes": [
+    {
+      "id": "route-dashboard-reviews",
+      "type": "route",
+      "label": "/actor/:actorId/dashboard/reviews",
+      "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx:207",
+      "scope": "VCSM",
+      "layer": "route",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "route-legacy-redirect",
+      "type": "route",
+      "label": "/vport/:actorId/dashboard/reviews (redirect)",
+      "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx:241",
+      "scope": "VCSM",
+      "layer": "route",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "screen-dashboard-review",
+      "type": "screen",
+      "label": "VportDashboardReviewScreen",
+      "path": "apps/VCSM/src/features/dashboard/vport/screens/VportDashboardReviewScreen.jsx",
+      "scope": "VCSM",
+      "layer": "final-screen",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "adapter-reviews-view",
+      "type": "adapter",
+      "label": "VportReviewsView.adapter",
+      "path": "apps/VCSM/src/features/profiles/adapters/kinds/vport/screens/review/VportReviewsView.adapter.js",
+      "scope": "VCSM",
+      "layer": "adapter",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "view-reviews",
+      "type": "screen",
+      "label": "VportReviewsView",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/screens/review/VportReviewsView.jsx",
+      "scope": "VCSM",
+      "layer": "view-screen",
+      "risk": "MEDIUM",
+      "status": "ACTIVE",
+      "note": "BOUNDARY VIOLATION: owns business state (6x useState) and handleSubmit callback"
+    },
+    {
+      "id": "hook-vport-reviews",
+      "type": "hook",
+      "label": "useVportReviews",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/hooks/review/useVportReviews.js",
+      "scope": "VCSM",
+      "layer": "hook",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "hook-review-list",
+      "type": "hook",
+      "label": "useVportReviewList",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/hooks/review/useVportReviewList.js",
+      "scope": "VCSM",
+      "layer": "hook",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "hook-review-mine",
+      "type": "hook",
+      "label": "useVportReviewMine",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/hooks/review/useVportReviewMine.js",
+      "scope": "VCSM",
+      "layer": "hook",
+      "risk": "LOW",
+      "status": "ACTIVE",
+      "note": "exports legacy submit() alongside canonical submitReview()"
+    },
+    {
+      "id": "hook-review-helpers",
+      "type": "hook",
+      "label": "useVportReviews.helpers",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/hooks/review/useVportReviews.helpers.js",
+      "scope": "VCSM",
+      "layer": "model",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "ctrl-vport-reviews",
+      "type": "controller",
+      "label": "VportReviews.controller",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js",
+      "scope": "VCSM",
+      "layer": "controller",
+      "risk": "NONE",
+      "status": "ACTIVE",
+      "note": "engine-backed — delegates to @reviews engine"
+    },
+    {
+      "id": "ctrl-service-reviews",
+      "type": "controller",
+      "label": "VportServiceReviews.controller",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportServiceReviews.controller.js",
+      "scope": "VCSM",
+      "layer": "controller",
+      "risk": "LOW",
+      "status": "ACTIVE",
+      "note": "positional arg bug: ctrlListReviews(targetActorId, limit) should be ({ limit })"
+    },
+    {
+      "id": "mappers-reviews",
+      "type": "model",
+      "label": "vportReviews.mappers",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/controller/review/vportReviews.mappers.js",
+      "scope": "VCSM",
+      "layer": "model",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "dal-review-target",
+      "type": "dal",
+      "label": "reviewTarget.read.dal",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/review/reviewTarget.read.dal.js",
+      "scope": "VCSM",
+      "layer": "dal",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "dal-review-authors-dead",
+      "type": "dal",
+      "label": "vportReviewAuthors.read.dal (DEAD)",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/review/vportReviewAuthors.read.dal.js",
+      "scope": "VCSM",
+      "layer": "dal",
+      "risk": "MEDIUM",
+      "status": "DEAD_CANDIDATE",
+      "note": "CONFIRMED DEAD: no consumers. Multi-client DAL (vc+supabase+vportSchema). Delete candidate."
+    },
+    {
+      "id": "dal-review-write-dead",
+      "type": "dal",
+      "label": "vportReviews.write.dal (DEAD)",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/review/vportReviews.write.dal.js",
+      "scope": "VCSM",
+      "layer": "dal",
+      "risk": "HIGH",
+      "status": "DEAD_CANDIDATE",
+      "note": "CONFIRMED DEAD: no consumers. Bypasses engine write path. Highest deletion priority."
+    },
+    {
+      "id": "model-review-dead",
+      "type": "model",
+      "label": "VportReview.model (DEAD)",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/model/review/VportReview.model.js",
+      "scope": "VCSM",
+      "layer": "model",
+      "risk": "LOW",
+      "status": "DEAD_CANDIDATE",
+      "note": "CONFIRMED DEAD: no consumers. Pre-engine model. Delete candidate."
+    },
+    {
+      "id": "config-dims-dead",
+      "type": "model",
+      "label": "reviewDimensions.config (LIKELY DEAD)",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/config/reviewDimensions.config.js",
+      "scope": "VCSM",
+      "layer": "model",
+      "risk": "MEDIUM",
+      "status": "DEAD_CANDIDATE",
+      "note": "LIKELY DEAD: not imported by any active review path. Engine resolves from DB."
+    },
+    {
+      "id": "engine-reviews",
+      "type": "engine",
+      "label": "engines/reviews",
+      "path": "engines/reviews/src/adapters/index.js",
+      "scope": "ENGINE",
+      "layer": "engine",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "engine-reviews-ctrl-list",
+      "type": "controller",
+      "label": "listReviews (engine)",
+      "path": "engines/reviews/src/controller/listReviews.controller.js",
+      "scope": "ENGINE",
+      "layer": "controller",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "engine-reviews-ctrl-submit",
+      "type": "controller",
+      "label": "submitReview (engine)",
+      "path": "engines/reviews/src/controller/submitReview.controller.js",
+      "scope": "ENGINE",
+      "layer": "controller",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "engine-reviews-ctrl-stats",
+      "type": "controller",
+      "label": "getTargetStats (engine)",
+      "path": "engines/reviews/src/controller/getReviewStats.controller.js",
+      "scope": "ENGINE",
+      "layer": "controller",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "engine-dal-reviews-read",
+      "type": "dal",
+      "label": "reviews.read.dal (engine)",
+      "path": "engines/reviews/src/dal/reviews.read.dal.js",
+      "scope": "ENGINE",
+      "layer": "dal",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "engine-dal-authors",
+      "type": "dal",
+      "label": "authors.read.dal (engine) — N+1",
+      "path": "engines/reviews/src/dal/authors.read.dal.js",
+      "scope": "ENGINE",
+      "layer": "dal",
+      "risk": "HIGH",
+      "status": "ACTIVE",
+      "note": "N+1: loops reviewIds, calls get_review_author_card RPC once per review. 25 reviews = 25 RPCs."
+    },
+    {
+      "id": "engine-dal-rpc",
+      "type": "dal",
+      "label": "reviews.rpc.dal (engine)",
+      "path": "engines/reviews/src/dal/reviews.rpc.dal.js",
+      "scope": "ENGINE",
+      "layer": "dal",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "table-reviews",
+      "type": "table",
+      "label": "reviews.reviews",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "table-dimension-ratings",
+      "type": "table",
+      "label": "reviews.review_dimension_ratings",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "table-dimensions",
+      "type": "table",
+      "label": "reviews.review_dimensions",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "rpc-upsert-review",
+      "type": "rpc",
+      "label": "upsert_neutral_review RPC",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "rpc-author-card",
+      "type": "rpc",
+      "label": "get_review_author_card RPC (N+1)",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "HIGH",
+      "status": "ACTIVE",
+      "note": "SECURITY DEFINER. Called once per review ID — N+1 pattern."
+    },
+    {
+      "id": "rpc-stats",
+      "type": "rpc",
+      "label": "get_target_overall_stats RPC",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "view-public-reviews",
+      "type": "view",
+      "label": "reviews.public_vport_reviews_v",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE",
+      "note": "Used by public/vportMenu path only — separate from auth path"
+    },
+    {
+      "id": "view-public-summary",
+      "type": "view",
+      "label": "reviews.public_vport_review_summary_v (cached 60s)",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "table-actors",
+      "type": "table",
+      "label": "vc.actors",
+      "path": null,
+      "scope": "DATABASE",
+      "layer": "database",
+      "risk": "NONE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "finding-n1-authors",
+      "type": "finding",
+      "label": "N+1: Author Cards Loop",
+      "path": "engines/reviews/src/dal/authors.read.dal.js",
+      "scope": "ENGINE",
+      "layer": "finding",
+      "risk": "HIGH",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "finding-boundary-view",
+      "type": "finding",
+      "label": "Boundary: View owns business state",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/screens/review/VportReviewsView.jsx",
+      "scope": "VCSM",
+      "layer": "finding",
+      "risk": "MEDIUM",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "finding-dead-write-dal",
+      "type": "finding",
+      "label": "Dead: Write DAL alongside active engine",
+      "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/review/vportReviews.write.dal.js",
+      "scope": "VCSM",
+      "layer": "finding",
+      "risk": "HIGH",
+      "status": "ACTIVE"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "route-dashboard-reviews",
+      "target": "screen-dashboard-review",
+      "type": "navigates_to",
+      "label": "renders",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e2",
+      "source": "route-legacy-redirect",
+      "target": "route-dashboard-reviews",
+      "type": "navigates_to",
+      "label": "redirects to canonical",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e3",
+      "source": "screen-dashboard-review",
+      "target": "adapter-reviews-view",
+      "type": "renders",
+      "label": "cross-feature via adapter",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e4",
+      "source": "adapter-reviews-view",
+      "target": "view-reviews",
+      "type": "renders",
+      "label": "re-export",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e5",
+      "source": "view-reviews",
+      "target": "hook-vport-reviews",
+      "type": "calls",
+      "label": "useVportReviews(targetActorId)",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e6",
+      "source": "hook-vport-reviews",
+      "target": "hook-review-list",
+      "type": "calls",
+      "label": "delegates list + pagination",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e7",
+      "source": "hook-vport-reviews",
+      "target": "hook-review-mine",
+      "type": "calls",
+      "label": "delegates my review operations",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e8",
+      "source": "hook-vport-reviews",
+      "target": "ctrl-vport-reviews",
+      "type": "calls",
+      "label": "ctrlAssertReviewTargetActor, ctrlGetOfficialStats, ctrlGetReviewFormConfig",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e9",
+      "source": "hook-review-list",
+      "target": "ctrl-vport-reviews",
+      "type": "calls",
+      "label": "ctrlListReviews",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e10",
+      "source": "hook-review-list",
+      "target": "ctrl-service-reviews",
+      "type": "calls",
+      "label": "ctrlListServiceReviews (service tab)",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e11",
+      "source": "hook-review-mine",
+      "target": "ctrl-vport-reviews",
+      "type": "calls",
+      "label": "ctrlGetMyActiveReview, ctrlSubmitReview, ctrlDeleteMyReview",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e12",
+      "source": "ctrl-vport-reviews",
+      "target": "engine-reviews",
+      "type": "depends_on",
+      "label": "imports from @reviews engine",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e13",
+      "source": "ctrl-vport-reviews",
+      "target": "dal-review-target",
+      "type": "calls",
+      "label": "dalReadReviewTargetActor",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e14",
+      "source": "ctrl-vport-reviews",
+      "target": "mappers-reviews",
+      "type": "calls",
+      "label": "mapReview, mapStats, mapDimension",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e15",
+      "source": "ctrl-service-reviews",
+      "target": "ctrl-vport-reviews",
+      "type": "calls",
+      "label": "ctrlListReviews (POSITIONAL ARG BUG)",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e16",
+      "source": "dal-review-target",
+      "target": "table-actors",
+      "type": "reads",
+      "label": "SELECT id,kind,vport_id,is_void FROM vc.actors",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e17",
+      "source": "engine-reviews",
+      "target": "engine-reviews-ctrl-list",
+      "type": "calls",
+      "label": "listReviews()",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e18",
+      "source": "engine-reviews",
+      "target": "engine-reviews-ctrl-submit",
+      "type": "calls",
+      "label": "submitReview()",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e19",
+      "source": "engine-reviews",
+      "target": "engine-reviews-ctrl-stats",
+      "type": "calls",
+      "label": "getTargetStats()",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e20",
+      "source": "engine-reviews-ctrl-list",
+      "target": "engine-dal-reviews-read",
+      "type": "calls",
+      "label": "dalListReviewsByTarget",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e21",
+      "source": "engine-reviews-ctrl-list",
+      "target": "engine-dal-authors",
+      "type": "calls",
+      "label": "dalGetAuthorCardsForReviews — N+1 RISK",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e22",
+      "source": "engine-dal-reviews-read",
+      "target": "table-reviews",
+      "type": "reads",
+      "label": "SELECT from reviews.reviews",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e23",
+      "source": "engine-dal-authors",
+      "target": "rpc-author-card",
+      "type": "reads",
+      "label": "RPC per review_id (N+1)",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e24",
+      "source": "engine-reviews-ctrl-submit",
+      "target": "engine-dal-rpc",
+      "type": "calls",
+      "label": "dalRpcUpsertNeutralReview",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e25",
+      "source": "engine-dal-rpc",
+      "target": "rpc-upsert-review",
+      "type": "writes",
+      "label": "upsert_neutral_review()",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e26",
+      "source": "engine-reviews-ctrl-stats",
+      "target": "rpc-stats",
+      "type": "reads",
+      "label": "get_target_overall_stats()",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e27",
+      "source": "finding-n1-authors",
+      "target": "engine-dal-authors",
+      "type": "violates",
+      "label": "N+1 loop on reviewIds",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e28",
+      "source": "finding-boundary-view",
+      "target": "view-reviews",
+      "type": "violates",
+      "label": "View owns business state",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "e29",
+      "source": "finding-dead-write-dal",
+      "target": "dal-review-write-dead",
+      "type": "pending_review",
+      "label": "DELETE CANDIDATE — pending LOKI verification",
+      "confidence": "STATICALLY_TRACED"
+    }
+  ]
+}

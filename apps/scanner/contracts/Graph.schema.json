@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Graph",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "nodeCount", "edgeCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "nodeCount": { "type": "number" },
+    "edgeCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type"],
+            "properties": {
+              "id": { "type": "string" },
+              "type": {
+                "enum": ["FeatureNode", "EngineNode", "RouteNode", "ControllerNode", "DALNode", "ModelNode", "HookNode", "AdapterNode", "ScreenNode", "ComponentNode", "TestNode", "WriteSurfaceNode"]
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "type"],
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "type": { "enum": ["USES", "IMPORTS", "OWNS", "WRITES", "CALLS", "DEPENDS_ON", "ROUTES_TO", "USES_HOOK", "USES_CONTROLLER", "USES_DAL", "USES_RPC", "USES_EDGE_FUNCTION", "TESTS"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

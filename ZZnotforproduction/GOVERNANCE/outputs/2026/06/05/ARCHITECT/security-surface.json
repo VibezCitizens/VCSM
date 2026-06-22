@@ -1,0 +1,103 @@
+{
+  "generated": "2026-06-05",
+  "branch": "vport-booking-feed-security-updates",
+  "mode": "SECURITY_WARFARE_SIMULATION",
+  "scope": "VCSM",
+  "trustBoundaries": [
+    {
+      "id": "TB-001",
+      "name": "Actor Kind Gate — Booking Creation",
+      "enforcer": "vportPublicBooking.controller.js:57-61",
+      "check": "readActorVportLinkDAL → actor.kind === 'user'",
+      "status": "PRESENT"
+    },
+    {
+      "id": "TB-002",
+      "name": "Actor Kind Gate — Booking Update (assertActorOwnsVportActor)",
+      "enforcer": "assertActorOwnsVportActor.controller.js:23-29",
+      "check": "getActorByIdDAL → requesterActor.kind !== 'user' throws",
+      "status": "PRESENT",
+      "note": "ELEK-004 patch: kind check unconditional before self-shortcut"
+    },
+    {
+      "id": "TB-003",
+      "name": "VPORT Ownership Check (checkVportOwnershipController)",
+      "enforcer": "checkVportOwnership.controller.js",
+      "check": "assertActorOwnsVportActorController OR vport-self-same-actor shortcut",
+      "status": "PRESENT",
+      "warning": "VPORT-kind self-shortcut is navigation gate ONLY — mutations must NOT rely on this gate alone"
+    },
+    {
+      "id": "TB-004",
+      "name": "Terminal Booking State Immutability",
+      "enforcer": "updateVportBooking.controller.js:35-37",
+      "check": "TERMINAL_STATUSES.includes(booking.status) → throw before auth",
+      "status": "PRESENT"
+    },
+    {
+      "id": "TB-005",
+      "name": "DAL Write Column Allowlist",
+      "enforcer": "insertVportBookingDAL (WRITE_COLS frozen)",
+      "check": "pick(row, WRITE_COLS) filters client input",
+      "status": "PRESENT"
+    },
+    {
+      "id": "TB-006",
+      "name": "Booking Scope Lock (profileId in update)",
+      "enforcer": "updateVportBookingDAL:29",
+      "check": ".eq('profile_id', profileId) prevents cross-profile update",
+      "status": "PRESENT"
+    },
+    {
+      "id": "TB-007",
+      "name": "Fuel Key Allowlist",
+      "enforcer": "reviewFuelPriceSuggestion.controller.js:81-83",
+      "check": "ALLOWED_FUEL_KEYS.has(fuel_key)",
+      "status": "PRESENT"
+    },
+    {
+      "id": "TB-008",
+      "name": "Service Label Server-Side Resolution",
+      "enforcer": "vportPublicBooking.controller.js:67-74",
+      "check": "Resolves service label from catalog — never trusts client-supplied snapshot",
+      "status": "PRESENT"
+    },
+    {
+      "id": "TB-009",
+      "name": "Customer Actor ID Session-Derived",
+      "enforcer": "vportPublicBooking.controller.js:84",
+      "check": "customer_actor_id = requestActorId ?? null (never caller-supplied)",
+      "status": "PRESENT",
+      "note": "VPD-V-019 enforcement"
+    },
+    {
+      "id": "TB-010",
+      "name": "Notification linkPath Scrubbing",
+      "enforcer": "vportPublicBooking.controller.js:116",
+      "check": "linkPath: null (VPD-V-020 — prevents raw VPORT UUID in notification rows)",
+      "status": "PRESENT"
+    }
+  ],
+  "importDiscrepancy": {
+    "id": "F-ARCH-001",
+    "severity": "HIGH",
+    "file": "apps/VCSM/src/features/dashboard/vport/dal/read/vportAvailabilityRules.read.dal.js",
+    "issue": "Named import { vport as vportSchema } vs default import in all other vport DALs",
+    "requiresVerification": true
+  },
+  "securitySensitiveSurfaces": [
+    "insertVportBookingDAL — bookings write",
+    "updateVportBookingDAL — bookings update (profileId scoped)",
+    "reviewFuelPriceSuggestionController — fuel price approval path",
+    "assertActorOwnsVportActorController — ownership gate for all mutations",
+    "checkVportOwnershipController — dashboard/navigation gate (NOT mutation gate)",
+    "requireDesignDocumentOwnerAccess — flyer design doc gate"
+  ],
+  "callChains": {
+    "publicBooking": "createVportPublicBookingController → readActorVportLinkDAL (kind gate) → insertVportBookingDAL",
+    "ownerBooking": "createOwnerBookingController → assertActorOwnsVportActorController → insertVportBookingDAL",
+    "bookingStatusUpdate": "updateBookingStatusController → terminal check → assertActorOwnsVportActorController (owner) | CUSTOMER_STATUSES check (customer) → updateVportBookingDAL",
+    "bookingReschedule": "rescheduleBookingController → terminal check → assertActorOwnsVportActorController → listVportBookingsInRangeDAL (conflict) → updateVportBookingDAL",
+    "fuelPriceReview": "reviewFuelPriceSuggestionController → resolveActorIdFromProfileId → checkVportOwnershipController → ALLOWED_FUEL_KEYS → upsertVportFuelPriceDAL"
+  }
+}

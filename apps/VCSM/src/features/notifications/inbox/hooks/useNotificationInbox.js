@@ -12,7 +12,6 @@ import { getNotifications } from '../controller/Notifications.controller'
 import { useSocialFollowRequestOps } from '@/features/social/adapters/social.adapter'
 
 const STALE_MS = 60_000
-const DEV = import.meta.env?.DEV
 
 export function useNotificationInbox() {
   const { identity } = useIdentity()
@@ -44,26 +43,6 @@ export function useNotificationInbox() {
     ])
   }, [actorId, queryClient])
 
-  // DEV: log cache state on each actorId mount to track warm vs cold opens.
-  useEffect(() => {
-    if (!DEV || !actorId) return
-    const cached = queryClient.getQueryData(queryKeys.notificationsInbox(actorId))
-    if (Array.isArray(cached) && cached.length > 0) {
-      console.log('[noti:cards:cache-hit]', { count: cached.length })
-    } else {
-      console.log('[noti:cards:cache-miss]')
-    }
-  }, [actorId]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // DEV: log when cached rows are rendered immediately on mount (warm open).
-  useEffect(() => {
-    if (!DEV || !actorId) return
-    const cached = queryClient.getQueryData(queryKeys.notificationsInbox(actorId))
-    if (Array.isArray(cached) && cached.length > 0) {
-      console.log('[noti:cards:render-cached]', { count: cached.length })
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
   // noti:refresh -> invalidate both notification queries. No realtime channel is created here.
   useEffect(() => {
     if (!actorId) return undefined
@@ -82,12 +61,6 @@ export function useNotificationInbox() {
   useEffect(() => {
     if (!actorId || !query.isSuccess || query.dataUpdatedAt === 0) return
     queryClient.invalidateQueries({ queryKey: queryKeys.notificationUnread(actorId) })
-    if (DEV) {
-      console.log('[noti:cards:server-reconciled]', {
-        count: (query.data ?? []).length,
-        wasPlaceholder: query.isPlaceholderData,
-      })
-    }
   }, [query.dataUpdatedAt, actorId, queryClient]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // noti:optimistic:replace -> patch list without a network round-trip.

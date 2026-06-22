@@ -24,8 +24,11 @@ export default function AccountTabView() {
     errHard,
     busyRestore,
     errRestore,
+    busyLogoutAll,
+    errLogoutAll,
     setShowConfirmAccount,
     logout,
+    logoutAllSessions,
     deleteAccount,
     softDeleteVport,
     hardDeleteVport,
@@ -33,6 +36,7 @@ export default function AccountTabView() {
   } = useAccountController()
 
   const [dangerOpen, setDangerOpen] = useState(false)
+  const [showConfirmLogoutAll, setShowConfirmLogoutAll] = useState(false)
   const [softTarget, setSoftTarget] = useState(null)
   const [hardTarget, setHardTarget] = useState(null)
   const [restoreTarget, setRestoreTarget] = useState(null)
@@ -109,6 +113,25 @@ export default function AccountTabView() {
                 {(errSoft || errHard || errRestore) && (
                   <div className="settings-danger-error px-3 py-2 text-sm">{errSoft || errHard || errRestore}</div>
                 )}
+
+                {/* Sign Out Everywhere */}
+                <div className="settings-danger-row rounded-xl p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-rose-100">{t('settings.account.signOutEverywhere')}</div>
+                      <div className="mt-0.5 text-xs text-rose-100/70">{t('settings.account.signOutEverywhereDesc')}</div>
+                    </div>
+                    <button
+                      onClick={() => setShowConfirmLogoutAll(true)}
+                      className="settings-btn settings-btn--ghost shrink-0 px-3 py-1.5 text-sm"
+                    >
+                      {t('settings.account.signOutEverywhere')}
+                    </button>
+                  </div>
+                  {errLogoutAll && (
+                    <div className="settings-danger-error mt-2 px-3 py-2 text-sm">{errLogoutAll}</div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -139,6 +162,20 @@ export default function AccountTabView() {
             onCancel={() => !busyRestore && setRestoreTarget(null)}
             onConfirm={handleRestoreConfirm}
           />
+        )}
+
+        {showConfirmLogoutAll && (
+          <DeleteModal
+            title={t('settings.account.signOutEverywhereModalTitle')}
+            busy={busyLogoutAll}
+            busyLabel={t('settings.account.signOutEverywhereBusy')}
+            onCancel={() => !busyLogoutAll && setShowConfirmLogoutAll(false)}
+            onConfirm={logoutAllSessions}
+            confirmLabel={t('settings.account.signOutEverywhereConfirm')}
+            confirmClassName="settings-btn border border-amber-500/40 bg-amber-500/15 text-amber-300"
+          >
+            <p className="text-sm text-white/70">{t('settings.account.signOutEverywhereModalBody')}</p>
+          </DeleteModal>
         )}
       </div>
     )
@@ -190,6 +227,25 @@ export default function AccountTabView() {
             {(errSoft || errHard || errRestore) && (
               <div className="settings-danger-error px-3 py-2 text-sm">{errSoft || errHard || errRestore}</div>
             )}
+
+            {/* Sign Out Everywhere */}
+            <div className="settings-danger-row rounded-xl p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-rose-100">{t('settings.account.signOutEverywhere')}</div>
+                  <div className="mt-0.5 text-xs text-rose-100/70">{t('settings.account.signOutEverywhereDesc')}</div>
+                </div>
+                <button
+                  onClick={() => setShowConfirmLogoutAll(true)}
+                  className="settings-btn settings-btn--ghost shrink-0 px-3 py-1.5 text-sm"
+                >
+                  {t('settings.account.signOutEverywhere')}
+                </button>
+              </div>
+              {errLogoutAll && (
+                <div className="settings-danger-error mt-2 px-3 py-2 text-sm">{errLogoutAll}</div>
+              )}
+            </div>
 
             {/* Delete account */}
             <div className="settings-danger-row rounded-xl p-3">
@@ -255,6 +311,20 @@ export default function AccountTabView() {
             {t('settings.account.deleteAccountBody')}
           </p>
           <p className="mt-2 text-sm text-rose-300/80">{t('settings.account.cannotBeUndone')}</p>
+        </DeleteModal>
+      )}
+
+      {showConfirmLogoutAll && (
+        <DeleteModal
+          title={t('settings.account.signOutEverywhereModalTitle')}
+          busy={busyLogoutAll}
+          busyLabel={t('settings.account.signOutEverywhereBusy')}
+          onCancel={() => !busyLogoutAll && setShowConfirmLogoutAll(false)}
+          onConfirm={logoutAllSessions}
+          confirmLabel={t('settings.account.signOutEverywhereConfirm')}
+          confirmClassName="settings-btn border border-amber-500/40 bg-amber-500/15 text-amber-300"
+        >
+          <p className="text-sm text-white/70">{t('settings.account.signOutEverywhereModalBody')}</p>
         </DeleteModal>
       )}
     </div>

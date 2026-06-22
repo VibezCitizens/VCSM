@@ -1,0 +1,13 @@
+# Dev Monitor Report
+Command : auto-scan: identity
+ID      : auto:identity
+Status  : CAUGHT — 4 results
+Matches : 4
+Exit    : 0
+Date    : 2026-06-07T11:53:20.294Z
+
+─────────────────────────────────────────
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/identity/dal/provision.rpc.dal.js:25: * @param {string} params.userId - auth.users.id
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/identity/dal/provision.rpc.dal.js:26: * @param {string} params.actorId - vc.actors.id
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/identity/controllers/ensureVcsmPlatformBootstrap.controller.js:27: * @param {string} params.userId - auth.users.id
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/identity/controllers/ensureVcsmPlatformBootstrap.controller.js:28: * @param {string} params.actorId - vc.actors.id

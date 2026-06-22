@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-05T00:00:00Z",
+  "scope": "VCSM:dashboard (modules 7-16)",
+  "scannerVersion": "1.1.0",
+  "securitySurface": {
+    "writeSurfaces": [
+      { "operation": "INSERT", "table": "bookings", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/bookings/dal/insertVportBooking.write.dal.js", "owner": "VCSM:dashboard", "ownershipCheck": "PARTIAL", "risk": "customer_actor_id caller-injected" },
+      { "operation": "UPDATE", "table": "bookings", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dal/write/updateVportBooking.write.dal.js", "owner": "VCSM:dashboard", "ownershipCheck": "PRESENT", "risk": "profile_id filter + controller auth" },
+      { "operation": "UPSERT", "table": "profile_public_details", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/dal/flyer.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "requireOwnerActorAccess upstream" },
+      { "operation": "UPSERT", "table": "profile_public_details", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/settings/dal/vportPublicDetails.write.dal.js", "owner": "VCSM:dashboard:settings", "ownershipCheck": "PARTIAL", "risk": "session check at DAL; ownership upstream" },
+      { "operation": "INSERT", "table": "design_documents", "schema": "?", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/designStudio/dal/designStudio.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "schema unknown to scanner" },
+      { "operation": "INSERT", "table": "design_pages", "schema": "?", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/designStudio/dal/designStudio.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "schema unknown to scanner" },
+      { "operation": "UPDATE", "table": "design_pages", "schema": "?", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/designStudio/dal/designStudio.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "schema unknown to scanner" },
+      { "operation": "INSERT", "table": "design_page_versions", "schema": "?", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/designStudio/dal/designStudio.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "schema unknown to scanner" },
+      { "operation": "DELETE", "table": "design_pages", "schema": "?", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/designStudio/dal/designStudio.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "schema unknown to scanner; delete requires per-row ownership" },
+      { "operation": "DELETE", "table": "design_documents", "schema": "?", "file": "apps/VCSM/src/features/dashboard/flyerBuilder/designStudio/dal/designStudio.write.dal.js", "owner": "VCSM:dashboard:flyerBuilder", "ownershipCheck": "PRESENT", "risk": "schema unknown to scanner; delete requires per-row ownership" },
+      { "operation": "INSERT", "table": "fuel_price_history", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js", "owner": "VCSM:dashboard:gasprices", "ownershipCheck": "PRESENT", "risk": "checkVportOwnershipController upstream" },
+      { "operation": "INSERT", "table": "fuel_price_submission_reviews", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js", "owner": "VCSM:dashboard:gasprices", "ownershipCheck": "PRESENT", "risk": "checkVportOwnershipController upstream" },
+      { "operation": "UPDATE", "table": "fuel_price_submissions", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js", "owner": "VCSM:dashboard:gasprices", "ownershipCheck": "PRESENT", "risk": "checkVportOwnershipController upstream" },
+      { "operation": "UPDATE", "table": "fuel_prices", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/gasprices/dal/vportFuelPrices.write.dal.js", "owner": "VCSM:dashboard:gasprices", "ownershipCheck": "PRESENT", "risk": "checkVportOwnershipController upstream" },
+      { "operation": "UPSERT", "table": "fuel_prices", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/gasprices/dal/vportFuelPrices.write.dal.js", "owner": "VCSM:dashboard:gasprices", "ownershipCheck": "PRESENT", "risk": "checkVportOwnershipController upstream" },
+      { "operation": "INSERT", "table": "fuel_price_submissions", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/gasprices/dal/vportFuelPriceSubmissions.write.dal.js", "owner": "VCSM:dashboard:gasprices", "ownershipCheck": "PARTIAL", "risk": "citizen submission — actor_id injected by caller" },
+      { "operation": "INSERT", "table": "resources", "schema": "vport", "file": "apps/VCSM/src/features/dashboard/vport/dal/write/vportResource.write.dal.js", "owner": "VCSM:dashboard:vport", "ownershipCheck": "PARTIAL", "risk": "resource ownership not confirmed in source" }
+    ],
+    "rpcs": [],
+    "edgeFunctions": [],
+    "securityPaths": [
+      { "route": "/actor/:actorId/dashboard/*", "access": "app-layer-auth", "ownershipGate": "useVportOwnership + assertActorOwnsVportActorController", "riskModules": ["exchange", "settings", "bookings"] }
+    ],
+    "executionPaths": {
+      "write": [
+        { "chain": "CHAIN-dashboard-001", "path": "bookings screen → updateBookingStatusController → assertActorOwnsVportActorController → updateVportBookingDAL", "confidence": "HIGH" },
+        { "chain": "CHAIN-dashboard-002", "path": "gas screen → reviewFuelPriceSuggestionController → checkVportOwnershipController → upsertVportFuelPriceDAL", "confidence": "HIGH" },
+        { "chain": "CHAIN-dashboard-003", "path": "settings screen → settingsSaveCoordinator → saveVportPublicDetailsByActorIdController → upsertVportPublicDetailsDAL", "confidence": "MEDIUM" },
+        { "chain": "CHAIN-dashboard-004", "path": "exchange screen.onSave → useUpsertVportRate (profiles adapter) → [UNRESOLVED] → rates table", "confidence": "LOW" },
+        { "chain": "CHAIN-dashboard-005", "path": "designStudio → requireOwnerActorAccess → actor_owners check → designStudio.write.dal", "confidence": "HIGH" }
+      ],
+      "rpc": [],
+      "edge": []
+    }
+  },
+  "provenance": {
+    "sourceMaps": ["write-surface-map", "rpc-map", "edge-function-map", "security-path-map", "route-execution-map", "write-execution-map", "rpc-execution-map", "edge-execution-map"],
+    "validationSummary": {
+      "surfacesRead": 17,
+      "surfacesValidated": 10,
+      "lowConfidenceCount": 1
+    }
+  }
+}

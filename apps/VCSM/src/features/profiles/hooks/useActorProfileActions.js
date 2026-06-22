@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — post share/report/delete for both citizen and vport actors
 import { useState, useCallback } from "react";
 import { shareNative } from "@/shared/lib/shareNative";
 import {
@@ -11,7 +12,7 @@ export function useActorProfileActions({
   onPostDeleted,
 }) {
   const deletePost = useDeletePostAction({ actorId: viewerActorId });
-  const reportFlow = useReportFlow({ reporterActorId: viewerActorId });
+  const reportFlow = useReportFlow();
 
   const [shareState, setShareState] = useState({
     open: false,

@@ -1,7 +1,7 @@
 // src/features/post/commentcard/hooks/usePostCommentCount.js
 
 import { useEffect, useState } from 'react';
-import { getPostCommentCount } from '@/features/post/commentcard/controller/postComments.count.controller';
+import { getPostCommentCount } from '@/features/post/commentcard/controllers/postComments.count.controller';
 
 export function usePostCommentCount(postId) {
   const [count, setCount] = useState(0);

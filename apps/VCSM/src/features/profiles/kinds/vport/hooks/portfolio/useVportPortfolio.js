@@ -11,7 +11,7 @@ import {
 
 const PAGE_SIZE = 24
 
-export function useVportPortfolio(actorId) {
+export function useVportPortfolio(actorId, { viewerIsOwner = false } = {}) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -44,7 +44,7 @@ export function useVportPortfolio(actorId) {
     offsetRef.current = 0
 
     try {
-      const result = await ctrlListPortfolio(actorId, { limit: PAGE_SIZE, offset: 0 })
+      const result = await ctrlListPortfolio(actorId, { limit: PAGE_SIZE, offset: 0, viewerIsOwner })
       if (!mountedRef.current) return
 
       setItems(result.items ?? [])
@@ -56,14 +56,14 @@ export function useVportPortfolio(actorId) {
       if (mountedRef.current) setLoading(false)
       inFlightRef.current = false
     }
-  }, [actorId])
+  }, [actorId, viewerIsOwner])
 
   const loadMore = useCallback(async () => {
     if (!actorId || !hasMore || loadingMore) return
     setLoadingMore(true)
 
     try {
-      const result = await ctrlListPortfolio(actorId, { limit: PAGE_SIZE, offset: offsetRef.current })
+      const result = await ctrlListPortfolio(actorId, { limit: PAGE_SIZE, offset: offsetRef.current, viewerIsOwner })
       if (!mountedRef.current) return
 
       setItems((prev) => [...prev, ...(result.items ?? [])])

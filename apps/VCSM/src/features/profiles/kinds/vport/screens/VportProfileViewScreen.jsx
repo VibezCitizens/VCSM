@@ -2,17 +2,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { VPORT_TABS } from "@/features/profiles/config/profileTabs.config";
+import { VPORT_TABS } from "@/features/profiles/kinds/vport/config/profileTabs.config";
 import { useProfileView } from "@/features/profiles/hooks/useProfileView";
 import { useProfileGate } from "@/features/profiles/hooks/useProfileGate";
 
-import VportProfileHeader from "@/features/profiles/kinds/vport/ui/vportprofileheader/VportProfileHeader";
-import VportProfileTabs from "@/features/profiles/kinds/vport/ui/tabs/VportProfileTabs";
+import VportProfileHeader from "@/features/profiles/kinds/vport/components/vportprofileheader/VportProfileHeader";
+import VportProfileTabs from "@/features/profiles/kinds/vport/components/tabs/VportProfileTabs";
 
 import PrivateProfileNotice from "@/features/social/adapters/components/PrivateProfileNotice.adapter";
-import PostActionsMenu from "@/features/post/adapters/postcard/components/PostActionsMenu.adapter";
+import { PostActionsMenu, ShareModal } from "@/features/post/adapters/post.adapter";
 import ReportModal from "@/features/moderation/adapters/components/ReportModal.adapter";
-import ShareModal from "@/features/post/adapters/postcard/components/ShareModal.adapter";
 
 import VportBarberShopOwnerBand from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopOwnerBand";
 import VportBarberShopBookingView from "@/features/profiles/kinds/vport/screens/barbershop/VportBarberShopBookingView";
@@ -24,10 +23,11 @@ import { useVportProfileBySlug } from "@/features/profiles/kinds/vport/hooks/use
 import { useActorSeoMeta } from "@/features/profiles/hooks/useActorSeoMeta";
 import UnavailableProfileGate from "@/features/profiles/adapters/ui/UnavailableProfileGate.adapter";
 import { deriveVportIsOwner } from "@/features/profiles/kinds/vport/model/vportOwnership.model";
+import { VportProfileContext } from "@/features/profiles/kinds/vport/context/VportProfileContext";
 import { useVportProfileActions } from "@/features/profiles/kinds/vport/hooks/useVportProfileActions";
-import VportProfileTabContent from "./components/VportProfileTabContent";
+import VportTabRouter from "../tabs/VportTabRouter";
 
-import "@/features/profiles/styles/profiles-modern.css";
+import "@/shared/styles/profiles-modern.css";
 import "@/features/profiles/styles/barbershop-owner-mode.css";
 
 export default function VportProfileViewScreen({
@@ -80,6 +80,17 @@ export default function VportProfileViewScreen({
     [viewerActorId, profileActorId]
   );
 
+  const vportProfileCtx = useMemo(() => ({
+    viewerActorId,
+    vportActorId: profileActorId,
+    vportProfileId: profile?.id ?? null,
+    mode: isOwner ? "owner" : "public",
+    authorization: {
+      canManage: isOwner,
+      mode: isOwner ? "self" : "public",
+    },
+  }), [viewerActorId, profileActorId, profile?.id, isOwner]);
+
   const vportType = useMemo(() => (
     publicDetails?.vportType ?? profile?.vport_type ?? profile?.vportType ?? null
   ), [publicDetails, profile]);
@@ -90,7 +101,7 @@ export default function VportProfileViewScreen({
   }, []);
 
   useEffect(() => {
-    if (!gate.loading && gate.isBlocked) navigate("/feed", { replace: true });
+    if (!gate.loading && gate.isBlocked) navigate("/CentralFeed", { replace: true });
   }, [gate.loading, gate.isBlocked, navigate]);
 
   const effectiveTabs = useMemo(() => {
@@ -182,6 +193,7 @@ export default function VportProfileViewScreen({
       {isBarbershopOwner && profile?.actorId && (
         <VportBarberShopOwnerBand
           actorId={profile.actorId}
+          callerActorId={viewerActorId}
           onNewBooking={() => handleTabSelect("book")}
           hideBookingButton={isCalendarActive}
         />
@@ -204,32 +216,34 @@ export default function VportProfileViewScreen({
         />
       )}
 
-      {gate.canView && isCalendarActive && (
-        <VportBarberShopBookingView profile={profile} isOwner={isOwner} />
-      )}
+      <VportProfileContext.Provider value={vportProfileCtx}>
+        {gate.canView && isCalendarActive && (
+          <VportBarberShopBookingView profile={profile} isOwner={isOwner} />
+        )}
 
-      {gate.canView && !isCalendarActive && !!profile && (
-        <VportProfileTabContent
-          tab={tab}
-          profile={profile}
-          publicDetails={publicDetails}
-          publicDetailsLoading={publicDetailsLoading}
-          viewerActorId={viewerActorId}
-          profileActorId={profileActorId}
-          identity={identity}
-          isOwner={isOwner}
-          vportType={vportType}
-          effectiveTabs={effectiveTabs}
-          reviewsDefaultTab={reviewsDefaultTab}
-          onSetTab={handleTabSelect}
-          onConsumedReviewsTab={(defaultTab) => {
-            if (defaultTab) setReviewsDefaultTab(defaultTab);
-            else setReviewsDefaultTab(null);
-          }}
-          onShare={actions.handleShare}
-          onOpenMenu={actions.openPostMenu}
-        />
-      )}
+        {gate.canView && !isCalendarActive && !!profile && (
+          <VportTabRouter
+            tab={tab}
+            profile={profile}
+            publicDetails={publicDetails}
+            publicDetailsLoading={publicDetailsLoading}
+            viewerActorId={viewerActorId}
+            profileActorId={profileActorId}
+            identity={identity}
+            isOwner={isOwner}
+            vportType={vportType}
+            effectiveTabs={effectiveTabs}
+            reviewsDefaultTab={reviewsDefaultTab}
+            onSetTab={handleTabSelect}
+            onConsumedReviewsTab={(defaultTab) => {
+              if (defaultTab) setReviewsDefaultTab(defaultTab);
+              else setReviewsDefaultTab(null);
+            }}
+            onShare={actions.handleShare}
+            onOpenMenu={actions.openPostMenu}
+          />
+        )}
+      </VportProfileContext.Provider>
 
       <PostActionsMenu
         open={!!actions.postMenu}

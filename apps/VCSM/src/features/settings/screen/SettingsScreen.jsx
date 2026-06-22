@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import '@/features/settings/styles/settings-modern.css'
+import '@/shared/styles/settings-modern.css'
 import { useTranslation } from '@i18n'
 
 const PrivacyView = lazy(() => import('../privacy/ui/PrivacyTab.view'))

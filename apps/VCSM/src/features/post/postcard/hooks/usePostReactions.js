@@ -6,16 +6,16 @@
 // ============================================================
 
 import { useState, useCallback, useEffect } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 
 import { togglePostReactionController } from
-  "../controller/togglePostReaction.controller";
+  "../controllers/togglePostReaction.controller";
 
 import { getPostReactionsController } from
-  "../controller/getPostReactions.controller";
+  "../controllers/getPostReactions.controller";
 
 import { sendRoseController } from
-  "../controller/sendRose.controller";
+  "../controllers/sendRose.controller";
 
 export function usePostReactions(postId, { preloadedReaction = null, preloadedCounts = null } = {}) {
   const { identity, loading: identityLoading } = useIdentity();

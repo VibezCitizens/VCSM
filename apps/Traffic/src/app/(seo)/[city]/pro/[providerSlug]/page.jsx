@@ -33,8 +33,10 @@ import {
   countryPath,
   countryProviderPath
 } from "@/lib/paths";
-import { ProviderPageTemplate } from "@/features/providers/templates/ProviderPageTemplate";
-import { buildProviderRelatedLinks } from "@/features/providers/lib/providerRelatedLinks";
+import {
+  ProviderPageTemplate,
+  buildProviderRelatedLinks
+} from "@/features/providers/adapters/providers.adapter";
 
 const PROVIDER_ROBOTS = {
   index: true,

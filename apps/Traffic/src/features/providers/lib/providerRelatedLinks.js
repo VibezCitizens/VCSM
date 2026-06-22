@@ -1,5 +1,5 @@
 import { dedupeInternalLinks } from "@/seo/internalLinks";
-import { listSpecialtiesByService } from "@/data/repositories/service.repo";
+import { listSpecialtiesByService } from "@/features/providers/dal/provider.read.dal";
 import {
   cityServicePath,
   countryCityLocalityServicePath,

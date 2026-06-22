@@ -8,7 +8,7 @@ import VportPublicBookingFlow from "@/features/profiles/kinds/vport/screens/book
 import {
   DURATION_OPTIONS,
   STATUS_LABELS,
-} from "@/features/booking/model/bookingCalendar.model";
+} from "@/features/booking/adapters/booking.adapter";
 import "@/features/profiles/styles/profiles-booking-modern.css";
 import "@/features/profiles/styles/profiles-booking-daypanel-modern.css";
 

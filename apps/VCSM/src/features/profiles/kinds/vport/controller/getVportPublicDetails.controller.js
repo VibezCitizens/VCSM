@@ -1,5 +1,5 @@
 import { fetchVportPublicDetailsByActorId } from '@/features/profiles/kinds/vport/dal/vportPublicDetails.read.dal'
-import { readVportTypeDAL } from '@/features/profiles/dal/readVportType.dal'
+import { readVportTypeDAL } from '@/features/profiles/kinds/vport/dal/readVportType.dal'
 import { mapVportPublicDetailsModel } from '@/features/profiles/kinds/vport/model/mapVportPublicDetails.model'
 import { createTTLCache } from '@/shared/lib/ttlCache'
 

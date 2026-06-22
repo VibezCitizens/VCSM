@@ -1,0 +1,8 @@
+# Dev Monitor Report
+Command : grep: TODO / FIXME / HACK
+ID      : grep:todo
+Exit    : 0
+Date    : 2026-06-07T11:21:04.486Z
+
+apps/VCSM/src/features/feed/hooks/useFeed.js:161:          // TODO VEN-PIPE-003 DEFERRED → DB/CARNAGE: vport.profiles policy must allow
+apps/VCSM/src/features/profiles/kinds/vport/screens/booking/components/BookingQrLinksPanel.jsx:13: * (VENOM V-003 — identity surface adapter implemented in useQrLinks; TODO resolved)

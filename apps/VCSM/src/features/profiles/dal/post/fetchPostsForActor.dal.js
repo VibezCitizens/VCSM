@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { supabase } from "@/services/supabase/supabaseClient";
 import vportSchema from "@/services/supabase/vportClient";
 
@@ -5,7 +6,7 @@ function makeActorRoute({ kind, username, actorId, vportId }) {
   if (kind === "user" && username) return `/u/${username}`;
   if (kind === "vport" && vportId) return `/vport/${vportId}`;
   if (actorId) return `/profile/${actorId}`;
-  return "/feed";
+  return "/CentralFeed";
 }
 
 // Resolves post author identity. Uses controller-provided actor data when present; falls back to DB.
@@ -200,6 +201,7 @@ export async function fetchPostsForActorDAL({
       media_url,
       media_type,
       post_type,
+      payload,
       tags,
       created_at,
       edited_at,

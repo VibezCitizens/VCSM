@@ -50,7 +50,7 @@ export async function submitProviderLeadRow({ config = {}, lead }) {
     throw new Error("PROVIDER_LEAD_CLIENT_UNAVAILABLE");
   }
 
-  const { error } = await client.schema("vport").rpc("submit_business_card_lead", {
+  const { data, error } = await client.schema("vport").rpc("submit_business_card_lead", {
     p_slug: lead.providerSlug,
     p_name: lead.name,
     p_phone: lead.phone,
@@ -62,6 +62,42 @@ export async function submitProviderLeadRow({ config = {}, lead }) {
   });
 
   if (error) throw error;
+  return data ?? null;
+}
+
+export async function invokeProviderLeadNotification({ config = {}, leadId }) {
+  // Best-effort: this runs AFTER the lead row is committed, so a failure here
+  // must never block lead creation. We return a structured result (never throw)
+  // so the dev capture/debug UI can show WHY the notification did not fire,
+  // instead of a silent `true` that masks CORS/auth/runtime/RPC failures.
+  const fn = "publish-lead-notification";
+
+  if (!leadId) return { ok: false, fn, leadId: null, error: "MISSING_LEAD_ID" };
+
+  const client = getProviderLeadClient(config);
+  if (!client) return { ok: false, fn, leadId, error: "CLIENT_UNAVAILABLE" };
+
+  try {
+    // supabase-js does NOT throw on non-2xx — it returns { data, error }.
+    const { data, error } = await client.functions.invoke(fn, {
+      body: { leadId: String(leadId) }
+    });
+
+    if (error) {
+      return {
+        ok: false,
+        fn,
+        leadId,
+        status: error?.context?.status ?? null,
+        error: error?.message ?? String(error)
+      };
+    }
+
+    return { ok: true, fn, leadId, data: data ?? null };
+  } catch (error) {
+    // Transport-level failure (network/CORS). Still best-effort — never block.
+    return { ok: false, fn, leadId, error: error?.message ?? String(error) };
+  }
 }
 
 export async function invokeProviderLeadConfirmation({ config = {}, lead }) {

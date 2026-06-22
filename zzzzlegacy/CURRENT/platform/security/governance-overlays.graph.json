@@ -1,0 +1,260 @@
+{
+  "metadata": {
+    "name": "governance-overlays",
+    "scope": "apps/VCSM",
+    "generatedAt": "2026-05-25",
+    "source": "VENOM",
+    "confidence": "STATICALLY_TRACED"
+  },
+  "nodes": [
+    {
+      "id": "venom-F001",
+      "type": "finding",
+      "label": "CRITICAL: No ownership check in reviewFuelPriceSuggestion",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "CRITICAL",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "priority": "P0",
+      "source": "VENOM",
+      "auditFile": "zNOTFORPRODUCTION/_ACTIVE/audits/security/2026-05-25_venom_vport-gas-prices.md",
+      "cisspsomain_primary": "Identity and Access Management"
+    },
+    {
+      "id": "venom-F002",
+      "type": "finding",
+      "label": "HIGH: createSystemPost actor_id not session-verified",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "HIGH",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "priority": "P1",
+      "source": "VENOM",
+      "cissp_primary": "Identity and Access Management"
+    },
+    {
+      "id": "venom-F003",
+      "type": "finding",
+      "label": "HIGH: submissionId enumeration — no access check",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "HIGH",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "priority": "P1",
+      "source": "VENOM",
+      "cissp_primary": "Identity and Access Management"
+    },
+    {
+      "id": "venom-F004",
+      "type": "finding",
+      "label": "HIGH: decidedByActorId not session-bound — audit trail forgery",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "HIGH",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "priority": "P0",
+      "source": "VENOM",
+      "cissp_primary": "Security Operations"
+    },
+    {
+      "id": "venom-F005",
+      "type": "finding",
+      "label": "MEDIUM: anon GRANT on fuel_price_submissions — RLS unverified",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "MEDIUM",
+      "status": "OPEN",
+      "severity": "MEDIUM",
+      "priority": "P1",
+      "source": "VENOM",
+      "cissp_primary": "Asset Security"
+    },
+    {
+      "id": "venom-F006",
+      "type": "finding",
+      "label": "MEDIUM: Ownership string compare instead of actor_owners",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "MEDIUM",
+      "status": "OPEN",
+      "severity": "MEDIUM",
+      "priority": "P1",
+      "source": "VENOM",
+      "cissp_primary": "Identity and Access Management"
+    },
+    {
+      "id": "venom-F007",
+      "type": "finding",
+      "label": "LOW: PUBLIC_REALM_ID hardcoded UUID in client bundle",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "LOW",
+      "status": "OPEN",
+      "severity": "LOW",
+      "priority": "P3",
+      "source": "VENOM",
+      "cissp_primary": "Asset Security"
+    },
+    {
+      "id": "venom-F008",
+      "type": "finding",
+      "label": "LOW: Dual Supabase client undocumented trust context",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "LOW",
+      "status": "OPEN",
+      "severity": "LOW",
+      "priority": "P3",
+      "source": "VENOM",
+      "cissp_primary": "Security Architecture and Engineering"
+    },
+    {
+      "id": "venom-F009",
+      "type": "finding",
+      "label": "LOW: Read function exported from write DAL",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "LOW",
+      "status": "OPEN",
+      "severity": "LOW",
+      "priority": "P2",
+      "source": "VENOM",
+      "cissp_primary": "Software Development Security"
+    },
+    {
+      "id": "venom-F010",
+      "type": "finding",
+      "label": "LOW/MEDIUM: updatedFuels caller-controlled in feed post text",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "MEDIUM",
+      "status": "OPEN",
+      "severity": "LOW",
+      "priority": "P2",
+      "source": "VENOM",
+      "cissp_primary": "Software Development Security"
+    },
+    {
+      "id": "review-block-thor",
+      "type": "finding",
+      "label": "RELEASE BLOCKED: P0 findings unresolved",
+      "scope": "apps/VCSM",
+      "layer": "finding",
+      "risk": "CRITICAL",
+      "status": "OPEN",
+      "source": "VENOM → THOR"
+    },
+    {
+      "id": "pending-wolverine-gas",
+      "type": "command",
+      "label": "Wolverine: Fix F-001, F-004 (P0)",
+      "scope": "apps/VCSM",
+      "layer": "command",
+      "risk": "NONE",
+      "status": "PENDING"
+    },
+    {
+      "id": "pending-carnage-gas",
+      "type": "command",
+      "label": "Carnage: RLS policy for submission reviews + anon GRANT audit",
+      "scope": "apps/VCSM",
+      "layer": "command",
+      "risk": "NONE",
+      "status": "PENDING"
+    }
+  ],
+  "edges": [
+    {
+      "id": "gov-e1",
+      "source": "venom-F001",
+      "target": "ctrl-review-fuel-price",
+      "type": "violates",
+      "label": "CRITICAL ownership gap",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e2",
+      "source": "venom-F002",
+      "target": "ctrl-publish-fuel-post",
+      "type": "violates",
+      "label": "actor_id not session-verified",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e3",
+      "source": "venom-F003",
+      "target": "dal-submissions-read",
+      "type": "violates",
+      "label": "submissionId enumeration",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e4",
+      "source": "venom-F004",
+      "target": "ctrl-review-fuel-price",
+      "type": "violates",
+      "label": "audit trail forgery via caller-supplied decidedByActorId",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e5",
+      "source": "venom-F005",
+      "target": "table-fuel-submissions",
+      "type": "violates",
+      "label": "anon GRANT — RLS policy unverified",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e6",
+      "source": "venom-F006",
+      "target": "ctrl-submit-fuel-price",
+      "type": "violates",
+      "label": "string compare vs actor_owners",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e7",
+      "source": "venom-F001",
+      "target": "review-block-thor",
+      "type": "pending_review",
+      "label": "blocks release",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e8",
+      "source": "venom-F004",
+      "target": "review-block-thor",
+      "type": "pending_review",
+      "label": "blocks release",
+      "confidence": "STATICALLY_TRACED"
+    },
+    {
+      "id": "gov-e9",
+      "source": "review-block-thor",
+      "target": "pending-wolverine-gas",
+      "type": "pending_review",
+      "label": "requires P0 fix",
+      "confidence": "INFERRED"
+    },
+    {
+      "id": "gov-e10",
+      "source": "venom-F005",
+      "target": "pending-carnage-gas",
+      "type": "pending_review",
+      "label": "requires RLS audit",
+      "confidence": "INFERRED"
+    },
+    {
+      "id": "gov-e11",
+      "source": "venom-F001",
+      "target": "pending-carnage-gas",
+      "type": "pending_review",
+      "label": "requires RLS defense-in-depth",
+      "confidence": "INFERRED"
+    }
+  ]
+}

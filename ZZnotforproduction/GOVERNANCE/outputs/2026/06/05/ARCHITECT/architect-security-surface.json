@@ -1,0 +1,255 @@
+{
+  "meta": {
+    "tool": "ARCHITECT",
+    "version": "2.0",
+    "date": "2026-06-05",
+    "ticket": "TICKET-ARCHITECT-DASHBOARD-MODULE-WAVE-0001",
+    "scannerVersion": "1.1.0",
+    "scope": "dashboard/modules: locksmith, portfolio, qrcode, shared, team"
+  },
+  "summary": {
+    "modulesScanned": 5,
+    "sourcesRead": 25,
+    "callChains": 15,
+    "writeSurfaces": 18,
+    "boundaryViolations": 5,
+    "findingsBySeverity": {
+      "HIGH": 5,
+      "MEDIUM": 7,
+      "LOW": 7
+    }
+  },
+  "boundaryViolations": [
+    {
+      "id": "BV-001",
+      "severity": "HIGH",
+      "module": "portfolio",
+      "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/portfolio/hooks/usePortfolioItemSubmit.js",
+      "line": 5,
+      "import": "ctrlSavePortfolioDetail",
+      "from": "@/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller",
+      "description": "Portfolio hook directly imports from profiles controller internals — bypasses profiles adapter"
+    },
+    {
+      "id": "BV-002",
+      "severity": "HIGH",
+      "module": "portfolio",
+      "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/portfolio/hooks/usePortfolioItemSubmit.js",
+      "line": 6,
+      "import": "publishLocksmithPortfolioUpdateAsPostController",
+      "from": "@/features/profiles/kinds/vport/controller/locksmith/publishLocksmithPortfolioUpdateAsPost.controller",
+      "description": "Portfolio hook directly imports from profiles controller internals — bypasses profiles adapter"
+    },
+    {
+      "id": "BV-003",
+      "severity": "MEDIUM",
+      "module": "team",
+      "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/team/controller/vportTeam.controller.js",
+      "import": "readVportProfileByActorIdDAL",
+      "from": "vport DAL (cross-module)",
+      "description": "Team controller imports vport profile DAL directly — should use vport adapter"
+    },
+    {
+      "id": "BV-004",
+      "severity": "MEDIUM",
+      "module": "team",
+      "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/team/controller/vportTeamAccess.controller.js",
+      "import": "readVportProfileByActorIdDAL",
+      "from": "vport DAL (cross-module)",
+      "description": "Team access controller imports vport profile DAL directly — should use vport adapter"
+    },
+    {
+      "id": "BV-005",
+      "severity": "LOW",
+      "module": "locksmith",
+      "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/locksmith/VportDashboardLocksmithScreen.jsx",
+      "import": "useVportOwnership",
+      "from": "@/features/dashboard/vport/hooks/useVportOwnership",
+      "description": "Screen imports vport hook directly instead of through an adapter"
+    }
+  ],
+  "identityHookInconsistency": {
+    "severity": "LOW",
+    "modules": {
+      "locksmith": "@/state/identity/identityContext",
+      "team": "@/features/identity/adapters/identity.adapter",
+      "portfolio": "@/features/identity/adapters/identity.adapter"
+    },
+    "recommendation": "Standardize all dashboard modules to use identity.adapter"
+  },
+  "writeSurfaces": [
+    {
+      "id": "WS-locksmith-001",
+      "module": "locksmith",
+      "operation": "INSERT/UPDATE/DELETE",
+      "table": "locksmith_service_areas",
+      "chain": "CHAIN-locksmith-001/002/003",
+      "ownershipChecked": true,
+      "ownershipLayer": "profiles DAL (delegated)",
+      "riskLevel": "MEDIUM"
+    },
+    {
+      "id": "WS-portfolio-001",
+      "module": "portfolio",
+      "operation": "UPDATE",
+      "table": "portfolio_media",
+      "chain": "CHAIN-portfolio-005",
+      "ownershipChecked": true,
+      "guard": "PORT-V-005 callerProfileId",
+      "riskLevel": "LOW"
+    },
+    {
+      "id": "WS-portfolio-002",
+      "module": "portfolio",
+      "operation": "INSERT/UPDATE/DELETE",
+      "table": "portfolio_items, portfolio_media, portfolio_tags",
+      "chain": "CHAIN-portfolio-001/002/003",
+      "ownershipChecked": true,
+      "ownershipLayer": "engine-level",
+      "riskLevel": "LOW"
+    },
+    {
+      "id": "WS-team-001",
+      "module": "team",
+      "operation": "INSERT",
+      "table": "resources",
+      "chain": "CHAIN-team-001",
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController",
+      "riskLevel": "LOW"
+    },
+    {
+      "id": "WS-team-002",
+      "module": "team",
+      "operation": "UPDATE",
+      "table": "resources",
+      "chain": "CHAIN-team-002/003",
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController + profileId",
+      "riskLevel": "LOW"
+    },
+    {
+      "id": "WS-team-003",
+      "module": "team",
+      "operation": "DELETE",
+      "table": "resources",
+      "chain": "CHAIN-team-004",
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController + profileId",
+      "riskLevel": "LOW"
+    },
+    {
+      "id": "WS-team-004",
+      "module": "team",
+      "operation": "UPDATE",
+      "table": "resources (invite accept)",
+      "chain": "CHAIN-team-005/007",
+      "ownershipChecked": true,
+      "guard": "ELEK-001 atomic meta->>status guard",
+      "riskLevel": "LOW"
+    },
+    {
+      "id": "WS-team-005",
+      "module": "team",
+      "operation": "UPDATE",
+      "table": "resources (invite decline)",
+      "chain": "CHAIN-team-006",
+      "ownershipChecked": true,
+      "guard": "ELEK-002 ownership assert",
+      "riskLevel": "LOW"
+    }
+  ],
+  "confirmedMitigations": [
+    {
+      "finding": "ELEK-001",
+      "description": "Atomic status guard on acceptTeamRequestDAL and acceptTeamInviteByActorDAL",
+      "status": "CONFIRMED"
+    },
+    {
+      "finding": "ELEK-002",
+      "description": "Ownership enforcement on isInvitedBarber decline path",
+      "status": "CONFIRMED"
+    },
+    {
+      "finding": "VPD-V-008",
+      "description": "callerActorId required guard in acceptBarbershopInviteController",
+      "status": "CONFIRMED"
+    },
+    {
+      "finding": "PORT-V-005",
+      "description": "portfolio_media UPDATE scoped to callerProfileId",
+      "status": "CONFIRMED"
+    }
+  ],
+  "performanceRisks": [
+    {
+      "id": "PERF-001",
+      "severity": "MEDIUM",
+      "module": "team",
+      "function": "findEligibleBarberActorIdsDAL",
+      "file": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/team/dal/vportTeam.read.dal.js",
+      "description": "4-5 sequential DB calls across vc and vportSchema clients",
+      "recommendation": "Consolidate into single RPC or materialized join"
+    }
+  ],
+  "governanceGaps": [
+    { "module": "locksmith", "file": "BEHAVIOR.md", "status": "MISSING", "severity": "MEDIUM" },
+    { "module": "portfolio", "file": "BEHAVIOR.md", "status": "MISSING", "severity": "HIGH" },
+    { "module": "qrcode", "file": "BEHAVIOR.md", "status": "MISSING", "severity": "LOW" },
+    { "module": "shared", "file": "BEHAVIOR.md", "status": "MISSING", "severity": "LOW" },
+    { "module": "team", "file": "BEHAVIOR.md", "status": "MISSING", "severity": "HIGH" }
+  ],
+  "architectureGaps": [
+    {
+      "id": "ARCH-GAP-001",
+      "module": "team",
+      "severity": "LOW",
+      "title": "VALID_ROLES in controller layer",
+      "description": "Business constant defined in vportTeamAccess.controller.js — should be in model/ layer"
+    },
+    {
+      "id": "ARCH-GAP-002",
+      "module": "portfolio",
+      "severity": "MEDIUM",
+      "title": "No model layer",
+      "description": "Portfolio has no model/ directory — complex domain object construction done inline in controllers/hooks"
+    },
+    {
+      "id": "ARCH-GAP-003",
+      "module": "locksmith",
+      "severity": "LOW",
+      "title": "No local DAL or controller",
+      "description": "All persistence delegated to profiles feature — ownership enforcement opaque to this module"
+    }
+  ],
+  "openVenomTargets": [
+    {
+      "id": "VENOM-TARGET-001",
+      "module": "portfolio",
+      "surface": "usePortfolioItemSubmit boundary violations (BV-001, BV-002)",
+      "priority": "HIGH",
+      "description": "Cross-feature controller imports should be evaluated for trust boundary exploitation"
+    },
+    {
+      "id": "VENOM-TARGET-002",
+      "module": "team",
+      "surface": "findEligibleBarberActorIdsDAL cross-client reads",
+      "priority": "MEDIUM",
+      "description": "Multi-step actor eligibility resolution — check for over-broad actor exposure"
+    },
+    {
+      "id": "VENOM-TARGET-003",
+      "module": "team",
+      "surface": "Team invite state machine (accept/decline/deactivate)",
+      "priority": "MEDIUM",
+      "description": "State transitions with callerActorId injection — verify no path bypasses ownership check"
+    },
+    {
+      "id": "VENOM-TARGET-004",
+      "module": "locksmith",
+      "surface": "Delegated ownership (useLocksmithOwner)",
+      "priority": "MEDIUM",
+      "description": "Ownership enforcement inside profiles feature — opaque trust boundary"
+    }
+  ]
+}

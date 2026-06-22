@@ -1,4 +1,4 @@
-import HousingNotesList from '@/features/professional/professional-nurse/housing/ui/HousingNotesList'
+import HousingNotesList from '@/features/professional/professional-nurse/housing/components/HousingNotesList'
 
 export default function HousingTabView({ location, query = '', notes = [] }) {
   return (

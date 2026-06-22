@@ -3,6 +3,7 @@
 import { useProviderLeadCapture } from "@/features/conversion/hooks/useProviderLeadCapture";
 import { useTrafficLanguage } from "@/lib/language";
 import { trackProviderAction } from "@/lib/analytics";
+import LeadNotificationDebugCard from "@/features/conversion/components/LeadNotificationDebugCard";
 
 function toPhoneHref(value) {
   const digits = String(value ?? "").replace(/[^\d+]/g, "");
@@ -31,7 +32,8 @@ export default function ProviderLeadCaptureCard({
     isSubmitted,
     isUnavailable,
     setField,
-    handleSubmit
+    handleSubmit,
+    notificationDiagnostics
   } = useProviderLeadCapture({
     providerSlug,
     providerName,
@@ -176,6 +178,10 @@ export default function ProviderLeadCaptureCard({
           </button>
         </form>
       )}
+
+      {process.env.NODE_ENV !== "production" && notificationDiagnostics ? (
+        <LeadNotificationDebugCard diagnostics={notificationDiagnostics} />
+      ) : null}
 
       {claimStatus !== "claimed" && claimLink ? (
         <a

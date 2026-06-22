@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "tool": "ARCHITECT",
+    "version": "2.0",
+    "date": "2026-06-05",
+    "ticket": "TICKET-ARCHITECT-DASHBOARD-MODULE-WAVE-0001",
+    "scannerVersion": "1.1.0",
+    "confidence": "HIGH"
+  },
+  "module": {
+    "name": "shared",
+    "feature": "dashboard",
+    "root": "apps/VCSM/src/features/dashboard/shared/",
+    "classification": "INDEPENDENT",
+    "completeness": "COMPLETE",
+    "runtimeReadiness": "READY"
+  },
+  "routes": [],
+  "layers": {
+    "screen": 0,
+    "controller": 0,
+    "dal": 0,
+    "hook": 0,
+    "component": 1,
+    "adapter": 0,
+    "tests": 1
+  },
+  "sourceFilesRead": [
+    { "file": "components/BackButton.jsx", "layer": "component", "lines": "1-28" }
+  ],
+  "publicApi": [
+    {
+      "export": "VportBackButton",
+      "type": "default",
+      "props": {
+        "isDesktop": "bool",
+        "onClick": "fn"
+      },
+      "behavior": "isDesktop=true shows text + icon; false shows icon only. aria-label=Back."
+    }
+  ],
+  "callChains": [],
+  "securitySurfaces": [],
+  "boundaryViolations": [],
+  "behaviorContract": {
+    "file": "BEHAVIOR.md",
+    "status": "MISSING",
+    "severity": "LOW"
+  },
+  "databases": {
+    "writes": [],
+    "reads": []
+  },
+  "engineUsage": [],
+  "externalDependencies": [
+    { "package": "lucide-react", "usedIn": "components/BackButton.jsx" }
+  ],
+  "findings": [
+    {
+      "id": "SHARED-ARCH-001",
+      "severity": "LOW",
+      "type": "GOVERNANCE",
+      "title": "BEHAVIOR.md missing",
+      "description": "No behavior contract file present — low severity for shared primitive"
+    }
+  ]
+}

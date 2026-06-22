@@ -1,0 +1,162 @@
+{
+  "meta": {
+    "command": "ARCHITECT V2",
+    "module": "auth/register",
+    "application": "VCSM",
+    "runDate": "2026-06-06",
+    "scannerVersion": "V2",
+    "evidenceStandard": "SOURCE_VERIFIED",
+    "finalStatus": "COMPLETE"
+  },
+  "sourceFilesRead": [
+    "apps/VCSM/src/features/auth/screens/RegisterScreen.jsx",
+    "apps/VCSM/src/features/auth/hooks/useRegister.js",
+    "apps/VCSM/src/features/auth/controllers/register.controller.js",
+    "apps/VCSM/src/features/auth/dal/register.dal.js",
+    "apps/VCSM/src/features/auth/dal/login.dal.js",
+    "apps/VCSM/src/features/auth/model/registerPasswordRules.model.js",
+    "apps/VCSM/src/features/auth/model/authInputValidation.model.js",
+    "apps/VCSM/src/features/auth/components/RegisterFormCard.jsx",
+    "apps/VCSM/src/features/auth/adapters/auth.adapter.js",
+    "apps/VCSM/src/app/routes/public/auth.routes.jsx",
+    "apps/VCSM/src/app/routes/public/AuthPublicRoute.jsx",
+    "apps/VCSM/src/app/routes/index.jsx",
+    "apps/VCSM/src/app/providers/AuthProvider.jsx",
+    "apps/VCSM/src/features/legal/adapters/legal.adapter.js",
+    "apps/VCSM/src/features/legal/hooks/useSignupConsent.js",
+    "apps/VCSM/src/features/legal/controllers/legalConsent.controller.js",
+    "apps/VCSM/src/features/legal/dal/userConsents.write.dal.js",
+    "apps/VCSM/src/services/monitoring/monitoringClient.js",
+    "apps/VCSM/src/features/wanders/adapters/services/wandersSupabaseClient.adapter.js"
+  ],
+  "routes": [
+    {
+      "path": "/register",
+      "classification": "PUBLIC",
+      "guard": "AuthPublicRoute",
+      "guardBehavior": "redirect to /feed if user !== null",
+      "component": "RegisterScreen",
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "screens": [
+    {
+      "file": "screens/RegisterScreen.jsx",
+      "hook": "useRegister",
+      "component": "RegisterFormCard",
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "hooks": [
+    {
+      "file": "hooks/useRegister.js",
+      "state": ["form", "termsAccepted", "consentError", "loading", "errorMessage", "successMessage", "showPassword", "showConfirmPassword"],
+      "controllers": ["ctrlRegisterAccount"],
+      "crossFeature": ["useSignupConsent (legal adapter)", "captureFrontendError (monitoring)"],
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "controllers": [
+    {
+      "file": "controllers/register.controller.js",
+      "exports": ["ctrlRegisterAccount"],
+      "functions": ["resolveRegisterClient", "maybeMirrorWandersSession", "isAnonymousUser", "isStaleJwtSubjectError", "signUpRegisterUserWithRecovery"],
+      "dalDependencies": ["register.dal.js"],
+      "crossFeature": ["wandersSupabaseClient.adapter"],
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "dals": [
+    {
+      "file": "dal/register.dal.js",
+      "functions": ["dalReadRegisterSession", "dalUpdateRegisterUser", "dalSignUpRegisterUser", "dalSignOutRegisterSession", "dalUpsertRegisterProfile", "dalMirrorWandersSessionToPrimary"],
+      "supabaseOperations": ["auth.getSession", "auth.updateUser", "auth.signUp", "auth.signOut", "auth.setSession", "auth.getSession (warm)", "from('profiles').upsert"],
+      "evidence": "SOURCE_VERIFIED"
+    },
+    {
+      "file": "features/legal/dal/userConsents.write.dal.js",
+      "functions": ["dalRecordLegalAcceptance"],
+      "supabaseOperations": ["schema('platform').from('user_consents').insert"],
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "models": [
+    {
+      "file": "model/registerPasswordRules.model.js",
+      "exports": ["evaluateRegisterPasswordRules", "evaluateConfirmPasswordState"],
+      "rules": ["minLength:8", "maxLength:72", "lowercase", "uppercase", "number"],
+      "enforcementLayer": "CLIENT_ONLY",
+      "evidence": "SOURCE_VERIFIED"
+    },
+    {
+      "file": "model/authInputValidation.model.js",
+      "exports": ["normalizeEmail", "isValidEmailFormat", "validateEmail", "isSafeAuthReturnPath", "isValidInviteCode", "mapLoginError"],
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "adapters": [
+    {
+      "file": "adapters/auth.adapter.js",
+      "exports": ["useAuthOps", "useJoinOnboarding", "authTheme", "isEmailVerifiedModel", "CompleteProfileGate", "VerifyEmailRequiredScreen", "ConsentCheckbox"],
+      "note": "RegisterScreen and useRegister are NOT exported via adapter — accessed directly by routing",
+      "evidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "dependencies": {
+    "internal": [
+      "@/services/supabase/supabaseClient",
+      "@/features/wanders/services/wandersSupabaseClient",
+      "@/features/legal (via adapter)"
+    ],
+    "external": ["react-router-dom", "@i18n", "lucide-react"]
+  },
+  "databaseReads": [
+    { "operation": "auth.getSession", "schema": "auth", "table": "sessions", "guard": "none — session may be null" },
+    { "operation": "platform.legal_documents SELECT", "schema": "platform", "table": "legal_documents", "guard": "TTL cache (60s)" }
+  ],
+  "databaseWrites": [
+    { "operation": "auth.signUp", "schema": "auth", "table": "users", "guard": "Supabase email uniqueness + rate limits" },
+    { "operation": "auth.updateUser (anonymous upgrade)", "schema": "auth", "table": "users", "guard": "Requires existing session" },
+    { "operation": "profiles.upsert", "schema": "public", "table": "profiles", "guard": "RLS — UNVERIFIED" },
+    { "operation": "platform.user_consents.insert", "schema": "platform", "table": "user_consents", "guard": "RLS — UNVERIFIED" }
+  ],
+  "rpcs": [],
+  "edgeFunctions": [
+    { "name": "monitoring-ingest-error", "trigger": "captureFrontendError", "direction": "write", "payloadPiiStripped": "PARTIAL (tags+context stripped; message field NOT stripped)" }
+  ],
+  "securitySensitiveSurfaces": [
+    { "surface": "navState.from", "finding": "FINDING-HIGH-001", "severity": "HIGH", "type": "OPEN_REDIRECT_RISK" },
+    { "surface": "platform.user_consents INSERT userId", "finding": "FINDING-MED-004", "severity": "MEDIUM", "type": "AUTHORIZATION_UNVERIFIED" },
+    { "surface": "profiles UPSERT", "finding": "FINDING-MED-005", "severity": "MEDIUM", "type": "RLS_UNVERIFIED" },
+    { "surface": "console.error in production", "finding": "FINDING-MED-003", "severity": "MEDIUM", "type": "INFO_DISCLOSURE" },
+    { "surface": "monitoring message field", "finding": "FINDING-LOW-008", "severity": "LOW", "type": "PII_STRIP_INCOMPLETE" },
+    { "surface": "password rules client-only", "finding": "FINDING-LOW-006", "severity": "LOW", "type": "CLIENT_ONLY_ENFORCEMENT" },
+    { "surface": "isWandersFlow client-controlled", "finding": "FINDING-LOW-007", "severity": "LOW_MITIGATED", "type": "CLIENT_TRUST_MITIGATED" }
+  ],
+  "callChains": [
+    {
+      "id": "register-standard",
+      "chain": "RegisterScreen → useRegister → handleSubmit → handleRegister → ctrlRegisterAccount → dalSignUpRegisterUser → supabase.auth.signUp → navigate('/verify-email')"
+    },
+    {
+      "id": "register-with-session",
+      "chain": "RegisterScreen → useRegister → handleRegister → ctrlRegisterAccount → dalSignUpRegisterUser → supabase.auth.signUp [session returned] → dalUpsertRegisterProfile → recordSignupConsent → dalRecordLegalAcceptance → navigate('/onboarding')"
+    },
+    {
+      "id": "register-anonymous-upgrade",
+      "chain": "RegisterScreen → useRegister → ctrlRegisterAccount → dalReadRegisterSession [anonymous user detected] → dalUpdateRegisterUser → dalUpsertRegisterProfile → navigate('/onboarding')"
+    },
+    {
+      "id": "register-wanders-mirror",
+      "chain": "RegisterScreen → useRegister [isWandersFlow=true] → ctrlRegisterAccount [getWandersSupabase()] → signUp/upgrade → maybeMirrorWandersSession [userId match guard] → dalMirrorWandersSessionToPrimary → supabase.auth.setSession"
+    }
+  ],
+  "findings": {
+    "HIGH": 1,
+    "MEDIUM": 4,
+    "LOW": 3,
+    "INFO": 4
+  },
+  "architectRecommendation": "CAUTION",
+  "provenance": "SOURCE_VERIFIED — 19 files read directly; no prior reports consulted"
+}

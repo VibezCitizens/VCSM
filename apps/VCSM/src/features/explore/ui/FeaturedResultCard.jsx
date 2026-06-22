@@ -10,7 +10,7 @@ export default function FeaturedResultCard({ item }) {
     return (
       <button
         type="button"
-        onClick={() => navigate(`/profile/${item.username ?? item.actor_id}`)}
+        onClick={() => item.username && navigate(`/profile/${item.username}`)}
         className="explore-featured-card"
       >
         <img

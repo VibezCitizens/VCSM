@@ -35,28 +35,28 @@ export const VportCategoryLandingScreen = lazyWithLog("VportCategoryLandingScree
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const LoginScreen = lazyWithLog("LoginScreen", () =>
-  import("@/features/auth/screens/LoginScreen"),
+  import("@/features/auth/login/screens/LoginScreen"),
 );
 export const RegisterScreen = lazyWithLog("RegisterScreen", () =>
-  import("@/features/auth/screens/RegisterScreen"),
+  import("@/features/auth/registration/screens/RegisterScreen"),
 );
 export const ForgotPasswordScreen = lazyWithLog("ForgotPasswordScreen", () =>
-  import("@/features/auth/screens/ForgotPasswordScreen"),
+  import("@/features/auth/password-recovery/screens/ForgotPasswordScreen"),
 );
 export const ResetPasswordScreen = lazyWithLog("ResetPasswordScreen", () =>
-  import("@/features/auth/screens/ResetPasswordScreen"),
+  import("@/features/auth/password-recovery/screens/ResetPasswordScreen"),
 );
 export const OnboardingScreen = lazyWithLog("OnboardingScreen", () =>
-  import("@/features/auth/screens/Onboarding"),
+  import("@/features/auth/onboarding/screens/OnboardingScreen"),
 );
 export const WelcomeScreen = lazyWithLog("WelcomeScreen", () =>
-  import("@/features/auth/screens/WelcomeScreen"),
+  import("@/features/auth/registration/screens/WelcomeScreen"),
 );
 export const AuthCallbackScreen = lazyWithLog("AuthCallbackScreen", () =>
-  import("@/features/auth/screens/AuthCallbackScreen"),
+  import("@/features/auth/callback/screens/AuthCallbackScreen"),
 );
 export const VerifyEmailRequiredScreen = lazyWithLog("VerifyEmailRequiredScreen", () =>
-  import("@/features/auth/screens/VerifyEmailRequiredScreen"),
+  import("@/features/auth/gates/screens/VerifyEmailRequiredScreen"),
 );
 
 // ── Wanders (public + app) ────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ export const VportActorMenuQrScreen = lazyWithLog("VportActorMenuQrScreen", () =
   import("@/features/public/vportMenu/screen/VportPublicMenuQrScreen"),
 );
 export const VportActorMenuFlyerScreen = lazyWithLog("VportActorMenuFlyerScreen", () =>
-  import("@/features/dashboard/flyerBuilder/screens/VportActorMenuFlyerScreen"),
+  import("@/features/flyerBuilder/screens/VportActorMenuFlyerScreen"),
 );
 export const VportMenuBySlugScreen = lazyWithLog("VportMenuBySlugScreen", () =>
   import("@/features/public/vportMenu/screen/VportPublicMenuBySlugScreen"),

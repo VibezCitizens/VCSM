@@ -87,6 +87,18 @@ follow the spec in `apps/Traffic/REVIEW.md`.
 
 ---
 
+## Migration Safety — Non-Negotiable
+
+Database migrations are **never pushed to production by Claude or any agent.**
+The owner deploys all migrations manually.
+
+- **Write to:** `supabase/migrations/` (root) — this is the one canonical migrations directory
+- **Never run:** `supabase db push`, `supabase migration up`, `supabase db reset`, or any DB-mutating CLI command
+- **Never touch:** `apps/VCSM/supabase/migrations/` — deprecated mirror, do not write here
+- **Full contract:** [`supabase/CLOUD.md`](supabase/CLOUD.md)
+
+---
+
 ## Files That Must Never Ship to Production
 
 | Directory | Purpose |
@@ -141,14 +153,105 @@ follow the spec in `apps/Traffic/REVIEW.md`.
 | `/Falcon` | iOS parity governance — PWA → Native transfer |
 | `/Vision` | Analytics intelligence — telemetry, funnels, attribution |
 | `/review-contract` | Architecture contract compliance check |
+| `/GREENGOBLIN` | Anti-hallucination enforcement — evidence classification and claim validation |
+| `/HULK` | Catastrophic failure red team — maximum damage assessment, worst-case scenario simulation |
+| `/WANDA` | Independent red team — post-Blue-Team adversarial discovery before THOR |
+| `/MAGNETO` | Dependency mapping and cascade failure red team — invisible coupling, SPOF, trust boundary collapse |
 | `/session-summary` | End-of-session audit log |
+
+---
+
+## Patching Phase — Code First, DB Audit Notes (Non-Negotiable)
+
+When any security, quality, or audit command is running — VENOM, BLACKWIDOW,
+ELEKTRA, ARCHITECT, IRONMAN, SPIDER-MAN, HAWKEYE, WANDA, HULK, MAGNETO, or any
+Red Team / Blue Team pass:
+
+1. Patch all application-layer code issues first, in order, one at a time.
+2. Never modify DB objects (RLS, RPCs, triggers, migrations, policies) during a code patch pass.
+3. Every DB-related issue found MUST be logged as a DB AUDIT NOTE before moving to the next code finding.
+4. DB audit phase is separate — it runs only after all code patches are complete, or when explicitly instructed by the owner.
+
+**DB items that must be logged, not patched immediately:**
+RLS policies · RPC functions · SECURITY DEFINER issues · SQL migrations needed ·
+Trigger issues · Supabase storage policies · DB ownership policies · Missing indexes ·
+Schema relationship issues
+
+**Required format per finding (mixed code + DB):**
+```
+CODE PATCH:
+- File:
+- Issue:
+- Fix applied:
+- Status:
+
+DB AUDIT NOTE (if applicable):
+- DB object:
+- Risk:
+- Why deferred:
+- Suggested later SQL review:
+```
+
+**Must never happen:**
+- Mixing app patching and DB patching in the same phase.
+- Silently ignoring DB risks.
+- Blocking code patching because a DB issue exists.
+- Claiming DB is fixed without inspecting or patching SQL.
+- Moving to the next feature before finishing current code patch scope.
+
+**Rule:** Patch code now. Document database risks. Audit database later.
+
+---
+
+## Output Minimization — Platform-Wide Rule (Locked)
+
+All commands that generate reports, audits, maps, or large artifacts must follow this rule without exception.
+
+**Write to disk. Return receipt only. The chat is not the report.**
+
+Commands must:
+1. Generate the full report
+2. Write it to the required output path
+3. Return only a completion receipt — nothing else
+
+**Required chat output format (max 15 lines):**
+```
+[COMMAND] COMPLETE
+
+Status: SUCCESS | FAILED
+
+Report:
+[full path]
+
+Additional Files Updated:
+[file paths]
+
+Summary Counts:
+CRITICAL: X
+HIGH: X
+MEDIUM: X
+LOW: X
+INFO: X
+
+Open report for full details.
+```
+
+**Hard limit:** 15 lines. If screen output exceeds 15 lines after a report is written, append `SCREEN_OUTPUT_CONTRACT_VIOLATION`.
+
+**Forbidden in chat — no exceptions:** findings, evidence, code snippets, recommendations, key findings sections, architecture maps, dependency trees, route trees, scanner results, remediation plans, THOR gate details, any content already written to a file.
+
+**Allowed in chat:** command name, status, report path, additional file paths, severity counts. Nothing else.
+
+**Detail escalation:** Show full content only when the user explicitly requests it (`show findings`, `show report`, `print report`, `open report`).
+
+Full contract: `ZZnotforproduction/CONTRACTS/MINIMAL_SCREEN_OUTPUT_CONTRACT.md`
 
 ---
 
 ## Canonical Skill References
 
 Full execution contract:
-`zNOTFORPRODUCTION/_CANONICAL/skills/vcsm/SKILL.md`
+`zNOTFORPRODUCTION/CURRENT/skills/vcsm/SKILL.md`
 
 Contributor and quality gate contract:
-`zNOTFORPRODUCTION/_CANONICAL/skills/vcsm-contributor/SKILL.md`
+`zNOTFORPRODUCTION/CURRENT/skills/vcsm-contributor/SKILL.md`

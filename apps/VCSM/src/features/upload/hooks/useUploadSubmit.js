@@ -1,9 +1,10 @@
 // src/features/upload/hooks/useUploadSubmit.js
 import { useCallback, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
+import { useActiveActorState } from "@/features/identity/adapters/identity.adapter";
 import { uploadMedia } from "../api/uploadMedia";
 import { createPostController } from "../controllers/createPost.controller";
-import { recordPostMediaController } from "@/features/upload/controller/recordPostMedia.controller";
+import { recordPostMediaController } from "@/features/upload/controllers/recordPostMedia.controller";
 import { bugBunnyUploadStep, bugBunnyUploadError } from "@debuggers/media/bugBunnyUploadDebugger";
 
 /**
@@ -14,6 +15,7 @@ import { bugBunnyUploadStep, bugBunnyUploadError } from "@debuggers/media/bugBun
  */
 export function useUploadSubmit() {
   const { identity } = useIdentity();
+  const { isVoid } = useActiveActorState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -41,6 +43,7 @@ export function useUploadSubmit() {
 
         const result = await createPostController({
           identity,
+          isVoid,
           input: {
             caption: form.caption,
             visibility: form.visibility,
@@ -84,7 +87,7 @@ export function useUploadSubmit() {
         setLoading(false);
       }
     },
-    [identity]
+    [identity, isVoid]
   );
 
   return { submit, loading, error, setError };

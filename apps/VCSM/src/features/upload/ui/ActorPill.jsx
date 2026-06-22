@@ -1,4 +1,4 @@
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { useActorSummary } from "@/state/actors/useActorSummary";
 
 export default function ActorPill() {

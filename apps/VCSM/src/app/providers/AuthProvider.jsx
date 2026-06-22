@@ -6,52 +6,38 @@
 // src/hooks/useAuth.jsx
 import { useEffect, useState, useContext, createContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/services/supabase/supabaseClient'
-import { dalHydrateAuthSession, dalSubscribeAuthStateChange } from '@/features/auth/dal/authSession.read.dal'
+import { useAuthInit } from '@/features/auth/adapters/auth.adapter'
+import { dalRemoveAllRealtimeChannels } from '@/services/supabase/channels.dal'
 import { hideLaunchSplash } from '@/shared/lib/hideLaunchSplash'
-import { clearAllIdentityStorage } from '@/state/identity/identityStorage'
+import { clearAllIdentityStorage } from '@/features/identity/identityStorage'
 import { debugLoginEvent } from '@debuggers/identity'
 import { debugUserChanged } from '@debuggers/cycle'
 import { appendIOSProdDebugLog } from '@/shared/lib/iosProdDebugger'
 
 
-// ─── Recovery nonce ──────────────────────────────────────────────────────────
-// Written ONLY inside the PASSWORD_RECOVERY event handler below.
-// Stores a random UUID nonce + issuedAt timestamp as a JSON object so that
-// resolveRecoverySessionController (setNewPassword.controller.js) can distinguish
-// a genuine recovery flow from a manually set sessionStorage value.
+// ─── Recovery permit ─────────────────────────────────────────────────────────
+// TICKET-AUTH-RESET-SECURITY-001
 //
-// Why a nonce instead of a plain '1' flag:
-//   A simple boolean is trivially forged. A random UUID is not predictable, so
-//   manually setting the key requires knowing both the key name AND the JSON format.
-//   This raises the barrier from "trivially bypassable" to "requires code knowledge".
+// Written ONLY inside the PASSWORD_RECOVERY event handler below, AFTER
+// auth-register-recovery (Edge Function) validates the session and issues a
+// server-side permit row in platform.auth_recovery_permits.
 //
-// ⚠ CLIENT-SIDE MITIGATION ONLY — NO SERVER-SIDE RECOVERY PROVENANCE CHECK:
-//   sessionStorage is readable and writable by any JavaScript running on the page.
-//   A user who reads the source code can deduce the format and set a valid nonce.
+// The value stored is { permitId: <server-issued-uuid>, issuedAt: <ms> }.
+// The permitId is validated server-side by auth-reset-password-secure before
+// any password update is allowed. A forged permitId that does not exist in
+// the DB for the caller's verified user_id is rejected with 403.
 //
-//   IMPORTANT (VENOM-AUTH-001): supabase.auth.updateUser({ password }) requires only
-//   a valid authenticated JWT — it does NOT enforce recovery-session provenance.
-//   There is no server-side check that the session originated from a PASSWORD_RECOVERY
-//   event. A source-code-aware user with any valid session who sets a conforming nonce
-//   can successfully update their own password. Impact: self-exploitation only.
+// ⚠ sessionStorage is user-writable. A user who forges a UUID-shaped value here
+// still cannot pass the server-side permit check — the DB row must exist.
+// This entry is a UX hint, not the security boundary.
 //
-//   AMR claims cannot be used here: Supabase v2 does not include method:'recovery'
-//   in the JWT AMR for password-reset sessions; it uses 'otp' or 'email' instead,
-//   which are indistinguishable from other OTP/email flows at the claim level.
-//
-// Key must stay in sync with RECOVERY_NONCE_KEY in setNewPassword.controller.js.
+// Key must stay in sync with RECOVERY_PERMIT_KEY in setNewPassword.controller.js.
 const RECOVERY_FLAG_KEY = 'vc.auth.recovery'
-function _setRecoveryFlag() {
+function _setRecoveryFlag(permitId) {
   try {
     sessionStorage.setItem(
       RECOVERY_FLAG_KEY,
-      JSON.stringify({
-        nonce: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        issuedAt: Date.now(),
-      }),
+      JSON.stringify({ permitId, issuedAt: Date.now() }),
     )
   } catch (_) {}
 }
@@ -64,9 +50,16 @@ const AuthContext = createContext({
   user: null,
   loading: true, // stays true until initial hydration completes
   logout: async () => {},
+  logoutAllSessions: async () => {},
 })
 
 export function AuthProvider({ children }) {
+  const {
+    hydrateSession: dalHydrateAuthSession,
+    subscribeAuthState: dalSubscribeAuthStateChange,
+    signOut: dalSignOut,
+    registerRecoveryPermit: dalRegisterRecoveryPermit,
+  } = useAuthInit()
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [session, setSession] = useState(null)
@@ -116,12 +109,24 @@ export function AuthProvider({ children }) {
           })
 
           // PASSWORD_RECOVERY: the user clicked a password reset link.
-          // Set the recovery flag BEFORE navigating so that resolveRecoverySessionController
-          // can detect a legitimate recovery flow on the /reset-password page.
+          // Register a server-side permit via auth-register-recovery Edge Function,
+          // then store the permitId and navigate. Navigation is deferred until the
+          // permit registration resolves (success or failure) so that
+          // resolveRecoverySessionController finds the permit already in storage.
+          // Falls through — setUser/setSession run synchronously below.
           if (_evt === 'PASSWORD_RECOVERY') {
-            _setRecoveryFlag()
-            appendIOSProdDebugLog('auth_password_recovery', { userId: nextUserId })
-            navigate('/reset-password', { replace: true })
+            ;(async () => {
+              try {
+                const permitId = await dalRegisterRecoveryPermit()
+                _setRecoveryFlag(permitId)
+              } catch (_err) {
+                // Edge Function call failed. Navigate without a stored permit —
+                // /reset-password will resolve to invalid state after its timeout.
+              } finally {
+                appendIOSProdDebugLog('auth_password_recovery', { userId: nextUserId })
+                if (!cancelled) navigate('/reset-password', { replace: true })
+              }
+            })()
           }
 
           // Clear the recovery flag on any non-recovery auth transition so a stale flag
@@ -130,12 +135,13 @@ export function AuthProvider({ children }) {
             _clearRecoveryFlag()
           }
 
-          // Guard: skip state updates on TOKEN_REFRESHED when the userId is unchanged.
-          // setUser() creates a new object reference, which would trigger re-renders
-          // across all AuthContext consumers and downstream identity resolution —
-          // even though nothing meaningful changed.
+          // KRAVEN-LOGIN-M02: guard must only short-circuit on TOKEN_REFRESHED, not
+          // on USER_UPDATED. For USER_UPDATED the user object carries new email/metadata
+          // and must always be applied — otherwise AuthContext holds a stale user.
+          // For TOKEN_REFRESHED the userId is unchanged and nothing meaningful changed,
+          // so skipping the update prevents unnecessary re-renders across all consumers.
           setUser((prev) => {
-            if (prev?.id === nextUserId && nextUserId != null) return prev
+            if (_evt === 'TOKEN_REFRESHED' && prev?.id === nextUserId && nextUserId != null) return prev
             return nextSession?.user ?? null
           })
           setSession((prev) => {
@@ -195,24 +201,66 @@ export function AuthProvider({ children }) {
     navigate('/login', { replace: true, state: navState })
 
     try {
-      await supabase.auth.signOut({ scope: 'local' })
+      // LOKI AD-01/AD-02: scope:'local' is intentional — other active sessions remain valid.
+      // This is expected multi-device behavior for a social platform. If full session
+      // revocation is ever required by policy, change scope to 'global'.
+      await dalSignOut('local')
       debugLoginEvent('AUTH_SIGNOUT_SUCCESS', { phase: 'auth', status: 'success' })
     } catch (e) {
       console.error('[Auth] signOut error:', e)
       debugLoginEvent('AUTH_SIGNOUT_ERROR', { phase: 'auth', status: 'error', message: e?.message })
+      // TICKET-AUTH-ARCH-001: if signOut() fails, manually evict the persisted session so
+      // autoRefreshToken cannot re-hydrate it on the next page load or tab open.
+      try { localStorage.removeItem('sb-auth-main') } catch (_) {}
     }
 
-    try {
-      supabase.getChannels?.().forEach((ch) => supabase.removeChannel(ch))
-    } catch (e) {
-      console.warn('[Auth] channel cleanup skipped:', e)
-    }
+    dalRemoveAllRealtimeChannels()
 
     debugLoginEvent('LOGOUT_DONE', { phase: 'auth', status: 'success', message: 'All state cleared' })
   }
 
+  const logoutAllSessions = async (navState = {}) => {
+    appendIOSProdDebugLog('auth_logout_all_start', { userId: user?.id ?? null })
+    debugLoginEvent('AUTH_SIGNOUT_ALL_START', { phase: 'auth', status: 'start', payload: { userId: user?.id ?? null } })
+
+    setSession(null)
+    setUser(null)
+    setLoading(false)
+
+    localStorage.removeItem('actor_kind')
+    localStorage.removeItem('actor_vport_id')
+    localStorage.setItem('actor_touch', String(Date.now()))
+    clearAllIdentityStorage()
+
+    try {
+      sessionStorage.removeItem('vcsm.debug.identity.events')
+      sessionStorage.removeItem('vcsm.debug.identity.snapshots')
+      sessionStorage.removeItem('vcsm.debug.switch.attempts')
+      sessionStorage.removeItem('vcsm.debug.switch.lastRequestedActorId')
+      sessionStorage.removeItem(RECOVERY_FLAG_KEY)
+    } catch (_) {}
+
+    window.dispatchEvent(new CustomEvent('actor:changed', { detail: { kind: 'profile', id: null } }))
+    hideLaunchSplash()
+    navigate('/login', { replace: true, state: navState })
+
+    try {
+      // TICKET-AUTH-LOGOUT-ALL-001: scope:'global' revokes all sessions across all devices.
+      await dalSignOut('global')
+      debugLoginEvent('AUTH_SIGNOUT_ALL_SUCCESS', { phase: 'auth', status: 'success' })
+    } catch (e) {
+      console.error('[Auth] signOut(global) error:', e)
+      debugLoginEvent('AUTH_SIGNOUT_ALL_ERROR', { phase: 'auth', status: 'error', message: e?.message })
+      try { localStorage.removeItem('sb-auth-main') } catch (_) {}
+    }
+
+    dalRemoveAllRealtimeChannels()
+
+    debugLoginEvent('LOGOUT_ALL_DONE', { phase: 'auth', status: 'success', message: 'All sessions revoked' })
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, logoutAllSessions }}>
       {children}
     </AuthContext.Provider>
   )

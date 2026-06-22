@@ -1,4 +1,4 @@
-import { getPublicContentPagesByProfileSlug } from "@/data/repositories/content.repo";
+import { getPublicContentPagesByProfileSlug } from "@/features/providers/dal/provider.read.dal";
 import { contentGuideCanonicalPath } from "@/lib/paths";
 import { normalizeSlug } from "@/lib/slugs";
 

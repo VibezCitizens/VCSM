@@ -12,13 +12,13 @@ if (!url || !anon) {
 }
 
 // 🔒 HMR-safe singleton: reuse across Vite hot reloads / multiple imports
-function getOrCreateClient() {
-  const g = globalThis;
-  if (g.__SB_CLIENT__ && g.__SB_CLIENT__.__isSingleton) {
-    return g.__SB_CLIENT__;
-  }
+// Module-scoped ref — intentionally not on globalThis/window (globalThis exposes auth client to XSS).
+let _client = null
 
-  const client = createClient(url, anon, {
+function getOrCreateClient() {
+  if (_client) return _client
+
+  _client = createClient(url, anon, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
@@ -28,12 +28,9 @@ function getOrCreateClient() {
       storageKey: 'sb-auth-main',
       // default localStorage is used internally
     },
-  });
+  })
 
-  Object.defineProperty(client, '__isSingleton', { value: true });
-  g.__SB_CLIENT__ = client;
-
-  return client;
+  return _client
 }
 
 export const supabase = getOrCreateClient();

@@ -3,6 +3,7 @@ import { dalGetUserConsents } from '../dal/userConsents.read.dal'
 import { dalRecordLegalAcceptance } from '../dal/userConsents.write.dal'
 import { buildConsentComplianceStatus } from '../engine/legalCompliance.engine'
 import { createTTLCache } from '@/shared/lib/ttlCache'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
 
 const VCSM_APP_KEY = 'vcsm'
 
@@ -43,12 +44,12 @@ export function invalidateConsentCache(userId, appId) {
  * Fetch user consents with a 90-second TTL cache.
  * Cache key includes appId to prevent cross-app collision.
  */
-async function getCachedUserConsents({ userId, appId }) {
+async function getCachedUserConsents({ userId, appId, consentTypes }) {
   const cacheKey = `${userId}:${appId}`
   const cached = consentCache.get(cacheKey)
   if (cached) return cached
 
-  const consents = await dalGetUserConsents({ userId, appId })
+  const consents = await dalGetUserConsents({ userId, appId, consentTypes })
   consentCache.set(cacheKey, consents)
   return consents
 }
@@ -63,7 +64,8 @@ export async function getUserConsentStatus({ userId }) {
   }
 
   const appId = activeDocs[0].app_id
-  const consents = await getCachedUserConsents({ userId, appId })
+  const consentTypes = activeDocs.map((d) => d.document_type)
+  const consents = await getCachedUserConsents({ userId, appId, consentTypes })
 
   const acceptedSet = new Set(
     consents.map((c) => `${c.consent_type}:${c.consent_version}`)
@@ -97,6 +99,11 @@ export async function recordLegalAcceptance({
   documents,
   acceptedVia,
 }) {
+  const user = await readCurrentAuthUser()
+  if (!user || user.id !== userId) {
+    throw new Error('recordLegalAcceptance: userId must match authenticated session')
+  }
+
   const locale = typeof navigator !== 'undefined' ? navigator.language : null
   const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : null
 
@@ -164,7 +171,8 @@ export async function resolveLegalGateForSession({ userId }) {
   }
 
   const appId = activeDocs[0].app_id
-  const consents = await getCachedUserConsents({ userId, appId })
+  const consentTypes = activeDocs.map((d) => d.document_type)
+  const consents = await getCachedUserConsents({ userId, appId, consentTypes })
 
   const status = buildConsentComplianceStatus({
     activeDocs,

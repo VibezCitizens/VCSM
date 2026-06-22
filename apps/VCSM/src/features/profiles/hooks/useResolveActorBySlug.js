@@ -1,4 +1,5 @@
 // features/profiles/hooks/useResolveActorBySlug.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 // ─────────────────────────────────────────────────────────────
 // Resolves a UUID-free slug or username route param → actorId.
 //

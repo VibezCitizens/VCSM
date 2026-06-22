@@ -1,5 +1,5 @@
-import { listMyBookingsController } from '@/features/booking/controller/listMyBookings.controller'
-import { cancelBookingController } from '@/features/booking/controller/cancelBooking.controller'
+import { listMyBookingsController } from '@/features/booking/controllers/listMyBookings.controller'
+import { cancelBookingController } from '@/features/booking/controllers/cancelBooking.controller'
 
 export function useBookingOps() {
   return {

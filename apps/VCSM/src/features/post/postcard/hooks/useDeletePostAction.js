@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { softDeletePostController } from "@/features/post/postcard/controller/deletePost.controller";
+import { softDeletePostController } from "@/features/post/postcard/controllers/deletePost.controller";
 
 export function useDeletePostAction({ actorId }) {
   return useCallback(

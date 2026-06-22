@@ -20,13 +20,15 @@ export async function searchMentionSuggestions(prefix, { limit = 8, viewerActorI
   const needle = (prefix || '').replace(/^@/, '').trim();
   if (!needle) return [];
 
+  const p_filter = viewerActorId ? 'all' : 'public'
+
   const { data, error } = await supabase
     .schema('identity')
     .rpc('search_actor_directory', {
       p_viewer_domain: 'vc',
       p_viewer_actor_id: viewerActorId,
       p_query: needle,
-      p_filter: 'all',
+      p_filter,
       p_limit: limit,
       p_offset: 0,
     });

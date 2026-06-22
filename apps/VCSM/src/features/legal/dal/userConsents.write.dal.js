@@ -42,8 +42,13 @@ export async function dalRecordLegalAcceptance({
       locale: locale ?? null,
       user_agent: userAgent ?? null,
     })
+    // Idempotent guard — silently ignores duplicate (user_id, legal_document_id,
+    // consent_version) rows. Activates fully once DB-LEGAL-002 UNIQUE constraint lands;
+    // safe to call now — onConflict is a no-op until the constraint exists.
+    .onConflict('user_id, legal_document_id, consent_version')
+    .ignoreDuplicates()
     .select('id, accepted_at')
-    .single()
+    .maybeSingle()
 
   if (error) throw error
   return data

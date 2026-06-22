@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getProviderLeadPrefill,
   submitProviderLead
-} from "@/features/conversion/controller/submitProviderLead.controller";
+} from "@/features/conversion/controllers/submitProviderLead.controller";
 import { trackProviderLeadSubmitted } from "@/lib/analytics";
 const DEFAULT_MESSAGE = "Hi, I'm interested in your services.";
 
@@ -38,6 +38,9 @@ export function useProviderLeadCapture({
   const [status, setStatus] = useState("idle");
   const [actorId, setActorId] = useState(null);
   const [prefilled, setPrefilled] = useState(false);
+  // Dev-only: lets a debug/capture surface show why the lead notification fired
+  // or failed. Stays null in production — raw errors are never shown to users.
+  const [notificationDiagnostics, setNotificationDiagnostics] = useState(null);
 
   const config = useMemo(
     () => ({ supabaseUrl, supabaseAnonKey }),
@@ -121,6 +124,9 @@ export function useProviderLeadCapture({
 
       setFieldErrors({});
       setStatus("success");
+      if (process.env.NODE_ENV !== "production" && result.notification) {
+        setNotificationDiagnostics(result.notification);
+      }
       trackProviderLeadSubmitted({
         providerSlug,
         surface: "provider",
@@ -143,6 +149,8 @@ export function useProviderLeadCapture({
     isSubmitted: status === "success",
     isUnavailable: status === "unavailable",
     setField,
-    handleSubmit
+    handleSubmit,
+    // Dev-only diagnostics for a debug/capture surface; null in production.
+    notificationDiagnostics
   };
 }

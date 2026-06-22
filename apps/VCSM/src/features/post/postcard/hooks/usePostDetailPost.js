@@ -1,8 +1,8 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\post\screens\hooks\usePostDetailPost.js
 
 import { useEffect, useState } from "react";
-import { getPostById } from "@/features/post/postcard/controller/getPostById.controller";
-import { getPostMentionMap } from "@/features/post/postcard/controller/getPostMentionMap.controller";
+import { getPostById } from "@/features/post/postcard/controllers/getPostById.controller";
+import { getPostMentionMap } from "@/features/post/postcard/controllers/getPostMentionMap.controller";
 
 export default function usePostDetailPost(postId, viewerActorId = null) {
   const [post, setPost] = useState(null);

@@ -17,7 +17,13 @@
     "deleteAccountDesc": "Elimina permanentemente tu perfil, publicaciones, mensajes y todos los VPORTs.",
     "deleteAccountModalTitle": "Eliminar tu cuenta",
     "deleteAccountBody": "Esto eliminará permanentemente tu perfil, todos los Vibes, Vox, VPORTs y cualquier contenido asociado a tu cuenta.",
-    "cannotBeUndone": "Esto no se puede deshacer."
+    "cannotBeUndone": "Esto no se puede deshacer.",
+    "signOutEverywhere": "Cerrar sesión en todos los dispositivos",
+    "signOutEverywhereDesc": "Finaliza todas las sesiones activas en todos los dispositivos.",
+    "signOutEverywhereModalTitle": "¿Cerrar sesión en todos los dispositivos?",
+    "signOutEverywhereModalBody": "Esto finalizará todas las sesiones activas en todos los dispositivos. Tendrás que iniciar sesión nuevamente en cada dispositivo.",
+    "signOutEverywhereBusy": "Cerrando sesiones...",
+    "signOutEverywhereConfirm": "Cerrar sesión en todos"
   },
   "vport": {
     "deactivated": "Desactivado",

@@ -3,9 +3,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // @ts-ignore — resolved via deno.json import map at Deno runtime; VS Code TS server does not resolve npm: specifiers
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 
+const ALLOWED_ORIGIN = "https://vibezcitizens.com";
+
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Headers": "authorization, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -424,11 +426,7 @@ serve(async (req: Request) => {
     .single();
 
   if (insertError) {
-    return json({
-      ok: false,
-      code: "INVITE_RECORD_FAILED",
-      message: insertError.message,
-    }, 500);
+    return json({ ok: false, code: "INVITE_RECORD_FAILED" }, 500);
   }
 
   const sesClient = new SESv2Client({

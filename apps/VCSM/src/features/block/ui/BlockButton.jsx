@@ -16,7 +16,7 @@
 //   • Uses blocking hooks only
 // ============================================================
 
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { useBlockStatus } from "@/features/block/hooks/useBlockStatus";
 import { useBlockActions } from "@/features/block/hooks/useBlockActions";
 

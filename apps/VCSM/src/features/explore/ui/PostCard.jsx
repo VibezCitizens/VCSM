@@ -11,7 +11,7 @@ export default function PostCard({ post }) {
   return (
     <button
       type="button"
-      onClick={() => navigate(`/posts/${post.id}`)}
+      onClick={post.slug ? () => navigate(`/posts/${post.slug}`) : undefined}
       className="explore-post-card"
     >
       {preview ? (

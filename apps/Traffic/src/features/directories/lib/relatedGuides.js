@@ -1,7 +1,7 @@
 import {
   getPublicContentPagesByLocation,
   getPublicContentPagesByService
-} from "@/data/repositories/content.repo";
+} from "@/features/directories/dal/directory.read.dal";
 import { contentGuideCanonicalPath, countryProviderPath } from "@/lib/paths";
 import { normalizeSlug } from "@/lib/slugs";
 

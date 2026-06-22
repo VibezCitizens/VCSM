@@ -1,0 +1,108 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-07T14:00:00.000Z",
+  "scope": "VCSM:moderation",
+  "feature": "moderation",
+  "module": null,
+  "commandVersion": "ARCHITECT V2",
+  "scannerVersion": "1.1.0",
+  "architecture": {
+    "sourceFilesRead": [
+      { "path": "apps/VCSM/src/features/moderation/controllers/report.controller.js", "layer": "controller", "linesRead": "1-143" },
+      { "path": "apps/VCSM/src/features/moderation/controllers/assertModerationAccess.controller.js", "layer": "controller", "linesRead": "1-22" },
+      { "path": "apps/VCSM/src/features/moderation/controllers/moderationActions.controller.js", "layer": "controller", "linesRead": "1-168" },
+      { "path": "apps/VCSM/src/features/moderation/controllers/undoConversationCover.controller.js", "layer": "controller", "linesRead": "1-38" },
+      { "path": "apps/VCSM/src/features/moderation/dal/assertModerationAccess.dal.js", "layer": "dal", "linesRead": "1-36" },
+      { "path": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "layer": "dal", "linesRead": "1-274" },
+      { "path": "apps/VCSM/src/features/moderation/hooks/useReportFlow.js", "layer": "hook", "linesRead": "1-104" },
+      { "path": "apps/VCSM/src/features/moderation/hooks/useConversationCover.js", "layer": "hook", "linesRead": "1-57" }
+    ],
+    "routes": [],
+    "screens": [],
+    "hooks": [
+      { "name": "useReportFlow", "file": "apps/VCSM/src/features/moderation/hooks/useReportFlow.js", "consumedBy": "ReportModal adapter" },
+      { "name": "useConversationCover", "file": "apps/VCSM/src/features/moderation/hooks/useConversationCover.js", "consumedBy": "chat feature" },
+      { "name": "useHidePostForActor", "file": "apps/VCSM/src/features/moderation/hooks/useHidePostForActor.js", "consumedBy": "unknown" },
+      { "name": "usePostVisibility", "file": "apps/VCSM/src/features/moderation/hooks/usePostVisibility.js", "consumedBy": "feed/post features" },
+      { "name": "useCommentVisibility", "file": "apps/VCSM/src/features/moderation/hooks/useCommentVisibility.js", "consumedBy": "social/comments" }
+    ],
+    "controllers": [
+      { "name": "createReportController", "file": "apps/VCSM/src/features/moderation/controllers/report.controller.js", "calledBy": "useReportFlow", "calls": "insertReportRow, insertReportEventRow, getReportRowByDedupeKey", "authCheck": "ABSENT — reporterActorId caller-provided; session-bound at hook layer" },
+      { "name": "assertModerationAccessController", "file": "apps/VCSM/src/features/moderation/controllers/assertModerationAccess.controller.js", "calledBy": "hideReportedObjectController, dismissReportController", "calls": "isModerationAuthorizedDAL", "authCheck": "PRESENT — resolves from auth.uid() server-side" },
+      { "name": "hideReportedObjectController", "file": "apps/VCSM/src/features/moderation/controllers/moderationActions.controller.js", "calledBy": "unknown (admin surface)", "calls": "assertModerationAccessController, hidePostRow, hideMessageRow, insertModerationActionRow, updateReportRowStatus", "authCheck": "PRESENT (assertModerationAccessController) — BUT actorId mismatch risk" },
+      { "name": "dismissReportController", "file": "apps/VCSM/src/features/moderation/controllers/moderationActions.controller.js", "calledBy": "unknown (admin surface)", "calls": "assertModerationAccessController, updateReportRowStatus, insertReportEventRow", "authCheck": "PRESENT (assertModerationAccessController) — BUT actorId mismatch risk" },
+      { "name": "undoConversationCover", "file": "apps/VCSM/src/features/moderation/controllers/undoConversationCover.controller.js", "calledBy": "useConversationCover", "calls": "dalDeleteConversationHideAction, updateConversationInboxFolderDAL, updateConversationInboxLastMessageDAL", "authCheck": "ABSENT — no ownership or session check; relies on DB RLS on chat.inbox_entries" }
+    ],
+    "dals": [
+      { "name": "isModerationAuthorizedDAL", "file": "apps/VCSM/src/features/moderation/dal/assertModerationAccess.dal.js", "operation": "RPC", "table": "is_current_user_moderator", "schema": "moderation" },
+      { "name": "insertReportRow", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "INSERT", "table": "reports", "schema": "moderation" },
+      { "name": "insertReportEventRow", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "INSERT", "table": "report_events", "schema": "moderation" },
+      { "name": "insertModerationActionRow", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "INSERT", "table": "actions", "schema": "moderation" },
+      { "name": "hidePostRow", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "UPDATE", "table": "posts", "schema": "vc" },
+      { "name": "hideMessageRow", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "UPDATE", "table": "messages", "schema": "chat" },
+      { "name": "updateReportRowStatus", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "UPDATE", "table": "reports", "schema": "moderation" },
+      { "name": "upsertInboxEntryFolder", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "operation": "UPSERT", "table": "inbox_entries", "schema": "chat" }
+    ],
+    "models": [
+      { "name": "report.model", "file": "apps/VCSM/src/features/moderation/models/report.model.js" }
+    ],
+    "services": [],
+    "adapters": [
+      { "name": "ChatSpamCover.adapter", "file": "apps/VCSM/src/features/moderation/adapters/components/ChatSpamCover.adapter.js", "exposedSurface": "component" },
+      { "name": "ReportModal.adapter", "file": "apps/VCSM/src/features/moderation/adapters/components/ReportModal.adapter.js", "exposedSurface": "component" },
+      { "name": "useReportFlow.adapter", "file": "apps/VCSM/src/features/moderation/adapters/hooks/useReportFlow.adapter.js", "exposedSurface": "hook" }
+    ]
+  },
+  "imports": [],
+  "dependencies": {
+    "featureDependencies": ["identity", "chat"],
+    "engineDependencies": [],
+    "sharedDependencies": []
+  },
+  "engineUsage": [],
+  "databaseReads": [],
+  "databaseWrites": [
+    { "dal": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "function": "insertReportRow", "operation": "INSERT", "table": "reports", "schema": "moderation", "caller": "createReportController", "ownershipCheck": "PARTIAL — reporter_actor_id session-bound at hook layer; DB RLS status UNKNOWN" },
+    { "dal": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "function": "hidePostRow", "operation": "UPDATE", "table": "posts", "schema": "vc", "caller": "hideReportedObjectController", "ownershipCheck": "PARTIAL — app-layer moderator check; DB RLS OFF on vc.posts" },
+    { "dal": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "function": "hideMessageRow", "operation": "UPDATE", "table": "messages", "schema": "chat", "caller": "hideReportedObjectController", "ownershipCheck": "PARTIAL — app-layer moderator check; DB RLS ON for chat.messages" },
+    { "dal": "apps/VCSM/src/features/moderation/dal/conversationCover.write.dal.js", "function": "updateConversationInboxFolderDAL", "operation": "UPDATE", "table": "inbox_entries", "schema": "chat", "caller": "undoConversationCover", "ownershipCheck": "PARTIAL — DB RLS ON (chat_inbox_update_own); NO app-layer ownership check" }
+  ],
+  "rpcs": [
+    { "name": "is_current_user_moderator", "schema": "moderation", "file": "apps/VCSM/src/features/moderation/dal/assertModerationAccess.dal.js", "caller": "assertModerationAccessController" }
+  ],
+  "edgeFunctions": [],
+  "behaviorIds": [],
+  "securitySensitiveSurfaces": [
+    { "surface": "undoConversationCover", "file": "apps/VCSM/src/features/moderation/controllers/undoConversationCover.controller.js", "risk": "No app-layer ownership check — actorId accepted without session verification; relies entirely on DB RLS (chat.inbox_entries update_own policy)", "priority": "MEDIUM" },
+    { "surface": "hideReportedObjectController / moderatorActorId mismatch", "file": "apps/VCSM/src/features/moderation/controllers/moderationActions.controller.js", "risk": "assertModerationAccessController resolves from auth.uid(), but writes use passed moderatorActorId — potential audit trail mismatch if actorId != session actor", "priority": "MEDIUM" },
+    { "surface": "hidePostRow", "file": "apps/VCSM/src/features/moderation/dal/reports.dal.js", "risk": "UPDATE vc.posts — RLS OFF — no DB-level enforcement; app-layer moderator check only", "priority": "HIGH" }
+  ],
+  "callChains": [
+    {
+      "id": "CHAIN-moderation-001",
+      "path": "useReportFlow → submit() → createReportController → insertReportRow → INSERT moderation.reports",
+      "userControlledParams": "reporterActorId = useIdentity().actorId (session-bound)",
+      "ownershipChecked": "YES (hook layer)",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-moderation-002",
+      "path": "hideReportedObjectController → assertModerationAccessController → isModerationAuthorizedDAL (auth.uid()) → hidePostRow → UPDATE vc.posts",
+      "userControlledParams": "moderatorActorId (caller-provided; authorization from auth.uid() — mismatch risk)",
+      "ownershipChecked": "PARTIAL",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-moderation-003",
+      "path": "useConversationCover → undoConversationCoverAction() → undoConversationCover → updateConversationInboxFolderDAL → UPDATE chat.inbox_entries",
+      "userControlledParams": "actorId (caller-provided; no session verification in controller)",
+      "ownershipChecked": "NO (DB RLS only)",
+      "confidence": "HIGH"
+    }
+  ],
+  "provenance": {
+    "sourceMaps": ["feature-map", "callgraph", "write-surface-map", "rpc-map", "db-policy-map"],
+    "sourceFilesValidated": 8,
+    "confidence": "HIGH"
+  }
+}

@@ -1,4 +1,5 @@
 // features/profiles/controller/buildActorCanonicalSlug.controller.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 // ─────────────────────────────────────────────────────────────
 // Orchestrates the SEO slug pipeline:
 //   1. Single query against vport.public_actor_seo_v

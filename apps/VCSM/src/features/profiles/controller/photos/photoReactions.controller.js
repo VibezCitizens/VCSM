@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { listPostReactions } from "@/features/profiles/dal/photos/listPostReactions.dal";
 import { listPostCommentsCount } from "@/features/profiles/dal/photos/listPostCommentsCount.dal";
 import { listPostRoseCount } from "@/features/profiles/dal/photos/listPostRoseCount.dal";

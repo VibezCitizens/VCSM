@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { getVportBusinessCardSectionsController } from "@/features/public/vportBusinessCard/controller/vportBusinessCard.controller";
 
-export function useVportBusinessCardSections({ profileId, enabled = true }) {
+export function useVportBusinessCardSections({ slug, enabled = true }) {
   const [sections, setSections] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!profileId || !enabled) {
+    if (!slug || !enabled) {
       setSections(null);
       return;
     }
@@ -15,13 +15,13 @@ export function useVportBusinessCardSections({ profileId, enabled = true }) {
     let alive = true;
     setIsLoading(true);
 
-    getVportBusinessCardSectionsController({ profileId })
+    getVportBusinessCardSectionsController({ slug })
       .then((data) => { if (alive) setSections(data); })
       .catch((e) => { if (alive) setError(e); })
       .finally(() => { if (alive) setIsLoading(false); });
 
     return () => { alive = false; };
-  }, [profileId, enabled]);
+  }, [slug, enabled]);
 
   return { sections, isLoading, error };
 }

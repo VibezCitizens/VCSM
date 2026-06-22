@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import TrazeSearchBar from "@/components/TrazeSearchBar";
+import TrazeSearchBar from "@/shared/components/TrazeSearchBar";
 import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
-import HomepageTopProvidersSection from "@/features/home/components/HomepageTopProvidersSection";
+import { HomepageTopProvidersSection } from "@/features/home/adapters/home.adapter";
 import { stripLocaleFromPathname, withLocale } from "@/lib/i18n";
 import { useTrafficLanguage } from "@/lib/language";
 import { normalizeSlug } from "@/lib/slugs";

@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 const VALID_MEDIA_TYPES = new Set(["image", "video"]);
 
 function normalizeMediaType(value) {
@@ -87,6 +88,7 @@ export function buildCanonicalProfilePostModel(
     title: row?.title ?? null,
     postType: row?.post_type ?? row?.postType ?? null,
     post_type: row?.post_type ?? row?.postType ?? null,
+    payload: row?.payload ?? null,
     tags,
 
     createdAt: row?.created_at ?? row?.createdAt ?? null,

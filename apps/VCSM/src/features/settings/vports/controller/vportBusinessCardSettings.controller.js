@@ -1,12 +1,20 @@
 import { readVportBusinessCardSettingsDAL } from "@/features/settings/vports/dal/vports.read.dal";
 import { setVportBusinessCardSettingsDAL } from "@/features/settings/vports/dal/vports.write.dal";
-import assertActorOwnsVportActorController from "@/features/booking/controller/assertActorOwnsVportActor.controller";
+import { checkVportOwnershipController } from "@/features/vportDashboard/adapters/vportDashboard.adapter";
+
+// VPORT-DASHBOARD-OWNERSHIP-CONSISTENCY-001: this card now authorizes the active
+// VPORT actor through the same vportDashboard ownership surface the gas dashboard
+// uses (checkVportOwnershipController), instead of the booking.adapter ownership
+// assertion. This grants the active VPORT-kind actor self-management (matching the
+// gas card) and surfaces VPORT-safe wording instead of the booking-resource error.
+const OWNERSHIP_DENIED_MESSAGE = "Only owners or managers can manage this VPORT.";
 
 export async function ctrlGetVportBusinessCardSettings({ vportId, callerActorId, vportActorId }) {
   if (!vportId) return null;
   if (!callerActorId) throw new Error("ctrlGetVportBusinessCardSettings: callerActorId required");
   if (!vportActorId)  throw new Error("ctrlGetVportBusinessCardSettings: vportActorId required");
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
+  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId });
+  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
   return readVportBusinessCardSettingsDAL(vportId);
 }
 
@@ -31,7 +39,8 @@ export async function ctrlSetVportBusinessCardSettings({ vportId, settings, call
   if (!settings || typeof settings !== "object") throw new Error("ctrlSetVportBusinessCardSettings: settings required");
 
   // Controller-layer ownership gate — mirrors the guard in ctrlSetVportDirectoryVisible.
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId });
+  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId });
+  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
 
   return setVportBusinessCardSettingsDAL(vportId, settings);
 }

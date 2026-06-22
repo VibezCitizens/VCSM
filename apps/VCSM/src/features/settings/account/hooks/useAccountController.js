@@ -2,8 +2,8 @@ import { useState } from 'react'
 
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
-import { useIdentityDisplayDeprecated } from '@/state/identity/identityContext'
-import { useAccountSettings } from '@/features/settings/queries/useAccountSettings'
+import { useActorSummary } from '@/state/actors/useActorSummary'
+import { useAccountSettings } from '@/features/settings/account/hooks/useAccountSettings'
 import {
   ctrlDeleteAccount,
   ctrlSoftDeleteVport,
@@ -12,9 +12,9 @@ import {
 } from '@/features/settings/account/controller/account.controller'
 
 export function useAccountController() {
-  const { user, logout: logoutFromAuth } = useAuth()
+  const { user, logout: logoutFromAuth, logoutAllSessions: logoutAllSessionsFromAuth } = useAuth()
   const { identity, availableActors, switchActor, refreshAvailableActors } = useIdentity()
-  const { displayName, username: handle, avatar: avatarUrl } = useIdentityDisplayDeprecated() ?? {}
+  const { displayName, username: handle, avatar: avatarUrl } = useActorSummary(identity?.actorId)
 
   const isVport = identity?.kind === 'vport'
   const actorId = identity?.actorId ?? null
@@ -35,8 +35,22 @@ export function useAccountController() {
   const [busyRestore, setBusyRestore] = useState(false)
   const [errRestore, setErrRestore] = useState('')
 
+  const [busyLogoutAll, setBusyLogoutAll] = useState(false)
+  const [errLogoutAll, setErrLogoutAll] = useState('')
+
   async function logout() {
     await logoutFromAuth()
+  }
+
+  async function logoutAllSessions() {
+    setBusyLogoutAll(true)
+    setErrLogoutAll('')
+    try {
+      await logoutAllSessionsFromAuth()
+    } catch (error) {
+      setErrLogoutAll(error?.message || 'Could not sign out all sessions.')
+      setBusyLogoutAll(false)
+    }
   }
 
   async function deleteAccount() {
@@ -150,8 +164,11 @@ export function useAccountController() {
     errHard,
     busyRestore,
     errRestore,
+    busyLogoutAll,
+    errLogoutAll,
     setShowConfirmAccount,
     logout,
+    logoutAllSessions,
     deleteAccount,
     softDeleteVport,
     hardDeleteVport,

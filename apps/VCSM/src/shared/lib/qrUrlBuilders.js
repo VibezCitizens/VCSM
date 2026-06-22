@@ -30,7 +30,7 @@ function getOrigin() {
  * @returns {string}
  */
 function encodeSlug(slug) {
-  return encodeURIComponent(String(slug));
+  return encodeURIComponent(String(slug).trim());
 }
 
 /**
@@ -51,7 +51,8 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  * @returns {boolean}
  */
 export function isQrSafeSlug(slug) {
-  return !!slug && !UUID_RE.test(String(slug));
+  const value = String(slug ?? "").trim();
+  return !!value && !UUID_RE.test(value);
 }
 
 /**

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineConsumerMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "engineConsumerCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "engineConsumerCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["engines"],
+      "properties": {
+        "engines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["engine", "consumers", "confidence"],
+            "properties": {
+              "engine": { "type": "string" },
+              "consumers": { "type": "array", "items": { "type": "string" } },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

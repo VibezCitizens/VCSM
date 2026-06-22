@@ -1,0 +1,10 @@
+# Dev Monitor Report
+Command : auto-scan: feed
+ID      : auto:feed
+Status  : CAUGHT — 1 result
+Matches : 1
+Exit    : 0
+Date    : 2026-06-07T12:04:44.834Z
+
+─────────────────────────────────────────
+/Users/vcsm/Desktop/VCSM/apps/VCSM/src/features/feed/hooks/useFeed.js:161:          // TODO VEN-PIPE-003 DEFERRED → DB/CARNAGE: vport.profiles policy must allow

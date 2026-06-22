@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-07T14:00:00.000Z",
+  "scope": "VCSM:media",
+  "feature": "media",
+  "module": null,
+  "commandVersion": "ARCHITECT V2",
+  "scannerVersion": "1.1.0",
+  "architecture": {
+    "sourceFilesRead": [
+      { "path": "apps/VCSM/src/features/media/controllers/createMediaAsset.controller.js", "layer": "controller", "linesRead": "1-81" },
+      { "path": "apps/VCSM/src/features/media/controllers/softDeleteMediaAsset.controller.js", "layer": "controller", "linesRead": "1-19" },
+      { "path": "apps/VCSM/src/features/media/dal/mediaAssets.write.dal.js", "layer": "dal", "linesRead": "1-94" },
+      { "path": "apps/VCSM/src/features/media/dal/mediaAssets.softDelete.dal.js", "layer": "dal", "linesRead": "1-66" },
+      { "path": "apps/VCSM/src/features/media/adapters/media.adapter.js", "layer": "adapter", "linesRead": "1-3" }
+    ],
+    "routes": [],
+    "screens": [],
+    "hooks": [],
+    "controllers": [
+      { "name": "createMediaAssetController", "file": "apps/VCSM/src/features/media/controllers/createMediaAsset.controller.js", "calledBy": "settings/profile/hooks/useProfileUploads.js (via adapter)", "calls": "insertMediaAssetDAL, resolveVcsmAppIdDAL", "authCheck": "PARTIAL — ownerActorId required (validated present), not verified against session" },
+      { "name": "softDeleteMediaAssetController", "file": "apps/VCSM/src/features/media/controllers/softDeleteMediaAsset.controller.js", "calledBy": "unknown (adapter exposed)", "calls": "softDeleteMediaAssetDAL", "authCheck": "PARTIAL — actorId required; DB RLS enforces ownership via actor_owners" }
+    ],
+    "dals": [
+      { "name": "insertMediaAssetDAL", "file": "apps/VCSM/src/features/media/dal/mediaAssets.write.dal.js", "operation": "INSERT", "table": "media_assets", "schema": "platform" },
+      { "name": "softDeleteMediaAssetDAL", "file": "apps/VCSM/src/features/media/dal/mediaAssets.softDelete.dal.js", "operation": "UPDATE", "table": "media_assets", "schema": "platform" },
+      { "name": "resolveVcsmAppIdDAL", "file": "apps/VCSM/src/features/media/dal/resolveAppId.read.dal.js", "operation": "READ", "table": "apps", "schema": "platform" }
+    ],
+    "models": [
+      { "name": "mediaAsset.model", "file": "apps/VCSM/src/features/media/models/mediaAsset.model.js" }
+    ],
+    "services": [],
+    "adapters": [
+      { "name": "media.adapter", "file": "apps/VCSM/src/features/media/adapters/media.adapter.js", "exposedSurface": "createMediaAssetController, softDeleteMediaAssetController — VIOLATION: adapter exposes controllers directly (should only expose hooks/components/screens)" },
+      { "name": "mediaAppId.adapter", "file": "apps/VCSM/src/features/media/adapters/mediaAppId.adapter.js", "exposedSurface": "resolveVcsmAppId" }
+    ]
+  },
+  "imports": [],
+  "dependencies": {
+    "featureDependencies": [],
+    "engineDependencies": ["media (engine)"],
+    "sharedDependencies": []
+  },
+  "engineUsage": [
+    { "engine": "media", "usedBy": "settings/profile/hooks/useProfileUploads.js", "method": "uploadMediaController" }
+  ],
+  "databaseReads": [
+    { "dal": "apps/VCSM/src/features/media/dal/resolveAppId.read.dal.js", "function": "resolveVcsmAppIdDAL", "table": "apps", "schema": "platform", "caller": "createMediaAssetController" }
+  ],
+  "databaseWrites": [
+    { "dal": "apps/VCSM/src/features/media/dal/mediaAssets.write.dal.js", "function": "insertMediaAssetDAL", "operation": "INSERT", "table": "media_assets", "schema": "platform", "caller": "createMediaAssetController", "ownershipCheck": "ABSENT — no app-layer check; DB RLS INSERT policy present (actor owner can insert media asset)" },
+    { "dal": "apps/VCSM/src/features/media/dal/mediaAssets.softDelete.dal.js", "function": "softDeleteMediaAssetDAL", "operation": "UPDATE", "table": "media_assets", "schema": "platform", "caller": "softDeleteMediaAssetController", "ownershipCheck": "PARTIAL — DB RLS actor-ownership policy present BUT coexists with PUBLIC role UPDATE policy (Phase 6 cleanup pending)" }
+  ],
+  "rpcs": [],
+  "edgeFunctions": [],
+  "behaviorIds": [],
+  "securitySensitiveSurfaces": [
+    { "surface": "insertMediaAssetDAL", "file": "apps/VCSM/src/features/media/dal/mediaAssets.write.dal.js", "risk": "INSERT platform.media_assets — ownerActorId caller-provided; no app-layer session ownership check; DB RLS INSERT policy exists but PUBLIC role UPDATE policy coexists", "priority": "MEDIUM" },
+    { "surface": "softDeleteMediaAssetDAL", "file": "apps/VCSM/src/features/media/dal/mediaAssets.softDelete.dal.js", "risk": "UPDATE platform.media_assets — DB RLS soft-delete ownership policy present BUT media_assets_vc_owner_update {public} role policy allows unrestricted column UPDATE (Phase 6 pending)", "priority": "MEDIUM" }
+  ],
+  "callChains": [
+    {
+      "id": "CHAIN-media-001",
+      "path": "useProfileUploads → createMediaAssetController → insertMediaAssetDAL → INSERT platform.media_assets",
+      "userControlledParams": "ownerActorId = identity.actorId (session-bound via useIdentity())",
+      "ownershipChecked": "YES (hook layer, session-bound)",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-media-002",
+      "path": "? → softDeleteMediaAssetController → softDeleteMediaAssetDAL → UPDATE platform.media_assets",
+      "userControlledParams": "actorId, assetId",
+      "ownershipChecked": "PARTIAL (DB RLS only; PUBLIC policy risk)",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "provenance": {
+    "sourceMaps": ["feature-map", "callgraph", "write-surface-map", "rpc-map", "db-policy-map"],
+    "sourceFilesValidated": 5,
+    "confidence": "HIGH"
+  }
+}

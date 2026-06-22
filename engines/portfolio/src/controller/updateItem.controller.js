@@ -42,10 +42,10 @@ export async function updateItem({ itemId, actorId, updates, tags }) {
     throw new Error('[updateItem] not authorized as this actor')
   }
 
-  const row = await dalUpdatePortfolioItem({ itemId, updates: updates ?? {} })
+  const row = await dalUpdatePortfolioItem({ itemId, callerProfileId, updates: updates ?? {} })
 
   if (tags !== undefined) {
-    await dalReplacePortfolioTags({ itemId, tags })
+    await dalReplacePortfolioTags({ itemId, callerProfileId, tags })
   }
 
   emit(EVENTS.ITEM_UPDATED, { itemId, actorId })

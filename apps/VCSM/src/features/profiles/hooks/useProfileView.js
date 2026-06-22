@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { queryKeys } from '@/queries/queryKeys'
 import { getProfileView } from '@/features/profiles/controller/getProfileView.controller'

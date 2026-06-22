@@ -55,9 +55,8 @@ export async function dalUpsertPendingRequest({
   return true
 }
 
-/**
- * Update request status
- */
+const VALID_REQUEST_STATUSES = new Set(['accepted', 'declined', 'cancelled', 'revoked'])
+
 /**
  * Update request status
  */
@@ -66,6 +65,10 @@ export async function dalUpdateRequestStatus({
   targetActorId,
   status,
 }) {
+  if (!VALID_REQUEST_STATUSES.has(status)) {
+    throw new Error(`dalUpdateRequestStatus: invalid status "${status}"`)
+  }
+
   const { error } = await supabase
     .schema('vc')
     .from('social_follow_requests')
@@ -82,12 +85,9 @@ export async function dalUpdateRequestStatus({
       error?.code === '42501' &&
       /notifications/i.test(String(error?.message ?? ''))
 
-    console.error('[dalUpdateRequestStatus] FAILED', {
-      requesterActorId,
-      targetActorId,
-      status,
-      error,
-    })
+    if (import.meta.env.DEV) {
+      console.error('[dalUpdateRequestStatus] FAILED', { status, error })
+    }
 
     if (isNotificationRlsChain) {
       const wrapped = new Error(

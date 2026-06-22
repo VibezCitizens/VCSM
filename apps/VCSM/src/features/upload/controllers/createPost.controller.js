@@ -1,5 +1,6 @@
 // C:\Users\trest\OneDrive\Desktop\VCSM\src\features\upload\controllers\createPostController.js
 import { resolveRealm } from "@/shared/utils/resolveRealm";
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 import { insertPost } from "../dal/insertPost.dal";
 import { insertPostMedia } from "../dal/insertPostMedia.dal";
 import { extractHashtags } from "../lib/extractHashtags";
@@ -12,6 +13,7 @@ import {
   deletePostByIdDAL,
   getCurrentAuthUserDAL,
 } from "@/features/upload/dal/postAuthRollback.dal";
+import { readActorOwnerLinkDAL } from "@/features/upload/dal/actorOwnership.read.dal";
 import { publishVcsmNotificationBatch } from "@/features/notifications/adapters/notifications.adapter";
 import { ctrlGetBlockedActorSet } from "@/features/block";
 
@@ -21,7 +23,7 @@ const MAX_VIBES_PHOTOS = 10;
  * Controller: Create Post
  * Owns all meaning, authority, and orchestration
  */
-export async function createPostController({ identity, input }) {
+export async function createPostController({ identity, isVoid, input }) {
   if (!identity?.actorId) {
     throw new Error("No actor identity");
   }
@@ -30,6 +32,15 @@ export async function createPostController({ identity, input }) {
   const user = await getCurrentAuthUserDAL();
   if (!user) {
     throw new Error("Not authenticated");
+  }
+
+  // Verify the claimed actor is owned by the authenticated session user
+  const ownerRow = await readActorOwnerLinkDAL({
+    userId: user.id,
+    actorId: identity.actorId,
+  })
+  if (!ownerRow) {
+    throw new Error('createPostController: actor not owned by session user')
   }
 
   // 🧠 Domain meaning
@@ -74,7 +85,7 @@ export async function createPostController({ identity, input }) {
   const row = {
     user_id: user.id,
     actor_id: identity.actorId,
-    realm_id: resolveRealm(identity.isVoid),
+    realm_id: resolveRealm(isVoid ?? false),
     text: caption,
     title: null,
 
@@ -91,7 +102,22 @@ export async function createPostController({ identity, input }) {
   };
 
   // 🧱 Persistence (DAL) — must return inserted post id
-  const created = await insertPost(row);
+  let created
+  try {
+    created = await insertPost(row)
+  } catch (error) {
+    captureVcsmError({
+      feature: 'upload',
+      module: 'createPost.controller',
+      severity: 'error',
+      message: `createPostController: insertPost failed — ${error?.message ?? 'unknown'}`,
+      error_name: error?.name,
+      operation: 'insertPost',
+      is_handled: false,
+      context: { mode: row.post_type ?? null },
+    })
+    throw error
+  }
   const postId = created?.id;
   if (!postId) throw new Error("insertPost did not return post id");
 
@@ -108,6 +134,16 @@ export async function createPostController({ identity, input }) {
       const postMediaRows = await insertPostMedia(postId, items);
       postMediaIds = (postMediaRows || []).map((r) => r.id);
     } catch (e) {
+      captureVcsmError({
+        feature: 'upload',
+        module: 'createPost.controller',
+        severity: 'error',
+        message: `createPostController: insertPostMedia failed — rolling back post ${postId} — ${e?.message ?? 'unknown'}`,
+        error_name: e?.name,
+        operation: 'insertPostMedia',
+        is_handled: false,
+        context: { postId, mediaCount: items.length },
+      })
       // rollback (controller allowed to call supabase)
       await deletePostByIdDAL(postId);
       throw e;
@@ -134,9 +170,16 @@ export async function createPostController({ identity, input }) {
       resolvedMentionIds = mentionedActorIds;
     }
   } catch (e) {
-    if (import.meta.env.DEV) {
-      console.warn("[createPostController] mention insert failed:", e);
-    }
+    captureVcsmError({
+      feature: 'upload',
+      module: 'createPost.controller',
+      severity: 'warning',
+      message: `createPostController: mention insert failed (non-fatal) — ${e?.message ?? 'unknown'}`,
+      error_name: e?.name,
+      operation: 'insertPostMentions',
+      is_handled: true,
+      context: { postId },
+    })
   }
 
   // Publish mention notifications — exclude actors in any block relationship with author

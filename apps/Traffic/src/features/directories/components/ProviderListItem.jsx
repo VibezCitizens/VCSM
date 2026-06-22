@@ -1,6 +1,8 @@
-import { getCountryByCode } from "@/data/repositories/geo.repo";
-import { getServiceById } from "@/data/repositories/service.repo";
-import { getPublicReviewSummaryForProvider } from "@/data/repositories/reviewSummary.repo";
+import {
+  getCountryByCode,
+  getServiceById,
+  getPublicReviewSummaryForProvider
+} from "@/features/directories/dal/directory.read.dal";
 import { countryProviderPath, providerPath } from "@/lib/paths";
 import { ProviderListItemFooter } from "@/features/directories/components/ProviderListItemFooter";
 

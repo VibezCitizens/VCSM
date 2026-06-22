@@ -11,6 +11,7 @@
  */
 
 import * as Sentry from '@sentry/react'
+import { _stripForbidden } from './vcsmMonitoring'
 
 /** True after a successful Sentry.init() with a real DSN. */
 let _active = false
@@ -51,5 +52,5 @@ export function initMonitoring() {
  */
 export function captureMonitoringError(error, context) {
   if (!_active) return
-  Sentry.captureException(error, { extra: context })
+  Sentry.captureException(error, { extra: _stripForbidden(context ?? {}) })
 }

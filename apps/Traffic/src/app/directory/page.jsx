@@ -5,7 +5,7 @@ import {
   listLiveProviderCountries,
   listLiveProviderLocationOptions
 } from "@/data/repositories/provider.repo";
-import DirectoryLandingClient from "@/features/directories/components/DirectoryLandingClient";
+import { DirectoryLandingClient } from "@/features/directories/adapters/directories.adapter";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 
 export function buildDirectoryLandingMetadata(routeLocale = null) {

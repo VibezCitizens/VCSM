@@ -1,0 +1,101 @@
+# Dev Monitor Report
+Command : grep: console.log occurrences
+ID      : grep:console-log
+Exit    : 0
+Date    : 2026-06-07T11:29:39.144Z
+
+apps/VCSM/src/features/settings/profile/controller/recordProfileMediaAsset.controller.js:31:  if (import.meta.env?.DEV) console.log('[recordProfileMediaAsset] write-back payload:', { scope, mediaAssetId, actorId })
+apps/VCSM/src/features/settings/profile/controller/recordProfileMediaAsset.controller.js:37:      if (import.meta.env?.DEV) console.log('[recordProfileMediaAsset] ✓ wrote user_avatar → public.profiles.photo_media_asset_id', { actorId, mediaAssetId })
+apps/VCSM/src/features/settings/profile/controller/recordProfileMediaAsset.controller.js:44:      if (import.meta.env?.DEV) console.log('[recordProfileMediaAsset] ✓ wrote user_banner → public.profiles.banner_media_asset_id', { actorId, mediaAssetId })
+apps/VCSM/src/features/settings/profile/controller/recordProfileMediaAsset.controller.js:51:      if (import.meta.env?.DEV) console.log('[recordProfileMediaAsset] ✓ wrote vport_avatar → vport.profiles.avatar_media_asset_id', { actorId, mediaAssetId })
+apps/VCSM/src/features/settings/profile/controller/recordProfileMediaAsset.controller.js:58:      if (import.meta.env?.DEV) console.log('[recordProfileMediaAsset] ✓ wrote vport_banner → vport.profiles.banner_media_asset_id', { actorId, mediaAssetId })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:37:      if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'user_avatar', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:46:          if (DEV) console.log('[useProfileUploads] media asset payload (user_avatar):', payload)
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:49:          if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:68:    if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'vport_avatar', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:77:        if (DEV) console.log('[useProfileUploads] media asset payload (vport_avatar):', payload)
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:80:        if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:106:      if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'vport_banner', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:115:          if (DEV) console.log('[useProfileUploads] media asset payload (vport_banner):', payload)
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:118:          if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:140:    if (DEV) console.log('[useProfileUploads] upload done:', { scope: 'user_banner', publicUrl: result?.publicUrl, storageKey: result?.storageKey, mimeType: result?.mimeType, sizeBytes: result?.sizeBytes, actorId, subjectId })
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:149:        if (DEV) console.log('[useProfileUploads] media asset payload (user_banner):', payload)
+apps/VCSM/src/features/settings/profile/hooks/useProfileUploads.js:152:        if (DEV) console.log('[useProfileUploads] media asset created:', { id: mediaAsset?.id, scopeType: mediaAsset?.scopeType })
+apps/VCSM/src/features/settings/account/hooks/useAccountController.js:134:    if (import.meta.env.DEV) console.log('[restore:start]', { surface: 'account_tab', vportId: targetVportId })
+apps/VCSM/src/features/settings/account/hooks/useAccountController.js:139:      if (import.meta.env.DEV) console.log('[restore:success]', { surface: 'account_tab', vportId: targetVportId })
+apps/VCSM/src/features/settings/account/hooks/useAccountController.js:142:      if (import.meta.env.DEV) console.log('[restore:error]', { surface: 'account_tab', vportId: targetVportId, error: error?.message })
+apps/VCSM/src/features/settings/vports/hooks/useVportsController.js:76:    if (import.meta.env.DEV) console.log('[restore:start]', { surface: 'vports_tab', vportId: targetVportId });
+apps/VCSM/src/features/settings/vports/hooks/useVportsController.js:82:      if (import.meta.env.DEV) console.log('[restore:success]', { surface: 'vports_tab', vportId: targetVportId });
+apps/VCSM/src/features/settings/vports/hooks/useVportsController.js:85:      if (import.meta.env.DEV) console.log('[restore:error]', { surface: 'vports_tab', vportId: targetVportId, error: error?.message });
+apps/VCSM/src/features/chat/inbox/hooks/useChatMessagePrefetch.js:51:        if (DEV) console.log('[chat:messages:prefetch:hit]', { cid, count: existing.length })
+apps/VCSM/src/features/chat/inbox/hooks/useChatMessagePrefetch.js:68:      if (DEV) console.log('[chat:messages:prefetch:start]', { cid })
+apps/VCSM/src/features/chat/inbox/hooks/useChatMessagePrefetch.js:79:          if (DEV) console.log('[chat:messages:prefetch:miss]', { cid, count: result?.length ?? 0 })
+apps/VCSM/src/features/chat/debug/chatBadgeDebugger.js:50:    console.log('actorId:', token.actorId, '| elapsed:', elapsed + 'ms', '| count:', count)
+apps/VCSM/src/features/chat/debug/chatBadgeDebugger.js:64:    console.log('actorId:', token.actorId, '| elapsed:', elapsed + 'ms')
+apps/VCSM/src/features/chat/debug/chatNavDebugger.js:70:  if (data !== undefined) console.log('data:', safeJson(data))
+apps/VCSM/src/features/chat/debug/chatNavDebugger.js:71:  console.log('run:', { name: run.name, startedAt: run.startedAtIso })
+apps/VCSM/src/features/chat/debug/chatNavDebugger.js:96:    console.log('startedAt:', run.startedAtIso)
+apps/VCSM/src/features/chat/debug/chatNavDebugger.js:97:    console.log('meta:', safeJson(meta))
+apps/VCSM/src/features/chat/debug/chatNavDebugger.js:147:    if (data !== undefined) console.log('data:', safeJson(data))
+apps/VCSM/src/features/chat/debug/chatNavDebugger.js:149:    console.log('summary:', {
+apps/VCSM/src/features/chat/conversation/hooks/conversation/useConversationMessages.js:67:      console.log('[chat:messages:cache:rendered]', {
+apps/VCSM/src/features/chat/conversation/hooks/conversation/useConversationMessages.js:81:      console.log('[chat:messages:server:reconciled]', {
+apps/VCSM/src/features/initiation/hooks/useOnboardingCards.js:33:        console.log('[DEV onboarding/cards] refresh result', {
+apps/VCSM/src/features/initiation/dal/vibeInvites.dal.js:72:    console.log('[DEV onboarding/vibe_invites] qualifying count', {
+apps/VCSM/src/features/feed/pipeline/fetchFeedPage.pipeline.js:138:    console.log("[useFeed][mentions][DBG] debugPostId is on this page", {
+apps/VCSM/src/features/feed/screens/DebugPrivacyPanel.jsx:28:    rows.forEach((row) => console.log(row));
+apps/VCSM/src/features/vportDashboard/components/calendar/WeeklyAvailabilityGrid.jsx:81:    if (import.meta.env.DEV) console.log("[ScheduleEditor] Applied Monday blocks to weekdays");
+apps/VCSM/src/features/profiles/kinds/vport/screens/menu/components/VportActorMenuConfirmDeleteModal.jsx:53:      console.log(`[${debugLabel}]`, ...args);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:38:    console.log("[mailbox.controller] rows.length =", Array.isArray(rows) ? rows.length : null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:39:    console.log("[mailbox.controller] rows[0].keys =", r0 ? Object.keys(r0) : null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:40:    console.log("[mailbox.controller] rows[0].card keys =", c0 ? Object.keys(c0) : null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:43:    console.log("[mailbox.controller] rows[0].card.customization =", rawCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:44:    console.log("[mailbox.controller] rows[0].card.customization type =", typeof rawCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:47:      console.log("[mailbox.controller] rows[0] customization has imageUrl =", "imageUrl" in rawCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:48:      console.log("[mailbox.controller] rows[0] customization has image_url =", "image_url" in rawCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:61:    console.log("[mailbox.controller] mapped.length =", Array.isArray(mapped) ? mapped.length : null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:62:    console.log("[mailbox.controller] mapped[0].keys =", m0 ? Object.keys(m0) : null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:63:    console.log("[mailbox.controller] mapped[0].card keys =", mc0 ? Object.keys(mc0) : null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:66:    console.log("[mailbox.controller] mapped[0].card.customization =", mappedCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:67:    console.log("[mailbox.controller] mapped[0].card.customization type =", typeof mappedCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:70:      console.log("[mailbox.controller] mapped customization has imageUrl =", "imageUrl" in mappedCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:71:      console.log("[mailbox.controller] mapped customization has image_url =", "image_url" in mappedCustom);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:72:      console.log("[mailbox.controller] mapped customization.imageUrl =", mappedCustom.imageUrl ?? null);
+apps/VCSM/src/features/wanders/core/controllers/mailbox.controller.js:73:      console.log("[mailbox.controller] mapped customization.image_url =", mappedCustom.image_url ?? null);
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:114:      console.log("[WandersCardPreview] templateKey =", k);
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:115:      console.log("[WandersCardPreview] template lookup tried =", registryDebug?.tried);
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:116:      console.log("[WandersCardPreview] template resolved key =", registryDebug?.usedKey);
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:117:      console.log("[WandersCardPreview] template resolved? =", !!registryTemplate, registryTemplate?.id);
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:118:      console.log("[WandersCardPreview] registry template ids =", keys);
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:119:      console.log("[WandersCardPreview] photo fields:", {
+apps/VCSM/src/features/wanders/components/WandersCardPreview.jsx:150:      console.log("[WandersCardPreview] template data =", {
+apps/VCSM/src/features/wanders/services/wandersSupabaseClient.js:11:  if (DEBUG_WANDERS_SB) console.log('[WandersSupabase]', ...args)
+apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:52:      console.log('[noti:cards:cache-hit]', { count: cached.length })
+apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:54:      console.log('[noti:cards:cache-miss]')
+apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:63:      console.log('[noti:cards:render-cached]', { count: cached.length })
+apps/VCSM/src/features/notifications/inbox/hooks/useNotificationInbox.js:86:      console.log('[noti:cards:server-reconciled]', {
+apps/VCSM/src/features/media/dal/mediaAssets.softDelete.dal.js:38:    console.log('[softDeleteMediaAssetDAL] soft-deleting:', { assetId, deletedByActorId })
+apps/VCSM/src/features/media/dal/mediaAssets.softDelete.dal.js:56:    console.log('[softDeleteMediaAssetDAL] result:', {
+apps/VCSM/src/features/media/dal/mediaAssets.write.dal.js:60:  if (import.meta.env?.DEV) console.log('[insertMediaAssetDAL] inserting:', { scope_type: row.scope_type, owner_actor_id: row.owner_actor_id, scope_id: row.scope_id, storage_key: row.storage_key })
+apps/VCSM/src/features/media/dal/mediaAssets.write.dal.js:90:  if (import.meta.env?.DEV) console.log('[insertMediaAssetDAL] result:', { id: data?.id, error: error?.code ?? null, message: error?.message ?? null })
+apps/VCSM/src/features/media/dal/resolveAppId.read.dal.js:14:    if (import.meta.env?.DEV) console.log('[resolveVcsmAppId] cache hit')
+apps/VCSM/src/features/media/dal/resolveAppId.read.dal.js:18:  if (import.meta.env?.DEV) console.log('[resolveVcsmAppId] DB query (cold)')
+apps/VCSM/src/features/media/controllers/createMediaAsset.controller.js:65:  if (import.meta.env?.DEV) console.log('[createMediaAsset] insert payload:', insertPayload)
+apps/VCSM/src/features/media/controllers/createMediaAsset.controller.js:76:  if (import.meta.env?.DEV) console.log('[createMediaAsset] insert result:', { id: row?.id, scope_type: row?.scope_type, app_id: row?.app_id })
+apps/VCSM/src/state/identity/identity.controller.inflight.js:13:  console.log('[Identity] resolve count', {
+apps/VCSM/src/state/identity/identity.controller.js:179:        console.log('[IdentityHydration] RLS_DIAGNOSTIC', {
+apps/VCSM/src/state/identity/identity.controller.js:187:        console.log('[IdentityHydration] RLS_DIAGNOSTIC', {
+apps/VCSM/src/state/identity/queries/identityEngineQuery.js:15:  console.log("[Query:identity-engine] resolve count", {
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:30:      if (extra && typeof extra === 'object') console.log(extra);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:71:    console.log('> headers:', redactedHeaders);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:72:    if (body !== undefined) console.log('> body:', body);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:84:    console.log('< status:', res.status, res.statusText || '');
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:85:    console.log('< headers:', toObj(res.headers));
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:86:    if (json !== null) console.log('< json:', json);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:87:    else console.log('< (non-JSON response body)');
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:111:  console.log('user error:', userErr || null);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:112:  console.log('session error:', sessionErr || null);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:113:  console.log('user:', userData?.user || null);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:114:  console.log('session.expires_at:', sessionData?.session?.expires_at || null);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:115:  console.log('access_token present:', !!sessionData?.session?.access_token);
+apps/VCSM/src/services/supabase/supabaseClient.debug.js:116:  console.log('schema (rest):', client?.rest?.schema ?? '(default)');

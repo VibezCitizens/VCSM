@@ -17,20 +17,20 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@/features/auth/dal/authCallback.dal', () => ({
+vi.mock('@/features/auth/callback/dal/authCallback.dal', () => ({
   dalExchangeCodeForSession: vi.fn(),
 }))
 
-vi.mock('@/features/auth/dal/authSession.read.dal', () => ({
+vi.mock('@/features/auth/shared/dal/authSession.read.dal', () => ({
   dalGetAuthSession: vi.fn(),
 }))
 
 // import.meta.env must be mocked before importing the controller
 vi.stubEnv('DEV', false)
 
-import { resolveAuthCallbackController } from '../authCallback.controller'
-import { dalExchangeCodeForSession } from '@/features/auth/dal/authCallback.dal'
-import { dalGetAuthSession } from '@/features/auth/dal/authSession.read.dal'
+import { resolveAuthCallbackController } from '@/features/auth/callback/controllers/authCallback.controller'
+import { dalExchangeCodeForSession } from '@/features/auth/callback/dal/authCallback.dal'
+import { dalGetAuthSession } from '@/features/auth/shared/dal/authSession.read.dal'
 
 describe('resolveAuthCallbackController — recovery hash guard (BW-LOGIN-002)', () => {
   beforeEach(() => {

@@ -15,6 +15,8 @@ import { setupVcsmNotificationsEngine } from '@/features/notifications/setup'
 import { setupVcsmBookingEngine } from '@/features/booking/setup'
 import { setupVcsmMediaEngine } from '@/features/media/setup'
 import { initMonitoring } from '@/services/monitoring/monitoring'
+import { registerGlobalErrorHandlers } from '@/app/monitoring/registerGlobalErrorHandlers'
+import MonitoringErrorBoundary from '@/app/monitoring/MonitoringErrorBoundary'
 
 // Configure engines before any component renders or auth checks run.
 setupVcsmIdentityEngine()
@@ -28,6 +30,7 @@ setupVcsmMediaEngine()
 
 // Initialize error monitoring. No-op when VITE_SENTRY_DSN is absent.
 initMonitoring()
+registerGlobalErrorHandlers()
 
 import App from './App'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -109,18 +112,20 @@ if (import.meta.env.PROD) {
 
 createRoot(document.getElementById('root')).render(
   <RootMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <LocaleProvider>
-          <LocaleRoot>
-            <AuthProvider>
-              <IdentityProvider>
-                <App />
-              </IdentityProvider>
-            </AuthProvider>
-          </LocaleRoot>
-        </LocaleProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <MonitoringErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <LocaleProvider>
+            <LocaleRoot>
+              <AuthProvider>
+                <IdentityProvider>
+                  <App />
+                </IdentityProvider>
+              </AuthProvider>
+            </LocaleRoot>
+          </LocaleProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </MonitoringErrorBoundary>
   </RootMode>
 )

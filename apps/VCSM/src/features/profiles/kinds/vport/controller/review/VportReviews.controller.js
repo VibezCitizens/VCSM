@@ -22,7 +22,6 @@ import {
   assertActorId,
   mapDimension,
   mapStats,
-  mapRating,
   mapReview,
 } from '@/features/profiles/kinds/vport/controller/review/vportReviews.mappers'
 

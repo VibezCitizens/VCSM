@@ -1,0 +1,167 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-05T00:00:00Z",
+  "scope": "VCSM:explore",
+  "feature": "explore",
+  "module": null,
+  "commandVersion": "ARCHITECT V2",
+  "scannerVersion": "1.1.0",
+  "architecture": {
+    "sourceFilesRead": [
+      { "path": "apps/VCSM/src/features/explore/dal/search.dal.js", "layer": "dal", "linesRead": "1-149" },
+      { "path": "apps/VCSM/src/features/explore/controller/searchResults.controller.js", "layer": "controller", "linesRead": "1-53" },
+      { "path": "apps/VCSM/src/features/explore/controller/searchTabs.controller.js", "layer": "controller", "linesRead": "1-13" },
+      { "path": "apps/VCSM/src/features/explore/hooks/useSearchActor.js", "layer": "hook", "linesRead": "1-5" },
+      { "path": "apps/VCSM/src/features/explore/hooks/useSearchScreenController.js", "layer": "hook", "linesRead": "1-142" },
+      { "path": "apps/VCSM/src/features/explore/hooks/useSearchTabsActor.js", "layer": "hook", "linesRead": "1-99" },
+      { "path": "apps/VCSM/src/features/explore/model/search.model.js", "layer": "model", "linesRead": "1-234" },
+      { "path": "apps/VCSM/src/features/explore/screens/ExploreScreen.jsx", "layer": "screen", "linesRead": "1-22" },
+      { "path": "apps/VCSM/src/features/explore/usecases/search.usecase.js", "layer": "controller", "linesRead": "1-18" },
+      { "path": "apps/VCSM/src/features/explore/ui/SearchScreen.view.jsx", "layer": "screen", "linesRead": "1-100" },
+      { "path": "apps/VCSM/src/features/explore/ui/ExploreFeed.jsx", "layer": "component", "linesRead": "1-18" },
+      { "path": "apps/VCSM/src/features/explore/ui/ResultList.jsx", "layer": "component", "linesRead": "1-63" },
+      { "path": "apps/VCSM/src/features/explore/ui/FilterTabs.jsx", "layer": "component", "linesRead": "1-29", "note": "DEAD CODE — not imported anywhere" },
+      { "path": "apps/VCSM/src/features/explore/ui/ActorSearchResultRow.jsx", "layer": "component", "linesRead": "1-45" },
+      { "path": "apps/VCSM/src/features/explore/ui/FeatureSearchResultRow.jsx", "layer": "component", "linesRead": "1-46" },
+      { "path": "apps/VCSM/src/features/explore/ui/FeaturedResultCard.jsx", "layer": "component", "linesRead": "1-68" },
+      { "path": "apps/VCSM/src/features/explore/ui/PostCard.jsx", "layer": "component", "linesRead": "1-29" },
+      { "path": "apps/VCSM/src/features/explore/ui/CitizensRow.jsx", "layer": "component", "linesRead": "1-23", "note": "DEAD AT RUNTIME — behind SHOW_EXPLORE_DISCOVERY_BLOCKS=false flag" },
+      { "path": "apps/VCSM/src/features/explore/ui/VportsRow.jsx", "layer": "component", "linesRead": "1-35", "note": "DEAD AT RUNTIME — behind SHOW_EXPLORE_DISCOVERY_BLOCKS=false flag" },
+      { "path": "apps/VCSM/src/features/explore/ui/EmptyState.jsx", "layer": "component", "linesRead": "1-19" },
+      { "path": "apps/VCSM/src/features/explore/ui/features/WanderCardSearch.jsx", "layer": "component", "linesRead": "1-78" },
+      { "path": "apps/VCSM/src/features/explore/ui/index.jsx", "layer": "module", "linesRead": "1-8" }
+    ],
+    "routes": [
+      {
+        "path": "/explore",
+        "access": "public",
+        "ownerFile": "apps/VCSM/src/features/explore/ui/index.jsx",
+        "notes": "Scanner classifies access:public; barrel declares public:false — conflict needs reconciliation"
+      }
+    ],
+    "screens": [
+      { "name": "ExploreScreen", "file": "apps/VCSM/src/features/explore/screens/ExploreScreen.jsx", "route": "/explore" },
+      { "name": "SearchScreen.view", "file": "apps/VCSM/src/features/explore/ui/SearchScreen.view.jsx", "route": "/explore (child)" }
+    ],
+    "hooks": [
+      { "name": "useSearchScreenController", "file": "apps/VCSM/src/features/explore/hooks/useSearchScreenController.js", "consumedBy": "SearchScreen.view.jsx" },
+      { "name": "useSearchActor", "file": "apps/VCSM/src/features/explore/hooks/useSearchActor.js", "consumedBy": "cross-feature consumers", "note": "thin re-export of useSearchScreenController" },
+      { "name": "useSearchTabsActor", "file": "apps/VCSM/src/features/explore/hooks/useSearchTabsActor.js", "consumedBy": "unknown — not confirmed in source reads" }
+    ],
+    "controllers": [
+      { "name": "ctrlSearchResults", "file": "apps/VCSM/src/features/explore/controller/searchResults.controller.js", "calledBy": "useSearchScreenController", "calls": "searchDal, hydrateActorsByIds", "authCheck": "ABSENT" },
+      { "name": "ctrlSearchTabs", "file": "apps/VCSM/src/features/explore/controller/searchTabs.controller.js", "calledBy": "useSearchTabsActor", "calls": "searchDal", "authCheck": "ABSENT" },
+      { "name": "searchUsecase", "file": "apps/VCSM/src/features/explore/usecases/search.usecase.js", "calledBy": "unknown", "calls": "searchDal", "authCheck": "ABSENT", "note": "redundant with ctrlSearchTabs; relative import violation" }
+    ],
+    "dals": [
+      { "name": "searchActors", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "operation": "RPC", "table": "search_actor_directory", "schema": "identity" },
+      { "name": "searchPosts", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "operation": "READ", "table": "posts", "schema": "vc" },
+      { "name": "searchPostsByTag", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "operation": "READ", "table": "posts", "schema": "vc" },
+      { "name": "searchDal", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "operation": "READ", "table": "dispatcher", "schema": "N/A", "note": "routes to searchActors/searchPosts based on filter" }
+    ],
+    "models": [
+      { "name": "normalizeActorRow", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "normalizeResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "dedupeByKindAndId", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "mapActorSearchResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "mapVportSearchResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "mapPostSearchResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "mapVideoSearchResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "mapGroupSearchResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" },
+      { "name": "mapSearchResult", "file": "apps/VCSM/src/features/explore/model/search.model.js" }
+    ],
+    "services": [],
+    "adapters": []
+  },
+  "imports": [
+    { "from": "apps/VCSM/src/features/explore/controller/searchResults.controller.js", "imports": "searchDal", "to": "apps/VCSM/src/features/explore/dal/search.dal.js" },
+    { "from": "apps/VCSM/src/features/explore/controller/searchResults.controller.js", "imports": "dedupeByKindAndId, normalizeResult", "to": "apps/VCSM/src/features/explore/model/search.model.js" },
+    { "from": "apps/VCSM/src/features/explore/controller/searchResults.controller.js", "imports": "hydrateActorsByIds", "to": "engines/hydration (@hydration alias)" },
+    { "from": "apps/VCSM/src/features/explore/controller/searchTabs.controller.js", "imports": "searchDal", "to": "apps/VCSM/src/features/explore/dal/search.dal.js" },
+    { "from": "apps/VCSM/src/features/explore/hooks/useSearchScreenController.js", "imports": "ctrlSearchResults", "to": "apps/VCSM/src/features/explore/controller/searchResults.controller.js" },
+    { "from": "apps/VCSM/src/features/explore/hooks/useSearchActor.js", "imports": "useSearchScreenController", "to": "apps/VCSM/src/features/explore/hooks/useSearchScreenController.js" },
+    { "from": "apps/VCSM/src/features/explore/hooks/useSearchTabsActor.js", "imports": "ctrlSearchTabs", "to": "apps/VCSM/src/features/explore/controller/searchTabs.controller.js" },
+    { "from": "apps/VCSM/src/features/explore/dal/search.dal.js", "imports": "normalizeActorRow", "to": "apps/VCSM/src/features/explore/model/search.model.js" },
+    { "from": "apps/VCSM/src/features/explore/usecases/search.usecase.js", "imports": "searchDal (relative ../dal/search.dal)", "to": "apps/VCSM/src/features/explore/dal/search.dal.js", "note": "VIOLATION: uses relative path instead of @/ alias" },
+    { "from": "apps/VCSM/src/features/explore/ui/SearchScreen.view.jsx", "imports": "OnboardingCardsView", "to": "apps/VCSM/src/features/onboarding/adapters/onboarding.adapter" },
+    { "from": "apps/VCSM/src/features/explore/screens/ExploreScreen.jsx", "imports": "module-modern.css", "to": "apps/VCSM/src/features/ui/modern/module-modern.css", "note": "cross-feature CSS import — boundary violation" }
+  ],
+  "dependencies": {
+    "featureDependencies": ["onboarding (OnboardingCardsView adapter)", "features/ui (module-modern.css — boundary violation)"],
+    "engineDependencies": ["hydration (@hydration alias)", "identity (identity.search_actor_directory RPC)"],
+    "sharedDependencies": ["@i18n (translation hook)", "@/shared/components/Skeleton (SkeletonRow)"]
+  },
+  "engineUsage": [
+    { "engine": "hydration", "usedBy": "apps/VCSM/src/features/explore/controller/searchResults.controller.js", "method": "hydrateActorsByIds (fire-and-forget)" },
+    { "engine": "identity", "usedBy": "apps/VCSM/src/features/explore/dal/search.dal.js", "method": "identity.search_actor_directory (RPC)" }
+  ],
+  "databaseReads": [
+    { "dal": "apps/VCSM/src/features/explore/dal/search.dal.js", "function": "searchActors", "table": "search_actor_directory", "schema": "identity", "caller": "searchDal dispatcher → ctrlSearchResults / ctrlSearchTabs" },
+    { "dal": "apps/VCSM/src/features/explore/dal/search.dal.js", "function": "searchPosts", "table": "posts", "schema": "vc", "caller": "searchDal dispatcher" },
+    { "dal": "apps/VCSM/src/features/explore/dal/search.dal.js", "function": "searchPostsByTag", "table": "posts", "schema": "vc", "caller": "searchDal dispatcher (hashtag mode)" }
+  ],
+  "databaseWrites": [],
+  "rpcs": [
+    { "name": "search_actor_directory", "schema": "identity", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "caller": "searchActors function" }
+  ],
+  "edgeFunctions": [],
+  "behaviorIds": [],
+  "securitySensitiveSurfaces": [
+    { "surface": "identity.search_actor_directory", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "risk": "p_viewer_actor_id null path accepted — RPC must enforce privacy suppression server-side; no auth gate at screen entry", "priority": "HIGH" },
+    { "surface": "vc.posts SELECT (searchPosts)", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "risk": "Direct table SELECT without schema-qualifier; RLS policy coverage unverified; deleted_at and is_hidden filters applied client-side in query", "priority": "HIGH" },
+    { "surface": "vc.posts SELECT (searchPostsByTag)", "file": "apps/VCSM/src/features/explore/dal/search.dal.js", "risk": "Same as searchPosts; tag-based post retrieval; no ownership check", "priority": "HIGH" },
+    { "surface": "PostCard navigation", "file": "apps/VCSM/src/features/explore/ui/PostCard.jsx", "risk": "navigate('/posts/${post.id}') exposes raw DB UUID in public URL — platform no-raw-IDs-in-URLs rule violation", "priority": "HIGH" },
+    { "surface": "ActorSearchResultRow navigation", "file": "apps/VCSM/src/features/explore/ui/ActorSearchResultRow.jsx", "risk": "navigate('/profile/${actor.username ?? actor.actor_id}') — UUID fallback when username is null; identity RPC may return null username for some actor kinds", "priority": "HIGH" }
+  ],
+  "callChains": [
+    {
+      "id": "CHAIN-explore-001",
+      "path": "ExploreScreen → SearchScreen.view → useSearchScreenController → ctrlSearchResults → searchDal → searchActors → identity.search_actor_directory",
+      "userControlledParams": "query (raw text input), filter (from localStorage + click), viewerActorId (null default)",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-explore-002",
+      "path": "ExploreScreen → SearchScreen.view → useSearchScreenController → ctrlSearchResults → searchDal → searchPosts → vc.posts",
+      "userControlledParams": "query (raw text input, used in ilike pattern), filter",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-explore-003",
+      "path": "ExploreScreen → SearchScreen.view → useSearchScreenController → ctrlSearchResults → hydrateActorsByIds (fire-and-forget)",
+      "userControlledParams": "actorIds derived from search results",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-explore-004",
+      "path": "useSearchTabsActor → ctrlSearchTabs → searchDal → searchActors / searchPosts",
+      "userControlledParams": "query, filter, limit, offset, viewerActorId",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-explore-005",
+      "path": "ResultList → PostCard → navigate('/posts/${post.id}')",
+      "userControlledParams": "post.id (DB UUID from search result)",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH",
+      "securityNote": "RAW UUID EXPOSED IN URL — platform rule violation"
+    },
+    {
+      "id": "CHAIN-explore-006",
+      "path": "ResultList → ActorSearchResultRow → navigate('/profile/${username ?? actor_id}')",
+      "userControlledParams": "actor_id (DB UUID fallback when username null)",
+      "ownershipChecked": "NO",
+      "confidence": "HIGH",
+      "securityNote": "UUID FALLBACK IN URL — platform rule violation"
+    }
+  ],
+  "provenance": {
+    "sourceMaps": ["feature-map", "callgraph", "write-surface-map", "route-map", "engine-candidates", "dependency-map"],
+    "sourceFilesValidated": 22,
+    "confidence": "HIGH"
+  }
+}

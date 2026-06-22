@@ -1,0 +1,284 @@
+{
+  "meta": {
+    "tool": "ARCHITECT",
+    "version": "2.0",
+    "date": "2026-06-05",
+    "ticket": "TICKET-ARCHITECT-DASHBOARD-MODULE-WAVE-0001",
+    "scannerVersion": "1.1.0",
+    "confidence": "HIGH"
+  },
+  "module": {
+    "name": "team",
+    "feature": "dashboard",
+    "root": "apps/VCSM/src/features/dashboard/vport/dashboard/cards/team/",
+    "classification": "DEPENDENT",
+    "completeness": "MOSTLY_COMPLETE",
+    "runtimeReadiness": "READY"
+  },
+  "routes": [
+    {
+      "path": "/actor/:actorId/dashboard/team",
+      "access": "PROTECTED",
+      "screen": "VportDashboardTeamScreen",
+      "confidence": "SOURCE_VERIFIED"
+    },
+    {
+      "path": "/actor/:actorId/dashboard/team-requests",
+      "access": "PROTECTED",
+      "screen": "BarberTeamRequestsScreen",
+      "confidence": "SOURCE_VERIFIED"
+    }
+  ],
+  "layers": {
+    "screen": 2,
+    "controller": 3,
+    "dal": 4,
+    "hook": 3,
+    "component": 3,
+    "model": 0,
+    "adapter_local": 0,
+    "tests": 2
+  },
+  "sourceFilesRead": [
+    { "file": "VportDashboardTeamScreen.jsx", "layer": "screen", "lines": "1-227" },
+    { "file": "controller/vportTeam.controller.js", "layer": "controller", "lines": "1-138" },
+    { "file": "controller/vportTeamAccess.controller.js", "layer": "controller", "lines": "1-157" },
+    { "file": "controller/vportTeamInvite.controller.js", "layer": "controller", "lines": "1-121" },
+    { "file": "dal/vportTeam.read.dal.js", "layer": "dal", "lines": "1-100" },
+    { "file": "dal/vportTeam.write.dal.js", "layer": "dal", "lines": "1-79" },
+    { "file": "dal/vportTeamInvite.read.dal.js", "layer": "dal", "lines": "1-45" },
+    { "file": "dal/vportTeamInvite.write.dal.js", "layer": "dal", "lines": "1-131" },
+    { "file": "hooks/useBarberTeamRequests.js", "layer": "hook", "lines": "1-70" },
+    { "file": "hooks/useVportTeam.js", "layer": "hook", "lines": "1-73" },
+    { "file": "hooks/useVportTeamAccess.js", "layer": "hook", "lines": "1-89" }
+  ],
+  "callChains": [
+    {
+      "id": "CHAIN-team-001",
+      "path": "VportDashboardTeamScreen → useVportTeamAccess → addTeamMemberController → insertLinkedTeamMemberDAL",
+      "userControlledParams": ["memberActorId", "role", "displayName"],
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-team-002",
+      "path": "VportDashboardTeamScreen → useVportTeamAccess → updateTeamMemberRoleController → updateTeamMemberRoleDAL",
+      "userControlledParams": ["resourceId", "role"],
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController + profileId scope",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-team-003",
+      "path": "VportDashboardTeamScreen → useVportTeamAccess → setTeamMemberStatusController → setTeamMemberActiveDAL",
+      "userControlledParams": ["resourceId", "status"],
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController + profileId scope",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-team-004",
+      "path": "VportDashboardTeamScreen → useVportTeamAccess → removeTeamMemberController → deleteTeamMemberByIdDAL",
+      "userControlledParams": ["resourceId"],
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController + profileId scope",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-team-005",
+      "path": "useBarberTeamRequests → acceptTeamRequestController → acceptTeamRequestDAL",
+      "userControlledParams": ["resourceId"],
+      "ownershipChecked": true,
+      "guard": "assertActorOwnsVportActorController + ELEK-001 atomic guard",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-team-006",
+      "path": "useBarberTeamRequests → declineTeamRequestController → declineTeamRequestDAL",
+      "userControlledParams": ["resourceId", "callerActorId"],
+      "ownershipChecked": true,
+      "guard": "ELEK-002 ownership assert on isInvitedBarber path",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CHAIN-team-007",
+      "path": "acceptBarbershopInviteController → acceptTeamInviteByActorDAL",
+      "userControlledParams": ["token", "barberVportActorId", "callerActorId"],
+      "ownershipChecked": true,
+      "guard": "VPD-V-008 callerActorId + ELEK-001 atomic guard",
+      "confidence": "HIGH"
+    }
+  ],
+  "securitySurfaces": [
+    {
+      "surface": "insertTeamRequestDAL",
+      "file": "dal/vportTeamInvite.write.dal.js",
+      "risk": "INSERT resources with member_actor_id",
+      "priority": "MEDIUM",
+      "mitigated": true
+    },
+    {
+      "surface": "acceptTeamRequestDAL",
+      "file": "dal/vportTeamInvite.write.dal.js",
+      "risk": "UPDATE resources state",
+      "priority": "MEDIUM",
+      "mitigated": true,
+      "guard": "ELEK-001 atomic guard confirmed"
+    },
+    {
+      "surface": "acceptTeamInviteByActorDAL",
+      "file": "dal/vportTeamInvite.write.dal.js",
+      "risk": "UPDATE resources with member_actor_id assignment",
+      "priority": "MEDIUM",
+      "mitigated": true,
+      "guard": "ELEK-001 + VPD-V-008 confirmed"
+    },
+    {
+      "surface": "declineTeamRequestDAL",
+      "file": "dal/vportTeamInvite.write.dal.js",
+      "risk": "UPDATE resources state",
+      "priority": "MEDIUM",
+      "mitigated": true,
+      "guard": "ELEK-002 confirmed"
+    },
+    {
+      "surface": "readVportProfileByActorIdDAL (direct import)",
+      "file": "controller/vportTeam.controller.js",
+      "risk": "Cross-module DAL import — boundary violation, not data risk",
+      "priority": "MEDIUM",
+      "mitigated": false
+    },
+    {
+      "surface": "readVportProfileByActorIdDAL (direct import)",
+      "file": "controller/vportTeamAccess.controller.js",
+      "risk": "Cross-module DAL import — boundary violation",
+      "priority": "MEDIUM",
+      "mitigated": false
+    }
+  ],
+  "boundaryViolations": [
+    {
+      "file": "controller/vportTeam.controller.js",
+      "import": "readVportProfileByActorIdDAL from vport DAL",
+      "risk": "MEDIUM — cross-module DAL access, not data leak"
+    },
+    {
+      "file": "controller/vportTeamAccess.controller.js",
+      "import": "readVportProfileByActorIdDAL from vport DAL",
+      "risk": "MEDIUM — cross-module DAL access"
+    }
+  ],
+  "securityHardeningConfirmations": [
+    {
+      "finding": "ELEK-001",
+      "description": "Atomic state guard on invite accept",
+      "status": "CONFIRMED",
+      "evidence": "acceptTeamInviteByActorDAL line 111: .eq(\"meta->>status\", \"pending_acceptance\")"
+    },
+    {
+      "finding": "ELEK-001",
+      "description": "Atomic state guard on request accept",
+      "status": "CONFIRMED",
+      "evidence": "acceptTeamRequestDAL line 57: .eq(\"meta->>status\", \"pending_acceptance\")"
+    },
+    {
+      "finding": "ELEK-002",
+      "description": "Ownership check on isInvitedBarber decline path",
+      "status": "CONFIRMED",
+      "evidence": "declineTeamRequestController lines 53-61: assertActorOwnsVportActorController called"
+    },
+    {
+      "finding": "VPD-V-008",
+      "description": "callerActorId required guard on invite accept",
+      "status": "CONFIRMED",
+      "evidence": "acceptBarbershopInviteController line 103: callerActorId null check"
+    }
+  ],
+  "performanceRisks": [
+    {
+      "id": "TEAM-PERF-001",
+      "type": "N_PLUS_1",
+      "severity": "MEDIUM",
+      "function": "findEligibleBarberActorIdsDAL",
+      "file": "dal/vportTeam.read.dal.js",
+      "description": "4-5 sequential DB calls: actor_follows → actors → actor_owners → actor_owners (user_id) → profile_categories (×2)",
+      "crossClient": true,
+      "clients": ["vc (vcClient)", "vportSchema (vportClient)"]
+    }
+  ],
+  "modelLayerGaps": [
+    {
+      "id": "TEAM-MODEL-001",
+      "severity": "LOW",
+      "description": "VALID_ROLES constant defined in controller/vportTeamAccess.controller.js — should be in model/ layer",
+      "note": "model/ directory exists but is empty"
+    }
+  ],
+  "behaviorContract": {
+    "file": "BEHAVIOR.md",
+    "status": "MISSING",
+    "severity": "HIGH"
+  },
+  "databases": {
+    "clients": ["vc (vcClient)", "vportSchema (vportClient)"],
+    "writes": [
+      { "dal": "vportTeam.write.dal", "fn": "insertTeamMemberDAL", "op": "INSERT", "table": "resources", "guard": "profileId scope" },
+      { "dal": "vportTeam.write.dal", "fn": "insertLinkedTeamMemberDAL", "op": "INSERT", "table": "resources", "guard": "profileId + ownership" },
+      { "dal": "vportTeam.write.dal", "fn": "updateTeamMemberRoleDAL", "op": "UPDATE", "table": "resources", "guard": "profileId + ownership" },
+      { "dal": "vportTeam.write.dal", "fn": "setTeamMemberActiveDAL", "op": "UPDATE", "table": "resources", "guard": "profileId + ownership" },
+      { "dal": "vportTeam.write.dal", "fn": "deleteTeamMemberByIdDAL", "op": "DELETE", "table": "resources", "guard": "profileId + ownership" },
+      { "dal": "vportTeamInvite.write.dal", "fn": "insertTeamRequestDAL", "op": "INSERT", "table": "resources", "guard": "profileId + ownership" },
+      { "dal": "vportTeamInvite.write.dal", "fn": "acceptTeamRequestDAL", "op": "UPDATE", "table": "resources", "guard": "meta->>status + memberActorId (ELEK-001)" },
+      { "dal": "vportTeamInvite.write.dal", "fn": "declineTeamRequestDAL", "op": "UPDATE", "table": "resources", "guard": "meta->>status + profileId/memberActorId (ELEK-002)" },
+      { "dal": "vportTeamInvite.write.dal", "fn": "acceptTeamInviteByActorDAL", "op": "UPDATE", "table": "resources", "guard": "meta->>status + memberActorId + callerActorId (ELEK-001+VPD-V-008)" },
+      { "dal": "vportTeamInvite.write.dal", "fn": "deleteTeamResourceDAL", "op": "DELETE", "table": "resources", "guard": "profileId scope" }
+    ],
+    "reads": [
+      { "dal": "vportTeam.read.dal", "fn": "fetchTeamMembersByProfileId", "table": "resources", "client": "vport" },
+      { "dal": "vportTeam.read.dal", "fn": "findEligibleBarberActorIdsDAL", "table": "actor_follows,actors,actor_owners,profile_categories", "client": "vc+vport" },
+      { "dal": "vportTeamInvite.read.dal", "fn": "fetchResourceByIdDAL", "table": "resources", "client": "vport" },
+      { "dal": "vportTeamInvite.read.dal", "fn": "fetchPendingTeamRequestsForBarberDAL", "table": "resources", "client": "vport" },
+      { "dal": "vportProfile.read.dal (cross-module)", "fn": "readVportProfileByActorIdDAL", "table": "profiles", "client": "vport" }
+    ]
+  },
+  "engineUsage": [
+    { "engine": "@hydration", "methods": ["hydrateActorsByIds"], "files": ["useVportTeam", "useVportTeamAccess"] },
+    { "engine": "booking adapter", "methods": ["assertActorOwnsVportActorController"], "files": ["vportTeam.controller", "vportTeamAccess.controller", "vportTeamInvite.controller"] },
+    { "engine": "actors adapter", "methods": ["searchActorsAdapter"], "files": ["vportTeamAccess.controller"] },
+    { "engine": "identity adapter", "methods": ["useIdentity"], "files": ["useVportTeam", "useVportTeamAccess", "VportDashboardTeamScreen"] }
+  ],
+  "findings": [
+    {
+      "id": "TEAM-ARCH-001",
+      "severity": "MEDIUM",
+      "type": "BOUNDARY",
+      "title": "Direct cross-module DAL import in controllers",
+      "files": ["controller/vportTeam.controller.js", "controller/vportTeamAccess.controller.js"],
+      "description": "readVportProfileByActorIdDAL imported directly from vport DAL — should route through vport adapter"
+    },
+    {
+      "id": "TEAM-ARCH-002",
+      "severity": "MEDIUM",
+      "type": "PERFORMANCE",
+      "title": "N+1 risk in findEligibleBarberActorIdsDAL",
+      "file": "dal/vportTeam.read.dal.js",
+      "description": "4-5 sequential DB calls across two DB clients per eligibility check"
+    },
+    {
+      "id": "TEAM-ARCH-003",
+      "severity": "LOW",
+      "type": "ARCHITECTURE",
+      "title": "VALID_ROLES defined in controller layer",
+      "file": "controller/vportTeamAccess.controller.js",
+      "description": "Business constant should live in model/ directory"
+    },
+    {
+      "id": "TEAM-ARCH-004",
+      "severity": "HIGH",
+      "type": "GOVERNANCE",
+      "title": "BEHAVIOR.md missing",
+      "description": "No behavior contract for team module — P1 feature with complex invite state machine"
+    }
+  ]
+}

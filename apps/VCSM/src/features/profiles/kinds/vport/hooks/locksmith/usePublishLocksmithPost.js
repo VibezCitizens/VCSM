@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { publishLocksmithServiceAreaUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/locksmith/publishLocksmithServiceAreaUpdateAsPost.controller";
 import { publishLocksmithHoursUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/locksmith/publishLocksmithHoursUpdateAsPost.controller";
 import { publishLocksmithPortfolioUpdateAsPostController } from "@/features/profiles/kinds/vport/controller/locksmith/publishLocksmithPortfolioUpdateAsPost.controller";

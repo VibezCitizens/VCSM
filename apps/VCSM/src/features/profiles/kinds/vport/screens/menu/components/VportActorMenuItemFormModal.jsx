@@ -25,11 +25,11 @@ export function VportActorMenuItemFormModal({
   className = "",
   onShareToFeed = null,
 } = {}) {
-  const [shareToFeed, setShareToFeed] = useState(false);
+  const [shareToFeed, setShareToFeed] = useState(true);
 
   useEffect(() => {
     if (!open) return;
-    setShareToFeed(false);
+    setShareToFeed(true);
   }, [open]);
 
   const wrappedOnSave = useCallback(

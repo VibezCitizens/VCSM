@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "tool": "ARCHITECT",
+    "version": "2.0",
+    "date": "2026-06-05",
+    "ticket": "TICKET-ARCHITECT-DASHBOARD-MODULE-WAVE-0001",
+    "scannerVersion": "1.1.0",
+    "confidence": "HIGH"
+  },
+  "module": {
+    "name": "qrcode",
+    "feature": "dashboard",
+    "root": "apps/VCSM/src/features/dashboard/qrcode/",
+    "classification": "INDEPENDENT",
+    "completeness": "COMPLETE",
+    "runtimeReadiness": "READY"
+  },
+  "routes": [],
+  "layers": {
+    "screen": 0,
+    "controller": 0,
+    "dal": 0,
+    "hook": 0,
+    "component": 4,
+    "style": 2,
+    "adapter_barrel": 1
+  },
+  "sourceFilesRead": [
+    { "file": "adapters/qrcode.adapter.js", "layer": "adapter (barrel)", "lines": "1-7" },
+    { "file": "components/QrCode.jsx", "layer": "component", "lines": "1-29" },
+    { "file": "components/QrCard.jsx", "layer": "component", "lines": "1-67" }
+  ],
+  "callChains": [],
+  "securitySurfaces": [],
+  "boundaryViolations": [],
+  "emptyValueGuards": [
+    { "file": "components/QrCode.jsx", "guard": "if (!v.trim()) return null", "confidence": "SOURCE_VERIFIED" },
+    { "file": "components/QrCard.jsx", "guard": "if (!v.trim()) return null", "confidence": "SOURCE_VERIFIED" }
+  ],
+  "adapterClassification": {
+    "type": "PUBLIC_BARREL",
+    "note": "Re-exports QrCode, QrCard, ClassicFlyer, PosterFlyer. NOT a library wrapper — react-qr-code is wrapped directly in QrCode.jsx"
+  },
+  "externalDependencies": [
+    { "package": "react-qr-code", "usedIn": "components/QrCode.jsx" }
+  ],
+  "behaviorContract": {
+    "file": "BEHAVIOR.md",
+    "status": "MISSING",
+    "severity": "LOW"
+  },
+  "databases": {
+    "writes": [],
+    "reads": []
+  },
+  "engineUsage": [],
+  "findings": [
+    {
+      "id": "QR-ARCH-001",
+      "severity": "LOW",
+      "type": "GOVERNANCE",
+      "title": "BEHAVIOR.md missing",
+      "description": "No behavior contract file present — low severity for display-only module"
+    }
+  ]
+}

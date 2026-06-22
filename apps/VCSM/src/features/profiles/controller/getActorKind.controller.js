@@ -1,4 +1,5 @@
 // src/features/profiles/controller/getActorKind.controller.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 
 import { readActorKindDAL } from "@/features/profiles/dal/readActorKind.dal";
 

@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — kind-aware polymorphic read (user vs vport profile tables)
 import { supabase } from '@/services/supabase/supabaseClient'
 import { createTTLCache } from '@/shared/lib/ttlCache'
 import { getActorPrivacyAdapter } from '@/features/social/adapters/privacy/actorPrivacy.adapter'

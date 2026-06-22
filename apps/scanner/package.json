@@ -1,0 +1,17 @@
+{
+  "name": "@vcsm/scanner",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "scanner": "./src/cli/index.js"
+  },
+  "scripts": {
+    "scan": "node ./src/cli/index.js scan",
+    "watch": "node ./src/cli/index.js watch",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.7"
+  }
+}

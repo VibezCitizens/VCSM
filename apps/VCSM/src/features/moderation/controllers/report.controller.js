@@ -15,6 +15,8 @@ import {
 } from '@/features/moderation/dal/reports.dal'
 
 import { toDomainReport } from '@/features/moderation/models/report.model'
+import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring'
+import { REPORT_REASONS } from '@/features/moderation/types/moderation'
 
 /**
  * Resolve target_domain from objectType.
@@ -48,6 +50,9 @@ export async function createReportController({
   }
   if (!reasonCode) {
     return { ok: false, error: new Error('reasonCode required') }
+  }
+  if (!REPORT_REASONS.includes(reasonCode)) {
+    return { ok: false, error: new Error(`createReportController: invalid reasonCode "${reasonCode}"`) }
   }
 
   // Controller-level idempotency: optional dedupe
@@ -92,7 +97,19 @@ export async function createReportController({
     updatedAt: nowIso,
   })
 
-  if (insertErr) return { ok: false, error: insertErr }
+  if (insertErr) {
+    captureVcsmError({
+      feature: 'moderation',
+      module: 'report.controller',
+      severity: 'error',
+      message: `createReportController: insertReportRow failed — ${insertErr?.message ?? 'unknown'}`,
+      error_name: insertErr?.name,
+      operation: 'insertReportRow',
+      is_handled: true,
+      context: { objectType: objectType ?? null },
+    })
+    return { ok: false, error: insertErr }
+  }
   if (!reportRow) return { ok: false, error: new Error('Failed to create report') }
 
   const { error: reportEventError, skipped: reportEventSkipped } = await insertReportEventRow({
@@ -111,7 +128,15 @@ export async function createReportController({
 
   // Audit trail is best-effort from client; report creation is authoritative.
   if (reportEventError && !reportEventSkipped) {
-    console.warn('[createReportController] report event not persisted (non-fatal)')
+    captureVcsmError({
+      feature: 'moderation',
+      module: 'report.controller',
+      severity: 'warning',
+      message: 'createReportController: report event not persisted (non-fatal)',
+      error_name: reportEventError?.name,
+      operation: 'insertReportEventRow',
+      is_handled: true,
+    })
   }
 
   return {

@@ -1,4 +1,5 @@
 // features/profiles/model/actorSeo.model.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 // ─────────────────────────────────────────────────────────────
 // Pure transform: raw DAL rows → canonical slug parts.
 //

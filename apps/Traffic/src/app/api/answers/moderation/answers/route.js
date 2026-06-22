@@ -1,8 +1,8 @@
 import {
   createModerationAnswer,
-  moderateAnswer
-} from "@/features/answers/controller/moderateAnswers.controller";
-import { validateModerationRequest } from "@/features/answers/model/moderationAuth.model";
+  moderateAnswer,
+  validateModerationRequest
+} from "@/features/answers/adapters/answers.adapter";
 
 export async function POST(request) {
   const auth = validateModerationRequest(request);

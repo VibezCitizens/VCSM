@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "engineConsumerCount": 9,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "engines": [
+      {
+        "engine": "booking",
+        "consumers": [
+          "VCSM:booking",
+          "VCSM:notifications",
+          "VCSM:portfolio",
+          "VCSM:profiles",
+          "VCSM:vport",
+          "VCSM:vportDashboard"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "consumers derived from AST dependency map"
+        ]
+      },
+      {
+        "engine": "chat",
+        "consumers": [
+          "wentrex:communication",
+          "wentrex:identity"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "consumers derived from AST dependency map"
+        ]
+      },
+      {
+        "engine": "hydration",
+        "consumers": [
+          "VCSM:CentralFeed",
+          "VCSM:block",
+          "VCSM:booking",
+          "VCSM:chat",
+          "VCSM:explore",
+          "VCSM:hydration",
+          "VCSM:identity",
+          "VCSM:notifications",
+          "VCSM:post",
+          "VCSM:profiles",
+          "VCSM:settings",
+          "VCSM:state",
+          "VCSM:vportDashboard"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "consumers derived from AST dependency map"
+        ]
+      },
+      {
+        "engine": "i18n",
+        "consumers": [
+          "VCSM:i18n",
+          "wentrex:i18n"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "consumers derived from AST dependency map"
+        ]
+      },
+      {
+        "engine": "identity",
+        "consumers": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "no app consumers found"
+        ]
+      },
+      {
+        "engine": "media",
+        "consumers": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "no app consumers found"
+        ]
+      },
+      {
+        "engine": "notifications",
+        "consumers": [
+          "VCSM:dev",
+          "VCSM:notifications"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "consumers derived from AST dependency map"
+        ]
+      },
+      {
+        "engine": "portfolio",
+        "consumers": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "no app consumers found"
+        ]
+      },
+      {
+        "engine": "reviews",
+        "consumers": [
+          "VCSM:chat",
+          "VCSM:dev",
+          "VCSM:profiles",
+          "VCSM:reviews"
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "consumers derived from AST dependency map"
+        ]
+      }
+    ]
+  }
+}

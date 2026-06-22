@@ -1,5 +1,5 @@
 import { supabase } from '@/services/supabase/supabaseClient'
-import { normalizeActorRow } from '@/features/explore/model/search.model'
+import { normalizeActorRow } from '@/features/explore/models/search.model'
 
 function mapFilter(filter) {
   if (filter === 'users' || filter === 'vports') return filter
@@ -15,13 +15,15 @@ async function searchActors(rawQuery, opts = {}) {
   const needle = (q.startsWith('@') || q.startsWith('#')) ? q.slice(1) : q
   if (!needle) return []
 
+  const safeFilter = viewerActorId ? mapFilter(filter) : 'public'
+
   const { data, error } = await supabase
     .schema('identity')
     .rpc('search_actor_directory', {
       p_viewer_domain: 'vc',
       p_viewer_actor_id: viewerActorId,
       p_query: needle,
-      p_filter: mapFilter(filter),
+      p_filter: safeFilter,
       p_limit: limit,
       p_offset: offset,
     })

@@ -1,0 +1,421 @@
+{
+  "metadata": {
+    "graph": "home-feed",
+    "title": "Bottom Navigation — Home Feed Runtime Chain",
+    "version": "1.0.0",
+    "generatedBy": "ARCHITECT",
+    "scope": "apps/VCSM",
+    "feature": "feed",
+    "entryPoint": "BottomNavBar",
+    "createdAt": "2026-05-11"
+  },
+  "nodes": [
+    {
+      "id": "bottom-nav",
+      "position": { "x": 530, "y": 0 },
+      "data": {
+        "nodeType": "route",
+        "label": "BottomNavBar",
+        "layer": "Route / Nav",
+        "filePath": "shared/components/BottomNavBar.jsx",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Platform UI",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": [],
+        "dependencies": ["central-feed-screen"],
+        "notes": "Always-mounted. CSS display:none hide — not unmounted. Bootstrap hydration runs continuously. Badge polling: notifications 60s, chat 30s. Profile tab isActive check uses /profile prefix — broken for /u/:slug routes.",
+        "meta": {
+          "mounting": "always-on",
+          "notifPoll": "60s",
+          "chatPoll": "30s"
+        }
+      }
+    },
+    {
+      "id": "central-feed-screen",
+      "position": { "x": 530, "y": 160 },
+      "data": {
+        "nodeType": "screen",
+        "label": "CentralFeedScreen",
+        "layer": "Screen",
+        "filePath": "features/feed/screens/CentralFeedScreen.jsx",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": ["use-central-feed"],
+        "notes": "Route entry + auth gate. Redirects to /login if no identity. Composes useCentralFeed, useCentralFeedActions, useFeedInfiniteScroll, useFeedConfirmToast.",
+        "meta": {
+          "lines": "246",
+          "authGate": "yes"
+        }
+      }
+    },
+    {
+      "id": "use-central-feed",
+      "position": { "x": 530, "y": 320 },
+      "data": {
+        "nodeType": "hook",
+        "label": "useCentralFeed",
+        "layer": "Hook",
+        "filePath": "features/feed/hooks/useCentralFeed.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI", "KRAVEN"],
+        "tablesTouched": [],
+        "dependencies": ["fetch-feed-page-pipeline"],
+        "notes": "React Query useInfiniteQuery. Upserts actorStore on each page. Calls hydrateActorsByIds. Preloads first 3 images. LOKI: verify stale cache behavior across actor switches. KRAVEN: check hydration overhead per page.",
+        "meta": {
+          "queryType": "useInfiniteQuery",
+          "staleTime": "30s",
+          "gcTime": "10min",
+          "refetchOnFocus": "off"
+        }
+      }
+    },
+    {
+      "id": "fetch-feed-page-pipeline",
+      "position": { "x": 530, "y": 480 },
+      "data": {
+        "nodeType": "controller",
+        "label": "fetchFeedPage.pipeline",
+        "layer": "Controller",
+        "filePath": "features/feed/pipeline/fetchFeedPage.pipeline.js",
+        "riskLevel": "high",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["SENTRY", "LOKI", "KRAVEN"],
+        "tablesTouched": ["vc.posts", "vc.actors", "vc.post_media", "vc.post_reactions"],
+        "dependencies": [
+          "dal-feed-posts",
+          "dal-actors-bundle",
+          "dal-post-media",
+          "dal-viewer-reactions",
+          "dal-reaction-counts"
+        ],
+        "notes": "1 serial read (vc.posts) then 9 parallel reads via Promise.all. 15s timeout. Max 2 pipeline calls per query. Shown: 5 of 9 parallel DALs. SENTRY: verify block/follow/hidden read access controls. KRAVEN: 9 parallel reads per page — profile at scale.",
+        "meta": {
+          "parallelReads": "9 total",
+          "timeout": "15s",
+          "maxCalls": "2",
+          "initialTarget": "3 visible"
+        }
+      }
+    },
+    {
+      "id": "dal-feed-posts",
+      "position": { "x": 50, "y": 640 },
+      "data": {
+        "nodeType": "dal",
+        "label": "feed.read.posts.dal",
+        "layer": "DAL",
+        "filePath": "features/feed/dal/feed.read.posts.dal.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": ["vc.posts"],
+        "dependencies": ["table-vc-posts"],
+        "notes": "Serial read — runs first before parallel reads. Cursor-based pagination. Explicit column selects only. RLS enforced on vc.posts.",
+        "meta": {
+          "execution": "serial (step 1)",
+          "pagination": "cursor"
+        }
+      }
+    },
+    {
+      "id": "dal-actors-bundle",
+      "position": { "x": 290, "y": 640 },
+      "data": {
+        "nodeType": "dal",
+        "label": "readActorsBundle.dal",
+        "layer": "DAL",
+        "filePath": "features/feed/dal/feed.read.actorsBundle.dal.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": ["LOKI"],
+        "tablesTouched": ["vc.actors"],
+        "dependencies": ["table-vc-actors"],
+        "notes": "30s TTL cache per actor. On cache miss: 3 sub-queries in parallel (actors + profiles + privacy + vport.profiles). LOKI: verify TTL cache behavior under actor switch — stale actor data risk.",
+        "meta": {
+          "execution": "parallel",
+          "cache": "30s TTL per actor",
+          "subQueries": "3 parallel on miss"
+        }
+      }
+    },
+    {
+      "id": "dal-post-media",
+      "position": { "x": 530, "y": 640 },
+      "data": {
+        "nodeType": "dal",
+        "label": "readPostMedia.dal",
+        "layer": "DAL",
+        "filePath": "features/feed/dal/feed.read.postMedia.dal.js",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "UNVERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": ["vc.post_media"],
+        "dependencies": ["table-vc-post-media"],
+        "notes": "Batch read of vc.post_media for all post IDs in page. Runs in parallel with other reads.",
+        "meta": {
+          "execution": "parallel",
+          "batchRead": "yes"
+        }
+      }
+    },
+    {
+      "id": "dal-viewer-reactions",
+      "position": { "x": 770, "y": 640 },
+      "data": {
+        "nodeType": "dal",
+        "label": "readViewerReactions.dal",
+        "layer": "DAL",
+        "filePath": "features/feed/dal/feed.read.reactions.dal.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["SENTRY", "KRAVEN"],
+        "tablesTouched": ["vc.post_reactions"],
+        "dependencies": ["table-vc-post-reactions"],
+        "notes": "Reads vc.post_reactions filtered to viewer actorId only. DUPLICATE READ: same table hit by readReactionCounts. SENTRY: confirm RLS scoping is actor-safe. KRAVEN: candidate for merge with reaction-counts.",
+        "meta": {
+          "execution": "parallel",
+          "duplicateRisk": "HIGH — same table as reaction-counts"
+        }
+      }
+    },
+    {
+      "id": "dal-reaction-counts",
+      "position": { "x": 1010, "y": 640 },
+      "data": {
+        "nodeType": "dal",
+        "label": "readReactionCounts.dal",
+        "layer": "DAL",
+        "filePath": "features/feed/dal/feed.read.reactionCounts.dal.js",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "Feed Feature",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["SENTRY", "KRAVEN"],
+        "tablesTouched": ["vc.post_reactions"],
+        "dependencies": ["table-vc-post-reactions"],
+        "notes": "Counts aggregate reactions per post. DUPLICATE READ: same vc.post_reactions as readViewerReactions. KRAVEN: candidate for merge into single query to halve table hits.",
+        "meta": {
+          "execution": "parallel",
+          "duplicateRisk": "HIGH — same table as viewer-reactions"
+        }
+      }
+    },
+    {
+      "id": "table-vc-posts",
+      "position": { "x": 50, "y": 820 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.posts",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "high",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vc schema",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Primary posts table. Scoped by realmId. RLS enforced. Most-read table in the feed pipeline.",
+        "meta": {
+          "schema": "vc",
+          "rls": "enforced",
+          "realmScoped": "yes"
+        }
+      }
+    },
+    {
+      "id": "table-vc-actors",
+      "position": { "x": 290, "y": 820 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.actors",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vc schema",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Actor directory. Joined for display names, kinds, slugs. Read via TTL-cached bundle DAL.",
+        "meta": {
+          "schema": "vc",
+          "rls": "enforced"
+        }
+      }
+    },
+    {
+      "id": "table-vc-post-media",
+      "position": { "x": 530, "y": 820 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.post_media",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "low",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vc schema",
+        "runtimeStatus": "VERIFIED",
+        "pendingReviews": [],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Media attachments for posts. Read in parallel with actor bundle.",
+        "meta": {
+          "schema": "vc",
+          "rls": "enforced"
+        }
+      }
+    },
+    {
+      "id": "table-vc-post-reactions",
+      "position": { "x": 790, "y": 820 },
+      "data": {
+        "nodeType": "table",
+        "label": "vc.post_reactions",
+        "layer": "Database",
+        "filePath": "supabase / vc schema",
+        "riskLevel": "medium",
+        "confidence": "STATICALLY_TRACED",
+        "ownership": "vc schema",
+        "runtimeStatus": "RISKY",
+        "pendingReviews": ["SENTRY"],
+        "tablesTouched": [],
+        "dependencies": [],
+        "notes": "Hit TWICE per feed page — viewer reactions DAL and reaction counts DAL both target this table in the same Promise.all. Two separate reads per page load.",
+        "meta": {
+          "schema": "vc",
+          "rls": "enforced",
+          "readCount": "2x per page load"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-nav-screen",
+      "source": "bottom-nav",
+      "target": "central-feed-screen",
+      "type": "smoothstep",
+      "animated": true,
+      "label": "nav",
+      "data": { "edgeType": "navigates_to" }
+    },
+    {
+      "id": "e-screen-hook",
+      "source": "central-feed-screen",
+      "target": "use-central-feed",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-hook-pipeline",
+      "source": "use-central-feed",
+      "target": "fetch-feed-page-pipeline",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-pipeline-posts",
+      "source": "fetch-feed-page-pipeline",
+      "target": "dal-feed-posts",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-pipeline-actors",
+      "source": "fetch-feed-page-pipeline",
+      "target": "dal-actors-bundle",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-pipeline-media",
+      "source": "fetch-feed-page-pipeline",
+      "target": "dal-post-media",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-pipeline-viewer-rx",
+      "source": "fetch-feed-page-pipeline",
+      "target": "dal-viewer-reactions",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-pipeline-rx-counts",
+      "source": "fetch-feed-page-pipeline",
+      "target": "dal-reaction-counts",
+      "type": "smoothstep",
+      "label": "calls",
+      "data": { "edgeType": "calls" }
+    },
+    {
+      "id": "e-dal-posts-table",
+      "source": "dal-feed-posts",
+      "target": "table-vc-posts",
+      "type": "smoothstep",
+      "label": "reads",
+      "data": { "edgeType": "reads" }
+    },
+    {
+      "id": "e-dal-actors-table",
+      "source": "dal-actors-bundle",
+      "target": "table-vc-actors",
+      "type": "smoothstep",
+      "label": "reads",
+      "data": { "edgeType": "reads" }
+    },
+    {
+      "id": "e-dal-media-table",
+      "source": "dal-post-media",
+      "target": "table-vc-post-media",
+      "type": "smoothstep",
+      "label": "reads",
+      "data": { "edgeType": "reads" }
+    },
+    {
+      "id": "e-dal-viewer-rx-table",
+      "source": "dal-viewer-reactions",
+      "target": "table-vc-post-reactions",
+      "type": "smoothstep",
+      "label": "reads",
+      "data": { "edgeType": "reads" }
+    },
+    {
+      "id": "e-dal-rx-counts-table",
+      "source": "dal-reaction-counts",
+      "target": "table-vc-post-reactions",
+      "type": "smoothstep",
+      "label": "reads",
+      "data": { "edgeType": "reads" }
+    }
+  ]
+}

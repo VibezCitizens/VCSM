@@ -1,0 +1,891 @@
+{
+  "version": 1,
+  "scannerVersion": "1.1.0",
+  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "root": "/Users/vcsm/Desktop/VCSM",
+  "scanDurationMs": 6492,
+  "confidence": "HIGH",
+  "rpcExecutionPathCount": 73,
+  "data": {
+    "version": 1,
+    "generatedAt": "2026-06-08T13:39:03.246Z",
+    "rpcExecutionPaths": [
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "block",
+        "rpc": "block_actor",
+        "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
+        "caller": "blockActor",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "block_actor",
+        "file": "apps/VCSM/src/features/settings/privacy/dal/blocks.dal.js",
+        "caller": "dalInsertBlock",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "social",
+        "rpc": "can_view_actor_signal",
+        "file": "apps/VCSM/src/features/social/privacy/dal/actorSignalVisibility.dal.js",
+        "caller": "dalCanViewActorSignal",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "count_unread_batch",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "countUnreadBatchDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "count_unread_for_actor",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "countUnreadForActorDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "rpc": "count_vport_subscribers",
+        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersCount.dal.js",
+        "caller": "dalCountVportSubscribers",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "create_actor_for_user",
+        "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+        "caller": "createUserActorViaLegacyRpc",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "rpc": "create_actor_for_user",
+        "file": "apps/VCSM/src/features/auth/onboarding/dal/actorCreate.dal.js",
+        "caller": "dalCreateUserActor",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "create_actor_for_user",
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "caller": "resolveOrCreateActor",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "create_event",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "insertNotificationEventDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "create_event",
+        "file": "engines/notifications/src/dal/events.write.dal.js",
+        "caller": "dalInsertEvent",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "rpc": "create_tenant_bootstrap",
+        "file": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "create_vport",
+        "file": "apps/VCSM/src/dev/diagnostics/groups/vports.group.js",
+        "caller": "runVportsGroup",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "create_vport",
+        "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureVportSeed.js",
+        "caller": "createVportViaRpc",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "rpc": "create_vport",
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "caller": "createVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "rpc": "ensure_org_member_account",
+        "file": "apps/wentrex/supabase/functions/create-org-member/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "rpc": "ensure_parent_account",
+        "file": "apps/wentrex/supabase/functions/create-parent/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "rpc": "generate_student_login_id",
+        "file": "apps/wentrex/supabase/functions/create-student/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "auth",
+        "rpc": "generate_username",
+        "file": "apps/VCSM/src/features/auth/onboarding/dal/onboarding.read.dal.js",
+        "caller": "generateUsernameDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "generate_username",
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "caller": "ensureProfile",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "social",
+        "rpc": "get_actor_social_public_policy",
+        "file": "apps/VCSM/src/features/social/privacy/dal/actorSocialPublicPolicy.dal.js",
+        "caller": "dalGetActorSocialPublicPolicy",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/hydration",
+        "feature": null,
+        "rpc": "get_actor_summaries",
+        "file": "engines/hydration/src/dal.js",
+        "caller": "getActorSummariesByIdsDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "rpc": "get_business_card_sections",
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/businessCardSections.read.dal.js",
+        "caller": "readBusinessCardSectionsDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "social",
+        "rpc": "get_follower_count",
+        "file": "apps/VCSM/src/features/social/friend/subscribe/dal/subscriberCount.dal.js",
+        "caller": "dalCountSubscribers",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "rpc": "get_friend_ranks",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friendRanks.reconcile.dal.js",
+        "caller": "reconcileFriendRanks",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "rpc": "get_friend_ranks",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friends.read.dal.js",
+        "caller": "readFriendRankRows",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "communication",
+        "rpc": "get_messageable_contacts",
+        "file": "apps/wentrex/src/features/communication/inbox/screens/InboxScreen.jsx",
+        "caller": "ContactPickerModal",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/chat",
+        "feature": null,
+        "rpc": "get_or_create_direct_conversation",
+        "file": "engines/chat/src/dal/getOrCreateDirectConversation.rpc.js",
+        "caller": "getOrCreateDirectConversationRPC",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/reviews",
+        "feature": null,
+        "rpc": "get_target_overall_stats",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+        "caller": "dalRpcGetTargetOverallStats",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "hard_delete_vport",
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "caller": "dalHardDeleteVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "rpc": "hard_delete_vport",
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "caller": "hardDeleteVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "insert_delivery_attempt",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "caller": "dalInsertDeliveryAttempt",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "insert_inbox_item",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "insertNotificationInboxItemDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "insert_inbox_item",
+        "file": "engines/notifications/src/dal/inbox.write.dal.js",
+        "caller": "dalInsertInboxItem",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "insert_recipients",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "insertNotificationRecipientsDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "insert_recipients",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js",
+        "caller": "dalInsertRecipients",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "moderation",
+        "rpc": "is_current_user_moderator",
+        "file": "apps/VCSM/src/features/moderation/dal/assertModerationAccess.dal.js",
+        "caller": "isModerationAuthorizedDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "rpc": "is_platform_owner",
+        "file": "apps/wentrex/src/learning/administration/dal/platformOwners/getPlatformOwnerByUserId.dal.js",
+        "caller": "getPlatformOwnerByUserIdDal",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": null,
+        "rpc": "is_platform_owner",
+        "file": "apps/wentrex/supabase/functions/create-tenant/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "rpc": "list_vport_subscribers",
+        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersList.dal.js",
+        "caller": "dalListVportSubscribers",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "post",
+        "rpc": "post_reactors_summary_one",
+        "file": "apps/VCSM/src/features/post/postcard/dal/postReactions.read.dal.js",
+        "caller": "fetchReactionSummaryDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "identity",
+        "rpc": "provision_vcsm_identity",
+        "file": "apps/VCSM/src/features/identity/dal/provision.rpc.dal.js",
+        "caller": "dalProvisionVcsmIdentity",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "identity",
+        "rpc": "provision_wentrex_identity",
+        "file": "apps/wentrex/src/features/identity/dal/provision.rpc.dal.js",
+        "caller": "dalProvisionWentrexIdentity",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "rpc": "read_business_card_public",
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCard.read.dal.js",
+        "caller": "readVportBusinessCardPublicBySlugDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "identity",
+        "rpc": "refresh_actor_directory_row",
+        "file": "apps/VCSM/src/features/identity/dal/refreshActorDirectory.dal.js",
+        "caller": "refreshActorDirectoryRow",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "wentrex",
+        "root": "apps/wentrex",
+        "feature": "identity",
+        "rpc": "refresh_actor_directory_row",
+        "file": "apps/wentrex/src/features/identity/dal/refreshActorDirectory.dal.js",
+        "caller": "refreshActorDirectoryRow",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "restore_vport",
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "caller": "dalRestoreVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "rpc": "restore_vport",
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "caller": "restoreVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "save_friend_ranks",
+        "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js",
+        "caller": "ensureFriendRankRow",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "save_friend_ranks",
+        "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "rpc": "save_friend_ranks",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friendRanks.reconcile.dal.js",
+        "caller": "reconcileFriendRanks",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "profiles",
+        "rpc": "save_friend_ranks",
+        "file": "apps/VCSM/src/features/profiles/kinds/citizen/dal/friends/friendRanks.write.dal.js",
+        "caller": "saveFriendRanks",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "actors",
+        "rpc": "search_actor_directory",
+        "file": "apps/VCSM/src/features/actors/dal/searchActors.dal.js",
+        "caller": "searchActorsDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "chat",
+        "rpc": "search_actor_directory",
+        "file": "apps/VCSM/src/features/chat/setup.js",
+        "caller": "searchActors",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "explore",
+        "rpc": "search_actor_directory",
+        "file": "apps/VCSM/src/features/explore/dal/search.dal.js",
+        "caller": "searchActors",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "upload",
+        "rpc": "search_actor_directory",
+        "file": "apps/VCSM/src/features/upload/dal/searchMentionSuggestions.dal.js",
+        "caller": "searchMentionSuggestions",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/chat",
+        "feature": null,
+        "rpc": "send_message_atomic",
+        "file": "engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
+        "caller": "sendMessageAtomicDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "set_business_card_publish_state",
+        "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
+        "caller": "setVportBusinessCardPublishStateDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "soft_delete_citizen_account",
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "caller": "dalSoftDeleteCitizenAccount",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "soft_delete_citizen_account",
+        "file": "apps/VCSM/supabase/functions/delete-citizen-account/index.ts",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "soft_delete_vport",
+        "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
+        "caller": "dalDeleteMyVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vport",
+        "rpc": "soft_delete_vport",
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "caller": "softDeleteVport",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "conversion",
+        "rpc": "submit_business_card_lead",
+        "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
+        "caller": "submitProviderLeadRow",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "public",
+        "rpc": "submit_business_card_lead",
+        "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCardLead.write.dal.js",
+        "caller": "createVportBusinessCardLeadDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "block",
+        "rpc": "unblock_actor",
+        "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
+        "caller": "unblockActor",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "settings",
+        "rpc": "unblock_actor",
+        "file": "apps/VCSM/src/features/settings/privacy/dal/blocks.dal.js",
+        "caller": "dalDeleteBlockByTarget",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "update_delivery_attempt",
+        "file": "engines/notifications/src/dal/deliveryAttempts.write.dal.js",
+        "caller": "dalUpdateDeliveryAttempt",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "update_recipient_status",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "updateNotificationRecipientStatusDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "update_recipient_status",
+        "file": "engines/notifications/src/dal/recipients.write.dal.js",
+        "caller": "dalUpdateRecipientStatus",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/reviews",
+        "feature": null,
+        "rpc": "upsert_neutral_review",
+        "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
+        "caller": "dalRpcUpsertNeutralReview",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "notifications",
+        "rpc": "upsert_rendered",
+        "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
+        "caller": "upsertNotificationRenderedDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": null,
+        "root": "engines/notifications",
+        "feature": null,
+        "rpc": "upsert_rendered",
+        "file": "engines/notifications/src/dal/rendered.write.dal.js",
+        "caller": "dalUpsertRendered",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "rpc": "vc_get_or_create_one_to_one",
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "caller": "opDmMessage",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      }
+    ]
+  }
+}

@@ -11,7 +11,7 @@ import InboxList from '@/features/chat/inbox/components/InboxList'
 import InboxEmptyState from '@/features/chat/inbox/components/InboxEmptyState'
 import { shouldShowInboxEntry } from '@/features/chat/inbox/model/vexSettings.model'
 import Spinner from '@/shared/components/Spinner'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 function isRequestEntry(entry) {

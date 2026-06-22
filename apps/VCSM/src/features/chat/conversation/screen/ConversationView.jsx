@@ -34,7 +34,7 @@ import { useBlockStatus } from '@/features/block/adapters/hooks/useBlockStatus.a
 import { chatNavDbg } from '@/features/chat/debug/chatNavDebugger'
 
 import Toast from '@/shared/components/components/Toast'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 
 const DEV = import.meta.env?.DEV
 
@@ -97,7 +97,7 @@ export default function ConversationView({ conversationId }) {
     useConversationMessages({ conversationId, actorId })
   const { notifyTyping } = useTypingChannel({ conversationId, actorId })
 
-  const reportFlow = useReportFlow({ reporterActorId: actorId })
+  const reportFlow = useReportFlow()
   const inboxActions = useInboxActions({ actorId })
   const { entry: inboxEntry } = useInboxEntryForConversation({ actorId, conversationId })
   const isArchived = inboxEntry?.folder === 'archived' || inboxEntry?.archived === true

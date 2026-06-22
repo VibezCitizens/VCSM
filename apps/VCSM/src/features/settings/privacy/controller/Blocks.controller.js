@@ -51,10 +51,11 @@ export async function ctrlListMyBlocks({ actorId, scope }) {
 // ============================================================
 // SEARCH ACTORS (SSOT — REUSED FROM EXPLORE)
 // ============================================================
-export async function ctrlSearchActors({ query }) {
+export async function ctrlSearchActors({ query, viewerActorId = null }) {
   return searchActorsAdapter({
     query,
     limit: 12,
+    viewerActorId,
   })
 }
 

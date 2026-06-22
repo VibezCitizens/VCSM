@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineOwnershipMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "engineOwnershipCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "engineOwnershipCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["engines"],
+      "properties": {
+        "engines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["engine", "path", "hasClaude", "ownership", "responsibility", "allowedConsumers", "boundaryRules", "confidence"],
+            "properties": {
+              "engine": { "type": "string" },
+              "path": { "type": "string" },
+              "hasClaude": { "type": "boolean" },
+              "ownership": { "type": ["string", "null"] },
+              "responsibility": { "type": ["string", "null"] },
+              "allowedConsumers": { "type": "array", "items": { "type": "string" } },
+              "boundaryRules": { "type": "array", "items": { "type": "string" } },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

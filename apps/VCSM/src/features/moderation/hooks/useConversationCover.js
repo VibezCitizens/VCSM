@@ -8,8 +8,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { getConversationCoverStatus } from '../controllers/getConversationCoverStatus.controller'
 import { undoConversationCover } from '../controllers/undoConversationCover.controller'
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 
-export default function useConversationCover({ actorId, conversationId }) {
+// actorId prop is accepted for API compat but overridden by session identity —
+// prevents a caller from operating on a different actor's conversations.
+export default function useConversationCover({ actorId: _actorId, conversationId }) {
+  const { actorId } = useIdentity() ?? {}
   const [conversationCovered, setConversationCovered] = useState(false)
 
   // ✅ HYDRATE: if user previously hid this conversation, show cover after refresh
@@ -25,7 +29,7 @@ export default function useConversationCover({ actorId, conversationId }) {
         setConversationCovered(!!covered)
       } catch (e) {
         if (!alive) return
-        console.warn('[useConversationCover] hydrate threw:', e)
+        if (import.meta.env.DEV) console.warn('[useConversationCover] hydrate threw:', e)
       }
     })()
 
@@ -40,12 +44,12 @@ export default function useConversationCover({ actorId, conversationId }) {
     try {
       const res = await undoConversationCover({ actorId, conversationId })
       if (!res?.ok) {
-        console.warn('[useConversationCover] undo failed')
+        if (import.meta.env.DEV) console.warn('[useConversationCover] undo failed')
         return
       }
       setConversationCovered(false)
     } catch (e) {
-      console.warn('[useConversationCover] undo threw:', e)
+      if (import.meta.env.DEV) console.warn('[useConversationCover] undo threw:', e)
     }
   }, [actorId, conversationId])
 

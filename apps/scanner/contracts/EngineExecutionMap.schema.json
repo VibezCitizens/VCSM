@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineExecutionMap",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "engineExecutionPathCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "engineExecutionPathCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["engineExecutionPaths"],
+      "properties": {
+        "engineExecutionPaths": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["engine", "confidence", "evidence"],
+            "properties": {
+              "feature": { "type": ["string", "null"] },
+              "engine": { "type": "string" },
+              "imports": { "type": "array" },
+              "calls": { "type": "array" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+              "evidence": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

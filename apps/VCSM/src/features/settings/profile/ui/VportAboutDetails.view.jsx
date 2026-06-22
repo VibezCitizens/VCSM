@@ -8,7 +8,7 @@ import {
   sanitizeCountryInput,
   US_STATE_LETTERS,
   US_ZIP_DIGITS,
-} from "@/features/settings/profile/ui/vportAboutDetails.model";
+} from "@/features/settings/profile/model/vportAboutDetails.model";
 import { Field, PhoneField, ChipsField } from "@/features/settings/profile/ui/vportAboutDetailsFields";
 
 export default function VportAboutDetailsView({

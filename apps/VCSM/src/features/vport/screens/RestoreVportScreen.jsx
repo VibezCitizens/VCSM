@@ -1,16 +1,19 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useIdentity, useActiveActorState } from '@/features/identity/adapters/identity.adapter'
+import { useActorSummary } from '@/state/actors/useActorSummary'
 import { useRestoreVport } from '@/features/vport/hooks/useRestoreVport'
 
 export default function RestoreVportScreen() {
   const navigate = useNavigate()
   const { identity, switchActor, blockedVport } = useIdentity()
+  const { isDeleted, isVoid } = useActiveActorState()
+  const { displayName } = useActorSummary(identity?.actorId)
   const { vportId, busy, err, restore } = useRestoreVport(identity?.actorId)
 
   useEffect(() => {
     if (!blockedVport && identity) {
-      navigate('/feed', { replace: true })
+      navigate('/CentralFeed', { replace: true })
     }
   }, [blockedVport, identity, navigate])
 
@@ -18,18 +21,16 @@ export default function RestoreVportScreen() {
     try {
       await restore()
       await switchActor(identity.actorId, 'RestoreVportScreen.handleRestore')
-      navigate('/feed', { replace: true })
+      navigate('/CentralFeed', { replace: true })
     } catch {} // err already set by hook
   }
 
   async function handleSwitchToProfile() {
     navigate('/settings?tab=account', { replace: true })
   }
-
-  const displayName = identity?.displayName ?? 'This VPORT'
-  const reason = identity?.isDeleted
+  const reason = isDeleted
     ? 'This VPORT has been soft-deleted and is no longer publicly visible.'
-    : identity?.isVoid
+    : isVoid
     ? 'This VPORT has been voided.'
     : 'This VPORT is currently inactive.'
 
@@ -47,7 +48,7 @@ export default function RestoreVportScreen() {
         )}
 
         <div className="space-y-3">
-          {identity?.isDeleted && vportId && (
+          {isDeleted && vportId && (
             <button
               onClick={handleRestore}
               disabled={busy}

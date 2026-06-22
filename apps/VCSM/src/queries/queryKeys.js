@@ -7,6 +7,8 @@ export const queryKeys = {
   vportProfileBySlug: (slug) => ['vport', 'profile-by-slug', slug],
   vportProfile: (actorId) => ['vport', 'profile', actorId],
   vportPublicDetails: (actorId) => ['vport', 'public-details', actorId],
+  // Separate key for the public menu RPC path — different controller, different data shape.
+  vportMenuDetails: (actorId) => ['vport', 'menu-details', actorId],
   resources: (actorId) => ['vport', 'resources', actorId],
   availability: (actorId) => ['vport', 'availability', actorId],
   bookings: (actorId, range) => ['vport', 'bookings', actorId, range],

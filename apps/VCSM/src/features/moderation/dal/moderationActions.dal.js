@@ -172,7 +172,8 @@ export async function dalDeleteConversationHideAction({
     .schema("moderation")
     .from("actions")
     .delete()
-    .eq("id", latest.id);
+    .eq("id", latest.id)
+    .eq("actor_id", actorId);
 
   if (error) throw error;
   return { ok: true };

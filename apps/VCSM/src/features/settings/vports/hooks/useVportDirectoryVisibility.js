@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import {
   ctrlGetVportDirectoryState,
   ctrlSetVportDirectoryVisible,

@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-05T00:00:00Z",
+  "scope": "VCSM:explore",
+  "scannerVersion": "1.1.0",
+  "securitySurface": {
+    "writeSurfaces": [],
+    "rpcs": [
+      {
+        "name": "search_actor_directory",
+        "schema": "identity",
+        "file": "apps/VCSM/src/features/explore/dal/search.dal.js",
+        "caller": "searchActors",
+        "params": ["p_viewer_domain", "p_viewer_actor_id", "p_query", "p_filter", "p_limit", "p_offset"],
+        "userControlledParams": ["p_query", "p_filter", "p_viewer_actor_id"],
+        "nullActorIdAllowed": true,
+        "ownershipCheck": "ABSENT — delegated to RPC server-side policy",
+        "authGateAtScreen": "ABSENT",
+        "risk": "HIGH — no auth gate; null viewerActorId accepted; private actor suppression is server-side only"
+      }
+    ],
+    "edgeFunctions": [],
+    "securityPaths": [
+      {
+        "route": "/explore",
+        "access": "public",
+        "writes": [],
+        "rpcs": ["identity.search_actor_directory"],
+        "directReads": ["vc.posts"],
+        "authRequired": false,
+        "notes": "Scanner marks access:public; barrel declares public:false — conflict"
+      }
+    ],
+    "directTableReads": [
+      {
+        "table": "posts",
+        "schema": "vc",
+        "file": "apps/VCSM/src/features/explore/dal/search.dal.js",
+        "functions": ["searchPosts", "searchPostsByTag"],
+        "userControlledParams": ["text ilike pattern (rawQuery)", "tags array contains (normalizedTag)"],
+        "rlsVerified": false,
+        "schemaQualified": false,
+        "filtersApplied": ["deleted_at IS NULL", "is_hidden IS NULL OR is_hidden = false"],
+        "risk": "HIGH — direct table SELECT; RLS policy coverage unverified; user query injected into ilike pattern"
+      }
+    ],
+    "navigationRisks": [
+      {
+        "component": "PostCard",
+        "file": "apps/VCSM/src/features/explore/ui/PostCard.jsx",
+        "navigateTo": "/posts/${post.id}",
+        "paramType": "UUID (raw DB primary key)",
+        "platformRuleViolation": "no-raw-IDs-in-public-URLs",
+        "risk": "HIGH"
+      },
+      {
+        "component": "ActorSearchResultRow",
+        "file": "apps/VCSM/src/features/explore/ui/ActorSearchResultRow.jsx",
+        "navigateTo": "/profile/${actor.username ?? actor.actor_id}",
+        "paramType": "username (preferred) or UUID fallback",
+        "platformRuleViolation": "no-raw-IDs-in-public-URLs",
+        "risk": "HIGH — UUID fallback when username is null, which is possible from identity RPC response"
+      }
+    ],
+    "executionPaths": {
+      "write": [],
+      "rpc": [
+        {
+          "rpc": "identity.search_actor_directory",
+          "sourceRoute": "/explore",
+          "controller": "ctrlSearchResults or ctrlSearchTabs",
+          "dal": "searchActors in dal/search.dal.js",
+          "userInputFlowsToRpc": true,
+          "inputValidation": "PARTIAL — query trimmed, @ and # prefixes stripped; filter validated against enum; no further sanitization"
+        }
+      ],
+      "edge": []
+    }
+  },
+  "provenance": {
+    "sourceMaps": ["write-surface-map", "rpc-map", "edge-function-map", "security-path-map", "route-execution-map", "write-execution-map", "rpc-execution-map", "edge-execution-map"],
+    "validationSummary": {
+      "surfacesRead": 5,
+      "surfacesValidated": 5,
+      "lowConfidenceCount": 0
+    }
+  },
+  "evidenceBundlePath": "ZZnotforproduction/APPS/VCSM/features/explore/outputs/2026/06/05/ARCHITECT/evidence-bundle.json",
+  "downstreamFreshnessWindow": "3 days"
+}

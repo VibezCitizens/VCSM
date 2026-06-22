@@ -1,5 +1,5 @@
 import { Check, Copy, ExternalLink, QrCode as QrIcon, X } from 'lucide-react'
-import { QrCode } from '@/features/dashboard/qrcode/adapters/qrcode.adapter'
+import { QrCode } from '@/features/qrcode/adapters/qrcode.adapter'
 import { buildBusinessCardQrUrl } from '@/shared/lib/qrUrlBuilders'
 
 export function VportsQrModal({ target, onClose, qrCopied, setQrCopied }) {
@@ -7,7 +7,7 @@ export function VportsQrModal({ target, onClose, qrCopied, setQrCopied }) {
   const cardUrl = buildBusinessCardQrUrl(target?.slug ?? '')
 
   function handleCopyLink() {
-    if (!target?.slug) return
+    if (!cardUrl) return
     navigator.clipboard?.writeText(cardUrl).then(() => {
       setQrCopied(true)
       setTimeout(() => setQrCopied(false), 2000)
@@ -85,7 +85,10 @@ export function VportsQrModal({ target, onClose, qrCopied, setQrCopied }) {
             </button>
 
             <button
-              onClick={() => window.open(cardUrl, '_blank')}
+              onClick={() => {
+                if (cardUrl) window.open(cardUrl, '_blank')
+              }}
+              disabled={!cardUrl}
               aria-label="Open business card in new tab"
               className="settings-btn settings-btn--ghost inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs"
             >

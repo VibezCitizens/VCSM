@@ -1,4 +1,5 @@
 // src/features/profiles/screens/views/tabs/photos/dal/listPostReactions.dal.js
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { supabase } from "@/services/supabase/supabaseClient";
 
 /**

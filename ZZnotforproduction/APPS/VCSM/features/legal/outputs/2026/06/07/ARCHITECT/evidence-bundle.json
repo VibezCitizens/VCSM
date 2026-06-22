@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-07T14:00:00.000Z",
+  "scope": "VCSM:legal",
+  "feature": "legal",
+  "module": null,
+  "commandVersion": "ARCHITECT V2",
+  "scannerVersion": "1.1.0",
+  "architecture": {
+    "sourceFilesRead": [
+      { "path": "apps/VCSM/src/features/legal/dal/userConsents.write.dal.js", "layer": "dal", "linesRead": "1-50" },
+      { "path": "apps/VCSM/src/features/legal/controllers/legalConsent.controller.js", "layer": "controller", "linesRead": "1-207" },
+      { "path": "apps/VCSM/src/features/legal/hooks/useLegalConsent.js", "layer": "hook", "linesRead": "1-93" },
+      { "path": "apps/VCSM/src/features/legal/adapters/legal.adapter.js", "layer": "adapter", "linesRead": "1-N" }
+    ],
+    "routes": [
+      { "path": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx", "access": "public", "ownerFile": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx" }
+    ],
+    "screens": [
+      { "name": "AboutScreen", "file": "apps/VCSM/src/features/legal/screens/AboutScreen.jsx", "route": "unknown" },
+      { "name": "ConsentGateScreen", "file": "apps/VCSM/src/features/legal/screens/ConsentGateScreen.jsx", "route": "unknown" },
+      { "name": "ContactScreen", "file": "apps/VCSM/src/features/legal/screens/ContactScreen.jsx", "route": "unknown" },
+      { "name": "HowToCreateProfileScreen", "file": "apps/VCSM/src/features/legal/screens/HowToCreateProfileScreen.jsx", "route": "unknown" },
+      { "name": "HowToCreateVportScreen", "file": "apps/VCSM/src/features/legal/screens/HowToCreateVportScreen.jsx", "route": "public" },
+      { "name": "LegalDocumentScreen", "file": "apps/VCSM/src/features/legal/screens/LegalDocumentScreen.jsx", "route": "unknown" },
+      { "name": "VportCategoryLandingScreen", "file": "apps/VCSM/src/features/legal/screens/VportCategoryLandingScreen.jsx", "route": "unknown" }
+    ],
+    "hooks": [
+      { "name": "useLegalConsent", "file": "apps/VCSM/src/features/legal/hooks/useLegalConsent.js", "consumedBy": "ConsentGateScreen" },
+      { "name": "useLegalDocument", "file": "apps/VCSM/src/features/legal/hooks/useLegalDocument.js", "consumedBy": "LegalDocumentScreen" },
+      { "name": "useSignupConsent", "file": "apps/VCSM/src/features/legal/hooks/useSignupConsent.js", "consumedBy": "signup flow" }
+    ],
+    "controllers": [
+      { "name": "legalConsent.controller", "file": "apps/VCSM/src/features/legal/controllers/legalConsent.controller.js", "calledBy": "useLegalConsent, useSignupConsent", "calls": "dalRecordLegalAcceptance, dalGetActiveLegalDocuments, dalGetUserConsents", "authCheck": "PARTIAL — userId from useAuth(), no DB-level INSERT RLS" },
+      { "name": "legalDocument.controller", "file": "apps/VCSM/src/features/legal/controllers/legalDocument.controller.js", "calledBy": "useLegalDocument", "calls": "dalGetActiveLegalDocuments", "authCheck": "ABSENT — read-only" }
+    ],
+    "dals": [
+      { "name": "dalRecordLegalAcceptance", "file": "apps/VCSM/src/features/legal/dal/userConsents.write.dal.js", "operation": "INSERT", "table": "user_consents", "schema": "platform" },
+      { "name": "dalGetUserConsents", "file": "apps/VCSM/src/features/legal/dal/userConsents.read.dal.js", "operation": "READ", "table": "user_consents", "schema": "platform" },
+      { "name": "dalGetActiveLegalDocuments", "file": "apps/VCSM/src/features/legal/dal/legalDocuments.read.dal.js", "operation": "READ", "table": "legal_documents", "schema": "platform" },
+      { "name": "getPublicIp", "file": "apps/VCSM/src/features/legal/dal/getPublicIp.dal.js", "operation": "READ", "table": "external-api", "schema": "external" }
+    ],
+    "models": [],
+    "services": [],
+    "adapters": [
+      { "name": "legal.adapter", "file": "apps/VCSM/src/features/legal/adapters/legal.adapter.js", "exposedSurface": "hooks and screens only" }
+    ]
+  },
+  "imports": [],
+  "dependencies": {
+    "featureDependencies": ["identity"],
+    "engineDependencies": [],
+    "sharedDependencies": ["shared/lib/ttlCache"]
+  },
+  "engineUsage": [],
+  "databaseReads": [
+    { "dal": "apps/VCSM/src/features/legal/dal/userConsents.read.dal.js", "function": "dalGetUserConsents", "table": "user_consents", "schema": "platform", "caller": "legalConsent.controller" },
+    { "dal": "apps/VCSM/src/features/legal/dal/legalDocuments.read.dal.js", "function": "dalGetActiveLegalDocuments", "table": "legal_documents", "schema": "platform", "caller": "legalConsent.controller" }
+  ],
+  "databaseWrites": [
+    { "dal": "apps/VCSM/src/features/legal/dal/userConsents.write.dal.js", "function": "dalRecordLegalAcceptance", "operation": "INSERT", "table": "user_consents", "schema": "platform", "caller": "legalConsent.controller", "ownershipCheck": "PARTIAL — userId from auth session; RLS OFF on table" }
+  ],
+  "rpcs": [],
+  "edgeFunctions": [],
+  "behaviorIds": [],
+  "securitySensitiveSurfaces": [
+    { "surface": "dalRecordLegalAcceptance", "file": "apps/VCSM/src/features/legal/dal/userConsents.write.dal.js", "risk": "INSERT platform.user_consents — userId is caller-provided; DB RLS is OFF — no DB-level prevention of recording consent for another user_id", "priority": "HIGH" }
+  ],
+  "callChains": [
+    {
+      "id": "CHAIN-legal-001",
+      "path": "useLegalConsent → acceptAll() → acceptRequiredConsents → recordLegalAcceptance → dalRecordLegalAcceptance → INSERT platform.user_consents",
+      "userControlledParams": "userId (from useAuth().user.id — session-bound)",
+      "ownershipChecked": "YES (session-bound at hook layer)",
+      "confidence": "HIGH"
+    }
+  ],
+  "provenance": {
+    "sourceMaps": ["feature-map", "callgraph", "write-surface-map", "rpc-map", "security-path-map", "db-policy-map"],
+    "sourceFilesValidated": 4,
+    "confidence": "HIGH"
+  }
+}

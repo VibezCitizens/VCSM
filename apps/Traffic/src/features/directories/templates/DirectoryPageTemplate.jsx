@@ -1,14 +1,16 @@
 import { DirectoryBreadcrumbs } from "@/features/directories/components/DirectoryBreadcrumbs";
 import { InternalLinkGrid } from "@/features/directories/components/InternalLinkGrid";
 import { ProviderListItem } from "@/features/directories/components/ProviderListItem";
-import { DirectoryCtaModules } from "@/features/conversion/components/CtaModules";
+import { DirectoryCtaModules } from "@/features/conversion/adapters/conversion.adapter";
 import { DirectoryFilterRow } from "@/features/directories/components/DirectoryFilterRow";
 import { DirectoryTitleClient } from "@/features/directories/components/DirectoryTitleClient";
 import { DirectoryHeroClient } from "@/features/directories/components/DirectoryHeroClient";
 import { DirectoryResultsClient, DirectoryEmptyStateClient } from "@/features/directories/components/DirectoryResultsClient";
 import { getRelatedGuideLinksForContext } from "@/features/directories/lib/relatedGuides";
-import { getServiceBySlug } from "@/data/repositories/service.repo";
-import { getCountryBySlug } from "@/data/repositories/geo.repo";
+import {
+  getServiceBySlug,
+  getCountryBySlug
+} from "@/features/directories/dal/directory.read.dal";
 import {
   listLiveProviderCountries,
   listLiveProviderLocationOptions

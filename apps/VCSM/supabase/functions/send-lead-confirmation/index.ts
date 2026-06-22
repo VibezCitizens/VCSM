@@ -10,18 +10,36 @@ const VIBEZ_HOME_URL = "https://vibezcitizens.com";
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+// Base allowed origin is always the VCSM app. Additional origins (external
+// business sites that embed lead forms) are set via the ALLOWED_ORIGINS env var
+// as a comma-separated list, e.g. "https://tripointlockandkeys.com,https://example.com".
+const BASE_ORIGIN = "https://vibezcitizens.com";
+
+function getAllowedOrigins(): Set<string> {
+  const extra = Deno.env.get("ALLOWED_ORIGINS") ?? "";
+  const origins = extra.split(",").map(s => s.trim()).filter(Boolean);
+  return new Set([BASE_ORIGIN, ...origins]);
+}
+
+function corsHeaders(requestOrigin: string | null): Record<string, string> {
+  const allowed = getAllowedOrigins();
+  const origin = (requestOrigin && allowed.has(requestOrigin))
+    ? requestOrigin
+    : BASE_ORIGIN;
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": "authorization, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function json(body: unknown, status = 200): Response {
+function json(body: unknown, status = 200, origin: string | null = null): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
   });
 }
 
@@ -323,19 +341,21 @@ async function sendLeadConfirmationEmail({
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 serve(async (req: Request) => {
+  const origin = req.headers.get("Origin");
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders(origin) });
   }
 
   if (req.method !== "POST") {
-    return json({ ok: false, code: "METHOD_NOT_ALLOWED" }, 405);
+    return json({ ok: false, code: "METHOD_NOT_ALLOWED" }, 405, origin);
   }
 
   // Require a Bearer token (anon key or service key from frontend/server callers).
   // This is not user-auth — lead forms are anonymous — but prevents uncredentialed requests.
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return json({ ok: false, code: "UNAUTHORIZED" }, 401);
+    return json({ ok: false, code: "UNAUTHORIZED" }, 401, origin);
   }
 
   const awsAccessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
@@ -344,7 +364,7 @@ serve(async (req: Request) => {
   const sesFromEmail = Deno.env.get("SES_FROM_EMAIL");
 
   if (!awsAccessKeyId || !awsSecretAccessKey || !awsRegion || !sesFromEmail) {
-    return json({ ok: false, code: "MISSING_ENV" }, 500);
+    return json({ ok: false, code: "MISSING_ENV" }, 500, origin);
   }
 
   let body: {
@@ -362,12 +382,12 @@ serve(async (req: Request) => {
   try {
     body = await req.json();
   } catch {
-    return json({ ok: false, code: "INVALID_INPUT" }, 400);
+    return json({ ok: false, code: "INVALID_INPUT" }, 400, origin);
   }
 
   const toEmail = normalizeEmail(body.email);
   if (!toEmail) {
-    return json({ ok: false, code: "INVALID_EMAIL" }, 400);
+    return json({ ok: false, code: "INVALID_EMAIL" }, 400, origin);
   }
 
   const displayName = normalizeDisplayName(body.firstName, body.name);
@@ -396,8 +416,8 @@ serve(async (req: Request) => {
   } catch (sesError) {
     const errMsg = sesError instanceof Error ? sesError.message : String(sesError);
     console.error("[send-lead-confirmation] SES error:", errMsg);
-    return json({ ok: false, code: "EMAIL_SEND_FAILED" }, 200);
+    return json({ ok: false, code: "EMAIL_SEND_FAILED" }, 200, origin);
   }
 
-  return json({ ok: true }, 200);
+  return json({ ok: true }, 200, origin);
 });

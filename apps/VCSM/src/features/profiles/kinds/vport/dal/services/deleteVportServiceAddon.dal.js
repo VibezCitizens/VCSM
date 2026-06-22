@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/dal/services/deleteVportServiceAddon.dal.js
 
 import vportSchema from "@/services/supabase/vportClient";
-import { resolveVportProfileId } from "@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal";
+import { resolveVportProfileId } from "@/shared/lib/vport/resolveVportProfileId";
 
 export async function deleteVportServiceAddonDal({ actorId, addonId } = {}) {
   if (!actorId) throw new Error("deleteVportServiceAddonDal: actorId required");

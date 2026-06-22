@@ -1,5 +1,5 @@
 import vport from '@/services/supabase/vportClient'
-import { resolveVportProfileId } from '@/features/profiles/kinds/vport/dal/services/resolveVportProfileId.dal'
+import { resolveVportProfileId } from '@/shared/lib/vport/resolveVportProfileId'
 
 const MEDIA_SELECT = 'id,profile_id,item_id,url,kind,sort_order,is_active,media_asset_id,created_at,updated_at'
 

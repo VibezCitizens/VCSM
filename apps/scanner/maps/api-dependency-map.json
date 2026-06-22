@@ -1,0 +1,818 @@
+{
+  "generatedAt": "SCANNER-API-DISCOVERY-001",
+  "schema": "1.0.0",
+  "controllerDependencies": {
+    "searchActors": {
+      "feature": "actors",
+      "file": "apps/VCSM/src/features/actors/controllers/searchActors.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["searchActors.dal"]
+    },
+    "resolveAuthCallbackController": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/authCallback.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["authCallback.dal", "authSession.read.dal"]
+    },
+    "readCurrentAuthUser": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/authOps.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["onboarding.dal"]
+    },
+    "hydrateAuthSession": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/authSession.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["authSession.read.dal"]
+    },
+    "evaluateCompleteProfileGateController": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/completeProfileGate.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": ["profileOnboarding.controller"],
+      "importsDal": ["onboarding.dal"]
+    },
+    "createUserActorForProfile": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/createUserActor.controller.js",
+      "rpcs": ["create_actor_for_user"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["actorCreate.dal", "actorOwnerCreate.dal", "actorGetByProfile.dal"]
+    },
+    "signInWithPassword_getAuthUser_signOut": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/login.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["login.dal"]
+    },
+    "getOnboardingBootstrapController_completeOnboardingController_bootstrapJoinOnboardingController": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/onboarding.controller.js",
+      "rpcs": ["generate_username"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": ["initiation.adapter"],
+      "importsControllers": ["createUserActor.controller"],
+      "importsDal": ["authSession.read.dal", "onboarding.dal"]
+    },
+    "ensureProfileDiscoverable": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/profile.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["authSession.read.dal", "profile.dal"]
+    },
+    "ensureProfileShell": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/profileOnboarding.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["profileOnboarding.dal"]
+    },
+    "ctrlRegisterAccount_ctrlRecordSignupConsent": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/register.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": ["wandersSupabaseClient.adapter"],
+      "importsControllers": [],
+      "importsDal": ["register.dal"]
+    },
+    "resendVerificationEmailController": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/resendVerification.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["emailVerification.dal"]
+    },
+    "ctrlSendResetPasswordEmail": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/sendResetPassword.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["resetPassword.dal"]
+    },
+    "resolveRecoverySessionController_watchPasswordRecoveryController_updatePasswordController_clearRecoveryFlag": {
+      "feature": "auth",
+      "file": "apps/VCSM/src/features/auth/controllers/setNewPassword.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": ["auth-register-recovery", "auth-reset-password-secure"],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["authSession.read.dal", "resetPasswordSecure.dal"]
+    },
+    "blockActorController_unblockActorController_toggleBlockActorController": {
+      "feature": "block",
+      "file": "apps/VCSM/src/features/block/controllers/blockActor.controller.js",
+      "rpcs": ["block_actor", "unblock_actor"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["block.dal", "block.check.dal"]
+    },
+    "ctrlGetBlockStatus": {
+      "feature": "block",
+      "file": "apps/VCSM/src/features/block/controllers/getBlockStatus.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["block.check.dal"]
+    },
+    "ctrlGetBlockedActorSet": {
+      "feature": "block",
+      "file": "apps/VCSM/src/features/block/controllers/getBlockedActorSet.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["block.read.dal"]
+    },
+    "assertActorOwnsVportActorController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/assertActorOwnsVportActor.controller.js",
+      "rpcs": [],
+      "tables": ["actor_owners"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["getActorById.dal", "readActorOwnerLinkByActorAndUserProfile.dal"]
+    },
+    "assertSessionOwnsVportActorController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/assertSessionOwnsVportActor.controller.js",
+      "rpcs": [],
+      "tables": ["actor_owners"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["getActorById.dal", "readOwnerLinkByActorAndSession.dal"]
+    },
+    "cancelBookingController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/cancelBooking.controller.js",
+      "rpcs": [],
+      "tables": ["bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter"],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["getBookingById.dal", "getBookingResourceById.dal", "updateBookingStatus.dal", "getVportSlugByActorId.dal"]
+    },
+    "confirmBookingController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/confirmBooking.controller.js",
+      "rpcs": [],
+      "tables": ["bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter"],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["getBookingById.dal", "getBookingResourceById.dal", "updateBookingStatus.dal", "getVportSlugByActorId.dal"]
+    },
+    "createBookingController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/createBooking.controller.js",
+      "rpcs": [],
+      "tables": ["bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter"],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["getBookingResourceById.dal", "getActorById.dal", "insertBooking.dal", "listBookingResourceServicesByResourceId.dal"]
+    },
+    "ensureOwnerBookingResourceController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/ensureOwnerBookingResource.controller.js",
+      "rpcs": [],
+      "tables": ["resources"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["insertBookingResource.dal", "listBookingResourcesByOwnerActorId.dal"]
+    },
+    "getResourceAvailabilityController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/getResourceAvailability.controller.js",
+      "rpcs": [],
+      "tables": ["availability_rules", "availability_exceptions", "bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["getBookingResourceById.dal", "listAvailabilityRulesByResourceId.dal", "listAvailabilityExceptionsInRange.dal", "listBookingsInRange.dal", "listBookingResourceServicesByResourceId.dal", "listBookingServiceProfilesByServiceIds.dal"]
+    },
+    "listMyBookingsController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/listMyBookings.controller.js",
+      "rpcs": [],
+      "tables": ["bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["listBookingsByCustomer.dal"]
+    },
+    "setAvailabilityExceptionController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/setAvailabilityException.controller.js",
+      "rpcs": [],
+      "tables": ["availability_exceptions"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["getBookingResourceById.dal", "upsertAvailabilityException.dal"]
+    },
+    "setAvailabilityRuleController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/setAvailabilityRule.controller.js",
+      "rpcs": [],
+      "tables": ["availability_rules"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["getBookingResourceById.dal", "upsertAvailabilityRule.dal"]
+    },
+    "setResourceSlotDurationController": {
+      "feature": "booking",
+      "file": "apps/VCSM/src/features/booking/controller/setResourceSlotDuration.controller.js",
+      "rpcs": [],
+      "tables": ["resource_services", "service_booking_profiles"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": ["assertActorOwnsVportActor.controller"],
+      "importsDal": ["getBookingResourceById.dal", "listBookingResourceServicesByResourceId.dal", "readVportServicesByActor.dal", "saveBookingServiceProfileDurationsByServiceIds.dal", "upsertBookingResourceServices.dal"]
+    },
+    "recordChatAttachmentController": {
+      "feature": "chat",
+      "file": "apps/VCSM/src/features/chat/conversation/controller/recordChatAttachment.controller.js",
+      "rpcs": [],
+      "tables": ["message_attachments"],
+      "edgeFunctions": [],
+      "importsAdapters": ["media.adapter", "mediaAppId.adapter"],
+      "importsControllers": [],
+      "importsDal": ["updateAttachmentMediaAsset.write.dal"]
+    },
+    "getChatInboxUnreadBadgeCount": {
+      "feature": "chat",
+      "file": "apps/VCSM/src/features/chat/inbox/controller/chatUnread.controller.js",
+      "rpcs": [],
+      "tables": ["inbox_entries"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["inboxUnread.read.dal"]
+    },
+    "ctrlSearchResults": {
+      "feature": "explore",
+      "file": "apps/VCSM/src/features/explore/controller/searchResults.controller.js",
+      "rpcs": ["search_actor_directory"],
+      "tables": ["posts"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["search.dal"]
+    },
+    "ctrlSearchTabs": {
+      "feature": "explore",
+      "file": "apps/VCSM/src/features/explore/controller/searchTabs.controller.js",
+      "rpcs": ["search_actor_directory"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["search.dal"]
+    },
+    "ctrlGetWelcomeCardVisible_ctrlMarkWelcomeCardSeen": {
+      "feature": "feed",
+      "file": "apps/VCSM/src/features/feed/controllers/feedWelcomeCard.controller.js",
+      "rpcs": [],
+      "tables": ["actor_onboarding_steps"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["feedWelcomeCard.dal"]
+    },
+    "ensureVcsmPlatformBootstrap": {
+      "feature": "identity",
+      "file": "apps/VCSM/src/features/identity/controller/ensureVcsmPlatformBootstrap.controller.js",
+      "rpcs": ["provision_vcsm_identity"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["provision.rpc.dal"]
+    },
+    "refreshVcActorDirectory_refreshActorDirectoryRow": {
+      "feature": "identity",
+      "file": "apps/VCSM/src/features/identity/controller/refreshActorDirectory.controller.js",
+      "rpcs": ["refresh_actor_directory_row"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["refreshActorDirectory.dal"]
+    },
+    "acceptCitizenInviteAttribution": {
+      "feature": "initiation",
+      "file": "apps/VCSM/src/features/initiation/controller/inviteAttribution.controller.js",
+      "rpcs": [],
+      "tables": ["vibe_invites"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["vibeInvites.dal"]
+    },
+    "ctrlSendCitizenInvite": {
+      "feature": "invite",
+      "file": "apps/VCSM/src/features/invite/controller/invite.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": ["send-citizen-invite"],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["invite.dal"]
+    },
+    "getActiveLegalDocuments_getUserConsentStatus_recordLegalAcceptance": {
+      "feature": "legal",
+      "file": "apps/VCSM/src/features/legal/controllers/legalConsent.controller.js",
+      "rpcs": [],
+      "tables": ["user_consents"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["legalDocuments.read.dal", "userConsents.read.dal", "userConsents.write.dal"]
+    },
+    "createMediaAssetController": {
+      "feature": "media",
+      "file": "apps/VCSM/src/features/media/controller/createMediaAsset.controller.js",
+      "rpcs": [],
+      "tables": ["media_assets", "apps"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["mediaAssets.write.dal", "resolveAppId.read.dal"]
+    },
+    "softDeleteMediaAssetController": {
+      "feature": "media",
+      "file": "apps/VCSM/src/features/media/controller/softDeleteMediaAsset.controller.js",
+      "rpcs": [],
+      "tables": ["media_assets"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["mediaAssets.softDelete.dal"]
+    },
+    "assertModerationAccessController": {
+      "feature": "moderation",
+      "file": "apps/VCSM/src/features/moderation/controllers/assertModerationAccess.controller.js",
+      "rpcs": ["is_current_user_moderator"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["assertModerationAccess.dal"]
+    },
+    "createReportController": {
+      "feature": "moderation",
+      "file": "apps/VCSM/src/features/moderation/controllers/report.controller.js",
+      "rpcs": [],
+      "tables": ["reports", "report_events", "actions"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["reports.dal"]
+    },
+    "getNotifications": {
+      "feature": "notifications",
+      "file": "apps/VCSM/src/features/notifications/inbox/controller/Notifications.controller.js",
+      "rpcs": [],
+      "tables": ["inbox_items", "recipients"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": []
+    },
+    "getUnreadNotificationCount": {
+      "feature": "notifications",
+      "file": "apps/VCSM/src/features/notifications/inbox/controller/notificationsCount.controller.js",
+      "rpcs": [],
+      "tables": ["inbox_items"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": []
+    },
+    "toggleCommentLike": {
+      "feature": "post",
+      "file": "apps/VCSM/src/features/post/commentcard/controller/commentReactions.controller.js",
+      "rpcs": [],
+      "tables": ["comment_likes", "post_comments"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter"],
+      "importsControllers": [],
+      "importsDal": ["commentLikes.dal", "comments.dal"]
+    },
+    "softDeletePostController": {
+      "feature": "post",
+      "file": "apps/VCSM/src/features/post/postcard/controller/deletePost.controller.js",
+      "rpcs": [],
+      "tables": ["posts"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["post.write.dal"]
+    },
+    "getPostReactionsController": {
+      "feature": "post",
+      "file": "apps/VCSM/src/features/post/postcard/controller/getPostReactions.controller.js",
+      "rpcs": ["post_reactors_summary_one"],
+      "tables": ["post_reactions"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["postReactions.read.dal"]
+    },
+    "togglePostReactionController": {
+      "feature": "post",
+      "file": "apps/VCSM/src/features/post/postcard/controller/togglePostReaction.controller.js",
+      "rpcs": [],
+      "tables": ["post_reactions"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter"],
+      "importsControllers": [],
+      "importsDal": ["postReactions.read.dal", "postReactions.write.dal", "post.read.dal"]
+    },
+    "buildActorCanonicalSlugController": {
+      "feature": "profiles",
+      "file": "apps/VCSM/src/features/profiles/controller/buildActorCanonicalSlug.controller.js",
+      "rpcs": [],
+      "tables": ["public_actor_seo_v", "profile_categories", "profile_public_details", "resources", "availability_rules", "public_vport_reviews_v", "public_vport_review_summary_v"],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["readActorSeoData.dal"]
+    },
+    "saveTopFriendRanksController": {
+      "feature": "profiles",
+      "file": "apps/VCSM/src/features/profiles/controller/friends/saveTopFriendRanks.controller.js",
+      "rpcs": ["save_friend_ranks"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["friendRanks.write.dal"]
+    },
+    "getSubscribersController": {
+      "feature": "profiles",
+      "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/subscribers/getSubscribers.controller.js",
+      "rpcs": ["count_vport_subscribers", "list_vport_subscribers", "can_view_actor_signal"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": ["actorSignalVisibility.adapter"],
+      "importsControllers": [],
+      "importsDal": ["subscribersCount.dal", "subscribersList.dal"]
+    },
+    "getVportBusinessCardPublicController_submitVportBusinessCardLeadController_getVportBusinessCardSectionsController": {
+      "feature": "public",
+      "file": "apps/VCSM/src/features/public/vportBusinessCard/controller/vportBusinessCard.controller.js",
+      "rpcs": ["read_business_card_public", "submit_business_card_lead", "get_business_card_sections"],
+      "tables": [],
+      "edgeFunctions": ["send-lead-confirmation"],
+      "importsAdapters": ["notifications.adapter"],
+      "importsControllers": [],
+      "importsDal": ["vportBusinessCard.read.dal", "vportBusinessCardLead.write.dal", "sendLeadConfirmationEmail.edge.dal", "businessCardSections.read.dal"]
+    },
+    "ctrlResolveVportIdByActorId_ctrlDeleteAccount_ctrlSoftDeleteVport_ctrlHardDeleteVport_ctrlRestoreVport": {
+      "feature": "settings",
+      "file": "apps/VCSM/src/features/settings/account/controller/account.controller.js",
+      "rpcs": ["soft_delete_citizen_account", "soft_delete_vport", "hard_delete_vport", "restore_vport"],
+      "tables": [],
+      "edgeFunctions": ["delete-citizen-account"],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController)"],
+      "importsControllers": [],
+      "importsDal": ["actors.read.dal", "account.read.dal", "account.write.dal"]
+    },
+    "ctrlListMyBlocks_ctrlSearchActors_ctrlBlockActor_ctrlUnblockActor": {
+      "feature": "settings",
+      "file": "apps/VCSM/src/features/settings/privacy/controller/Blocks.controller.js",
+      "rpcs": ["block_actor", "unblock_actor"],
+      "tables": ["blocks"],
+      "edgeFunctions": [],
+      "importsAdapters": ["actors.adapter (searchActorsAdapter)"],
+      "importsControllers": [],
+      "importsDal": ["blocks.dal"]
+    },
+    "ctrlSetVportBusinessCardPublishState": {
+      "feature": "settings",
+      "file": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCard.controller.js",
+      "rpcs": ["set_business_card_publish_state"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController)"],
+      "importsControllers": [],
+      "importsDal": ["vports.write.dal"]
+    },
+    "ctrlGetVportSocialSettings_ctrlUpdateVportSocialSettings": {
+      "feature": "settings",
+      "file": "apps/VCSM/src/features/settings/vports/controller/vportSocialSettings.controller.js",
+      "rpcs": ["get_actor_social_public_policy"],
+      "tables": ["actor_social_settings"],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController)"],
+      "importsControllers": [],
+      "importsDal": ["actorSocialSettings.dal", "actorSocialPublicPolicy.dal"]
+    },
+    "ctrlSendFollowRequest_ctrlAcceptFollowRequest_ctrlDeclineFollowRequest_ctrlCancelFollowRequest": {
+      "feature": "social",
+      "file": "apps/VCSM/src/features/social/friend/request/controllers/followRequests.controller.js",
+      "rpcs": [],
+      "tables": ["social_follow_requests", "actor_follows"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter", "feedCache.adapter", "block (ctrlGetBlockStatus)"],
+      "importsControllers": [],
+      "importsDal": ["followRequests.dal", "actorFollows.dal"]
+    },
+    "ctrlSubscribe": {
+      "feature": "social",
+      "file": "apps/VCSM/src/features/social/friend/subscribe/controllers/follow.controller.js",
+      "rpcs": [],
+      "tables": ["actor_follows"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter", "feedCache.adapter", "block (ctrlGetBlockStatus)"],
+      "importsControllers": ["getFollowRelationshipState.controller", "followRequests.controller"],
+      "importsDal": ["actorFollows.dal", "subscriberCount.dal"]
+    },
+    "ctrlGetFollowerCount": {
+      "feature": "social",
+      "file": "apps/VCSM/src/features/social/friend/subscribe/controllers/getFollowerCount.controller.js",
+      "rpcs": ["get_follower_count"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["subscriberCount.dal"]
+    },
+    "createPostController": {
+      "feature": "upload",
+      "file": "apps/VCSM/src/features/upload/controllers/createPost.controller.js",
+      "rpcs": [],
+      "tables": ["posts", "post_media", "post_mentions"],
+      "edgeFunctions": [],
+      "importsAdapters": ["notifications.adapter", "block (ctrlGetBlockedActorSet)"],
+      "importsControllers": [],
+      "importsDal": ["insertPost.dal", "insertPostMedia.dal", "findActorsByHandles.dal", "insertPostMentions.dal"]
+    },
+    "submitCreateVportController": {
+      "feature": "vport",
+      "file": "apps/VCSM/src/features/vport/controller/submitCreateVport.controller.js",
+      "rpcs": ["create_vport"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": ["media.adapter", "mediaAppId.adapter", "vportTypes.config.adapter"],
+      "importsControllers": [],
+      "importsDal": ["vport.core.dal", "vport.read.vportRecords.dal", "vport.write.profileMedia.dal"]
+    },
+    "vportCoreOps_createVport_restoreVport": {
+      "feature": "vport",
+      "file": "apps/VCSM/src/features/vport/controller/vportCoreOps.controller.js",
+      "rpcs": ["create_vport", "soft_delete_vport", "hard_delete_vport", "restore_vport"],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["vport.core.dal"]
+    },
+    "checkVportOwnershipController": {
+      "feature": "vportDashboard",
+      "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController, getActorByIdDAL)"],
+      "importsControllers": [],
+      "importsDal": []
+    },
+    "createOwnerBookingController": {
+      "feature": "vportDashboard",
+      "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/createOwnerBooking.controller.js",
+      "rpcs": [],
+      "tables": ["bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController)"],
+      "importsControllers": [],
+      "importsDal": ["vportResource.read.dal", "vportProfile.read.dal", "insertVportBooking.write.dal"]
+    },
+    "updateBookingStatusController_rescheduleBookingController": {
+      "feature": "vportDashboard",
+      "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
+      "rpcs": [],
+      "tables": ["bookings"],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController)", "notifications.adapter"],
+      "importsControllers": [],
+      "importsDal": ["updateVportBooking.write.dal", "vportBookingById.read.dal", "vportProfile.read.dal", "vportBookingsInRange.read.dal"]
+    },
+    "listVportLeadsController_markVportLeadContactedController_countNewVportLeadsController_deleteVportLeadController": {
+      "feature": "vportDashboard",
+      "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller.js",
+      "rpcs": [],
+      "tables": ["business_card_leads"],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController, assertSessionOwnsVportActorController)"],
+      "importsControllers": [],
+      "importsDal": ["vportProfile.read.dal", "vportLeads.read.dal", "vportLeads.write.dal"]
+    },
+    "getTeamMembersController_addTeamMemberController_sendTeamRequestController_removeTeamMemberController": {
+      "feature": "vportDashboard",
+      "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+      "rpcs": [],
+      "tables": ["resources"],
+      "edgeFunctions": [],
+      "importsAdapters": ["booking.adapter (assertActorOwnsVportActorController)", "notifications.adapter"],
+      "importsControllers": [],
+      "importsDal": ["vportProfile.read.dal", "vportTeam.write.dal", "vportTeam.read.dal", "vportTeamInvite.read.dal"]
+    },
+    "upsertWandersCardKey_readWandersCardKey": {
+      "feature": "wanders",
+      "file": "apps/VCSM/src/features/wanders/controllers/wandersCardKeys.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": ["wandersCardKeys.dal"]
+    },
+    "createWandersCard": {
+      "feature": "wanders",
+      "file": "apps/VCSM/src/features/wanders/core/controllers/createWandersCard.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": ["ensureGuestUser.controller"],
+      "importsDal": ["cards.write.dal", "mailbox.write.dal"]
+    },
+    "ensureGuestUser": {
+      "feature": "wanders",
+      "file": "apps/VCSM/src/features/wanders/core/controllers/ensureGuestUser.controller.js",
+      "rpcs": [],
+      "tables": [],
+      "edgeFunctions": [],
+      "importsAdapters": [],
+      "importsControllers": [],
+      "importsDal": []
+    }
+  },
+  "crossFeatureGraph": {
+    "ads": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/ads/screens/VportAdsSettingsScreen.jsx"] }
+      ]
+    },
+    "auth": {
+      "imports": [
+        { "target": "initiation", "via": "adapter", "files": ["features/auth/controllers/onboarding.controller.js", "features/auth/controllers/__tests__/onboarding.controller.test.js"] },
+        { "target": "wanders", "via": "adapter", "files": ["features/auth/controllers/register.controller.js"] },
+        { "target": "identity", "via": "adapter", "files": ["features/auth/hooks/useAuthOnboarding.js"] },
+        { "target": "legal", "via": "adapter", "files": ["features/auth/hooks/useRegister.js"] }
+      ]
+    },
+    "block": {
+      "imports": [
+        { "target": "feed", "via": "adapter", "files": ["features/block/hooks/useBlockActions.js"] },
+        { "target": "identity", "via": "adapter", "files": ["features/block/hooks/useBlockActions.js"] }
+      ]
+    },
+    "booking": {
+      "imports": [
+        { "target": "notifications", "via": "adapter", "files": ["features/booking/controllers/bookingCancellation.controller.js", "features/booking/controllers/bookingCheckout.controller.js", "features/booking/controllers/bookingReschedule.controller.js", "features/booking/controllers/bookingStatusUpdate.controller.js"] },
+        { "target": "identity", "via": "adapter", "files": ["features/booking/adapters/booking.adapter.js", "features/booking/adapters/bookingAvailability.adapter.js"] },
+        { "target": "vport-exchange", "via": "adapter", "files": ["features/booking/controllers/bookingStatusUpdate.controller.js"] }
+      ]
+    },
+    "chat": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/chat/adapters/chatEnrichment.adapter.js", "features/chat/adapters/chatSearch.adapter.js", "features/chat/components/ChatSearchResult.jsx", "features/chat/components/MessageItem.jsx", "features/chat/hooks/useChatConversation.js", "features/chat/hooks/useChatMessages.js", "features/chat/hooks/useChatRoom.js", "features/chat/screens/ChatScreen.jsx"] },
+        { "target": "notifications", "via": "adapter", "files": ["features/chat/hooks/useChatMessages.js", "features/chat/screens/ChatScreen.jsx"] }
+      ]
+    },
+    "explore": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/explore/adapters/explore.adapter.js", "features/explore/hooks/useExploreSearch.js", "features/explore/screens/ExploreScreen.jsx"] }
+      ]
+    },
+    "feed": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/feed/adapters/feed.adapter.js", "features/feed/components/FeedCard.jsx", "features/feed/hooks/useFeedActions.js", "features/feed/hooks/useFeedReactions.js", "features/feed/screens/FeedScreen.jsx"] },
+        { "target": "profiles", "via": "adapter", "files": ["features/feed/components/FeedCard.jsx"] },
+        { "target": "notifications", "via": "adapter", "files": ["features/feed/hooks/useFeedActions.js", "features/feed/screens/FeedScreen.jsx"] }
+      ]
+    },
+    "identity": {
+      "imports": [
+        { "target": "actors", "via": "adapter", "files": ["features/identity/adapters/identity.adapter.js", "features/identity/hooks/useIdentityBoot.js"] },
+        { "target": "profiles", "via": "adapter", "files": ["features/identity/adapters/identity.adapter.js"] }
+      ]
+    },
+    "initiation": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/initiation/adapters/initiation.adapter.js", "features/initiation/controllers/inviteAttribution.controller.js", "features/initiation/screens/InitiationOnboardingScreen.jsx"] },
+        { "target": "notifications", "via": "adapter", "files": ["features/initiation/controllers/inviteAttribution.controller.js"] }
+      ]
+    },
+    "join": {
+      "imports": [
+        { "target": "legal", "via": "adapter", "files": ["features/join/controllers/joinBarbershopAccount.controller.js"] },
+        { "target": "booking", "via": "adapter", "files": ["features/join/controllers/joinBarbershopAccount.controller.js", "features/join/controllers/joinBarbershopQr.controller.js"] }
+      ]
+    },
+    "notifications": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/notifications/adapters/notifications.adapter.js", "features/notifications/hooks/useNotificationActions.js", "features/notifications/screens/NotificationsScreen.jsx"] }
+      ]
+    },
+    "portfolio": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/portfolio/adapters/portfolio.adapter.js", "features/portfolio/hooks/usePortfolioActions.js", "features/portfolio/screens/PortfolioScreen.jsx"] }
+      ]
+    },
+    "profiles": {
+      "imports": [
+        { "target": "actors", "via": "adapter", "files": ["features/profiles/adapters/profiles.adapter.js"] },
+        { "target": "booking", "via": "adapter", "files": ["features/profiles/adapters/profiles.adapter.js", "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations.js", "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js", "features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.js", "features/profiles/kinds/vport/screens/booking/view/BookingStepConfirm.jsx", "features/profiles/kinds/vport/screens/booking/view/VportBookingView.jsx"] },
+        { "target": "booking", "via": "DIRECT_IMPORT", "files": ["features/profiles/kinds/vport/screens/booking/hooks/useAgendaCalendarValues.js", "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingMutations.js", "features/profiles/kinds/vport/screens/booking/hooks/useVportBookingView.js", "features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.js", "features/profiles/kinds/vport/screens/booking/view/BookingStepConfirm.jsx", "features/profiles/kinds/vport/screens/booking/view/VportBookingView.jsx"] },
+        { "target": "identity", "via": "adapter", "files": ["features/profiles/adapters/profiles.adapter.js", "features/profiles/components/ProfileAvatar.jsx", "features/profiles/components/ProfileCard.jsx", "features/profiles/hooks/useProfileActions.js", "features/profiles/hooks/useProfileData.js", "features/profiles/screens/ProfileScreen.jsx"] }
+      ]
+    },
+    "reviews": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/reviews/adapters/reviews.adapter.js", "features/reviews/hooks/useReviewActions.js", "features/reviews/screens/ReviewsScreen.jsx"] },
+        { "target": "notifications", "via": "adapter", "files": ["features/reviews/hooks/useReviewActions.js"] }
+      ]
+    },
+    "settings": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/settings/account/hooks/useAccountSettings.js", "features/settings/account/screens/AccountSettingsScreen.jsx", "features/settings/notifications/hooks/useNotificationSettings.js", "features/settings/privacy/hooks/usePrivacySettings.js", "features/settings/privacy/screens/PrivacySettingsScreen.jsx", "features/settings/profile/hooks/useProfileSettings.js", "features/settings/profile/screens/ProfileSettingsScreen.jsx", "features/settings/vports/hooks/useVportSettings.js", "features/settings/vports/screens/VportSettingsScreen.jsx"] },
+        { "target": "social", "via": "DAL_BYPASS", "files": ["features/settings/vports/controller/vportSocialSettings.controller.js"] },
+        { "target": "social", "via": "adapter", "files": ["features/settings/privacy/hooks/usePrivacySettings.js"] },
+        { "target": "notifications", "via": "adapter", "files": ["features/settings/notifications/hooks/useNotificationSettings.js"] }
+      ]
+    },
+    "social": {
+      "imports": [
+        { "target": "identity", "via": "adapter", "files": ["features/social/adapters/social.adapter.js", "features/social/hooks/useSocialActions.js", "features/social/screens/SocialScreen.jsx"] }
+      ]
+    },
+    "upload": {
+      "imports": [
+        { "target": "notifications", "via": "adapter", "files": ["features/upload/controllers/createPost.controller.js"] },
+        { "target": "block", "via": "adapter", "files": ["features/upload/controllers/createPost.controller.js"] }
+      ]
+    },
+    "wanders": {
+      "imports": [
+        { "target": "public", "via": "CONTROLLER_BYPASS", "files": ["features/wanders/core/hooks/useWandersBusinessCardOps.js"] }
+      ]
+    }
+  }
+}

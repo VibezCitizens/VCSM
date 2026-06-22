@@ -2,7 +2,7 @@
 
 import { useTrafficLanguage } from "@/lib/language";
 import ProviderReviewList from "@/features/providers/components/ProviderReviewList";
-import { ReviewTrustSummary } from "@/features/reviews/components/ReviewTrustSummary";
+import { ReviewTrustSummary } from "@/features/reviews/adapters/reviews.adapter";
 
 export function ProviderTrustSection({ reviewSummary, visibleReviews, hasVisibleReviews, hasVisibleReviewSignals }) {
   const { t } = useTrafficLanguage();

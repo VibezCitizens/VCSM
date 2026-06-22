@@ -8,7 +8,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useBootstrapStore } from './bootstrap.store'
 import { queryKeys } from '@/queries/queryKeys'
-import { getUnreadNotificationCount } from '@/features/notifications/adapters/notifications.adapter'
+import { getNotificationUnreadCount } from '@/features/notifications/adapters/notifications.adapter'
 import { useChatUnreadOps } from '@/features/chat/adapters/chat.adapter'
 
 const NOTIFICATION_POLL_MS = 60_000
@@ -19,7 +19,7 @@ export function useNotificationUnread() {
   const actorId = useBootstrapStore((s) => s.hydratedForActorId)
   const { data } = useQuery({
     queryKey: queryKeys.notificationUnread(actorId),
-    queryFn: () => getUnreadNotificationCount(actorId),
+    queryFn: () => getNotificationUnreadCount(actorId),
     enabled: !!actorId,
     staleTime: NOTIFICATION_POLL_MS,
     refetchInterval: NOTIFICATION_POLL_MS,

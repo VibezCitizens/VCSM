@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
-import { useBookingServices } from "@/features/booking/adapters/booking.adapter";
-import { mapAvailabilityRule, useVportBookingOps } from "@/features/dashboard/vport/adapters/vport.adapter";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import {
+  useBookingServices,
   buildOccupiedIntervalsByDate,
   buildSlotsByDate,
-} from "@/features/booking/model/bookingCalendarAvailability.model";
-import {
   endOfMonth,
   groupSlotsBySegment,
   shiftMonth,
   startOfMonth,
   toDateKey,
-} from "@/features/booking/model/bookingCalendarDate.model";
-import { buildBookingPayload } from "@/features/booking/model/buildBookingPayload.model";
+  buildBookingPayload,
+} from "@/features/booking/adapters/booking.adapter";
+import { mapAvailabilityRule, useVportBookingOps } from "@/features/vportDashboard/adapters/vportDashboard.adapter";
 import { canAdvanceBookingStep } from "@/features/profiles/kinds/vport/screens/booking/hooks/useVportPublicBooking.helpers";
 
 const FALLBACK_DURATION = 30;

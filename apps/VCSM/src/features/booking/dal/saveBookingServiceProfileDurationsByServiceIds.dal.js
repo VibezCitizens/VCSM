@@ -35,7 +35,7 @@ export async function saveBookingServiceProfileDurationsByServiceIdsDAL({
 
   const normalizedDuration = normalizeDurationMinutes(durationMinutes, 30);
 
-  const { data: existingRows, error: existingError } = await supabase
+  const { data: existingRows, error: existingError } = await vportClient
     .schema("vc")
     .from("service_booking_profiles")
     .select("service_id")
@@ -50,7 +50,7 @@ export async function saveBookingServiceProfileDurationsByServiceIdsDAL({
 
   let updatedRows = [];
   if (existingIds.length > 0) {
-    const { data, error } = await supabase
+    const { data, error } = await vportClient
       .schema("vc")
       .from("service_booking_profiles")
       .update({
@@ -75,7 +75,7 @@ export async function saveBookingServiceProfileDurationsByServiceIdsDAL({
       is_bookable: true,
     }));
 
-    const { data, error } = await supabase
+    const { data, error } = await vportClient
       .schema("vc")
       .from("service_booking_profiles")
       .insert(rows)

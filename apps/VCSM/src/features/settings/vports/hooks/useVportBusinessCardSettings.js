@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useIdentity } from "@/state/identity/identityContext";
+import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import {
   ctrlGetVportBusinessCardSettings,
   ctrlSetVportBusinessCardSettings,
@@ -7,7 +7,7 @@ import {
 import {
   getBusinessCardSettings,
   deepMergeSettings,
-} from "@/features/public/vportBusinessCard/model/businessCardSettings.model";
+} from "@/shared/lib/businessCard/businessCardSettings.model";
 
 /**
  * Loads and manages business_card_settings for a vport.
@@ -19,7 +19,7 @@ import {
  *
  * VPD-V-FIX-004: Removed dependency on useWandersBusinessCardOps. Pure model
  * helpers (getBusinessCardSettings, deepMergeSettings) are now imported directly
- * from their source: public/vportBusinessCard/model/businessCardSettings.model.
+ * from their source: shared/lib/businessCard/businessCardSettings.model.
  *
  * VPD-V-FIX-001: callerActorId is read from identity and forwarded to the
  * controller so ctrlSetVportBusinessCardSettings can enforce actor_owners parity.

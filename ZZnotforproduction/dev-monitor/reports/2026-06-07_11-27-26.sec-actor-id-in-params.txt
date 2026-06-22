@@ -1,0 +1,18 @@
+# Dev Monitor Report
+Command : sec: actorId / actor_id in route params (IDOR surface)
+ID      : sec:actor-id-in-params
+Exit    : 0
+Date    : 2026-06-07T11:27:26.558Z
+
+apps/VCSM/src/features/settings/profile/controller/recordProfileMediaAsset.controller.js:19: * @param {string} params.actorId      — vc.actors.id (canonical identity only)
+apps/VCSM/src/features/identity/dal/provision.rpc.dal.js:26: * @param {string} params.actorId - vc.actors.id
+apps/VCSM/src/features/identity/controllers/ensureVcsmPlatformBootstrap.controller.js:28: * @param {string} params.actorId - vc.actors.id
+apps/VCSM/src/features/chat/conversation/permissions/isActorBlocked.js:19: * @param {string} params.actorId          // current actor
+apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/controller/settingsCoordinator.controller.js:19: * @param {string}   params.actorId                    - Target VPORT actorId
+apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/hooks/useSaveVportSettings.js:23: * @param {string}  params.actorId          - The VPORT's actorId
+apps/VCSM/src/features/vportDashboard/dashboard/cards/portfolio/controller/addPortfolioMediaWithRecord.controller.js:15: * @param {string} params.actorId
+apps/VCSM/src/features/profiles/kinds/vport/dal/services/readVportServiceAddonsByActor.dal.js:13: * @param {string} params.actorId
+apps/VCSM/src/features/profiles/kinds/vport/dal/services/upsertVportServicesByActor.dal.js:15: * @param {string} params.actorId
+apps/VCSM/src/features/profiles/kinds/vport/dal/services/readVportTypeByActorId.dal.js:13: * @param {string} params.actorId
+apps/VCSM/src/features/notifications/publish.js:34: * @param {string} [params.actorId] — who triggered the event (source actor)
+apps/VCSM/src/features/upload/controllers/recordPostMedia.controller.js:21: * @param {string}   params.actorId

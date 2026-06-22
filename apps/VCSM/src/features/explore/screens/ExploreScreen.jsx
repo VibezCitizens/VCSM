@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { useTranslation } from '@i18n'
 import SearchScreen from '../ui/SearchScreen.view'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 import '@/features/explore/styles/explore-modern.css'
 
 export default function ExploreScreen() {

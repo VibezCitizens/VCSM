@@ -4,7 +4,7 @@ import { ChevronLeft } from 'lucide-react'
 
 import useMessagePrivacySettings from '@/features/chat/inbox/hooks/useMessagePrivacySettings'
 import { useTranslation } from '@i18n'
-import '@/features/ui/modern/module-modern.css'
+import '@/shared/styles/modern/module-modern.css'
 import '@/features/chat/styles/chat-modern.css'
 
 function RadioRow({ title, subtitle, selected, onClick }) {

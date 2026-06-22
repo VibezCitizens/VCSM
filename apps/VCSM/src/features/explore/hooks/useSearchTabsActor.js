@@ -1,7 +1,7 @@
 // src/features/explore/hooks/useSearchTabsActor.js
 
 import { useEffect, useRef, useState } from 'react'
-import { ctrlSearchTabs } from '@/features/explore/controller/searchTabs.controller'
+import { ctrlSearchTabs } from '@/features/explore/controllers/searchTabs.controller'
 
 // ============================================================
 // useSearchTabsActor

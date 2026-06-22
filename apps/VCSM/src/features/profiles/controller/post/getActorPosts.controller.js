@@ -1,3 +1,4 @@
+// [SHARED_ACTOR_PRIMITIVE] — serves both citizen and vport actor kinds
 import { fetchPostsForActorDAL } from "@/features/profiles/dal/post/fetchPostsForActor.dal";
 import { buildCanonicalProfilePostModel as PostModel } from "@/features/profiles/model/postCanonical.model";
 import { hydrateActorsFromRows } from "@/state/actors/hydrateActors";
@@ -9,7 +10,7 @@ function makeActorRoute({ kind, username, actorId, vportId }) {
   if (kind === "user" && username) return `/u/${username}`;
   if (kind === "vport" && vportId) return `/vport/${vportId}`;
   if (actorId) return `/profile/${actorId}`;
-  return "/feed";
+  return "/CentralFeed";
 }
 
 function buildAuthorActorEntryFromStore(actorId) {

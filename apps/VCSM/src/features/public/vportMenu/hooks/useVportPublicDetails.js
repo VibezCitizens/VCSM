@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/queries/queryKeys";
 import getVportPublicDetailsController from "@/features/public/vportMenu/controller/getVportPublicDetails.controller";
 
 const EMPTY = Object.freeze({
@@ -9,34 +10,25 @@ const EMPTY = Object.freeze({
 });
 
 export function useVportPublicDetails({ actorId } = {}) {
-  const [result, setResult] = useState(EMPTY);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
 
-  const refresh = useCallback(async () => {
-    if (!actorId) return;
-    setLoading(true);
-    setError(null);
+  const query = useQuery({
+    queryKey: queryKeys.vportMenuDetails(actorId),
+    queryFn: () => getVportPublicDetailsController({ actorId }),
+    enabled: !!actorId,
+    staleTime: 60_000,
+    gcTime: 300_000,
+  });
 
-    try {
-      const next = await getVportPublicDetailsController({ actorId });
-      setResult(next || EMPTY);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [actorId]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  const result = query.data ?? EMPTY;
+  const refresh = () =>
+    queryClient.invalidateQueries({ queryKey: queryKeys.vportMenuDetails(actorId) });
 
   return {
     result,
     details: result?.details ?? null,
-    loading,
-    error,
+    loading: query.isLoading,
+    error: query.error ?? null,
     refresh,
     rpcErrorCode: result?.ok === false ? result?.error ?? "unavailable" : null,
   };

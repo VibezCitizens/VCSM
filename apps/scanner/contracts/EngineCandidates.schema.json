@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineCandidates",
+  "type": "object",
+  "required": ["version", "scannerVersion", "generatedAt", "root", "scanDurationMs", "confidence", "engineCandidateCount", "data"],
+  "properties": {
+    "version": { "const": 1 },
+    "scannerVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "root": { "type": "string" },
+    "scanDurationMs": { "type": "number" },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+    "engineCandidateCount": { "type": "number" },
+    "data": {
+      "type": "object",
+      "required": ["engineCandidates"],
+      "properties": {
+        "engineCandidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["engine", "domain", "confidence", "evidence", "consumers", "controllers", "dals", "writeSurfaces", "riskTier"],
+            "properties": {
+              "engine": { "type": "string" },
+              "domain": { "type": "string" },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW", "BLOCKED"] },
+              "evidence": { "type": "array", "items": { "type": "string" } },
+              "consumers": { "type": "array", "items": { "type": "string" } },
+              "controllers": { "type": "array", "items": { "type": "string" } },
+              "dals": { "type": "array", "items": { "type": "string" } },
+              "writeSurfaces": { "type": "array" },
+              "riskTier": { "enum": ["low", "medium", "high"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}
