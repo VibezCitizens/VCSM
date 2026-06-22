@@ -7,12 +7,15 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 const DEBUG_WANDERS_SB = import.meta.env.VITE_DEBUG_WANDERS_SB === '1'
 
+// Dev-only debug logging. Never emits in production builds, and callers below
+// must pass only non-sensitive metadata (presence booleans, status codes) —
+// never raw client keys, auth tokens, or response bodies.
 function dbg(...args) {
-  if (DEBUG_WANDERS_SB) console.log('[WandersSupabase]', ...args)
+  if (DEBUG_WANDERS_SB && import.meta.env.DEV) console.log('[WandersSupabase]', ...args)
 }
 
 function warn(...args) {
-  console.warn('[WandersSupabase]', ...args)
+  if (import.meta.env.DEV) console.warn('[WandersSupabase]', ...args)
 }
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -76,7 +79,8 @@ function withClientKeyFetch(clientKey) {
         apikey_present: Boolean(headers.get('apikey')),
         authorization_present: Boolean(headers.get('authorization')),
         x_client_info: headers.get('x-client-info'),
-        x_client_key: headers.get('x-client-key'),
+        // Never log the raw client key — presence only.
+        x_client_key_present: Boolean(headers.get('x-client-key')),
       })
     }
 
@@ -94,7 +98,8 @@ function withClientKeyFetch(clientKey) {
       sb_request_id: res.headers.get('sb-request-id'),
       sb_gateway_version: res.headers.get('sb-gateway-version'),
       content_type: res.headers.get('content-type'),
-      body,
+      // Response body may contain user data — log only the PostgREST error code.
+      body_code: body?.code ?? null,
     })
 
     if (res.status === 406 && isPgrst106(body)) {
@@ -102,7 +107,6 @@ function withClientKeyFetch(clientKey) {
         url,
         acceptProfile,
         contentProfile,
-        message: body?.message,
       })
     }
 

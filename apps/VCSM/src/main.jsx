@@ -32,6 +32,28 @@ setupVcsmMediaEngine()
 initMonitoring()
 registerGlobalErrorHandlers()
 
+// [TICKET-QR-REVIEWS-PROD-002] Earliest interception of stale-chunk failures.
+// Vite dispatches `vite:preloadError` when a lazy chunk fails to preload/import
+// (production-only: a stale app shell requests a content-hashed chunk that no
+// longer exists after a deploy). Preventing default stops the rethrow that would
+// otherwise surface as RouteErrorBoundary's "Page unavailable", and a single
+// guarded reload pulls the fresh shell + correct chunk hashes. RouteErrorBoundary
+// keeps its own one-time recovery as a fallback for failures that bypass this.
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault()
+  const key = 'vcsm:vite-preload-error-reload-at'
+  try {
+    const lastReloadAt = Number(sessionStorage.getItem(key) || 0)
+    const now = Date.now()
+    if (now - lastReloadAt > 10_000) {
+      sessionStorage.setItem(key, String(now))
+      window.location.reload()
+    }
+  } catch {
+    // sessionStorage unavailable (private mode) — skip auto-reload to avoid loops.
+  }
+})
+
 import App from './App'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/queries/queryClient'

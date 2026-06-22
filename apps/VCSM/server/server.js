@@ -3,9 +3,24 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import rateLimit from "express-rate-limit";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Basic abuse protection for the dynamic routes below (the meta-injection route
+// reads index.html from disk on every hit, and the SPA fallback serves a file).
+// Static assets are served before this limiter and are intentionally not capped.
+const dynamicRouteLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 120, // generous: well above normal page-navigation rates
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Only accept opaque, URL-safe lovedrop ids — blocks any markup/script from
+// reaching the templated meta tags below (reflected-XSS defense in depth).
+const LOVEDROP_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
 // Your real domain
 const PUBLIC_ORIGIN = "https://vibezcitizens.com";
@@ -74,10 +89,19 @@ async function getLovedropById(_ID) {
   return null;
 }
 
+// Apply the limiter to the dynamic (non-static) routes only.
+app.use(dynamicRouteLimiter);
+
 // ✅ Link preview route
 app.get("/lovedrop/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    // Reject anything that is not an opaque id before it can be templated into
+    // the response HTML. Invalid ids just fall through to the SPA shell.
+    if (!LOVEDROP_ID_RE.test(id)) {
+      return res.sendFile(INDEX_HTML_PATH);
+    }
 
     const lovedrop = await getLovedropById(id);
 
