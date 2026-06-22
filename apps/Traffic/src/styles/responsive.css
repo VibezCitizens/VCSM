@@ -115,20 +115,7 @@
 
 @media (max-width: 820px) {
   .traffic-shell-inner {
-    min-height: 68px;
-  }
-
-  .traffic-shell-subtitle {
-    display: none;
-  }
-
-  .traffic-shell-cta-btn {
-    display: none;
-  }
-
-  .traffic-lang-toggle {
-    /* Keep visible on mobile — it's small enough */
-    order: -1;
+    height: 60px;
   }
 }
 
@@ -396,21 +383,6 @@
   .hp-cat-grid,
   .homepage-trending-groups {
     grid-template-columns: 1fr;
-  }
-}
-
-/* ── max-width: 600px ─────────────────────────────────────── */
-
-@media (max-width: 600px) {
-  .traffic-shell-nav {
-    width: 100%;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 0.2rem;
-  }
-
-  .traffic-shell-link {
-    flex: 0 0 auto;
   }
 }
 

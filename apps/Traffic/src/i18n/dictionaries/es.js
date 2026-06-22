@@ -41,7 +41,15 @@ const es = {
       home: "Inicio",
       directory: "Directorio",
       categories: "Categorías",
-      answers: "Respuestas"
+      answers: "Respuestas",
+      providers: "Proveedores",
+      settings: "Configuración",
+      language: "Idioma"
+    },
+    drawer: {
+      label: "Navegación principal",
+      open: "Abrir menú de navegación",
+      close: "Cerrar menú de navegación"
     },
     claimProfile: "Reclamar perfil"
   },

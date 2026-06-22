@@ -1,0 +1,11 @@
+{
+  "name": "vcsm-workspace",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix apps/Traffic run build",
+    "lint": "npm --prefix apps/Traffic run lint"
+  },
+  "workspaces": [
+    "apps/Traffic"
+  ]
+}

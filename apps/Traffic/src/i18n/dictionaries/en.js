@@ -41,7 +41,15 @@ const en = {
       home: "Home",
       directory: "Directory",
       categories: "Categories",
-      answers: "Answers"
+      answers: "Answers",
+      providers: "Providers",
+      settings: "Settings",
+      language: "Language"
+    },
+    drawer: {
+      label: "Primary navigation",
+      open: "Open navigation menu",
+      close: "Close navigation menu"
     },
     claimProfile: "Claim Profile"
   },

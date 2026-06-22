@@ -3,6 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  ExternalLink,
+  Grid3X3,
+  Home,
+  Languages,
+  MapPinned,
+  Menu,
+  MessageCircleQuestion,
+  Settings,
+  UsersRound,
+  X
+} from "lucide-react";
 import { getPlatformOrigin } from "@/lib/env";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { LanguageProvider, useTrafficLanguage } from "@/lib/language";
@@ -25,18 +37,145 @@ function claimHref() {
 }
 
 const NAV_LINKS = [
-  { labelKey: "shell.nav.home", key: "home" },
-  { labelKey: "shell.nav.directory", key: "directory" },
-  { labelKey: "shell.nav.categories", key: "categories" },
-  { labelKey: "shell.nav.answers", key: "answers" },
+  { labelKey: "shell.nav.home", key: "home", Icon: Home },
+  { labelKey: "shell.nav.directory", key: "directory", Icon: MapPinned },
+  { labelKey: "shell.nav.categories", key: "categories", Icon: Grid3X3 },
+  { labelKey: "shell.nav.answers", key: "answers", Icon: MessageCircleQuestion },
+  { labelKey: "shell.nav.providers", key: "top-providers", Icon: UsersRound },
+  { labelKey: "shell.nav.settings", key: "settings", Icon: Settings, external: true },
 ];
 
 // ─── Inner shell — consumes LanguageContext ────────────────────────────────────
+
+function getRawHref(link, navHrefs) {
+  if (link.key === "home") return "/";
+  if (link.key === "settings") return "/settings";
+  return navHrefs[link.key];
+}
+
+function isLinkActive({ link, href, pathname, lang }) {
+  if (link.external) return false;
+  if (link.key === "home") return pathname === "/" || pathname === `/${lang}`;
+  if (link.key === "directory") {
+    return pathname === href || pathname === "/directory" || pathname.endsWith("/directory");
+  }
+  return pathname === href || pathname.endsWith(`/${link.key}`) || pathname === `/${link.key}`;
+}
+
+function LanguageToggle({ lang, setLang, pathname, router, t, compact = false }) {
+  return (
+    <div className="traffic-lang-toggle" role="group" aria-label={t("common.language")}>
+      <button
+        type="button"
+        className={`traffic-lang-btn${lang === "en" ? " traffic-lang-btn--active" : ""}`}
+        onClick={() => {
+          setLang("en");
+          router.push(switchLocalePath(pathname, "en"));
+        }}
+        aria-pressed={lang === "en"}
+      >
+        {compact ? "EN" : "English"}
+      </button>
+      <button
+        type="button"
+        className={`traffic-lang-btn${lang === "es" ? " traffic-lang-btn--active" : ""}`}
+        onClick={() => {
+          setLang("es");
+          router.push(switchLocalePath(pathname, "es"));
+        }}
+        aria-pressed={lang === "es"}
+      >
+        {compact ? "ES" : "Español"}
+      </button>
+    </div>
+  );
+}
+
+function TrafficDrawer({ open, onClose, navHrefs, pathname, lang, setLang, router, t }) {
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function onKeyDown(event) {
+      if (event.key === "Escape") onClose();
+    }
+
+    document.body.classList.add("traffic-drawer-open");
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.classList.remove("traffic-drawer-open");
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
+
+  return (
+    <div className={`traffic-drawer-layer${open ? " traffic-drawer-layer--open" : ""}`} aria-hidden={!open}>
+      <button
+        type="button"
+        className="traffic-drawer-scrim"
+        aria-label={t("shell.drawer.close")}
+        onClick={onClose}
+      />
+      <aside id="traffic-drawer" className="traffic-drawer" aria-label={t("shell.drawer.label")}>
+        <div className="traffic-drawer-head">
+          <div>
+            <p className="traffic-drawer-kicker">{t("shell.subtitle")}</p>
+            <strong>TRAZE</strong>
+          </div>
+          <button type="button" className="traffic-icon-btn" aria-label={t("shell.drawer.close")} onClick={onClose}>
+            <X size={21} strokeWidth={2.2} />
+          </button>
+        </div>
+
+        <nav className="traffic-drawer-nav" aria-label={t("shell.drawer.label")}>
+          {NAV_LINKS.map((link) => {
+            const rawHref = getRawHref(link, navHrefs);
+            const href = link.external
+              ? new URL(rawHref, getPlatformOrigin()).toString()
+              : withLocale(rawHref, lang);
+            const active = isLinkActive({ link, href, pathname, lang });
+            const Icon = link.Icon;
+            return (
+              <Link
+                key={link.key}
+                className={`traffic-drawer-link${active ? " traffic-drawer-link--active" : ""}`}
+                href={href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noreferrer" : undefined}
+                onClick={onClose}
+              >
+                <span className="traffic-drawer-link-icon">
+                  <Icon size={19} strokeWidth={2.1} />
+                </span>
+                <span>{t(link.labelKey)}</span>
+                {link.external ? <ExternalLink className="traffic-drawer-external" size={15} /> : null}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <section className="traffic-drawer-language" aria-label={t("common.language")}>
+          <div className="traffic-drawer-language-label">
+            <Languages size={17} />
+            <span>{t("shell.nav.language")}</span>
+          </div>
+          <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} />
+        </section>
+
+        <a className="traffic-drawer-cta" href={claimHref()} target="_blank" rel="noreferrer">
+          {t("shell.claimProfile")}
+          <ExternalLink size={16} />
+        </a>
+      </aside>
+    </div>
+  );
+}
 
 function ShellInner({ children, countryOptions = [] }) {
   const pathname = usePathname();
   const router = useRouter();
   const { lang, setLang, t } = useTrafficLanguage();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [navHrefs, setNavHrefs] = useState({
     directory: "/directory",
     categories: "/categories",
@@ -87,76 +226,42 @@ function ShellInner({ children, countryOptions = [] }) {
     };
   }, [countryOptions]);
 
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
+
   return (
     <>
       <header className="traffic-shell-header">
         <div className="traffic-shell-inner">
-          <div className="traffic-shell-brand-wrap">
-            <Link className="traffic-shell-brand" href={withLocale("/", lang)}>
-              TRAZE
-            </Link>
-            <span className="traffic-shell-subtitle">
-              {t("shell.subtitle")}
-            </span>
-          </div>
+          <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} compact />
 
-          <nav className="traffic-shell-nav" aria-label={t("shell.nav.directory")}>
-            {NAV_LINKS.map((link) => {
-              const rawHref = link.key === "home" ? "/" : navHrefs[link.key];
-              const href = withLocale(rawHref, lang);
-              const isActive =
-                link.key === "home"
-                  ? pathname === "/" || pathname === `/${lang}`
-                  : link.key === "directory"
-                    ? pathname === href || pathname === "/directory" || pathname.endsWith("/directory")
-                    : pathname.endsWith(`/${link.key}`) || pathname === `/${link.key}`;
-              return (
-                <Link
-                  key={link.key}
-                  className={`traffic-shell-link${isActive ? " traffic-shell-link--active" : ""}`}
-                  href={href}
-                >
-                  {t(link.labelKey)}
-                </Link>
-              );
-            })}
-          </nav>
+          <Link className="traffic-shell-brand" href={withLocale("/", lang)} aria-label="TRAZE home">
+            TRAZE
+          </Link>
 
-          <div className="traffic-lang-toggle" role="group" aria-label={t("common.language")}>
-            <button
-              type="button"
-              className={`traffic-lang-btn${lang === "en" ? " traffic-lang-btn--active" : ""}`}
-              onClick={() => {
-                setLang("en");
-                router.push(switchLocalePath(pathname, "en"));
-              }}
-              aria-pressed={lang === "en"}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              className={`traffic-lang-btn${lang === "es" ? " traffic-lang-btn--active" : ""}`}
-              onClick={() => {
-                setLang("es");
-                router.push(switchLocalePath(pathname, "es"));
-              }}
-              aria-pressed={lang === "es"}
-            >
-              ES
-            </button>
-          </div>
-
-          <a
-            className="traffic-shell-cta-btn"
-            href={claimHref()}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            className="traffic-icon-btn"
+            aria-label={t("shell.drawer.open")}
+            aria-expanded={drawerOpen}
+            aria-controls="traffic-drawer"
+            onClick={() => setDrawerOpen(true)}
           >
-            {t("shell.claimProfile")}
-          </a>
+            <Menu size={22} strokeWidth={2.2} />
+          </button>
         </div>
       </header>
+      <TrafficDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        navHrefs={navHrefs}
+        pathname={pathname}
+        lang={lang}
+        setLang={setLang}
+        router={router}
+        t={t}
+      />
       {children}
     </>
   );
