@@ -1,6 +1,12 @@
 // src/lib/vcClient.js
-import { supabase } from '@/services/supabase/supabaseClient'; //transfer
+import { createLazySchemaClient } from '@/services/supabase/supabaseClient'; //transfer
 
-/** Use this for all VC-schema tables */
-export const vc = supabase.schema('vc');
+/**
+ * Use this for all VC-schema tables.
+ *
+ * Lazily resolves `supabase.schema('vc')` on first use rather than at module
+ * import, so importing this module never constructs the Supabase client (which
+ * would otherwise require env vars at import time).
+ */
+export const vc = createLazySchemaClient('vc');
 export default vc;

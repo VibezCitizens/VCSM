@@ -3,6 +3,7 @@ import { Lock } from 'lucide-react'
 import { useTranslation } from '@i18n'
 import Card from '@/features/settings/ui/Card'
 import ProfessionalAccessButton from './ProfessionalAccessButton'
+import { safeMediaSrc } from '@/shared/lib/safeMediaSrc'
 
 export default function ProfileTabView({
   username,
@@ -46,7 +47,7 @@ export default function ProfileTabView({
           <div className="overflow-hidden rounded-xl border border-white/12 bg-white/4/50">
             <div className="relative h-32 w-full sm:h-40 md:h-48">
               <img
-                src={previewBanner || bannerUrl || '/default-banner.jpg'}
+                src={safeMediaSrc(previewBanner || bannerUrl, '/default-banner.jpg')}
                 alt="avatar banner"
                 className="absolute inset-0 h-full w-full object-cover"
               />
@@ -83,7 +84,7 @@ export default function ProfileTabView({
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 overflow-hidden rounded-xl bg-white/6">
               {(previewAvatar || photoUrl) ? (
-                <img src={previewAvatar || photoUrl} alt="avatar" className="h-full w-full object-cover" />
+                <img src={safeMediaSrc(previewAvatar || photoUrl, '/avatar.jpg')} alt="avatar" className="h-full w-full object-cover" />
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-2">

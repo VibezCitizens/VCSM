@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Paperclip, X, Send, Loader2 } from 'lucide-react'
+import { safeMediaSrc } from '@/shared/lib/safeMediaSrc'
 
 const DEFAULT_MAX = 4000
 
@@ -229,9 +230,9 @@ export default function ChatInput({
             {mediaPreview && (
               <div className="relative shrink-0">
                 {String(mediaPreview.type || '').startsWith('video/') ? (
-                  <video src={mediaPreview.url} className="h-12 w-12 rounded-xl border border-purple-300/25 object-cover" muted playsInline />
+                  <video src={safeMediaSrc(mediaPreview.url)} className="h-12 w-12 rounded-xl border border-purple-300/25 object-cover" muted playsInline />
                 ) : (
-                  <img src={mediaPreview.url} alt="" className="h-12 w-12 rounded-xl border border-purple-300/25 object-cover" />
+                  <img src={safeMediaSrc(mediaPreview.url)} alt="" className="h-12 w-12 rounded-xl border border-purple-300/25 object-cover" />
                 )}
 
                 <button
