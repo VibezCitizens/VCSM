@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "@/data/connectors/supabase.client";
+import { shouldRequireLiveProviderIndex } from "@/lib/env";
 
 const PROVIDER_INDEX_PROJECTION = [
   "id",
@@ -35,11 +36,6 @@ const PROVIDER_INDEX_PROJECTION = [
 ].join(", ");
 
 let loggedVportDatasetError = false;
-
-function shouldRequireLiveProviderIndex() {
-  return process.env.NODE_ENV === "production" &&
-    process.env.TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX !== "true";
-}
 
 function normalizeCountryCode(value) {
   const countryCode = String(value ?? "").trim().toUpperCase();

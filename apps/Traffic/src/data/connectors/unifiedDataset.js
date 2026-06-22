@@ -5,13 +5,14 @@
  * vport.public_traze_provider_index_v. The view itself merges real VPORT
  * profiles and public-safe seed listings, with VPORT winning by slug.
  *
- * If Supabase is unavailable, the build continues with empty provider arrays,
- * but the failure is logged. No mock provider fallback is injected.
+ * Preview builds can continue with empty provider arrays when Supabase is
+ * unavailable. Production branch builds fail instead of exporting empty pages.
  */
 
 import { loadVportRows } from "@/data/connectors/vportDataset";
 import { mapProviderIndexRowToProvider } from "@/data/mappers/providerIndex.model";
 import { readAllServicePriceRows } from "@/data/dal/priceAggregate.read.dal";
+import { shouldRequireLiveProviderIndex } from "@/lib/env";
 
 /** @typedef {import("@/data/types").Provider} Provider */
 /** @typedef {import("@/data/types").ProviderService} ProviderService */
@@ -27,11 +28,6 @@ const providerServices = [];
 /** @type {ProviderStats[]} */
 const providerStats = [];
 let loadedProviderRowCount = 0;
-
-function shouldRequireLiveProviderIndex() {
-  return process.env.NODE_ENV === "production" &&
-    process.env.TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX !== "true";
-}
 
 function logDatasetError(scope, error) {
   console.error(`[unifiedDataset] ${scope}:`, error?.message ?? error);
