@@ -51,8 +51,7 @@
 }
 
 .traffic-shell-brand--mobile,
-.traffic-mobile-left,
-.traffic-shell-menu {
+.traffic-mobile-left {
   display: none;
 }
 
@@ -142,6 +141,10 @@
 .traffic-icon-btn:hover {
   border-color: rgba(139, 92, 246, 0.46);
   transform: translateY(-1px);
+}
+
+.traffic-shell-menu {
+  display: none;
 }
 
 .traffic-drawer-open {
