@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useTrafficLanguage } from "@/lib/language";
 
 const SUPPORT_EMAIL = "support@vibezcitizens.com";
-const TERMS_URL = "https://vibezcitizens.com/legal/terms-of-service";
+const TERMS_URL = "/terms";
 
 function buildReportMailto(providerName, providerSlug) {
   const subject = encodeURIComponent(`Report listing: ${providerName}`);
@@ -48,14 +49,9 @@ export function ProviderDataDisclaimer({ providerName, providerSlug, claimStatus
           {t("disclaimer.report")}
         </a>
         <span className="pro-data-disclaimer-sep" aria-hidden="true">·</span>
-        <a
-          className="pro-data-disclaimer-terms"
-          href={TERMS_URL}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <Link className="pro-data-disclaimer-terms" href={TERMS_URL}>
           {t("homepage.terms")}
-        </a>
+        </Link>
       </div>
     </div>
   );

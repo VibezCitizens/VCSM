@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trackQuestionSubmitted } from "@/lib/analytics";
+import { submitQuestion as submitQuestionRequest } from "@/features/answers/controllers/submitQuestion.controller";
 
 export function useSubmitQuestion() {
   const [state, setState] = useState({
@@ -13,14 +14,11 @@ export function useSubmitQuestion() {
     setState({ status: "submitting", errors: {} });
 
     try {
-      const response = await fetch("/api/answers/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json();
+      // Static export has no server route — submit runs in the browser via the
+      // anon Supabase client and the answers.submit_question RPC.
+      const result = await submitQuestionRequest(payload);
 
-      if (!response.ok || !result.ok) {
+      if (!result.ok) {
         setState({
           status: "error",
           errors: result.errors ?? { form: "Question could not be submitted." }

@@ -9,14 +9,23 @@ export function AskQuestionForm() {
   const submission = useSubmitQuestion();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [askerName, setAskerName] = useState("");
+  const [askerEmail, setAskerEmail] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const result = await submission.submitQuestion({ title, body });
+    const result = await submission.submitQuestion({
+      title: title.trim(),
+      body: body.trim(),
+      askerName: askerName.trim(),
+      askerEmail: askerEmail.trim()
+    });
 
     if (result.ok) {
       setTitle("");
       setBody("");
+      setAskerName("");
+      setAskerEmail("");
     }
   }
 
@@ -57,6 +66,30 @@ export function AskQuestionForm() {
               maxLength={1000}
               placeholder={t("answers.questionBodyPlaceholder")}
             />
+          </label>
+
+          <label className="answers-field">
+            <span>{t("answers.questionNameLabel")}</span>
+            <input
+              value={askerName}
+              onChange={(event) => setAskerName(event.target.value)}
+              maxLength={120}
+              autoComplete="name"
+              placeholder={t("answers.questionNamePlaceholder")}
+            />
+          </label>
+
+          <label className="answers-field">
+            <span>{t("answers.questionEmailLabel")}</span>
+            <input
+              type="email"
+              value={askerEmail}
+              onChange={(event) => setAskerEmail(event.target.value)}
+              maxLength={254}
+              autoComplete="email"
+              placeholder={t("answers.questionEmailPlaceholder")}
+            />
+            <small className="answers-field-hint">{t("answers.questionEmailHint")}</small>
           </label>
 
           {submission.errors?.title ? (

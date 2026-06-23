@@ -45,9 +45,9 @@ export default function HomepageCtaFooter({ claimHref, mainPlatformHref, directo
             <a className="homepage-footer-link homepage-footer-link--strong" href={claimHref} target="_blank" rel="noreferrer">
               {t("shell.claimProfile")}
             </a>
-            <a className="homepage-footer-link" href="https://vibezcitizens.com/legal/terms-of-service" target="_blank" rel="noreferrer">
+            <Link className="homepage-footer-link" href="/terms">
               {t("homepage.terms")}
-            </a>
+            </Link>
           </nav>
         </div>
 

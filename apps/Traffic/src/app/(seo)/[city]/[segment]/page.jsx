@@ -58,8 +58,9 @@ export function generateStaticParams() {
   return dedupeParamPairs([...fallbackCountryCity, ...fallbackCityService]);
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const graph = resolvePage(params);
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     return {};
   }
@@ -75,14 +76,15 @@ export function generateMetadata({ params }) {
   return generateMetadataForLocale({ params });
 }
 
-export default function DualSegmentPage({ params }) {
-  const graph = resolvePage(params);
+export default async function DualSegmentPage({ params }) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     notFound();
   }
 
   if (graph.routeMode === "country_city") {
-    if (params.city !== graph.country.slug) {
+    if (resolvedParams.city !== graph.country.slug) {
       redirect(countryCityPath(graph.country.slug, graph.city.slug));
     }
 

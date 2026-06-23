@@ -35,8 +35,9 @@ export function generateStaticParams() {
   return listCountries().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const graph = resolvePage(params);
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     return {};
   }

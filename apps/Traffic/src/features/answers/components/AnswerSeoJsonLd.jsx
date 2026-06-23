@@ -1,4 +1,5 @@
 import { getSiteOrigin } from "@/lib/env";
+import { buildBreadcrumbSchema } from "@/seo/schemaOrg";
 
 function safeJson(value) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
@@ -7,7 +8,7 @@ function safeJson(value) {
 export function AnswerSeoJsonLd({ page }) {
   if (!page?.seo?.isIndexable || !page.question || !page.answer) return null;
 
-  const jsonLd = {
+  const qaPage = {
     "@context": "https://schema.org",
     "@type": "QAPage",
     mainEntity: {
@@ -17,6 +18,7 @@ export function AnswerSeoJsonLd({ page }) {
       dateCreated: page.seo.askedAt,
       dateModified: page.seo.updatedAt,
       url: page.seo.canonicalUrl,
+      answerCount: 1,
       acceptedAnswer: {
         "@type": "Answer",
         text: page.answer.body,
@@ -33,10 +35,16 @@ export function AnswerSeoJsonLd({ page }) {
     }
   };
 
+  const breadcrumb = buildBreadcrumbSchema([
+    { label: "Home", href: "/" },
+    { label: "Answers", href: "/answers" },
+    { label: page.question.title }
+  ]);
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: safeJson(jsonLd) }}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(qaPage) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(breadcrumb) }} />
+    </>
   );
 }

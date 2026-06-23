@@ -149,8 +149,9 @@ function buildProviderGraph(cityParam, providerSlug) {
   };
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const graph = buildProviderGraph(params.city, params.providerSlug);
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const graph = buildProviderGraph(resolvedParams.city, resolvedParams.providerSlug);
   if (!graph) return {};
 
   const cityName = graph.city?.name ?? graph.provider.primaryCityName ?? null;

@@ -19,8 +19,9 @@ export function generateStaticParams() {
   return [{ providerSlug: "no-providers" }];
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const legacyPath = `/pro/${params.providerSlug}`;
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const legacyPath = `/pro/${resolvedParams.providerSlug}`;
   const alternates = buildLocalizedAlternates(legacyPath, { locale: routeLocale });
 
   return {
