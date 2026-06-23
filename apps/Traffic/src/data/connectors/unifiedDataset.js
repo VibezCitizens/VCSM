@@ -77,7 +77,7 @@ try {
 
 if (shouldRequireLiveProviderIndex() && providers.length === 0) {
   throw new Error(
-    `Traffic build produced no mapped providers from ${loadedProviderRowCount} provider index rows. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for build-time data reads, fix provider row shape, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true.`
+    `Traffic build produced no mapped providers from ${loadedProviderRowCount} provider index rows. Set SUPABASE_URL and SUPABASE_ANON_KEY for build-time data reads, fix provider row shape, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true.`
   );
 }
 
