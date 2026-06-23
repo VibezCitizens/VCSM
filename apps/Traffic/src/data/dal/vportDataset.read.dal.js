@@ -1,4 +1,4 @@
-import { getSupabaseAdminClient } from "@/data/connectors/supabase.client";
+import { getSupabaseClient } from "@/data/connectors/supabase.client";
 import { shouldRequireLiveProviderIndex } from "@/lib/env";
 
 const PROVIDER_INDEX_PROJECTION = [
@@ -43,11 +43,11 @@ function normalizeCountryCode(value) {
 }
 
 export async function readPublicTrazeProviderIndexRows(options = {}) {
-  const client = getSupabaseAdminClient();
+  const client = getSupabaseClient();
   if (!client) {
     if (shouldRequireLiveProviderIndex()) {
       throw new Error(
-        "Traffic build requires Supabase provider index access. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true."
+        "Traffic build requires Supabase provider index access. Set SUPABASE_URL and SUPABASE_ANON_KEY, or set TRAFFIC_ALLOW_EMPTY_PROVIDER_INDEX=true."
       );
     }
     return null;
