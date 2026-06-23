@@ -91,6 +91,23 @@ function LanguageToggle({ lang, setLang, pathname, router, t, compact = false })
   );
 }
 
+function DesktopNavigation({ navHrefs, pathname, lang, t }) {
+  return (
+    <nav className="traffic-desktop-nav" aria-label={t("shell.drawer.label")}>
+      {NAV_LINKS.filter((link) => ["home", "directory", "categories", "answers"].includes(link.key)).map((link) => {
+        const rawHref = getRawHref(link, navHrefs);
+        const href = withLocale(rawHref, lang);
+        const active = isLinkActive({ link, href, pathname, lang });
+        return (
+          <Link key={link.key} className={`traffic-desktop-link${active ? " traffic-desktop-link--active" : ""}`} href={href}>
+            {t(link.labelKey)}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 function TrafficDrawer({ open, onClose, navHrefs, pathname, lang, setLang, router, t }) {
   useEffect(() => {
     if (!open) return undefined;
@@ -234,15 +251,31 @@ function ShellInner({ children, countryOptions = [] }) {
     <>
       <header className="traffic-shell-header">
         <div className="traffic-shell-inner">
-          <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} compact />
-
-          <Link className="traffic-shell-brand" href={withLocale("/", lang)} aria-label="TRAZE home">
-            TRAZE
+          <Link className="traffic-shell-brand traffic-shell-brand--desktop" href={withLocale("/", lang)} aria-label="TRAZE home">
+            <span>TRAZE</span>
+            <small>{t("shell.subtitle")}</small>
           </Link>
+
+          <div className="traffic-mobile-left">
+            <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} compact />
+          </div>
+
+          <Link className="traffic-shell-brand traffic-shell-brand--mobile" href={withLocale("/", lang)} aria-label="TRAZE home">
+            <span>TRAZE</span>
+          </Link>
+
+          <DesktopNavigation navHrefs={navHrefs} pathname={pathname} lang={lang} t={t} />
+
+          <div className="traffic-shell-actions">
+            <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} compact />
+            <a className="traffic-shell-claim" href={claimHref()} target="_blank" rel="noreferrer">
+              {t("shell.claimProfile")}
+            </a>
+          </div>
 
           <button
             type="button"
-            className="traffic-icon-btn"
+            className="traffic-icon-btn traffic-shell-menu"
             aria-label={t("shell.drawer.open")}
             aria-expanded={drawerOpen}
             aria-controls="traffic-drawer"
