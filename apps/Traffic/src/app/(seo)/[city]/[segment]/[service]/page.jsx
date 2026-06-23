@@ -105,8 +105,9 @@ export function generateStaticParams() {
   ]);
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const graph = resolvePage(params);
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     return {};
   }
@@ -131,13 +132,14 @@ export function generateMetadata({ params }) {
 }
 
 export default async function TripleSegmentPage({ params }) {
-  const graph = resolvePage(params);
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     notFound();
   }
 
   if (graph.routeMode === "country_provider") {
-    if (params.city !== graph.country.slug) {
+    if (resolvedParams.city !== graph.country.slug) {
       redirect(countryProviderPath(graph.country.slug, graph.provider.slug));
     }
 
@@ -145,7 +147,7 @@ export default async function TripleSegmentPage({ params }) {
   }
 
   if (graph.routeMode === "country_city_service") {
-    if (params.city !== graph.country.slug) {
+    if (resolvedParams.city !== graph.country.slug) {
       redirect(countryCityServicePath(graph.country.slug, graph.city.slug, graph.service.slug));
     }
 
@@ -153,7 +155,7 @@ export default async function TripleSegmentPage({ params }) {
   }
 
   if (graph.routeMode === "country_service_hub") {
-    if (params.city !== graph.country.slug) {
+    if (resolvedParams.city !== graph.country.slug) {
       redirect(countryServiceHubPath(graph.country.slug, graph.service.slug));
     }
 

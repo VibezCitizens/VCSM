@@ -36,7 +36,8 @@ function renderAlternateLinks(basePath) {
 }
 
 export async function GET(request, { params }) {
-  const chunkData = await getSitemapChunk(params.chunk);
+  const { chunk } = await params;
+  const chunkData = await getSitemapChunk(chunk);
 
   if (!chunkData) {
     return new Response("Not found", { status: 404 });

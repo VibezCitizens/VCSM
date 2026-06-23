@@ -4,6 +4,7 @@ import { listServices, listSpecialtiesByService } from "@/data/repositories/serv
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { getAllPublicContentPages } from "@/data/repositories/content.repo";
 import { listAnswerPageCandidates } from "@/features/answers/controllers/readAnswerPage.controller";
+import { listPublishedQuestions } from "@/features/answers/dal/publishedQuestions.read.dal";
 import {
   listProviders,
   listProvidersByCity,
@@ -299,9 +300,33 @@ export function listPageCandidates(options = {}) {
   return [...listGlobalPageCandidates(), ...listLegacyPageCandidates()];
 }
 
+// Community published questions (answers.list_published_questions) get sitemap
+// entries too, not just build-time SEO answer pages. Degrades to empty on failure.
+async function listPublishedQuestionCandidates() {
+  const { data } = await listPublishedQuestions().catch(() => ({ data: [] }));
+  return (data ?? [])
+    .filter((row) => row?.slug)
+    .map((row) => ({
+      pageType: "answer",
+      path: `/answers/${row.slug}`,
+      updatedAt: normalizeUpdatedAt(row.published_at)
+    }));
+}
+
 export async function listPageCandidatesWithAnswers(options = {}) {
-  const answers = await listAnswerPageCandidates();
-  return [...listPageCandidates(options), ...answers];
+  const [answers, publishedQuestions] = await Promise.all([
+    listAnswerPageCandidates(),
+    listPublishedQuestionCandidates()
+  ]);
+
+  // SEO answer pages and community questions can share a slug; dedupe by path so
+  // each question URL appears exactly once in the sitemap.
+  const byPath = new Map();
+  [...answers, ...publishedQuestions].forEach((candidate) => {
+    if (candidate?.path && !byPath.has(candidate.path)) byPath.set(candidate.path, candidate);
+  });
+
+  return [...listPageCandidates(options), ...byPath.values()];
 }
 
 /**

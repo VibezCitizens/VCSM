@@ -38,17 +38,10 @@ export function AnswerCard({ answer }) {
 
   return (
     <section className="answer-card" aria-label={t("answers.answerAria")}>
-      <p className="answer-card__eyebrow">
-        {t("answers.answeredByExpert")}{answeredDate ? ` - ${answeredDate}` : ""}
-      </p>
+      {answeredDate ? <p className="answer-card__eyebrow">{answeredDate}</p> : null}
       <h2>{answer.expert.displayName}</h2>
       {answer.expert.serviceLabel ? <p>{answer.expert.serviceLabel}</p> : null}
       <div className="answer-card__body">{renderParagraphs(answer.body)}</div>
-      {answer.expert.profileSlug ? (
-        <a className="answer-card__link" href={`/pro/${answer.expert.profileSlug}`}>
-          {t("answers.viewExpertProfile")}
-        </a>
-      ) : null}
     </section>
   );
 }

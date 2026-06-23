@@ -1,11 +1,6 @@
 import { createQuestionRow } from "@/features/answers/dal/questions.write.dal";
 import { buildQuestionSubmission } from "@/features/answers/models/questionSubmission.model";
 
-function makeSlug(base) {
-  const suffix = globalThis.crypto?.randomUUID?.().slice(0, 8) ?? `${Date.now()}`;
-  return `${base}-${suffix}`;
-}
-
 export async function submitQuestion(input = {}) {
   const submission = buildQuestionSubmission(input);
   if (!submission.ok) {
@@ -16,18 +11,15 @@ export async function submitQuestion(input = {}) {
     };
   }
 
-  const payload = {
-    ...submission.value,
-    slug: makeSlug(submission.value.slugBase)
-  };
-  const { data, error } = await createQuestionRow(payload);
+  // Slug + collision retry are owned by the answers.submit_question RPC.
+  const { data, error } = await createQuestionRow(submission.value);
 
-  if (error) {
+  if (error || !data) {
     return {
       ok: false,
       status: "failed",
       errors: {
-        form: error.message || "Question could not be submitted."
+        form: error?.message || "Question could not be submitted."
       }
     };
   }

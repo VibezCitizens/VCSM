@@ -1,19 +1,22 @@
+import { AnswerDetailScreen } from "@/features/answers/adapters/answers.adapter";
 import {
-  AnswerDetailScreen,
-  listAnswerStaticParams
-} from "@/features/answers/adapters/answers.adapter";
-import { generateMetadataForLocale } from "../../../answers/[slug]/page";
+  generateMetadataForLocale,
+  generateStaticParams as baseGenerateStaticParams,
+  loadAnswerDetailProps
+} from "../../../answers/[slug]/page";
 
 export const dynamicParams = false;
 
-export async function generateStaticParams() {
-  return listAnswerStaticParams();
+export function generateStaticParams() {
+  return baseGenerateStaticParams();
 }
 
 export function generateMetadata(args) {
   return generateMetadataForLocale(args, "en");
 }
 
-export default function EnglishAnswerPage({ params }) {
-  return <AnswerDetailScreen slug={params.slug} />;
+export default async function EnglishAnswerPage({ params }) {
+  const { slug } = await params;
+  const props = await loadAnswerDetailProps(slug);
+  return <AnswerDetailScreen {...props} />;
 }

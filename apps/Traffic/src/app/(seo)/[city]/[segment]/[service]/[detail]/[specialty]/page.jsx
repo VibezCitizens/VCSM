@@ -77,8 +77,9 @@ function resolvePage(params) {
   };
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const graph = resolvePage(params);
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     return {};
   }
@@ -112,8 +113,9 @@ export function generateMetadata({ params }) {
   return generateMetadataForLocale({ params });
 }
 
-export default function CountryCityLocalityServiceSpecialtyPage({ params }) {
-  const graph = resolvePage(params);
+export default async function CountryCityLocalityServiceSpecialtyPage({ params }) {
+  const resolvedParams = await params;
+  const graph = resolvePage(resolvedParams);
   if (!graph) {
     notFound();
   }

@@ -268,9 +268,6 @@ function ShellInner({ children, countryOptions = [] }) {
 
           <div className="traffic-shell-actions">
             <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} compact />
-            <a className="traffic-shell-claim" href={claimHref()} target="_blank" rel="noreferrer">
-              {t("shell.claimProfile")}
-            </a>
           </div>
 
           <button

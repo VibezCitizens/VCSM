@@ -16,8 +16,9 @@ export function generateStaticParams() {
   return listCountries().map((c) => ({ city: c.slug }));
 }
 
-export function generateMetadataForLocale({ params }, routeLocale = null) {
-  const country = getCountryBySlug(params.city);
+export async function generateMetadataForLocale({ params }, routeLocale = null) {
+  const resolvedParams = await params;
+  const country = getCountryBySlug(resolvedParams.city);
   if (!country) return {};
 
   return buildDirectoryMetadata({
