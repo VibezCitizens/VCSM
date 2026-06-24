@@ -113,7 +113,7 @@ export function AnswersHeroArt() {
         <circle cx="368" cy="372" r="2.2" />
       </g>
 
-      {/* ── Workflow flow lines (Question → Expert → Answer) ──── */}
+      {/* ── Workflow flow lines (Question → Provider → Answer) ──── */}
       <g stroke="url(#ahaGold)" strokeWidth="1.4" strokeOpacity="0.6" fill="none" strokeLinecap="round">
         <path d="M198 122 C 226 150, 232 162, 250 184" />
         <path d="M312 232 C 320 250, 312 258, 298 264" />
@@ -130,10 +130,10 @@ export function AnswersHeroArt() {
           <line x1="64" y1="106" x2="150" y2="106" stroke="#ffffff" strokeOpacity="0.11" strokeWidth="4" strokeLinecap="round" />
         </g>
 
-        {/* 2 · Expert */}
+        {/* 2 · Provider */}
         <g transform="rotate(3 329 191)">
           <rect x="250" y="150" width="158" height="82" rx="14" fill="url(#ahaGlass)" stroke="url(#ahaGlassEdge)" strokeWidth="1" />
-          <text x="266" y="172" fontFamily={SANS} fontSize="11" fontWeight="700" letterSpacing="0.6" fill="url(#ahaGold)">Expert</text>
+          <text x="266" y="172" fontFamily={SANS} fontSize="11" fontWeight="700" letterSpacing="0.6" fill="url(#ahaGold)">Provider</text>
           <line x1="266" y1="182" x2="394" y2="182" stroke="#ffffff" strokeOpacity="0.12" strokeWidth="1" />
           <text x="266" y="200" fontFamily={SANS} fontSize="11.5" fontWeight="600" fill="#eef0fb" fillOpacity="0.9">Local Locksmith</text>
           <g transform="translate(266 210)">
@@ -179,7 +179,7 @@ export function AnswersHeroArt() {
       {/* ── Micro metrics (decorative; hidden on smaller screens) ── */}
       <g className="answers-hero-art__chips">
         <MetricChip x="296" y="26" w="92" label="124 Answers" />
-        <MetricChip x="14" y="170" w="86" label="58 Experts" />
+        <MetricChip x="14" y="170" w="86" label="58 Providers" />
         <MetricChip x="322" y="398" w="74" label="6 Topics" />
       </g>
     </svg>

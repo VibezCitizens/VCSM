@@ -10,7 +10,9 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/"],
+        // /search is a parallel, noindex interactive layer — keep it out of the
+        // index and prevent infinite crawlable query-string pages (TRAZE-SEARCH-004).
+        disallow: ["/api/", "/search", "/en/search", "/es/search"],
       },
     ],
     sitemap: `${siteOrigin}/sitemap-index.xml`,

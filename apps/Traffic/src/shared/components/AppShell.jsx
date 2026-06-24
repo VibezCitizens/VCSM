@@ -145,7 +145,7 @@ function TrafficDrawer({ open, onClose, navHrefs, pathname, lang, setLang, route
         </div>
 
         <nav className="traffic-drawer-nav" aria-label={t("shell.drawer.label")}>
-          {NAV_LINKS.map((link) => {
+          {NAV_LINKS.filter((link) => ["home", "directory", "categories", "answers"].includes(link.key)).map((link) => {
             const rawHref = getRawHref(link, navHrefs);
             const href = link.external
               ? new URL(rawHref, getPlatformOrigin()).toString()

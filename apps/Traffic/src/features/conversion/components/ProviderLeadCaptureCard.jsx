@@ -23,6 +23,7 @@ export default function ProviderLeadCaptureCard({
   supabaseAnonKey
 }) {
   const { t } = useTrafficLanguage();
+  const isClaimed = claimStatus === "claimed";
 
   const {
     values,
@@ -68,7 +69,7 @@ export default function ProviderLeadCaptureCard({
             {t("leadCapture.callNow")}
           </button>
         )}
-        {profileHref ? (
+        {isClaimed && profileHref ? (
           <a
             className="btn btn--primary"
             href={profileHref}
@@ -131,7 +132,9 @@ export default function ProviderLeadCaptureCard({
               inputMode="tel"
               placeholder="(555) 555-1234"
               maxLength={14}
+              required
             />
+            {fieldErrors.phone ? <span className="pro-lead-error">{fieldErrors.phone}</span> : null}
           </label>
 
           <label className="pro-lead-field" htmlFor="lead-email">
@@ -141,12 +144,15 @@ export default function ProviderLeadCaptureCard({
             <input
               id="lead-email"
               className="pro-lead-input"
+              type="email"
               value={values.email}
               onChange={(event) => setField("email", event.target.value)}
               autoComplete="email"
               inputMode="email"
-              placeholder={t("common.optional")}
+              placeholder="you@example.com"
+              required
             />
+            {fieldErrors.email ? <span className="pro-lead-error">{fieldErrors.email}</span> : null}
           </label>
 
           <label className="pro-lead-field" htmlFor="lead-message">

@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "reexportCount": 844,
+  "reexportCount": 846,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.520Z",
+    "generatedAt": "2026-06-24T06:36:28.150Z",
     "reexports": [
       {
         "sourceFile": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
@@ -209,6 +209,17 @@
         ]
       },
       {
+        "sourceFile": "apps/Traffic/src/app/en/contact/page.jsx",
+        "exportFile": "apps/Traffic/src/app/contact/page.jsx",
+        "symbol": "default",
+        "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
         "sourceFile": "apps/Traffic/src/app/en/directory/page.jsx",
         "exportFile": "apps/Traffic/src/app/directory/page.jsx",
         "symbol": "default",
@@ -222,6 +233,17 @@
       {
         "sourceFile": "apps/Traffic/src/app/en/page.jsx",
         "exportFile": "apps/Traffic/src/app/page.jsx",
+        "symbol": "default",
+        "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/app/en/privacy/page.jsx",
+        "exportFile": "apps/Traffic/src/app/privacy/page.jsx",
         "symbol": "default",
         "alias": null,
         "kind": "named",
@@ -245,6 +267,28 @@
         "sourceFile": "apps/Traffic/src/app/en/pro/[providerSlug]/page.jsx",
         "exportFile": "apps/Traffic/src/app/(seo)/pro/[providerSlug]/page.jsx",
         "symbol": "generateStaticParams",
+        "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/app/en/search/page.jsx",
+        "exportFile": "apps/Traffic/src/app/search/page.jsx",
+        "symbol": "default",
+        "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/app/en/terms/page.jsx",
+        "exportFile": "apps/Traffic/src/app/terms/page.jsx",
+        "symbol": "default",
         "alias": null,
         "kind": "named",
         "confidence": "HIGH",
@@ -506,6 +550,17 @@
         ]
       },
       {
+        "sourceFile": "apps/Traffic/src/app/es/search/page.jsx",
+        "exportFile": "apps/Traffic/src/app/search/page.jsx",
+        "symbol": "default",
+        "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
         "sourceFile": "apps/Traffic/src/app/es/top-providers/page.jsx",
         "exportFile": "apps/Traffic/src/app/top-providers/page.jsx",
         "symbol": "default",
@@ -606,28 +661,6 @@
       },
       {
         "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "exportFile": "apps/Traffic/src/features/answers/screens/AnswersModeration.view.jsx",
-        "symbol": "AnswersModerationView",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "exportFile": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-        "symbol": "createModerationAnswer",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
         "exportFile": "apps/Traffic/src/features/answers/hooks/useAnswerPage.js",
         "symbol": "fetchAnswerPage",
         "alias": null,
@@ -661,41 +694,8 @@
       },
       {
         "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "exportFile": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-        "symbol": "listAnswersModerationQueue",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
         "exportFile": "apps/Traffic/src/features/answers/controllers/readAnswerPage.controller.js",
         "symbol": "listAnswerStaticParams",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "exportFile": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-        "symbol": "moderateAnswer",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "exportFile": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-        "symbol": "moderateQuestion",
         "alias": null,
         "kind": "named",
         "confidence": "HIGH",
@@ -737,17 +737,6 @@
         ]
       },
       {
-        "sourceFile": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "exportFile": "apps/Traffic/src/features/answers/models/moderationAuth.model.js",
-        "symbol": "validateModerationRequest",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
         "sourceFile": "apps/Traffic/src/features/categories/adapters/categories.adapter.js",
         "exportFile": "apps/Traffic/src/features/categories/components/CategoriesDiscoveryClient.jsx",
         "symbol": "CategoriesDiscoveryClient",
@@ -763,6 +752,17 @@
         "exportFile": "apps/Traffic/src/features/conversion/components/CtaModules.jsx",
         "symbol": "DirectoryCtaModules",
         "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/features/conversion/adapters/conversion.adapter.js",
+        "exportFile": "apps/Traffic/src/features/conversion/components/ProviderAccountPromptCard.jsx",
+        "symbol": "ProviderAccountPromptCard",
+        "alias": "default",
         "kind": "named",
         "confidence": "HIGH",
         "evidence": [
@@ -990,17 +990,6 @@
         ]
       },
       {
-        "sourceFile": "apps/Traffic/src/features/home/adapters/home.adapter.js",
-        "exportFile": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
-        "symbol": "HomepageTrendingSection",
-        "alias": "default",
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
         "sourceFile": "apps/Traffic/src/features/home/components/HomepageProviderCard.jsx",
         "exportFile": "apps/Traffic/src/shared/components/TrazeProviderCard.jsx",
         "symbol": "default",
@@ -1016,6 +1005,39 @@
         "exportFile": "apps/Traffic/src/shared/components/TrazeProviderCard.jsx",
         "symbol": "getCategoryStyle",
         "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "exportFile": "apps/Traffic/src/features/legal/screens/ContactScreen.jsx",
+        "symbol": "ContactScreen",
+        "alias": "default",
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "exportFile": "apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx",
+        "symbol": "PrivacyScreen",
+        "alias": "default",
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "exportFile": "apps/Traffic/src/features/legal/screens/TermsScreen.jsx",
+        "symbol": "TermsScreen",
+        "alias": "default",
         "kind": "named",
         "confidence": "HIGH",
         "evidence": [
@@ -1463,6 +1485,17 @@
         ]
       },
       {
+        "sourceFile": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "exportFile": "apps/VCSM/src/features/authorization/controllers/readActorStatus.controller.js",
+        "symbol": "readActorStatusController",
+        "alias": null,
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
         "sourceFile": "apps/VCSM/src/features/block/adapters/ui/BlockConfirmModal.adapter.js",
         "exportFile": "apps/VCSM/src/features/block/ui/BlockConfirmModal.jsx",
         "symbol": "default",
@@ -1588,28 +1621,6 @@
         "exportFile": "apps/VCSM/src/features/booking/model/bookingCalendarDate.model.js",
         "symbol": "addDays",
         "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "exportFile": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-        "symbol": "assertActorOwnsVportActorController",
-        "alias": "default",
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "exportFile": "apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
-        "symbol": "assertSessionOwnsVportActorController",
-        "alias": "default",
         "kind": "named",
         "confidence": "HIGH",
         "evidence": [
@@ -1764,17 +1775,6 @@
         "exportFile": "apps/VCSM/src/features/booking/model/bookingCalendarDate.model.js",
         "symbol": "fromDateKey",
         "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "exportFile": "apps/VCSM/src/features/booking/dal/getActorById.dal.js",
-        "symbol": "getActorByIdDAL",
-        "alias": "default",
         "kind": "named",
         "confidence": "HIGH",
         "evidence": [
@@ -2237,6 +2237,50 @@
         "exportFile": "apps/VCSM/src/features/chat/inbox/screens/InboxScreen.jsx",
         "symbol": "InboxScreen",
         "alias": "default",
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/VCSM/src/features/claim/adapters/claim.adapter.js",
+        "exportFile": "apps/VCSM/src/features/claim/screens/ClaimProfileScreen.jsx",
+        "symbol": "ClaimProfileScreen",
+        "alias": "default",
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter.js",
+        "exportFile": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+        "symbol": "ClaimApprovedScreen",
+        "alias": "default",
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter.js",
+        "exportFile": "apps/VCSM/src/features/claimOnboarding/components/ClaimOnboardingBanner.jsx",
+        "symbol": "ClaimOnboardingBanner",
+        "alias": "default",
+        "kind": "named",
+        "confidence": "HIGH",
+        "evidence": [
+          "named re-export detected via AST"
+        ]
+      },
+      {
+        "sourceFile": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter.js",
+        "exportFile": "apps/VCSM/src/features/claimOnboarding/hooks/useClaimApprovalDiscovery.js",
+        "symbol": "useClaimApprovalDiscovery",
+        "alias": null,
         "kind": "named",
         "confidence": "HIGH",
         "evidence": [
@@ -4612,28 +4656,6 @@
         "sourceFile": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
         "exportFile": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/model/vportAvailabilityRule.model.js",
         "symbol": "mapAvailabilityRule",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
-        "exportFile": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/components/OwnerPendingSuggestionsList.jsx",
-        "symbol": "OwnerPendingSuggestionsList",
-        "alias": null,
-        "kind": "named",
-        "confidence": "HIGH",
-        "evidence": [
-          "named re-export detected via AST"
-        ]
-      },
-      {
-        "sourceFile": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
-        "exportFile": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/hooks/useOwnerPendingSuggestions.js",
-        "symbol": "useOwnerPendingSuggestions",
         "alias": null,
         "kind": "named",
         "confidence": "HIGH",

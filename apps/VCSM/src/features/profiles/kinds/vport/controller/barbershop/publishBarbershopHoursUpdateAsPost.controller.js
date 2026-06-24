@@ -4,7 +4,7 @@ import {
 } from "@/features/profiles/kinds/vport/dal/barbershop/vportBarbershopPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -71,7 +71,7 @@ export async function publishBarbershopHoursUpdateAsPostController({ actorId, bl
 
   // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): resolved from the auth
   // session via actor_owners — holds whether acting as the user or as the VPORT.
-  await assertSessionOwnsVportActorController({ targetActorId: actorId });
+  await assertSessionOwnsActorController({ targetActorId: actorId });
 
   const realmId = PUBLIC_REALM_ID;
   if (!realmId) return { published: false, status: "skipped", reason: "missing_public_realm" };

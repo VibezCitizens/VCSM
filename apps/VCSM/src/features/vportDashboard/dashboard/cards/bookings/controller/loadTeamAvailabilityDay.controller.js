@@ -5,14 +5,14 @@ import {
 } from "@/features/vportDashboard/dal/read/vportResource.read.dal";
 import { listVportAvailabilityRulesByResourceIdsDAL } from "@/features/vportDashboard/dal/read/vportAvailabilityRules.read.dal";
 import { listVportBookingsInRangeDAL } from "@/features/vportDashboard/dal/read/vportBookingsInRange.read.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from "@/services/monitoring/vcsmMonitoring";
 
 // Read-only loader for the Bookings "Team available today" section.
 //
 // Mirrors the resource + availability_rules + weekday-filter shape of the schedule
 // card's loadDayScheduleController, but uses the SESSION-derived ownership gate
-// (assertSessionOwnsVportActorController) instead of the actor-to-actor gate. The
+// (assertSessionOwnsActorController) instead of the actor-to-actor gate. The
 // vport dashboard runs in "self" mode — the active/caller actor is the VPORT itself —
 // so the actor-to-actor gate's user-kind requirement cannot be satisfied here. The
 // session gate derives the owner from the Supabase auth session via actor_owners
@@ -23,7 +23,7 @@ export async function loadTeamAvailabilityDayController({ actorId, dateKey }) {
     if (!actorId || !dateKey) throw new Error("actorId and dateKey are required");
 
     // Session-derived ownership gate — verifies the authenticated user owns this VPORT.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
 
     const profileId = await getVportProfileIdByActorDAL({ actorId });
     if (!profileId) throw new Error("Vport profile not found.");

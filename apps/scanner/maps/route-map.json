@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "routeCount": 243,
+  "routeCount": 253,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.615Z",
+    "generatedAt": "2026-06-24T06:36:27.088Z",
     "routes": [
       {
         "route": "/",
@@ -222,82 +222,6 @@
         "source": "next-app-router"
       },
       {
-        "route": "/answers/moderation",
-        "type": "static",
-        "routeType": "static",
-        "access": "public",
-        "routeAccess": "public",
-        "runtime": "web",
-        "confidence": "HIGH",
-        "evidence": [
-          "Next app-router page or route file exists"
-        ],
-        "app": "Traffic",
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "app",
-        "path": "apps/Traffic/src/app/answers/moderation/page.jsx",
-        "file": "apps/Traffic/src/app/answers/moderation/page.jsx",
-        "source": "next-app-router"
-      },
-      {
-        "route": "/api/answers/moderation/answers",
-        "type": "static",
-        "routeType": "static",
-        "access": "public",
-        "routeAccess": "public",
-        "runtime": "web",
-        "confidence": "HIGH",
-        "evidence": [
-          "Next app-router page or route file exists"
-        ],
-        "app": "Traffic",
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "app",
-        "path": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-        "file": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-        "source": "next-app-router"
-      },
-      {
-        "route": "/api/answers/moderation/questions",
-        "type": "static",
-        "routeType": "static",
-        "access": "public",
-        "routeAccess": "public",
-        "runtime": "web",
-        "confidence": "HIGH",
-        "evidence": [
-          "Next app-router page or route file exists"
-        ],
-        "app": "Traffic",
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "app",
-        "path": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-        "file": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-        "source": "next-app-router"
-      },
-      {
-        "route": "/api/answers/questions",
-        "type": "static",
-        "routeType": "static",
-        "access": "public",
-        "routeAccess": "public",
-        "runtime": "web",
-        "confidence": "HIGH",
-        "evidence": [
-          "Next app-router page or route file exists"
-        ],
-        "app": "Traffic",
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "app",
-        "path": "apps/Traffic/src/app/api/answers/questions/route.js",
-        "file": "apps/Traffic/src/app/api/answers/questions/route.js",
-        "source": "next-app-router"
-      },
-      {
         "route": "/categories",
         "routeType": "static",
         "access": "public",
@@ -316,6 +240,26 @@
         "feature": null,
         "path": "apps/Traffic/src/app/categories/page.jsx",
         "file": "apps/Traffic/src/app/categories/page.jsx"
+      },
+      {
+        "route": "/contact",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/contact/page.jsx",
+        "file": "apps/Traffic/src/app/contact/page.jsx"
       },
       {
         "route": "/directory",
@@ -566,6 +510,25 @@
         "source": "next-app-router"
       },
       {
+        "route": "/en/contact",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/contact/page.jsx",
+        "file": "apps/Traffic/src/app/en/contact/page.jsx",
+        "source": "next-app-router"
+      },
+      {
         "route": "/en/directory",
         "type": "static",
         "routeType": "static",
@@ -585,6 +548,25 @@
         "source": "next-app-router"
       },
       {
+        "route": "/en/privacy",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/privacy/page.jsx",
+        "file": "apps/Traffic/src/app/en/privacy/page.jsx",
+        "source": "next-app-router"
+      },
+      {
         "route": "/en/pro/[providerSlug]",
         "type": "dynamic",
         "routeType": "dynamic",
@@ -601,6 +583,44 @@
         "feature": "app",
         "path": "apps/Traffic/src/app/en/pro/[providerSlug]/page.jsx",
         "file": "apps/Traffic/src/app/en/pro/[providerSlug]/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/search",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/search/page.jsx",
+        "file": "apps/Traffic/src/app/en/search/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/en/terms",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/en/terms/page.jsx",
+        "file": "apps/Traffic/src/app/en/terms/page.jsx",
         "source": "next-app-router"
       },
       {
@@ -851,6 +871,25 @@
         "source": "next-app-router"
       },
       {
+        "route": "/es/contact",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/contact/page.jsx",
+        "file": "apps/Traffic/src/app/es/contact/page.jsx",
+        "source": "next-app-router"
+      },
+      {
         "route": "/es/directory",
         "type": "static",
         "routeType": "static",
@@ -867,6 +906,25 @@
         "feature": "app",
         "path": "apps/Traffic/src/app/es/directory/page.jsx",
         "file": "apps/Traffic/src/app/es/directory/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/privacy",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/privacy/page.jsx",
+        "file": "apps/Traffic/src/app/es/privacy/page.jsx",
         "source": "next-app-router"
       },
       {
@@ -889,6 +947,44 @@
         "source": "next-app-router"
       },
       {
+        "route": "/es/search",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/search/page.jsx",
+        "file": "apps/Traffic/src/app/es/search/page.jsx",
+        "source": "next-app-router"
+      },
+      {
+        "route": "/es/terms",
+        "type": "static",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "confidence": "HIGH",
+        "evidence": [
+          "Next app-router page or route file exists"
+        ],
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "app",
+        "path": "apps/Traffic/src/app/es/terms/page.jsx",
+        "file": "apps/Traffic/src/app/es/terms/page.jsx",
+        "source": "next-app-router"
+      },
+      {
         "route": "/es/top-providers",
         "type": "static",
         "routeType": "static",
@@ -908,6 +1004,26 @@
         "source": "next-app-router"
       },
       {
+        "route": "/privacy",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/privacy/page.jsx",
+        "file": "apps/Traffic/src/app/privacy/page.jsx"
+      },
+      {
         "route": "/pro/[providerSlug]",
         "type": "dynamic",
         "routeType": "dynamic",
@@ -925,6 +1041,26 @@
         "path": "apps/Traffic/src/app/(seo)/pro/[providerSlug]/page.jsx",
         "file": "apps/Traffic/src/app/(seo)/pro/[providerSlug]/page.jsx",
         "source": "next-app-router"
+      },
+      {
+        "route": "/search",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/search/page.jsx",
+        "file": "apps/Traffic/src/app/search/page.jsx"
       },
       {
         "route": "/sitemap-index.xml",
@@ -963,6 +1099,26 @@
         "path": "apps/Traffic/src/app/sitemaps/[chunk]/route.js",
         "file": "apps/Traffic/src/app/sitemaps/[chunk]/route.js",
         "source": "next-app-router"
+      },
+      {
+        "route": "/terms",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": null,
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "path": "apps/Traffic/src/app/terms/page.jsx",
+        "file": "apps/Traffic/src/app/terms/page.jsx"
       },
       {
         "route": "/top-providers",
@@ -1465,6 +1621,26 @@
         "file": "apps/VCSM/src/app/routes/public/auth.routes.jsx"
       },
       {
+        "route": "/business/welcome",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ClaimApprovedScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
         "route": "/CentralFeed",
         "routeType": "static",
         "access": "public",
@@ -1703,6 +1879,26 @@
         "feature": null,
         "path": "apps/VCSM/src/app/routes/protected/app.routes.jsx",
         "file": "apps/VCSM/src/app/routes/protected/app.routes.jsx"
+      },
+      {
+        "route": "/claim-profile",
+        "routeType": "static",
+        "access": "public",
+        "routeAccess": "public",
+        "runtime": "web",
+        "elementName": "ClaimProfileScreen",
+        "source": "route-object",
+        "confidence": "HIGH",
+        "evidence": [
+          "route extracted from AST"
+        ],
+        "type": "static",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "path": "apps/VCSM/src/app/routes/public/claim.routes.jsx",
+        "file": "apps/VCSM/src/app/routes/public/claim.routes.jsx"
       },
       {
         "route": "/contact",

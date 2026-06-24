@@ -13,8 +13,8 @@ vi.mock("@/features/upload/adapters/posts.adapter", () => ({
 vi.mock("@/shared/utils/resolveRealm", () => ({
   PUBLIC_REALM_ID: "test-realm-uuid-000",
 }));
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 import { publishExchangeRateUpdateAsPostController } from "../publishExchangeRateUpdateAsPost.controller.js";
@@ -23,7 +23,7 @@ import {
   hasRecentExchangeRatePostDAL,
 } from "@/features/profiles/kinds/vport/dal/exchange/vportExchangeRatePost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const BASE_ARGS = {
   identityActorId: "identity-actor-1",
@@ -36,7 +36,7 @@ const BASE_ARGS = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  assertSessionOwnsVportActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
+  assertSessionOwnsActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
   hasRecentExchangeRatePostDAL.mockResolvedValue(false);
   resolveVportExchangeNameDAL.mockResolvedValue("Downtown FX Exchange");
   createSystemPost.mockResolvedValue({ id: "post-id-999" });
@@ -51,11 +51,11 @@ describe("publishExchangeRateUpdateAsPostController — guard: actorId required"
     ).rejects.toThrow("actorId required");
   });
 
-  it("does not call assertSessionOwnsVportActorController when actorId is missing", async () => {
+  it("does not call assertSessionOwnsActorController when actorId is missing", async () => {
     await expect(
       publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, actorId: undefined })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 });
 
@@ -68,11 +68,11 @@ describe("publishExchangeRateUpdateAsPostController — guard: identityActorId r
     ).rejects.toThrow("identityActorId required");
   });
 
-  it("does not call assertSessionOwnsVportActorController when identityActorId is missing", async () => {
+  it("does not call assertSessionOwnsActorController when identityActorId is missing", async () => {
     await expect(
       publishExchangeRateUpdateAsPostController({ ...BASE_ARGS, identityActorId: undefined })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 
   it("does not call createSystemPost when identityActorId is missing", async () => {
@@ -113,15 +113,15 @@ describe("publishExchangeRateUpdateAsPostController — guard: missing currencie
 // ─── ownership check ─────────────────────────────────────────────────────────
 
 describe("publishExchangeRateUpdateAsPostController — ownership check", () => {
-  it("calls assertSessionOwnsVportActorController with correct requestActorId and targetActorId", async () => {
+  it("calls assertSessionOwnsActorController with correct requestActorId and targetActorId", async () => {
     await publishExchangeRateUpdateAsPostController(BASE_ARGS);
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: "vport-actor-1",
     });
   });
 
   it("propagates ownership rejection without calling createSystemPost", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error("Actor does not own this vport actor.")
     );
     await expect(publishExchangeRateUpdateAsPostController(BASE_ARGS)).rejects.toThrow(
@@ -131,7 +131,7 @@ describe("publishExchangeRateUpdateAsPostController — ownership check", () => 
   });
 
   it("does not call hasRecentExchangeRatePostDAL when ownership fails", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error("Actor does not own this vport actor.")
     );
     await expect(publishExchangeRateUpdateAsPostController(BASE_ARGS)).rejects.toThrow();
@@ -139,7 +139,7 @@ describe("publishExchangeRateUpdateAsPostController — ownership check", () => 
   });
 
   it("does not call resolveVportExchangeNameDAL when ownership fails", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error("Actor does not own this vport actor.")
     );
     await expect(publishExchangeRateUpdateAsPostController(BASE_ARGS)).rejects.toThrow();

@@ -1,5 +1,5 @@
 import { captureVcsmError } from "@/services/monitoring/vcsmMonitoring";
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import insertBookingResourceDAL from "@/features/booking/dal/insertBookingResource.dal";
 import listBookingResourcesByOwnerActorIdDAL from "@/features/booking/dal/listBookingResourcesByOwnerActorId.dal";
 import { mapBookingResourceRow } from "@/features/booking/model/bookingResource.model";
@@ -25,7 +25,7 @@ export async function ensureOwnerBookingResourceController({
     throw new Error("ensureOwnerBookingResourceController: ownerActorId is required");
   }
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId,
     targetActorId: ownerActorId,
   });

@@ -8,7 +8,7 @@ import {
   deleteVportBusinessCardLeadDAL,
   markVportBusinessCardLeadContactedDAL,
 } from "@/features/vportDashboard/dashboard/cards/leads/dal/vportLeads.write.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { normalizeVportLead } from "@/features/vportDashboard/dashboard/cards/leads/model/vportLead.model";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
@@ -33,7 +33,7 @@ async function resolveProfileId(actorId) {
 
 export async function listVportLeadsController(actorId, { limit = 100, statusGroup } = {}) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     const profileId = await resolveProfileId(actorId);
     const rows = await readVportBusinessCardLeadsByProfileDAL(profileId, { limit, statusGroup });
     return rows.map(normalizeVportLead).filter((lead) => lead.id);
@@ -45,7 +45,7 @@ export async function listVportLeadsController(actorId, { limit = 100, statusGro
 
 export async function countContactedVportLeadsController(actorId) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     const profileId = await resolveProfileId(actorId);
     return readContactedLeadsCountByProfileDAL(profileId);
   } catch (error) {
@@ -56,7 +56,7 @@ export async function countContactedVportLeadsController(actorId) {
 
 export async function markVportLeadContactedController(actorId, { leadId, source } = {}) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     const profileId = await resolveProfileId(actorId);
     const updated = await markVportBusinessCardLeadContactedDAL({ profileId, leadId, source });
     return updated ? normalizeVportLead(updated) : null;
@@ -68,7 +68,7 @@ export async function markVportLeadContactedController(actorId, { leadId, source
 
 export async function countNewVportLeadsController(actorId) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     const profileId = await resolveProfileId(actorId);
     const count = await readNewLeadsCountByProfileDAL(profileId);
     return { count, resolvedProfileId: profileId };
@@ -81,7 +81,7 @@ export async function countNewVportLeadsController(actorId) {
 export async function fastCountNewVportLeadsController(actorId, profileId) {
   if (!actorId || !profileId) return 0;
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     return readNewLeadsCountByProfileDAL(profileId);
   } catch (error) {
     captureVcsmError({ feature: 'vportDashboard', module: 'leads.vportLeads.controller', severity: 'error', message: `fastCountNewVportLeadsController: ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'fastCountNewVportLeads', is_handled: false, context: { dbErrorCode: error?.code ?? null } })
@@ -91,7 +91,7 @@ export async function fastCountNewVportLeadsController(actorId, profileId) {
 
 export async function deleteVportLeadController(actorId, { leadId } = {}) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     const profileId = await resolveProfileId(actorId);
     await deleteVportBusinessCardLeadDAL({ profileId, leadId });
     return true;

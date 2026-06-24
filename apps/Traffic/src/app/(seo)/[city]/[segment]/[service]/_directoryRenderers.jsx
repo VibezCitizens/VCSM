@@ -113,7 +113,7 @@ export function renderCountryCityServicePage(graph) {
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: graph.country.name, href: countryCityPath(graph.country.slug, graph.city.slug) },
+    { label: graph.country.name, href: countryPath(graph.country.slug) },
     { label: graph.city.name, href: countryCityPath(graph.country.slug, graph.city.slug) },
     { label: graph.service.name }
   ];
@@ -207,7 +207,7 @@ export function renderLegacyLocalityServicePage(graph) {
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: graph.country.name, href: countryCityPath(graph.country.slug, graph.city.slug) },
+    { label: graph.country.name, href: countryPath(graph.country.slug) },
     { label: graph.city.name, href: countryCityPath(graph.country.slug, graph.city.slug) },
     {
       label: `${graph.service.name} in ${graph.city.name}`,

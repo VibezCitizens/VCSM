@@ -2,7 +2,7 @@ import { signUpForInviteDAL } from "@/features/join/dal/joinAuth.dal";
 import { readBarberVportByOwnerUserIdDAL } from "@/features/join/dal/barberVport.read.dal";
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from "@/features/join/dal/joinInvite.dal";
 import { recordSignupConsent } from "@/features/legal/adapters/legal.adapter";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const BARBER_CATEGORY = "barber";
 
@@ -107,7 +107,7 @@ export async function autoResumeInviteOnboarding(token, {
     directoryVisible: true,
   });
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId: callerActorId,
     targetActorId: vportResult.actorId,
   });
@@ -128,7 +128,7 @@ export async function createBarberVportAndAccept(token, vportName, { readCurrent
     directoryVisible: true,
   });
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId: callerActorId,
     targetActorId: vportResult.actorId,
   });
@@ -144,7 +144,7 @@ export async function useExistingBarberVportAndAccept(token, vportActorId, { rea
   const user = await readCurrentAuthUserDAL?.();
   if (!user) throw new Error("Not signed in.");
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId: callerActorId,
     targetActorId: vportActorId,
   });

@@ -21,6 +21,27 @@ function NotificationsSkeleton({ count = 6 }) {
   )
 }
 
+function NotificationsEndcap() {
+  return (
+    <div className="noti-endcap">
+      <div className="noti-endcap-divider" />
+      <div className="noti-endcap-icon" aria-hidden="true">
+        {/* sparkle glyph */}
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 2.25c.55 5.05 2.45 6.95 7.5 7.5-5.05.55-6.95 2.45-7.5 7.5-.55-5.05-2.45-6.95-7.5-7.5 5.05-.55 6.95-2.45 7.5-7.5Z"
+            fill="currentColor"
+          />
+          <path d="M18.75 3.5c.18 1.4.78 2 2.18 2.18-1.4.18-2 .78-2.18 2.18-.18-1.4-.78-2-2.18-2.18 1.4-.18 2-.78 2.18-2.18Z" fill="currentColor" opacity="0.55" />
+        </svg>
+      </div>
+      <div className="noti-endcap-title">You&rsquo;re all caught up</div>
+      <div className="noti-endcap-sub">No more notifications waiting for you.</div>
+      <div className="noti-endcap-fade" />
+    </div>
+  )
+}
+
 export default function NotificationsView({ rows, loading }) {
   const { t } = useTranslation()
 
@@ -43,10 +64,13 @@ export default function NotificationsView({ rows, loading }) {
   }
 
   return (
-    <ul className="notifications-list">
-      {rows.map((n) => (
-        <NotificationItem key={n.id} notification={n} />
-      ))}
-    </ul>
+    <>
+      <ul className="notifications-list">
+        {rows.map((n) => (
+          <NotificationItem key={n.id} notification={n} />
+        ))}
+      </ul>
+      <NotificationsEndcap />
+    </>
   )
 }

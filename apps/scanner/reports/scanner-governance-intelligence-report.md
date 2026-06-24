@@ -1,6 +1,6 @@
 # Scanner Governance Intelligence Report
 
-Generated: 2026-06-08T13:39:07.000Z
+Generated: 2026-06-24T06:36:32.078Z
 Root: /Users/vcsm/Desktop/VCSM
 
 ## New Maps Created
@@ -18,18 +18,18 @@ Root: /Users/vcsm/Desktop/VCSM
 - governance-graph.json
 
 ## Counts Per Map
-- behavior-map.json: behaviorFeatureCount=48, behaviorModuleCount=160, behaviorCount=1113
-- policy-map.json: policyCount=19254
-- identity-flow-map.json: identityFlowCount=8143, identityRiskFindingCount=899
-- ownership-map.json: behaviorOwnershipCount=1113
-- documentation-drift-map.json: documentationDriftCount=771
-- db-policy-map.json: dbTableCount=116, dbRpcCount=68, dbPolicyUnverifiedCount=173
-- finding-map.json: findingCount=4459
-- behavior-test-coverage-map.json: behaviorTestCoverageCount=1113
-- runtime-cost-map.json: runtimeCostCount=1113
-- native-parity-map.json: nativeParityCount=1113
-- business-impact-map.json: businessImpactCount=1113
-- governance-graph.json: governanceNodeCount=24973, governanceEdgeCount=193093
+- behavior-map.json: behaviorFeatureCount=52, behaviorModuleCount=164, behaviorCount=1122
+- policy-map.json: policyCount=19146
+- identity-flow-map.json: identityFlowCount=8206, identityRiskFindingCount=905
+- ownership-map.json: behaviorOwnershipCount=1122
+- documentation-drift-map.json: documentationDriftCount=787
+- db-policy-map.json: dbTableCount=81, dbRpcCount=61, dbPolicyUnverifiedCount=193
+- finding-map.json: findingCount=4472
+- behavior-test-coverage-map.json: behaviorTestCoverageCount=1122
+- runtime-cost-map.json: runtimeCostCount=1122
+- native-parity-map.json: nativeParityCount=1122
+- business-impact-map.json: businessImpactCount=1122
+- governance-graph.json: governanceNodeCount=24951, governanceEdgeCount=200795
 
 ## Example: Dashboard / Leads
 - Behavior: BEH-DASHBOARD-LEADS-001 DASH Leads

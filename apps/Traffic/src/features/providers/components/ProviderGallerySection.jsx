@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrafficLanguage } from "@/lib/language";
+import { SafeImage } from "@/shared/components/SafeImage";
 
 export function ProviderGallerySection({ portfolio }) {
   const { t } = useTrafficLanguage();
@@ -16,7 +17,7 @@ export function ProviderGallerySection({ portfolio }) {
       <div className="pro-gallery-grid">
         {portfolio.slice(0, 9).map((item) => (
           <div key={item.portfolioItemId} className="pro-gallery-item">
-            <img
+            <SafeImage
               className="pro-gallery-img"
               src={item.mediaUrl}
               alt={item.altText ?? item.title ?? t("providerProfile.portfolioImage")}

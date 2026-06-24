@@ -91,7 +91,7 @@ describe("portfolio SPIDER-MAN governance coverage", () => {
     expect(screenSource).not.toMatch(/from\s+["'][^"']*\/dal\//);
     expect(screenSource).not.toContain("features/authorization");
     // authorization stays in portfolio controllers, never in the screen.
-    expect(screenSource).not.toContain("assertActorOwnsVportActorController");
+    expect(screenSource).not.toContain("assertActorOwnsActorController");
   });
 
   it("keeps media asset backfill scoped to the caller profile", () => {

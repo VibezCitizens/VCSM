@@ -16,8 +16,8 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 vi.mock("@/features/vportDashboard/dal/read/vportProfile.read.dal", () => ({
@@ -33,7 +33,7 @@ vi.mock("@/features/vportDashboard/dal/read/listVportBookingsForProfileDay.read.
   listVportBookingsForProfileDayDAL: vi.fn(),
 }));
 
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { readVportProfileByActorIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import {
   listVportResourcesByProfileIdDAL,
@@ -69,7 +69,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
       loadOwnerQuickStatsController({ callerActorId: CALLER_ACTOR_ID })
     ).rejects.toThrow("actorId is required");
 
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
     expect(readVportProfileByActorIdDAL).not.toHaveBeenCalled();
     expect(listVportStaffResourcesByProfileIdDAL).not.toHaveBeenCalled();
     expect(listVportResourcesByProfileIdDAL).not.toHaveBeenCalled();
@@ -81,12 +81,12 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
       loadOwnerQuickStatsController({ actorId: TARGET_ACTOR_ID })
     ).rejects.toThrow("callerActorId is required");
 
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
     expect(readVportProfileByActorIdDAL).not.toHaveBeenCalled();
   });
 
   it("rejects unauthorized callers before any stats DAL read", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error("Actor does not own this vport actor.")
     );
 
@@ -97,7 +97,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
       })
     ).rejects.toThrow("Actor does not own this vport actor.");
 
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: TARGET_ACTOR_ID,
     });
     expect(readVportProfileByActorIdDAL).not.toHaveBeenCalled();
@@ -107,7 +107,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
   });
 
   it("reads stats only after ownership is verified", async () => {
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
     readVportProfileByActorIdDAL.mockResolvedValue({ id: "profile-1", is_active: true, is_deleted: false });
     listVportStaffResourcesByProfileIdDAL.mockResolvedValue([
       { id: "staff-1", is_active: true, meta: { status: "linked" } },
@@ -127,7 +127,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
       callerActorId: CALLER_ACTOR_ID,
     });
 
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: TARGET_ACTOR_ID,
     });
     expect(readVportProfileByActorIdDAL).toHaveBeenCalledWith({ actorId: TARGET_ACTOR_ID });
@@ -142,7 +142,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
   });
 
   it("returns zero booking counts without booking DAL calls when no resources exist", async () => {
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
     readVportProfileByActorIdDAL.mockResolvedValue({ id: "profile-1", is_active: true, is_deleted: false });
     listVportStaffResourcesByProfileIdDAL.mockResolvedValue([
       { id: "staff-1", is_active: true, meta: { status: "linked" } },
@@ -163,7 +163,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
   });
 
   it("surfaces staff DAL failures instead of silently degrading to zero", async () => {
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
     readVportProfileByActorIdDAL.mockResolvedValue({ id: "profile-1", is_active: true, is_deleted: false });
     listVportStaffResourcesByProfileIdDAL.mockRejectedValue(new Error("staff read failed"));
     listVportResourcesByProfileIdDAL.mockResolvedValue([{ id: "resource-1" }]);
@@ -217,7 +217,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
   // TESTREQ-BW-vportOwnerStats-001
   // VEN-VPORTOS-002 / ELEK-2026-06-04-001 / BW-VPORTOS-001
   it("throws when VPORT profile is inactive (is_active: false)", async () => {
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
     readVportProfileByActorIdDAL.mockResolvedValue({ id: "profile-1", is_active: false, is_deleted: false });
 
     await expect(
@@ -235,7 +235,7 @@ describe("loadOwnerQuickStatsController — ownership gate", () => {
   // TESTREQ-BW-vportOwnerStats-001 (variant)
   // VEN-VPORTOS-002 / ELEK-2026-06-04-001 / BW-VPORTOS-001
   it("throws when VPORT profile is soft-deleted (is_deleted: true)", async () => {
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true, mode: "actor_owner" });
     readVportProfileByActorIdDAL.mockResolvedValue({ id: "profile-1", is_active: true, is_deleted: true });
 
     await expect(

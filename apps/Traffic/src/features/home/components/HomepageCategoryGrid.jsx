@@ -2,18 +2,13 @@
 
 import { useTrafficLanguage } from "@/lib/language";
 import { countryCityServicePath, countryServiceHubPath } from "@/lib/paths";
+import { getServiceBySlug } from "@/data/repositories/service.repo";
 import TrazeCategoryCard from "@/shared/components/TrazeCategoryCard";
 
 function getCategoryLabel(cat, lang) {
   return lang === "es" && cat.categoryLabelEs
     ? cat.categoryLabelEs
     : cat.categoryLabel;
-}
-
-function getCategoryDescription(cat, lang) {
-  return lang === "es" && cat.categoryDescriptionEs
-    ? cat.categoryDescriptionEs
-    : (cat.categoryDescription ?? "");
 }
 
 function getCategoryRouteKey(cat) {
@@ -30,15 +25,23 @@ function getCategoryRouteKey(cat) {
 }
 
 function getCategoryHref(cat, defaultCountrySlug, defaultCitySlug) {
-  const serviceSlug = getCategoryRouteKey(cat);
-  if (!serviceSlug) return `/categories?filter=${encodeURIComponent(cat.categoryKey)}`;
-  if (!defaultCountrySlug) return `/categories?filter=${encodeURIComponent(serviceSlug)}`;
+  const routeKey = getCategoryRouteKey(cat);
 
-  if (defaultCitySlug) {
-    return countryCityServicePath(defaultCountrySlug, defaultCitySlug, serviceSlug);
+  // Only build a directory route when the key maps to a real taxonomy service.
+  // Unknown / uncategorized keys (e.g. "other") have no [service] page and would
+  // 404, so fall back to the categories filter page instead.
+  const service = routeKey ? getServiceBySlug(routeKey) : null;
+  if (!service) {
+    return `/categories?filter=${encodeURIComponent(routeKey || cat.categoryKey || "")}`;
   }
 
-  return countryServiceHubPath(defaultCountrySlug, serviceSlug);
+  if (!defaultCountrySlug) return `/categories?filter=${encodeURIComponent(service.slug)}`;
+
+  if (defaultCitySlug) {
+    return countryCityServicePath(defaultCountrySlug, defaultCitySlug, service.slug);
+  }
+
+  return countryServiceHubPath(defaultCountrySlug, service.slug);
 }
 
 /**
@@ -101,26 +104,17 @@ export default function HomepageCategoryGrid({
       ) : (
         <div className="hp-cat-grid">
           {visibleCategories.map((cat) => {
-            const catLabel       = getCategoryLabel(cat, lang);
-            const catDescription = getCategoryDescription(cat, lang);
-            const isLive         = cat.isLive === true;
-            const href           = getCategoryHref(cat, defaultCountrySlug, defaultCitySlug);
-            const distinctPills  = Array.isArray(cat.services)
-              ? cat.services
-                  .slice(0, 4)
-                  .map((svc) => (lang === "es" && svc.serviceLabelEs ? svc.serviceLabelEs : svc.serviceLabel))
-                  .filter((label) => label && label.toLowerCase() !== catLabel.toLowerCase())
-              : [];
+            const catLabel = getCategoryLabel(cat, lang);
+            const isLive   = cat.isLive === true;
+            const href     = getCategoryHref(cat, defaultCountrySlug, defaultCitySlug);
 
             return (
               <TrazeCategoryCard
                 key={cat.categoryKey}
                 categoryKey={cat.categoryKey}
                 label={catLabel}
-                description={catDescription}
                 isLive={isLive}
                 href={href}
-                pills={distinctPills}
                 lang={lang}
               />
             );

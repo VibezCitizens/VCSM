@@ -7,6 +7,7 @@ const TABS = [
   { key: "upcoming", label: "Upcoming" },
   { key: "pending",  label: "Pending"  },
   { key: "past",     label: "Past"     },
+  { key: "archived", label: "Archived" },
 ];
 
 const STATUS_STYLES = {
@@ -192,8 +193,8 @@ function AppointmentCard({ booking, onCancel, cancelling, onDismiss, dismissing 
   );
 }
 
-function TabList({ activeTab, onChange, upcoming, pending, past }) {
-  const counts = { upcoming: upcoming.length, pending: pending.length, past: past.length };
+function TabList({ activeTab, onChange, upcoming, pending, past, archived }) {
+  const counts = { upcoming: upcoming.length, pending: pending.length, past: past.length, archived: archived.length };
   return (
     <div className="appt-tabs">
       {TABS.map(({ key, label }) => {
@@ -222,6 +223,7 @@ function EmptyAppointments({ tab }) {
     upcoming: { icon: "📅", title: "No upcoming appointments", body: "Confirmed bookings will appear here." },
     pending:  { icon: "⏳", title: "No pending requests",      body: "Requests waiting for confirmation show here." },
     past:     { icon: "🗂️", title: "No past appointments",     body: "Completed and cancelled bookings appear here." },
+    archived: { icon: "🗄️", title: "No previous appointments", body: "Appointments from earlier months appear here." },
   };
   const msg = messages[tab] ?? messages.upcoming;
   return (
@@ -238,31 +240,49 @@ function EmptyAppointments({ tab }) {
 }
 
 export default function MyAppointmentsView({ actorId }) {
-  const [activeTab, setActiveTab] = useState("upcoming");
-  const { loading, error, upcoming, pending, past, cancelAppointment, cancelling, dismissAppointment, dismissing } =
-    useMyAppointments({ actorId });
+  // Always land on "Upcoming". `pickedTab` is null until the citizen taps a tab.
+  const [pickedTab, setPickedTab] = useState(null);
+  const {
+    loading, error, upcoming, pending, past, archived,
+    cancelAppointment, cancelling, dismissAppointment, dismissing,
+    loadPrevious, previousLoaded, loadingPrevious,
+  } = useMyAppointments({ actorId });
 
-  const tabRows = { upcoming, pending, past }[activeTab] ?? [];
+  const activeTab = pickedTab ?? "upcoming";
+
+  // Selecting "Archived" lazily fetches the previous-months dataset the first
+  // time it is opened — all other tabs are already loaded.
+  function handleTabChange(key) {
+    setPickedTab(key);
+    if (key === "archived" && !previousLoaded) loadPrevious();
+  }
+
+  const tabRows = { upcoming, pending, past, archived }[activeTab] ?? [];
+
+  // The Archived tab has its own loading flag; until its dataset has resolved we
+  // show the skeletons rather than a premature empty state.
+  const busy = activeTab === "archived" ? (loadingPrevious || !previousLoaded) : loading;
 
   return (
     <div>
       <TabList
         activeTab={activeTab}
-        onChange={setActiveTab}
+        onChange={handleTabChange}
         upcoming={upcoming}
         pending={pending}
         past={past}
+        archived={archived}
       />
 
-      {loading ? (
+      {error ? (
+        <div className="notifications-empty" style={{ color: "rgba(239,68,68,0.8)", fontSize: 13 }}>
+          {error}
+        </div>
+      ) : busy ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <AppointmentSkeleton />
           <AppointmentSkeleton />
           <AppointmentSkeleton />
-        </div>
-      ) : error ? (
-        <div className="notifications-empty" style={{ color: "rgba(239,68,68,0.8)", fontSize: 13 }}>
-          {error}
         </div>
       ) : tabRows.length === 0 ? (
         <EmptyAppointments tab={activeTab} />

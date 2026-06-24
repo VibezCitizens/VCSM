@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
   "engineExecutionPathCount": 29,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "generatedAt": "2026-06-24T06:36:28.651Z",
     "engineExecutionPaths": [
       {
         "feature": "VCSM:booking",
@@ -3229,6 +3229,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@hydration",
+            "importKind": "import",
+            "resolvedPath": "engines/hydration/index.js",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/components/schedule/BarberLaneHeader.jsx",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -3555,6 +3565,20 @@
           },
           {
             "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#addTeamMemberController",
+            "to": "controller:apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js#assertSessionOwnsActorController",
+            "type": "CALLS",
+            "callKind": "call",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+            "confidence": "HIGH",
+            "evidence": [
+              "imported symbol call resolved via barrel re-export chain"
+            ],
+            "via": [
+              "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js"
+            ]
+          },
+          {
+            "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#addTeamMemberController",
             "to": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#resolveProfileId",
             "type": "CALLS",
             "callKind": "call",
@@ -3646,6 +3670,20 @@
           },
           {
             "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#getTeamMembersController",
+            "to": "controller:apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js#assertSessionOwnsActorController",
+            "type": "CALLS",
+            "callKind": "call",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+            "confidence": "HIGH",
+            "evidence": [
+              "imported symbol call resolved via barrel re-export chain"
+            ],
+            "via": [
+              "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js"
+            ]
+          },
+          {
+            "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#getTeamMembersController",
             "to": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#resolveProfileId",
             "type": "CALLS",
             "callKind": "call",
@@ -3675,6 +3713,20 @@
             "confidence": "HIGH",
             "evidence": [
               "imported symbol call resolved"
+            ]
+          },
+          {
+            "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#removeTeamMemberController",
+            "to": "controller:apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js#assertSessionOwnsActorController",
+            "type": "CALLS",
+            "callKind": "call",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+            "confidence": "HIGH",
+            "evidence": [
+              "imported symbol call resolved via barrel re-export chain"
+            ],
+            "via": [
+              "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js"
             ]
           },
           {
@@ -3734,6 +3786,20 @@
           },
           {
             "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#sendTeamRequestController",
+            "to": "controller:apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js#assertSessionOwnsActorController",
+            "type": "CALLS",
+            "callKind": "call",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+            "confidence": "HIGH",
+            "evidence": [
+              "imported symbol call resolved via barrel re-export chain"
+            ],
+            "via": [
+              "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js"
+            ]
+          },
+          {
+            "from": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#sendTeamRequestController",
             "to": "controller:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js#resolveProfileId",
             "type": "CALLS",
             "callKind": "call",
@@ -3788,6 +3854,20 @@
             "confidence": "HIGH",
             "evidence": [
               "imported symbol call resolved"
+            ]
+          },
+          {
+            "from": "dal:apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal.js#fetchSubmitterSummariesDAL",
+            "to": "module:engines/hydration/src/hydrate.js#hydrateAndReturnSummaries",
+            "type": "CALLS",
+            "callKind": "call",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal.js",
+            "confidence": "HIGH",
+            "evidence": [
+              "imported symbol call resolved via barrel re-export chain"
+            ],
+            "via": [
+              "engines/hydration/index.js"
             ]
           },
           {
@@ -4122,6 +4202,17 @@
           {
             "from": "module:apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryView.jsx#VportDashboardBookingHistoryView",
             "to": "component:apps/VCSM/src/features/vportDashboard/components/bookingHistory/QuickBookingModal.jsx#QuickBookingModal",
+            "type": "CALLS",
+            "callKind": "jsx",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryView.jsx",
+            "confidence": "HIGH",
+            "evidence": [
+              "imported symbol call resolved"
+            ]
+          },
+          {
+            "from": "module:apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryView.jsx#VportDashboardBookingHistoryView",
+            "to": "component:apps/VCSM/src/features/vportDashboard/components/bookingHistory/TeamAvailabilityToday.jsx#TeamAvailabilityToday",
             "type": "CALLS",
             "callKind": "jsx",
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryView.jsx",

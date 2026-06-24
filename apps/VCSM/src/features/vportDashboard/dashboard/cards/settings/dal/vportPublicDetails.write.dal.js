@@ -26,7 +26,7 @@ export async function upsertVportPublicDetailsDAL({ row }) {
 
   // Session binding — require an authenticated session at the DAL boundary.
   // Ownership is verified upstream by saveVportPublicDetailsByActorIdController
-  // via assertActorOwnsVportActorController (actor_owners). The prior owner_user_id
+  // via assertActorOwnsActorController (actor_owners). The prior owner_user_id
   // check here used an inconsistent ownership model and blocked legitimate team-member
   // writes. VEN-DASHBOARD-002 — removed 2026-06-05.
   const { data: authData, error: authError } = await supabase.auth.getUser();

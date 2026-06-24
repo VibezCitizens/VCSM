@@ -2,6 +2,7 @@ import { ProviderPageTemplate } from "@/features/providers/adapters/providers.ad
 import { buildProviderPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
 import { buildBreadcrumbSchema, buildProviderSchema } from "@/seo/schemaOrg";
+import { providerMetaDescription } from "@/seo/providerBio";
 import {
   getPublicReviewSummaryForProvider,
   listVisibleReviewsForProvider
@@ -79,7 +80,7 @@ export async function renderCountryProviderPage(graph) {
     buildBreadcrumbSchema(breadcrumbs),
     buildProviderSchema({
       providerName: graph.provider.displayName,
-      description: graph.provider.shortBio,
+      description: providerMetaDescription(graph.provider),
       providerPath: countryProviderPath(graph.country.slug, graph.provider.slug),
       ratingAvg: graph.stats?.ratingAvg,
       reviewCount: graph.stats?.reviewCount,

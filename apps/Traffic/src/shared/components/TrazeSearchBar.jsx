@@ -118,6 +118,35 @@ function mapServiceQuery(rawQuery) {
   return null;
 }
 
+// Stricter variant used for HERO ROUTING decisions: only treats the query as a
+// known service when the WHOLE normalized query is exactly a service slug,
+// alias, name, or search term. Multi-token queries ("restaurant san salvador",
+// "locksmith laredo") and partials ("barb") return null → they fall through to
+// the real /search engine instead of collapsing onto a single service page.
+function mapServiceQueryExact(rawQuery) {
+  const normalized = normalizeSlug(rawQuery);
+  if (!normalized) return null;
+
+  if (SERVICE_ALIASES[normalized]) return SERVICE_ALIASES[normalized];
+  if (SERVICE_BY_SLUG.has(normalized)) return normalized;
+
+  for (const service of SERVICES) {
+    const exacts = [
+      service.slug,
+      service.name,
+      service.nameEs,
+      ...(service.searchTerms ?? []),
+      ...(service.searchTermsEs ?? [])
+    ]
+      .filter(Boolean)
+      .map((entry) => normalizeSlug(entry));
+
+    if (exacts.includes(normalized)) return service.slug;
+  }
+
+  return null;
+}
+
 function normalizeCountryOption(option) {
   const countryCode = String(option?.countryCode ?? option?.country_code ?? "").trim().toUpperCase();
   const countrySlug = String(option?.countrySlug ?? option?.country_slug ?? "").trim();
@@ -488,6 +517,21 @@ export default function TrazeSearchBar({
     router.push(queryString ? `${pathname}?${queryString}` : pathname);
   }
 
+  // Hand a free-text query off to the real (noindex) search engine at /search,
+  // carrying the active country/city as filters (TRAZE-SEARCH-004).
+  function pushToSearch(rawQuery, location) {
+    const params = new URLSearchParams();
+    const q = String(rawQuery ?? "").trim();
+    if (q) params.set("q", q);
+
+    const countryCode = location?.countryCode ?? selectedCountryCode ?? null;
+    if (countryCode) params.set("country", String(countryCode).toUpperCase());
+    if (location?.citySlug) params.set("city", location.citySlug);
+
+    const queryString = params.toString();
+    router.push(queryString ? `${localizePath("/search")}?${queryString}` : localizePath("/search"));
+  }
+
   function notifyOrRoute(payload) {
     if (onSearch) {
       onSearch(payload);
@@ -510,9 +554,12 @@ export default function TrazeSearchBar({
   function handleDirectorySearchSubmit(payload) {
     const resolvedLocation = payload.location;
 
-    const serviceSlug = mapServiceQuery(payload.query);
-    const hasLiveService = serviceSlug && liveServiceSlugs.includes(serviceSlug);
+    // Exact match only: a clean single-service query routes to the SEO page;
+    // anything else (partials, multi-token, unknown) goes to /search.
+    const serviceSlug = mapServiceQueryExact(payload.query);
+    const hasLiveService = Boolean(serviceSlug && liveServiceSlugs.includes(serviceSlug));
     const countrySlug = resolvedLocation?.countrySlug;
+    const hasQuery = String(payload.query ?? "").trim().length > 0;
 
     trackSearch({
       query: payload.query,
@@ -520,28 +567,28 @@ export default function TrazeSearchBar({
       serviceSlug: hasLiveService ? serviceSlug : null
     });
 
-    if (hasLiveService && resolvedLocation?.citySlug && countrySlug) {
+    // Recognized live service → route to the real, pre-built static SEO page
+    // (unchanged behavior — the SEO directory architecture is preserved).
+    if (hasLiveService && countrySlug) {
       router.push(
-        localizePath(countryCityServicePath(
-          countrySlug,
-          resolvedLocation.citySlug,
-          serviceSlug
-        ))
+        localizePath(
+          resolvedLocation?.citySlug
+            ? countryCityServicePath(countrySlug, resolvedLocation.citySlug, serviceSlug)
+            : countryServiceHubPath(countrySlug, serviceSlug)
+        )
       );
       return;
     }
 
-    if (hasLiveService && countrySlug) {
-      router.push(localizePath(countryServiceHubPath(countrySlug, serviceSlug)));
+    // Any other query (unknown text, or a live service without a chosen country)
+    // → hand off to the real /search engine (TRAZE-SEARCH-004). No more
+    // "service not available" dead-end now that real search exists.
+    if (hasQuery) {
+      pushToSearch(payload.query, resolvedLocation);
       return;
     }
 
-    if (payload.query.length > 0 && resolvedLocation?.citySlug && countrySlug) {
-      const basePath = countryCityPath(countrySlug, resolvedLocation.citySlug);
-      router.push(`${localizePath(basePath)}?${new URLSearchParams({ query: payload.query }).toString()}`);
-      return;
-    }
-
+    // No query → navigate by location only.
     if (resolvedLocation?.citySlug && countrySlug) {
       router.push(localizePath(countryCityPath(countrySlug, resolvedLocation.citySlug)));
       return;
@@ -552,16 +599,13 @@ export default function TrazeSearchBar({
       return;
     }
 
-    router.push(
-      payload.query.length > 0
-        ? `${localizePath("/directory")}?${new URLSearchParams({ query: payload.query }).toString()}`
-        : localizePath("/directory")
-    );
+    router.push(localizePath("/directory"));
   }
 
   function handleDirectoryFilterSubmit(payload) {
-    const serviceSlug = mapServiceQuery(payload.query);
+    const serviceSlug = mapServiceQueryExact(payload.query);
     const resolvedLocation = payload.location;
+    const hasQuery = String(payload.query ?? "").trim().length > 0;
 
     if (serviceSlug && resolvedLocation?.citySlug && resolvedLocation?.countrySlug) {
       router.push(
@@ -581,6 +625,13 @@ export default function TrazeSearchBar({
 
     if (!payload.query && !payload.filter && resolvedLocation?.citySlug && resolvedLocation?.countrySlug) {
       router.push(localizePath(countryCityPath(resolvedLocation.countrySlug, resolvedLocation.citySlug)));
+      return;
+    }
+
+    // Query typed but not a routable service → hand off to the real /search
+    // engine instead of writing a ?query= the static page ignores (TRAZE-SEARCH-004).
+    if (hasQuery && !serviceSlug) {
+      pushToSearch(payload.query, resolvedLocation);
       return;
     }
 
@@ -906,9 +957,6 @@ export default function TrazeSearchBar({
           <div className="traze-search__location">
             {resolvedShowCountrySelector && countryOptions.length > 0 && (
               <label className="traze-search__country-wrap">
-                <span className="traze-search__country-label">
-                  {t("common.country")}
-                </span>
                 <select
                   className="traze-search__country-select"
                   value={selectedCountryCode ?? ""}

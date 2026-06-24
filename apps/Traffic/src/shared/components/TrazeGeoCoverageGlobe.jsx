@@ -9,6 +9,8 @@ import { useTrafficLanguage } from "@/lib/language";
 import { translate } from "@/i18n";
 import { readDetectedTrazeLocation, readStoredTrazeLocation } from "@/lib/trazeLocationStorage";
 import TrazeGeoCoverageFallback from "@/shared/components/TrazeGeoCoverageFallback";
+import ExpansionRoadmap from "@/shared/components/ExpansionRoadmap";
+import TrazeSpotlightCarousel from "@/shared/components/TrazeSpotlightCarousel";
 
 const ISO_NUMERIC_TO_ALPHA2 = {
   "840": "US",
@@ -83,8 +85,10 @@ function hasUsableGeometry(geoJson) {
 
 export default function TrazeGeoCoverageGlobe({
   coverage,
+  spotlightProviders = [],
   title = "Traze coverage",
   subtitle = "Live provider coverage by country, state, and city.",
+  showMeta = true,
   className = ""
 }) {
   const router = useRouter();
@@ -141,6 +145,8 @@ export default function TrazeGeoCoverageGlobe({
   const totalCities = countries.reduce((sum, country) => sum + Number(country.cityCount ?? 0), 0);
   const activeProviders = activeState?.providerCount ?? activeCountry?.providerCount ?? totalProviders;
   const activeCityCount = activeState?.cityCount ?? activeCountry?.cityCount ?? totalCities;
+  // Coverage Insights — full-network totals (independent of the active-market
+  // selection driving the globe / Current Market panel).
   const activeMarketName = activeState
     ? activeState.stateName || activeState.stateCode
     : activeCountry
@@ -292,46 +298,77 @@ export default function TrazeGeoCoverageGlobe({
     <section className={`geo-coverage-section ${className}`}>
       <div className="geo-coverage-shell">
         <div className="geo-coverage-copy">
-          <span className="geo-coverage-eyebrow">
-            {t("geoCoverage.liveGeography")}
-          </span>
-          <h2>{title === "Traze coverage" ? t("geoCoverage.coverageExplorer") : title}</h2>
-          <p>
-            {isEs && subtitle === "Live provider coverage by country, state, and city."
-              ? t("geoCoverage.subtitle")
-              : subtitle}
-          </p>
-          <div className="geo-coverage-stats">
-            <span>
-              <strong>{formatCount(activeProviders)}</strong>
-              <small>{t("common.providers")}</small>
+          {showMeta && (
+            <span className="geo-coverage-eyebrow">
+              {t("geoCoverage.liveGeography")}
             </span>
-            <span>
-              <strong>{formatCount(activeStates.length)}</strong>
-              <small>{t("common.states").toLowerCase()}</small>
-            </span>
-            <span>
-              <strong>{formatCount(activeCityCount)}</strong>
-              <small>{t("common.cities").toLowerCase()}</small>
-            </span>
-          </div>
-          {activeCountry && (
-            <button
-              type="button"
-              className="geo-coverage-active-market"
-              onClick={() => {
-                if (activeState) return;
-                routeTo(activeCountry);
-              }}
-            >
-              <span>{t("geoCoverage.currentMarket")}</span>
-              <strong>{activeMarketName}</strong>
-              <small>
-                {formatCount(activeProviders)} {t("common.providers")} ·{" "}
-                {formatCount(activeCityCount)} {t("common.cities").toLowerCase()}
-              </small>
-            </button>
           )}
+          <h2>{title === "Traze coverage" ? t("geoCoverage.coverageExplorer") : title}</h2>
+          {showMeta && (
+            <p>
+              {isEs && subtitle === "Live provider coverage by country, state, and city."
+                ? t("geoCoverage.subtitle")
+                : subtitle}
+            </p>
+          )}
+          {showMeta && (
+            <div className="geo-coverage-stats">
+              <span>
+                <strong>{formatCount(activeProviders)}</strong>
+                <small>{t("common.providers")}</small>
+              </span>
+              <span>
+                <strong>{formatCount(activeStates.length)}</strong>
+                <small>{t("common.states").toLowerCase()}</small>
+              </span>
+              <span>
+                <strong>{formatCount(activeCityCount)}</strong>
+                <small>{t("common.cities").toLowerCase()}</small>
+              </span>
+            </div>
+          )}
+          <div className="geo-coverage-insights">
+            <span className="geo-coverage-insights__title">
+              {t("geoCoverage.coverageInsights")}
+            </span>
+            <div className="geo-coverage-insights__grid">
+              <span className="geo-coverage-insights__stat">
+                <strong>{formatCount(countries.length)}</strong>
+                <small>{t("common.countries")}</small>
+              </span>
+              <span className="geo-coverage-insights__stat">
+                <strong>{formatCount(states.length)}</strong>
+                <small>{t("common.states")}</small>
+              </span>
+              <span className="geo-coverage-insights__stat">
+                <strong>{formatCount(cities.length)}</strong>
+                <small>{t("common.cities")}</small>
+              </span>
+              <span className="geo-coverage-insights__stat">
+                <strong>{formatCount(totalProviders)}</strong>
+                <small>{t("common.providers")}</small>
+              </span>
+            </div>
+            {activeCountry && (
+              <button
+                type="button"
+                className="geo-coverage-active-market"
+                onClick={() => {
+                  if (activeState) return;
+                  routeTo(activeCountry);
+                }}
+              >
+                <span>{t("geoCoverage.currentMarket")}</span>
+                <strong>{activeMarketName}</strong>
+                <small>
+                  {formatCount(activeProviders)} {t("common.providers")} ·{" "}
+                  {formatCount(activeCityCount)} {t("common.cities").toLowerCase()}
+                </small>
+              </button>
+            )}
+          </div>
+
+          <TrazeSpotlightCarousel providers={spotlightProviders} />
         </div>
 
         <div className="geo-coverage-globe-card">
@@ -393,6 +430,8 @@ export default function TrazeGeoCoverageGlobe({
             )}
           </div>
         </div>
+
+        <ExpansionRoadmap className="geo-coverage-spotlight" />
       </div>
 
       <TrazeGeoCoverageFallback

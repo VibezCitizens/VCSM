@@ -3,7 +3,7 @@ import { getVportBookingByIdDAL } from "@/features/vportDashboard/dal/read/vport
 import { getVportActorIdByProfileIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { listVportBookingsInRangeDAL } from "@/features/vportDashboard/dal/read/vportBookingsInRange.read.dal";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 const OWNER_STATUSES    = ["cancelled", "completed", "no_show", "confirmed"];
@@ -53,7 +53,7 @@ export async function updateBookingStatusController({ bookingId, status, callerA
       // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): owner actions run
       // while acting as the VPORT, so ownership is resolved from the auth session via
       // actor_owners. The customer branch above still uses callerActorId for identity.
-      await assertSessionOwnsVportActorController({ targetActorId: vportActorId });
+      await assertSessionOwnsActorController({ targetActorId: vportActorId });
     }
 
     const updates = { status };
@@ -126,7 +126,7 @@ export async function rescheduleBookingController({ bookingId, startsAt, endsAt,
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): reschedule is an
     // owner-only action performed while acting as the VPORT; ownership is resolved from
     // the auth session via actor_owners rather than the UI-passed caller actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: vportActorId });
+    await assertSessionOwnsActorController({ targetActorId: vportActorId });
 
     const targetResourceId = resourceId ?? booking.resource_id;
 

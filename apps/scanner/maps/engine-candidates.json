@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
   "engineCandidateCount": 17,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:06.448Z",
+    "generatedAt": "2026-06-24T06:36:31.491Z",
     "engineCandidates": [
       {
         "engine": "availability",
@@ -242,7 +242,7 @@
         "domain": "booking",
         "confidence": "HIGH",
         "evidence": [
-          "12 consumers found",
+          "10 consumers found",
           "dependency references domain",
           "engine folder exists",
           "write surface references domain"
@@ -250,12 +250,10 @@
         "consumers": [
           "VCSM:booking",
           "VCSM:dev",
-          "VCSM:join",
           "VCSM:main.jsx",
           "VCSM:notifications",
           "VCSM:portfolio",
           "VCSM:profiles",
-          "VCSM:settings",
           "VCSM:vport",
           "VCSM:vportDashboard",
           "VCSM:wanderex",
@@ -2896,7 +2894,7 @@
         "domain": "identity",
         "confidence": "HIGH",
         "evidence": [
-          "35 consumers found",
+          "37 consumers found",
           "RPC references domain",
           "dependency references domain",
           "engine folder exists",
@@ -2909,6 +2907,8 @@
           "VCSM:auth",
           "VCSM:block",
           "VCSM:chat",
+          "VCSM:claim",
+          "VCSM:claimOnboarding",
           "VCSM:explore",
           "VCSM:flyerBuilder",
           "VCSM:hydration",
@@ -3367,6 +3367,25 @@
             "layer": "dal",
             "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/dal/vportLeads.write.dal.js",
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/dal/vportLeads.write.dal.js"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx"
           },
           {
             "operation": "edge_function_file",
@@ -6667,7 +6686,7 @@
         "domain": "profile",
         "confidence": "MEDIUM",
         "evidence": [
-          "20 consumers found",
+          "21 consumers found",
           "RPC references domain",
           "dependency references domain",
           "write surface references domain"
@@ -6676,6 +6695,7 @@
           "VCSM:app",
           "VCSM:auth",
           "VCSM:booking",
+          "VCSM:claim",
           "VCSM:dev",
           "VCSM:flyerBuilder",
           "VCSM:initiation",
@@ -7264,26 +7284,6 @@
             "rpc": null,
             "functionName": null,
             "function": "dalUpdateLocksmithServiceArea",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase write call extracted from AST"
-            ],
-            "owner": "VCSM:profiles",
-            "ownerKind": "feature",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "layer": "dal",
-            "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js",
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js"
-          },
-          {
-            "operation": "upsert",
-            "schema": null,
-            "table": "locksmith_service_areas",
-            "rpc": null,
-            "functionName": null,
-            "function": "dalUpsertLocksmithServiceArea",
             "confidence": "HIGH",
             "evidence": [
               "Supabase write call extracted from AST"
@@ -8073,7 +8073,7 @@
         "domain": "review",
         "confidence": "HIGH",
         "evidence": [
-          "14 consumers found",
+          "15 consumers found",
           "RPC references domain",
           "dependency references domain",
           "engine folder exists",
@@ -8093,16 +8093,31 @@
           "VCSM:vportDashboard",
           "VCSM:wanders",
           "apps",
-          "engine:reviews"
+          "engine:reviews",
+          "feature:vportDashboard"
         ],
         "controllers": [],
         "dals": [
-          "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
+          "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
           "engines/reviews/src/dal/dimensionRatings.write.dal.js",
           "engines/reviews/src/dal/reviews.rpc.dal.js",
           "engines/reviews/src/dal/reviews.write.dal.js"
         ],
         "rpcs": [
+          {
+            "rpc": "approve_fuel_price_submission_batch",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "engine": null,
+            "caller": "approveFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          },
           {
             "rpc": "get_target_overall_stats",
             "schema": "reviews",
@@ -8112,6 +8127,20 @@
             "feature": null,
             "engine": "reviews",
             "caller": "dalRpcGetTargetOverallStats",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          },
+          {
+            "rpc": "reject_fuel_price_submission_batch",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "engine": null,
+            "caller": "rejectFuelPriceSubmissionBatchDAL",
             "confidence": "HIGH",
             "evidence": [
               "rpc() extracted from AST"
@@ -8172,15 +8201,15 @@
             "file": "apps/VCSM/functions/sitemaps/vport-reviews.xml.js"
           },
           {
-            "operation": "insert",
+            "operation": "rpc",
             "schema": null,
-            "table": "fuel_price_submission_reviews",
-            "rpc": null,
+            "table": null,
+            "rpc": "approve_fuel_price_submission_batch",
             "functionName": null,
-            "function": "createFuelPriceSubmissionReviewDAL",
+            "function": "approveFuelPriceSubmissionBatchDAL",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "RPC call extracted from AST"
             ],
             "owner": "VCSM:vportDashboard",
             "ownerKind": "feature",
@@ -8188,19 +8217,19 @@
             "root": "apps/VCSM",
             "feature": "vportDashboard",
             "layer": "dal",
-            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
+            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
           },
           {
-            "operation": "update",
+            "operation": "rpc",
             "schema": null,
-            "table": "fuel_price_submissions",
-            "rpc": null,
+            "table": null,
+            "rpc": "reject_fuel_price_submission_batch",
             "functionName": null,
-            "function": "updateFuelPriceSubmissionStatusDAL",
+            "function": "rejectFuelPriceSubmissionBatchDAL",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "RPC call extracted from AST"
             ],
             "owner": "VCSM:vportDashboard",
             "ownerKind": "feature",
@@ -8208,28 +8237,27 @@
             "root": "apps/VCSM",
             "feature": "vportDashboard",
             "layer": "dal",
-            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
+            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
           },
           {
-            "operation": "update",
+            "operation": "edge_function_file",
             "schema": null,
-            "table": "fuel_price_submission_reviews",
+            "table": null,
             "rpc": null,
-            "functionName": null,
-            "function": "markFuelPriceSubmissionReviewAppliedDAL",
+            "functionName": "_shared",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "edge function source file exists"
             ],
-            "owner": "VCSM:vportDashboard",
-            "ownerKind": "feature",
+            "owner": "apps",
             "appId": "VCSM",
             "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "layer": "dal",
-            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx"
           },
           {
             "operation": "delete",

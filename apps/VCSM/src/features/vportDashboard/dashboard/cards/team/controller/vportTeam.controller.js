@@ -11,7 +11,7 @@ import {
 } from "@/features/vportDashboard/dashboard/cards/team/dal/vportTeamInvite.write.dal";
 import { fetchResourceByIdDAL } from "@/features/vportDashboard/dashboard/cards/team/dal/vportTeamInvite.read.dal";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 async function resolveProfileId(actorId) {
@@ -28,7 +28,7 @@ export async function getTeamMembersController(actorId, callerActorId) {
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor
     // is the VPORT itself, so ownership is resolved from the auth session via
     // actor_owners rather than trusting the UI-passed caller actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     const profileId = await resolveProfileId(actorId);
     return fetchTeamMembersByProfileId(profileId);
   } catch (error) {
@@ -46,7 +46,7 @@ export async function addTeamMemberController(callerActorId, actorId, { name }) 
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor
     // is the VPORT itself, so ownership is resolved from the auth session via
     // actor_owners rather than trusting the UI-passed caller actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
 
     const profileId = await resolveProfileId(actorId);
     return insertTeamMemberDAL({ profileId, ownerActorId: actorId, name: String(name).trim() });
@@ -103,7 +103,7 @@ export async function sendTeamRequestController(callerActorId, actorId, barberVp
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor
     // is the VPORT itself, so ownership is resolved from the auth session via
     // actor_owners rather than trusting the UI-passed caller actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
 
     const profileId = await resolveProfileId(actorId);
 
@@ -151,7 +151,7 @@ export async function removeTeamMemberController(callerActorId, resourceId) {
 
     if (!vportActorId) throw new Error("Could not resolve VPORT ownership.");
 
-    await assertSessionOwnsVportActorController({ targetActorId: vportActorId });
+    await assertSessionOwnsActorController({ targetActorId: vportActorId });
 
     return deleteTeamResourceDAL({ resourceId, profileId: resource.profile_id });
   } catch (error) {

@@ -3,6 +3,7 @@ import { getLocaleForCountryCode } from "@/data/repositories/geo.repo";
 import { listServices, listSpecialtiesByService } from "@/data/repositories/service.repo";
 import {
   listProvidersByCityAndService,
+  listProvidersByCountryAndService,
   listProvidersByCountryCitySlug,
   listProvidersByCountryCitySlugAndService
 } from "@/data/repositories/provider.repo";
@@ -10,6 +11,7 @@ import { getPriceAggregate } from "@/data/repositories/aggregate.repo";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
+import { isCountryServiceIndexable } from "@/seo/qualityGuards";
 import {
   cityPath,
   cityServicePath,
@@ -29,6 +31,24 @@ export function renderCountryCityPage(graph) {
   const providers = listProvidersByCountryCitySlug(graph.country.code, graph.city.slug);
   const services = listServices();
   const localities = listLocalitiesByCity(graph.city.id);
+
+  // The [service] route calls notFound() when a city/service combo has zero
+  // providers, so linking the full service taxonomy here produces dead 404
+  // links (e.g. /us/san-lorenzo/hair-color when the city only has a barber).
+  // Restrict service links to services that actually have coverage.
+  const cityServiceIds = new Set(
+    providers.flatMap((item) => item.providerServices.map((ps) => ps.serviceId))
+  );
+  const cityServices = services.filter((service) => cityServiceIds.has(service.id));
+  // Country-hub links must mirror the static-export indexability gate
+  // (>=3 providers across >=2 cities), or they 404 in the production export.
+  const countryServices = services.filter((service) => {
+    const countryServiceProviders = listProvidersByCountryAndService(graph.country.code, service.id);
+    const cityCount = new Set(
+      countryServiceProviders.map((item) => item.provider.primaryCitySlug).filter(Boolean)
+    ).size;
+    return isCountryServiceIndexable(countryServiceProviders.length, cityCount);
+  });
 
   const locationTail = [graph.region?.code ?? graph.city.stateCode, graph.country.code]
     .filter(Boolean)
@@ -50,17 +70,17 @@ export function renderCountryCityPage(graph) {
   ];
 
   const relatedLinks = dedupeInternalLinks([
-    ...services.map((service) => ({
+    ...cityServices.map((service) => ({
       label: `${service.name} in ${graph.city.name}`,
       href: countryCityServicePath(graph.country.slug, graph.city.slug, service.slug)
     })),
     ...localities.flatMap((locality) =>
-      services.slice(0, 2).map((service) => ({
+      cityServices.slice(0, 2).map((service) => ({
         label: `${service.name} in ${locality.name}`,
         href: countryCityLocalityServicePath(graph.country.slug, graph.city.slug, locality.slug, service.slug)
       }))
     ),
-    ...services.map((service) => ({
+    ...countryServices.map((service) => ({
       label: `${service.name} across ${graph.country.name}`,
       href: countryServiceHubPath(graph.country.slug, service.slug)
     })),

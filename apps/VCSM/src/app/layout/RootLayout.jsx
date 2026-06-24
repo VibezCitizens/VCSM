@@ -7,6 +7,7 @@ import { IOSDebugHUD, IOSProdRouteDebugger } from "@/app/platform/ios";
 import { hideLaunchSplash } from "@/shared/lib/hideLaunchSplash";
 import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
+import { ClaimOnboardingBanner } from "@/features/claimOnboarding/adapters/claimOnboarding.adapter";
 
 export default function RootLayout() {
   const { pathname } = useLocation();
@@ -85,7 +86,13 @@ export default function RootLayout() {
         <PageContainer>
           {/* Gate content on identity resolution for authenticated routes.
               Auth routes (login/register/etc.) bypass this — identity is irrelevant there. */}
-          {(isAuthRoute || !identityLoading) ? <Outlet /> : null}
+          {(isAuthRoute || !identityLoading) ? (
+            <>
+              {/* T7: self-gating approved-claim onboarding entry point. */}
+              {!isAuthRoute ? <ClaimOnboardingBanner /> : null}
+              <Outlet />
+            </>
+          ) : null}
         </PageContainer>
       </main>
 

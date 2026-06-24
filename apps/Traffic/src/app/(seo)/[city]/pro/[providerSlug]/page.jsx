@@ -26,6 +26,7 @@ import {
 } from "@/data/dal/providerProfile.read.dal";
 import { buildProviderPageModel } from "@/data/mappers/pageModel.model";
 import { buildProviderMetadata } from "@/seo/metadata";
+import { providerMetaDescription } from "@/seo/providerBio";
 import { buildBreadcrumbSchema, buildProviderSchema } from "@/seo/schemaOrg";
 import {
   countryCityPath,
@@ -156,9 +157,7 @@ export async function generateMetadataForLocale({ params }, routeLocale = null) 
 
   const cityName = graph.city?.name ?? graph.provider.primaryCityName ?? null;
   const title = `${graph.provider.displayName}${cityName ? ` in ${cityName}, ${graph.country.name}` : ""}`;
-  const description =
-    graph.provider.shortBio ||
-    `Learn more about ${graph.provider.displayName}. View services, reviews, and book directly.`;
+  const description = providerMetaDescription(graph.provider);
 
   return buildProviderMetadata({
     title,
@@ -246,7 +245,7 @@ export default async function CountryProviderPage({ params }) {
     buildBreadcrumbSchema(breadcrumbs),
     buildProviderSchema({
       providerName: provider.displayName,
-      description: provider.shortBio,
+      description: providerMetaDescription(provider),
       providerPath: countryProviderPath(country.slug, provider.slug),
       ratingAvg: stats?.ratingAvg,
       reviewCount: stats?.reviewCount,

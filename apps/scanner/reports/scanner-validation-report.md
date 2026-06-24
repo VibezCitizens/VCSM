@@ -1,6 +1,6 @@
 # Scanner Validation Report
 
-Generated: 2026-06-08T13:39:06.992Z
+Generated: 2026-06-24T06:36:32.067Z
 
 ## Schema Validation Results
 
@@ -60,14 +60,14 @@ Generated: 2026-06-08T13:39:06.992Z
 
 ## Route Validation Results
 
-- Routes indexed: 243
-- Route nodes retain `RouteNode`: 243
-- Confidence: HIGH: 243
+- Routes indexed: 253
+- Route nodes retain `RouteNode`: 253
+- Confidence: HIGH: 253
 
 ## Dependency Validation Results
 
-- Dependencies indexed: 385
-- Confidence: HIGH: 377, MEDIUM: 8
+- Dependencies indexed: 404
+- Confidence: HIGH: 397, MEDIUM: 7
 
 ## Engine Validation Results
 
@@ -79,11 +79,11 @@ Generated: 2026-06-08T13:39:06.992Z
 
 | Map | Distribution |
 |---|---|
-| route-map.json | HIGH: 243 |
-| dependency-map.json | HIGH: 377, MEDIUM: 8 |
-| write-surface-map.json | HIGH: 491 |
-| rpc-map.json | HIGH: 73 |
-| edge-function-map.json | HIGH: 52 |
+| route-map.json | HIGH: 253 |
+| dependency-map.json | HIGH: 397, MEDIUM: 7 |
+| write-surface-map.json | HIGH: 500 |
+| rpc-map.json | HIGH: 82 |
+| edge-function-map.json | HIGH: 59 |
 | engine-candidates.json | MEDIUM: 8, HIGH: 9 |
 
 ## ARCHITECT Readiness

@@ -8,7 +8,8 @@ export function DirectoryHeroClient({
   providerCount,
   placeLabel,
   placeLabelEs,
-  priceParts = []
+  priceParts = [],
+  variant = "card"
 }) {
   const { lang, t } = useTrafficLanguage();
 
@@ -22,6 +23,10 @@ export function DirectoryHeroClient({
 
   const place = lang === "es" ? (placeLabelEs || placeLabel) : placeLabel;
   const scopeLabel = t("directory.scope", { place });
+
+  if (variant === "hero") {
+    return <p className="homepage-hero-copy">{compareCopy}</p>;
+  }
 
   return (
     <>

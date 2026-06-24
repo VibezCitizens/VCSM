@@ -2,6 +2,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // @ts-ignore — resolved via deno.json import map at Deno runtime; VS Code TS server does not resolve npm: specifiers
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
+// @ts-ignore — resolved via deno.json import map at Deno runtime; VS Code TS server does not resolve npm: specifiers
+import React from "react";
+import { renderEmail } from "../_shared/emails/render/renderEmail.js";
+import { CitizenInviteEmail } from "../_shared/emails/templates/CitizenInviteEmail.jsx";
 
 const ALLOWED_ORIGIN = "https://vibezcitizens.com";
 
@@ -51,129 +55,9 @@ async function sendInviteEmail({
   inviterName: string;
   inviteLink: string;
 }): Promise<void> {
-  const safeInviterName = escapeHtml(inviterName);
-  const safeInviteLink = escapeHtml(inviteLink);
-
-  const VIBEZ_LOGO_URL = "https://vibezcitizens.com/vibez-icon-512x512.png";
-
-  const htmlBody = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>You're invited to Vibez Citizens</title>
-</head>
-<body style="margin:0;padding:0;background-color:#0b0b0f;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
-
-  <!-- Outer wrapper -->
-  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#0b0b0f" style="background-color:#0b0b0f;">
-    <tr>
-      <td align="center" valign="top" style="padding:40px 16px 56px;">
-
-        <!-- Card -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;background-color:#13111f;border-radius:20px;">
-
-          <!-- Header strip -->
-          <tr>
-            <td bgcolor="#5b21b6" style="background:linear-gradient(135deg,#3b0764 0%,#5b21b6 50%,#7c5cff 100%);padding:20px 28px;border-radius:20px 20px 0 0;">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                  <td width="58" valign="middle">
-                    <img
-                      src="${VIBEZ_LOGO_URL}"
-                      alt="Vibez Citizens"
-                      width="48"
-                      height="48"
-                      style="display:block;border:0;outline:none;text-decoration:none;border-radius:10px;width:48px;height:48px;"
-                    />
-                  </td>
-                  <td valign="middle" style="padding-left:10px;">
-                    <span style="font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Vibez Citizens</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:36px 32px 28px;">
-
-              <!-- Heading -->
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.4px;line-height:1.2;">
-                You're invited
-              </p>
-
-              <!-- Spacer -->
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr><td height="22" style="font-size:0;line-height:0;">&nbsp;</td></tr>
-              </table>
-
-              <!-- Body copy -->
-              <p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#b8c0cc;line-height:1.75;">
-                <strong style="color:#ffffff;">${safeInviterName}</strong> invited you to join Vibez Citizens.
-              </p>
-
-              <p style="margin:0 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#b8c0cc;line-height:1.75;">
-                Create your profile, discover local businesses, and connect with your community.
-              </p>
-
-              <!-- CTA button -->
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="border-radius:12px;" bgcolor="#7c5cff">
-                    <a href="${safeInviteLink}"
-                       style="display:inline-block;padding:14px 22px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:12px;background-color:#7c5cff;"
-                    >Join Vibez Citizens</a>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Bottom spacer -->
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr><td height="28" style="font-size:0;line-height:0;">&nbsp;</td></tr>
-              </table>
-
-              <!-- Disclaimer -->
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#4a4a5a;line-height:1.6;">
-                If you didn't expect this invitation, you can ignore this email.
-              </p>
-
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="padding:14px 32px 28px;border-top:1px solid #1e1a30;">
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#4a4a5a;line-height:1.5;text-align:center;">
-                &#x2014; Vibez Citizens
-              </p>
-            </td>
-          </tr>
-
-        </table>
-
-      </td>
-    </tr>
-  </table>
-
-</body>
-</html>`;
-
-  const textBody = [
-    `You're invited to Vibez Citizens`,
-    ``,
-    `${inviterName} invited you to join Vibez Citizens.`,
-    ``,
-    `Create your profile, discover local businesses, and connect with your community.`,
-    ``,
-    `Join Vibez Citizens:`,
-    inviteLink,
-    ``,
-    `If you didn't expect this invitation, you can ignore this email.`,
-    ``,
-    `— Vibez Citizens`,
-  ].join("\n");
+  const { html: htmlBody, text: textBody } = await renderEmail(
+    React.createElement(CitizenInviteEmail, { inviterName, inviteLink }),
+  );
 
   await sesClient.send(
     new SendEmailCommand({

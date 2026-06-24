@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "screenCount": 359,
+  "screenCount": 364,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.621Z",
+    "generatedAt": "2026-06-24T06:36:27.095Z",
     "screens": [
       {
         "id": "apps/Traffic/src/features/answers/screens/AnswerDetail.view.jsx:AnswerDetail.view",
@@ -56,18 +56,51 @@
         ]
       },
       {
-        "id": "apps/Traffic/src/features/answers/screens/AnswersModeration.view.jsx:AnswersModeration.view",
+        "id": "apps/Traffic/src/features/legal/screens/ContactScreen.jsx:ContactScreen",
         "appId": "Traffic",
-        "feature": "answers",
-        "file": "apps/Traffic/src/features/answers/screens/AnswersModeration.view.jsx",
-        "component": "AnswersModeration.view",
+        "feature": "legal",
+        "file": "apps/Traffic/src/features/legal/screens/ContactScreen.jsx",
+        "component": "ContactScreen",
+        "screenKind": "final-screen",
+        "routes": [
+          "/contact"
+        ],
+        "access": "public",
+        "layer": "screen",
+        "confidence": "HIGH",
+        "evidence": [
+          "screen component discovered from file path",
+          "linked to route element"
+        ]
+      },
+      {
+        "id": "apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx:PrivacyScreen",
+        "appId": "Traffic",
+        "feature": "legal",
+        "file": "apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx",
+        "component": "PrivacyScreen",
         "screenKind": "unknown-screen",
         "routes": [],
         "access": "unknown",
         "layer": "screen",
-        "confidence": "LOW",
+        "confidence": "MEDIUM",
         "evidence": [
-          "screen file discovered from path pattern, no named screen component found"
+          "screen component discovered from file path"
+        ]
+      },
+      {
+        "id": "apps/Traffic/src/features/legal/screens/TermsScreen.jsx:TermsScreen",
+        "appId": "Traffic",
+        "feature": "legal",
+        "file": "apps/Traffic/src/features/legal/screens/TermsScreen.jsx",
+        "component": "TermsScreen",
+        "screenKind": "unknown-screen",
+        "routes": [],
+        "access": "unknown",
+        "layer": "screen",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "screen component discovered from file path"
         ]
       },
       {
@@ -496,6 +529,44 @@
         "confidence": "LOW",
         "evidence": [
           "screen file discovered from path pattern, no named screen component found"
+        ]
+      },
+      {
+        "id": "apps/VCSM/src/features/claim/screens/ClaimProfileScreen.jsx:ClaimProfileScreen",
+        "appId": "VCSM",
+        "feature": "claim",
+        "file": "apps/VCSM/src/features/claim/screens/ClaimProfileScreen.jsx",
+        "component": "ClaimProfileScreen",
+        "screenKind": "view-screen",
+        "routes": [
+          "/claim-profile"
+        ],
+        "access": "public",
+        "layer": "screen",
+        "confidence": "HIGH",
+        "evidence": [
+          "screen component discovered from file path",
+          "linked to route element",
+          "hooks: useClaimProfile"
+        ]
+      },
+      {
+        "id": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx:ClaimApprovedScreen",
+        "appId": "VCSM",
+        "feature": "claimOnboarding",
+        "file": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+        "component": "ClaimApprovedScreen",
+        "screenKind": "view-screen",
+        "routes": [
+          "/business/welcome"
+        ],
+        "access": "public",
+        "layer": "screen",
+        "confidence": "HIGH",
+        "evidence": [
+          "screen component discovered from file path",
+          "linked to route element",
+          "hooks: useNavigate, useIdentity, useClaimApprovalDiscovery, useState"
         ]
       },
       {
@@ -1189,6 +1260,21 @@
         "feature": "notifications",
         "file": "apps/VCSM/src/features/notifications/types/follow/FollowRequestItem.view.jsx",
         "component": "FollowRequestItem.view",
+        "screenKind": "unknown-screen",
+        "routes": [],
+        "access": "unknown",
+        "layer": "screen",
+        "confidence": "LOW",
+        "evidence": [
+          "screen file discovered from path pattern, no named screen component found"
+        ]
+      },
+      {
+        "id": "apps/VCSM/src/features/notifications/types/gasprices/GasPriceSuggestionNotificationItem.view.jsx:GasPriceSuggestionNotificationItem.view",
+        "appId": "VCSM",
+        "feature": "notifications",
+        "file": "apps/VCSM/src/features/notifications/types/gasprices/GasPriceSuggestionNotificationItem.view.jsx",
+        "component": "GasPriceSuggestionNotificationItem.view",
         "screenKind": "unknown-screen",
         "routes": [],
         "access": "unknown",

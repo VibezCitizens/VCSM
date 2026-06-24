@@ -26,8 +26,8 @@ vi.mock("@/features/vportDashboard/dal/read/vportBookingsInRange.read.dal", () =
   listVportBookingsInRangeDAL: vi.fn(),
 }));
 
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 vi.mock("@/features/notifications/adapters/notifications.adapter", () => ({
@@ -38,7 +38,7 @@ import { updateVportBookingDAL } from "@/features/vportDashboard/dal/write/updat
 import { getVportBookingByIdDAL } from "@/features/vportDashboard/dal/read/vportBookingById.read.dal";
 import { getVportActorIdByProfileIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { listVportBookingsInRangeDAL } from "@/features/vportDashboard/dal/read/vportBookingsInRange.read.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 import {
   rescheduleBookingController,
@@ -63,7 +63,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   getVportBookingByIdDAL.mockResolvedValue(activeBooking);
   getVportActorIdByProfileIdDAL.mockResolvedValue(VPORT_ACTOR_ID);
-  assertSessionOwnsVportActorController.mockResolvedValue({ ok: true });
+  assertSessionOwnsActorController.mockResolvedValue({ ok: true });
   updateVportBookingDAL.mockResolvedValue({ ...activeBooking, status: "confirmed" });
   listVportBookingsInRangeDAL.mockResolvedValue([]);
   publishVcsmNotification.mockResolvedValue(undefined);
@@ -77,7 +77,7 @@ describe("updateBookingStatusController booking profile scope", () => {
       callerActorId: OWNER_ACTOR_ID,
     });
 
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: VPORT_ACTOR_ID,
     });
     expect(updateVportBookingDAL).toHaveBeenCalledWith({
@@ -88,7 +88,7 @@ describe("updateBookingStatusController booking profile scope", () => {
   });
 
   it("does not call update DAL when owner authorization fails", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(new Error("not owner"));
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
 
     await expect(
       updateBookingStatusController({

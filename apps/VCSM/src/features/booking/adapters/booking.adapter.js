@@ -14,12 +14,10 @@ export { default as useQrLinks }                   from "@/features/booking/hook
 export { useBookingOps }     from "@/features/booking/hooks/useBookingOps";
 export { useBookingServices } from "@/features/booking/hooks/useBookingServices";
 export { default as useBookingHistory } from "@/features/booking/hooks/useBookingHistory";
-// Approved §5.3 exception: shared cross-feature ownership assertion primitive (9 call sites across dashboard controllers).
-export { default as assertActorOwnsVportActorController } from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
-// Approved §5.3 exception: session-derived ownership assertion for self-read operations (Identity Contract §1.3 compliance).
-export { default as assertSessionOwnsVportActorController } from "@/features/booking/controllers/assertSessionOwnsVportActor.controller";
-// Approved §5.3 exception: actor kind/void check for self-ownership shortcut in checkVportOwnership (1 call site, dashboard controller only).
-export { default as getActorByIdDAL } from "@/features/booking/dal/getActorById.dal";
+// IDENTITY-BOUNDARY-005: ownership authority no longer lives here. Actor ownership
+// assertions are owned by features/authorization (vc.actor_owners). Consumers import
+// assertActorOwnsActorController / assertSessionOwnsActorController from
+// @/features/authorization/adapters/authorization.adapter directly.
 
 // §5.3 exception: booking calendar model utilities — pure date/slot computation, no data access.
 // Re-exported here so profiles/booking UI never imports booking internals directly.

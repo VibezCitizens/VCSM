@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "behaviorOwnershipCount": 1113,
+  "behaviorOwnershipCount": 1122,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:04.978Z",
+    "generatedAt": "2026-06-24T06:36:30.047Z",
     "ownership": [
       {
         "behaviorId": "BEH-ACTORS-ACTORS-001",
@@ -1558,6 +1558,20 @@
         "evidence": []
       },
       {
+        "behaviorId": "BEH-AUTHORIZATION-AUTHORIZATION-003",
+        "feature": "authorization",
+        "module": "authorization",
+        "featureOwner": "VCSM:authorization",
+        "moduleOwner": "VCSM:authorization/authorization",
+        "codeOwner": "apps/VCSM/src/features/authorization",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
         "behaviorId": "BEH-BLOCK-BLOCK-001",
         "feature": "block",
         "module": "block",
@@ -2875,46 +2889,6 @@
       },
       {
         "behaviorId": "BEH-BOOKING-BOOKING-043",
-        "feature": "booking",
-        "module": "booking",
-        "featureOwner": "VCSM:booking",
-        "moduleOwner": "VCSM:booking/booking",
-        "codeOwner": "apps/VCSM/src/features/booking",
-        "decisionOwner": null,
-        "securityOwner": "Security governance document",
-        "dataOwner": null,
-        "documentationOwner": "Governance document set",
-        "confidence": "MEDIUM",
-        "evidence": [
-          "ZZnotforproduction/APPS/VCSM/features/booking/ARCHITECTURE.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/BEHAVIOR.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/CURRENT_STATUS.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/README.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/SECURITY.md"
-        ]
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-044",
-        "feature": "booking",
-        "module": "booking",
-        "featureOwner": "VCSM:booking",
-        "moduleOwner": "VCSM:booking/booking",
-        "codeOwner": "apps/VCSM/src/features/booking",
-        "decisionOwner": null,
-        "securityOwner": "Security governance document",
-        "dataOwner": null,
-        "documentationOwner": "Governance document set",
-        "confidence": "MEDIUM",
-        "evidence": [
-          "ZZnotforproduction/APPS/VCSM/features/booking/ARCHITECTURE.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/BEHAVIOR.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/CURRENT_STATUS.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/README.md",
-          "ZZnotforproduction/APPS/VCSM/features/booking/SECURITY.md"
-        ]
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-045",
         "feature": "booking",
         "module": "booking",
         "featureOwner": "VCSM:booking",
@@ -4383,6 +4357,90 @@
           "ZZnotforproduction/APPS/VCSM/features/chat/modules/start/CURRENT_STATUS.md",
           "ZZnotforproduction/APPS/VCSM/features/chat/modules/start/SECURITY.md"
         ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-001",
+        "feature": "claim",
+        "module": "claim",
+        "featureOwner": "VCSM:claim",
+        "moduleOwner": "VCSM:claim/claim",
+        "codeOwner": "apps/VCSM/src/features/claim",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-002",
+        "feature": "claim",
+        "module": "claim",
+        "featureOwner": "VCSM:claim",
+        "moduleOwner": "VCSM:claim/claim",
+        "codeOwner": "apps/VCSM/src/features/claim",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-003",
+        "feature": "claim",
+        "module": "claim",
+        "featureOwner": "VCSM:claim",
+        "moduleOwner": "VCSM:claim/claim",
+        "codeOwner": "apps/VCSM/src/features/claim",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-004",
+        "feature": "claim",
+        "module": "claim",
+        "featureOwner": "VCSM:claim",
+        "moduleOwner": "VCSM:claim/claim",
+        "codeOwner": "apps/VCSM/src/features/claim",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-001",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "featureOwner": "VCSM:claimOnboarding",
+        "moduleOwner": "VCSM:claimOnboarding/claimOnboarding",
+        "codeOwner": "apps/VCSM/src/features/claimOnboarding",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-002",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "featureOwner": "VCSM:claimOnboarding",
+        "moduleOwner": "VCSM:claimOnboarding/claimOnboarding",
+        "codeOwner": "apps/VCSM/src/features/claimOnboarding",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
       },
       {
         "behaviorId": "BEH-DASHBOARD-BOOKINGS-001",
@@ -5936,11 +5994,13 @@
         "moduleOwner": "VCSM:flyerBuilder/flyerBuilder",
         "codeOwner": "apps/VCSM/src/features/flyerBuilder",
         "decisionOwner": null,
-        "securityOwner": null,
+        "securityOwner": "Security governance document",
         "dataOwner": null,
-        "documentationOwner": null,
-        "confidence": "LOW",
-        "evidence": []
+        "documentationOwner": "Governance document set",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md"
+        ]
       },
       {
         "behaviorId": "BEH-FLYERBUILDER-FLYERBUILDER-002",
@@ -5950,11 +6010,13 @@
         "moduleOwner": "VCSM:flyerBuilder/flyerBuilder",
         "codeOwner": "apps/VCSM/src/features/flyerBuilder",
         "decisionOwner": null,
-        "securityOwner": null,
+        "securityOwner": "Security governance document",
         "dataOwner": null,
-        "documentationOwner": null,
-        "confidence": "LOW",
-        "evidence": []
+        "documentationOwner": "Governance document set",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md"
+        ]
       },
       {
         "behaviorId": "BEH-FLYERBUILDER-FLYERBUILDER-003",
@@ -5964,11 +6026,13 @@
         "moduleOwner": "VCSM:flyerBuilder/flyerBuilder",
         "codeOwner": "apps/VCSM/src/features/flyerBuilder",
         "decisionOwner": null,
-        "securityOwner": null,
+        "securityOwner": "Security governance document",
         "dataOwner": null,
-        "documentationOwner": null,
-        "confidence": "LOW",
-        "evidence": []
+        "documentationOwner": "Governance document set",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md"
+        ]
       },
       {
         "behaviorId": "BEH-FLYERBUILDER-FLYERBUILDER-004",
@@ -5978,11 +6042,13 @@
         "moduleOwner": "VCSM:flyerBuilder/flyerBuilder",
         "codeOwner": "apps/VCSM/src/features/flyerBuilder",
         "decisionOwner": null,
-        "securityOwner": null,
+        "securityOwner": "Security governance document",
         "dataOwner": null,
-        "documentationOwner": null,
-        "confidence": "LOW",
-        "evidence": []
+        "documentationOwner": "Governance document set",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md"
+        ]
       },
       {
         "behaviorId": "BEH-HYDRATION-HYDRATOR-001",
@@ -12338,20 +12404,6 @@
         "evidence": []
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-155",
-        "feature": "profiles",
-        "module": "kinds",
-        "featureOwner": "VCSM:profiles",
-        "moduleOwner": "VCSM:profiles/kinds",
-        "codeOwner": "apps/VCSM/src/features/profiles",
-        "decisionOwner": null,
-        "securityOwner": null,
-        "dataOwner": null,
-        "documentationOwner": null,
-        "confidence": "LOW",
-        "evidence": []
-      },
-      {
         "behaviorId": "BEH-PROFILES-PROFILE-001",
         "feature": "profiles",
         "module": "profile",
@@ -17878,6 +17930,76 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-092",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "featureOwner": "VCSM:vportDashboard",
+        "moduleOwner": "VCSM:vportDashboard/dashboard",
+        "codeOwner": "apps/VCSM/src/features/vportDashboard",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-093",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "featureOwner": "VCSM:vportDashboard",
+        "moduleOwner": "VCSM:vportDashboard/dashboard",
+        "codeOwner": "apps/VCSM/src/features/vportDashboard",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-094",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "featureOwner": "VCSM:vportDashboard",
+        "moduleOwner": "VCSM:vportDashboard/dashboard",
+        "codeOwner": "apps/VCSM/src/features/vportDashboard",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-095",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "featureOwner": "VCSM:vportDashboard",
+        "moduleOwner": "VCSM:vportDashboard/dashboard",
+        "codeOwner": "apps/VCSM/src/features/vportDashboard",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-096",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "featureOwner": "VCSM:vportDashboard",
+        "moduleOwner": "VCSM:vportDashboard/dashboard",
+        "codeOwner": "apps/VCSM/src/features/vportDashboard",
+        "decisionOwner": null,
+        "securityOwner": null,
+        "dataOwner": null,
+        "documentationOwner": null,
+        "confidence": "LOW",
+        "evidence": []
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-097",
         "feature": "vportDashboard",
         "module": "dashboard",
         "featureOwner": "VCSM:vportDashboard",

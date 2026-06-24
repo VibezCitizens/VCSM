@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
   "engineEntrypointCount": 9,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "generatedAt": "2026-06-24T06:36:28.651Z",
     "engines": [
       {
         "engine": "booking",
@@ -1231,7 +1231,7 @@
             "status": "ACTIVE"
           },
           "hydrateAndReturnSummaries": {
-            "consumerCount": 8,
+            "consumerCount": 9,
             "consumers": [
               "apps/VCSM/src/features/CentralFeed/dal/feed.posts.dal.js",
               "apps/VCSM/src/features/CentralFeed/pipeline/fetchFeedPage.pipeline.js",
@@ -1240,6 +1240,7 @@
               "apps/VCSM/src/features/notifications/setup.js",
               "apps/VCSM/src/features/post/postcard/dal/post.read.dal.js",
               "apps/VCSM/src/features/post/postcard/dal/postMentions.read.dal.js",
+              "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal.js",
               "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js"
             ],
             "status": "ACTIVE"

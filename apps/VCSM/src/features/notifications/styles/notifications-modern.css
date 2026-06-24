@@ -16,7 +16,9 @@
 .notifications-modern-shell {
   max-width: 600px;
   margin: 0 auto;
-  padding: 12px 16px 40px;
+  /* Clear the floating bottom nav so the last card (and its actions) can be
+     scrolled fully into view above the rail + safe-area inset. */
+  padding: 12px 16px calc(var(--vc-bottom-nav-total-height, 58px) + 32px);
 }
 
 /* ── Page header ── */
@@ -111,6 +113,93 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+/* ── End-of-feed endcap (premium "all caught up") ── */
+.noti-endcap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 56px 24px 8px;
+  animation: noti-endcap-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes noti-endcap-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* hairline divider that fades out at both edges */
+.noti-endcap-divider {
+  width: 100%;
+  max-width: 168px;
+  height: 1px;
+  margin-bottom: 30px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.10) 50%,
+    transparent 100%
+  );
+}
+
+/* glyph with a soft radial halo + neon glow */
+.noti-endcap-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 16px;
+  color: rgba(178, 152, 255, 0.92);
+}
+.noti-endcap-icon::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(124, 92, 246, 0.30) 0%,
+    rgba(124, 92, 246, 0.10) 40%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+.noti-endcap-icon svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 6px rgba(124, 92, 246, 0.55));
+}
+
+.noti-endcap-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.60);
+}
+.noti-endcap-sub {
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.30);
+}
+
+/* whisper-soft fade into the page background */
+.noti-endcap-fade {
+  width: 100%;
+  height: 60px;
+  margin-top: 12px;
+  background: linear-gradient(180deg, transparent 0%, var(--vc-bg-0) 100%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noti-endcap { animation: none; }
 }
 
 /* ── Notification card ── */

@@ -1,21 +1,921 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "edgeExecutionPathCount": 52,
+  "edgeExecutionPathCount": 118,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.246Z",
+    "generatedAt": "2026-06-24T06:36:27.849Z",
     "edgeExecutionPaths": [
       {
         "appId": "VCSM",
         "root": "apps/VCSM",
         "feature": null,
-        "edgeFunction": "_shared/securityHeaders",
-        "file": "apps/VCSM/functions/_shared/securityHeaders.js",
+        "sourceRoute": "*",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/booking-history",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/calendar",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/exchange",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/gas",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/leads",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/locksmith",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/portfolio",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/reviews",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/schedule",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/services",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/team-requests",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/dashboard/team",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/actor/:actorId/settings",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/business/welcome",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/CentralFeed",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/:conversationId",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/archived",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/new",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/requests",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/settings",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/settings/blocked",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/settings/inbox",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/settings/privacy",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/chat/spam",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/citizen/vibes",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/explore",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/invite",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/me",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/noti/post/:postId",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/notifications",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/post/:postId",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/post/:postId/edit",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/posts",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/posts/:postId",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/posts/:postId/edit",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/profile/:actorId",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/profile/:id/friends/top/edit",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/settings",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/u/:username",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/upload",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/void",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/ads",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/dashboard",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/dashboard/calendar",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/dashboard/exchange",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/dashboard/leads",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/dashboard/reviews",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/menu/flyer",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/menu/flyer/edit",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/menu/qr",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/:actorId/settings",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/chat",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/chat/:conversationId",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/inbox",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/notifications",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "sourceRoute": "/vport/restore",
+        "sourceScreen": "protectedAppRoutes",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "edgeFunction": "monitoring-ingest-error",
+        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+        "caller": "_send",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "edge function connected to traversed route files"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
         "caller": null,
         "confidence": "LOW",
         "evidence": [
@@ -23,12 +923,96 @@
         ]
       },
       {
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "answers",
-        "edgeFunction": "/api/answers/questions",
-        "file": "apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js",
-        "caller": "submitQuestion",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+        "caller": null,
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "edgeFunction": "_shared/securityHeaders",
+        "file": "apps/VCSM/functions/_shared/securityHeaders.js",
+        "caller": null,
         "confidence": "LOW",
         "evidence": [
           "edge function discovered without route execution path"
@@ -293,18 +1277,6 @@
         "edgeFunction": "monitoring-ingest-error",
         "file": "apps/VCSM/src/services/monitoring/monitoringClient.js",
         "caller": "captureFrontendError",
-        "confidence": "LOW",
-        "evidence": [
-          "edge function discovered without route execution path"
-        ]
-      },
-      {
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": null,
-        "edgeFunction": "monitoring-ingest-error",
-        "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
-        "caller": "_send",
         "confidence": "LOW",
         "evidence": [
           "edge function discovered without route execution path"

@@ -8,9 +8,29 @@
 
 .geo-coverage-shell {
   display: grid;
-  grid-template-columns: minmax(260px, 0.78fr) minmax(420px, 1.22fr);
+  grid-template-columns: minmax(280px, 35fr) minmax(440px, 65fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "explorer globe"
+    "explorer insights";
   gap: 1.25rem;
   align-items: stretch;
+}
+
+.geo-coverage-copy {
+  grid-area: explorer;
+}
+
+.geo-coverage-globe-card {
+  grid-area: globe;
+}
+
+/* Expansion Roadmap occupies the bottom-right "insights" cell (the former
+   Sponsored box). It brings its own card styling, so no shared card rule here. */
+.geo-coverage-spotlight {
+  grid-area: insights;
+  align-self: start;
+  margin-top: 0;
 }
 
 .geo-coverage-copy,
@@ -26,9 +46,9 @@
 }
 
 .geo-coverage-copy {
-  display: grid;
-  align-content: center;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
   min-height: 420px;
   padding: clamp(1.25rem, 3vw, 2rem);
   border-radius: 24px;
@@ -94,7 +114,7 @@
   display: grid;
   gap: 0.22rem;
   width: 100%;
-  margin-top: 0.1rem;
+  margin-top: 0;
   padding: 0.9rem;
   border: 1px solid rgba(139, 92, 246, 0.24);
   border-radius: 16px;
@@ -167,6 +187,47 @@
   position: absolute;
   inset: 0;
   min-height: 100%;
+}
+
+/* ── Coverage Insights (content group inside the Coverage Explorer card) ── */
+.geo-coverage-insights {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.geo-coverage-insights__title {
+  color: rgba(213, 203, 255, 0.72);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.geo-coverage-insights__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.geo-coverage-insights__stat {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(139, 92, 246, 0.14);
+  border-radius: 14px;
+  background: rgba(8, 10, 22, 0.58);
+}
+
+.geo-coverage-insights__stat strong {
+  color: var(--vc-text);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.geo-coverage-insights__stat small {
+  color: rgba(174, 166, 204, 0.68);
+  font-size: 0.74rem;
 }
 
 .geo-coverage-tooltip {
@@ -314,9 +375,176 @@
   font-weight: 800;
 }
 
+.geo-coverage-fallback__reason {
+  color: rgba(251, 191, 36, 0.78) !important;
+  font-size: 0.82rem;
+}
+
+/* ── Coverage explorer (drill-down: countries → states → cities) ──── */
+
+.geo-coverage-explorer {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.geo-coverage-explorer__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.geo-coverage-explorer__heading {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.geo-coverage-explorer__title {
+  color: var(--vc-text);
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.geo-coverage-explorer__count {
+  color: rgba(174, 166, 204, 0.62);
+  font-size: 0.76rem;
+}
+
+.geo-coverage-back {
+  justify-self: start;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgba(167, 139, 250, 0.9);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 140ms ease;
+}
+
+.geo-coverage-back:hover,
+.geo-coverage-back:focus-visible {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+.geo-coverage-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.geo-coverage-search-input,
+.geo-coverage-select {
+  min-height: 40px;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(8, 10, 22, 0.7);
+  color: rgba(218, 224, 255, 0.9);
+  font-size: 0.84rem;
+  font-family: var(--traffic-font-sans);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.geo-coverage-search-input {
+  min-width: 200px;
+}
+
+.geo-coverage-search-input:focus,
+.geo-coverage-select:focus {
+  border-color: rgba(139, 92, 246, 0.44);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.geo-coverage-search-input::placeholder {
+  color: rgba(155, 148, 190, 0.5);
+}
+
+.geo-coverage-fallback__list--grid {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+.geo-coverage-more {
+  justify-self: center;
+  width: fit-content;
+  margin-top: 0.1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.24);
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.08);
+  color: rgba(213, 203, 255, 0.9);
+  font-size: 0.8rem;
+  font-family: var(--traffic-font-sans);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.geo-coverage-more:hover {
+  border-color: rgba(167, 139, 250, 0.46);
+  background: rgba(139, 92, 246, 0.14);
+}
+
+.geo-coverage-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+}
+
+.geo-coverage-page-btn {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 0.55rem;
+  border: 1px solid rgba(139, 92, 246, 0.16);
+  border-radius: 10px;
+  background: rgba(8, 10, 22, 0.6);
+  color: rgba(213, 203, 255, 0.82);
+  font-size: 0.82rem;
+  font-family: var(--traffic-font-sans);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.geo-coverage-page-btn:hover:not(:disabled) {
+  border-color: rgba(167, 139, 250, 0.46);
+  background: rgba(15, 18, 35, 0.82);
+  color: #fff;
+}
+
+.geo-coverage-page-btn.is-active {
+  border-color: rgba(167, 139, 250, 0.6);
+  background: linear-gradient(118deg, rgba(124, 58, 237, 0.9), rgba(59, 130, 246, 0.9));
+  color: #fff;
+  font-weight: 700;
+}
+
+.geo-coverage-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.geo-coverage-page-ellipsis {
+  padding: 0 0.25rem;
+  color: rgba(174, 166, 204, 0.6);
+  font-size: 0.82rem;
+}
+
 @media (max-width: 980px) {
   .geo-coverage-shell {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "explorer"
+      "globe"
+      "insights";
   }
 
   .geo-coverage-copy {
@@ -338,6 +566,10 @@
     grid-template-columns: 1fr;
   }
 
+  .geo-coverage-insights__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .geo-coverage-globe-card {
     min-height: 360px;
     border-radius: 20px;
@@ -345,5 +577,22 @@
 
   .geo-coverage-fallback {
     padding: 0.8rem;
+  }
+
+  .geo-coverage-explorer__bar {
+    align-items: stretch;
+  }
+
+  .geo-coverage-toolbar {
+    width: 100%;
+  }
+
+  .geo-coverage-search-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .geo-coverage-fallback__list--grid {
+    grid-template-columns: 1fr;
   }
 }

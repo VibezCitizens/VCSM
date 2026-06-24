@@ -3,6 +3,7 @@
 import createVportActorMenuCategoryDAL from "@/features/profiles/kinds/vport/dal/menu/createVportActorMenuCategory.dal";
 import updateVportActorMenuCategoryDAL from "@/features/profiles/kinds/vport/dal/menu/updateVportActorMenuCategory.dal";
 import readVportActorMenuCategoriesDAL from "@/features/profiles/kinds/vport/dal/menu/readVportActorMenuCategories.dal";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 import { VportActorMenuCategoryModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenuCategory.model";
 
@@ -26,6 +27,10 @@ export async function saveVportActorMenuCategoryController({
   if (!actorId) {
     throw new Error("saveVportActorMenuCategoryController: actorId is required");
   }
+
+  // Bind the operation to the authenticated session's ownership of this vport
+  // actor before any read/write (parity with DELETE menu controllers).
+  await assertSessionOwnsActorController({ targetActorId: actorId });
 
   if (!name) {
     throw new Error("saveVportActorMenuCategoryController: name is required");

@@ -44,7 +44,7 @@ describe("gasprices SPIDER-MAN architecture coverage", () => {
     expect(finalSource).not.toMatch(/@supabase|supabaseClient|createClient/);
     expect(finalSource).not.toMatch(/\/dal\//);
     expect(finalSource).not.toContain("features/authorization");
-    expect(finalSource).not.toContain("assertActorOwnsVportActorController");
+    expect(finalSource).not.toContain("assertActorOwnsActorController");
   });
 
   it("keeps the FROZEN public gas screen on its own ownership path (no dashboard context)", () => {

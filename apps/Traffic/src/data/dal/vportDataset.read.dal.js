@@ -37,6 +37,14 @@ const PROVIDER_INDEX_PROJECTION = [
 
 let loggedVportDatasetError = false;
 
+// Supabase caps an unbounded select at ~1,000 rows, which silently truncated the
+// provider index. We page through the view with explicit .range() windows.
+// PAGE_SIZE matches Supabase's default max-rows so a full window means "more may
+// remain"; a short window means we have reached the end. MAX_PAGES is a defensive
+// stop far beyond the 1M-provider target (5,000 pages = 5M rows).
+const PROVIDER_INDEX_PAGE_SIZE = 1000;
+const PROVIDER_INDEX_MAX_PAGES = 5000;
+
 function normalizeCountryCode(value) {
   const countryCode = String(value ?? "").trim().toUpperCase();
   return /^[A-Z]{2}$/.test(countryCode) ? countryCode : null;
@@ -53,31 +61,67 @@ export async function readPublicTrazeProviderIndexRows(options = {}) {
     return null;
   }
 
-  let query = client
-    .schema("vport")
-    .from("public_traze_provider_index_v")
-    .select(PROVIDER_INDEX_PROJECTION)
-    .eq("is_active", true)
-    .eq("is_indexable", true)
-    .order("created_at", { ascending: false });
-
   const countryCode = normalizeCountryCode(options.countryCode);
-  if (countryCode) {
-    query = query.eq("country_code", countryCode);
+
+  // A fresh query per page. Ordering is a strict total order
+  // (created_at DESC, id ASC) — id is the unique view key, so range windows never
+  // overlap or skip rows even when created_at values tie (e.g. batch-seeded rows).
+  const buildPageQuery = (from, to) => {
+    let query = client
+      .schema("vport")
+      .from("public_traze_provider_index_v")
+      .select(PROVIDER_INDEX_PROJECTION)
+      .eq("is_active", true)
+      .eq("is_indexable", true)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to);
+
+    if (countryCode) {
+      query = query.eq("country_code", countryCode);
+    }
+
+    return query;
+  };
+
+  const rows = [];
+  let from = 0;
+  let page = 0;
+  let lastBatchSize = PROVIDER_INDEX_PAGE_SIZE;
+
+  while (lastBatchSize === PROVIDER_INDEX_PAGE_SIZE && page < PROVIDER_INDEX_MAX_PAGES) {
+    const to = from + PROVIDER_INDEX_PAGE_SIZE - 1;
+    const { data, error } = await buildPageQuery(from, to);
+
+    if (error) {
+      if (!loggedVportDatasetError) {
+        loggedVportDatasetError = true;
+        console.error("[vportDataset] public_traze_provider_index_v query failed:", error.message);
+      }
+      if (shouldRequireLiveProviderIndex()) {
+        throw new Error(`Traffic build could not read public_traze_provider_index_v: ${error.message}`);
+      }
+      return null;
+    }
+
+    const batch = data ?? [];
+    rows.push(...batch);
+    lastBatchSize = batch.length;
+    from += PROVIDER_INDEX_PAGE_SIZE;
+    page += 1;
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    if (!loggedVportDatasetError) {
-      loggedVportDatasetError = true;
-      console.error("[vportDataset] public_traze_provider_index_v query failed:", error.message);
-    }
-    if (shouldRequireLiveProviderIndex()) {
-      throw new Error(`Traffic build could not read public_traze_provider_index_v: ${error.message}`);
-    }
-    return null;
+  if (lastBatchSize === PROVIDER_INDEX_PAGE_SIZE && page >= PROVIDER_INDEX_MAX_PAGES) {
+    console.warn(
+      `[vportDataset] provider index pagination hit the ${PROVIDER_INDEX_MAX_PAGES}-page safety cap; ` +
+        `loaded ${rows.length} rows — output may be truncated.`
+    );
   }
 
-  return data ?? [];
+  console.info(
+    `[vportDataset] loaded ${rows.length} provider index rows` +
+      `${countryCode ? ` for ${countryCode}` : ""} across ${page} page(s).`
+  );
+
+  return rows;
 }

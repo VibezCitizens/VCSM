@@ -2,23 +2,16 @@
 
 import Link from "next/link";
 import { DirectoryBreadcrumbs } from "@/features/directories/components/DirectoryBreadcrumbs";
-import { DirectoryFilterRow } from "@/features/directories/components/DirectoryFilterRow";
 import { DirectoryCtaModules } from "@/features/conversion/adapters/conversion.adapter";
+import TrazeSearchBar from "@/shared/components/TrazeSearchBar";
+import TrazeHeroMap from "@/shared/components/TrazeHeroMap";
+import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
 import TrazeProviderCard from "@/shared/components/TrazeProviderCard";
 import { TrazeSection } from "@/shared/components/TrazeSection";
 import TrazeGeoExplorer from "@/shared/components/TrazeGeoExplorer";
 import { JsonLdScript } from "@/shared/components/JsonLdScript";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { useTrafficLanguage } from "@/lib/language";
-
-function StatPill({ value, label }) {
-  if (!value) return null;
-  return (
-    <span className="traze-stat-pill">
-      <strong>{value}</strong> {label}
-    </span>
-  );
-}
 
 function FeaturedProviders({ providers, lang, t }) {
   if (!providers?.length) return null;
@@ -58,7 +51,6 @@ export function CountryHubTemplate({
   breadcrumbs,
   schema,
   context,
-  stats,
   featuredProviders,
   geoData,
   serviceGroups,
@@ -72,29 +64,36 @@ export function CountryHubTemplate({
     <TrazePageShell>
       <JsonLdScript id="directory-schema" schema={schema} />
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <section className="traze-hero-card traze-page-hero">
-        <DirectoryBreadcrumbs items={breadcrumbs} />
-        <h1 className="traze-hero-title">
-          {t("directory.countryHubTitle", { country: countryName })}
-        </h1>
-        <p className="traze-hero-sub">{t("directory.countryHubSubtitle")}</p>
-        <div className="traze-stats-row">
-          <StatPill value={stats.providerCount} label={t("common.providers")} />
-          <StatPill value={stats.cityCount} label={t("directory.activeCities")} />
-          <StatPill value={stats.serviceCount} label={t("common.serviceTypes")} />
+      {/* ── Hero (homepage style + search) ────────────────── */}
+      <section className="homepage-hero">
+        <div className="homepage-hero-layout">
+          <div className="homepage-hero-content">
+            <DirectoryBreadcrumbs items={breadcrumbs} />
+            <h1 className="homepage-hero-title">
+              {t("directory.countryHubTitle", { country: countryName })}
+            </h1>
+            <p className="homepage-hero-copy">{t("directory.countryHubSubtitle")}</p>
+
+            <TrazeSearchBar
+              screenKey="home"
+              {...TRAZE_SCREEN_SEARCH.home}
+              locationOptions={locationOptions}
+              countryOptions={countryOptions}
+              selectedCountry={country.code}
+              showCountrySelector
+              showCitySelector
+              locationPlaceholder={{
+                en: "City, state, or country",
+                es: "Ciudad, estado o pais"
+              }}
+            />
+          </div>
+
+          <div className="homepage-hero-visual" aria-hidden="true">
+            <TrazeHeroMap />
+          </div>
         </div>
       </section>
-
-      {/* ── Search ────────────────────────────────────────── */}
-      <DirectoryFilterRow
-        locationLabel={countryName}
-        countrySlug={context.countrySlug}
-        countryCode={country.code}
-        citySlug={null}
-        locationOptions={locationOptions}
-        countryOptions={countryOptions}
-      />
 
       {/* ── Featured providers ────────────────────────────── */}
       <FeaturedProviders providers={featuredProviders} lang={lang} t={t} />

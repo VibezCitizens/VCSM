@@ -8,8 +8,11 @@
 @import "../styles/components/search-panel.css";
 @import "../styles/components/filters.css";
 @import "../styles/components/language-toggle.css";
+@import "../styles/components/traze-spotlight-carousel.css";
+@import "../styles/components/expansion-roadmap.css";
 @import "../styles/sections/hero.css";
 @import "../styles/sections/featured-providers.css";
+@import "../styles/sections/directory-spotlight.css";
 @import "../styles/sections/category-grid.css";
 @import "../styles/sections/geo-coverage.css";
 @import "../styles/sections/popular-searches.css";
@@ -22,4 +25,5 @@
 @import "../styles/pages/provider-profile.css";
 @import "../styles/pages/dashboard.css";
 @import "../styles/pages/terms.css";
+@import "../styles/pages/contact.css";
 @import "../styles/responsive.css";

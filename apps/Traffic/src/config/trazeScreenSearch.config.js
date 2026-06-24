@@ -20,8 +20,12 @@ export const TRAZE_SCREEN_SEARCH = {
     },
     showLocation: true,
     showUseLocation: false,
-    showQuickFilters: true,
-    quickFilters: ["open_now", "top_rated", "bookable", "near_me"],
+    // Directory pages render pre-built static provider lists and do not honor
+    // quick-filter chips (open_now / top_rated / bookable / near_me were
+    // decorative — they set ?filter= which the directory renderer ignores).
+    // Removed under TRAZE-SEARCH-002 so the UI matches what the page can do.
+    showQuickFilters: false,
+    quickFilters: [],
     submitMode: "filterDirectory"
   },
 

@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "behaviorCoverageCount": 1113,
+  "behaviorCoverageCount": 1122,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:04.978Z",
+    "generatedAt": "2026-06-24T06:36:30.047Z",
     "coverage": [
       {
         "behaviorId": "BEH-ACTORS-ACTORS-001",
@@ -1115,6 +1115,18 @@
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
+        "behaviorId": "BEH-AUTHORIZATION-AUTHORIZATION-003",
+        "feature": "authorization",
+        "module": "authorization",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
         "behaviorId": "BEH-BLOCK-BLOCK-001",
         "feature": "block",
         "module": "block",
@@ -1884,30 +1896,6 @@
       },
       {
         "behaviorId": "BEH-BOOKING-BOOKING-043",
-        "feature": "booking",
-        "module": "booking",
-        "architectureCoverage": "COMPLETE",
-        "behaviorCoverage": "COMPLETE",
-        "securityCoverage": "COMPLETE",
-        "ownershipCoverage": "PARTIAL",
-        "testCoverage": "PARTIAL",
-        "policyCoverage": "PARTIAL",
-        "codeSurfaceCoverage": "PARTIAL"
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-044",
-        "feature": "booking",
-        "module": "booking",
-        "architectureCoverage": "COMPLETE",
-        "behaviorCoverage": "COMPLETE",
-        "securityCoverage": "COMPLETE",
-        "ownershipCoverage": "PARTIAL",
-        "testCoverage": "PARTIAL",
-        "policyCoverage": "PARTIAL",
-        "codeSurfaceCoverage": "PARTIAL"
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-045",
         "feature": "booking",
         "module": "booking",
         "architectureCoverage": "COMPLETE",
@@ -2924,6 +2912,78 @@
         "ownershipCoverage": "PARTIAL",
         "testCoverage": "MISSING",
         "policyCoverage": "PARTIAL",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-001",
+        "feature": "claim",
+        "module": "claim",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-002",
+        "feature": "claim",
+        "module": "claim",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-003",
+        "feature": "claim",
+        "module": "claim",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-004",
+        "feature": "claim",
+        "module": "claim",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-001",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-002",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
@@ -3976,10 +4036,10 @@
         "module": "flyerBuilder",
         "architectureCoverage": "MISSING",
         "behaviorCoverage": "MISSING",
-        "securityCoverage": "MISSING",
-        "ownershipCoverage": "MISSING",
+        "securityCoverage": "COMPLETE",
+        "ownershipCoverage": "PARTIAL",
         "testCoverage": "PARTIAL",
-        "policyCoverage": "MISSING",
+        "policyCoverage": "PARTIAL",
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
@@ -3988,10 +4048,10 @@
         "module": "flyerBuilder",
         "architectureCoverage": "MISSING",
         "behaviorCoverage": "MISSING",
-        "securityCoverage": "MISSING",
-        "ownershipCoverage": "MISSING",
+        "securityCoverage": "COMPLETE",
+        "ownershipCoverage": "PARTIAL",
         "testCoverage": "PARTIAL",
-        "policyCoverage": "MISSING",
+        "policyCoverage": "PARTIAL",
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
@@ -4000,10 +4060,10 @@
         "module": "flyerBuilder",
         "architectureCoverage": "MISSING",
         "behaviorCoverage": "MISSING",
-        "securityCoverage": "MISSING",
-        "ownershipCoverage": "MISSING",
+        "securityCoverage": "COMPLETE",
+        "ownershipCoverage": "PARTIAL",
         "testCoverage": "PARTIAL",
-        "policyCoverage": "MISSING",
+        "policyCoverage": "PARTIAL",
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
@@ -4012,10 +4072,10 @@
         "module": "flyerBuilder",
         "architectureCoverage": "MISSING",
         "behaviorCoverage": "MISSING",
-        "securityCoverage": "MISSING",
-        "ownershipCoverage": "MISSING",
+        "securityCoverage": "COMPLETE",
+        "ownershipCoverage": "PARTIAL",
         "testCoverage": "PARTIAL",
-        "policyCoverage": "MISSING",
+        "policyCoverage": "PARTIAL",
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
@@ -8495,18 +8555,6 @@
         "codeSurfaceCoverage": "PARTIAL"
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-155",
-        "feature": "profiles",
-        "module": "kinds",
-        "architectureCoverage": "MISSING",
-        "behaviorCoverage": "MISSING",
-        "securityCoverage": "MISSING",
-        "ownershipCoverage": "MISSING",
-        "testCoverage": "PARTIAL",
-        "policyCoverage": "MISSING",
-        "codeSurfaceCoverage": "PARTIAL"
-      },
-      {
         "behaviorId": "BEH-PROFILES-PROFILE-001",
         "feature": "profiles",
         "module": "profile",
@@ -12396,6 +12444,66 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-092",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-093",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-094",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-095",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-096",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "architectureCoverage": "MISSING",
+        "behaviorCoverage": "MISSING",
+        "securityCoverage": "MISSING",
+        "ownershipCoverage": "MISSING",
+        "testCoverage": "PARTIAL",
+        "policyCoverage": "MISSING",
+        "codeSurfaceCoverage": "PARTIAL"
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-097",
         "feature": "vportDashboard",
         "module": "dashboard",
         "architectureCoverage": "MISSING",

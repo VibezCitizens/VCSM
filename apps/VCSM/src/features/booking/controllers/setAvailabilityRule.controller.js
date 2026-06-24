@@ -1,7 +1,7 @@
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import getAvailabilityRuleByIdDAL from "@/features/booking/dal/getAvailabilityRuleById.dal";
 import upsertAvailabilityRuleDAL from "@/features/booking/dal/upsertAvailabilityRule.dal";
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { mapAvailabilityRuleRow } from "@/features/booking/model/bookingAvailability.model";
 
 export async function setAvailabilityRuleController({
@@ -37,7 +37,7 @@ export async function setAvailabilityRuleController({
     throw new Error("Booking resource not found.");
   }
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId,
     targetActorId: resource.owner_actor_id,
   });

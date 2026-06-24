@@ -188,6 +188,26 @@
   color: rgba(181, 194, 230, 0.82);
 }
 
+/* ── Country badge (TRAZE-SEARCH-005, search results only) ──── */
+/* Neutral translucent pill — deliberately distinct from the colored
+   service/category chips and the blue/teal status badge. */
+.hp-provider-country {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  margin-top: 0.1rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(214, 220, 240, 0.92);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 /* ── Provider status badge ────────────────────────────────── */
 
 .hp-provider-status {

@@ -93,6 +93,11 @@ export const JoinBarbershopScreen = lazyWithLog("JoinBarbershopScreen", () =>
   import("@/features/join/screens/JoinBarbershopScreen"),
 );
 
+// ── Claim (Traze provider → Citizen claim funnel) ──────────────────────────────
+export const ClaimProfileScreen = lazyWithLog("ClaimProfileScreen", () =>
+  import("@/features/claim/screens/ClaimProfileScreen"),
+);
+
 // ── Public VPORT menu ─────────────────────────────────────────────────────────
 export const VportMenuRedirectScreen = lazyWithLog("VportMenuRedirectScreen", () =>
   import("@/features/public/vportMenu/screen/VportPublicMenuRedirectScreen"),

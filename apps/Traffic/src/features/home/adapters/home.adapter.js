@@ -3,4 +3,3 @@ export { default as HomepageCategoryGrid } from "@/features/home/components/Home
 export { default as HomepageCtaFooter } from "@/features/home/components/HomepageCtaFooter";
 export { default as HomepageHeroSection } from "@/features/home/components/HomepageHeroSection";
 export { default as HomepageTopProvidersSection } from "@/features/home/components/HomepageTopProvidersSection";
-export { default as HomepageTrendingSection } from "@/features/home/components/HomepageTrendingSection";

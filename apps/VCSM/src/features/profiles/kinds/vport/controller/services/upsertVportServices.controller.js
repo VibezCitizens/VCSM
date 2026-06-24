@@ -6,12 +6,12 @@ import { getFallbackServiceCatalogRows } from "@/features/profiles/kinds/vport/m
 import { dalInsertLocksmithServiceDetailDefaults } from "@/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal";
 import { getLocksmithServiceDefaults } from "@/features/profiles/kinds/vport/model/locksmith/locksmithServiceDefaults.model";
 import { resolveVportServiceCatalogType } from "@/features/profiles/kinds/vport/config/vportTypes.config";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 /**
  * Controller:
  * - No direct Supabase import
- * - Ownership enforced at controller layer via assertActorOwnsVportActorController
+ * - Ownership enforced at controller layer via assertActorOwnsActorController
  *   (defense-in-depth: RLS also enforces at DB layer)
  *
  * Owns:
@@ -42,7 +42,7 @@ export default async function upsertVportServicesController({
   // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the saving actor is the
   // VPORT itself when switched in, so ownership is resolved from the auth session via
   // actor_owners rather than trusting the UI-passed identity actor id.
-  await assertSessionOwnsVportActorController({ targetActorId });
+  await assertSessionOwnsActorController({ targetActorId });
 
   const resolvedCatalogType = resolveVportServiceCatalogType(vportType);
 

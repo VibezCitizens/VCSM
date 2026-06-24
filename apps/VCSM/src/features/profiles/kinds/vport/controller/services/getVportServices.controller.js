@@ -14,14 +14,14 @@ import {
 } from "@/features/profiles/kinds/vport/model/services/vportService.model.js";
 
 // Approved §5.3 exception: shared cross-feature ownership assertion primitive.
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 /**
  * Controller (DB via DAL only):
  * - Accepts optional vportType
  * - If vportType is missing, resolves it from DB using actor_id -> vport_id -> vport_type
  * - asOwner=true REQUIRES callerActorId and server-side ownership verification via
- *   assertActorOwnsVportActorController before returning disabled services.
+ *   assertActorOwnsActorController before returning disabled services.
  *   Trusting asOwner from the UI without a server check allows any authenticated
  *   actor to enumerate disabled rows via a crafted API call.
  * - No Supabase import
@@ -50,7 +50,7 @@ export default async function getVportServicesController({
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor is
     // the VPORT itself when switched in, so the actor gate's user-kind requirement cannot
     // be satisfied. Ownership is resolved from the auth session via actor_owners.
-    await assertSessionOwnsVportActorController({ targetActorId });
+    await assertSessionOwnsActorController({ targetActorId });
   }
   // ────────────────────────────────────────────────────────────────────────────
 

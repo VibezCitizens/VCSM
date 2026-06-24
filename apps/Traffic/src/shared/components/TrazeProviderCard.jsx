@@ -17,6 +17,9 @@ import { withLocale } from "@/lib/i18n";
 import { useTrafficLanguage } from "@/lib/language";
 import { translate } from "@/i18n";
 import { trackProviderCardClick } from "@/lib/analytics";
+import { SafeImage } from "@/shared/components/SafeImage";
+import { safeMediaSrc } from "@/lib/safeMediaSrc";
+import { getCountryBadge } from "@/lib/countryDisplay";
 
 const CATEGORY_STYLES = {
   locksmith:      { bg: "#4c1d95", icon: ShieldCheck },
@@ -36,10 +39,10 @@ export function getCategoryStyle(category, categoryKey) {
   return { bg: "#374151", icon: Building2 };
 }
 
-function formatProviderLocation(provider, lang) {
+function formatProviderLocation(provider, lang, { omitCountry = false } = {}) {
   const city    = provider.city ?? provider.primaryCityName ?? null;
   const state   = provider.stateCode ?? provider.primaryRegionCode ?? null;
-  const country = provider.primaryCountryCode
+  const country = !omitCountry && provider.primaryCountryCode
     ? String(provider.primaryCountryCode).toUpperCase()
     : null;
 
@@ -78,10 +81,16 @@ function formatResponseTime(provider, lang) {
   return translate("providerCard.responsePending", lang);
 }
 
-export default function TrazeProviderCard({ provider, lang }) {
+export default function TrazeProviderCard({ provider, lang, showCountryBadge = false }) {
   const { lang: contextLang, t } = useTrafficLanguage();
   const resolvedLang = lang ?? contextLang;
   const { bg, icon: IconComp } = getCategoryStyle(provider.category, provider.categoryKey);
+  // Opt-in country badge (TRAZE-SEARCH-005) — used by search results so the
+  // country is obvious without reading ISO codes. Off by default so home /
+  // directory cards are unchanged.
+  const countryBadge = showCountryBadge
+    ? getCountryBadge(provider.primaryCountryCode, resolvedLang)
+    : null;
   const rating           = formatRating(provider.rating);
   const reviewCountLabel = formatReviewCount(provider.reviewCount, resolvedLang);
   const responseLabel    = formatResponseTime(provider, resolvedLang);
@@ -89,6 +98,7 @@ export default function TrazeProviderCard({ provider, lang }) {
     ? t("providerCard.verified")
     : t("providerCard.listed");
   const avatarSrc = provider.avatarUrl || provider.logoUrl || null;
+  const safeAvatarSrc = safeMediaSrc(avatarSrc);
 
   return (
     <Link
@@ -105,24 +115,17 @@ export default function TrazeProviderCard({ provider, lang }) {
       }
     >
       <div className="hp-provider-card-head">
-        <div className="hp-provider-icon" style={avatarSrc ? undefined : { background: bg }}>
-          {avatarSrc ? (
-            <img
-              src={avatarSrc}
-              alt={provider.name}
-              className="hp-provider-avatar"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                e.currentTarget.nextSibling.style.display = "flex";
-              }}
-            />
-          ) : null}
-          <span
-            className="hp-provider-icon-fallback"
-            style={{ background: bg, display: avatarSrc ? "none" : "flex" }}
-          >
-            <IconComp size={19} color="#fff" />
-          </span>
+        <div className="hp-provider-icon" style={safeAvatarSrc ? undefined : { background: bg }}>
+          <SafeImage
+            src={avatarSrc}
+            alt={provider.name}
+            className="hp-provider-avatar"
+            fallback={
+              <span className="hp-provider-icon-fallback" style={{ background: bg, display: "flex" }}>
+                <IconComp size={19} color="#fff" />
+              </span>
+            }
+          />
         </div>
 
         <div className="hp-provider-main">
@@ -138,8 +141,15 @@ export default function TrazeProviderCard({ provider, lang }) {
 
       <p className="hp-provider-location">
         <MapPin size={12} />
-        {formatProviderLocation(provider, resolvedLang)}
+        {formatProviderLocation(provider, resolvedLang, { omitCountry: Boolean(countryBadge) })}
       </p>
+
+      {countryBadge && (
+        <span className="hp-provider-country" aria-label={countryBadge.name}>
+          {countryBadge.flag && <span aria-hidden="true">{countryBadge.flag}</span>}
+          {countryBadge.name}
+        </span>
+      )}
 
       <div className="hp-provider-stats">
         <span className="hp-provider-stat hp-provider-stat--rating">

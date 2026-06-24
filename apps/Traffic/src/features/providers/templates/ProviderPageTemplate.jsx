@@ -1,5 +1,5 @@
 import { InternalLinkGrid } from "@/features/directories/adapters/directories.adapter";
-import { ProviderCtaModules } from "@/features/conversion/adapters/conversion.adapter";
+import { ProviderAccountPromptCard, ProviderCtaModules } from "@/features/conversion/adapters/conversion.adapter";
 import { getProviderGuideLinks } from "@/features/providers/lib/providerGuideLinks";
 import { ContactSection } from "@/features/providers/components/ContactSection";
 import { ProviderHoursSection } from "@/features/providers/components/ProviderHoursSection";
@@ -9,7 +9,10 @@ import { ProviderGallerySection } from "@/features/providers/components/Provider
 import { ProviderHeroBadges, ProviderHeroStats } from "@/features/providers/components/ProviderHeroStatus";
 import { ProviderTrustSection } from "@/features/providers/components/ProviderTrustSection";
 import { JsonLdScript } from "@/shared/components/JsonLdScript";
+import { SafeImage } from "@/shared/components/SafeImage";
+import { safeMediaSrc } from "@/lib/safeMediaSrc";
 import { ProviderDataDisclaimer } from "@/features/providers/components/ProviderDataDisclaimer";
+import TrazeAccountCta from "@/shared/components/TrazeAccountCta";
 
 const SERVICE_GRADIENT = {
   locksmith: "linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #4338ca 100%)",
@@ -90,13 +93,16 @@ export async function ProviderPageTemplate({
   const hasVisibleReviews = visibleReviews.length > 0 || hasVisibleReviewSignals;
   const showBio = !isDefaultBio(provider.shortBio, provider.displayName);
 
-  const heroBannerStyle = provider.bannerUrl
+  const safeBannerUrl = safeMediaSrc(provider.bannerUrl);
+  const heroBannerStyle = safeBannerUrl
     ? {
-        backgroundImage: `linear-gradient(to bottom, rgba(11,11,15,0.55) 0%, rgba(11,11,15,0.97) 100%), url(${provider.bannerUrl})`,
+        backgroundImage: `linear-gradient(to bottom, rgba(11,11,15,0.55) 0%, rgba(11,11,15,0.97) 100%), url(${safeBannerUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center"
       }
     : undefined;
+
+  const heroAvatarSrc = safeMediaSrc(provider.logoUrl ?? provider.avatarUrl);
 
   const exploreLinks = relatedLinks.filter(
     (link) => !link.label.toLowerCase().startsWith("legacy")
@@ -115,17 +121,14 @@ export async function ProviderPageTemplate({
         <div className="pro-hero-top">
           <div
             className="pro-hero-avatar"
-            style={(provider.logoUrl || provider.avatarUrl) ? undefined : { background: serviceGradient }}
+            style={heroAvatarSrc ? undefined : { background: serviceGradient }}
           >
-            {(provider.logoUrl || provider.avatarUrl) ? (
-              <img
-                className="pro-hero-avatar-img"
-                src={provider.logoUrl ?? provider.avatarUrl}
-                alt={provider.displayName}
-              />
-            ) : (
-              <span className="pro-hero-initials">{serviceInitials}</span>
-            )}
+            <SafeImage
+              className="pro-hero-avatar-img"
+              src={heroAvatarSrc}
+              alt={provider.displayName}
+              fallback={<span className="pro-hero-initials">{serviceInitials}</span>}
+            />
           </div>
 
           <ProviderHeroBadges
@@ -201,8 +204,28 @@ export async function ProviderPageTemplate({
           {providerGuideLinks.length > 0 ? (
             <InternalLinkGrid title="Guides & Resources" titleEs="Guías y recursos" links={providerGuideLinks} />
           ) : null}
+
+          {provider.claimStatus === "claimed" ? (
+            <ProviderAccountPromptCard
+              providerSlug={provider.slug}
+              providerSource={provider.source}
+            />
+          ) : null}
         </div>
       </div>
+
+      {/* ── OWNERSHIP — "Own this business?" ──────────────────────────
+         Promoted ABOVE "Explore nearby" so the primary conversion action is
+         more visible (TICKET-TRAZE-PROVIDER-PAGE-CTA-CONSOLIDATION).
+         Renders only for unclaimed providers not yet linked to a VPORT.
+
+         FUTURE (claimStatus === "claimed"): replace this block with a
+         "✓ Verified Business — This profile is managed by its owner through
+         Vibez Citizens." confirmation. Not implemented here (needs new copy +
+         component); claim routing/params/destinations stay unchanged. */}
+      {provider.claimStatus !== "claimed" && !provider.vcsmActorId ? (
+        <TrazeAccountCta variant="provider" providerSlug={provider.slug} />
+      ) : null}
 
       {/* ── EXPLORE NEARBY ───────────────────────────────────── */}
       {exploreLinks.length > 0 ? (

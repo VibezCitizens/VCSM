@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import TrazeSearchBar from "@/shared/components/TrazeSearchBar";
+import TrazeHeroMap from "@/shared/components/TrazeHeroMap";
 import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
 import { HomepageCategoryGrid } from "@/features/home/adapters/home.adapter";
 import { findLiveCountryByCode, getBrowserCountryCode } from "@/lib/geo/clientMarket";
@@ -188,29 +189,38 @@ export default function CategoriesDiscoveryClient({
 
   return (
     <>
-      <section className="traze-hero-card traze-page-hero">
-        <span className="traze-eyebrow">
-          {t("directory.serviceDirectory")}
-        </span>
-        <h1 className="traze-hero-title">
-          {t("directory.serviceCategories")}
-        </h1>
-        <p className="traze-hero-sub">{t("directory.categoriesIntro")}</p>
-      </section>
+      <section className="homepage-hero">
+        <div className="homepage-hero-layout">
+          <div className="homepage-hero-content">
+            <h1 className="homepage-hero-title">
+              {t("directory.serviceCategories")}
+            </h1>
+            <p className="homepage-hero-copy">{t("directory.categoriesIntro")}</p>
 
-      <TrazeSearchBar
-        screenKey="categories"
-        {...TRAZE_SCREEN_SEARCH.categories}
-        quickFilters={categoryQuickFilters}
-        query={query}
-        initialFilter={activeFilter || null}
-        locationOptions={locationOptions}
-        countryOptions={countries}
-        selectedCountry={selectedCountry ?? null}
-        showCountrySelector
-        showCitySelector={false}
-        onSearch={handleSearch}
-      />
+            <TrazeSearchBar
+              screenKey="home"
+              {...TRAZE_SCREEN_SEARCH.home}
+              quickFilters={categoryQuickFilters}
+              query={query}
+              initialFilter={activeFilter || null}
+              locationOptions={locationOptions}
+              countryOptions={countries}
+              selectedCountry={selectedCountry ?? null}
+              showCountrySelector
+              showCitySelector
+              onSearch={handleSearch}
+              locationPlaceholder={{
+                en: "City, state, or country",
+                es: "Ciudad, estado o pais"
+              }}
+            />
+          </div>
+
+          <div className="homepage-hero-visual" aria-hidden="true">
+            <TrazeHeroMap />
+          </div>
+        </div>
+      </section>
 
       <HomepageCategoryGrid
         categories={filteredCategories}

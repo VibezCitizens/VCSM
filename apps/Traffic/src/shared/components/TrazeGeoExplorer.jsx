@@ -57,7 +57,20 @@ function CountryHeader({ country, lang }) {
 export default function TrazeGeoExplorer({ geoData }) {
   const { lang } = useTrafficLanguage();
 
-  const [expandedKeys, setExpandedKeys] = useState(() => new Set());
+  // Start expanded so every city <Link> is present in the server-rendered HTML and
+  // crawlable without client interaction (TICKET-TRAZE-SEO-REMEDIATION-001 — C3).
+  // Visitors can still collapse groups; the toggle state is preserved below.
+  const [expandedKeys, setExpandedKeys] = useState(() => {
+    const keys = new Set();
+    for (const country of geoData) {
+      for (const state of country.stateGroups) {
+        if (state.cities.length > 0) {
+          keys.add(state.stateCode ?? "__none__");
+        }
+      }
+    }
+    return keys;
+  });
 
   function toggleState(key) {
     setExpandedKeys((prev) => {

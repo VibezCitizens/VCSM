@@ -1,0 +1,368 @@
+/* ============================================================
+   SECTION — Directory featured business spotlight (.dir-spotlight-*)
+   TRAZE-DIRECTORY-FEATURED-SPOTLIGHT-CARD-001
+   Premium rotating spotlight card. Dark/glass/purple system.
+   ============================================================ */
+
+.dir-spotlight {
+  display: grid;
+  gap: 0.85rem;
+}
+
+/* ── Viewport (holds the badge + active card) ─────────────── */
+
+.dir-spotlight-viewport {
+  position: relative;
+  border-radius: var(--traffic-radius-xl);
+  border: 1px solid var(--vc-border-strong);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(139, 92, 246, 0.16) 0%, transparent 52%),
+    var(--vc-surface-strong);
+  box-shadow: var(--vc-shadow-elevated);
+  backdrop-filter: var(--vc-backdrop-blur);
+  padding: 1.15rem;
+  overflow: hidden;
+}
+
+/* Subtle top glow line */
+.dir-spotlight-viewport::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.55), transparent);
+  pointer-events: none;
+}
+
+/* ── Section flag badge (TRAZE SPOTLIGHT) ─────────────────── */
+
+.dir-spotlight-flag {
+  position: absolute;
+  top: 1.05rem;
+  right: 1.05rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--traffic-radius-pill);
+  border: 1px solid rgba(167, 139, 250, 0.55);
+  background: rgba(109, 70, 220, 0.22);
+  color: #e2d9ff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Card (image left, content right) ─────────────────────── */
+
+.dir-spotlight-card {
+  display: grid;
+  grid-template-columns: clamp(180px, 26%, 250px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+/* ── Media ────────────────────────────────────────────────── */
+
+.dir-spotlight-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--traffic-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-bg-2);
+  text-decoration: none;
+}
+
+.dir-spotlight-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.dir-spotlight-media-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dir-spotlight-pill {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.32rem 0.7rem;
+  border-radius: var(--traffic-radius-pill);
+  background: rgba(13, 12, 22, 0.82);
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  color: #e6def7;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: var(--vc-backdrop-blur);
+}
+
+/* ── Content ──────────────────────────────────────────────── */
+
+.dir-spotlight-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+  /* Leave room for the absolute flag badge on the first line. */
+  padding-right: 7.5rem;
+}
+
+.dir-spotlight-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.dir-spotlight-name {
+  margin: 0;
+  font-family: var(--traffic-font-display);
+  font-size: clamp(1.25rem, 2.6vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--vc-text);
+}
+
+.dir-spotlight-name-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+
+.dir-spotlight-name-link:hover {
+  color: var(--vc-accent-primary-hover);
+}
+
+.dir-spotlight-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: var(--traffic-radius-pill);
+  border: 1px solid rgba(99, 226, 194, 0.36);
+  background: rgba(16, 115, 93, 0.2);
+  color: rgba(188, 247, 231, 0.95);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dir-spotlight-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--vc-text-soft);
+}
+
+.dir-spotlight-desc {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--vc-text-muted);
+  text-transform: capitalize;
+}
+
+.dir-spotlight-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--vc-text-soft);
+}
+
+.dir-spotlight-rating svg {
+  color: #fbbf24;
+  fill: #fbbf24;
+}
+
+.dir-spotlight-rating-value {
+  font-weight: 700;
+  color: var(--vc-text);
+}
+
+.dir-spotlight-review-count {
+  color: var(--vc-text-muted);
+}
+
+.dir-spotlight-cta {
+  align-self: flex-start;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--traffic-radius-md);
+  border: 1px solid var(--vc-border-strong);
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.28), rgba(139, 92, 246, 0.16));
+  color: #f3eeff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.dir-spotlight-cta:hover {
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.42), rgba(139, 92, 246, 0.26));
+  border-color: var(--vc-accent-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* ── Carousel controls ────────────────────────────────────── */
+
+.dir-spotlight-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.dir-spotlight-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--traffic-radius-pill);
+  border: 1px solid var(--vc-border-strong);
+  background: var(--vc-surface);
+  color: var(--vc-text-soft);
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
+}
+
+.dir-spotlight-nav:hover {
+  border-color: var(--vc-accent-primary-hover);
+  color: #fff;
+  background: rgba(109, 70, 220, 0.2);
+}
+
+.dir-spotlight-nav:focus-visible {
+  outline: none;
+  box-shadow: var(--vc-ring);
+}
+
+.dir-spotlight-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dir-spotlight-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: var(--traffic-radius-pill);
+  border: none;
+  background: rgba(168, 162, 190, 0.4);
+  cursor: pointer;
+  transition: background 140ms ease, transform 140ms ease, width 140ms ease;
+}
+
+.dir-spotlight-dot:hover {
+  background: rgba(199, 188, 240, 0.7);
+}
+
+.dir-spotlight-dot--active {
+  width: 20px;
+  background: var(--vc-accent-primary);
+}
+
+.dir-spotlight-dot:focus-visible {
+  outline: none;
+  box-shadow: var(--vc-ring);
+}
+
+/* ── Screen-reader slide position ─────────────────────────── */
+
+.dir-spotlight-sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+
+.dir-spotlight-empty {
+  display: grid;
+  gap: 0.3rem;
+  place-items: center;
+  text-align: center;
+  padding: 2.4rem 1.25rem;
+  border-radius: var(--traffic-radius-xl);
+  border: 1px dashed var(--vc-border-strong);
+  background: var(--vc-surface);
+}
+
+.dir-spotlight-empty-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--vc-text);
+}
+
+.dir-spotlight-empty-body {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--vc-text-muted);
+}
+
+/* ── Responsive: stack image above content on small screens ── */
+
+@media (max-width: 640px) {
+  .dir-spotlight-card {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .dir-spotlight-media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .dir-spotlight-content {
+    /* Badge moves out of the text column flow on mobile. */
+    padding-right: 0;
+    padding-top: 1.6rem;
+  }
+
+  .dir-spotlight-cta {
+    align-self: stretch;
+    width: 100%;
+  }
+}
+
+/* ── Reduced motion: remove hover lift transitions ────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dir-spotlight-cta,
+  .dir-spotlight-nav,
+  .dir-spotlight-dot {
+    transition: none;
+  }
+
+  .dir-spotlight-cta:hover {
+    transform: none;
+  }
+}

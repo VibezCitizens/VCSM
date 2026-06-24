@@ -142,6 +142,9 @@
 
 .pro-sidebar {
   grid-area: sidebar;
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
 }
 
 .pro-main {
@@ -269,6 +272,41 @@
   color: var(--vc-text-muted);
   line-height: 1.6;
   margin: 0;
+}
+
+/* Account prompt rendered as a wide banner at the foot of the main column. */
+.pro-account-banner {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pro-account-banner__text {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.pro-account-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+@media (min-width: 640px) {
+  .pro-account-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pro-account-banner__text {
+    max-width: 60ch;
+  }
+
+  .pro-account-banner__actions {
+    flex-shrink: 0;
+  }
 }
 
 .pro-cta-actions {

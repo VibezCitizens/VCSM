@@ -22,6 +22,7 @@ import {
 } from "@/data/repositories/provider.repo";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { buildDirectoryMetadata, buildProviderMetadata } from "@/seo/metadata";
+import { providerMetaDescription } from "@/seo/providerBio";
 import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import {
   countryCityLocalityServicePath,
@@ -168,9 +169,7 @@ export function resolvePage(params) {
 export function buildCountryProviderMetadata(graph, options = {}) {
   return buildProviderMetadata({
     title: `${graph.provider.displayName}${graph.city?.name ? ` in ${graph.city.name}, ${graph.country.name}` : ""}`,
-    description:
-      graph.provider.shortBio ||
-      `Learn more about ${graph.provider.displayName}. View services, reviews, and book directly.`,
+    description: providerMetaDescription(graph.provider),
     path: countryProviderPath(graph.country.slug, graph.provider.slug),
     locale: getLocaleForCountryCode(graph.country.code),
     routeLocale: options.routeLocale

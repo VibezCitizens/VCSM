@@ -6,6 +6,7 @@ import {
   listServicesForProvider
 } from "@/data/repositories/provider.repo";
 import { getServiceById } from "@/data/repositories/service.repo";
+import { getFeaturedProviderRank } from "@/config/featuredProviders.config";
 import { countryProviderPath } from "@/lib/paths";
 
 function toText(value) {
@@ -53,7 +54,7 @@ function formatLocationText(provider) {
   return country;
 }
 
-function buildHomepageProviderCard(provider) {
+export function buildHomepageProviderCard(provider) {
   const country = getCountryByCode(provider.primaryCountryCode);
   if (!country) return null;
 
@@ -175,7 +176,14 @@ export async function getHomepageLiveDirectoryData({
   const liveProviderCards = listProviders({ countryCode: scopedCountryCode })
     .map(buildHomepageProviderCard)
     .filter(Boolean)
-    .sort((left, right) => Number(right.rankScore ?? 0) - Number(left.rankScore ?? 0));
+    .sort((left, right) => {
+      // Featured/pinned providers come first (in config order), then the
+      // normal rankScore ordering for everything else.
+      const leftFeatured = getFeaturedProviderRank(left.slug);
+      const rightFeatured = getFeaturedProviderRank(right.slug);
+      if (leftFeatured !== rightFeatured) return leftFeatured - rightFeatured;
+      return Number(right.rankScore ?? 0) - Number(left.rankScore ?? 0);
+    });
 
   const selectedLive = selectProvidersForHomepage({
     liveCards: liveProviderCards,

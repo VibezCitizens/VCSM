@@ -12,6 +12,7 @@ import { authPublicRoutes } from "@/app/routes/public/auth.routes";
 import { contactPublicRoutes } from "@/app/routes/public/contact.routes";
 import { howToPublicRoutes } from "@/app/routes/public/howto.routes";
 import { joinPublicRoutes } from "@/app/routes/public/join.routes";
+import { claimPublicRoutes } from "@/app/routes/public/claim.routes";
 import { legalPublicRoutes } from "@/app/routes/public/legal.routes";
 import { wandersPublicRoutes } from "@/app/routes/public/wanders.routes";
 import { vportMenuPublicRoutes } from "@/app/routes/public/vportMenu.routes";
@@ -25,6 +26,7 @@ import {
   HowToCreateVportScreen,
   VportCategoryLandingScreen,
   JoinBarbershopScreen,
+  ClaimProfileScreen,
   LoginScreen,
   RegisterScreen,
   ForgotPasswordScreen,
@@ -54,6 +56,7 @@ import {
 
 import {
   CentralFeed,
+  ClaimApprovedScreen,
   ExploreScreen,
   CitizenVibesScreen,
   NotificationsScreen,
@@ -144,6 +147,7 @@ export default function AppRoutes() {
     }),
 
     ...joinPublicRoutes({ JoinBarbershopScreen }),
+    ...claimPublicRoutes({ ClaimProfileScreen }),
     ...legalPublicRoutes({ LegalDocumentScreen }),
 
     ...wandersPublicRoutes({
@@ -183,6 +187,7 @@ export default function AppRoutes() {
               element: <RootLayout />,
               children: protectedAppRoutes({
                 CentralFeed,
+                ClaimApprovedScreen,
                 ExploreScreen,
                 CitizenVibesScreen,
 

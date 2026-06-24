@@ -3,7 +3,7 @@ import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResource
 import getActorByIdDAL from "@/features/booking/dal/getActorById.dal";
 import insertBookingDAL from "@/features/booking/dal/insertBooking.dal";
 import { listBookingResourceServicesByResourceIdDAL } from "@/features/booking/dal/listBookingResourceServicesByResourceId.dal";
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { mapBookingRow } from "@/features/booking/model/booking.model";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
@@ -79,7 +79,7 @@ export async function createBookingController({
       throw new Error("createBookingController: requestActorId is required for management source");
     }
 
-    await assertActorOwnsVportActorController({
+    await assertActorOwnsActorController({
       requestActorId,
       targetActorId: resource.owner_actor_id,
     });

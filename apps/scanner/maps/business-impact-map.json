@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "businessImpactCount": 1113,
+  "businessImpactCount": 1122,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:06.295Z",
+    "generatedAt": "2026-06-24T06:36:31.312Z",
     "businessImpact": [
       {
         "behaviorId": "BEH-ACTORS-ACTORS-001",
@@ -21,11 +21,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -39,11 +40,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -109,11 +111,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -181,11 +184,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -199,11 +203,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1301,11 +1306,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1319,11 +1325,31 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-AUTHORIZATION-AUTHORIZATION-003",
+        "feature": "authorization",
+        "module": "authorization",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1727,11 +1753,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1745,11 +1772,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1763,11 +1791,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1781,11 +1810,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1799,11 +1829,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1817,11 +1848,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1835,11 +1867,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1853,11 +1886,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1871,11 +1905,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1889,11 +1924,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1907,11 +1943,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1925,11 +1962,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1943,11 +1981,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1961,11 +2000,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1979,11 +2019,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -1997,11 +2038,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2015,11 +2057,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2033,11 +2076,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2051,11 +2095,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2069,11 +2114,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2087,11 +2133,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2105,11 +2152,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2123,11 +2171,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2141,11 +2190,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2159,11 +2209,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2177,11 +2228,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2195,11 +2247,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2213,11 +2266,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2231,11 +2285,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2249,11 +2304,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2267,11 +2323,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2285,11 +2342,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2303,11 +2361,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2321,11 +2380,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2339,11 +2399,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2357,11 +2418,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2375,11 +2437,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2393,11 +2456,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2411,11 +2475,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2429,11 +2494,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2447,11 +2513,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2465,11 +2532,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -2483,47 +2551,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
-        ]
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-044",
-        "feature": "booking",
-        "module": "booking",
-        "categories": [
-          "communication/email",
-          "booking/scheduling",
-          "ownership",
-          "public surface",
-          "PII",
-          "money/revenue",
-          "native migration sensitivity"
-        ],
-        "businessImpact": "CRITICAL",
-        "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
-        ]
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-045",
-        "feature": "booking",
-        "module": "booking",
-        "categories": [
-          "communication/email",
-          "booking/scheduling",
-          "ownership",
-          "public surface",
-          "PII",
-          "money/revenue",
-          "native migration sensitivity"
-        ],
-        "businessImpact": "CRITICAL",
-        "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -3019,11 +3052,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -3037,11 +3071,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -3923,6 +3958,120 @@
         ]
       },
       {
+        "behaviorId": "BEH-CLAIM-CLAIM-001",
+        "feature": "claim",
+        "module": "claim",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-002",
+        "feature": "claim",
+        "module": "claim",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-003",
+        "feature": "claim",
+        "module": "claim",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-004",
+        "feature": "claim",
+        "module": "claim",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-001",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-002",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
         "behaviorId": "BEH-DASHBOARD-BOOKINGS-001",
         "feature": "dashboard",
         "module": "bookings",
@@ -3962,11 +4111,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -3980,11 +4130,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -3998,11 +4149,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4016,11 +4168,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4034,11 +4187,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4052,11 +4206,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4070,11 +4225,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4088,11 +4244,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4106,11 +4263,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4124,11 +4282,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4369,11 +4528,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4387,11 +4547,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4405,11 +4566,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4423,11 +4585,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4441,11 +4604,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4459,11 +4623,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4477,11 +4642,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4495,11 +4661,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4513,11 +4680,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4531,11 +4699,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4549,11 +4718,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4567,11 +4737,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4585,11 +4756,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4603,11 +4775,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4621,11 +4794,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4639,11 +4813,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4657,11 +4832,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4675,11 +4851,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4693,11 +4870,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -4737,11 +4915,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5259,11 +5438,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5277,11 +5457,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5295,11 +5476,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5313,11 +5495,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5344,11 +5527,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5362,11 +5546,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5380,11 +5565,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5398,11 +5584,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5416,11 +5603,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5434,11 +5622,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5452,11 +5641,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5470,11 +5660,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5488,11 +5679,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5506,11 +5698,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5524,11 +5717,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5542,11 +5736,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5560,11 +5755,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5578,11 +5774,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5596,11 +5793,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5614,11 +5812,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5632,11 +5831,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5650,11 +5850,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5668,11 +5869,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5686,11 +5888,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5756,11 +5959,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5774,11 +5978,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5792,11 +5997,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5810,11 +6016,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5828,11 +6035,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5846,11 +6054,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5864,11 +6073,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5882,11 +6092,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5900,11 +6111,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5918,11 +6130,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5936,11 +6149,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5954,11 +6168,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5972,11 +6187,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -5990,11 +6206,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6008,11 +6225,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6026,11 +6244,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6044,11 +6263,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6062,11 +6282,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6080,11 +6301,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6098,11 +6320,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6116,11 +6339,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6134,11 +6358,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6152,11 +6377,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6170,11 +6396,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6188,11 +6415,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6206,11 +6434,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6224,11 +6453,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6242,11 +6472,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6260,11 +6491,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6278,11 +6510,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6296,11 +6529,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6314,11 +6548,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6332,11 +6567,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6350,11 +6586,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6368,11 +6605,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -6386,11 +6624,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7046,11 +7285,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7064,11 +7304,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7082,11 +7323,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7100,11 +7342,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7896,11 +8139,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7914,11 +8158,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -7932,11 +8177,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11673,24 +11919,6 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-155",
-        "feature": "profiles",
-        "module": "kinds",
-        "categories": [
-          "booking/scheduling",
-          "ownership",
-          "public surface",
-          "PII",
-          "money/revenue",
-          "moderation/trust",
-          "native migration sensitivity"
-        ],
-        "businessImpact": "CRITICAL",
-        "evidence": [
-          "categories: booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
-        ]
-      },
-      {
         "behaviorId": "BEH-PROFILES-PROFILE-001",
         "feature": "profiles",
         "module": "profile",
@@ -11715,11 +11943,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11733,11 +11962,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11751,11 +11981,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11769,11 +12000,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11787,11 +12019,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11805,11 +12038,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11823,11 +12057,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11841,11 +12076,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11859,11 +12095,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11877,11 +12114,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11895,11 +12133,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11913,11 +12152,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11931,11 +12171,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11949,11 +12190,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11967,11 +12209,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -11985,11 +12228,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12003,11 +12247,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12021,11 +12266,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12039,11 +12285,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12057,11 +12304,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12075,11 +12323,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12093,11 +12342,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12111,11 +12361,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12129,11 +12380,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12147,11 +12399,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12686,11 +12939,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12704,11 +12958,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12722,11 +12977,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12740,11 +12996,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12758,11 +13015,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -12776,11 +13034,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14585,11 +14844,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14603,11 +14863,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14621,11 +14882,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14639,11 +14901,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14657,11 +14920,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14675,11 +14939,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14693,11 +14958,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14711,11 +14977,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14729,11 +14996,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14747,11 +15015,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14765,11 +15034,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14783,11 +15053,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14801,11 +15072,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14819,11 +15091,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14837,11 +15110,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14855,11 +15129,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14873,11 +15148,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14891,11 +15167,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14909,11 +15186,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14927,11 +15205,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14945,11 +15224,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14963,11 +15243,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14981,11 +15262,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -14999,11 +15281,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15017,11 +15300,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15035,11 +15319,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15053,11 +15338,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15071,11 +15357,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15089,11 +15376,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15107,11 +15395,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15125,11 +15414,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15143,11 +15433,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15161,11 +15452,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15179,11 +15471,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15197,11 +15490,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -15215,11 +15509,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -16971,6 +17266,101 @@
         ]
       },
       {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-093",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-094",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-095",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-096",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-097",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "categories": [
+          "communication/email",
+          "booking/scheduling",
+          "ownership",
+          "public surface",
+          "PII",
+          "money/revenue",
+          "moderation/trust",
+          "native migration sensitivity"
+        ],
+        "businessImpact": "CRITICAL",
+        "evidence": [
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
+        ]
+      },
+      {
         "behaviorId": "BEH-VPORTDASHBOARD-VPORTDASHBOARD-001",
         "feature": "vportDashboard",
         "module": "vportDashboard",
@@ -17179,11 +17569,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17197,11 +17588,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17215,11 +17607,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17233,11 +17626,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17251,11 +17645,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17269,11 +17664,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17287,11 +17683,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17305,11 +17702,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17323,11 +17721,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17341,11 +17740,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17359,11 +17759,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17377,11 +17778,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -17395,11 +17797,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -18141,11 +18544,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -18159,11 +18563,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -18177,11 +18582,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       },
       {
@@ -18195,11 +18601,12 @@
           "public surface",
           "PII",
           "money/revenue",
+          "moderation/trust",
           "native migration sensitivity"
         ],
         "businessImpact": "CRITICAL",
         "evidence": [
-          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, native migration sensitivity"
+          "categories: communication/email, booking/scheduling, ownership, public surface, PII, money/revenue, moderation/trust, native migration sensitivity"
         ]
       }
     ]

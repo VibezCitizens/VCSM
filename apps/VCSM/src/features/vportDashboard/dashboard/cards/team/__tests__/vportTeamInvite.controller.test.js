@@ -2,7 +2,7 @@
  * Regression tests — vportTeamInvite.controller
  *
  * Security invariant (ELEK-002):
- * acceptTeamRequestController must use assertSessionOwnsVportActorController
+ * acceptTeamRequestController must use assertSessionOwnsActorController
  * instead of String() equality to verify the caller owns the VPORT actor.
  *
  * Security invariant (ELEK-007):
@@ -12,8 +12,8 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@/features/booking/adapters/booking.adapter', () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock('@/features/authorization/adapters/authorization.adapter', () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }))
 
 vi.mock('@/features/vportDashboard/dashboard/cards/team/dal/vportTeamInvite.read.dal', () => ({
@@ -37,7 +37,7 @@ import {
   declineTeamRequestController,
   getBarberTeamRequestsController,
 } from '../controller/vportTeamInvite.controller'
-import { assertSessionOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
+import { assertSessionOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 import {
   fetchResourceByIdDAL,
   fetchPendingTeamRequestsForBarberDAL,
@@ -79,7 +79,7 @@ describe('acceptTeamRequestController — ownership gate blocks unauthorized cal
       meta: { status: 'pending_acceptance' },
       member_actor_id: MEMBER_ACTOR_ID,
     })
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error('Actor does not own this vport actor.')
     )
   })
@@ -100,13 +100,13 @@ describe('acceptTeamRequestController — legitimate owner resolves', () => {
       meta: { status: 'pending_acceptance' },
       member_actor_id: MEMBER_ACTOR_ID,
     })
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     acceptTeamRequestDAL.mockResolvedValue({ id: RESOURCE_ID, meta: { status: 'accepted' } })
   })
 
   it('calls acceptTeamRequestDAL when ownership passes', async () => {
     const result = await acceptTeamRequestController(CALLER_ACTOR_ID, RESOURCE_ID)
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: MEMBER_ACTOR_ID,
     })
     expect(acceptTeamRequestDAL).toHaveBeenCalledWith(RESOURCE_ID, expect.any(Object))
@@ -122,14 +122,14 @@ describe('getBarberTeamRequestsController — null guard', () => {
   it('returns empty array when callerActorId is null', async () => {
     const result = await getBarberTeamRequestsController(null, VPORT_ACTOR_ID)
     expect(result).toEqual([])
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(fetchPendingTeamRequestsForBarberDAL).not.toHaveBeenCalled()
   })
 
   it('returns empty array when barberVportActorId is null', async () => {
     const result = await getBarberTeamRequestsController(CALLER_ACTOR_ID, null)
     expect(result).toEqual([])
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(fetchPendingTeamRequestsForBarberDAL).not.toHaveBeenCalled()
   })
 })
@@ -137,7 +137,7 @@ describe('getBarberTeamRequestsController — null guard', () => {
 describe('getBarberTeamRequestsController — ownership gate blocks unauthorized caller', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error('Actor does not own this vport actor.')
     )
   })
@@ -153,7 +153,7 @@ describe('getBarberTeamRequestsController — ownership gate blocks unauthorized
 describe('getBarberTeamRequestsController — legitimate owner returns data', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     fetchPendingTeamRequestsForBarberDAL.mockResolvedValue([
       { id: 'req-1', member_actor_id: 'actor-barber-333' },
     ])
@@ -161,7 +161,7 @@ describe('getBarberTeamRequestsController — legitimate owner returns data', ()
 
   it('returns data when ownership passes', async () => {
     const result = await getBarberTeamRequestsController(CALLER_ACTOR_ID, VPORT_ACTOR_ID)
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: VPORT_ACTOR_ID,
     })
     expect(fetchPendingTeamRequestsForBarberDAL).toHaveBeenCalledWith(VPORT_ACTOR_ID)
@@ -175,7 +175,7 @@ describe('acceptBarbershopInviteController — ELEK-001: resource state guard bl
   beforeEach(() => {
     vi.clearAllMocks()
     // ownership assertion should NOT be reached when state guard fires
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
   })
 
   it('throws "invite is no longer available" when status is not pending_acceptance', async () => {
@@ -187,7 +187,7 @@ describe('acceptBarbershopInviteController — ELEK-001: resource state guard bl
     await expect(
       acceptBarbershopInviteController(INVITE_TOKEN, BARBER_VPORT_ACTOR_ID, CALLER_ACTOR_ID)
     ).rejects.toThrow('invite is no longer available')
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(acceptTeamInviteByActorDAL).not.toHaveBeenCalled()
   })
 
@@ -200,13 +200,13 @@ describe('acceptBarbershopInviteController — ELEK-001: resource state guard bl
     await expect(
       acceptBarbershopInviteController(INVITE_TOKEN, BARBER_VPORT_ACTOR_ID, CALLER_ACTOR_ID)
     ).rejects.toThrow('invite is no longer available')
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(acceptTeamInviteByActorDAL).not.toHaveBeenCalled()
   })
 
   it('state guard fires BEFORE ownership assertion — wrong-status invite never reaches ownership check', async () => {
     // Simulate attacker with no ownership — ownership gate would reject, but state guard must fire first
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error('Actor does not own this vport actor.')
     )
     fetchResourceByIdDAL.mockResolvedValue({
@@ -217,7 +217,7 @@ describe('acceptBarbershopInviteController — ELEK-001: resource state guard bl
     await expect(
       acceptBarbershopInviteController(INVITE_TOKEN, BARBER_VPORT_ACTOR_ID, 'actor-attacker-999')
     ).rejects.toThrow('invite is no longer available')
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
   })
 })
 
@@ -226,7 +226,7 @@ describe('acceptBarbershopInviteController — ELEK-001: resource state guard bl
 describe('acceptBarbershopInviteController — ELEK-001: concurrent/second accept propagates stable DAL error', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     fetchResourceByIdDAL.mockResolvedValue({
       id: INVITE_TOKEN,
       meta: { status: 'pending_acceptance' },
@@ -253,14 +253,14 @@ describe('acceptBarbershopInviteController — legitimate owner with valid invit
       meta: { status: 'pending_acceptance' },
       member_actor_id: BARBER_VPORT_ACTOR_ID,
     })
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     acceptTeamInviteByActorDAL.mockResolvedValue({ id: INVITE_TOKEN, meta: { status: 'accepted' } })
   })
 
   it('calls acceptTeamInviteByActorDAL when state is valid and ownership passes', async () => {
     const result = await acceptBarbershopInviteController(INVITE_TOKEN, BARBER_VPORT_ACTOR_ID, CALLER_ACTOR_ID)
     expect(fetchResourceByIdDAL).toHaveBeenCalledWith(INVITE_TOKEN)
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: BARBER_VPORT_ACTOR_ID,
     })
     expect(acceptTeamInviteByActorDAL).toHaveBeenCalledWith(
@@ -289,7 +289,7 @@ describe('declineTeamRequestController — ELEK-002: invited barber decline requ
     await expect(
       declineTeamRequestController(BARBER_VPORT_ACTOR_ID, RESOURCE_ID, undefined)
     ).rejects.toThrow('declineTeamRequestController: viewerActorId required for invited barber path')
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(declineTeamRequestDAL).not.toHaveBeenCalled()
   })
 
@@ -297,7 +297,7 @@ describe('declineTeamRequestController — ELEK-002: invited barber decline requ
     await expect(
       declineTeamRequestController(BARBER_VPORT_ACTOR_ID, RESOURCE_ID, null)
     ).rejects.toThrow('declineTeamRequestController: viewerActorId required for invited barber path')
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
   })
 })
 
@@ -309,7 +309,7 @@ describe('declineTeamRequestController — ELEK-002: ownership gate blocks unaut
       meta: { status: 'pending_acceptance' },
       member_actor_id: BARBER_VPORT_ACTOR_ID,
     })
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error('Actor does not own this vport actor.')
     )
   })
@@ -318,7 +318,7 @@ describe('declineTeamRequestController — ELEK-002: ownership gate blocks unaut
     await expect(
       declineTeamRequestController(BARBER_VPORT_ACTOR_ID, RESOURCE_ID, 'user-attacker-999')
     ).rejects.toThrow('Actor does not own this vport actor.')
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: BARBER_VPORT_ACTOR_ID,
     })
     expect(declineTeamRequestDAL).not.toHaveBeenCalled()
@@ -342,13 +342,13 @@ describe('declineTeamRequestController — ELEK-002: invited barber decline succ
       meta: { status: 'pending_acceptance' },
       member_actor_id: BARBER_VPORT_ACTOR_ID,
     })
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     declineTeamRequestDAL.mockResolvedValue({ id: RESOURCE_ID, meta: { status: 'declined' } })
   })
 
   it('calls declineTeamRequestDAL when session user owns the barber VPORT', async () => {
     const result = await declineTeamRequestController(BARBER_VPORT_ACTOR_ID, RESOURCE_ID, VIEWER_ACTOR_ID)
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: BARBER_VPORT_ACTOR_ID,
     })
     expect(declineTeamRequestDAL).toHaveBeenCalledWith(RESOURCE_ID, expect.any(Object))

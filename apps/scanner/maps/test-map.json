@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "testCount": 110,
+  "testCount": 126,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.625Z",
+    "generatedAt": "2026-06-24T06:36:27.099Z",
     "tests": [
       {
         "file": "apps/Traffic/src/data/dal/trazeCategories.read.dal.js",
@@ -147,30 +147,6 @@
             "evidence": [
               "test declaration extracted from AST"
             ]
-          }
-        ],
-        "confidence": "HIGH",
-        "evidence": [
-          "test declarations extracted from AST"
-        ]
-      },
-      {
-        "file": "apps/Traffic/src/features/directories/components/ProviderListItem.jsx",
-        "owner": "Traffic:directories",
-        "ownerKind": "feature",
-        "app": "Traffic",
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "directories",
-        "engine": null,
-        "declarations": [
-          {
-            "call": "test",
-            "name": null,
-            "confidence": "HIGH",
-            "evidence": [
-              "test declaration extracted from AST"
-            ]
           },
           {
             "call": "test",
@@ -187,7 +163,55 @@
         ]
       },
       {
+        "file": "apps/Traffic/src/lib/countryDisplay.js",
+        "owner": "Traffic:lib",
+        "ownerKind": "app-area",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
         "file": "apps/Traffic/src/lib/geo/clientMarket.js",
+        "owner": "Traffic:lib",
+        "ownerKind": "app-area",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/Traffic/src/lib/safeMediaSrc.js",
         "owner": "Traffic:lib",
         "ownerKind": "app-area",
         "app": "Traffic",
@@ -347,8 +371,56 @@
         ]
       },
       {
+        "file": "apps/VCSM/src/app/routes/RouteErrorBoundary.jsx",
+        "owner": "VCSM:app",
+        "ownerKind": "app-area",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
         "file": "apps/VCSM/src/bootstrap/bootstrap.hydrate.controller.js",
         "owner": "VCSM:bootstrap",
+        "ownerKind": "app-area",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.js",
+        "owner": "VCSM:dev",
         "ownerKind": "app-area",
         "app": "VCSM",
         "appId": "VCSM",
@@ -1163,18 +1235,18 @@
         ]
       },
       {
-        "file": "apps/VCSM/src/features/booking/controllers/__tests__/assertActorOwnsVportActor.controller.test.js",
-        "owner": "VCSM:booking",
+        "file": "apps/VCSM/src/features/authorization/controllers/__tests__/assertActorOwnsActor.controller.test.js",
+        "owner": "VCSM:authorization",
         "ownerKind": "feature",
         "app": "VCSM",
         "appId": "VCSM",
         "root": "apps/VCSM",
-        "feature": "booking",
+        "feature": "authorization",
         "engine": null,
         "declarations": [
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — self ownership short-circuit (user-kind)",
+            "name": "assertActorOwnsActorController — self ownership short-circuit (user-kind)",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1198,7 +1270,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — ELEK-004: vport-kind self-match is rejected",
+            "name": "assertActorOwnsActorController — ELEK-004: vport-kind self-match is rejected",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1214,7 +1286,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — requester validation",
+            "name": "assertActorOwnsActorController — requester validation",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1246,7 +1318,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — actor_owners DB verification",
+            "name": "assertActorOwnsActorController — actor_owners DB verification",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1278,7 +1350,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — target actor void check",
+            "name": "assertActorOwnsActorController — target actor void check",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1362,6 +1434,54 @@
         "appId": "VCSM",
         "root": "apps/VCSM",
         "feature": "chat",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/claim/dal/providerLookup.read.dal.js",
+        "owner": "VCSM:claim",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/claim/model/claim.model.js",
+        "owner": "VCSM:claim",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
         "engine": null,
         "declarations": [
           {
@@ -2070,7 +2190,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when actorId is missing",
+            "name": "does not call assertSessionOwnsActorController when actorId is missing",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2094,7 +2214,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when identityActorId is missing",
+            "name": "does not call assertSessionOwnsActorController when identityActorId is missing",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2150,7 +2270,7 @@
           },
           {
             "call": "it",
-            "name": "calls assertActorOwnsVportActorController with correct requestActorId and targetActorId",
+            "name": "calls assertSessionOwnsActorController with correct requestActorId and targetActorId",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2502,7 +2622,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when actorId is missing",
+            "name": "does not call assertSessionOwnsActorController when actorId is missing",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2558,7 +2678,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when rateType is invalid",
+            "name": "does not call assertSessionOwnsActorController when rateType is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2622,7 +2742,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when meta is invalid",
+            "name": "does not call assertSessionOwnsActorController when meta is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2678,7 +2798,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when buyRate is invalid",
+            "name": "does not call assertSessionOwnsActorController when buyRate is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2734,7 +2854,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when sellRate is invalid",
+            "name": "does not call assertSessionOwnsActorController when sellRate is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2798,7 +2918,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when currency is invalid",
+            "name": "does not call assertSessionOwnsActorController when currency is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2854,7 +2974,7 @@
           },
           {
             "call": "it",
-            "name": "calls assertActorOwnsVportActorController with named object params",
+            "name": "calls assertSessionOwnsActorController with named object params",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6027,6 +6147,86 @@
         ]
       },
       {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/fuelPriceBatch.model.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "groupSubmissionsIntoBatches",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "groups rows into one entry per submission_batch_id",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "orders newest batch first by latest submission time",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "computes submittedAtMin / submittedAtMax for a multi-fuel batch",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "falls back to submission id when batch id is missing (no row dropped)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns [] for empty / non-array input",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "attachSubmittersToBatches",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "attaches resolved submitter identity by actorId",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/gasErrorMessages.model.test.js",
         "owner": "VCSM:vportDashboard",
         "ownerKind": "feature",
@@ -6159,6 +6359,110 @@
           {
             "call": "it",
             "name": "does not export DAL internals through the card barrel",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/gasPrices.model.batchMessages.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "buildBatchApproveMessage",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "Case A — all approved applied, nothing stale",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "Case B — some stale-skipped, explains the gap",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "omits the skip clause when staleSkippedCount is 0",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "uses singular nouns for a count of 1",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "coerces missing / null / undefined counts to 0 without throwing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "coerces numeric strings (defensive — RPC counts are numbers)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "buildBatchRejectMessage",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "formats the rejected count (plural)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "uses singular for a count of 1",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "defaults to 0 when no count is provided",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6367,6 +6671,126 @@
           {
             "call": "it",
             "name": "throws when pending submissions DAL errors",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/normalizeFuelUnitForDb.model.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "normalizeFuelUnitForDb",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "maps 'gallon' -> 'gal'",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "passes DB-supported values through unchanged",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/reviewFuelPriceBatch.controller.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "approveFuelPriceBatchController",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "maps RPC counts and invalidates official + pending caches on success",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "surfaces stale_skipped_count from the RPC (Scenario B)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns not_owner when the RPC raises 42501 (Scenario C)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns missing_batch and never calls the DAL when batch id is absent",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "rejectFuelPriceBatchController",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "maps rejected_count and invalidates only the pending cache",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns not_owner on 42501",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6635,6 +7059,142 @@
         ]
       },
       {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPriceBatchReview.write.dal.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "approveFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "resolves profileId internally and calls the RPC with profile + batch + reason",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "never forwards a caller-supplied profileId (actor-first)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns an error when the profile cannot be resolved",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "throws when submissionBatchId is missing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "rejectFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "calls the reject RPC and unwraps rejected_count",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPrices.write.dal.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "upsertVportFuelPriceDAL — unit normalization (owner price update path)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "persists 'gal' when the UI sends 'gallon'",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "passes through 'liter' and 'kwh' unchanged",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "updateFuelPriceUnitForActorDAL — unit toggle path (the reported crash)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "persists 'gal' when the toggle sends 'gallon'",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "persists 'liter' unchanged",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPriceSubmissions.read.dal.test.js",
         "owner": "VCSM:vportDashboard",
         "ownerKind": "feature",
@@ -6703,6 +7263,22 @@
           {
             "call": "it",
             "name": "inserts the expected fields",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "normalizes unit 'gallon' to 'gal' (submissions CHECK only accepts gal)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "passes through allowed units unchanged",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6782,7 +7358,7 @@
         "declarations": [
           {
             "call": "describe",
-            "name": "vportLeads.controller — ownership gate rejects unauthorized caller",
+            "name": "vportLeads.controller — ownership gate rejects unauthorized session",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6799,6 +7375,14 @@
           {
             "call": "it",
             "name": "countNewVportLeadsController rejects and does not call any DAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "countContactedVportLeadsController rejects and does not call any DAL",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6838,7 +7422,23 @@
           },
           {
             "call": "it",
-            "name": "listVportLeadsController calls readVportBusinessCardLeadsByProfileDAL with resolved profileId",
+            "name": "listVportLeadsController gates the session, then reads via resolved profileId",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "listVportLeadsController forwards statusGroup to the read DAL (lazy active/contacted split)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "countContactedVportLeadsController gates the session then reads the contacted head count",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6991,6 +7591,70 @@
           {
             "call": "it",
             "name": "passes portfolio media profile scope into the write DAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/__tests__/loadDaySchedule.controller.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "loadDayScheduleController — deleted team member filtering",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "excludes a deleted/inactive team member resource from the lanes",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "still renders the active barber lane",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "hides the primary 'Default calendar' lane when staff/barber lanes exist",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "keeps the primary lane for a solo vport with no staff resources",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "only validates the member actor ids that are present",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7343,6 +8007,78 @@
           {
             "call": "test",
             "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeam.read.dal.test.js",
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "fetchTeamMembersByProfileId — orphan member filtering",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns [] without querying when profileId is missing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "counts an active barber whose actor is still valid",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "does not count a deleted/voided barber",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "does not count a member whose actor record is missing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "keeps a staff resource with a null member_actor_id (manual, non-linked)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "aligns totals with loadDaySchedule filtering: only valid + null-member rows remain",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7915,6 +8651,30 @@
         ]
       },
       {
+        "file": "apps/VCSM/src/shared/lib/safeMediaSrc.js",
+        "owner": "VCSM:shared",
+        "ownerKind": "app-area",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
         "file": "apps/VCSM/src/shared/lib/vport/dashboardVportDetails.model.js",
         "owner": "VCSM:shared",
         "ownerKind": "app-area",
@@ -8028,6 +8788,54 @@
               "test declaration extracted from AST"
             ]
           },
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "owner": "apps",
+        "ownerKind": "apps",
+        "app": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "HIGH",
+        "evidence": [
+          "test declarations extracted from AST"
+        ]
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "owner": "apps",
+        "ownerKind": "apps",
+        "app": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "engine": null,
+        "declarations": [
           {
             "call": "test",
             "name": null,
@@ -8741,7 +9549,15 @@
         "status": "missing"
       },
       {
+        "owner": "Traffic:directories",
+        "status": "missing"
+      },
+      {
         "owner": "Traffic:home",
+        "status": "missing"
+      },
+      {
+        "owner": "Traffic:legal",
         "status": "missing"
       },
       {
@@ -8753,6 +9569,10 @@
         "status": "missing"
       },
       {
+        "owner": "Traffic:search",
+        "status": "missing"
+      },
+      {
         "owner": "VCSM:actors",
         "status": "missing"
       },
@@ -8761,11 +9581,15 @@
         "status": "missing"
       },
       {
-        "owner": "VCSM:authorization",
+        "owner": "VCSM:block",
         "status": "missing"
       },
       {
-        "owner": "VCSM:block",
+        "owner": "VCSM:booking",
+        "status": "missing"
+      },
+      {
+        "owner": "VCSM:claimOnboarding",
         "status": "missing"
       },
       {
@@ -8814,10 +9638,6 @@
       },
       {
         "owner": "VCSM:reviews",
-        "status": "missing"
-      },
-      {
-        "owner": "VCSM:vgrid",
         "status": "missing"
       },
       {

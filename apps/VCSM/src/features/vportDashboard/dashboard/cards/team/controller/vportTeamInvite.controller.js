@@ -8,7 +8,7 @@ import {
   declineTeamRequestDAL,
 } from "@/features/vportDashboard/dashboard/cards/team/dal/vportTeamInvite.write.dal";
 import { getVportActorIdByProfileIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 export async function acceptTeamRequestController(callerActorId, resourceId) {
@@ -25,7 +25,7 @@ export async function acceptTeamRequestController(callerActorId, resourceId) {
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the invited barber
     // accepts while acting as their VPORT, so ownership of the member VPORT is resolved
     // from the auth session via actor_owners rather than the UI-passed caller actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: resource.member_actor_id });
+    await assertSessionOwnsActorController({ targetActorId: resource.member_actor_id });
 
     return acceptTeamRequestDAL(resourceId, {
       ...resource.meta,
@@ -39,7 +39,7 @@ export async function acceptTeamRequestController(callerActorId, resourceId) {
 
 // ELEK-002 / IDENTITY-BOUNDARY-006: callerActorId is the barber VPORT actorId, used only
 // for the isInvitedBarber data discriminator (callerActorId === resource.member_actor_id).
-// Ownership is resolved from the auth session via assertSessionOwnsVportActorController
+// Ownership is resolved from the auth session via assertSessionOwnsActorController
 // (actor_owners), so it holds whether the session is acting as a user or as the VPORT.
 // String equality alone is not a sufficient ownership gate. viewerActorId is retained for
 // signature compatibility but no longer trusted for authorization.
@@ -62,7 +62,7 @@ export async function declineTeamRequestController(callerActorId, resourceId, vi
       if (!viewerActorId) {
         throw new Error("declineTeamRequestController: viewerActorId required for invited barber path");
       }
-      await assertSessionOwnsVportActorController({ targetActorId: callerActorId });
+      await assertSessionOwnsActorController({ targetActorId: callerActorId });
     } else {
       const vportActorId = resource.owner_actor_id
         ?? (resource.profile_id
@@ -71,7 +71,7 @@ export async function declineTeamRequestController(callerActorId, resourceId, vi
 
       if (!vportActorId) throw new Error("Could not resolve VPORT ownership.");
 
-      await assertSessionOwnsVportActorController({ targetActorId: vportActorId });
+      await assertSessionOwnsActorController({ targetActorId: vportActorId });
     }
 
     const declineScope = isInvitedBarber
@@ -91,7 +91,7 @@ export async function declineTeamRequestController(callerActorId, resourceId, vi
 export async function getBarberTeamRequestsController(callerActorId, barberVportActorId) {
   try {
     if (!callerActorId || !barberVportActorId) return [];
-    await assertSessionOwnsVportActorController({ targetActorId: barberVportActorId });
+    await assertSessionOwnsActorController({ targetActorId: barberVportActorId });
     return fetchPendingTeamRequestsForBarberDAL(barberVportActorId);
   } catch (error) {
     captureVcsmError({ feature: 'vportDashboard', module: 'team.vportTeamInvite.controller', severity: 'error', message: `getBarberTeamRequestsController: ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'getBarberTeamRequests', is_handled: false, context: { dbErrorCode: error?.code ?? null } })
@@ -119,7 +119,7 @@ export async function acceptBarbershopInviteController(token, barberVportActorId
       throw new Error("invite is no longer available");
     }
 
-    await assertSessionOwnsVportActorController({ targetActorId: barberVportActorId });
+    await assertSessionOwnsActorController({ targetActorId: barberVportActorId });
 
     return acceptTeamInviteByActorDAL(token, barberVportActorId, resource.meta);
   } catch (error) {

@@ -7,7 +7,7 @@ import { listValidMemberActorIdsDAL } from "@/features/vportDashboard/dal/read/a
 import { listVportAvailabilityRulesByResourceIdsDAL } from "@/features/vportDashboard/dal/read/vportAvailabilityRules.read.dal";
 import { listVportBookingsForProfileDayDAL } from "@/features/vportDashboard/dal/read/listVportBookingsForProfileDay.read.dal";
 import { listVportServicesByProfileIdDAL } from "@/features/vportDashboard/dal/read/vportServices.read.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 export async function loadDayScheduleController({ actorId, dateKey, callerActorId }) {
@@ -20,7 +20,7 @@ export async function loadDayScheduleController({ actorId, dateKey, callerActorI
     // Session-derived (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor here is the
     // VPORT itself, so ownership is resolved from the auth session via actor_owners
     // rather than trusting the UI-passed caller actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
 
     const profileId = await getVportProfileIdByActorDAL({ actorId });
     if (!profileId) throw new Error("Vport profile not found.");

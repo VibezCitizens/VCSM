@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "findingCount": 4459,
+  "findingCount": 4472,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:05.347Z",
+    "generatedAt": "2026-06-24T06:36:30.432Z",
     "findings": [
       {
         "findingId": "SEARCH-SEC-001",
@@ -21581,6 +21581,51 @@
         "requiredFollowUp": "review and assign owner"
       },
       {
+        "findingId": "TICKET-FUEL-BATCH-NOTIF-001",
+        "feature": "dashboard",
+        "module": "gasprices",
+        "behaviorId": "BEH-DASHBOARD-GASPRICES-001",
+        "severity": "MEDIUM",
+        "status": "OPEN",
+        "sourceCommand": "UNKNOWN",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/dashboard/modules/gasprices/outputs/DEADPOOL-FUEL-BATCH-NOTIF-001.md",
+        "evidence": [
+          "# DEADPOOL — TICKET-FUEL-BATCH-NOTIF-001"
+        ],
+        "owner": null,
+        "requiredFollowUp": "review and assign owner"
+      },
+      {
+        "findingId": "TICKET-FUEL-LEGACY-REVIEW-PATH-001",
+        "feature": "dashboard",
+        "module": "gasprices",
+        "behaviorId": "BEH-DASHBOARD-GASPRICES-001",
+        "severity": "MEDIUM",
+        "status": "OPEN",
+        "sourceCommand": "UNKNOWN",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/dashboard/modules/gasprices/outputs/TICKET-FUEL-LEGACY-REVIEW-PATH-001.md",
+        "evidence": [
+          "# TICKET-FUEL-LEGACY-REVIEW-PATH-001"
+        ],
+        "owner": null,
+        "requiredFollowUp": "review and assign owner"
+      },
+      {
+        "findingId": "TICKET-SEC-GASFUEL-REVIEW-001",
+        "feature": "dashboard",
+        "module": "gasprices",
+        "behaviorId": "BEH-DASHBOARD-GASPRICES-001",
+        "severity": "MEDIUM",
+        "status": "OPEN",
+        "sourceCommand": "UNKNOWN",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/dashboard/modules/gasprices/outputs/TICKET-FUEL-LEGACY-REVIEW-PATH-001.md",
+        "evidence": [
+          "Opened by: ELEKTRA E-1 / E-2 (under TICKET-SEC-GASFUEL-REVIEW-001)"
+        ],
+        "owner": null,
+        "requiredFollowUp": "review and assign owner"
+      },
+      {
         "findingId": "VEN-CARD-001",
         "feature": "dashboard",
         "module": "gasprices",
@@ -41801,6 +41846,36 @@
         "requiredFollowUp": "review and assign owner"
       },
       {
+        "findingId": "VENOM-EDGE-11",
+        "feature": "flyerBuilder",
+        "module": "flyerBuilder",
+        "behaviorId": "BEH-FLYERBUILDER-FLYERBUILDER-001",
+        "severity": "MEDIUM",
+        "status": "FIXED",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
+        "evidence": [
+          "- **VENOM-EDGE-11 (CLOSED):** `flyer.write.dal.js` upserts `vport.profile_public_details` keyed on client `profileId` — REFUTED_SAFE by BLACKWIDOW: `public_details_insert_managed`/`update_managed` RLS gate on `vport.actor_can_manage_profile` (`20260527030000`)."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-EDGE-11 (CLOSED):** `flyer.write.dal.js` upserts `vport.profile_public_details` keyed on client `profileId` — REFUTED_SAFE by BLACKWIDOW: `public_details_insert_managed`/`update_managed` RLS gate on `vport.actor_can_manage_profile` (`20260527030000`)."
+      },
+      {
+        "findingId": "VENOM-EDGE-12",
+        "feature": "flyerBuilder",
+        "module": "flyerBuilder",
+        "behaviorId": "BEH-FLYERBUILDER-FLYERBUILDER-001",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
+        "evidence": [
+          "- **VENOM-EDGE-12 (HIGH, OPEN):** `designStudio/dal/designStudio.write.dal.js` stamps client `ownerActorId` on create and deletes by raw `documentId`/`pageId` (`dalDeleteDesignPageById`, `dalDelete*ByPageId`, `dalClearDesignPageCurrentVersion`) with no ownership scope. No app-layer owner gate."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-EDGE-12 (HIGH, OPEN):** `designStudio/dal/designStudio.write.dal.js` stamps client `ownerActorId` on create and deletes by raw `documentId`/`pageId` (`dalDeleteDesignPageById`, `dalDelete*ByPageId`, `dalClearDesignPageCurrentVersion`) with no ownership scope. No app-layer owner gate."
+      },
+      {
         "findingId": "HYDR-SEC-001",
         "feature": "hydration",
         "module": "hydrator",
@@ -46299,6 +46374,36 @@
         ],
         "owner": null,
         "requiredFollowUp": "review and assign owner"
+      },
+      {
+        "findingId": "VENOM-EDGE-06",
+        "feature": "learning",
+        "module": "learning",
+        "behaviorId": null,
+        "severity": "HIGH",
+        "status": "OPEN",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/learning/SECURITY.md",
+        "evidence": [
+          "- **VENOM-EDGE-06/07 (HIGH, OPEN):** `learning/controller/administration/adminAccess.controller.js` and `linkParentToStudent.controller.js` evaluate the privilege decision (`isPlatformAdmin({actorId})`, `canManageCourse({actorId})`) on a **client-supplied `actorId`**, not a server-verified session; `parentActorId`/`studentActorId` are fully client-controlled and inserted into `observer_student_links`."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-EDGE-06/07 (HIGH, OPEN):** `learning/controller/administration/adminAccess.controller.js` and `linkParentToStudent.controller.js` evaluate the privilege decision (`isPlatformAdmin({actorId})`, `canManageCourse({actorId})`) on a **client-supplied `actorId`**, not a server-verified session; `parentActorId`/`studentActorId` are fully client-controlled and inserted into `observer_student_links`."
+      },
+      {
+        "findingId": "VENOM-EDGE-08",
+        "feature": "learning",
+        "module": "learning",
+        "behaviorId": null,
+        "severity": "LOW",
+        "status": "OPEN",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/learning/SECURITY.md",
+        "evidence": [
+          "- **VENOM-EDGE-08/09 (LOW, OPEN):** `upsertSubmissionDraft.dal.js` / `upsertLessonProgress.dal.js` trust client `actorId` (low impact)."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-EDGE-08/09 (LOW, OPEN):** `upsertSubmissionDraft.dal.js` / `upsertLessonProgress.dal.js` trust client `actorId` (low impact)."
       },
       {
         "findingId": "CONSENT-SEC-001",
@@ -56621,109 +56726,154 @@
         "requiredFollowUp": "review and assign owner"
       },
       {
-        "findingId": "VEN-PROFILES-002",
-        "feature": "profiles",
-        "module": "profiles",
-        "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
-        "status": "OPEN",
-        "sourceCommand": "SECURITY_DOC",
-        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
-        "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
-        ],
-        "owner": null,
-        "requiredFollowUp": "review and assign owner"
-      },
-      {
         "findingId": "BW-PROF-001",
         "feature": "profiles",
         "module": "profiles",
         "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
-        "status": "OPEN",
+        "severity": "CRITICAL",
+        "status": "VERIFIED",
         "sourceCommand": "SECURITY_DOC",
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
+          "Prior CRITICAL (BW-PROF-001 friend-rank IDOR) and menu_categories CREATE gap (BW-PROF-002) RE-VERIFIED 2026-06-22 as REMEDIATED at DB layer (see re-verify notes below)."
         ],
         "owner": null,
-        "requiredFollowUp": "review and assign owner"
+        "requiredFollowUp": "Prior CRITICAL (BW-PROF-001 friend-rank IDOR) and menu_categories CREATE gap (BW-PROF-002) RE-VERIFIED 2026-06-22 as REMEDIATED at DB layer (see re-verify notes below)."
       },
       {
         "findingId": "BW-PROF-002",
         "feature": "profiles",
         "module": "profiles",
         "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
+        "severity": "CRITICAL",
+        "status": "VERIFIED",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "Prior CRITICAL (BW-PROF-001 friend-rank IDOR) and menu_categories CREATE gap (BW-PROF-002) RE-VERIFIED 2026-06-22 as REMEDIATED at DB layer (see re-verify notes below)."
+        ],
+        "owner": null,
+        "requiredFollowUp": "Prior CRITICAL (BW-PROF-001 friend-rank IDOR) and menu_categories CREATE gap (BW-PROF-002) RE-VERIFIED 2026-06-22 as REMEDIATED at DB layer (see re-verify notes below)."
+      },
+      {
+        "findingId": "TICKET-SEC-WIDE-VCSM-VBE-001",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "MEDIUM",
         "status": "OPEN",
         "sourceCommand": "SECURITY_DOC",
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
+          "### 2026-06-22 Re-verify (wide-VCSM run, TICKET-SEC-WIDE-VCSM-VBE-001)"
         ],
         "owner": null,
         "requiredFollowUp": "review and assign owner"
       },
       {
-        "findingId": "BW-PROF-003",
+        "findingId": "VENOM-PROF-02",
         "feature": "profiles",
         "module": "profiles",
         "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
+        "severity": "HIGH",
         "status": "OPEN",
         "sourceCommand": "SECURITY_DOC",
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
+          "- **VENOM-PROF-02/03 (HIGH, OPEN):** `vport.menu_items` + `vport.menu_item_media` carry GRANT-only write exposure (`GRANT INSERT/UPDATE/DELETE TO authenticated`, `20260427060000`) with **no confirmed RLS migration** in `supabase/migrations/`, and the vport menu SAVE controllers (`saveVportActorMenuCategory`/`saveVportActorMenuItem`) **lacked any session ownership assertion** (`actorId` taken from client props, no `assertSessionOwnsVportActorController`) before ELEK-001. Confirmed by BLACKWIDOW. → ELEK-001 (advisory, not yet applied)."
         ],
         "owner": null,
-        "requiredFollowUp": "review and assign owner"
+        "requiredFollowUp": "- **VENOM-PROF-02/03 (HIGH, OPEN):** `vport.menu_items` + `vport.menu_item_media` carry GRANT-only write exposure (`GRANT INSERT/UPDATE/DELETE TO authenticated`, `20260427060000`) with **no confirmed RLS migration** in `supabase/migrations/`, and the vport menu SAVE controllers (`saveVportActorMenuCategory`/`saveVportActorMenuItem`) **lacked any session ownership assertion** (`actorId` taken from client props, no `assertSessionOwnsVportActorController`) before ELEK-001. Confirmed by BLACKWIDOW. → ELEK-001 (advisory, not yet applied)."
+      },
+      {
+        "findingId": "VENOM-PROF-01",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "MEDIUM",
+        "status": "FIXED",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "- **VENOM-PROF-01 menu_categories (CLOSED — DB-remediated / REFUTED_SAFE):** owner-bound policies now exist (`20260503040334`) gating INSERT/UPDATE/DELETE on `vport.actor_can_manage_profile(vc.current_actor_id(), profile_id)`. A forged `profile_id` write is rejected at the DB. Supersedes prior BW-PROF-002."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-PROF-01 menu_categories (CLOSED — DB-remediated / REFUTED_SAFE):** owner-bound policies now exist (`20260503040334`) gating INSERT/UPDATE/DELETE on `vport.actor_can_manage_profile(vc.current_actor_id(), profile_id)`. A forged `profile_id` write is rejected at the DB. Supersedes prior BW-PROF-002."
+      },
+      {
+        "findingId": "VENOM-PROF-06",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "LOW",
+        "status": "FIXED",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "- **VENOM-PROF-06 friend ranks (CLOSED — DB-remediated / REFUTED_SAFE):** `save_friend_ranks` RPC now guards `IF NOT vc.is_actor_owner(p_owner_actor_id) THEN RAISE EXCEPTION ... USING errcode='42501'` (`20260519120000`; function recreated WITHOUT SECURITY DEFINER). Supersedes prior VEN-PROFILES-002 / BW-PROF-001 / BW-PROF-004. **App-layer hardening (LOW, still recommended):** `saveTopFriendRanks.controller.js` still accepts `ownerActorId` as an argument — derive it from session identity rather than trusting the caller (defense-in-depth; DB guard is now the enforcing boundary)."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-PROF-06 friend ranks (CLOSED — DB-remediated / REFUTED_SAFE):** `save_friend_ranks` RPC now guards `IF NOT vc.is_actor_owner(p_owner_actor_id) THEN RAISE EXCEPTION ... USING errcode='42501'` (`20260519120000`; function recreated WITHOUT SECURITY DEFINER). Supersedes prior VEN-PROFILES-002 / BW-PROF-001 / BW-PROF-004. **App-layer hardening (LOW, still recommended):** `saveTopFriendRanks.controller.js` still accepts `ownerActorId` as an argument — derive it from session identity rather than trusting the caller (defense-in-depth; DB guard is now the enforcing boundary)."
+      },
+      {
+        "findingId": "VEN-PROFILES-002",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "LOW",
+        "status": "FIXED",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "- **VENOM-PROF-06 friend ranks (CLOSED — DB-remediated / REFUTED_SAFE):** `save_friend_ranks` RPC now guards `IF NOT vc.is_actor_owner(p_owner_actor_id) THEN RAISE EXCEPTION ... USING errcode='42501'` (`20260519120000`; function recreated WITHOUT SECURITY DEFINER). Supersedes prior VEN-PROFILES-002 / BW-PROF-001 / BW-PROF-004. **App-layer hardening (LOW, still recommended):** `saveTopFriendRanks.controller.js` still accepts `ownerActorId` as an argument — derive it from session identity rather than trusting the caller (defense-in-depth; DB guard is now the enforcing boundary)."
+        ],
+        "owner": null,
+        "requiredFollowUp": "- **VENOM-PROF-06 friend ranks (CLOSED — DB-remediated / REFUTED_SAFE):** `save_friend_ranks` RPC now guards `IF NOT vc.is_actor_owner(p_owner_actor_id) THEN RAISE EXCEPTION ... USING errcode='42501'` (`20260519120000`; function recreated WITHOUT SECURITY DEFINER). Supersedes prior VEN-PROFILES-002 / BW-PROF-001 / BW-PROF-004. **App-layer hardening (LOW, still recommended):** `saveTopFriendRanks.controller.js` still accepts `ownerActorId` as an argument — derive it from session identity rather than trusting the caller (defense-in-depth; DB guard is now the enforcing boundary)."
       },
       {
         "findingId": "BW-PROF-004",
         "feature": "profiles",
         "module": "profiles",
         "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
-        "status": "OPEN",
+        "severity": "LOW",
+        "status": "FIXED",
         "sourceCommand": "SECURITY_DOC",
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
+          "- **VENOM-PROF-06 friend ranks (CLOSED — DB-remediated / REFUTED_SAFE):** `save_friend_ranks` RPC now guards `IF NOT vc.is_actor_owner(p_owner_actor_id) THEN RAISE EXCEPTION ... USING errcode='42501'` (`20260519120000`; function recreated WITHOUT SECURITY DEFINER). Supersedes prior VEN-PROFILES-002 / BW-PROF-001 / BW-PROF-004. **App-layer hardening (LOW, still recommended):** `saveTopFriendRanks.controller.js` still accepts `ownerActorId` as an argument — derive it from session identity rather than trusting the caller (defense-in-depth; DB guard is now the enforcing boundary)."
         ],
         "owner": null,
-        "requiredFollowUp": "review and assign owner"
+        "requiredFollowUp": "- **VENOM-PROF-06 friend ranks (CLOSED — DB-remediated / REFUTED_SAFE):** `save_friend_ranks` RPC now guards `IF NOT vc.is_actor_owner(p_owner_actor_id) THEN RAISE EXCEPTION ... USING errcode='42501'` (`20260519120000`; function recreated WITHOUT SECURITY DEFINER). Supersedes prior VEN-PROFILES-002 / BW-PROF-001 / BW-PROF-004. **App-layer hardening (LOW, still recommended):** `saveTopFriendRanks.controller.js` still accepts `ownerActorId` as an argument — derive it from session identity rather than trusting the caller (defense-in-depth; DB guard is now the enforcing boundary)."
       },
       {
-        "findingId": "BW-PROF-010",
+        "findingId": "VENOM-PROF-07",
         "feature": "profiles",
         "module": "profiles",
         "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
-        "status": "OPEN",
+        "severity": "MEDIUM",
+        "status": "FIXED",
         "sourceCommand": "SECURITY_DOC",
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
+          "- **VENOM-PROF-07..10 content_pages (CLOSED):** owner-bound RLS (`20260523030000`) — REFUTED_SAFE."
         ],
         "owner": null,
-        "requiredFollowUp": "review and assign owner"
+        "requiredFollowUp": "- **VENOM-PROF-07..10 content_pages (CLOSED):** owner-bound RLS (`20260523030000`) — REFUTED_SAFE."
       },
       {
-        "findingId": "BW-PROF-011",
+        "findingId": "VENOM-PROF-12",
         "feature": "profiles",
         "module": "profiles",
         "behaviorId": "BEH-PROFILES-PROFILES-001",
-        "severity": "BLOCKER",
+        "severity": "LOW",
         "status": "OPEN",
         "sourceCommand": "SECURITY_DOC",
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
-          "THOR Release Blocker: YES — VEN-PROFILES-002, BW-PROF-001, BW-PROF-002, BW-PROF-003, BW-PROF-004, BW-PROF-010, BW-PROF-011"
+          "- **VENOM-PROF-12/13 subscribers (LOW, OPEN):** `viewerActorId` caller-supplied to list/count RPC — derive from session (ELEK-004)."
         ],
         "owner": null,
-        "requiredFollowUp": "review and assign owner"
+        "requiredFollowUp": "- **VENOM-PROF-12/13 subscribers (LOW, OPEN):** `viewerActorId` caller-supplied to list/count RPC — derive from session (ELEK-004)."
       },
       {
         "findingId": "VEN-PROFILES-001",
@@ -56841,6 +56991,51 @@
         "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
         "evidence": [
           "| VEN-PROFILES-009 | LOW | console.error with internal identifiers in DEV guard path (upsertVportServices controller) |"
+        ],
+        "owner": null,
+        "requiredFollowUp": "review and assign owner"
+      },
+      {
+        "findingId": "BW-PROF-003",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "| BW-PROF-003 | HIGH | menu_items CREATE has no assertActorOwnsVportActorController call — actorId taken from argument, not session-verified | BYPASSED | DRAFT — OPEN |"
+        ],
+        "owner": null,
+        "requiredFollowUp": "review and assign owner"
+      },
+      {
+        "findingId": "BW-PROF-010",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "| BW-PROF-010 | HIGH | Raw UUID exposed in public-facing profile URL when slug resolution fails — buildActorCanonicalSlug.controller.js:89 falls back to bare actorId | BYPASSED | DRAFT — OPEN |"
+        ],
+        "owner": null,
+        "requiredFollowUp": "review and assign owner"
+      },
+      {
+        "findingId": "BW-PROF-011",
+        "feature": "profiles",
+        "module": "profiles",
+        "behaviorId": "BEH-PROFILES-PROFILES-001",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "sourceCommand": "SECURITY_DOC",
+        "sourceDocument": "ZZnotforproduction/APPS/VCSM/features/profiles/SECURITY.md",
+        "evidence": [
+          "| BW-PROF-011 | HIGH | Raw postId (UUID) exposed in post share URLs — useActorProfileActions.js:31 constructs /post/{postId} | BYPASSED | DRAFT — OPEN |"
         ],
         "owner": null,
         "requiredFollowUp": "review and assign owner"
