@@ -3,7 +3,7 @@
  *
  * Security invariant (SPIDER-MAN / VENOM):
  * Every VPORT lead operation (list, count, markContacted, delete) must pass
- * the session-derived ownership gate (assertSessionOwnsVportActorController)
+ * the session-derived ownership gate (assertSessionOwnsActorController)
  * before any DAL is called. An unauthorized session must be rejected before any
  * data is read or written.
  *
@@ -18,11 +18,11 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@/features/booking/adapters/booking.adapter', () => ({
+vi.mock('@/features/authorization/adapters/authorization.adapter', () => ({
   // All four read/write paths gate through the session-derived ownership
   // controller (vportLeads.controller.js). It must be mocked and configured
   // per-group.
-  assertSessionOwnsVportActorController: vi.fn(),
+  assertSessionOwnsActorController: vi.fn(),
 }))
 vi.mock('@/features/vportDashboard/dal/read/vportProfile.read.dal', () => ({
   readVportProfileByActorIdDAL: vi.fn(),
@@ -48,7 +48,7 @@ import {
   markVportLeadContactedController,
   deleteVportLeadController,
 } from '../controller/vportLeads.controller'
-import { assertSessionOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
+import { assertSessionOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 import { readVportProfileByActorIdDAL } from '@/features/vportDashboard/dal/read/vportProfile.read.dal'
 import {
   readVportBusinessCardLeadsByProfileDAL,
@@ -67,7 +67,7 @@ const VPORT_ID = 'actor-vport-111'
 describe('vportLeads.controller — ownership gate rejects unauthorized session', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error('Session user does not own this vport actor.')
     )
   })
@@ -126,7 +126,7 @@ describe('vportLeads.controller — ownership gate rejects unauthorized session'
 describe('vportLeads.controller — legitimate owner routes to correct DAL', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     readVportProfileByActorIdDAL.mockResolvedValue({ id: 'profile-abc' })
   })
 
@@ -137,7 +137,7 @@ describe('vportLeads.controller — legitimate owner routes to correct DAL', () 
     ])
     // A VPORT-acting session that owns the target VPORT can list its leads.
     const result = await listVportLeadsController(VPORT_ID, { limit: 20 })
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: VPORT_ID,
     })
     expect(readVportBusinessCardLeadsByProfileDAL).toHaveBeenCalledWith('profile-abc', { limit: 20, statusGroup: undefined })
@@ -156,7 +156,7 @@ describe('vportLeads.controller — legitimate owner routes to correct DAL', () 
   it('countContactedVportLeadsController gates the session then reads the contacted head count', async () => {
     readContactedLeadsCountByProfileDAL.mockResolvedValue(7)
     const result = await countContactedVportLeadsController(VPORT_ID)
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: VPORT_ID,
     })
     expect(readContactedLeadsCountByProfileDAL).toHaveBeenCalledWith('profile-abc')
@@ -174,7 +174,7 @@ describe('vportLeads.controller — legitimate owner routes to correct DAL', () 
     readNewLeadsCountByProfileDAL.mockResolvedValue(3)
     // Signature is (actorId, profileId); ownership is gated via the session gate.
     const result = await fastCountNewVportLeadsController(VPORT_ID, 'profile-abc')
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: VPORT_ID,
     })
     expect(readNewLeadsCountByProfileDAL).toHaveBeenCalledWith('profile-abc')

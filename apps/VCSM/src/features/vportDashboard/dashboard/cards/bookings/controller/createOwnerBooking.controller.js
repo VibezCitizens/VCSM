@@ -1,7 +1,7 @@
 import { getVportResourceByIdDAL } from "@/features/vportDashboard/dal/read/vportResource.read.dal";
 import { getVportActorIdByProfileIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { insertVportBookingDAL } from "@/features/vportDashboard/dashboard/cards/bookings/dal/insertVportBooking.write.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 export async function createOwnerBookingController({
@@ -37,7 +37,7 @@ export async function createOwnerBookingController({
 
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the owner books while
     // acting as the VPORT, so ownership is resolved from the auth session via actor_owners.
-    await assertSessionOwnsVportActorController({ targetActorId: vportActorId });
+    await assertSessionOwnsActorController({ targetActorId: vportActorId });
 
     const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 

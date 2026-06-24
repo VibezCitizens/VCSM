@@ -1,15 +1,29 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "rpcCount": 73,
+  "rpcCount": 82,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.623Z",
+    "generatedAt": "2026-06-24T06:36:27.096Z",
     "rpcs": [
+      {
+        "rpc": "approve_fuel_price_submission_batch",
+        "schema": null,
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "caller": "approveFuelPriceSubmissionBatchDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
       {
         "rpc": "block_actor",
         "schema": "moderation",
@@ -403,6 +417,20 @@
         ]
       },
       {
+        "rpc": "get_published_question",
+        "schema": "answers",
+        "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "engine": null,
+        "caller": "getPublishedQuestion",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
         "rpc": "get_target_overall_stats",
         "schema": "reviews",
         "file": "engines/reviews/src/dal/reviews.rpc.dal.js",
@@ -557,6 +585,34 @@
         ]
       },
       {
+        "rpc": "list_published_answers_for_question",
+        "schema": "answers",
+        "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "engine": null,
+        "caller": "listPublishedAnswersForQuestion",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "list_published_questions",
+        "schema": "answers",
+        "file": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "engine": null,
+        "caller": "listPublishedQuestions",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
         "rpc": "list_vport_subscribers",
         "schema": "vc",
         "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/subscribersList.dal.js",
@@ -649,6 +705,20 @@
         "feature": "identity",
         "engine": null,
         "caller": "refreshActorDirectoryRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "reject_fuel_price_submission_batch",
+        "schema": null,
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "engine": null,
+        "caller": "rejectFuelPriceSubmissionBatchDAL",
         "confidence": "HIGH",
         "evidence": [
           "rpc() extracted from AST"
@@ -795,6 +865,20 @@
         ]
       },
       {
+        "rpc": "search_public_providers",
+        "schema": "traffic",
+        "file": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "search",
+        "engine": null,
+        "caller": "searchPublicProviders",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
         "rpc": "send_message_atomic",
         "schema": "chat",
         "file": "engines/chat/src/dal/sendMessageAtomic.rpc.dal.js",
@@ -879,6 +963,20 @@
         ]
       },
       {
+        "rpc": "submit_answer",
+        "schema": "answers",
+        "file": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "engine": null,
+        "caller": "submitAnswerRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
         "rpc": "submit_business_card_lead",
         "schema": "vport",
         "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
@@ -901,6 +999,34 @@
         "feature": "public",
         "engine": null,
         "caller": "createVportBusinessCardLeadDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "submit_business_claim",
+        "schema": null,
+        "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "engine": null,
+        "caller": "submitBusinessClaim",
+        "confidence": "HIGH",
+        "evidence": [
+          "rpc() extracted from AST"
+        ]
+      },
+      {
+        "rpc": "submit_question",
+        "schema": "answers",
+        "file": "apps/Traffic/src/features/answers/dal/questions.write.dal.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "engine": null,
+        "caller": "createQuestionRow",
         "confidence": "HIGH",
         "evidence": [
           "rpc() extracted from AST"

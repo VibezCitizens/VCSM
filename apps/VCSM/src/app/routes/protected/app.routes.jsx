@@ -23,6 +23,7 @@ const devDiagnosticsEnabled = import.meta.env.DEV;
 
 export function protectedAppRoutes({
   CentralFeed,
+  ClaimApprovedScreen,
   ExploreScreen,
   CitizenVibesScreen,
   PostFeedScreen,
@@ -97,6 +98,7 @@ export function protectedAppRoutes({
 }) {
   return [
     { path: "/CentralFeed", element: <CentralFeed /> },
+    { path: "/business/welcome", element: <ClaimApprovedScreen /> },
     { path: "/explore", element: <ExploreScreen /> },
     { path: "/citizen/vibes", element: <CitizenVibesScreen /> },
 

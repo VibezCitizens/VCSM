@@ -27,3 +27,7 @@
 
 export { assertActorOwnsActorController } from "@/features/authorization/controllers/assertActorOwnsActor.controller";
 export { assertSessionOwnsActorController } from "@/features/authorization/controllers/assertSessionOwnsActor.controller";
+
+// Minimal actor kind/void read for navigation/visibility gates that must avoid
+// importing booking for ownership. Read-only; not an ownership decision.
+export { readActorStatusController } from "@/features/authorization/controllers/readActorStatus.controller";

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { listLiveProviderCountries } from "@/data/repositories/provider.repo";
 import { AppShell } from "@/shared/components/AppShell";
+import TrazePublicFooter from "@/shared/components/TrazePublicFooter";
 
 export const viewport = {
   width: "device-width",
@@ -50,7 +51,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="traffic-theme">
         <AppShell countryOptions={countryOptions}>
-          <main>{children}</main>
+          <main>
+            {children}
+            <TrazePublicFooter />
+          </main>
         </AppShell>
       </body>
     </html>

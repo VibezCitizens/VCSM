@@ -9,7 +9,6 @@ import {
 import {
   HomepageHeroSection,
   HomepageTopProvidersSection,
-  HomepageTrendingSection,
   HomepageCategoryGrid,
   HomepageCtaFooter
 } from "@/features/home/adapters/home.adapter";
@@ -51,92 +50,6 @@ function buildMainPlatformLink() {
   return url.toString();
 }
 
-function getHomepageCityCountries(locationOptions) {
-  const countries = new Map();
-
-  for (const option of locationOptions) {
-    const countryCode = String(option.countryCode ?? "").toUpperCase();
-    if (!countryCode || countries.has(countryCode)) continue;
-
-    countries.set(countryCode, {
-      countryCode,
-      countrySlug: option.countrySlug,
-      name: option.countryName,
-      nameEs: option.countryNameEs
-    });
-  }
-
-  return [...countries.values()].sort((left, right) =>
-    left.name.localeCompare(right.name)
-  );
-}
-
-// Browse groups use city-agnostic country-level URLs where needed so no city is
-// assumed on the server. The Cities group is client-filtered by country.
-function buildBrowseGroups(locationOptions, liveCountries) {
-  const cityCountries = getHomepageCityCountries(locationOptions);
-  const countryLinks = liveCountries.map((country) => ({
-    label: country.name,
-    labelEs: country.nameEs,
-    href: `/${country.countrySlug}`,
-    countryCode: country.countryCode,
-    countrySlug: country.countrySlug
-  }));
-
-  return [
-    {
-      title: "Service types",
-      titleEs: "Tipos de servicio",
-      description: "Jump straight to a service category.",
-      descriptionEs: "Ve directo a una categoría de servicio.",
-      type: "service_links",
-      countries: liveCountries,
-      links: [
-        {
-          label: "Locksmiths",
-          labelEs: "Cerrajeros",
-          serviceSlug: "locksmith"
-        },
-        {
-          label: "Barbers",
-          labelEs: "Barberos",
-          serviceSlug: "barber"
-        },
-        {
-          label: "Browse all",
-          labelEs: "Ver todo",
-          href: "/categories"
-        }
-      ]
-    },
-    {
-      title: "Active cities",
-      titleEs: "Ciudades activas",
-      description: "Browse providers by active city.",
-      descriptionEs: "Explora proveedores por ciudad activa.",
-      type: "cities",
-      defaultCountryCode: "",
-      countries: cityCountries,
-      cities: locationOptions.map((entry) => ({
-        citySlug: entry.citySlug,
-        countrySlug: entry.countrySlug,
-        countryCode: entry.countryCode,
-        label: entry.label,
-        labelEs: entry.labelEs,
-        href: entry.href
-      }))
-    },
-    {
-      title: "Active countries",
-      titleEs: "Países activos",
-      description: "Browse all active country directories.",
-      descriptionEs: "Explora los directorios activos por país.",
-      links: countryLinks
-    }
-  ];
-}
-
-
 export default async function TrafficHomePage() {
   const liveCountries = listLiveProviderCountries();
   const locationOptions = listLiveProviderLocationOptions();
@@ -159,7 +72,6 @@ export default async function TrafficHomePage() {
 
   const countryGroups = groupProvidersByCountry(homepageData.providers);
 
-  const browseGroups = buildBrowseGroups(locationOptions, liveCountries);
   const liveServiceSlugs = [
     ...new Set(
       traceCategories.flatMap((category) =>
@@ -189,8 +101,9 @@ export default async function TrafficHomePage() {
 
       <TrazeGeoCoverageGlobe
         coverage={geoCoverage}
+        spotlightProviders={homepageData.providers}
         title="Traze coverage"
-        subtitle="Live provider density across active countries, states, and cities."
+        showMeta={false}
       />
 
       <HomepageCategoryGrid
@@ -198,8 +111,6 @@ export default async function TrafficHomePage() {
         defaultCountrySlug=""
         defaultCitySlug={null}
       />
-
-      <HomepageTrendingSection groups={browseGroups} />
 
       <HomepageCtaFooter
         claimHref={claimHref}

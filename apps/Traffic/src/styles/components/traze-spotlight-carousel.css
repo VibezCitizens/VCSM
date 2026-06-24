@@ -1,0 +1,301 @@
+/* ============================================================
+   COMPONENT — TRAZE spotlight carousel
+   Auto-rotating business spotlight rendered inside the Coverage
+   explorer (left) card. Self-contained stylesheet — matches the
+   dark/glass/purple card system (radius + glow).
+   ============================================================ */
+
+.traze-spotlight {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 200px;
+  margin-top: 0.5rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 16px;
+  background:
+    radial-gradient(90% 140% at 12% 0%, rgba(139, 92, 246, 0.14), transparent 60%),
+    rgba(8, 10, 22, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.traze-spotlight__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.traze-spotlight__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(213, 203, 255, 0.78);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.traze-spotlight__position {
+  color: rgba(174, 166, 204, 0.6);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Viewport + slide ─────────────────────────────────────── */
+
+.traze-spotlight__viewport {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  touch-action: pan-y;
+}
+
+.traze-spotlight__slide {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: 14px;
+  background: rgba(8, 10, 22, 0.5);
+  color: inherit;
+  text-decoration: none;
+  animation: traze-spotlight-fade 420ms ease;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.traze-spotlight__slide:hover,
+.traze-spotlight__slide:focus-visible {
+  border-color: rgba(167, 139, 250, 0.42);
+  background: rgba(15, 18, 35, 0.78);
+  transform: translateY(-1px);
+}
+
+@keyframes traze-spotlight-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.traze-spotlight__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.traze-spotlight__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.traze-spotlight__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.traze-spotlight__body {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.traze-spotlight__namerow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.traze-spotlight__name {
+  overflow: hidden;
+  color: var(--vc-text);
+  font-size: 0.98rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traze-spotlight__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  flex-shrink: 0;
+  padding: 0.18rem 0.42rem;
+  border: 1px solid rgba(139, 92, 246, 0.26);
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.12);
+  color: rgba(213, 203, 255, 0.86);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.traze-spotlight__badge--verified {
+  border-color: rgba(74, 222, 128, 0.32);
+  background: rgba(34, 197, 94, 0.12);
+  color: rgba(167, 243, 208, 0.92);
+}
+
+.traze-spotlight__category {
+  overflow: hidden;
+  color: rgba(205, 199, 229, 0.78);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traze-spotlight__location,
+.traze-spotlight__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgba(174, 166, 204, 0.7);
+  font-size: 0.76rem;
+}
+
+.traze-spotlight__rating {
+  color: rgba(244, 241, 255, 0.86);
+}
+
+.traze-spotlight__reviews {
+  color: rgba(174, 166, 204, 0.7);
+}
+
+.traze-spotlight__cta {
+  margin-top: 0.15rem;
+  color: rgba(167, 139, 250, 0.92);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* ── Controls ─────────────────────────────────────────────── */
+
+.traze-spotlight__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.traze-spotlight__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 10px;
+  background: rgba(8, 10, 22, 0.6);
+  color: rgba(213, 203, 255, 0.86);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.traze-spotlight__nav:hover,
+.traze-spotlight__nav:focus-visible {
+  border-color: rgba(167, 139, 250, 0.46);
+  background: rgba(15, 18, 35, 0.82);
+  color: #fff;
+}
+
+.traze-spotlight__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.traze-spotlight__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.28);
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.traze-spotlight__dot:hover {
+  background: rgba(167, 139, 250, 0.55);
+}
+
+.traze-spotlight__dot.is-active {
+  background: rgba(196, 181, 253, 0.95);
+  transform: scale(1.25);
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+
+.traze-spotlight__empty {
+  display: grid;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+  place-content: center;
+  text-align: center;
+}
+
+.traze-spotlight__empty strong {
+  color: var(--vc-text);
+  font-size: 0.92rem;
+}
+
+.traze-spotlight__empty span {
+  color: rgba(174, 166, 204, 0.66);
+  font-size: 0.8rem;
+}
+
+/* Small phones: tighten the slide so avatar + text + badge fit comfortably. */
+@media (max-width: 380px) {
+  .traze-spotlight {
+    padding: 0.9rem;
+  }
+
+  .traze-spotlight__slide {
+    gap: 0.7rem;
+    padding: 0.65rem;
+  }
+
+  .traze-spotlight__media {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .traze-spotlight__name {
+    font-size: 0.92rem;
+  }
+}
+
+/* Respect reduced-motion: no slide animation. */
+@media (prefers-reduced-motion: reduce) {
+  .traze-spotlight__slide {
+    animation: none;
+  }
+
+  .traze-spotlight__dot.is-active {
+    transform: none;
+  }
+}

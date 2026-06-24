@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuCategory.controller.js
 
 import deleteVportActorMenuCategoryDAL from "@/features/profiles/kinds/vport/dal/menu/deleteVportActorMenuCategory.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 export async function deleteVportActorMenuCategoryController({
   callerActorId,
@@ -20,7 +20,7 @@ export async function deleteVportActorMenuCategoryController({
     throw new Error("deleteVportActorMenuCategoryController: actorId required");
   }
 
-  await assertSessionOwnsVportActorController({ targetActorId: actorId });
+  await assertSessionOwnsActorController({ targetActorId: actorId });
 
   // DAL throws on error — no destructuring of { error }
   await deleteVportActorMenuCategoryDAL({ categoryId });

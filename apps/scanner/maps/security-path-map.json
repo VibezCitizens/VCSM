@@ -1,16 +1,3196 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "securityPathCount": 616,
+  "securityPathCount": 699,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.246Z",
+    "generatedAt": "2026-06-24T06:36:27.849Z",
     "securityPaths": [
       {
+        "route": "*",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/booking-history",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/calendar",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/exchange",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/gas",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/leads",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/locksmith",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/portfolio",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/reviews",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/schedule",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/services",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/team-requests",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/dashboard/team",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/actor/:actorId/settings",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/business/welcome",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/CentralFeed",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/:conversationId",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/archived",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/new",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/requests",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/settings",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/settings/blocked",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/settings/inbox",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/settings/privacy",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/chat/spam",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/citizen/vibes",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/explore",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/invite",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/me",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/noti/post/:postId",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/notifications",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/post/:postId",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/post/:postId/edit",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/posts",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/posts/:postId",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/posts/:postId/edit",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/profile/:actorId",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/profile/:id/friends/top/edit",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/settings",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/u/:username",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/upload",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/void",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/ads",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/dashboard",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/dashboard/calendar",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/dashboard/exchange",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/dashboard/leads",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/dashboard/reviews",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/menu/flyer",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/menu/flyer/edit",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/menu/qr",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/:actorId/settings",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/chat",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/chat/:conversationId",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/inbox",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/notifications",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
+        "route": "/vport/restore",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "access": "public",
+        "controller": "controller:apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js#checkVportOwnershipController",
+        "writes": [
+          {
+            "operation": "edge_function",
+            "functionName": "monitoring-ingest-error",
+            "caller": "_send",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ],
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "function": "_send",
+            "owner": "VCSM:services",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "monitoring-ingest-error",
+            "caller": "_send",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "route": null,
+            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
+            "source": "supabase-invoke",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase function invoke extracted from AST"
+            ]
+          }
+        ],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "potential attack surface path only; no finding asserted"
+        ]
+      },
+      {
         "appId": "Traffic",
         "root": "apps/Traffic",
         "feature": "answers",
@@ -19,15 +3199,15 @@
         "controller": null,
         "writes": [
           {
-            "operation": "insert",
+            "operation": "rpc",
             "schema": "answers",
-            "table": "answers",
-            "rpc": null,
+            "table": null,
+            "rpc": "get_published_question",
             "functionName": null,
-            "function": "createModerationAnswerRow",
+            "function": "getPublishedQuestion",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "RPC call extracted from AST"
             ],
             "owner": "Traffic:answers",
             "ownerKind": "feature",
@@ -35,8 +3215,8 @@
             "root": "apps/Traffic",
             "feature": "answers",
             "layer": "dal",
-            "path": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js",
-            "file": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js"
+            "path": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+            "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js"
           }
         ],
         "rpcs": [],
@@ -55,15 +3235,15 @@
         "controller": null,
         "writes": [
           {
-            "operation": "update",
+            "operation": "rpc",
             "schema": "answers",
-            "table": "answers",
-            "rpc": null,
+            "table": null,
+            "rpc": "list_published_answers_for_question",
             "functionName": null,
-            "function": "updateAnswerModerationRow",
+            "function": "listPublishedAnswersForQuestion",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "RPC call extracted from AST"
             ],
             "owner": "Traffic:answers",
             "ownerKind": "feature",
@@ -71,8 +3251,8 @@
             "root": "apps/Traffic",
             "feature": "answers",
             "layer": "dal",
-            "path": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js",
-            "file": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js"
+            "path": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+            "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js"
           }
         ],
         "rpcs": [],
@@ -91,15 +3271,15 @@
         "controller": null,
         "writes": [
           {
-            "operation": "update",
+            "operation": "rpc",
             "schema": "answers",
-            "table": "questions",
-            "rpc": null,
+            "table": null,
+            "rpc": "list_published_questions",
             "functionName": null,
-            "function": "updateQuestionModerationRow",
+            "function": "listPublishedQuestions",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "RPC call extracted from AST"
             ],
             "owner": "Traffic:answers",
             "ownerKind": "feature",
@@ -107,8 +3287,8 @@
             "root": "apps/Traffic",
             "feature": "answers",
             "layer": "dal",
-            "path": "apps/Traffic/src/features/answers/dal/moderationQuestions.dal.js",
-            "file": "apps/Traffic/src/features/answers/dal/moderationQuestions.dal.js"
+            "path": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js",
+            "file": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js"
           }
         ],
         "rpcs": [],
@@ -127,15 +3307,15 @@
         "controller": null,
         "writes": [
           {
-            "operation": "insert",
+            "operation": "rpc",
             "schema": "answers",
-            "table": "questions",
-            "rpc": null,
+            "table": null,
+            "rpc": "submit_question",
             "functionName": null,
             "function": "createQuestionRow",
             "confidence": "HIGH",
             "evidence": [
-              "Supabase write call extracted from AST"
+              "RPC call extracted from AST"
             ],
             "owner": "Traffic:answers",
             "ownerKind": "feature",
@@ -145,6 +3325,42 @@
             "layer": "dal",
             "path": "apps/Traffic/src/features/answers/dal/questions.write.dal.js",
             "file": "apps/Traffic/src/features/answers/dal/questions.write.dal.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "rpc",
+            "schema": "answers",
+            "table": null,
+            "rpc": "submit_answer",
+            "functionName": null,
+            "function": "submitAnswerRow",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "Traffic:answers",
+            "ownerKind": "feature",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "layer": "dal",
+            "path": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js",
+            "file": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js"
           }
         ],
         "rpcs": [],
@@ -218,6 +3434,42 @@
             "layer": "dal",
             "path": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
             "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "search",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "rpc",
+            "schema": "traffic",
+            "table": null,
+            "rpc": "search_public_providers",
+            "functionName": null,
+            "function": "searchPublicProviders",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "Traffic:search",
+            "ownerKind": "feature",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "layer": "dal",
+            "path": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js",
+            "file": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js"
           }
         ],
         "rpcs": [],
@@ -3995,6 +7247,42 @@
       {
         "appId": "VCSM",
         "root": "apps/VCSM",
+        "feature": "claim",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "submit_business_claim",
+            "functionName": null,
+            "function": "submitBusinessClaim",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:claim",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+            "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
         "feature": "explore",
         "route": null,
         "access": "unknown",
@@ -6774,42 +10062,6 @@
         "controller": null,
         "writes": [
           {
-            "operation": "upsert",
-            "schema": null,
-            "table": "locksmith_service_areas",
-            "rpc": null,
-            "functionName": null,
-            "function": "dalUpsertLocksmithServiceArea",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase write call extracted from AST"
-            ],
-            "owner": "VCSM:profiles",
-            "ownerKind": "feature",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "layer": "dal",
-            "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js",
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js"
-          }
-        ],
-        "rpcs": [],
-        "edgeFunctions": [],
-        "confidence": "LOW",
-        "evidence": [
-          "write surface discovered without route-confirmed path; potential surface only"
-        ]
-      },
-      {
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "profiles",
-        "route": null,
-        "access": "unknown",
-        "controller": null,
-        "writes": [
-          {
             "operation": "delete",
             "schema": null,
             "table": "locksmith_service_details",
@@ -8936,6 +12188,78 @@
         "controller": null,
         "writes": [
           {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "approve_fuel_price_submission_batch",
+            "functionName": null,
+            "function": "approveFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:vportDashboard",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "reject_fuel_price_submission_batch",
+            "functionName": null,
+            "function": "rejectFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:vportDashboard",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
             "operation": "insert",
             "schema": null,
             "table": "fuel_price_history",
@@ -8954,114 +12278,6 @@
             "layer": "dal",
             "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js",
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js"
-          }
-        ],
-        "rpcs": [],
-        "edgeFunctions": [],
-        "confidence": "LOW",
-        "evidence": [
-          "write surface discovered without route-confirmed path; potential surface only"
-        ]
-      },
-      {
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "vportDashboard",
-        "route": null,
-        "access": "unknown",
-        "controller": null,
-        "writes": [
-          {
-            "operation": "insert",
-            "schema": null,
-            "table": "fuel_price_submission_reviews",
-            "rpc": null,
-            "functionName": null,
-            "function": "createFuelPriceSubmissionReviewDAL",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase write call extracted from AST"
-            ],
-            "owner": "VCSM:vportDashboard",
-            "ownerKind": "feature",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "layer": "dal",
-            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-          }
-        ],
-        "rpcs": [],
-        "edgeFunctions": [],
-        "confidence": "LOW",
-        "evidence": [
-          "write surface discovered without route-confirmed path; potential surface only"
-        ]
-      },
-      {
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "vportDashboard",
-        "route": null,
-        "access": "unknown",
-        "controller": null,
-        "writes": [
-          {
-            "operation": "update",
-            "schema": null,
-            "table": "fuel_price_submissions",
-            "rpc": null,
-            "functionName": null,
-            "function": "updateFuelPriceSubmissionStatusDAL",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase write call extracted from AST"
-            ],
-            "owner": "VCSM:vportDashboard",
-            "ownerKind": "feature",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "layer": "dal",
-            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-          }
-        ],
-        "rpcs": [],
-        "edgeFunctions": [],
-        "confidence": "LOW",
-        "evidence": [
-          "write surface discovered without route-confirmed path; potential surface only"
-        ]
-      },
-      {
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "vportDashboard",
-        "route": null,
-        "access": "unknown",
-        "controller": null,
-        "writes": [
-          {
-            "operation": "update",
-            "schema": null,
-            "table": "fuel_price_submission_reviews",
-            "rpc": null,
-            "functionName": null,
-            "function": "markFuelPriceSubmissionReviewAppliedDAL",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase write call extracted from AST"
-            ],
-            "owner": "VCSM:vportDashboard",
-            "ownerKind": "feature",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "layer": "dal",
-            "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
           }
         ],
         "rpcs": [],
@@ -10233,25 +13449,268 @@
         "controller": null,
         "writes": [
           {
-            "operation": "edge_function",
-            "functionName": "monitoring-ingest-error",
-            "caller": "_send",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase function invoke extracted from AST"
-            ],
+            "operation": "edge_function_file",
             "schema": null,
             "table": null,
             "rpc": null,
-            "function": "_send",
-            "owner": "VCSM:services",
-            "ownerKind": "app-area",
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": null,
-            "layer": "module",
-            "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
-            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx"
+          }
+        ],
+        "rpcs": [],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "write surface discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx"
           }
         ],
         "rpcs": [],
@@ -17672,6 +21131,36 @@
       {
         "appId": "VCSM",
         "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "approve_fuel_price_submission_batch",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "engine": null,
+            "caller": "approveFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
         "feature": "block",
         "route": null,
         "access": "unknown",
@@ -18510,6 +21999,36 @@
         ]
       },
       {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "get_published_question",
+            "schema": "answers",
+            "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "engine": null,
+            "caller": "getPublishedQuestion",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
         "appId": null,
         "root": "engines/reviews",
         "feature": null,
@@ -18840,6 +22359,66 @@
         ]
       },
       {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "list_published_answers_for_question",
+            "schema": "answers",
+            "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "engine": null,
+            "caller": "listPublishedAnswersForQuestion",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "list_published_questions",
+            "schema": "answers",
+            "file": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "engine": null,
+            "caller": "listPublishedQuestions",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
         "appId": "VCSM",
         "root": "apps/VCSM",
         "feature": "profiles",
@@ -19037,6 +22616,36 @@
             "feature": "identity",
             "engine": null,
             "caller": "refreshActorDirectoryRow",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "reject_fuel_price_submission_batch",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "engine": null,
+            "caller": "rejectFuelPriceSubmissionBatchDAL",
             "confidence": "HIGH",
             "evidence": [
               "rpc() extracted from AST"
@@ -19350,6 +22959,36 @@
         ]
       },
       {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "search",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "search_public_providers",
+            "schema": "traffic",
+            "file": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "engine": null,
+            "caller": "searchPublicProviders",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
         "appId": null,
         "root": "engines/chat",
         "feature": null,
@@ -19532,6 +23171,36 @@
       {
         "appId": "Traffic",
         "root": "apps/Traffic",
+        "feature": "answers",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "submit_answer",
+            "schema": "answers",
+            "file": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "engine": null,
+            "caller": "submitAnswerRow",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
         "feature": "conversion",
         "route": null,
         "access": "unknown",
@@ -19577,6 +23246,66 @@
             "feature": "public",
             "engine": null,
             "caller": "createVportBusinessCardLeadDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "submit_business_claim",
+            "schema": null,
+            "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "engine": null,
+            "caller": "submitBusinessClaim",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
+        "edgeFunctions": [],
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [
+          {
+            "rpc": "submit_question",
+            "schema": "answers",
+            "file": "apps/Traffic/src/features/answers/dal/questions.write.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "engine": null,
+            "caller": "createQuestionRow",
             "confidence": "HIGH",
             "evidence": [
               "rpc() extracted from AST"
@@ -19870,13 +23599,13 @@
         "rpcs": [],
         "edgeFunctions": [
           {
-            "function": "_shared/securityHeaders",
+            "function": "_shared",
             "caller": null,
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": null,
-            "route": "apps/VCSM/functions/_shared/securityHeaders.js",
-            "file": "apps/VCSM/functions/_shared/securityHeaders.js",
+            "route": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
             "source": "edge-function-file",
             "confidence": "HIGH",
             "evidence": [
@@ -19890,9 +23619,9 @@
         ]
       },
       {
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "answers",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
         "route": null,
         "access": "unknown",
         "controller": null,
@@ -19900,18 +23629,227 @@
         "rpcs": [],
         "edgeFunctions": [
           {
-            "function": "/api/answers/questions",
-            "caller": "submitQuestion",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "answers",
-            "engine": null,
-            "route": null,
-            "file": "apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js",
-            "source": "fetch-mutation",
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+            "source": "edge-function-file",
             "confidence": "HIGH",
             "evidence": [
-              "mutation fetch extracted from AST"
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
+            ]
+          }
+        ],
+        "confidence": "LOW",
+        "evidence": [
+          "edge function discovered without route-confirmed path; potential surface only"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": null,
+        "access": "unknown",
+        "controller": null,
+        "writes": [],
+        "rpcs": [],
+        "edgeFunctions": [
+          {
+            "function": "_shared/securityHeaders",
+            "caller": null,
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "route": "apps/VCSM/functions/_shared/securityHeaders.js",
+            "file": "apps/VCSM/functions/_shared/securityHeaders.js",
+            "source": "edge-function-file",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function file exists"
             ]
           }
         ],
@@ -20580,37 +24518,6 @@
             "engine": null,
             "route": null,
             "file": "apps/VCSM/src/services/monitoring/monitoringClient.js",
-            "source": "supabase-invoke",
-            "confidence": "HIGH",
-            "evidence": [
-              "Supabase function invoke extracted from AST"
-            ]
-          }
-        ],
-        "confidence": "LOW",
-        "evidence": [
-          "edge function discovered without route-confirmed path; potential surface only"
-        ]
-      },
-      {
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": null,
-        "route": null,
-        "access": "unknown",
-        "controller": null,
-        "writes": [],
-        "rpcs": [],
-        "edgeFunctions": [
-          {
-            "function": "monitoring-ingest-error",
-            "caller": "_send",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": null,
-            "engine": null,
-            "route": null,
-            "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
             "source": "supabase-invoke",
             "confidence": "HIGH",
             "evidence": [

@@ -21,6 +21,10 @@ const SAFE_RETURN_PREFIXES = [
   '/settings',
   '/booking',
   '/learning',
+  // TICKET-TRAZE-CLAIM-VPORT-003 (T3): the Traze claim funnel preserves
+  // provider/source through register+onboarding+login by round-tripping the
+  // /claim-profile path via location.state.from.
+  '/claim-profile',
 ]
 
 // FINDING-008: only these messages are surfaced verbatim in login error UI.

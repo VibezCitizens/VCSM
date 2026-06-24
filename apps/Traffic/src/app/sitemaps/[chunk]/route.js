@@ -4,7 +4,7 @@ import {
   listSitemapChunks
 } from "@/data/repositories/pageCandidate.repo";
 import { buildCanonical } from "@/seo/canonical";
-import { buildLocalizedAlternates, listLocalizedSitemapPaths } from "@/seo/locale";
+import { listLocalizedSitemapPaths } from "@/seo/locale";
 
 export const dynamic = "force-static";
 
@@ -25,16 +25,6 @@ function escapeXml(value) {
     .replace(/'/g, "&apos;");
 }
 
-function renderAlternateLinks(basePath) {
-  const alternates = buildLocalizedAlternates(basePath).languages;
-  return Object.entries(alternates)
-    .map(
-      ([hrefLang, href]) =>
-        `    <xhtml:link rel="alternate" hreflang="${escapeXml(hrefLang)}" href="${escapeXml(href)}" />`
-    )
-    .join("\n");
-}
-
 export async function GET(request, { params }) {
   const { chunk } = await params;
   const chunkData = await getSitemapChunk(chunk);
@@ -53,13 +43,12 @@ export async function GET(request, { params }) {
     )
     .map(
       (page) =>
-        `  <url>\n    <loc>${escapeXml(buildCanonical(page.path))}</loc>\n${renderAlternateLinks(page.basePath)}\n    <lastmod>${escapeXml(page.updatedAt)}</lastmod>\n    <changefreq>weekly</changefreq>\n  </url>`
+        `  <url>\n    <loc>${escapeXml(buildCanonical(page.path))}</loc>\n    <lastmod>${escapeXml(page.updatedAt)}</lastmod>\n    <changefreq>weekly</changefreq>\n  </url>`
     )
     .join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>`;
 

@@ -2,32 +2,44 @@
    SECTIONS — Category grid (.hp-cat-*)
    ============================================================ */
 
+/* Balanced auto-fit grid: tracks stretch to fill the full section width so
+   the cards stay aligned edge-to-edge (no empty right gutter). Columns adapt
+   to the container — one full row on wide screens, wrapping to 4 / 3 / 2 / 1
+   as it narrows. */
 .hp-cat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.7rem;
 }
 
-/* ── Card ─────────────────────────────────────────────────── */
+/* ── Card — fully clickable, compact horizontal navigation tile ──── */
 
 .hp-cat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 96px;
+  padding: 1rem 1.1rem;
   border-radius: 14px;
   border: 1px solid rgba(129, 149, 208, 0.13);
   background: linear-gradient(160deg, rgba(18, 22, 42, 0.94) 0%, rgba(10, 13, 26, 0.98) 100%);
-  overflow: hidden;
-  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
 .hp-cat-card--live {
   border-color: rgba(139, 92, 246, 0.2);
-  border-top-color: rgba(139, 92, 246, 0.55);
+  border-left-color: rgba(139, 92, 246, 0.5);
 }
 
-.hp-cat-card--live:hover {
+.hp-cat-card--live:hover,
+.hp-cat-card--live:focus-visible {
   border-color: rgba(139, 92, 246, 0.45);
-  border-top-color: rgba(139, 92, 246, 0.7);
+  border-left-color: rgba(139, 92, 246, 0.72);
+  background: linear-gradient(160deg, rgba(24, 28, 52, 0.96) 0%, rgba(12, 15, 30, 0.98) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(139, 92, 246, 0.12);
 }
 
 .hp-cat-card--inactive {
@@ -35,100 +47,26 @@
   pointer-events: none;
 }
 
-/* ── Card body ────────────────────────────────────────────── */
+/* ── Icon (left) ──────────────────────────────────────────── */
 
-.hp-cat-card-body {
-  padding: 1.3rem 1.2rem 1.15rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  min-height: 148px;
+.hp-cat-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(196, 181, 253, 0.95);
 }
 
-/* ── Header row ───────────────────────────────────────────── */
-
-.hp-cat-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
+/* ── Name (right) ─────────────────────────────────────────── */
 
 .hp-cat-card-name {
+  margin: 0;
+  min-width: 0;
   font-family: var(--traffic-font-sans);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: rgba(228, 234, 255, 0.95);
-  margin: 0;
   line-height: 1.2;
-}
-
-.hp-cat-card-count {
-  font-size: 0.68rem;
-  font-weight: 500;
-  color: rgba(167, 210, 140, 0.82);
-  background: rgba(134, 239, 172, 0.08);
-  border: 1px solid rgba(134, 239, 172, 0.16);
-  border-radius: 999px;
-  padding: 0.15rem 0.5rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-top: 0.1rem;
-}
-
-/* ── Description ──────────────────────────────────────────── */
-
-.hp-cat-card-desc {
-  font-size: 0.78rem;
-  color: rgba(181, 194, 230, 0.52);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* ── Service pills ────────────────────────────────────────── */
-
-.hp-cat-service-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.hp-cat-service-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.18rem 0.52rem;
-  border-radius: 999px;
-  border: 1px solid rgba(129, 149, 208, 0.14);
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(181, 194, 230, 0.6);
-  font-size: 0.67rem;
-  font-family: var(--traffic-font-sans);
-}
-
-/* ── CTA ──────────────────────────────────────────────────── */
-
-.hp-cat-card-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.38rem;
-  margin-top: auto;
-  padding: 0.36rem 0.78rem;
-  border-radius: 8px;
-  border: 1px solid rgba(139, 92, 246, 0.26);
-  background: rgba(109, 70, 220, 0.1);
-  color: rgba(200, 188, 255, 0.85);
-  font-size: 0.75rem;
-  font-weight: 600;
-  font-family: var(--traffic-font-sans);
-  text-decoration: none;
-  width: fit-content;
-  transition: background 130ms ease, border-color 130ms ease, color 130ms ease;
-}
-
-.hp-cat-card--live .hp-cat-card-cta:hover {
-  background: rgba(109, 70, 220, 0.22);
-  border-color: rgba(139, 92, 246, 0.5);
-  color: #e2d9ff;
+  color: rgba(232, 237, 255, 0.96);
 }
 
 /* ── Country selector (categories page) ──────────────────── */

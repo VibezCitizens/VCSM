@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrafficLanguage } from "@/lib/language";
+import { SafeImage } from "@/shared/components/SafeImage";
 
 function formatCents(cents, currencyCode) {
   if (cents == null) return null;
@@ -26,9 +27,7 @@ export function ProviderMenuSection({ menuCategories }) {
           <ul className="pro-menu-items">
             {cat.items.slice(0, 4).map((item) => (
               <li key={item.key ?? item.name} className="pro-menu-item">
-                {item.imageUrl ? (
-                  <img className="pro-menu-item-img" src={item.imageUrl} alt={item.name} loading="lazy" />
-                ) : null}
+                <SafeImage className="pro-menu-item-img" src={item.imageUrl} alt={item.name} loading="lazy" />
                 <div className="pro-menu-item-info">
                   <span className="pro-menu-item-name">{item.name}</span>
                   {item.description ? <span className="pro-menu-item-desc">{item.description}</span> : null}

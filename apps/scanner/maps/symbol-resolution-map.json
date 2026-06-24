@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "resolutionCount": 742,
+  "resolutionCount": 747,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.520Z",
+    "generatedAt": "2026-06-24T06:36:28.150Z",
     "resolutions": [
       {
         "consumer": "apps/Traffic/src/app/(seo)/[city]/_renderers.jsx",
@@ -255,23 +255,6 @@
         "confidence": "HIGH"
       },
       {
-        "consumer": "apps/Traffic/src/app/answers/moderation/page.jsx",
-        "importedSymbol": "AnswersModerationView",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "AnswersModerationView",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/screens/AnswersModeration.view.jsx",
-          "symbolName": "AnswersModerationView"
-        },
-        "confidence": "HIGH"
-      },
-      {
         "consumer": "apps/Traffic/src/app/answers/page.jsx",
         "importedSymbol": "AnswersIndexView",
         "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
@@ -289,125 +272,6 @@
         "confidence": "HIGH"
       },
       {
-        "consumer": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-        "importedSymbol": "validateModerationRequest",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "validateModerationRequest",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/models/moderationAuth.model.js",
-          "symbolName": "validateModerationRequest"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-        "importedSymbol": "moderateAnswer",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "moderateAnswer",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-          "symbolName": "moderateAnswer"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-        "importedSymbol": "createModerationAnswer",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "createModerationAnswer",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-          "symbolName": "createModerationAnswer"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-        "importedSymbol": "validateModerationRequest",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "validateModerationRequest",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/models/moderationAuth.model.js",
-          "symbolName": "validateModerationRequest"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-        "importedSymbol": "moderateQuestion",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "moderateQuestion",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-          "symbolName": "moderateQuestion"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-        "importedSymbol": "listAnswersModerationQueue",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "listAnswersModerationQueue",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/moderateAnswers.controller.js",
-          "symbolName": "listAnswersModerationQueue"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/api/answers/questions/route.js",
-        "importedSymbol": "submitQuestion",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "submitQuestion",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/submitQuestion.controller.js",
-          "symbolName": "submitQuestion"
-        },
-        "confidence": "HIGH"
-      },
-      {
         "consumer": "apps/Traffic/src/app/categories/page.jsx",
         "importedSymbol": "CategoriesDiscoveryClient",
         "importedFrom": "apps/Traffic/src/features/categories/adapters/categories.adapter.js",
@@ -420,6 +284,26 @@
         ],
         "origin": {
           "file": "apps/Traffic/src/features/categories/components/CategoriesDiscoveryClient.jsx",
+          "symbolName": "default"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
+      },
+      {
+        "consumer": "apps/Traffic/src/app/contact/page.jsx",
+        "importedSymbol": "ContactScreen",
+        "importedFrom": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "chain": [
+          {
+            "file": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+            "symbol": "ContactScreen",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/Traffic/src/features/legal/screens/ContactScreen.jsx",
           "symbolName": "default"
         },
         "confidence": "MEDIUM",
@@ -449,54 +333,40 @@
       },
       {
         "consumer": "apps/Traffic/src/app/en/answers/[slug]/page.jsx",
-        "importedSymbol": "listAnswerStaticParams",
+        "importedSymbol": "AnswerDetailScreen",
         "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
         "chain": [
           {
             "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "listAnswerStaticParams",
+            "symbol": "AnswerDetailScreen",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/readAnswerPage.controller.js",
-          "symbolName": "listAnswerStaticParams"
+          "file": "apps/Traffic/src/features/answers/screens/AnswerDetailScreen.jsx",
+          "symbolName": "AnswerDetailScreen"
         },
         "confidence": "HIGH"
       },
       {
         "consumer": "apps/Traffic/src/app/en/answers/[slug]/page.jsx",
-        "importedSymbol": "AnswerDetailScreen",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
+        "importedSymbol": "generateStaticParams",
+        "importedFrom": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
         "chain": [
           {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "AnswerDetailScreen",
+            "file": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+            "symbol": "generateStaticParams",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/Traffic/src/features/answers/screens/AnswerDetailScreen.jsx",
-          "symbolName": "AnswerDetailScreen"
+          "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+          "symbolName": "generateStaticParams"
         },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/app/es/answers/[slug]/page.jsx",
-        "importedSymbol": "listAnswerStaticParams",
-        "importedFrom": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/answers/adapters/answers.adapter.js",
-            "symbol": "listAnswerStaticParams",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/answers/controllers/readAnswerPage.controller.js",
-          "symbolName": "listAnswerStaticParams"
-        },
-        "confidence": "HIGH"
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
       },
       {
         "consumer": "apps/Traffic/src/app/es/answers/[slug]/page.jsx",
@@ -514,6 +384,66 @@
           "symbolName": "AnswerDetailScreen"
         },
         "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/Traffic/src/app/es/answers/[slug]/page.jsx",
+        "importedSymbol": "generateStaticParams",
+        "importedFrom": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+        "chain": [
+          {
+            "file": "apps/Traffic/src/app/en/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+            "symbol": "generateStaticParams",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/[service]/[detail]/[specialty]/page.jsx",
+          "symbolName": "generateStaticParams"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
+      },
+      {
+        "consumer": "apps/Traffic/src/app/es/contact/page.jsx",
+        "importedSymbol": "ContactScreen",
+        "importedFrom": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "chain": [
+          {
+            "file": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+            "symbol": "ContactScreen",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/Traffic/src/features/legal/screens/ContactScreen.jsx",
+          "symbolName": "default"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
+      },
+      {
+        "consumer": "apps/Traffic/src/app/es/privacy/page.jsx",
+        "importedSymbol": "PrivacyScreen",
+        "importedFrom": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "chain": [
+          {
+            "file": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+            "symbol": "PrivacyScreen",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx",
+          "symbolName": "default"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
       },
       {
         "consumer": "apps/Traffic/src/app/page.jsx",
@@ -557,26 +487,6 @@
       },
       {
         "consumer": "apps/Traffic/src/app/page.jsx",
-        "importedSymbol": "HomepageTrendingSection",
-        "importedFrom": "apps/Traffic/src/features/home/adapters/home.adapter.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/home/adapters/home.adapter.js",
-            "symbol": "HomepageTrendingSection",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
-      },
-      {
-        "consumer": "apps/Traffic/src/app/page.jsx",
         "importedSymbol": "HomepageCategoryGrid",
         "importedFrom": "apps/Traffic/src/features/home/adapters/home.adapter.js",
         "chain": [
@@ -608,6 +518,26 @@
         ],
         "origin": {
           "file": "apps/Traffic/src/features/home/components/HomepageCtaFooter.jsx",
+          "symbolName": "default"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
+      },
+      {
+        "consumer": "apps/Traffic/src/app/privacy/page.jsx",
+        "importedSymbol": "PrivacyScreen",
+        "importedFrom": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+        "chain": [
+          {
+            "file": "apps/Traffic/src/features/legal/adapters/legal.adapter.js",
+            "symbol": "PrivacyScreen",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx",
           "symbolName": "default"
         },
         "confidence": "MEDIUM",
@@ -705,57 +635,6 @@
         "evidence": [
           "barrel import detected via AST; not confirmed by a call edge"
         ]
-      },
-      {
-        "consumer": "apps/Traffic/src/features/directories/components/ProviderListItem.jsx",
-        "importedSymbol": "getCountryByCode",
-        "importedFrom": "apps/Traffic/src/features/directories/dal/directory.read.dal.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/directories/dal/directory.read.dal.js",
-            "symbol": "getCountryByCode",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/data/repositories/geo.repo.js",
-          "symbolName": "getCountryByCode"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/features/directories/components/ProviderListItem.jsx",
-        "importedSymbol": "getPublicReviewSummaryForProvider",
-        "importedFrom": "apps/Traffic/src/features/directories/dal/directory.read.dal.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/directories/dal/directory.read.dal.js",
-            "symbol": "getPublicReviewSummaryForProvider",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/data/repositories/reviewSummary.repo.js",
-          "symbolName": "getPublicReviewSummaryForProvider"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/Traffic/src/features/directories/components/ProviderListItem.jsx",
-        "importedSymbol": "getServiceById",
-        "importedFrom": "apps/Traffic/src/features/directories/dal/directory.read.dal.js",
-        "chain": [
-          {
-            "file": "apps/Traffic/src/features/directories/dal/directory.read.dal.js",
-            "symbol": "getServiceById",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/Traffic/src/data/repositories/service.repo.js",
-          "symbolName": "getServiceById"
-        },
-        "confidence": "HIGH"
       },
       {
         "consumer": "apps/Traffic/src/features/directories/lib/relatedGuides.js",
@@ -965,6 +844,26 @@
         "confidence": "HIGH"
       },
       {
+        "consumer": "apps/Traffic/src/features/providers/templates/ProviderPageTemplate.jsx",
+        "importedSymbol": "ProviderAccountPromptCard",
+        "importedFrom": "apps/Traffic/src/features/conversion/adapters/conversion.adapter.js",
+        "chain": [
+          {
+            "file": "apps/Traffic/src/features/conversion/adapters/conversion.adapter.js",
+            "symbol": "ProviderAccountPromptCard",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/Traffic/src/features/conversion/components/ProviderAccountPromptCard.jsx",
+          "symbolName": "default"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
+      },
+      {
         "consumer": "apps/VCSM/src/app/guards/ProfileGatedOutlet.jsx",
         "importedSymbol": "CompleteProfileGate",
         "importedFrom": "apps/VCSM/src/features/auth/adapters/auth.adapter.js",
@@ -1105,6 +1004,26 @@
         ],
         "origin": {
           "file": "apps/VCSM/src/features/shell/modules/bottom-bar/components/BottomNavBar.jsx",
+          "symbolName": "default"
+        },
+        "confidence": "MEDIUM",
+        "evidence": [
+          "barrel import detected via AST; not confirmed by a call edge"
+        ]
+      },
+      {
+        "consumer": "apps/VCSM/src/app/layout/RootLayout.jsx",
+        "importedSymbol": "ClaimOnboardingBanner",
+        "importedFrom": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter.js",
+            "symbol": "ClaimOnboardingBanner",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/claimOnboarding/components/ClaimOnboardingBanner.jsx",
           "symbolName": "default"
         },
         "confidence": "MEDIUM",
@@ -1827,7 +1746,7 @@
         "confidence": "HIGH"
       },
       {
-        "consumer": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
+        "consumer": "apps/VCSM/src/features/booking/controllers/cancelBooking.controller.js",
         "importedSymbol": "assertActorOwnsActorController",
         "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
@@ -1840,23 +1759,6 @@
         "origin": {
           "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
           "symbolName": "assertActorOwnsActorController"
-        },
-        "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
-        "importedSymbol": "assertSessionOwnsActorController",
-        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
-            "symbol": "assertSessionOwnsActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
-          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "HIGH"
       },
@@ -1879,6 +1781,23 @@
       },
       {
         "consumer": "apps/VCSM/src/features/booking/controllers/confirmBooking.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/booking/controllers/confirmBooking.controller.js",
         "importedSymbol": "publishVcsmNotification",
         "importedFrom": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
         "chain": [
@@ -1891,6 +1810,23 @@
         "origin": {
           "file": "apps/VCSM/src/features/notifications/publish.js",
           "symbolName": "publishVcsmNotification"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/booking/controllers/createBooking.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
         "confidence": "HIGH"
       },
@@ -1912,6 +1848,23 @@
         "confidence": "HIGH"
       },
       {
+        "consumer": "apps/VCSM/src/features/booking/controllers/ensureOwnerBookingResource.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
         "consumer": "apps/VCSM/src/features/booking/controllers/listMyBookings.controller.js",
         "importedSymbol": "fetchActorSummaries",
         "importedFrom": "engines/hydration/index.js",
@@ -1925,6 +1878,74 @@
         "origin": {
           "file": "engines/hydration/src/dal.js",
           "symbolName": "getActorSummariesByIdsDAL"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/booking/controllers/listOwnerBookingResources.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/booking/controllers/setAvailabilityException.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/booking/controllers/setAvailabilityRule.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/booking/controllers/setResourceSlotDuration.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
         "confidence": "HIGH"
       },
@@ -2779,6 +2800,40 @@
         "confidence": "HIGH"
       },
       {
+        "consumer": "apps/VCSM/src/features/claim/hooks/useClaimProfile.js",
+        "importedSymbol": "useIdentity",
+        "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+            "symbol": "useIdentity",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/identity/identityContext.jsx",
+          "symbolName": "useIdentity"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+        "importedSymbol": "useIdentity",
+        "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+            "symbol": "useIdentity",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/identity/identityContext.jsx",
+          "symbolName": "useIdentity"
+        },
+        "confidence": "HIGH"
+      },
+      {
         "consumer": "apps/VCSM/src/features/debug/components/LoginDebugPanel.jsx",
         "importedSymbol": "getLoginDebugState",
         "importedFrom": "apps/VCSM/src/features/debug/loginDebug.store.js",
@@ -3402,18 +3457,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/join/controllers/__tests__/joinBarbershopQr.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -3439,43 +3494,37 @@
       },
       {
         "consumer": "apps/VCSM/src/features/join/controllers/joinBarbershopAccount.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/join/controllers/joinBarbershopQr.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/join/hooks/useJoinBarbershop.js",
@@ -4048,6 +4097,23 @@
       },
       {
         "consumer": "apps/VCSM/src/features/notifications/types/booking/BookingCreatedNotificationItem.view.jsx",
+        "importedSymbol": "useIdentity",
+        "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+            "symbol": "useIdentity",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/identity/identityContext.jsx",
+          "symbolName": "useIdentity"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/notifications/types/gasprices/GasPriceSuggestionNotificationItem.view.jsx",
         "importedSymbol": "useIdentity",
         "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
         "chain": [
@@ -4907,18 +4973,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/__tests__/publishBarbershopHoursUpdateAsPost.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -4927,18 +4993,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/__tests__/publishBarbershopPortfolioUpdateAsPost.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -4947,58 +5013,52 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/publishBarbershopHoursUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/publishBarbershopPortfolioUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/exchange/__tests__/publishExchangeRateUpdateAsPost.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -5007,38 +5067,35 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/exchange/publishExchangeRateUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/__tests__/publishLocksmithUpdatesAsPost.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -5047,98 +5104,86 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithHoursUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithPortfolioUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithServiceAreaUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/__tests__/publishMenuUpdateAsPost.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -5147,63 +5192,88 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuCategory.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuItem.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/publishMenuUpdateAsPost.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/saveVportActorMenuCategory.controller.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/saveVportActorMenuItem.controller.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
+        },
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/saveVportActorMenuItem.controller.js",
@@ -5224,18 +5294,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/rates/__tests__/upsertVportRate.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -5244,23 +5314,20 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/rates/upsertVportRate.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/review/VportReviews.controller.js",
@@ -5383,63 +5450,54 @@
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/deleteVportServiceAddon.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/getVportServices.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/upsertVportServices.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/profiles/kinds/vport/controller/subscribers/__tests__/getSubscribers.controller.test.js",
@@ -7093,23 +7151,6 @@
         "confidence": "HIGH"
       },
       {
-        "consumer": "apps/VCSM/src/features/public/vportBusinessCard/controller/vportBusinessCard.controller.js",
-        "importedSymbol": "publishVcsmNotification",
-        "importedFrom": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
-            "symbol": "publishVcsmNotification",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/notifications/publish.js",
-          "symbolName": "publishVcsmNotification"
-        },
-        "confidence": "HIGH"
-      },
-      {
         "consumer": "apps/VCSM/src/features/public/vportBusinessCard/view/VportBusinessCardPublic.view.jsx",
         "importedSymbol": "ServicesSection",
         "importedFrom": "apps/VCSM/src/features/public/vportBusinessCard/view/businessCardSections.jsx",
@@ -7474,23 +7515,20 @@
       },
       {
         "consumer": "apps/VCSM/src/features/settings/account/controller/account.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/settings/account/hooks/useAccountController.js",
@@ -7545,6 +7583,23 @@
       },
       {
         "consumer": "apps/VCSM/src/features/settings/privacy/controller/actorPrivacy.controller.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/settings/privacy/controller/actorPrivacy.controller.js",
         "importedSymbol": "invalidateActorBundleEntry",
         "importedFrom": "apps/VCSM/src/features/CentralFeed/adapters/feedCache.adapter.js",
         "chain": [
@@ -7559,26 +7614,6 @@
           "symbolName": "invalidateActorBundleEntry"
         },
         "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/VCSM/src/features/settings/privacy/controller/actorPrivacy.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
       },
       {
         "consumer": "apps/VCSM/src/features/settings/privacy/hooks/useActorLookup.js",
@@ -7854,63 +7889,71 @@
       },
       {
         "consumer": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCard.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "checkVportOwnershipController",
+        "importedFrom": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
+            "symbol": "checkVportOwnershipController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
+          "symbolName": "checkVportOwnershipController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCardSettings.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "checkVportOwnershipController",
+        "importedFrom": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
+            "symbol": "checkVportOwnershipController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
+          "symbolName": "checkVportOwnershipController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/settings/vports/controller/vportDirectoryVisibility.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "checkVportOwnershipController",
+        "importedFrom": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
+            "symbol": "checkVportOwnershipController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
+          "symbolName": "checkVportOwnershipController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/settings/vports/controller/vportSocialSettings.controller.js",
+        "importedSymbol": "checkVportOwnershipController",
+        "importedFrom": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
+            "symbol": "checkVportOwnershipController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
+          "symbolName": "checkVportOwnershipController"
+        },
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/settings/vports/controller/vportSocialSettings.controller.js",
@@ -7979,26 +8022,6 @@
           "symbolName": "invalidateActorSocialPublicPolicyCache"
         },
         "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/VCSM/src/features/settings/vports/controller/vportSocialSettings.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
       },
       {
         "consumer": "apps/VCSM/src/features/settings/vports/hooks/useVportBusinessCardSettings.js",
@@ -8648,6 +8671,23 @@
         "confidence": "HIGH"
       },
       {
+        "consumer": "apps/VCSM/src/features/vportDashboard/components/bookingHistory/ClientSearchField.jsx",
+        "importedSymbol": "useIdentity",
+        "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
+            "symbol": "useIdentity",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/identity/identityContext.jsx",
+          "symbolName": "useIdentity"
+        },
+        "confidence": "HIGH"
+      },
+      {
         "consumer": "apps/VCSM/src/features/vportDashboard/components/bookingHistory/OperationalBookingCard.jsx",
         "importedSymbol": "useActorSummary",
         "importedFrom": "apps/VCSM/src/state/actors/useActorSummary.js",
@@ -8683,18 +8723,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/controller/__tests__/vportOwnerStats.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -8703,78 +8743,69 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "readActorStatusController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "readActorStatusController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/readActorStatus.controller.js",
+          "symbolName": "readActorStatusController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
-        "importedSymbol": "getActorByIdDAL",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertActorOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "getActorByIdDAL",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertActorOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/dal/getActorById.dal.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
+          "symbolName": "assertActorOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/controller/vportOwnerStats.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/__tests__/updateVportBooking.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -8823,23 +8854,54 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/createOwnerBooking.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/loadTeamAvailabilityDay.controller.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
+        },
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
@@ -8857,26 +8919,6 @@
           "symbolName": "publishVcsmNotification"
         },
         "confidence": "HIGH"
-      },
-      {
-        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/vportPublicBooking.controller.js",
@@ -9280,6 +9322,57 @@
         "confidence": "HIGH"
       },
       {
+        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/notifyFuelPriceSubmissionBatch.controller.js",
+        "importedSymbol": "publishVcsmNotification",
+        "importedFrom": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
+            "symbol": "publishVcsmNotification",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/notifications/publish.js",
+          "symbolName": "publishVcsmNotification"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/submitCitizenFuelPriceSuggestion.controller.js",
+        "importedSymbol": "publishVcsmNotification",
+        "importedFrom": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/notifications/adapters/notifications.adapter.js",
+            "symbol": "publishVcsmNotification",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/notifications/publish.js",
+          "symbolName": "publishVcsmNotification"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal.js",
+        "importedSymbol": "hydrateAndReturnSummaries",
+        "importedFrom": "engines/hydration/index.js",
+        "chain": [
+          {
+            "file": "engines/hydration/index.js",
+            "symbol": "hydrateAndReturnSummaries",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "engines/hydration/src/hydrate.js",
+          "symbolName": "hydrateAndReturnSummaries"
+        },
+        "confidence": "HIGH"
+      },
+      {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/hooks/useSubmitFuelPriceSuggestion.js",
         "importedSymbol": "useIdentity",
         "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
@@ -9349,38 +9442,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/__tests__/vportLeads.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
-      },
-      {
-        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/__tests__/vportLeads.controller.test.js",
-        "importedSymbol": "assertSessionOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertSessionOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -9389,58 +9462,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
-      },
-      {
-        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller.js",
-        "importedSymbol": "assertSessionOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertSessionOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
-      },
-      {
-        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/hooks/useVportLeads.js",
-        "importedSymbol": "useIdentity",
-        "importedFrom": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/identity/adapters/identity.adapter.js",
-            "symbol": "useIdentity",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/identity/identityContext.jsx",
-          "symbolName": "useIdentity"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "HIGH"
       },
@@ -9605,23 +9638,20 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/portfolio/controller/probeVportPortfolio.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/portfolio/hooks/usePortfolioItemSubmit.js",
@@ -9778,23 +9808,20 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/controller/loadDaySchedule.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/hooks/useVportOwnerSchedule.js",
@@ -9897,26 +9924,6 @@
         ],
         "origin": {
           "file": "apps/VCSM/src/features/settings/ui/Card.jsx",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
-      },
-      {
-        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/controller/saveVportPublicDetailsByActorId.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
           "symbolName": "default"
         },
         "confidence": "MEDIUM",
@@ -10213,18 +10220,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeamAccess.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -10233,18 +10240,18 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeamInvite.controller.test.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
         "confidence": "MEDIUM",
         "evidence": [
@@ -10338,6 +10345,23 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+        "chain": [
+          {
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
+            "hop": 1
+          }
+        ],
+        "origin": {
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
+        },
+        "confidence": "HIGH"
+      },
+      {
+        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
         "importedSymbol": "hydrateAndReturnSummaries",
         "importedFrom": "engines/hydration/index.js",
         "chain": [
@@ -10371,44 +10395,21 @@
         "confidence": "HIGH"
       },
       {
-        "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-        "chain": [
-          {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
-            "hop": 1
-          }
-        ],
-        "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
-        },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
-      },
-      {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js",
@@ -10432,23 +10433,20 @@
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamInvite.controller.js",
-        "importedSymbol": "assertActorOwnsVportActorController",
-        "importedFrom": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
+        "importedSymbol": "assertSessionOwnsActorController",
+        "importedFrom": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
         "chain": [
           {
-            "file": "apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-            "symbol": "assertActorOwnsVportActorController",
+            "file": "apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+            "symbol": "assertSessionOwnsActorController",
             "hop": 1
           }
         ],
         "origin": {
-          "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "symbolName": "default"
+          "file": "apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "symbolName": "assertSessionOwnsActorController"
         },
-        "confidence": "MEDIUM",
-        "evidence": [
-          "barrel import detected via AST; not confirmed by a call edge"
-        ]
+        "confidence": "HIGH"
       },
       {
         "consumer": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/hooks/useBarberTeamRequests.js",

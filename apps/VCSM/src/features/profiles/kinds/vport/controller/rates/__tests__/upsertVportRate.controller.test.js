@@ -6,14 +6,14 @@ vi.mock("@/features/profiles/kinds/vport/dal/rates/upsertVportRate.dal.js", () =
 vi.mock("@/features/profiles/kinds/vport/dal/rates/readVportRatesByActor.dal.js", () => ({
   invalidateRatesCache: vi.fn(),
 }));
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 import upsertVportRateController from "../upsertVportRate.controller.js";
 import upsertVportRateDal from "@/features/profiles/kinds/vport/dal/rates/upsertVportRate.dal.js";
 import { invalidateRatesCache } from "@/features/profiles/kinds/vport/dal/rates/readVportRatesByActor.dal.js";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const BASE_ARGS = {
   identityActorId: "identity-actor-1",
@@ -41,7 +41,7 @@ const MOCK_RESULT = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  assertSessionOwnsVportActorController.mockResolvedValue(undefined);
+  assertSessionOwnsActorController.mockResolvedValue(undefined);
   upsertVportRateDal.mockResolvedValue(MOCK_RESULT);
 });
 
@@ -71,11 +71,11 @@ describe("upsertVportRateController — guard: actorId required", () => {
     ).rejects.toThrow("actorId required");
   });
 
-  it("does not call assertSessionOwnsVportActorController when actorId is missing", async () => {
+  it("does not call assertSessionOwnsActorController when actorId is missing", async () => {
     await expect(
       upsertVportRateController({ ...BASE_ARGS, actorId: undefined })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 
   it("does not call upsertVportRateDal when actorId is missing", async () => {
@@ -114,11 +114,11 @@ describe("upsertVportRateController — rateType validation", () => {
     );
   });
 
-  it("does not call assertSessionOwnsVportActorController when rateType is invalid", async () => {
+  it("does not call assertSessionOwnsActorController when rateType is invalid", async () => {
     await expect(
       upsertVportRateController({ ...BASE_ARGS, rateType: "crypto" })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 });
 
@@ -166,11 +166,11 @@ describe("upsertVportRateController — meta validation", () => {
     ).rejects.toThrow("meta exceeds maximum allowed size");
   });
 
-  it("does not call assertSessionOwnsVportActorController when meta is invalid", async () => {
+  it("does not call assertSessionOwnsActorController when meta is invalid", async () => {
     await expect(
       upsertVportRateController({ ...BASE_ARGS, meta: ["bad"] })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 });
 
@@ -207,11 +207,11 @@ describe("upsertVportRateController — rate validation: buyRate", () => {
     ).rejects.toThrow("buyRate must be a positive finite number");
   });
 
-  it("does not call assertSessionOwnsVportActorController when buyRate is invalid", async () => {
+  it("does not call assertSessionOwnsActorController when buyRate is invalid", async () => {
     await expect(
       upsertVportRateController({ ...BASE_ARGS, buyRate: 0 })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 
   it("does not call upsertVportRateDal when buyRate is invalid", async () => {
@@ -249,11 +249,11 @@ describe("upsertVportRateController — rate validation: sellRate", () => {
     ).rejects.toThrow("sellRate must be a positive finite number");
   });
 
-  it("does not call assertSessionOwnsVportActorController when sellRate is invalid", async () => {
+  it("does not call assertSessionOwnsActorController when sellRate is invalid", async () => {
     await expect(
       upsertVportRateController({ ...BASE_ARGS, sellRate: 0 })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 
   it("does not call upsertVportRateDal when sellRate is invalid", async () => {
@@ -297,11 +297,11 @@ describe("upsertVportRateController — currency validation", () => {
     ).rejects.toThrow("baseCurrency and quoteCurrency must differ");
   });
 
-  it("does not call assertSessionOwnsVportActorController when currency is invalid", async () => {
+  it("does not call assertSessionOwnsActorController when currency is invalid", async () => {
     await expect(
       upsertVportRateController({ ...BASE_ARGS, baseCurrency: "FAKE" })
     ).rejects.toThrow();
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 
   it("does not call upsertVportRateDal when same-currency pair is supplied", async () => {
@@ -340,15 +340,15 @@ describe("upsertVportRateController — currency normalization", () => {
 // ─── ownership check ──────────────────────────────────────────────────────────
 
 describe("upsertVportRateController — ownership check", () => {
-  it("calls assertSessionOwnsVportActorController with named object params", async () => {
+  it("calls assertSessionOwnsActorController with named object params", async () => {
     await upsertVportRateController(BASE_ARGS);
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: "vport-actor-1",
     });
   });
 
   it("propagates ownership rejection without calling upsertVportRateDal", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error("ownership check failed")
     );
     await expect(upsertVportRateController(BASE_ARGS)).rejects.toThrow(

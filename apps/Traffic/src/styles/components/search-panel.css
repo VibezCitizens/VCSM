@@ -325,7 +325,9 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
-.traze-search--hero .traze-search__form {
+.traze-search--hero .traze-search__form,
+.traze-search--directory .traze-search__form,
+.traze-search--categories .traze-search__form {
   gap: 0;
   padding: 8px;
   border-radius: 20px;
@@ -341,8 +343,6 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
-.traze-search--directory .traze-search__form,
-.traze-search--categories .traze-search__form,
 .traze-search--top-providers .traze-search__form {
   gap: 0.58rem;
   padding: 0.7rem;
@@ -394,7 +394,9 @@
   transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 
-.traze-search--hero .traze-search__input {
+.traze-search--hero .traze-search__input,
+.traze-search--directory .traze-search__input,
+.traze-search--categories .traze-search__input {
   min-height: 56px;
   padding-left: 44px;
   border-radius: 13px;
@@ -432,7 +434,9 @@
   transition: opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
-.traze-search--hero .traze-search__button {
+.traze-search--hero .traze-search__button,
+.traze-search--directory .traze-search__button,
+.traze-search--categories .traze-search__button {
   min-height: 56px;
   min-width: 108px;
   padding: 0 24px;
@@ -459,18 +463,8 @@
 }
 
 .traze-search__country-wrap {
-  display: grid;
-  gap: 3px;
+  display: flex;
   min-width: 168px;
-}
-
-.traze-search__country-label {
-  padding-left: 0.1rem;
-  font-size: 0.62rem;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(172, 165, 210, 0.58);
 }
 
 .traze-search__country-select {
@@ -492,7 +486,9 @@
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
-.traze-search--hero .traze-search__location {
+.traze-search--hero .traze-search__location,
+.traze-search--directory .traze-search__location,
+.traze-search--categories .traze-search__location {
   padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
@@ -515,7 +511,9 @@
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.traze-search--hero .traze-search__location-input {
+.traze-search--hero .traze-search__location-input,
+.traze-search--directory .traze-search__location-input,
+.traze-search--categories .traze-search__location-input {
   min-height: 44px;
   background: transparent;
 }
@@ -547,7 +545,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 0.84rem;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -652,10 +650,236 @@
   color: #a78bfa;
 }
 
+/* ============================================================
+   /search — interactive search page (TRAZE-SEARCH-004)
+   ============================================================ */
+.traze-searchpage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.4rem 0 3rem;
+}
+
+.traze-searchpage__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.traze-searchpage__title {
+  margin: 0;
+  font-family: var(--traffic-font-serif, serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: #fff;
+}
+
+.traze-searchpage__subtitle {
+  margin: 0;
+  color: var(--vc-text-soft);
+  font-size: 0.9rem;
+}
+
+.traze-searchpage__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.traze-searchpage__input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.45rem 0.45rem 0.85rem;
+  border-radius: var(--traffic-radius-pill, 999px);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+}
+
+.traze-searchpage__icon {
+  color: var(--vc-text-soft);
+  flex-shrink: 0;
+}
+
+.traze-searchpage__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.traze-searchpage__button {
+  flex-shrink: 0;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--traffic-radius-pill, 999px);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  background: linear-gradient(90deg, var(--vc-accent-primary), rgba(167, 139, 250, 0.88));
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.traze-searchpage__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.traze-searchpage__country,
+.traze-searchpage__city {
+  min-height: 38px;
+  padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.traze-searchpage__city-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-left: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+}
+
+.traze-searchpage__city-icon {
+  color: var(--vc-text-soft);
+}
+
+.traze-searchpage__city {
+  border: none;
+  background: none;
+  padding-left: 0;
+}
+
+.traze-searchpage__city-clear {
+  border: none;
+  background: none;
+  color: var(--vc-text-soft);
+  cursor: pointer;
+  padding: 0 0.4rem;
+}
+
+.traze-searchpage__suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  border-radius: 10px;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface, #14101f);
+  box-shadow: var(--vc-shadow-glow, 0 8px 30px rgba(0, 0, 0, 0.45));
+}
+
+.traze-searchpage__suggestion {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.traze-searchpage__suggestion:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.traze-searchpage__suggestion-meta {
+  margin-left: auto;
+  color: var(--vc-text-soft);
+  font-size: 0.74rem;
+}
+
+.traze-searchpage__count {
+  margin: 0 0 0.2rem;
+  color: var(--vc-text-soft);
+  font-size: 0.82rem;
+}
+
+.traze-searchpage__state {
+  margin: 1.5rem 0;
+  color: var(--vc-text-soft);
+  text-align: center;
+}
+
+.traze-searchpage__state--muted {
+  opacity: 0.75;
+}
+
+.traze-searchpage__state--error {
+  color: rgba(251, 191, 36, 0.85);
+}
+
+.traze-searchpage__state-body {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+.traze-searchpage__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.3rem;
+}
+
+.traze-searchpage__more-button {
+  padding: 0.55rem 1.4rem;
+  border-radius: var(--traffic-radius-pill, 999px);
+  border: 1px solid var(--vc-border-strong, rgba(255, 255, 255, 0.18));
+  background: var(--vc-surface-input);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.traze-searchpage__more-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.traze-searchpage__foot {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+}
+
+.traze-searchpage__foot a {
+  color: rgba(167, 139, 250, 0.9);
+}
+
 .traze-search__filters {
   display: flex;
   flex-wrap: wrap;
   gap: 0.42rem;
+}
+
+/* The directory/categories forms now use the tight hero card (gap: 0), so the
+   filter pills need their own divider/spacing from the location row above. */
+.traze-search--directory .traze-search__filters,
+.traze-search--categories .traze-search__filters {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .traze-search__filter {

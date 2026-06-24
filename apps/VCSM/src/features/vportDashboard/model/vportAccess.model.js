@@ -5,7 +5,7 @@
  * (link ownership, active status, is_switchable) before identity is committed —
  * so identity.kind is trustworthy without a second DB round-trip.
  *
- * Mutations must still verify through assertActorOwnsVportActorController.
+ * Mutations must still verify through assertActorOwnsActorController.
  *
  * @param {{ kind: string, actorId: string } | null} identity
  * @param {string | null} targetActorId

@@ -8,7 +8,7 @@ const VportDashboardContext = createContext(null);
  * Resolves display-layer ownership once per dashboard navigation session.
  *
  * SECURITY: This context is display-only. Controllers must still independently
- * verify ownership via assertActorOwnsVportActorController for all mutations
+ * verify ownership via assertActorOwnsActorController for all mutations
  * and privileged reads. This provider does not replace controller authorization.
  */
 export function VportDashboardProvider({ actorId, callerActorId, children }) {

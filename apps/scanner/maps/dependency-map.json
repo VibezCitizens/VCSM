@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "dependencyCount": 385,
+  "dependencyCount": 404,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.613Z",
+    "generatedAt": "2026-06-24T06:36:27.084Z",
     "dependencies": [
       {
         "from": "Traffic:answers",
@@ -28,27 +28,17 @@
         ],
         "imports": [
           {
+            "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/data/connectors/answersAnonClient",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/data/connectors/answersAnonClient",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/features/answers/dal/answers.read.dal.js",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "answers",
-            "importPath": "@/data/connectors/supabase.client",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/data/connectors/supabase.client",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "answers",
-            "importPath": "@/data/connectors/supabase.client",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/data/connectors/supabase.client",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/answers/dal/moderationQuestions.dal.js",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "answers",
@@ -88,13 +78,13 @@
             "resolved": true
           },
           {
-            "file": "apps/Traffic/src/features/answers/dal/questions.write.dal.js",
+            "file": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "answers",
-            "importPath": "@/data/connectors/supabase.client",
+            "importPath": "@/data/connectors/answersAnonClient",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/data/connectors/supabase.client",
+            "resolvedPath": "apps/Traffic/src/data/connectors/answersAnonClient",
             "resolved": true
           },
           {
@@ -187,6 +177,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/features/answers/components/AnswerSubmitForm.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/features/answers/components/AnswersEmptyState.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -227,6 +227,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/features/answers/components/AnswersQuestionJsonLd.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/lib/env",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/env",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/features/answers/components/AnswersSearchSection.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -248,6 +258,16 @@
           },
           {
             "file": "apps/Traffic/src/features/answers/components/AskQuestionForm.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/answers/components/QuestionAnswerWorkspace.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "answers",
@@ -299,6 +319,55 @@
         ]
       },
       {
+        "from": "Traffic:answers",
+        "fromKind": "feature",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": "answers",
+        "to": "Traffic:seo",
+        "toKind": "app-area",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/features/answers/components/AnswerSeoJsonLd.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/seo/schemaOrg",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/schemaOrg",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/answers/components/AnswersQuestionJsonLd.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/seo/canonical",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/canonical",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/answers/components/AnswersQuestionJsonLd.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "answers",
+            "importPath": "@/seo/schemaOrg",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/schemaOrg",
+            "resolved": true
+          }
+        ]
+      },
+      {
         "from": "Traffic:app",
         "fromKind": "app-area",
         "fromAppId": "Traffic",
@@ -326,47 +395,47 @@
             "resolved": true
           },
           {
-            "file": "apps/Traffic/src/app/answers/moderation/page.jsx",
+            "file": "apps/Traffic/src/app/answers/[slug]/page.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
-            "importPath": "@/features/answers/adapters/answers.adapter",
+            "importPath": "@/features/answers/dal/publishedQuestions.read.dal",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/features/answers/adapters/answers.adapter",
+            "resolvedPath": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/answers/[slug]/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/answers/dal/answerDetail.read.dal",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/answers/[slug]/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/answers/models/publishedQuestion.model",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/answers/models/publishedQuestion.model",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/answers/[slug]/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/answers/models/publishedAnswer.model",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/answers/models/publishedAnswer.model",
             "resolved": true
           },
           {
             "file": "apps/Traffic/src/app/answers/page.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": null,
-            "importPath": "@/features/answers/adapters/answers.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/features/answers/adapters/answers.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": null,
-            "importPath": "@/features/answers/adapters/answers.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/features/answers/adapters/answers.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": null,
-            "importPath": "@/features/answers/adapters/answers.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/features/answers/adapters/answers.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/app/api/answers/questions/route.js",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
@@ -978,6 +1047,16 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
+            "importPath": "@/data/repositories/homepage.repo",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/data/repositories/homepage.repo",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/(seo)/[city]/_renderers.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
             "importPath": "@/data/connectors/unifiedDataset",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/data/connectors/unifiedDataset",
@@ -1218,9 +1297,9 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
-            "importPath": "@/data/repositories/geoCoverage.repo",
+            "importPath": "@/data/repositories/provider.repo",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/data/repositories/geoCoverage.repo",
+            "resolvedPath": "apps/Traffic/src/data/repositories/provider.repo",
             "resolved": true
           },
           {
@@ -1228,9 +1307,9 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
-            "importPath": "@/data/repositories/provider.repo",
+            "importPath": "@/data/repositories/homepage.repo",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/data/repositories/provider.repo",
+            "resolvedPath": "apps/Traffic/src/data/repositories/homepage.repo",
             "resolved": true
           },
           {
@@ -1275,6 +1354,16 @@
           },
           {
             "file": "apps/Traffic/src/app/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/data/repositories/provider.repo",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/data/repositories/provider.repo",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/search/page.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
@@ -1439,6 +1528,85 @@
             "importPath": "@/features/home/adapters/home.adapter",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/features/home/adapters/home.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:app",
+        "fromKind": "app-area",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": null,
+        "to": "Traffic:legal",
+        "toKind": "feature",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": "legal",
+        "relationship": "app-area->feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/app/contact/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/legal/adapters/legal.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/legal/adapters/legal.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/es/contact/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/legal/adapters/legal.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/legal/adapters/legal.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/es/privacy/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/legal/adapters/legal.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/legal/adapters/legal.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/es/terms/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/legal/screens/TermsScreen",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/legal/screens/TermsScreen",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/privacy/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/legal/adapters/legal.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/legal/adapters/legal.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/terms/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/legal/screens/TermsScreen",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/legal/screens/TermsScreen",
             "resolved": true
           }
         ]
@@ -1697,6 +1865,35 @@
         "fromAppId": "Traffic",
         "fromRoot": "apps/Traffic",
         "fromFeature": null,
+        "to": "Traffic:search",
+        "toKind": "feature",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": "search",
+        "relationship": "app-area->feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/app/search/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/search/components/SearchClient",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/search/components/SearchClient",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:app",
+        "fromKind": "app-area",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": null,
         "to": "Traffic:seo",
         "toKind": "app-area",
         "toAppId": "Traffic",
@@ -1889,6 +2086,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/app/(seo)/[city]/[segment]/_renderers.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/seo/qualityGuards",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/qualityGuards",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/app/(seo)/[city]/_graph.js",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -1993,9 +2200,9 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
-            "importPath": "@/seo/locale",
+            "importPath": "@/seo/metadata",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/seo/locale",
+            "resolvedPath": "apps/Traffic/src/seo/metadata",
             "resolved": true
           },
           {
@@ -2019,6 +2226,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/app/contact/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/seo/metadata",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/metadata",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/app/directory/page.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -2030,6 +2247,26 @@
           },
           {
             "file": "apps/Traffic/src/app/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/seo/metadata",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/metadata",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/privacy/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/seo/metadata",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/metadata",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/search/page.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
@@ -2076,6 +2313,16 @@
             "importPath": "@/seo/locale",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/seo/locale",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/terms/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/seo/metadata",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/seo/metadata",
             "resolved": true
           },
           {
@@ -2158,6 +2405,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/app/layout.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/shared/components/TrazePublicFooter",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazePublicFooter",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/app/page.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -2175,6 +2432,16 @@
             "importPath": "@/shared/components/TrazeGeoCoverageGlobe",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/shared/components/TrazeGeoCoverageGlobe",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/app/search/page.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/shared/components/TrazePageShell",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazePageShell",
             "resolved": true
           },
           {
@@ -2342,6 +2609,16 @@
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/shared/components/TrazeSearchBar",
             "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/categories/components/CategoriesDiscoveryClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "categories",
+            "importPath": "@/shared/components/TrazeHeroMap",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeHeroMap",
+            "resolved": true
           }
         ]
       },
@@ -2374,6 +2651,26 @@
           },
           {
             "file": "apps/Traffic/src/features/conversion/components/CtaModules.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "conversion",
+            "importPath": "@/lib/analytics",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/analytics",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/conversion/components/ProviderAccountPromptCard.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "conversion",
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/conversion/components/ProviderAccountPromptCard.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "conversion",
@@ -2436,9 +2733,9 @@
         "toRoot": "apps/Traffic",
         "toFeature": "answers",
         "relationship": "app-area->feature",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "evidence": [
-          "AST import resolved by alias or path heuristic"
+          "AST import resolved to source path"
         ],
         "imports": [
           {
@@ -2446,10 +2743,49 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": null,
-            "importPath": "@/features/answers/controller/readAnswerPage.controller",
+            "importPath": "@/features/answers/controllers/readAnswerPage.controller",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/features/answers/controller/readAnswerPage.controller",
-            "resolved": false
+            "resolvedPath": "apps/Traffic/src/features/answers/controllers/readAnswerPage.controller",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/data/repositories/pageCandidate.repo.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/features/answers/dal/publishedQuestions.read.dal",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:data",
+        "fromKind": "app-area",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": null,
+        "to": "Traffic:config",
+        "toKind": "app-area",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": null,
+        "relationship": "app-area->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/data/repositories/homepage.repo.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/config/featuredProviders.config",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/config/featuredProviders.config",
+            "resolved": true
           }
         ]
       },
@@ -2501,6 +2837,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/data/connectors/unifiedDataset.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/env",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/env",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/data/dal/publicContent.read.dal.js",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -2518,6 +2864,16 @@
             "importPath": "@/lib/slugs",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/slugs",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/data/dal/vportDataset.read.dal.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/env",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/env",
             "resolved": true
           },
           {
@@ -2687,6 +3043,16 @@
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/config/trazeScreenSearch.config",
             "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/templates/CountryHubTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/config/trazeScreenSearch.config",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/config/trazeScreenSearch.config",
+            "resolved": true
           }
         ]
       },
@@ -2801,6 +3167,16 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "directories",
+            "importPath": "@/data/repositories/homepage.repo",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/data/repositories/homepage.repo",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/templates/DirectoryPageTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
             "importPath": "@/data/repositories/provider.repo",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/data/repositories/provider.repo",
@@ -2856,6 +3232,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/features/directories/components/DirectoryLandingClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/lib/countryDisplay",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/countryDisplay",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/features/directories/components/DirectoryResultsClient.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -2883,36 +3269,6 @@
             "importPath": "@/lib/language",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/language",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/directories/components/ProviderListItem.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "directories",
-            "importPath": "@/lib/paths",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/paths",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/directories/components/ProviderListItemFooter.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "directories",
-            "importPath": "@/lib/language",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/language",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/directories/components/ProviderListItemFooter.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "directories",
-            "importPath": "@/lib/analytics",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/analytics",
             "resolved": true
           },
           {
@@ -2989,9 +3345,49 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "directories",
-            "importPath": "@/shared/components/TrazeGeoCoverageGlobe",
+            "importPath": "@/shared/components/TrazeHeroMap",
             "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/shared/components/TrazeGeoCoverageGlobe",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeHeroMap",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/components/DirectoryLandingClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/shared/components/TrazeProviderCard",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeProviderCard",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/components/DirectoryLandingClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/shared/components/TrazeSection",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeSection",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/templates/CountryHubTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/shared/components/TrazeSearchBar",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeSearchBar",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/templates/CountryHubTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/shared/components/TrazeHeroMap",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeHeroMap",
             "resolved": true
           },
           {
@@ -3049,6 +3445,16 @@
             "appId": "Traffic",
             "root": "apps/Traffic",
             "feature": "directories",
+            "importPath": "@/shared/components/TrazeProviderCard",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeProviderCard",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/templates/DirectoryPageTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
             "importPath": "@/shared/components/JsonLdScript",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/shared/components/JsonLdScript",
@@ -3062,6 +3468,16 @@
             "importPath": "@/shared/components/TrazePageShell",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/shared/components/TrazePageShell",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/directories/templates/DirectoryPageTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "directories",
+            "importPath": "@/shared/components/TrazeHeroMap",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeHeroMap",
             "resolved": true
           }
         ]
@@ -3101,6 +3517,35 @@
             "importPath": "@/config/trazeScreenSearch.config",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/config/trazeScreenSearch.config",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:home",
+        "fromKind": "feature",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": "home",
+        "to": "Traffic:data",
+        "toKind": "app-area",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/features/home/components/HomepageCategoryGrid.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "home",
+            "importPath": "@/data/repositories/service.repo",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/data/repositories/service.repo",
             "resolved": true
           }
         ]
@@ -3212,16 +3657,6 @@
             "resolved": true
           },
           {
-            "file": "apps/Traffic/src/features/home/components/HomepageCtaFooter.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "home",
-            "importPath": "@/lib/language",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/language",
-            "resolved": true
-          },
-          {
             "file": "apps/Traffic/src/features/home/components/HomepageHeroSection.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -3239,46 +3674,6 @@
             "importPath": "@/lib/language",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/language",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "home",
-            "importPath": "@/lib/i18n",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/i18n",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "home",
-            "importPath": "@/lib/language",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/language",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "home",
-            "importPath": "@/lib/paths",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/paths",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": "home",
-            "importPath": "@/lib/trazeLocationStorage",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/lib/trazeLocationStorage",
             "resolved": true
           }
         ]
@@ -3321,6 +3716,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/features/home/components/HomepageCtaFooter.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "home",
+            "importPath": "@/shared/components/TrazeAccountCta",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeAccountCta",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/features/home/components/HomepageHeroSection.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -3328,6 +3733,16 @@
             "importPath": "@/shared/components/TrazeSearchBar",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/shared/components/TrazeSearchBar",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/home/components/HomepageHeroSection.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "home",
+            "importPath": "@/shared/components/TrazeHeroMap",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeHeroMap",
             "resolved": true
           },
           {
@@ -3377,6 +3792,35 @@
             "importPath": "@/lib/i18n",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/i18n",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:lib",
+        "fromKind": "app-area",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": null,
+        "to": "Traffic:data",
+        "toKind": "app-area",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": null,
+        "relationship": "app-area->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/lib/countryDisplay.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/data/repositories/geo.repo",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/data/repositories/geo.repo",
             "resolved": true
           }
         ]
@@ -3780,6 +4224,16 @@
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/paths",
             "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/providers/templates/ProviderPageTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "providers",
+            "importPath": "@/lib/safeMediaSrc",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/safeMediaSrc",
+            "resolved": true
           }
         ]
       },
@@ -3859,6 +4313,26 @@
         ],
         "imports": [
           {
+            "file": "apps/Traffic/src/features/providers/components/ProviderGallerySection.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "providers",
+            "importPath": "@/shared/components/SafeImage",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/SafeImage",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/providers/components/ProviderMenuSection.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "providers",
+            "importPath": "@/shared/components/SafeImage",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/SafeImage",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/features/providers/components/TopProvidersDiscoveryClient.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -3876,6 +4350,26 @@
             "importPath": "@/shared/components/JsonLdScript",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/shared/components/JsonLdScript",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/providers/templates/ProviderPageTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "providers",
+            "importPath": "@/shared/components/SafeImage",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/SafeImage",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/providers/templates/ProviderPageTemplate.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "providers",
+            "importPath": "@/shared/components/TrazeAccountCta",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeAccountCta",
             "resolved": true
           }
         ]
@@ -3934,6 +4428,94 @@
             "importPath": "@/lib/language",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:search",
+        "fromKind": "feature",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": "search",
+        "to": "Traffic:lib",
+        "toKind": "app-area",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "importPath": "@/lib/i18n",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/i18n",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "importPath": "@/lib/analytics",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/analytics",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/features/search/lib/searchResultCard.js",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "importPath": "@/lib/paths",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/paths",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "Traffic:search",
+        "fromKind": "feature",
+        "fromAppId": "Traffic",
+        "fromRoot": "apps/Traffic",
+        "fromFeature": "search",
+        "to": "Traffic:shared",
+        "toKind": "app-area",
+        "toAppId": "Traffic",
+        "toRoot": "apps/Traffic",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": "search",
+            "importPath": "@/shared/components/TrazeProviderCard",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/shared/components/TrazeProviderCard",
             "resolved": true
           }
         ]
@@ -4053,26 +4635,6 @@
         ],
         "imports": [
           {
-            "file": "apps/Traffic/src/shared/components/TrazeCategoryCard.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": null,
-            "importPath": "@/i18n",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/i18n",
-            "resolved": true
-          },
-          {
-            "file": "apps/Traffic/src/shared/components/TrazeGeoCoverageFallback.jsx",
-            "appId": "Traffic",
-            "root": "apps/Traffic",
-            "feature": null,
-            "importPath": "@/i18n",
-            "importKind": "import",
-            "resolvedPath": "apps/Traffic/src/i18n",
-            "resolved": true
-          },
-          {
             "file": "apps/Traffic/src/shared/components/TrazeGeoCoverageGlobe.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -4182,6 +4744,36 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/shared/components/SafeImage.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/safeMediaSrc",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/safeMediaSrc",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazeAccountCta.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/env",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/env",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazeAccountCta.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/shared/components/TrazeCategoryCard.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -4282,6 +4874,16 @@
             "resolved": true
           },
           {
+            "file": "apps/Traffic/src/shared/components/TrazeHeroMap.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
             "file": "apps/Traffic/src/shared/components/TrazeProviderCard.jsx",
             "appId": "Traffic",
             "root": "apps/Traffic",
@@ -4309,6 +4911,56 @@
             "importPath": "@/lib/analytics",
             "importKind": "import",
             "resolvedPath": "apps/Traffic/src/lib/analytics",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazeProviderCard.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/safeMediaSrc",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/safeMediaSrc",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazeProviderCard.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/countryDisplay",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/countryDisplay",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazePublicFooter.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/env",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/env",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazePublicFooter.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/language",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/language",
+            "resolved": true
+          },
+          {
+            "file": "apps/Traffic/src/shared/components/TrazePublicFooter.jsx",
+            "appId": "Traffic",
+            "root": "apps/Traffic",
+            "feature": null,
+            "importPath": "@/lib/i18n",
+            "importKind": "import",
+            "resolvedPath": "apps/Traffic/src/lib/i18n",
             "resolved": true
           },
           {
@@ -4782,6 +5434,74 @@
             "importPath": "@/features/chat/inbox/screens/settings/BlockedUsersScreen",
             "importKind": "dynamic-import",
             "resolvedPath": "apps/VCSM/src/features/chat/inbox/screens/settings/BlockedUsersScreen",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:app",
+        "fromKind": "app-area",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": null,
+        "to": "VCSM:claim",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "claim",
+        "relationship": "app-area->feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/app/routes/lazyPublic.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "importPath": "@/features/claim/screens/ClaimProfileScreen",
+            "importKind": "dynamic-import",
+            "resolvedPath": "apps/VCSM/src/features/claim/screens/ClaimProfileScreen",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:app",
+        "fromKind": "app-area",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": null,
+        "to": "VCSM:claimOnboarding",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "claimOnboarding",
+        "relationship": "app-area->feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/app/layout/RootLayout.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "importPath": "@/features/claimOnboarding/adapters/claimOnboarding.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/app/routes/lazyApp.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "importPath": "@/features/claimOnboarding/adapters/claimOnboarding.adapter",
+            "importKind": "dynamic-import",
+            "resolvedPath": "apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter",
             "resolved": true
           }
         ]
@@ -7380,27 +8100,7 @@
         ],
         "imports": [
           {
-            "file": "apps/VCSM/src/features/booking/controllers/__tests__/assertActorOwnsVportActor.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "booking",
-            "importPath": "@/features/authorization/dal/actors.read.dal",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/authorization/dal/actors.read.dal",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/booking/controllers/__tests__/assertActorOwnsVportActor.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "booking",
-            "importPath": "@/features/authorization/dal/actorOwners.read.dal",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/authorization/dal/actorOwners.read.dal",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
+            "file": "apps/VCSM/src/features/booking/controllers/cancelBooking.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "booking",
@@ -7410,7 +8110,67 @@
             "resolved": true
           },
           {
-            "file": "apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
+            "file": "apps/VCSM/src/features/booking/controllers/confirmBooking.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "booking",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/booking/controllers/createBooking.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "booking",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/booking/controllers/ensureOwnerBookingResource.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "booking",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/booking/controllers/listOwnerBookingResources.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "booking",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/booking/controllers/setAvailabilityException.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "booking",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/booking/controllers/setAvailabilityRule.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "booking",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/booking/controllers/setResourceSlotDuration.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "booking",
@@ -9450,6 +10210,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/chat/conversation/components/ChatInput.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "chat",
+            "importPath": "@/shared/lib/safeMediaSrc",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/shared/lib/safeMediaSrc",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/chat/conversation/components/MessageBubble.jsx",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -9794,6 +10564,210 @@
             "importPath": "@debuggers/media/bugBunnyUploadDebugger",
             "importKind": "import",
             "resolvedPath": "ZZnotforproduction/_ACTIVE/debuggers/media/bugBunnyUploadDebugger",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:claim",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "claim",
+        "to": "VCSM:app",
+        "toKind": "app-area",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/claim/hooks/useClaimProfile.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "importPath": "@/app/providers/AuthProvider",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/app/providers/AuthProvider",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:claim",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "claim",
+        "to": "VCSM:identity",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "identity",
+        "relationship": "Feature->Feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/claim/hooks/useClaimProfile.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "importPath": "@/features/identity/adapters/identity.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/identity/adapters/identity.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:claim",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "claim",
+        "to": "VCSM:services",
+        "toKind": "app-area",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/claim/dal/providerLookup.read.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "importPath": "@/services/supabase/trafficClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/trafficClient",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "importPath": "@/services/supabase/trafficClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/trafficClient",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/claim/hooks/useClaimProfile.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claim",
+            "importPath": "@/services/monitoring/monitoringClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/monitoring/monitoringClient",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:claimOnboarding",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "claimOnboarding",
+        "to": "VCSM:app",
+        "toKind": "app-area",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/claimOnboarding/hooks/useClaimApprovalDiscovery.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claimOnboarding",
+            "importPath": "@/app/providers/AuthProvider",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/app/providers/AuthProvider",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:claimOnboarding",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "claimOnboarding",
+        "to": "VCSM:identity",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "identity",
+        "relationship": "Feature->Feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claimOnboarding",
+            "importPath": "@/features/identity/adapters/identity.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/identity/adapters/identity.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:claimOnboarding",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "claimOnboarding",
+        "to": "VCSM:services",
+        "toKind": "app-area",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": null,
+        "relationship": "feature->app-area",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/claimOnboarding/dal/approvedClaimVports.read.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claimOnboarding",
+            "importPath": "@/services/supabase/trafficClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/trafficClient",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/claimOnboarding/dal/approvedClaimVports.read.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "claimOnboarding",
+            "importPath": "@/services/supabase/vportClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/vportClient",
             "resolved": true
           }
         ]
@@ -13838,11 +14812,11 @@
         "fromAppId": "VCSM",
         "fromRoot": "apps/VCSM",
         "fromFeature": "join",
-        "to": "VCSM:booking",
+        "to": "VCSM:authorization",
         "toKind": "feature",
         "toAppId": "VCSM",
         "toRoot": "apps/VCSM",
-        "toFeature": "booking",
+        "toFeature": "authorization",
         "relationship": "Feature->Feature",
         "confidence": "HIGH",
         "evidence": [
@@ -13854,9 +14828,9 @@
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "join",
-            "importPath": "@/features/booking/adapters/booking.adapter",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
             "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
             "resolved": true
           },
           {
@@ -13864,9 +14838,9 @@
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "join",
-            "importPath": "@/features/booking/adapters/booking.adapter",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
             "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
             "resolved": true
           },
           {
@@ -13874,9 +14848,9 @@
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "join",
-            "importPath": "@/features/booking/adapters/booking.adapter",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
             "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
             "resolved": true
           }
         ]
@@ -15558,6 +16532,16 @@
             "importKind": "import",
             "resolvedPath": "apps/VCSM/src/features/identity/adapters/identity.adapter",
             "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/notifications/types/gasprices/GasPriceSuggestionNotificationItem.view.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "notifications",
+            "importPath": "@/features/identity/adapters/identity.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/identity/adapters/identity.adapter",
+            "resolved": true
           }
         ]
       },
@@ -15810,9 +16794,9 @@
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "notifications",
-            "importPath": "@/shared/lib/formatTimestamp",
+            "importPath": "@/shared/lib/formatRelativeTime",
             "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/shared/lib/formatTimestamp",
+            "resolvedPath": "apps/VCSM/src/shared/lib/formatRelativeTime",
             "resolved": true
           }
         ]
@@ -15975,6 +16959,16 @@
           },
           {
             "file": "apps/VCSM/src/features/notifications/types/follow/FollowRequestItem.view.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "notifications",
+            "importPath": "@i18n",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/notifications/types/gasprices/GasPriceSuggestionNotificationItem.view.jsx",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "notifications",
@@ -17171,6 +18165,245 @@
         "fromAppId": "VCSM",
         "fromRoot": "apps/VCSM",
         "fromFeature": "profiles",
+        "to": "VCSM:authorization",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "authorization",
+        "relationship": "Feature->Feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/__tests__/publishBarbershopHoursUpdateAsPost.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/__tests__/publishBarbershopPortfolioUpdateAsPost.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/publishBarbershopHoursUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/publishBarbershopPortfolioUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/exchange/__tests__/publishExchangeRateUpdateAsPost.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/exchange/publishExchangeRateUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/__tests__/publishLocksmithUpdatesAsPost.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithHoursUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithPortfolioUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithServiceAreaUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/__tests__/publishMenuUpdateAsPost.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuCategory.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuItem.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/publishMenuUpdateAsPost.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/saveVportActorMenuCategory.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/saveVportActorMenuItem.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/rates/__tests__/upsertVportRate.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/rates/upsertVportRate.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/deleteVportServiceAddon.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/getVportServices.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/upsertVportServices.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "profiles",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:profiles",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "profiles",
         "to": "VCSM:block",
         "toKind": "feature",
         "toAppId": "VCSM",
@@ -17271,206 +18504,6 @@
           "AST import resolved to source path"
         ],
         "imports": [
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/__tests__/publishBarbershopHoursUpdateAsPost.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/__tests__/publishBarbershopPortfolioUpdateAsPost.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/publishBarbershopHoursUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/barbershop/publishBarbershopPortfolioUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/exchange/__tests__/publishExchangeRateUpdateAsPost.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/exchange/publishExchangeRateUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/__tests__/publishLocksmithUpdatesAsPost.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/locksmithOwner.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithHoursUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithPortfolioUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/locksmith/publishLocksmithServiceAreaUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/__tests__/publishMenuUpdateAsPost.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuCategory.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuItem.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/menu/publishMenuUpdateAsPost.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/rates/__tests__/upsertVportRate.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/rates/upsertVportRate.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/deleteVportServiceAddon.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/getVportServices.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/profiles/kinds/vport/controller/services/upsertVportServices.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "profiles",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
           {
             "file": "apps/VCSM/src/features/profiles/kinds/vport/screens/booking/components/BookingOrganizationPanel.jsx",
             "appId": "VCSM",
@@ -20102,35 +21135,6 @@
         "fromAppId": "VCSM",
         "fromRoot": "apps/VCSM",
         "fromFeature": "public",
-        "to": "VCSM:notifications",
-        "toKind": "feature",
-        "toAppId": "VCSM",
-        "toRoot": "apps/VCSM",
-        "toFeature": "notifications",
-        "relationship": "Feature->Feature",
-        "confidence": "HIGH",
-        "evidence": [
-          "AST import resolved to source path"
-        ],
-        "imports": [
-          {
-            "file": "apps/VCSM/src/features/public/vportBusinessCard/controller/vportBusinessCard.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "public",
-            "importPath": "@/features/notifications/adapters/notifications.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/notifications/adapters/notifications.adapter",
-            "resolved": true
-          }
-        ]
-      },
-      {
-        "from": "VCSM:public",
-        "fromKind": "feature",
-        "fromAppId": "VCSM",
-        "fromRoot": "apps/VCSM",
-        "fromFeature": "public",
         "to": "VCSM:profiles",
         "toKind": "feature",
         "toAppId": "VCSM",
@@ -20297,6 +21301,16 @@
             "importPath": "@/services/supabase/vportClient",
             "importKind": "import",
             "resolvedPath": "apps/VCSM/src/services/supabase/vportClient",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/publishLeadNotification.edge.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "public",
+            "importPath": "@/services/supabase/supabaseClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/supabaseClient",
             "resolved": true
           },
           {
@@ -20525,6 +21539,35 @@
             "importPath": "@/features/vport/adapters/vport.public.adapter",
             "importKind": "import",
             "resolvedPath": "apps/VCSM/src/features/vport/adapters/vport.public.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:public",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "public",
+        "to": "ZZnotforproduction",
+        "toKind": "ZZnotforproduction",
+        "toAppId": null,
+        "toRoot": "ZZnotforproduction",
+        "toFeature": null,
+        "relationship": "feature->ZZnotforproduction",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/public/vportBusinessCard/view/VportBusinessCardPublic.view.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "public",
+            "importPath": "@debuggers/lead-notification",
+            "importKind": "import",
+            "resolvedPath": "ZZnotforproduction/_ACTIVE/debuggers/lead-notification",
             "resolved": true
           }
         ]
@@ -20856,11 +21899,11 @@
         "fromAppId": "VCSM",
         "fromRoot": "apps/VCSM",
         "fromFeature": "settings",
-        "to": "VCSM:booking",
+        "to": "VCSM:authorization",
         "toKind": "feature",
         "toAppId": "VCSM",
         "toRoot": "apps/VCSM",
-        "toFeature": "booking",
+        "toFeature": "authorization",
         "relationship": "Feature->Feature",
         "confidence": "HIGH",
         "evidence": [
@@ -20872,9 +21915,9 @@
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "settings",
-            "importPath": "@/features/booking/adapters/booking.adapter",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
             "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
             "resolved": true
           },
           {
@@ -20882,49 +21925,9 @@
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "settings",
-            "importPath": "@/features/booking/adapters/booking.adapter",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
             "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCard.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "settings",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCardSettings.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "settings",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/settings/vports/controller/vportDirectoryVisibility.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "settings",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/settings/vports/controller/vportSocialSettings.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "settings",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
             "resolved": true
           }
         ]
@@ -21559,6 +22562,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/settings/profile/ui/ProfileTab.view.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "settings",
+            "importPath": "@/shared/lib/safeMediaSrc",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/shared/lib/safeMediaSrc",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/settings/profile/ui/VportAboutDetails.view.jsx",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -21922,6 +22935,65 @@
             "importPath": "@/features/vport/adapters/CreateVportForm.jsx.adapter",
             "importKind": "import",
             "resolvedPath": "apps/VCSM/src/features/vport/adapters/CreateVportForm.jsx.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:settings",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "settings",
+        "to": "VCSM:vportDashboard",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "vportDashboard",
+        "relationship": "Feature->Feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCard.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "settings",
+            "importPath": "@/features/vportDashboard/adapters/vportDashboard.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/settings/vports/controller/vportBusinessCardSettings.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "settings",
+            "importPath": "@/features/vportDashboard/adapters/vportDashboard.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/settings/vports/controller/vportDirectoryVisibility.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "settings",
+            "importPath": "@/features/vportDashboard/adapters/vportDashboard.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/settings/vports/controller/vportSocialSettings.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "settings",
+            "importPath": "@/features/vportDashboard/adapters/vportDashboard.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter",
             "resolved": true
           }
         ]
@@ -23891,6 +24963,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@hydration",
+            "importKind": "import",
+            "resolvedPath": "engines/hydration/index.js",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/components/schedule/BarberLaneHeader.jsx",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -23999,6 +25081,16 @@
           "AST import resolved to source path"
         ],
         "imports": [
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useCustomerSearch.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/actors/adapters/actors.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/actors/adapters/actors.adapter",
+            "resolved": true
+          },
           {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js",
             "appId": "VCSM",
@@ -24114,6 +25206,185 @@
         "fromAppId": "VCSM",
         "fromRoot": "apps/VCSM",
         "fromFeature": "vportDashboard",
+        "to": "VCSM:authorization",
+        "toKind": "feature",
+        "toAppId": "VCSM",
+        "toRoot": "apps/VCSM",
+        "toFeature": "authorization",
+        "relationship": "Feature->Feature",
+        "confidence": "HIGH",
+        "evidence": [
+          "AST import resolved to source path"
+        ],
+        "imports": [
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/controller/__tests__/vportOwnerStats.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/controller/vportOwnerStats.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/__tests__/updateVportBooking.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/createOwnerBooking.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/loadTeamAvailabilityDay.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/__tests__/vportLeads.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/portfolio/controller/probeVportPortfolio.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/controller/loadDaySchedule.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeamAccess.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeamInvite.controller.test.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamInvite.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/authorization/adapters/authorization.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/authorization/adapters/authorization.adapter",
+            "resolved": true
+          }
+        ]
+      },
+      {
+        "from": "VCSM:vportDashboard",
+        "fromKind": "feature",
+        "fromAppId": "VCSM",
+        "fromRoot": "apps/VCSM",
+        "fromFeature": "vportDashboard",
         "to": "VCSM:booking",
         "toKind": "feature",
         "toAppId": "VCSM",
@@ -24126,36 +25397,6 @@
         ],
         "imports": [
           {
-            "file": "apps/VCSM/src/features/vportDashboard/controller/__tests__/vportOwnerStats.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/controller/checkVportOwnership.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/controller/vportOwnerStats.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/VportDashboardBookingHistoryView.jsx",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -24166,137 +25407,7 @@
             "resolved": true
           },
           {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/__tests__/updateVportBooking.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/createOwnerBooking.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/calendar/hooks/useCalendarDashboard.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/__tests__/vportLeads.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/portfolio/controller/probeVportPortfolio.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/controller/loadDaySchedule.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/controller/saveVportPublicDetailsByActorId.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeamAccess.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeamInvite.controller.test.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeam.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamAccess.controller.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/booking/adapters/booking.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/booking/adapters/booking.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/controller/vportTeamInvite.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "vportDashboard",
@@ -24324,6 +25435,16 @@
           "AST import resolved to source path"
         ],
         "imports": [
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/components/bookingHistory/ClientSearchField.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/identity/adapters/identity.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/identity/adapters/identity.adapter",
+            "resolved": true
+          },
           {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useQuickBookingModal.js",
             "appId": "VCSM",
@@ -24396,16 +25517,6 @@
           },
           {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsFinalScreen.jsx",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/features/identity/adapters/identity.adapter",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/features/identity/adapters/identity.adapter",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/hooks/useVportLeads.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "vportDashboard",
@@ -24644,6 +25755,26 @@
           },
           {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/vportPublicBooking.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/notifications/adapters/notifications.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/notifications/adapters/notifications.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/notifyFuelPriceSubmissionBatch.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/features/notifications/adapters/notifications.adapter",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/features/notifications/adapters/notifications.adapter",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/submitCitizenFuelPriceSuggestion.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "vportDashboard",
@@ -24940,6 +26071,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/vportDashboard/dal/read/actorValidity.read.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/services/supabase/supabaseClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/supabaseClient",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/vportDashboard/dal/read/actorVport.read.dal.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -25070,6 +26211,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/loadTeamAvailabilityDay.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/services/monitoring/vcsmMonitoring",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/monitoring/vcsmMonitoring",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -25110,6 +26261,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/notifyFuelPriceSubmissionBatch.controller.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/services/monitoring/vcsmMonitoring",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/monitoring/vcsmMonitoring",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/publishFuelPriceUpdateAsPost.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -25120,7 +26281,7 @@
             "resolved": true
           },
           {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/reviewFuelPriceSuggestion.controller.js",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/reviewFuelPriceBatch.controller.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "vportDashboard",
@@ -25160,6 +26321,16 @@
             "resolved": true
           },
           {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/services/supabase/vportClient",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/services/supabase/vportClient",
+            "resolved": true
+          },
+          {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
@@ -25181,16 +26352,6 @@
           },
           {
             "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPricePost.read.dal.js",
-            "appId": "VCSM",
-            "root": "apps/VCSM",
-            "feature": "vportDashboard",
-            "importPath": "@/services/supabase/vportClient",
-            "importKind": "import",
-            "resolvedPath": "apps/VCSM/src/services/supabase/vportClient",
-            "resolved": true
-          },
-          {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "vportDashboard",
@@ -25598,13 +26759,23 @@
             "resolved": true
           },
           {
-            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/submitFuelPriceSuggestion.controller.test.js",
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPriceBatchReview.write.dal.test.js",
             "appId": "VCSM",
             "root": "apps/VCSM",
             "feature": "vportDashboard",
             "importPath": "@/shared/lib/vport/resolveVportProfileId",
             "importKind": "import",
             "resolvedPath": "apps/VCSM/src/shared/lib/vport/resolveVportProfileId",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/components/OwnerPendingBatchCard.jsx",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/shared/lib/formatRelativeTime",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/shared/lib/formatRelativeTime",
             "resolved": true
           },
           {
@@ -25615,6 +26786,16 @@
             "importPath": "@/shared/utils/resolveRealm",
             "importKind": "import",
             "resolvedPath": "apps/VCSM/src/shared/utils/resolveRealm",
+            "resolved": true
+          },
+          {
+            "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vportDashboard",
+            "importPath": "@/shared/lib/vport/resolveVportProfileId",
+            "importKind": "import",
+            "resolvedPath": "apps/VCSM/src/shared/lib/vport/resolveVportProfileId",
             "resolved": true
           },
           {

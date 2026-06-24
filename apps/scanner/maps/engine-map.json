@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
   "engineCount": 9,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.724Z",
+    "generatedAt": "2026-06-24T06:36:28.650Z",
     "engines": [
       {
         "engine": "booking",

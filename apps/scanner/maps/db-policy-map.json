@@ -1,16 +1,16 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "dbTableCount": 116,
-  "dbRpcCount": 68,
-  "dbPolicyUnverifiedCount": 173,
+  "dbTableCount": 81,
+  "dbRpcCount": 61,
+  "dbPolicyUnverifiedCount": 193,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:05.278Z",
+    "generatedAt": "2026-06-24T06:36:30.363Z",
     "migrationsScanned": [
       "apps/VCSM/supabase/migrations/20260427010000_vport_bookings_insert_rls_fix.sql",
       "apps/VCSM/supabase/migrations/20260427020000_vport_traze_directory_visibility_fix.sql",
@@ -190,25 +190,7 @@
       "supabase/migrations/20260607000001_notification_create_event_source_actor_session_binding.sql",
       "supabase/migrations/20260607000002_notification_count_unread_for_actor.sql",
       "supabase/migrations/20260607000003_notification_count_unread_batch.sql",
-      "supabase/migrations/20260607100000_harden_identity_search_actor_directory.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_fuel_price_submissions_grants.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_vport_create_rpc_overload_ambiguity.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_a_search_path_hardening.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step1_revoke_dangerous_execute.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step4_drop_dead_functions.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5_harden_security_definer.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5b_trigger_and_wanders_search_path.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_add_payload_to_posts.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_03_accepted_at_server_default.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/A_track_vc_is_actor_owner.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql",
-      "zzzzlegacy/CURRENT/platform/migrations/preflight_actor_can_manage_profile_legacy_branch.sql"
+      "supabase/migrations/20260607100000_harden_identity_search_actor_directory.sql"
     ],
     "schemas": [
       "notification",
@@ -383,14 +365,6 @@
           {
             "policy": "app_roles_select_authenticated",
             "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql"
-          },
-          {
-            "policy": "app_roles_authenticated_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "app_roles_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       },
@@ -424,46 +398,12 @@
         "policies": []
       },
       {
-        "schema": "learning",
-        "table": "assignment_rubrics",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "assignment_rubrics_admin_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "assignment_rubrics_member_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
         "schema": "chat",
         "table": "audit_log",
         "file": "apps/wentrex/supabase/migrations/20260331050000_chat_rls.sql",
         "created": false,
         "rlsEnabled": true,
         "policies": []
-      },
-      {
-        "schema": "learning",
-        "table": "audit_log",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "audit_log_admin_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "audit_log_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
       },
       {
         "schema": "platform",
@@ -870,40 +810,6 @@
         ]
       },
       {
-        "schema": "traffic",
-        "table": "business_claim_requests",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "business_claim_requests_anon_insert",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "business_claim_requests_deny_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "business_intake_leads",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "business_intake_leads_anon_insert",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "business_intake_leads_deny_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
         "schema": "platform",
         "table": "capabilities",
         "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql",
@@ -913,44 +819,6 @@
           {
             "policy": "capabilities_select_authenticated",
             "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql"
-          },
-          {
-            "policy": "capabilities_authenticated_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "capabilities_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "wanders",
-        "table": "cards",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "cards_insert_sender_authenticated",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "cities",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "cities_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "cities_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
           }
         ]
       },
@@ -1421,14 +1289,6 @@
           {
             "policy": "courses_delete_scoped_admin",
             "file": "apps/wentrex/supabase/migrations/20260325184500_learning_center_guardrails.sql"
-          },
-          {
-            "policy": "courses_org_member_select",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "courses_org_admin_insert",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
           }
         ]
       },
@@ -1455,32 +1315,6 @@
         "created": false,
         "rlsEnabled": true,
         "policies": []
-      },
-      {
-        "schema": "notification",
-        "table": "event_categories",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "event_categories_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vc",
-        "table": "friend_ranks",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "friend_ranks_self_select",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ]
       },
       {
         "schema": "vport",
@@ -1605,40 +1439,6 @@
         ]
       },
       {
-        "schema": "vport",
-        "table": "fuel_type_localizations",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "fuel_type_localizations_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "fuel_type_localizations_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vport",
-        "table": "fuel_types",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "fuel_types_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "fuel_types_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
         "schema": "chat",
         "table": "inbox_entries",
         "file": "apps/VCSM/supabase/migrations/20260430200000_fix_chat_rls_multi_actor.sql",
@@ -1701,42 +1501,7 @@
         "file": "apps/wentrex/supabase/migrations/20260331050000_chat_rls.sql",
         "created": false,
         "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "legacy_mappings_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "platform",
-        "table": "legal_documents",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "legal_documents_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "legal_documents_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "learning",
-        "table": "lesson_progress",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "lesson_progress_student_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ]
+        "policies": []
       },
       {
         "schema": "platform",
@@ -1816,19 +1581,6 @@
           {
             "policy": "media_assets_learning_owner_update",
             "file": "supabase/migrations/20260527130000_platform_media_assets_rls_role_hardening.sql"
-          }
-        ]
-      },
-      {
-        "schema": "platform",
-        "table": "media_jobs",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "media_jobs_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       },
@@ -2053,36 +1805,6 @@
       },
       {
         "schema": "learning",
-        "table": "modules",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "modules_org_member_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "neighborhoods",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "neighborhoods_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "neighborhoods_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "learning",
         "table": "observer_student_links",
         "file": "apps/wentrex/supabase/migrations/20260329010000_create_observer_student_links.sql",
         "created": true,
@@ -2166,46 +1888,7 @@
         "file": "apps/wentrex/supabase/migrations/20260331050000_chat_rls.sql",
         "created": false,
         "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "outbox_events_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "page_candidates",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "page_candidates_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "page_candidates_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "page_internal_links",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "page_internal_links_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "page_internal_links_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
+        "policies": []
       },
       {
         "schema": "learning",
@@ -2263,23 +1946,6 @@
           {
             "policy": "platform_admins_delete_platform_admin",
             "file": "apps/wentrex/supabase/migrations/20260325184500_learning_center_guardrails.sql"
-          },
-          {
-            "policy": "platform_admins_authenticated_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ]
-      },
-      {
-        "schema": "platform",
-        "table": "platform_owners",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "platform_owners_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       },
@@ -2346,57 +2012,6 @@
           {
             "policy": "posts_delete_actor_owner",
             "file": "supabase/migrations/20260523010000_backfill_tracked_rls_coverage.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "price_aggregates",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "price_aggregates_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "price_aggregates_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vc",
-        "table": "professional_housing_categories",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "professional_housing_categories_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "professional_housing_categories_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vc",
-        "table": "professional_housing_note_categories",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "professional_housing_note_categories_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "professional_housing_note_categories_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       },
@@ -2560,78 +2175,6 @@
           {
             "policy": "profiles_delete_owner",
             "file": "supabase/migrations/20260527100000_harden_bookings_and_profiles_delete_policies.sql"
-          }
-        ]
-      },
-      {
-        "schema": "public",
-        "table": "profiles",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "provider_services",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "provider_services_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "provider_services_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "provider_stats_current",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "provider_stats_current_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "provider_stats_current_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "providers",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "providers_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "providers_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
           }
         ]
       },
@@ -2943,31 +2486,6 @@
       },
       {
         "schema": "reviews",
-        "table": "review_dimension_ratings",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "ratings_select_public",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-          },
-          {
-            "policy": "ratings_insert_author",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-          },
-          {
-            "policy": "ratings_update_author",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-          },
-          {
-            "policy": "ratings_delete_author",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-          }
-        ]
-      },
-      {
-        "schema": "reviews",
         "table": "review_dimensions",
         "file": "apps/VCSM/supabase/migrations/20260503040334_fix_public_profile_rls_policies.sql",
         "created": false,
@@ -2992,23 +2510,6 @@
         ]
       },
       {
-        "schema": "reviews",
-        "table": "reviews",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "reviews_select_public",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-          },
-          {
-            "policy": "reviews_update_author",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-          }
-        ]
-      },
-      {
         "schema": "platform",
         "table": "role_capabilities",
         "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql",
@@ -3018,14 +2519,6 @@
           {
             "policy": "role_capabilities_select_authenticated",
             "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql"
-          },
-          {
-            "policy": "role_capabilities_authenticated_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "role_capabilities_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       },
@@ -3047,19 +2540,6 @@
           {
             "policy": "chat_saved_delete_own",
             "file": "apps/wentrex/supabase/migrations/20260331050000_chat_rls.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "seo_rules",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "seo_rules_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
           }
         ]
       },
@@ -3236,104 +2716,6 @@
         ]
       },
       {
-        "schema": "traffic",
-        "table": "services",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "services_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "services_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "sitemap_chunks",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "sitemap_chunks_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "sitemap_chunks_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "traffic",
-        "table": "specialties",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql",
-        "created": false,
-        "rlsEnabled": true,
-        "policies": [
-          {
-            "policy": "specialties_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "specialties_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vport",
-        "table": "station_brands",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "station_brands_public_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "station_brands_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vport",
-        "table": "station_contact_routes",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "station_contact_routes_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "station_contact_routes_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
-        "schema": "learning",
-        "table": "student_login_id_counters",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "student_login_id_counters_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          }
-        ]
-      },
-      {
         "schema": "chat",
         "table": "typing_states",
         "file": "apps/wentrex/supabase/migrations/20260331050000_chat_rls.sql",
@@ -3401,14 +2783,6 @@
           {
             "policy": "user_app_account_roles_select_own",
             "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql"
-          },
-          {
-            "policy": "user_app_account_roles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-          },
-          {
-            "policy": "user_app_account_roles_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       },
@@ -3534,14 +2908,6 @@
           {
             "policy": "user_capabilities_select_own",
             "file": "apps/wentrex/supabase/migrations/20260331010000_platform_rls.sql"
-          },
-          {
-            "policy": "user_capabilities_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-          },
-          {
-            "policy": "user_capabilities_deny_write",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
           }
         ]
       },
@@ -3567,27 +2933,6 @@
           {
             "policy": "user_consents_deny_delete",
             "file": "supabase/migrations/20260510030000_user_consents_immutability_and_grant.sql"
-          },
-          {
-            "policy": "user_consents_deny_update",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql"
-          },
-          {
-            "policy": "user_consents_deny_delete",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql"
-          }
-        ]
-      },
-      {
-        "schema": "vc",
-        "table": "void_profiles",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql",
-        "created": false,
-        "rlsEnabled": false,
-        "policies": [
-          {
-            "policy": "void_profiles_deny_all",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
           }
         ]
       }
@@ -3596,13 +2941,7 @@
       {
         "schema": "vport",
         "functionName": "actor_can_manage_profile",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/preflight_actor_can_manage_profile_legacy_branch.sql",
-        "securityDefiner": true
-      },
-      {
-        "schema": "public",
-        "functionName": "admin_delete_user_everywhere",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5_harden_security_definer.sql",
+        "file": "supabase/migrations/20260523230000_remove_actor_can_manage_profile_legacy_branch.sql",
         "securityDefiner": true
       },
       {
@@ -3714,18 +3053,6 @@
         "securityDefiner": true
       },
       {
-        "schema": "wanders",
-        "functionName": "create_inbox_share_link",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5b_trigger_and_wanders_search_path.sql",
-        "securityDefiner": true
-      },
-      {
-        "schema": "vport",
-        "functionName": "create_vport",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_vport_create_rpc_overload_ambiguity.sql",
-        "securityDefiner": true
-      },
-      {
         "schema": "learning",
         "functionName": "current_actor_id",
         "file": "apps/wentrex/supabase/migrations/20260330000000_fix_current_actor_id_for_parents.sql",
@@ -3744,12 +3071,6 @@
         "securityDefiner": true
       },
       {
-        "schema": "wanders",
-        "functionName": "drop_send_card",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5b_trigger_and_wanders_search_path.sql",
-        "securityDefiner": true
-      },
-      {
         "schema": "learning",
         "functionName": "enforce_max_parents_per_student",
         "file": "apps/wentrex/supabase/migrations/20260329080000_parent_student_links_trigger.sql",
@@ -3758,7 +3079,7 @@
       {
         "schema": "platform",
         "functionName": "enforce_server_accepted_at",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_03_accepted_at_server_default.sql",
+        "file": "supabase/migrations/20260510050000_accepted_at_server_default.sql",
         "securityDefiner": false
       },
       {
@@ -3834,12 +3155,6 @@
         "securityDefiner": true
       },
       {
-        "schema": "vc",
-        "functionName": "is_actor_owner",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/A_track_vc_is_actor_owner.sql",
-        "securityDefiner": true
-      },
-      {
         "schema": "learning",
         "functionName": "is_conversation_admin",
         "file": "apps/wentrex/supabase/migrations/20260330100000_communication_rls_and_rpcs.sql",
@@ -3894,12 +3209,6 @@
         "securityDefiner": true
       },
       {
-        "schema": "public",
-        "functionName": "mark_all_messages_seen",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5_harden_security_definer.sql",
-        "securityDefiner": true
-      },
-      {
         "schema": "vc",
         "functionName": "mark_read",
         "file": "supabase/migrations/20260519120000_platform_vc_security_hardening.sql",
@@ -3914,7 +3223,7 @@
       {
         "schema": "platform",
         "functionName": "prevent_consent_audit_mutation",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql",
+        "file": "supabase/migrations/20260510030000_user_consents_immutability_and_grant.sql",
         "securityDefiner": false
       },
       {
@@ -3933,12 +3242,6 @@
         "schema": "vport",
         "functionName": "read_business_card_public",
         "file": "supabase/migrations/20260511010000_fix_read_business_card_public_remove_review_join.sql",
-        "securityDefiner": true
-      },
-      {
-        "schema": "wanders",
-        "functionName": "redeem_inbox_share_link",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5b_trigger_and_wanders_search_path.sql",
         "securityDefiner": true
       },
       {
@@ -5482,50 +4785,6 @@
       {
         "grant": "grant  execute on function identity.search_actor_directory(text, uuid, text, text, integer, integer) to   authenticated;",
         "file": "supabase/migrations/20260607100000_harden_identity_search_actor_directory.sql"
-      },
-      {
-        "grant": "GRANT SELECT/INSERT/UPDATE for the authenticated\n--   role. PostgreSQL evaluates GRANTs before RLS — so the policies never fire\n--   and the client gets \"permission denied for table fuel_price_submissions\".\n--\n--   All other vport tables have their grants set. These two were likely created\n--   after the initial GRANT ALL IN SCHEMA sweep.\n--\n-- VENOM F-005 correction:\n--   Original draft of this migration included GRANT SELECT TO anon. This was\n--   removed because the raw table contains proposed_price, submitted_by_actor_id,\n--   and submission UUIDs — none of which are safe to expose to unauthenticated\n--   clients without row-level filtering. RLS policies (20260526010000) enforce\n--   visibility at the row level for authenticated users.\n--\n-- Safe: adds GRANT only — does not modify RLS policies or function definitions.\n\n-- ── fuel_price_submissions ────────────────────────────────────────────────────\n-- authenticated: SELECT (own submissions + stations they manage), INSERT, UPDATE\n-- anon: NO access — raw table contains proposed_price, submitted_by_actor_id,\n--       and submission UUIDs. RLS policies enforce row-level visibility.\n--       See migration 20260526010000_fuel_price_submissions_rls.sql for policies.\nGRANT SELECT, INSERT, UPDATE\n  ON vport.fuel_price_submissions\n  TO authenticated;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_fuel_price_submissions_grants.sql"
-      },
-      {
-        "grant": "grant the table itself\n-- so vport owners can read/insert review decisions.\nGRANT SELECT, INSERT, UPDATE\n  ON vport.fuel_price_submission_reviews\n  TO authenticated;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_fuel_price_submissions_grants.sql"
-      },
-      {
-        "grant": "grant preserved for authenticated\nSELECT has_function_privilege('authenticated', p.oid, 'execute') AS can_execute\nFROM pg_proc p\nJOIN pg_namespace n ON n.oid = p.pronamespace\nWHERE n.nspname = 'vport' AND p.proname = 'create_vport';",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_vport_create_rpc_overload_ambiguity.sql"
-      },
-      {
-        "grant": "grant new access where none exists.\n--             Test each table in staging before applying to prod.\n-- DEPLOY ORDER: 2 of 3 (run after _a, before _c)\n-- IDEMPOTENT: Yes — all statements use IF NOT EXISTS or DROP IF EXISTS\n--             before CREATE POLICY.\n-- PRE-CHECK QUERY (run first to confirm zero-policy tables):\n--   SELECT schemaname, tablename, COUNT(policyname) AS policy_count\n--   FROM pg_policies\n--   GROUP BY schemaname, tablename\n--   HAVING COUNT(policyname) = 0\n--   ORDER BY schemaname, tablename;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "grant": "GRANT EXECUTE ON FUNCTION public.admin_delete_user_everywhere(uuid) TO service_role;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step5_harden_security_definer.sql"
-      },
-      {
-        "grant": "GRANT + immutability enforcement\n-- Status: STAGED — must be reviewed and applied via Supabase SQL editor or CLI\n-- ============================================================\n\n-- 1. Ensure authenticated role can insert consent rows.\n--    This grant must be tracked to survive a fresh deployment.\nGRANT INSERT ON platform.user_consents TO authenticated;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql"
-      },
-      {
-        "grant": "GRANT EXECUTE ON FUNCTION vc.is_actor_owner(uuid) TO authenticated;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/A_track_vc_is_actor_owner.sql"
-      },
-      {
-        "grant": "GRANT SELECT ON reviews.reviews TO authenticated         (20260503052543:62)\n--   - GRANT SELECT ON reviews.review_dimension_ratings         (20260503052543:63)\n--   - GRANT USAGE ON SCHEMA reviews TO authenticated           (20260503040334, 20260503052543)\n--   - reviews.review_dimensions SELECT + RLS                   (20260503040334, 20260503052543)\n--\n-- VERIFICATION REQUIRED BEFORE DEPLOY:\n--   Run on the live DB to see what policies currently exist:\n--     SELECT tablename, policyname, cmd, qual\n--     FROM pg_policies\n--     WHERE schemaname = 'reviews';",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-      },
-      {
-        "grant": "grant needed for the RPC path.\n--\n--   B. UPDATE — dalUpdateReviewBody, dalSoftDeleteReview call\n--      supabase.from('reviews').update(...).eq('id', reviewId) directly.\n--      This IS subject to RLS. The UPDATE policy must enforce that only the\n--      review's author_actor_id owner (via actor_owners) can update.\n--\n-- SELECT policy: any authenticated user can read active, non-deleted reviews.\n-- =============================================================================\n\n-- Enable RLS (idempotent — no-op if already enabled)\nALTER TABLE reviews.reviews ENABLE ROW LEVEL SECURITY;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-      },
-      {
-        "grant": "Grant INSERT for RPC fallback path (anon inserts via SECURITY DEFINER don't\n-- need a client-role INSERT grant, but including it ensures the authenticated\n-- role can reach the upsert path if the RPC changes to non-SECURITY DEFINER).\n-- The RLS INSERT policy is intentionally omitted — all INSERTs go via RPC.\nGRANT INSERT, UPDATE ON reviews.reviews TO authenticated;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-      },
-      {
-        "grant": "Grant writes (SELECT already granted in 20260503052543)\nGRANT INSERT, UPDATE, DELETE ON reviews.review_dimension_ratings TO authenticated;",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
       }
     ],
     "constraints": [
@@ -6988,222 +6247,6 @@
       {
         "constraint": "CHECK (",
         "file": "supabase/migrations/20260606000001_vc_actor_owners_insert_policy_and_rpc_grant_hygiene.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_b_zero_policy_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_secdef_c_rls_disabled_tables.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-      },
-      {
-        "constraint": "Constraint Layer",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "constraint below",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "constraint allows",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "constraint name",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "constraint name",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "CONSTRAINT IF",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "constraint along",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-      },
-      {
-        "constraint": "CONSTRAINT IF",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
-      },
-      {
-        "constraint": "CONSTRAINT user_consents_consent_type_check",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
-      },
-      {
-        "constraint": "CONSTRAINT IF",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
-      },
-      {
-        "constraint": "CONSTRAINT legal_documents_document_type_check",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
-      },
-      {
-        "constraint": "CHECK (",
-        "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/reviews/B_track_reviews_write_rls.sql"
       }
     ],
     "dalDependencies": [
@@ -7461,18 +6504,11 @@
         "schema": "vc",
         "table": "friend_ranks",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "friend_ranks_self_select",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js",
@@ -7480,18 +6516,11 @@
         "schema": "vc",
         "table": "friend_ranks",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "friend_ranks_self_select",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js",
@@ -8395,18 +7424,11 @@
         "schema": "vc",
         "table": "friend_ranks",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "friend_ranks_self_select",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
@@ -8414,18 +7436,11 @@
         "schema": "vc",
         "table": "friend_ranks",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "friend_ranks_self_select",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
@@ -8505,26 +7520,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
@@ -8776,26 +7776,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/auth/login/dal/profile.dal.js",
@@ -8803,26 +7788,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/auth/onboarding/dal/actorCreate.dal.js",
@@ -8873,26 +7843,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/auth/password-recovery/dal/resetPasswordSecure.dal.js",
@@ -8924,26 +7879,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
@@ -9160,6 +8100,18 @@
         "schema": "identity",
         "table": null,
         "rpc": "search_actor_directory",
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+        "operation": "rpc",
+        "schema": null,
+        "table": null,
+        "rpc": "submit_business_claim",
         "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
@@ -9530,14 +8482,6 @@
           {
             "policy": "user_consents_deny_delete",
             "file": "supabase/migrations/20260510030000_user_consents_immutability_and_grant.sql"
-          },
-          {
-            "policy": "user_consents_deny_update",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql"
-          },
-          {
-            "policy": "user_consents_deny_delete",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql"
           }
         ],
         "rlsEnabled": false,
@@ -9549,17 +8493,12 @@
           {
             "constraint": "CONSTRAINT user_consents_consent_type_check",
             "file": "supabase/migrations/20260510040000_age_verification_consent_type.sql"
-          },
-          {
-            "constraint": "CONSTRAINT user_consents_consent_type_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_02_age_verification_consent_type.sql"
           }
         ],
         "status": "VERIFIED",
         "evidence": [
           "apps/VCSM/supabase/migrations/20260510030000_user_consents_immutability_and_grant.sql",
-          "supabase/migrations/20260510030000_user_consents_immutability_and_grant.sql",
-          "zzzzlegacy/CURRENT/platform/migrations/draft/carnage_migrations/20260510_01_user_consents_immutability_and_grant.sql"
+          "supabase/migrations/20260510030000_user_consents_immutability_and_grant.sql"
         ]
       },
       {
@@ -10596,18 +9535,6 @@
         "evidence": []
       },
       {
-        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js",
-        "operation": "upsert",
-        "schema": null,
-        "table": "locksmith_service_areas",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
         "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal.js",
         "operation": "delete",
         "schema": null,
@@ -10989,26 +9916,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/settings/profile/dal/profileMediaAsset.write.dal.js",
@@ -11016,26 +9928,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/settings/profile/dal/profileMediaAsset.write.dal.js",
@@ -11043,26 +9940,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
@@ -11082,26 +9964,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
@@ -11109,26 +9976,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
@@ -11543,26 +10395,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/vport/dal/vport.write.profileMedia.dal.js",
@@ -11570,26 +10407,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/vport/dal/vport.write.profileMedia.dal.js",
@@ -11597,26 +10419,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/features/vportDashboard/dal/write/updateVportBooking.write.dal.js",
@@ -11655,51 +10462,34 @@
         "evidence": []
       },
       {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "operation": "rpc",
+        "schema": null,
+        "table": null,
+        "rpc": "approve_fuel_price_submission_batch",
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "operation": "rpc",
+        "schema": null,
+        "table": null,
+        "rpc": "reject_fuel_price_submission_batch",
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js",
         "operation": "insert",
         "schema": null,
         "table": "fuel_price_history",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "operation": "insert",
-        "schema": null,
-        "table": "fuel_price_submission_reviews",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "operation": "update",
-        "schema": null,
-        "table": "fuel_price_submissions",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "operation": "update",
-        "schema": null,
-        "table": "fuel_price_submission_reviews",
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
@@ -11739,12 +10529,7 @@
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
+        "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
       },
@@ -12176,18 +10961,11 @@
         "schema": "learning",
         "table": "lesson_progress",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "lesson_progress_student_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/learning/dal/submissions/submitAssignmentAttempt.dal.js",
@@ -12197,12 +10975,7 @@
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
+        "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
       },
@@ -12214,12 +10987,7 @@
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
+        "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
       },
@@ -12361,26 +11129,11 @@
         "schema": null,
         "table": "profiles",
         "rpc": null,
-        "policyEvidence": [
-          {
-            "policy": "profiles_select_via_actor",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_discoverable_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          },
-          {
-            "policy": "profiles_self_read",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-          }
-        ],
+        "policyEvidence": [],
         "rlsEnabled": false,
         "constraints": [],
-        "status": "VERIFIED",
-        "evidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_step2_rls_policy_repairs.sql"
-        ]
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
       },
       {
         "file": "apps/VCSM/src/services/monitoring/monitoringClient.js",
@@ -12397,6 +11150,102 @@
       {
         "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
         "operation": "edge_function",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "NOT_TABLE_BACKED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+        "operation": "edge_function_file",
         "schema": null,
         "table": null,
         "rpc": null,
@@ -12613,6 +11462,14 @@
     ],
     "rpcDependencies": [
       {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "rpc": "approve_fuel_price_submission_batch",
+        "schema": null,
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
         "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
         "rpc": "block_actor",
         "schema": "moderation",
@@ -12704,21 +11561,17 @@
         "file": "apps/VCSM/src/dev/diagnostics/groups/vports.group.js",
         "rpc": "create_vport",
         "schema": "vport",
-        "functionEvidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_vport_create_rpc_overload_ambiguity.sql"
-        ],
-        "securityDefiner": true,
-        "status": "VERIFIED"
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureVportSeed.js",
         "rpc": "create_vport",
         "schema": "vport",
-        "functionEvidence": [
-          "zzzzlegacy/CURRENT/platform/migrations/2026-05-10_fix_vport_create_rpc_overload_ambiguity.sql"
-        ],
-        "securityDefiner": true,
-        "status": "VERIFIED"
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
       },
       {
         "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
@@ -12875,6 +11728,14 @@
         "status": "DB_POLICY_UNVERIFIED"
       },
       {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "rpc": "reject_fuel_price_submission_batch",
+        "schema": null,
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
         "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
         "rpc": "restore_vport",
         "schema": null,
@@ -13019,6 +11880,14 @@
         "status": "DB_POLICY_UNVERIFIED"
       },
       {
+        "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+        "rpc": "submit_business_claim",
+        "schema": null,
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
         "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
         "rpc": "unblock_actor",
         "schema": "moderation",
@@ -13065,6 +11934,30 @@
         "operation": "upsert",
         "schema": "vc",
         "table": "actor_follows",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js",
+        "operation": "delete",
+        "schema": "vc",
+        "table": "friend_ranks",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/groups/blockGroup.helpers.js",
+        "operation": "insert",
+        "schema": "vc",
+        "table": "friend_ranks",
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
@@ -13410,6 +12303,30 @@
       },
       {
         "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
+        "operation": "delete",
+        "schema": "vc",
+        "table": "friend_ranks",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
+        "operation": "insert",
+        "schema": "vc",
+        "table": "friend_ranks",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/groups/socialGroup.friendRankTest.js",
         "operation": "upsert",
         "schema": "vc",
         "table": "actor_follows",
@@ -13445,10 +12362,70 @@
         "evidence": []
       },
       {
+        "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+        "operation": "upsert",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
         "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureBookingSeed.js",
         "operation": "insert",
         "schema": "vc",
         "table": "booking_resources",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/auth/gates/dal/profileShell.dal.js",
+        "operation": "upsert",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/auth/login/dal/profile.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/auth/onboarding/dal/onboarding.write.dal.js",
+        "operation": "upsert",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/auth/registration/dal/register.dal.js",
+        "operation": "upsert",
+        "schema": null,
+        "table": "profiles",
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
@@ -14141,18 +13118,6 @@
         "evidence": []
       },
       {
-        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js",
-        "operation": "upsert",
-        "schema": null,
-        "table": "locksmith_service_areas",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
         "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceDetails.write.dal.js",
         "operation": "delete",
         "schema": null,
@@ -14321,6 +13286,66 @@
         "evidence": []
       },
       {
+        "file": "apps/VCSM/src/features/settings/profile/dal/profile.write.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/settings/profile/dal/profileMediaAsset.write.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/settings/profile/dal/profileMediaAsset.write.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
         "file": "apps/VCSM/src/features/settings/vports/dal/vports.write.dal.js",
         "operation": "update",
         "schema": null,
@@ -14417,6 +13442,42 @@
         "evidence": []
       },
       {
+        "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/vport/dal/vport.write.profileMedia.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/vport/dal/vport.write.profileMedia.dal.js",
+        "operation": "update",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
         "file": "apps/VCSM/src/features/vportDashboard/dal/write/updateVportBooking.write.dal.js",
         "operation": "update",
         "schema": null,
@@ -14465,47 +13526,6 @@
         "evidence": []
       },
       {
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "operation": "insert",
-        "schema": null,
-        "table": "fuel_price_submission_reviews",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "operation": "update",
-        "schema": null,
-        "table": "fuel_price_submissions",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "operation": "update",
-        "schema": null,
-        "table": "fuel_price_submission_reviews",
-        "rpc": null,
-        "policyEvidence": [],
-        "rlsEnabled": false,
-        "constraints": [],
-        "status": "DB_POLICY_UNVERIFIED",
-        "evidence": []
-      },
-      {
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPrices.write.dal.js",
         "operation": "update",
         "schema": null,
@@ -14537,12 +13557,7 @@
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
+        "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
       },
@@ -14721,6 +13736,18 @@
         "evidence": []
       },
       {
+        "file": "apps/VCSM/src/learning/dal/lessonProgress/upsertLessonProgress.dal.js",
+        "operation": "upsert",
+        "schema": "learning",
+        "table": "lesson_progress",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
         "file": "apps/VCSM/src/learning/dal/submissions/submitAssignmentAttempt.dal.js",
         "operation": "update",
         "schema": "learning",
@@ -14728,12 +13755,7 @@
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
+        "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
       },
@@ -14745,12 +13767,19 @@
         "rpc": null,
         "policyEvidence": [],
         "rlsEnabled": false,
-        "constraints": [
-          {
-            "constraint": "CONSTRAINT fuel_price_submissions_status_check",
-            "file": "zzzzlegacy/CURRENT/platform/migrations/2026-05-27_gasprices_batch_c.sql"
-          }
-        ],
+        "constraints": [],
+        "status": "DB_POLICY_UNVERIFIED",
+        "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/scripts/load/simulateAuthenticatedActors.mjs",
+        "operation": "upsert",
+        "schema": null,
+        "table": "profiles",
+        "rpc": null,
+        "policyEvidence": [],
+        "rlsEnabled": false,
+        "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
       },
@@ -14789,6 +13818,14 @@
         "constraints": [],
         "status": "DB_POLICY_UNVERIFIED",
         "evidence": []
+      },
+      {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "rpc": "approve_fuel_price_submission_batch",
+        "schema": null,
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
       },
       {
         "file": "apps/VCSM/src/features/block/dal/block.write.dal.js",
@@ -14834,6 +13871,22 @@
         "file": "apps/VCSM/src/features/notifications/runtime/notificationRuntime.dal.js",
         "rpc": "create_event",
         "schema": "notification",
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/groups/vports.group.js",
+        "rpc": "create_vport",
+        "schema": "vport",
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
+        "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureVportSeed.js",
+        "rpc": "create_vport",
+        "schema": "vport",
         "functionEvidence": [],
         "securityDefiner": false,
         "status": "DB_POLICY_UNVERIFIED"
@@ -14943,6 +13996,14 @@
         "status": "DB_POLICY_UNVERIFIED"
       },
       {
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "rpc": "reject_fuel_price_submission_batch",
+        "schema": null,
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
         "file": "apps/VCSM/src/features/settings/account/dal/account.write.dal.js",
         "rpc": "restore_vport",
         "schema": null,
@@ -15001,6 +14062,14 @@
       {
         "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCardLead.write.dal.js",
         "rpc": "submit_business_card_lead",
+        "schema": null,
+        "functionEvidence": [],
+        "securityDefiner": false,
+        "status": "DB_POLICY_UNVERIFIED"
+      },
+      {
+        "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+        "rpc": "submit_business_claim",
         "schema": null,
         "functionEvidence": [],
         "securityDefiner": false,

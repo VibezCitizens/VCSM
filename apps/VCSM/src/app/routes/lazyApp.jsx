@@ -6,6 +6,12 @@ const devDiagnosticsEnabled = import.meta.env.DEV;
 export const CentralFeed = lazyWithLog("CentralFeed", () =>
   import("@/features/CentralFeed/screens/CentralFeedScreen"),
 );
+// TICKET-TRAZE-CLAIM-VPORT-007 (T7): approved-claim owner onboarding.
+export const ClaimApprovedScreen = lazyWithLog("ClaimApprovedScreen", () =>
+  import("@/features/claimOnboarding/adapters/claimOnboarding.adapter").then((m) => ({
+    default: m.ClaimApprovedScreen,
+  })),
+);
 export const ExploreScreen = lazyWithLog("Explore", () =>
   import("@/features/explore/screens/ExploreScreen"),
 );

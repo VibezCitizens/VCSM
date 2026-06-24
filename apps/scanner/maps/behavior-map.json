@@ -1,16 +1,16 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "behaviorFeatureCount": 48,
-  "behaviorModuleCount": 160,
-  "behaviorCount": 1113,
+  "behaviorFeatureCount": 52,
+  "behaviorModuleCount": 164,
+  "behaviorCount": 1122,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:04.978Z",
+    "generatedAt": "2026-06-24T06:36:30.047Z",
     "appId": "VCSM",
     "features": [
       {
@@ -76,7 +76,7 @@
         "modules": [
           "authorization"
         ],
-        "behaviorCount": 2
+        "behaviorCount": 3
       },
       {
         "feature": "block",
@@ -97,7 +97,7 @@
           "resources",
           "services"
         ],
-        "behaviorCount": 50
+        "behaviorCount": 48
       },
       {
         "feature": "chat",
@@ -109,6 +109,20 @@
           "start"
         ],
         "behaviorCount": 58
+      },
+      {
+        "feature": "claim",
+        "modules": [
+          "claim"
+        ],
+        "behaviorCount": 4
+      },
+      {
+        "feature": "claimOnboarding",
+        "modules": [
+          "claimOnboarding"
+        ],
+        "behaviorCount": 2
       },
       {
         "feature": "dashboard",
@@ -213,6 +227,13 @@
         "behaviorCount": 16
       },
       {
+        "feature": "learning",
+        "modules": [
+          "learning"
+        ],
+        "behaviorCount": 0
+      },
+      {
         "feature": "legal",
         "modules": [
           "config",
@@ -309,7 +330,7 @@
           "social",
           "vport"
         ],
-        "behaviorCount": 182
+        "behaviorCount": 181
       },
       {
         "feature": "public",
@@ -399,6 +420,13 @@
         "behaviorCount": 14
       },
       {
+        "feature": "traze-claim-to-vport",
+        "modules": [
+          "traze-claim-to-vport"
+        ],
+        "behaviorCount": 0
+      },
+      {
         "feature": "ui",
         "modules": [
           "primitives",
@@ -443,7 +471,7 @@
           "dashboard",
           "vportDashboard"
         ],
-        "behaviorCount": 103
+        "behaviorCount": 108
       },
       {
         "feature": "wanderex",
@@ -801,8 +829,10 @@
         "evidence": [
           "feature-map source: apps/VCSM/src/features/authorization",
           "source adapter: apps/VCSM/src/features/authorization/adapters/authorization.adapter.js",
+          "source controller: apps/VCSM/src/features/authorization/controllers/__tests__/assertActorOwnsActor.controller.test.js",
           "source controller: apps/VCSM/src/features/authorization/controllers/assertActorOwnsActor.controller.js",
           "source controller: apps/VCSM/src/features/authorization/controllers/assertSessionOwnsActor.controller.js",
+          "source controller: apps/VCSM/src/features/authorization/controllers/readActorStatus.controller.js",
           "source dal: apps/VCSM/src/features/authorization/dal/actorOwners.read.dal.js",
           "source dal: apps/VCSM/src/features/authorization/dal/actors.read.dal.js",
           "source model: apps/VCSM/src/features/authorization/model/authorizationDecision.model.js"
@@ -860,11 +890,11 @@
           "governance document: ZZnotforproduction/APPS/VCSM/features/booking/README.md",
           "governance document: ZZnotforproduction/APPS/VCSM/features/booking/SECURITY.md",
           "source adapter: apps/VCSM/src/features/booking/adapters/booking.adapter.js",
-          "source controller: apps/VCSM/src/features/booking/controllers/__tests__/assertActorOwnsVportActor.controller.test.js",
-          "source controller: apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js",
-          "source controller: apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
           "source controller: apps/VCSM/src/features/booking/controllers/bookingServices.controller.js",
-          "source controller: apps/VCSM/src/features/booking/controllers/cancelBooking.controller.js"
+          "source controller: apps/VCSM/src/features/booking/controllers/cancelBooking.controller.js",
+          "source controller: apps/VCSM/src/features/booking/controllers/confirmBooking.controller.js",
+          "source controller: apps/VCSM/src/features/booking/controllers/createBooking.controller.js",
+          "source controller: apps/VCSM/src/features/booking/controllers/ensureOwnerBookingResource.controller.js"
         ]
       },
       {
@@ -1025,6 +1055,43 @@
           "governance document: ZZnotforproduction/APPS/VCSM/features/chat/modules/start/SECURITY.md",
           "source hook: apps/VCSM/src/features/chat/start/hooks/useStartConversation.js",
           "source screen: apps/VCSM/src/features/chat/start/screens/StartConversationModal.jsx"
+        ]
+      },
+      {
+        "feature": "claim",
+        "module": "claim",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "feature-map source: apps/VCSM/src/features/claim",
+          "source adapter: apps/VCSM/src/features/claim/adapters/claim.adapter.js",
+          "source component: apps/VCSM/src/features/claim/components/ClaimAuthPrompt.jsx",
+          "source component: apps/VCSM/src/features/claim/components/ClaimForm.jsx",
+          "source component: apps/VCSM/src/features/claim/components/ClaimLayout.jsx",
+          "source component: apps/VCSM/src/features/claim/components/ClaimMessageCard.jsx",
+          "source component: apps/VCSM/src/features/claim/components/ClaimProviderSummary.jsx",
+          "source component: apps/VCSM/src/features/claim/components/claimStyles.js",
+          "source controller: apps/VCSM/src/features/claim/controllers/resolveProvider.controller.js",
+          "source controller: apps/VCSM/src/features/claim/controllers/submitClaim.controller.js",
+          "source dal: apps/VCSM/src/features/claim/dal/providerLookup.read.dal.js",
+          "source dal: apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js"
+        ]
+      },
+      {
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "feature-map source: apps/VCSM/src/features/claimOnboarding",
+          "source adapter: apps/VCSM/src/features/claimOnboarding/adapters/claimOnboarding.adapter.js",
+          "source component: apps/VCSM/src/features/claimOnboarding/components/ClaimActivationChecklist.jsx",
+          "source component: apps/VCSM/src/features/claimOnboarding/components/ClaimApprovedWelcome.jsx",
+          "source component: apps/VCSM/src/features/claimOnboarding/components/ClaimOnboardingBanner.jsx",
+          "source controller: apps/VCSM/src/features/claimOnboarding/controllers/loadApprovedClaimVports.controller.js",
+          "source dal: apps/VCSM/src/features/claimOnboarding/dal/approvedClaimVports.read.dal.js",
+          "source hook: apps/VCSM/src/features/claimOnboarding/hooks/useClaimApprovalDiscovery.js",
+          "source model: apps/VCSM/src/features/claimOnboarding/model/claimOnboarding.model.js",
+          "source model: apps/VCSM/src/features/claimOnboarding/model/claimOnboardingRoute.js",
+          "source screen: apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx"
         ]
       },
       {
@@ -1363,6 +1430,7 @@
         "confidence": "MEDIUM",
         "evidence": [
           "feature-map source: apps/VCSM/src/features/flyerBuilder",
+          "governance document: ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
           "source adapter: apps/VCSM/src/features/flyerBuilder/adapters/flyerBuilder.adapter.js",
           "source component: apps/VCSM/src/features/flyerBuilder/components/FlyerBuilderShell.jsx",
           "source component: apps/VCSM/src/features/flyerBuilder/components/FlyerEditorPanel.jsx",
@@ -1372,8 +1440,7 @@
           "source component: apps/VCSM/src/features/flyerBuilder/components/printableQr/PrintableQrFlyerCard.jsx",
           "source component: apps/VCSM/src/features/flyerBuilder/components/printableQr/PrintableQrSheet.jsx",
           "source component: apps/VCSM/src/features/flyerBuilder/components/printableQr/printableQrSheet.base.styles.js",
-          "source component: apps/VCSM/src/features/flyerBuilder/components/printableQr/printableQrSheet.layout.styles.js",
-          "source component: apps/VCSM/src/features/flyerBuilder/components/printableQr/printableQrSheet.styles.js"
+          "source component: apps/VCSM/src/features/flyerBuilder/components/printableQr/printableQrSheet.layout.styles.js"
         ]
       },
       {
@@ -1496,6 +1563,14 @@
           "source adapter: apps/VCSM/src/features/join/adapters/join.adapter.js",
           "source controller: apps/VCSM/src/features/join/controllers/__tests__/joinBarbershopQr.controller.test.js",
           "source controller: apps/VCSM/src/features/join/controllers/joinBarbershopAccount.controller.js"
+        ]
+      },
+      {
+        "feature": "learning",
+        "module": "learning",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "governance document: ZZnotforproduction/APPS/VCSM/features/learning/SECURITY.md"
         ]
       },
       {
@@ -2060,6 +2135,7 @@
         "evidence": [
           "source controller: apps/VCSM/src/features/public/vportBusinessCard/controller/vportBusinessCard.controller.js",
           "source dal: apps/VCSM/src/features/public/vportBusinessCard/dal/businessCardSections.read.dal.js",
+          "source dal: apps/VCSM/src/features/public/vportBusinessCard/dal/publishLeadNotification.edge.dal.js",
           "source dal: apps/VCSM/src/features/public/vportBusinessCard/dal/sendLeadConfirmationEmail.edge.dal.js",
           "source dal: apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCard.read.dal.js",
           "source dal: apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCardLead.write.dal.js",
@@ -2068,8 +2144,7 @@
           "source hook: apps/VCSM/src/features/public/vportBusinessCard/hooks/useVportBusinessCardSections.js",
           "source module: apps/VCSM/src/features/public/vportBusinessCard/index.js",
           "source model: apps/VCSM/src/features/public/vportBusinessCard/model/vportBusinessCard.model.js",
-          "source screen: apps/VCSM/src/features/public/vportBusinessCard/screen/VportBusinessCardPublic.screen.jsx",
-          "source module: apps/VCSM/src/features/public/vportBusinessCard/view/BusinessCardLeadForm.jsx"
+          "source screen: apps/VCSM/src/features/public/vportBusinessCard/screen/VportBusinessCardPublic.screen.jsx"
         ]
       },
       {
@@ -2413,6 +2488,14 @@
         ]
       },
       {
+        "feature": "traze-claim-to-vport",
+        "module": "traze-claim-to-vport",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "governance document: ZZnotforproduction/APPS/VCSM/features/traze-claim-to-vport/ARCHITECTURE.md"
+        ]
+      },
+      {
         "feature": "ui",
         "module": "primitives",
         "confidence": "HIGH",
@@ -2461,7 +2544,6 @@
         "module": "vgrid",
         "confidence": "MEDIUM",
         "evidence": [
-          "feature-map source: apps/VCSM/src/features/vgrid",
           "governance document: ZZnotforproduction/APPS/VCSM/features/vgrid/ARCHITECTURE.md",
           "governance document: ZZnotforproduction/APPS/VCSM/features/vgrid/BEHAVIOR.md",
           "governance document: ZZnotforproduction/APPS/VCSM/features/vgrid/CURRENT_STATUS.md",
@@ -2547,12 +2629,12 @@
           "source module: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/__tests__/updateVportBooking.controller.test.js",
           "source module: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/__tests__/vportPublicBooking.controller.test.js",
           "source controller: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/createOwnerBooking.controller.js",
+          "source controller: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/loadTeamAvailabilityDay.controller.js",
           "source controller: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/updateVportBooking.controller.js",
           "source controller: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/vportPublicBooking.controller.js",
           "source dal: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/dal/insertVportBooking.write.dal.js",
-          "source hook: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useQuickBookingModal.js",
-          "source hook: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useVportBookingActions.js",
-          "source hook: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useVportBookingOps.js"
+          "source hook: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useCustomerSearch.js",
+          "source hook: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useQuickBookingModal.js"
         ]
       },
       {
@@ -2563,15 +2645,15 @@
           "feature-map source: apps/VCSM/src/features/vportDashboard",
           "source adapter: apps/VCSM/src/features/vportDashboard/adapters/vportDashboard.adapter.js",
           "source component: apps/VCSM/src/features/vportDashboard/components/bookingHistory/BookingCard.jsx",
+          "source component: apps/VCSM/src/features/vportDashboard/components/bookingHistory/ClientSearchField.jsx",
           "source component: apps/VCSM/src/features/vportDashboard/components/bookingHistory/OperationalBookingCard.jsx",
           "source component: apps/VCSM/src/features/vportDashboard/components/bookingHistory/QuickBookingModal.jsx",
+          "source component: apps/VCSM/src/features/vportDashboard/components/bookingHistory/TeamAvailabilityToday.jsx",
           "source component: apps/VCSM/src/features/vportDashboard/components/bookingHistory/TodayView.jsx",
           "source component: apps/VCSM/src/features/vportDashboard/components/calendar/DayBody.jsx",
           "source component: apps/VCSM/src/features/vportDashboard/components/calendar/DayHeader.jsx",
           "source component: apps/VCSM/src/features/vportDashboard/components/calendar/RangeToggle.jsx",
-          "source component: apps/VCSM/src/features/vportDashboard/components/calendar/ResourceDropdown.jsx",
-          "source component: apps/VCSM/src/features/vportDashboard/components/calendar/TimeBlock.jsx",
-          "source component: apps/VCSM/src/features/vportDashboard/components/calendar/TimeLabelsColumn.jsx"
+          "source component: apps/VCSM/src/features/vportDashboard/components/calendar/ResourceDropdown.jsx"
         ]
       },
       {
@@ -2662,7 +2744,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -2684,7 +2766,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -2802,7 +2884,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -2912,7 +2994,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 83
+          "tests": 98
         }
       },
       {
@@ -2934,7 +3016,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 83
+          "tests": 98
         }
       },
       {
@@ -4670,12 +4752,12 @@
           "routes": 0,
           "screens": 0,
           "hooks": 0,
-          "controllers": 2,
+          "controllers": 4,
           "dals": 2,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4692,12 +4774,34 @@
           "routes": 0,
           "screens": 0,
           "hooks": 0,
-          "controllers": 2,
+          "controllers": 4,
           "dals": 2,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
+        }
+      },
+      {
+        "behaviorId": "BEH-AUTHORIZATION-AUTHORIZATION-003",
+        "behaviorName": "Read Actor Status",
+        "module": "authorization",
+        "feature": "authorization",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration readActorStatusController: apps/VCSM/src/features/authorization/controllers/readActorStatus.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 0,
+          "hooks": 0,
+          "controllers": 4,
+          "dals": 2,
+          "rpcs": 0,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
         }
       },
       {
@@ -4719,7 +4823,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4741,7 +4845,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4763,7 +4867,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4787,7 +4891,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4809,7 +4913,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4833,7 +4937,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4855,7 +4959,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4877,7 +4981,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4901,7 +5005,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4925,7 +5029,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4947,7 +5051,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4969,7 +5073,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -4991,7 +5095,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -5015,7 +5119,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -5037,7 +5141,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -5061,7 +5165,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -5220,60 +5324,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
         "behaviorId": "BEH-BOOKING-BOOKING-002",
-        "behaviorName": "Assert Actor Owns Vport Actor",
-        "module": "booking",
-        "feature": "booking",
-        "confidence": "HIGH",
-        "evidence": [
-          "controller declaration assertActorOwnsVportActorController: apps/VCSM/src/features/booking/controllers/assertActorOwnsVportActor.controller.js"
-        ],
-        "sourceBehaviorIds": [],
-        "codeSurfaces": {
-          "routes": 0,
-          "screens": 0,
-          "hooks": 16,
-          "controllers": 16,
-          "dals": 23,
-          "rpcs": 0,
-          "edgeFunctions": 0,
-          "tables": 6,
-          "tests": 89
-        }
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-003",
-        "behaviorName": "Assert Session Owns Vport Actor",
-        "module": "booking",
-        "feature": "booking",
-        "confidence": "HIGH",
-        "evidence": [
-          "controller declaration assertSessionOwnsVportActorController: apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js"
-        ],
-        "sourceBehaviorIds": [],
-        "codeSurfaces": {
-          "routes": 0,
-          "screens": 0,
-          "hooks": 16,
-          "controllers": 16,
-          "dals": 23,
-          "rpcs": 0,
-          "edgeFunctions": 0,
-          "tables": 6,
-          "tests": 89
-        }
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-004",
         "behaviorName": "Booking Availability",
         "module": "booking",
         "feature": "booking",
@@ -5286,16 +5346,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-005",
+        "behaviorId": "BEH-BOOKING-BOOKING-003",
         "behaviorName": "Booking Context Resolver",
         "module": "booking",
         "feature": "booking",
@@ -5308,16 +5368,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-006",
+        "behaviorId": "BEH-BOOKING-BOOKING-004",
         "behaviorName": "Booking History",
         "module": "booking",
         "feature": "booking",
@@ -5330,16 +5390,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-007",
+        "behaviorId": "BEH-BOOKING-BOOKING-005",
         "behaviorName": "Booking Ops",
         "module": "booking",
         "feature": "booking",
@@ -5352,16 +5412,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-008",
+        "behaviorId": "BEH-BOOKING-BOOKING-006",
         "behaviorName": "Booking Service Profiles",
         "module": "booking",
         "feature": "booking",
@@ -5374,16 +5434,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-009",
+        "behaviorId": "BEH-BOOKING-BOOKING-007",
         "behaviorName": "Booking Services",
         "module": "booking",
         "feature": "booking",
@@ -5396,16 +5456,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-010",
+        "behaviorId": "BEH-BOOKING-BOOKING-008",
         "behaviorName": "Cancel Booking",
         "module": "booking",
         "feature": "booking",
@@ -5418,16 +5478,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-011",
+        "behaviorId": "BEH-BOOKING-BOOKING-009",
         "behaviorName": "Confirm Booking",
         "module": "booking",
         "feature": "booking",
@@ -5440,16 +5500,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-012",
+        "behaviorId": "BEH-BOOKING-BOOKING-010",
         "behaviorName": "Create Booking",
         "module": "booking",
         "feature": "booking",
@@ -5463,16 +5523,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-013",
+        "behaviorId": "BEH-BOOKING-BOOKING-011",
         "behaviorName": "Ensure Owner Booking Resource",
         "module": "booking",
         "feature": "booking",
@@ -5486,16 +5546,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-014",
+        "behaviorId": "BEH-BOOKING-BOOKING-012",
         "behaviorName": "Get Booking Service Profiles",
         "module": "booking",
         "feature": "booking",
@@ -5508,16 +5568,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-015",
+        "behaviorId": "BEH-BOOKING-BOOKING-013",
         "behaviorName": "Get Resource Availability",
         "module": "booking",
         "feature": "booking",
@@ -5530,16 +5590,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-016",
+        "behaviorId": "BEH-BOOKING-BOOKING-014",
         "behaviorName": "Insert Availability Exceptions",
         "module": "booking",
         "feature": "booking",
@@ -5552,16 +5612,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-017",
+        "behaviorId": "BEH-BOOKING-BOOKING-015",
         "behaviorName": "Insert Availability Rules",
         "module": "booking",
         "feature": "booking",
@@ -5574,16 +5634,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-018",
+        "behaviorId": "BEH-BOOKING-BOOKING-016",
         "behaviorName": "Insert Bookings",
         "module": "booking",
         "feature": "booking",
@@ -5596,16 +5656,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-019",
+        "behaviorId": "BEH-BOOKING-BOOKING-017",
         "behaviorName": "Insert Resources",
         "module": "booking",
         "feature": "booking",
@@ -5618,16 +5678,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-020",
+        "behaviorId": "BEH-BOOKING-BOOKING-018",
         "behaviorName": "Insert Service Booking Profiles",
         "module": "booking",
         "feature": "booking",
@@ -5640,16 +5700,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-021",
+        "behaviorId": "BEH-BOOKING-BOOKING-019",
         "behaviorName": "Invalidate Booking Availability",
         "module": "booking",
         "feature": "booking",
@@ -5662,16 +5722,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-022",
+        "behaviorId": "BEH-BOOKING-BOOKING-020",
         "behaviorName": "List Booking Service Profiles By Service Ids",
         "module": "booking",
         "feature": "booking",
@@ -5684,16 +5744,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-023",
+        "behaviorId": "BEH-BOOKING-BOOKING-021",
         "behaviorName": "List My Bookings",
         "module": "booking",
         "feature": "booking",
@@ -5706,16 +5766,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-024",
+        "behaviorId": "BEH-BOOKING-BOOKING-022",
         "behaviorName": "List Owner Booking Resources",
         "module": "booking",
         "feature": "booking",
@@ -5728,16 +5788,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-025",
+        "behaviorId": "BEH-BOOKING-BOOKING-023",
         "behaviorName": "Location Resources",
         "module": "booking",
         "feature": "booking",
@@ -5750,16 +5810,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-026",
+        "behaviorId": "BEH-BOOKING-BOOKING-024",
         "behaviorName": "Manage Availability",
         "module": "booking",
         "feature": "booking",
@@ -5772,16 +5832,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-027",
+        "behaviorId": "BEH-BOOKING-BOOKING-025",
         "behaviorName": "Normalize Duration Minutes",
         "module": "booking",
         "feature": "booking",
@@ -5794,16 +5854,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-028",
+        "behaviorId": "BEH-BOOKING-BOOKING-026",
         "behaviorName": "Normalize Ids",
         "module": "booking",
         "feature": "booking",
@@ -5816,16 +5876,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-029",
+        "behaviorId": "BEH-BOOKING-BOOKING-027",
         "behaviorName": "Normalize Service Ids",
         "module": "booking",
         "feature": "booking",
@@ -5838,16 +5898,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-030",
+        "behaviorId": "BEH-BOOKING-BOOKING-028",
         "behaviorName": "Organization Locations",
         "module": "booking",
         "feature": "booking",
@@ -5860,16 +5920,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-031",
+        "behaviorId": "BEH-BOOKING-BOOKING-029",
         "behaviorName": "Organization Workspace",
         "module": "booking",
         "feature": "booking",
@@ -5882,16 +5942,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-032",
+        "behaviorId": "BEH-BOOKING-BOOKING-030",
         "behaviorName": "Owner Booking Resources",
         "module": "booking",
         "feature": "booking",
@@ -5904,16 +5964,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-033",
+        "behaviorId": "BEH-BOOKING-BOOKING-031",
         "behaviorName": "Pick Primary Or First",
         "module": "booking",
         "feature": "booking",
@@ -5926,16 +5986,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-034",
+        "behaviorId": "BEH-BOOKING-BOOKING-032",
         "behaviorName": "Qr Links",
         "module": "booking",
         "feature": "booking",
@@ -5948,16 +6008,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-035",
+        "behaviorId": "BEH-BOOKING-BOOKING-033",
         "behaviorName": "Read Vport Services By Actor",
         "module": "booking",
         "feature": "booking",
@@ -5970,16 +6030,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-036",
+        "behaviorId": "BEH-BOOKING-BOOKING-034",
         "behaviorName": "Resolve Vport Profile Id",
         "module": "booking",
         "feature": "booking",
@@ -5992,16 +6052,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-037",
+        "behaviorId": "BEH-BOOKING-BOOKING-035",
         "behaviorName": "Resource Service Overrides",
         "module": "booking",
         "feature": "booking",
@@ -6014,16 +6074,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-038",
+        "behaviorId": "BEH-BOOKING-BOOKING-036",
         "behaviorName": "Set Availability Exception",
         "module": "booking",
         "feature": "booking",
@@ -6036,16 +6096,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-039",
+        "behaviorId": "BEH-BOOKING-BOOKING-037",
         "behaviorName": "Set Availability Rule",
         "module": "booking",
         "feature": "booking",
@@ -6058,16 +6118,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-040",
+        "behaviorId": "BEH-BOOKING-BOOKING-038",
         "behaviorName": "Set Resource Slot Duration",
         "module": "booking",
         "feature": "booking",
@@ -6080,16 +6140,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-041",
+        "behaviorId": "BEH-BOOKING-BOOKING-039",
         "behaviorName": "Update Availability Exceptions",
         "module": "booking",
         "feature": "booking",
@@ -6102,16 +6162,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-042",
+        "behaviorId": "BEH-BOOKING-BOOKING-040",
         "behaviorName": "Update Availability Rules",
         "module": "booking",
         "feature": "booking",
@@ -6124,16 +6184,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-043",
+        "behaviorId": "BEH-BOOKING-BOOKING-041",
         "behaviorName": "Update Bookings",
         "module": "booking",
         "feature": "booking",
@@ -6146,16 +6206,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-044",
+        "behaviorId": "BEH-BOOKING-BOOKING-042",
         "behaviorName": "Update Service Booking Profiles",
         "module": "booking",
         "feature": "booking",
@@ -6168,16 +6228,16 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-045",
+        "behaviorId": "BEH-BOOKING-BOOKING-043",
         "behaviorName": "Upsert Resource Services",
         "module": "booking",
         "feature": "booking",
@@ -6190,12 +6250,12 @@
           "routes": 0,
           "screens": 0,
           "hooks": 16,
-          "controllers": 16,
+          "controllers": 13,
           "dals": 23,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 6,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6305,7 +6365,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6327,7 +6387,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6349,7 +6409,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6371,7 +6431,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6393,7 +6453,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6416,7 +6476,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6438,7 +6498,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6460,7 +6520,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6482,7 +6542,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6504,7 +6564,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6526,7 +6586,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6548,7 +6608,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6570,7 +6630,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6592,7 +6652,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6614,7 +6674,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6636,7 +6696,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6658,7 +6718,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6681,7 +6741,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6704,7 +6764,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6726,7 +6786,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6748,7 +6808,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6770,7 +6830,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -6792,7 +6852,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -6814,7 +6874,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -8099,6 +8159,138 @@
         }
       },
       {
+        "behaviorId": "BEH-CLAIM-CLAIM-001",
+        "behaviorName": "Claim Profile",
+        "module": "claim",
+        "feature": "claim",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "hook declaration useClaimProfile: apps/VCSM/src/features/claim/hooks/useClaimProfile.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 1,
+          "hooks": 1,
+          "controllers": 2,
+          "dals": 2,
+          "rpcs": 1,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
+        }
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-002",
+        "behaviorName": "Resolve Provider",
+        "module": "claim",
+        "feature": "claim",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration resolveProviderController: apps/VCSM/src/features/claim/controllers/resolveProvider.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 1,
+          "hooks": 1,
+          "controllers": 2,
+          "dals": 2,
+          "rpcs": 1,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
+        }
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-003",
+        "behaviorName": "Rpc Submit Business Claim",
+        "module": "claim",
+        "feature": "claim",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "write surface rpc: apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 1,
+          "hooks": 1,
+          "controllers": 2,
+          "dals": 2,
+          "rpcs": 1,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
+        }
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-004",
+        "behaviorName": "Submit Claim",
+        "module": "claim",
+        "feature": "claim",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration submitClaimController: apps/VCSM/src/features/claim/controllers/submitClaim.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 1,
+          "hooks": 1,
+          "controllers": 2,
+          "dals": 2,
+          "rpcs": 1,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
+        }
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-001",
+        "behaviorName": "Claim Approval Discovery",
+        "module": "claimOnboarding",
+        "feature": "claimOnboarding",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "hook declaration useClaimApprovalDiscovery: apps/VCSM/src/features/claimOnboarding/hooks/useClaimApprovalDiscovery.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 1,
+          "hooks": 1,
+          "controllers": 1,
+          "dals": 1,
+          "rpcs": 0,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
+        }
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-002",
+        "behaviorName": "Load Approved Claim Vports",
+        "module": "claimOnboarding",
+        "feature": "claimOnboarding",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration loadApprovedClaimVports: apps/VCSM/src/features/claimOnboarding/controllers/loadApprovedClaimVports.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 1,
+          "hooks": 1,
+          "controllers": 1,
+          "dals": 1,
+          "rpcs": 0,
+          "edgeFunctions": 0,
+          "tables": 0,
+          "tests": 104
+        }
+      },
+      {
         "behaviorId": "BEH-DASHBOARD-BOOKINGS-001",
         "behaviorName": "DASH Bookings",
         "module": "bookings",
@@ -8242,7 +8434,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8266,7 +8458,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8290,7 +8482,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8314,7 +8506,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8338,7 +8530,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8362,7 +8554,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8386,7 +8578,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8410,7 +8602,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8434,7 +8626,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -8458,7 +8650,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9389,7 +9581,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9413,7 +9605,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9437,7 +9629,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9461,7 +9653,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9485,7 +9677,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9509,7 +9701,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9533,7 +9725,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9555,7 +9747,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9577,7 +9769,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9599,7 +9791,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9621,7 +9813,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9643,7 +9835,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9665,7 +9857,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9687,7 +9879,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9709,7 +9901,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9731,7 +9923,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9753,7 +9945,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9775,7 +9967,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9797,7 +9989,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -9863,7 +10055,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10677,7 +10869,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 85
+          "tests": 100
         }
       },
       {
@@ -10699,7 +10891,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 85
+          "tests": 100
         }
       },
       {
@@ -10721,7 +10913,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 85
+          "tests": 100
         }
       },
       {
@@ -10743,7 +10935,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 85
+          "tests": 100
         }
       },
       {
@@ -10787,7 +10979,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10809,7 +11001,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10833,7 +11025,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10857,7 +11049,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10879,7 +11071,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10901,7 +11093,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10923,7 +11115,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10947,7 +11139,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10971,7 +11163,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -10995,7 +11187,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11019,7 +11211,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11041,7 +11233,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11063,7 +11255,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11087,7 +11279,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11111,7 +11303,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11135,7 +11327,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11161,7 +11353,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11185,7 +11377,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11209,7 +11401,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11231,7 +11423,7 @@
           "rpcs": 2,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11349,7 +11541,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11371,7 +11563,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11393,7 +11585,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11415,7 +11607,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11437,7 +11629,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11459,7 +11651,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11481,7 +11673,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11503,7 +11695,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11525,7 +11717,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11547,7 +11739,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11569,7 +11761,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11591,7 +11783,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11613,7 +11805,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11635,7 +11827,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11657,7 +11849,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 3,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11679,7 +11871,7 @@
           "rpcs": 0,
           "edgeFunctions": 1,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11701,7 +11893,7 @@
           "rpcs": 0,
           "edgeFunctions": 1,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11723,7 +11915,7 @@
           "rpcs": 0,
           "edgeFunctions": 1,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11745,7 +11937,7 @@
           "rpcs": 0,
           "edgeFunctions": 1,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11767,7 +11959,7 @@
           "rpcs": 0,
           "edgeFunctions": 1,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11789,7 +11981,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11811,7 +12003,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11833,7 +12025,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11855,7 +12047,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11877,7 +12069,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11899,7 +12091,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11921,7 +12113,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11943,7 +12135,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11965,7 +12157,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -11987,7 +12179,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12009,7 +12201,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12031,7 +12223,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12053,7 +12245,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12075,7 +12267,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12097,7 +12289,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12119,7 +12311,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12477,7 +12669,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12499,7 +12691,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12521,7 +12713,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12543,7 +12735,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12565,7 +12757,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12587,7 +12779,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12609,7 +12801,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12631,7 +12823,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12653,7 +12845,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12675,7 +12867,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12697,7 +12889,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12719,7 +12911,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12741,7 +12933,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12763,7 +12955,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12785,7 +12977,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12807,7 +12999,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12829,7 +13021,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12851,7 +13043,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12873,7 +13065,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -12895,7 +13087,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13059,7 +13251,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13081,7 +13273,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13103,7 +13295,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13125,7 +13317,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13147,7 +13339,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13169,7 +13361,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13191,7 +13383,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13213,7 +13405,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13235,7 +13427,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13257,7 +13449,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13279,7 +13471,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13301,7 +13493,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13323,7 +13515,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13345,7 +13537,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13367,7 +13559,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13389,7 +13581,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13411,7 +13603,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13434,7 +13626,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13456,7 +13648,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13479,7 +13671,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13501,7 +13693,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13523,7 +13715,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13545,7 +13737,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13567,7 +13759,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13589,7 +13781,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13611,7 +13803,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13633,7 +13825,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13655,7 +13847,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13677,7 +13869,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13699,7 +13891,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13721,7 +13913,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13743,7 +13935,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13765,7 +13957,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -13787,7 +13979,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 7,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -14095,7 +14287,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -14117,7 +14309,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -14139,7 +14331,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -18387,28 +18579,6 @@
       },
       {
         "behaviorId": "BEH-PROFILES-KINDS-125",
-        "behaviorName": "Upsert Locksmith Service Areas",
-        "module": "kinds",
-        "feature": "profiles",
-        "confidence": "MEDIUM",
-        "evidence": [
-          "write surface upsert: apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js"
-        ],
-        "sourceBehaviorIds": [],
-        "codeSurfaces": {
-          "routes": 0,
-          "screens": 96,
-          "hooks": 51,
-          "controllers": 50,
-          "dals": 49,
-          "rpcs": 6,
-          "edgeFunctions": 0,
-          "tables": 11,
-          "tests": 15
-        }
-      },
-      {
-        "behaviorId": "BEH-PROFILES-KINDS-126",
         "behaviorName": "Upsert Locksmith Service Details",
         "module": "kinds",
         "feature": "profiles",
@@ -18430,7 +18600,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-127",
+        "behaviorId": "BEH-PROFILES-KINDS-126",
         "behaviorName": "Upsert Rates",
         "module": "kinds",
         "feature": "profiles",
@@ -18452,7 +18622,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-128",
+        "behaviorId": "BEH-PROFILES-KINDS-127",
         "behaviorName": "Upsert Services",
         "module": "kinds",
         "feature": "profiles",
@@ -18474,7 +18644,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-129",
+        "behaviorId": "BEH-PROFILES-KINDS-128",
         "behaviorName": "Upsert Vport Rate",
         "module": "kinds",
         "feature": "profiles",
@@ -18497,7 +18667,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-130",
+        "behaviorId": "BEH-PROFILES-KINDS-129",
         "behaviorName": "Upsert Vport Services",
         "module": "kinds",
         "feature": "profiles",
@@ -18520,7 +18690,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-131",
+        "behaviorId": "BEH-PROFILES-KINDS-130",
         "behaviorName": "Username Profile Redirect",
         "module": "kinds",
         "feature": "profiles",
@@ -18542,7 +18712,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-132",
+        "behaviorId": "BEH-PROFILES-KINDS-131",
         "behaviorName": "Vport Actor Id By Vport Id",
         "module": "kinds",
         "feature": "profiles",
@@ -18564,7 +18734,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-133",
+        "behaviorId": "BEH-PROFILES-KINDS-132",
         "behaviorName": "Vport Actor Menu",
         "module": "kinds",
         "feature": "profiles",
@@ -18586,7 +18756,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-134",
+        "behaviorId": "BEH-PROFILES-KINDS-133",
         "behaviorName": "Vport Actor Menu Categories Mutations",
         "module": "kinds",
         "feature": "profiles",
@@ -18608,7 +18778,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-135",
+        "behaviorId": "BEH-PROFILES-KINDS-134",
         "behaviorName": "Vport Actor Menu Items Mutations",
         "module": "kinds",
         "feature": "profiles",
@@ -18630,7 +18800,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-136",
+        "behaviorId": "BEH-PROFILES-KINDS-135",
         "behaviorName": "Vport Actor Menu Manage State",
         "module": "kinds",
         "feature": "profiles",
@@ -18652,7 +18822,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-137",
+        "behaviorId": "BEH-PROFILES-KINDS-136",
         "behaviorName": "Vport Booking Mutations",
         "module": "kinds",
         "feature": "profiles",
@@ -18674,7 +18844,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-138",
+        "behaviorId": "BEH-PROFILES-KINDS-137",
         "behaviorName": "Vport Booking View",
         "module": "kinds",
         "feature": "profiles",
@@ -18696,7 +18866,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-139",
+        "behaviorId": "BEH-PROFILES-KINDS-138",
         "behaviorName": "Vport Content Pages",
         "module": "kinds",
         "feature": "profiles",
@@ -18718,7 +18888,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-140",
+        "behaviorId": "BEH-PROFILES-KINDS-139",
         "behaviorName": "Vport Dashboard Details",
         "module": "kinds",
         "feature": "profiles",
@@ -18740,7 +18910,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-141",
+        "behaviorId": "BEH-PROFILES-KINDS-140",
         "behaviorName": "Vport Owner Quick Stats",
         "module": "kinds",
         "feature": "profiles",
@@ -18762,7 +18932,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-142",
+        "behaviorId": "BEH-PROFILES-KINDS-141",
         "behaviorName": "Vport Portfolio",
         "module": "kinds",
         "feature": "profiles",
@@ -18784,7 +18954,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-143",
+        "behaviorId": "BEH-PROFILES-KINDS-142",
         "behaviorName": "Vport Profile Actions",
         "module": "kinds",
         "feature": "profiles",
@@ -18806,7 +18976,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-144",
+        "behaviorId": "BEH-PROFILES-KINDS-143",
         "behaviorName": "Vport Profile By Slug",
         "module": "kinds",
         "feature": "profiles",
@@ -18828,7 +18998,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-145",
+        "behaviorId": "BEH-PROFILES-KINDS-144",
         "behaviorName": "Vport Profile Ops",
         "module": "kinds",
         "feature": "profiles",
@@ -18850,7 +19020,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-146",
+        "behaviorId": "BEH-PROFILES-KINDS-145",
         "behaviorName": "Vport Public Booking",
         "module": "kinds",
         "feature": "profiles",
@@ -18872,7 +19042,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-147",
+        "behaviorId": "BEH-PROFILES-KINDS-146",
         "behaviorName": "Vport Public Content",
         "module": "kinds",
         "feature": "profiles",
@@ -18894,7 +19064,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-148",
+        "behaviorId": "BEH-PROFILES-KINDS-147",
         "behaviorName": "Vport Public Content Page",
         "module": "kinds",
         "feature": "profiles",
@@ -18916,7 +19086,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-149",
+        "behaviorId": "BEH-PROFILES-KINDS-148",
         "behaviorName": "Vport Rates",
         "module": "kinds",
         "feature": "profiles",
@@ -18938,7 +19108,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-150",
+        "behaviorId": "BEH-PROFILES-KINDS-149",
         "behaviorName": "Vport Review Compose",
         "module": "kinds",
         "feature": "profiles",
@@ -18960,7 +19130,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-151",
+        "behaviorId": "BEH-PROFILES-KINDS-150",
         "behaviorName": "Vport Review List",
         "module": "kinds",
         "feature": "profiles",
@@ -18982,7 +19152,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-152",
+        "behaviorId": "BEH-PROFILES-KINDS-151",
         "behaviorName": "Vport Review Mine",
         "module": "kinds",
         "feature": "profiles",
@@ -19004,7 +19174,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-153",
+        "behaviorId": "BEH-PROFILES-KINDS-152",
         "behaviorName": "Vport Reviews",
         "module": "kinds",
         "feature": "profiles",
@@ -19026,7 +19196,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-154",
+        "behaviorId": "BEH-PROFILES-KINDS-153",
         "behaviorName": "Vport Services",
         "module": "kinds",
         "feature": "profiles",
@@ -19048,7 +19218,7 @@
         }
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-155",
+        "behaviorId": "BEH-PROFILES-KINDS-154",
         "behaviorName": "Vport Type",
         "module": "kinds",
         "feature": "profiles",
@@ -19110,7 +19280,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19132,7 +19302,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19154,7 +19324,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19176,7 +19346,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19198,7 +19368,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19220,7 +19390,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19242,7 +19412,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19264,7 +19434,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19286,7 +19456,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19308,7 +19478,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19330,7 +19500,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19352,7 +19522,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19374,7 +19544,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19396,7 +19566,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19418,7 +19588,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19440,7 +19610,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19462,7 +19632,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19484,7 +19654,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19506,7 +19676,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19528,7 +19698,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19550,7 +19720,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19572,7 +19742,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19594,7 +19764,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19616,7 +19786,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19639,7 +19809,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 74
+          "tests": 89
         }
       },
       {
@@ -19657,7 +19827,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19679,7 +19849,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19701,7 +19871,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19723,7 +19893,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19745,7 +19915,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19767,7 +19937,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19789,7 +19959,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19811,7 +19981,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19833,7 +20003,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19855,7 +20025,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19877,7 +20047,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19899,7 +20069,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -19921,7 +20091,7 @@
           "screens": 2,
           "hooks": 3,
           "controllers": 1,
-          "dals": 4,
+          "dals": 5,
           "rpcs": 3,
           "edgeFunctions": 1,
           "tables": 0,
@@ -20485,7 +20655,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -20515,7 +20685,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -20539,7 +20709,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -20565,7 +20735,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -20589,7 +20759,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -20613,7 +20783,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23504,7 +23674,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23528,7 +23698,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23552,7 +23722,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23576,7 +23746,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23600,7 +23770,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23624,7 +23794,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23648,7 +23818,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23672,7 +23842,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23694,7 +23864,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23716,7 +23886,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23738,7 +23908,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23760,7 +23930,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23782,7 +23952,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23804,7 +23974,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23826,7 +23996,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23848,7 +24018,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23870,7 +24040,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23892,7 +24062,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23914,7 +24084,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23936,7 +24106,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23958,7 +24128,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -23980,7 +24150,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -24002,7 +24172,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -24024,7 +24194,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -24046,7 +24216,7 @@
           "rpcs": 1,
           "edgeFunctions": 0,
           "tables": 4,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -24068,7 +24238,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24090,7 +24260,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24112,7 +24282,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24134,7 +24304,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24156,7 +24326,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24178,7 +24348,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24200,7 +24370,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24222,7 +24392,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24245,7 +24415,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24267,7 +24437,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24289,7 +24459,7 @@
           "rpcs": 4,
           "edgeFunctions": 0,
           "tables": 1,
-          "tests": 88
+          "tests": 103
         }
       },
       {
@@ -24305,13 +24475,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24327,13 +24497,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24349,13 +24519,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24372,35 +24542,35 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-005",
-        "behaviorName": "After Submit Suggestion",
+        "behaviorName": "Approve Fuel Price Batch",
         "module": "dashboard",
         "feature": "vportDashboard",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "evidence": [
-          "hook declaration useAfterSubmitSuggestion: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/hooks/useAfterSubmitSuggestion.js"
+          "controller declaration approveFuelPriceBatchController: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/reviewFuelPriceBatch.controller.js"
         ],
         "sourceBehaviorIds": [],
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24416,13 +24586,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24438,13 +24608,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24460,13 +24630,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -24482,17 +24652,39 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-010",
+        "behaviorName": "Count Contacted Vport Leads",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration countContactedVportLeadsController: apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-011",
         "behaviorName": "Count New Vport Leads",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24504,17 +24696,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-011",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-012",
         "behaviorName": "Create Owner Booking",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24526,17 +24718,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-012",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-013",
         "behaviorName": "Create Schedule Booking",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24548,17 +24740,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-013",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-014",
         "behaviorName": "Create Vport Public Booking",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24570,17 +24762,39 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-014",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-015",
+        "behaviorName": "Customer Search",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "hook declaration useCustomerSearch: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useCustomerSearch.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-016",
         "behaviorName": "Decline Team Request",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24592,17 +24806,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-015",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-017",
         "behaviorName": "Delete Business Card Leads",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24614,17 +24828,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-016",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-018",
         "behaviorName": "Delete Resources",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24637,17 +24851,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-017",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-019",
         "behaviorName": "Delete Vport Lead",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24659,17 +24873,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-018",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-020",
         "behaviorName": "Exchange Rate Editor",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24681,17 +24895,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-019",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-021",
         "behaviorName": "Fast Count New Vport Leads",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24703,17 +24917,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-020",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-022",
         "behaviorName": "Fetch Barbershop Invite",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24725,17 +24939,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-021",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-023",
         "behaviorName": "Find Eligible Barbers",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24747,17 +24961,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-022",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-024",
         "behaviorName": "Fuel Label",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24769,17 +24983,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-023",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-025",
         "behaviorName": "Gas Unit Toggle",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24791,17 +25005,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-024",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-026",
         "behaviorName": "Get Barber Team Requests",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24813,17 +25027,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-025",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-027",
         "behaviorName": "Get Team Access",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24835,17 +25049,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-026",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-028",
         "behaviorName": "Get Team Members",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24857,17 +25071,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-027",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-029",
         "behaviorName": "Get Vport Gas Prices",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24879,17 +25093,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-028",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-030",
         "behaviorName": "Get Vport Resource Availability",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24901,17 +25115,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-029",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-031",
         "behaviorName": "Insert Bookings",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24923,17 +25137,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-030",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-032",
         "behaviorName": "Insert Fuel Price History",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24945,39 +25159,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-031",
-        "behaviorName": "Insert Fuel Price Submission Reviews",
-        "module": "dashboard",
-        "feature": "vportDashboard",
-        "confidence": "MEDIUM",
-        "evidence": [
-          "write surface insert: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-        ],
-        "sourceBehaviorIds": [],
-        "codeSurfaces": {
-          "routes": 0,
-          "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
-          "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
-        }
-      },
-      {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-032",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-033",
         "behaviorName": "Insert Fuel Price Submissions",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -24989,17 +25181,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-033",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-034",
         "behaviorName": "Insert Resources",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25012,17 +25204,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-034",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-035",
         "behaviorName": "Is Active Owner",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25034,17 +25226,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-035",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-036",
         "behaviorName": "List Vport Booking Resources",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25056,17 +25248,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-036",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-037",
         "behaviorName": "List Vport Leads",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25078,17 +25270,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-037",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-038",
         "behaviorName": "Load Day Schedule",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25100,17 +25292,61 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-038",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-039",
+        "behaviorName": "Load Team Availability Day",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration loadTeamAvailabilityDayController: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/controller/loadTeamAvailabilityDay.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-040",
+        "behaviorName": "Local Date Key",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "hook declaration localDateKey: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useTeamAvailabilityToday.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-041",
         "behaviorName": "Locksmith Dashboard",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25122,17 +25358,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-039",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-042",
         "behaviorName": "Map Payload To Row",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25144,17 +25380,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-040",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-043",
         "behaviorName": "Mark Vport Lead Contacted",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25166,17 +25402,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-041",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-044",
         "behaviorName": "Normalize Row",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25188,39 +25424,39 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-042",
-        "behaviorName": "Owner Pending Suggestions",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-045",
+        "behaviorName": "Notify Fuel Price Submission Batch",
         "module": "dashboard",
         "feature": "vportDashboard",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "evidence": [
-          "hook declaration useOwnerPendingSuggestions: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/hooks/useOwnerPendingSuggestions.js"
+          "controller declaration notifyFuelPriceSubmissionBatchController: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/notifyFuelPriceSubmissionBatch.controller.js"
         ],
         "sourceBehaviorIds": [],
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-043",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-046",
         "behaviorName": "Portfolio Item Submit",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25232,17 +25468,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-044",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-047",
         "behaviorName": "Portfolio Media Upload",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25254,17 +25490,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-045",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-048",
         "behaviorName": "Probe Vport Portfolio",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25276,17 +25512,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-046",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-049",
         "behaviorName": "Publish Fuel Price Update As Post",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25298,17 +25534,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-047",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-050",
         "behaviorName": "Quick Booking Modal",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25320,17 +25556,39 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-048",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-051",
+        "behaviorName": "Reject Fuel Price Batch",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "HIGH",
+        "evidence": [
+          "controller declaration rejectFuelPriceBatchController: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/reviewFuelPriceBatch.controller.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-052",
         "behaviorName": "Remove Team Member",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25343,17 +25601,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-049",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-053",
         "behaviorName": "Reschedule Booking",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25365,17 +25623,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-050",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-054",
         "behaviorName": "Reschedule Schedule Booking",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25387,17 +25645,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-051",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-055",
         "behaviorName": "Resolve Profile Id",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25411,17 +25669,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-052",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-056",
         "behaviorName": "Resolve Vport Actor From Profile Id",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25433,39 +25691,39 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-053",
-        "behaviorName": "Review Fuel Price Suggestion",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-057",
+        "behaviorName": "Review Fuel Price Batch",
         "module": "dashboard",
         "feature": "vportDashboard",
-        "confidence": "HIGH",
+        "confidence": "MEDIUM",
         "evidence": [
-          "controller declaration reviewFuelPriceSuggestionController: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/controller/reviewFuelPriceSuggestion.controller.js"
+          "hook declaration useReviewFuelPriceBatch: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/hooks/useReviewFuelPriceBatch.js"
         ],
         "sourceBehaviorIds": [],
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-054",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-058",
         "behaviorName": "Role Of",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25477,17 +25735,61 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-055",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-059",
+        "behaviorName": "Rpc Approve Fuel Price Submission Batch",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "write surface rpc: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-060",
+        "behaviorName": "Rpc Reject Fuel Price Submission Batch",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "write surface rpc: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-061",
         "behaviorName": "Safe Arr",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25499,17 +25801,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-056",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-062",
         "behaviorName": "Safe Obj",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25521,17 +25823,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-057",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-063",
         "behaviorName": "Save Vport Public Details By Actor Id",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25544,17 +25846,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-058",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-064",
         "behaviorName": "Save Vport Settings",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25566,17 +25868,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-059",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-065",
         "behaviorName": "Search Team Candidates",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25588,17 +25890,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-060",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-066",
         "behaviorName": "Send Team Request",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25610,17 +25912,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-061",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-067",
         "behaviorName": "Set Team Member Status",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25632,17 +25934,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-062",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-068",
         "behaviorName": "Settings Save Coordinator",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25654,17 +25956,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-063",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-069",
         "behaviorName": "Shift Date Key",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25676,17 +25978,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-064",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-070",
         "behaviorName": "Show Toast",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25698,17 +26000,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-065",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-071",
         "behaviorName": "Submit Bulk Fuel Prices",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25720,17 +26022,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-066",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-072",
         "behaviorName": "Submit Citizen Fuel Price Suggestion",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25742,17 +26044,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-067",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-073",
         "behaviorName": "Submit Fuel Price Suggestion",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25765,17 +26067,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-068",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-074",
         "behaviorName": "Submit Owner Fuel Price Update",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25787,17 +26089,39 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-069",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-075",
+        "behaviorName": "Team Availability Today",
+        "module": "dashboard",
+        "feature": "vportDashboard",
+        "confidence": "MEDIUM",
+        "evidence": [
+          "hook declaration useTeamAvailabilityToday: apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/hooks/useTeamAvailabilityToday.js"
+        ],
+        "sourceBehaviorIds": [],
+        "codeSurfaces": {
+          "routes": 0,
+          "screens": 18,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
+          "edgeFunctions": 0,
+          "tables": 8,
+          "tests": 28
+        }
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-076",
         "behaviorName": "To Team Candidate Row",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25809,17 +26133,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-070",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-077",
         "behaviorName": "Today Key",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25831,17 +26155,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-071",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-078",
         "behaviorName": "Update Booking Status",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25853,17 +26177,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-072",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-079",
         "behaviorName": "Update Business Card Leads",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25875,61 +26199,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-073",
-        "behaviorName": "Update Fuel Price Submission Reviews",
-        "module": "dashboard",
-        "feature": "vportDashboard",
-        "confidence": "MEDIUM",
-        "evidence": [
-          "write surface update: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-        ],
-        "sourceBehaviorIds": [],
-        "codeSurfaces": {
-          "routes": 0,
-          "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
-          "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
-        }
-      },
-      {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-074",
-        "behaviorName": "Update Fuel Price Submissions",
-        "module": "dashboard",
-        "feature": "vportDashboard",
-        "confidence": "MEDIUM",
-        "evidence": [
-          "write surface update: apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-        ],
-        "sourceBehaviorIds": [],
-        "codeSurfaces": {
-          "routes": 0,
-          "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
-          "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
-        }
-      },
-      {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-075",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-080",
         "behaviorName": "Update Fuel Prices",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25941,17 +26221,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-076",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-081",
         "behaviorName": "Update Portfolio Media",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25963,17 +26243,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-077",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-082",
         "behaviorName": "Update Resources",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -25986,17 +26266,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-078",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-083",
         "behaviorName": "Update Schedule Booking Status",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26008,17 +26288,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-079",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-084",
         "behaviorName": "Update Station Fuel Unit",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26031,17 +26311,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-080",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-085",
         "behaviorName": "Update Team Member Role",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26053,17 +26333,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-081",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-086",
         "behaviorName": "Upsert Fuel Prices",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26075,17 +26355,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-082",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-087",
         "behaviorName": "Upsert Profile Public Details",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26097,17 +26377,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-083",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-088",
         "behaviorName": "Vport Booking Actions",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26119,17 +26399,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-084",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-089",
         "behaviorName": "Vport Booking Ops",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26141,17 +26421,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-085",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-090",
         "behaviorName": "Vport Gas Prices",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26163,17 +26443,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-086",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-091",
         "behaviorName": "Vport Leads",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26185,17 +26465,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-087",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-092",
         "behaviorName": "Vport Owner Schedule",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26207,17 +26487,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-088",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-093",
         "behaviorName": "Vport Portfolio Probe",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26229,17 +26509,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-089",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-094",
         "behaviorName": "Vport Reviews",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26251,17 +26531,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-090",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-095",
         "behaviorName": "Vport Services",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26273,17 +26553,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-091",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-096",
         "behaviorName": "Vport Team",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26295,17 +26575,17 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
-        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-092",
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-097",
         "behaviorName": "Vport Team Access",
         "module": "dashboard",
         "feature": "vportDashboard",
@@ -26317,13 +26597,13 @@
         "codeSurfaces": {
           "routes": 0,
           "screens": 18,
-          "hooks": 25,
-          "controllers": 20,
-          "dals": 20,
-          "rpcs": 0,
+          "hooks": 26,
+          "controllers": 22,
+          "dals": 24,
+          "rpcs": 2,
           "edgeFunctions": 0,
-          "tables": 9,
-          "tests": 20
+          "tables": 8,
+          "tests": 28
         }
       },
       {
@@ -26341,11 +26621,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26363,11 +26643,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26385,11 +26665,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26407,11 +26687,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26429,11 +26709,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26451,11 +26731,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26473,11 +26753,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26495,11 +26775,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26517,11 +26797,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26539,11 +26819,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26561,11 +26841,11 @@
           "screens": 4,
           "hooks": 2,
           "controllers": 3,
-          "dals": 13,
+          "dals": 14,
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 2,
-          "tests": 69
+          "tests": 76
         }
       },
       {
@@ -26587,7 +26867,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26609,7 +26889,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26631,7 +26911,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26653,7 +26933,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26675,7 +26955,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26697,7 +26977,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26719,7 +26999,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26741,7 +27021,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26763,7 +27043,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26785,7 +27065,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26807,7 +27087,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26829,7 +27109,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -26851,7 +27131,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -28027,7 +28307,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -28049,7 +28329,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -28071,7 +28351,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       },
       {
@@ -28093,7 +28373,7 @@
           "rpcs": 0,
           "edgeFunctions": 0,
           "tables": 0,
-          "tests": 89
+          "tests": 104
         }
       }
     ]

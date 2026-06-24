@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/controller/menu/deleteVportActorMenuItem.controller.js
 
 import deleteVportActorMenuItemDAL from "@/features/profiles/kinds/vport/dal/menu/deleteVportActorMenuItem.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 export async function deleteVportActorMenuItemController({
   callerActorId,
@@ -20,7 +20,7 @@ export async function deleteVportActorMenuItemController({
     throw new Error("deleteVportActorMenuItemController: actorId required");
   }
 
-  await assertSessionOwnsVportActorController({ targetActorId: actorId });
+  await assertSessionOwnsActorController({ targetActorId: actorId });
 
   // DAL throws on error — no { error } destructuring
   await deleteVportActorMenuItemDAL({ itemId });

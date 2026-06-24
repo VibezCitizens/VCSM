@@ -6,7 +6,7 @@ import {
   dalHardDeleteVport,
   dalRestoreVport,
 } from '@/features/settings/account/dal/account.write.dal'
-import { assertActorOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
+import { assertActorOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 
 export async function ctrlResolveVportIdByActorId(actorId) {
   return dalReadVportIdByActorId(actorId)
@@ -27,7 +27,7 @@ export async function ctrlHardDeleteVport({ vportId, callerActorId }) {
   const vportActorId = await dalReadActorIdByVportId(vportId)
   if (!vportActorId) throw new Error('ctrlHardDeleteVport: vport actor not found')
 
-  await assertActorOwnsVportActorController({ requestActorId: callerActorId, targetActorId: vportActorId })
+  await assertActorOwnsActorController({ requestActorId: callerActorId, targetActorId: vportActorId })
   await dalHardDeleteVport(vportId)
 }
 

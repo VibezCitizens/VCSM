@@ -1,22 +1,22 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "trafficFeatureCount": 7,
-  "trafficRouteCount": 51,
+  "trafficFeatureCount": 9,
+  "trafficRouteCount": 59,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.725Z",
+    "generatedAt": "2026-06-24T06:36:28.652Z",
     "app": {
       "appId": "Traffic",
       "root": "apps/Traffic",
       "packageJson": true,
       "packageName": "vcsm-traffic",
       "sourceRoot": "apps/Traffic/src",
-      "sourceFileCount": 224,
+      "sourceFileCount": 251,
       "routeSystem": "next-app-router",
       "aliases": {
         "jsconfig": {
@@ -80,23 +80,21 @@
           }
         ]
       },
-      "features": 7,
-      "components": 63,
-      "hooks": 4,
+      "features": 9,
+      "components": 70,
+      "hooks": 6,
       "controllers": 5,
-      "dals": 17,
+      "dals": 19,
       "models": 12,
-      "adapters": 7,
-      "tests": 10,
-      "routes": 51,
-      "writes": 6,
-      "rpcs": 1,
-      "edgeFunctions": 3,
-      "dependencies": 47,
+      "adapters": 8,
+      "tests": 11,
+      "routes": 59,
+      "writes": 8,
+      "rpcs": 7,
+      "edgeFunctions": 2,
+      "dependencies": 55,
       "engineUsage": [],
-      "unresolvedAliases": [
-        "@/features/answers/controller/readAnswerPage.controller"
-      ],
+      "unresolvedAliases": [],
       "confidence": "HIGH",
       "evidence": [
         "Traffic source root scanned directly"

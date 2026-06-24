@@ -1,6 +1,17 @@
 import { buildCanonical } from "@/seo/canonical";
 import { buildLocalizedAlternates, routeLocaleToOpenGraphLocale } from "@/seo/locale";
 
+// Default TRAZE social-share image (1200x630, public/og-default.png). Emitted on
+// every page unless a caller passes its own openGraphImages, so og:image /
+// twitter:image are always present and resolve to an absolute URL
+// (TICKET-TRAZE-SEO-REMEDIATION-001 — H5).
+const DEFAULT_SOCIAL_IMAGE = {
+  url: buildCanonical("/og-default.png"),
+  width: 1200,
+  height: 630,
+  alt: "TRAZE — Find local service providers"
+};
+
 function normalizeLanguageAlternates(languageAlternates) {
   if (!languageAlternates) {
     return undefined;
@@ -30,6 +41,7 @@ function baseMetadata(args) {
   const title = args.title || "TRAZE";
   const description =
     args.description || "Discover providers, guides, directories, and reviews on TRAZE.";
+  const socialImages = args.openGraphImages ?? [DEFAULT_SOCIAL_IMAGE];
 
   return {
     title,
@@ -46,12 +58,14 @@ function baseMetadata(args) {
       type: openGraphType,
       locale: args.openGraphLocale ?? routeLocaleToOpenGraphLocale(args.routeLocale, args.locale ?? "en_US"),
       siteName: args.siteName ?? "TRAZE",
+      images: socialImages,
       ...openGraphExtras
     },
     twitter: {
       card: twitterCard,
       title,
-      description
+      description,
+      images: socialImages.map((image) => image.url)
     }
   };
 }

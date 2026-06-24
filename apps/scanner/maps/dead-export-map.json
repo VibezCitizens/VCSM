@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "deadExportCount": 1464,
+  "deadExportCount": 1490,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.522Z",
+    "generatedAt": "2026-06-24T06:36:28.153Z",
     "deadExports": [
       {
         "symbol": "CountryCityLocalityServiceSpecialtyPage",
@@ -417,34 +417,6 @@
         ]
       },
       {
-        "symbol": "generateStaticParams",
-        "id": "module:apps/Traffic/src/app/answers/[slug]/page.jsx#generateStaticParams",
-        "file": "apps/Traffic/src/app/answers/[slug]/page.jsx",
-        "layer": "module",
-        "owner": "Traffic:app",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
-        "symbol": "AnswersModerationPage",
-        "id": "module:apps/Traffic/src/app/answers/moderation/page.jsx#AnswersModerationPage",
-        "file": "apps/Traffic/src/app/answers/moderation/page.jsx",
-        "layer": "module",
-        "owner": "Traffic:app",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
         "symbol": "AnswersPage",
         "id": "module:apps/Traffic/src/app/answers/page.jsx#AnswersPage",
         "file": "apps/Traffic/src/app/answers/page.jsx",
@@ -459,51 +431,23 @@
         ]
       },
       {
-        "symbol": "POST",
-        "id": "module:apps/Traffic/src/app/api/answers/moderation/answers/route.js#POST",
-        "file": "apps/Traffic/src/app/api/answers/moderation/answers/route.js",
-        "layer": "module",
-        "owner": "Traffic:app",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
-        "symbol": "POST",
-        "id": "module:apps/Traffic/src/app/api/answers/moderation/questions/route.js#POST",
-        "file": "apps/Traffic/src/app/api/answers/moderation/questions/route.js",
-        "layer": "module",
-        "owner": "Traffic:app",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
-        "symbol": "POST",
-        "id": "module:apps/Traffic/src/app/api/answers/questions/route.js#POST",
-        "file": "apps/Traffic/src/app/api/answers/questions/route.js",
-        "layer": "module",
-        "owner": "Traffic:app",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
         "symbol": "CategoriesPage",
         "id": "module:apps/Traffic/src/app/categories/page.jsx#CategoriesPage",
         "file": "apps/Traffic/src/app/categories/page.jsx",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "ContactPage",
+        "id": "module:apps/Traffic/src/app/contact/page.jsx#ContactPage",
+        "file": "apps/Traffic/src/app/contact/page.jsx",
         "layer": "module",
         "owner": "Traffic:app",
         "consumerCount": 0,
@@ -851,9 +795,51 @@
         ]
       },
       {
+        "symbol": "ContactPageEs",
+        "id": "module:apps/Traffic/src/app/es/contact/page.jsx#ContactPageEs",
+        "file": "apps/Traffic/src/app/es/contact/page.jsx",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "PrivacyPageEs",
+        "id": "module:apps/Traffic/src/app/es/privacy/page.jsx#PrivacyPageEs",
+        "file": "apps/Traffic/src/app/es/privacy/page.jsx",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
         "symbol": "generateMetadata",
         "id": "module:apps/Traffic/src/app/es/pro/[providerSlug]/page.jsx#generateMetadata",
         "file": "apps/Traffic/src/app/es/pro/[providerSlug]/page.jsx",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "TermsPageEs",
+        "id": "module:apps/Traffic/src/app/es/terms/page.jsx#TermsPageEs",
+        "file": "apps/Traffic/src/app/es/terms/page.jsx",
         "layer": "module",
         "owner": "Traffic:app",
         "consumerCount": 0,
@@ -893,9 +879,37 @@
         ]
       },
       {
+        "symbol": "PrivacyPage",
+        "id": "module:apps/Traffic/src/app/privacy/page.jsx#PrivacyPage",
+        "file": "apps/Traffic/src/app/privacy/page.jsx",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
         "symbol": "robots",
         "id": "module:apps/Traffic/src/app/robots.js#robots",
         "file": "apps/Traffic/src/app/robots.js",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "SearchPage",
+        "id": "module:apps/Traffic/src/app/search/page.jsx#SearchPage",
+        "file": "apps/Traffic/src/app/search/page.jsx",
         "layer": "module",
         "owner": "Traffic:app",
         "consumerCount": 0,
@@ -952,6 +966,20 @@
         "symbol": "GET",
         "id": "module:apps/Traffic/src/app/sitemaps/[chunk]/route.js#GET",
         "file": "apps/Traffic/src/app/sitemaps/[chunk]/route.js",
+        "layer": "module",
+        "owner": "Traffic:app",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "TermsPage",
+        "id": "module:apps/Traffic/src/app/terms/page.jsx#TermsPage",
+        "file": "apps/Traffic/src/app/terms/page.jsx",
         "layer": "module",
         "owner": "Traffic:app",
         "consumerCount": 0,
@@ -1384,8 +1412,8 @@
       },
       {
         "symbol": "handleSubmit",
-        "id": "component:apps/Traffic/src/features/answers/components/AskQuestionForm.jsx#handleSubmit",
-        "file": "apps/Traffic/src/features/answers/components/AskQuestionForm.jsx",
+        "id": "component:apps/Traffic/src/features/answers/components/AnswerSubmitForm.jsx#handleSubmit",
+        "file": "apps/Traffic/src/features/answers/components/AnswerSubmitForm.jsx",
         "layer": "component",
         "owner": "Traffic:answers",
         "consumerCount": 0,
@@ -1397,13 +1425,13 @@
         ]
       },
       {
-        "symbol": "listAnswerPageCandidates",
-        "id": "controller:apps/Traffic/src/features/answers/controllers/readAnswerPage.controller.js#listAnswerPageCandidates",
-        "file": "apps/Traffic/src/features/answers/controllers/readAnswerPage.controller.js",
-        "layer": "controller",
+        "symbol": "handleSubmit",
+        "id": "component:apps/Traffic/src/features/answers/components/AskQuestionForm.jsx#handleSubmit",
+        "file": "apps/Traffic/src/features/answers/components/AskQuestionForm.jsx",
+        "layer": "component",
         "owner": "Traffic:answers",
         "consumerCount": 0,
-        "isBarrelTarget": true,
+        "isBarrelTarget": false,
         "status": "UNUSED_EXPORT",
         "confidence": "HIGH",
         "evidence": [
@@ -1496,6 +1524,34 @@
       },
       {
         "symbol": "reset",
+        "id": "hook:apps/Traffic/src/features/answers/hooks/useSubmitAnswer.js#reset",
+        "file": "apps/Traffic/src/features/answers/hooks/useSubmitAnswer.js",
+        "layer": "hook",
+        "owner": "Traffic:answers",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "submitAnswer",
+        "id": "hook:apps/Traffic/src/features/answers/hooks/useSubmitAnswer.js#submitAnswer",
+        "file": "apps/Traffic/src/features/answers/hooks/useSubmitAnswer.js",
+        "layer": "hook",
+        "owner": "Traffic:answers",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "reset",
         "id": "hook:apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js#reset",
         "file": "apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js",
         "layer": "hook",
@@ -1570,6 +1626,20 @@
         "file": "apps/Traffic/src/features/categories/components/CategoriesDiscoveryClient.jsx",
         "layer": "component",
         "owner": "Traffic:categories",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "ProviderAccountPromptCard",
+        "id": "component:apps/Traffic/src/features/conversion/components/ProviderAccountPromptCard.jsx#ProviderAccountPromptCard",
+        "file": "apps/Traffic/src/features/conversion/components/ProviderAccountPromptCard.jsx",
+        "layer": "component",
+        "owner": "Traffic:conversion",
         "consumerCount": 0,
         "isBarrelTarget": false,
         "status": "UNUSED_EXPORT",
@@ -1775,9 +1845,9 @@
         ]
       },
       {
-        "symbol": "HomepageTrendingSection",
-        "id": "component:apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx#HomepageTrendingSection",
-        "file": "apps/Traffic/src/features/home/components/HomepageTrendingSection.jsx",
+        "symbol": "HomepageTrustStrip",
+        "id": "component:apps/Traffic/src/features/home/components/HomepageTrustStrip.jsx#HomepageTrustStrip",
+        "file": "apps/Traffic/src/features/home/components/HomepageTrustStrip.jsx",
         "layer": "component",
         "owner": "Traffic:home",
         "consumerCount": 0,
@@ -1789,11 +1859,25 @@
         ]
       },
       {
-        "symbol": "HomepageTrustStrip",
-        "id": "component:apps/Traffic/src/features/home/components/HomepageTrustStrip.jsx#HomepageTrustStrip",
-        "file": "apps/Traffic/src/features/home/components/HomepageTrustStrip.jsx",
-        "layer": "component",
-        "owner": "Traffic:home",
+        "symbol": "ContactScreen",
+        "id": "screen:apps/Traffic/src/features/legal/screens/ContactScreen.jsx#ContactScreen",
+        "file": "apps/Traffic/src/features/legal/screens/ContactScreen.jsx",
+        "layer": "screen",
+        "owner": "Traffic:legal",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "PrivacyScreen",
+        "id": "screen:apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx#PrivacyScreen",
+        "file": "apps/Traffic/src/features/legal/screens/PrivacyScreen.jsx",
+        "layer": "screen",
+        "owner": "Traffic:legal",
         "consumerCount": 0,
         "isBarrelTarget": false,
         "status": "UNUSED_EXPORT",
@@ -1836,6 +1920,76 @@
         "file": "apps/Traffic/src/features/providers/components/TopProvidersDiscoveryClient.jsx",
         "layer": "component",
         "owner": "Traffic:providers",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "clearCity",
+        "id": "component:apps/Traffic/src/features/search/components/SearchClient.jsx#clearCity",
+        "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+        "layer": "component",
+        "owner": "Traffic:search",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "handleCityChange",
+        "id": "component:apps/Traffic/src/features/search/components/SearchClient.jsx#handleCityChange",
+        "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+        "layer": "component",
+        "owner": "Traffic:search",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "handleCountryChange",
+        "id": "component:apps/Traffic/src/features/search/components/SearchClient.jsx#handleCountryChange",
+        "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+        "layer": "component",
+        "owner": "Traffic:search",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "handleLoadMore",
+        "id": "component:apps/Traffic/src/features/search/components/SearchClient.jsx#handleLoadMore",
+        "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+        "layer": "component",
+        "owner": "Traffic:search",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "handleSubmit",
+        "id": "component:apps/Traffic/src/features/search/components/SearchClient.jsx#handleSubmit",
+        "file": "apps/Traffic/src/features/search/components/SearchClient.jsx",
+        "layer": "component",
+        "owner": "Traffic:search",
         "consumerCount": 0,
         "isBarrelTarget": false,
         "status": "UNUSED_EXPORT",
@@ -1971,20 +2125,6 @@
         ]
       },
       {
-        "symbol": "buildContentMetadata",
-        "id": "module:apps/Traffic/src/seo/metadata.js#buildContentMetadata",
-        "file": "apps/Traffic/src/seo/metadata.js",
-        "layer": "module",
-        "owner": "Traffic:seo",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
         "symbol": "hasMeaningfulDirectoryMetadata",
         "id": "module:apps/Traffic/src/seo/qualityGuards.js#hasMeaningfulDirectoryMetadata",
         "file": "apps/Traffic/src/seo/qualityGuards.js",
@@ -2016,6 +2156,34 @@
         "symbol": "TrazeEmptyState",
         "id": "component:apps/Traffic/src/shared/components/TrazeEmptyState.jsx#TrazeEmptyState",
         "file": "apps/Traffic/src/shared/components/TrazeEmptyState.jsx",
+        "layer": "component",
+        "owner": "Traffic:shared",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "backToCountries",
+        "id": "component:apps/Traffic/src/shared/components/TrazeGeoCoverageFallback.jsx#backToCountries",
+        "file": "apps/Traffic/src/shared/components/TrazeGeoCoverageFallback.jsx",
+        "layer": "component",
+        "owner": "Traffic:shared",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "backToStates",
+        "id": "component:apps/Traffic/src/shared/components/TrazeGeoCoverageFallback.jsx#backToStates",
+        "file": "apps/Traffic/src/shared/components/TrazeGeoCoverageFallback.jsx",
         "layer": "component",
         "owner": "Traffic:shared",
         "consumerCount": 0,
@@ -3487,6 +3655,20 @@
         "id": "hook:apps/VCSM/src/debuggers-stub/identity/useActorConsistencyCheck.js#useActorConsistencyCheck",
         "file": "apps/VCSM/src/debuggers-stub/identity/useActorConsistencyCheck.js",
         "layer": "hook",
+        "owner": "VCSM:debuggers-stub",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "LeadNotificationDebugPanel",
+        "id": "module:apps/VCSM/src/debuggers-stub/lead-notification/index.js#LeadNotificationDebugPanel",
+        "file": "apps/VCSM/src/debuggers-stub/lead-notification/index.js",
+        "layer": "module",
         "owner": "VCSM:debuggers-stub",
         "consumerCount": 0,
         "isBarrelTarget": false,
@@ -5611,20 +5793,6 @@
         ]
       },
       {
-        "symbol": "assertSessionOwnsVportActorController",
-        "id": "controller:apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js#assertSessionOwnsVportActorController",
-        "file": "apps/VCSM/src/features/booking/controllers/assertSessionOwnsVportActor.controller.js",
-        "layer": "controller",
-        "owner": "VCSM:booking",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
         "symbol": "listBookingServiceProfilesByServiceIds",
         "id": "controller:apps/VCSM/src/features/booking/controllers/bookingServices.controller.js#listBookingServiceProfilesByServiceIds",
         "file": "apps/VCSM/src/features/booking/controllers/bookingServices.controller.js",
@@ -6731,6 +6899,90 @@
         ]
       },
       {
+        "symbol": "ClaimProfileScreen",
+        "id": "screen:apps/VCSM/src/features/claim/screens/ClaimProfileScreen.jsx#ClaimProfileScreen",
+        "file": "apps/VCSM/src/features/claim/screens/ClaimProfileScreen.jsx",
+        "layer": "screen",
+        "owner": "VCSM:claim",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "ClaimOnboardingBanner",
+        "id": "component:apps/VCSM/src/features/claimOnboarding/components/ClaimOnboardingBanner.jsx#ClaimOnboardingBanner",
+        "file": "apps/VCSM/src/features/claimOnboarding/components/ClaimOnboardingBanner.jsx",
+        "layer": "component",
+        "owner": "VCSM:claimOnboarding",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "loadApprovedClaimVports",
+        "id": "controller:apps/VCSM/src/features/claimOnboarding/controllers/loadApprovedClaimVports.controller.js#loadApprovedClaimVports",
+        "file": "apps/VCSM/src/features/claimOnboarding/controllers/loadApprovedClaimVports.controller.js",
+        "layer": "controller",
+        "owner": "VCSM:claimOnboarding",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "ClaimApprovedScreen",
+        "id": "screen:apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx#ClaimApprovedScreen",
+        "file": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+        "layer": "screen",
+        "owner": "VCSM:claimOnboarding",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "dismiss",
+        "id": "screen:apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx#dismiss",
+        "file": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+        "layer": "screen",
+        "owner": "VCSM:claimOnboarding",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "goToDashboard",
+        "id": "screen:apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx#goToDashboard",
+        "file": "apps/VCSM/src/features/claimOnboarding/screens/ClaimApprovedScreen.jsx",
+        "layer": "screen",
+        "owner": "VCSM:claimOnboarding",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
         "symbol": "LoginDebugPanel",
         "id": "component:apps/VCSM/src/features/debug/components/LoginDebugPanel.jsx#LoginDebugPanel",
         "file": "apps/VCSM/src/features/debug/components/LoginDebugPanel.jsx",
@@ -7268,34 +7520,6 @@
         "file": "apps/VCSM/src/features/initiation/screens/OnboardingCardsView.jsx",
         "layer": "screen",
         "owner": "VCSM:initiation",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
-        "symbol": "codeToInviteMessage",
-        "id": "controller:apps/VCSM/src/features/invite/controllers/invite.controller.js#codeToInviteMessage",
-        "file": "apps/VCSM/src/features/invite/controllers/invite.controller.js",
-        "layer": "controller",
-        "owner": "VCSM:invite",
-        "consumerCount": 0,
-        "isBarrelTarget": false,
-        "status": "UNUSED_EXPORT",
-        "confidence": "HIGH",
-        "evidence": [
-          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
-        ]
-      },
-      {
-        "symbol": "ctrlSendCitizenInvite",
-        "id": "controller:apps/VCSM/src/features/invite/controllers/invite.controller.js#ctrlSendCitizenInvite",
-        "file": "apps/VCSM/src/features/invite/controllers/invite.controller.js",
-        "layer": "controller",
-        "owner": "VCSM:invite",
         "consumerCount": 0,
         "isBarrelTarget": false,
         "status": "UNUSED_EXPORT",
@@ -8022,6 +8246,20 @@
         "symbol": "NotiViewPostScreen",
         "id": "screen:apps/VCSM/src/features/notifications/screen/NotiViewPostScreen.jsx#NotiViewPostScreen",
         "file": "apps/VCSM/src/features/notifications/screen/NotiViewPostScreen.jsx",
+        "layer": "screen",
+        "owner": "VCSM:notifications",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "handleTabChange",
+        "id": "screen:apps/VCSM/src/features/notifications/screen/views/MyAppointmentsView.jsx#handleTabChange",
+        "file": "apps/VCSM/src/features/notifications/screen/views/MyAppointmentsView.jsx",
         "layer": "screen",
         "owner": "VCSM:notifications",
         "consumerCount": 0,
@@ -12023,6 +12261,20 @@
         ]
       },
       {
+        "symbol": "mapLaneToAvailability",
+        "id": "model:apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/model/teamAvailabilityToday.model.js#mapLaneToAvailability",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/model/teamAvailabilityToday.model.js",
+        "layer": "model",
+        "owner": "VCSM:vportDashboard",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
         "symbol": "mapBooking",
         "id": "model:apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/model/vportBooking.model.js#mapBooking",
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/model/vportBooking.model.js",
@@ -12093,9 +12345,9 @@
         ]
       },
       {
-        "symbol": "markFuelPriceSubmissionReviewAppliedDAL",
-        "id": "dal:apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js#markFuelPriceSubmissionReviewAppliedDAL",
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
+        "symbol": "resolveActorIdFromProfileId",
+        "id": "dal:apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPrices.read.dal.js#resolveActorIdFromProfileId",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPrices.read.dal.js",
         "layer": "dal",
         "owner": "VCSM:vportDashboard",
         "consumerCount": 0,
@@ -12121,6 +12373,20 @@
         ]
       },
       {
+        "symbol": "VportDashboardGasView",
+        "id": "screen:apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/screens/VportDashboardGasView.jsx#VportDashboardGasView",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/screens/VportDashboardGasView.jsx",
+        "layer": "screen",
+        "owner": "VCSM:vportDashboard",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
         "symbol": "VportGasPricesScreen",
         "id": "screen:apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/screens/VportGasPricesScreen.jsx#VportGasPricesScreen",
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/screens/VportGasPricesScreen.jsx",
@@ -12138,6 +12404,34 @@
         "symbol": "VportDashboardLeadsFinalScreen",
         "id": "module:apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsFinalScreen.jsx#VportDashboardLeadsFinalScreen",
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsFinalScreen.jsx",
+        "layer": "module",
+        "owner": "VCSM:vportDashboard",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "onToggleContacted",
+        "id": "module:apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsView.jsx#onToggleContacted",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsView.jsx",
+        "layer": "module",
+        "owner": "VCSM:vportDashboard",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "renderLeadCard",
+        "id": "module:apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsView.jsx#renderLeadCard",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/leads/VportDashboardLeadsView.jsx",
         "layer": "module",
         "owner": "VCSM:vportDashboard",
         "consumerCount": 0,
@@ -14333,6 +14627,20 @@
         ]
       },
       {
+        "symbol": "traffic",
+        "id": "module:apps/VCSM/src/services/supabase/trafficClient.js#traffic",
+        "file": "apps/VCSM/src/services/supabase/trafficClient.js",
+        "layer": "module",
+        "owner": "VCSM:services",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
         "symbol": "vc",
         "id": "module:apps/VCSM/src/services/supabase/vcClient.js#vc",
         "file": "apps/VCSM/src/services/supabase/vcClient.js",
@@ -14618,6 +14926,62 @@
         "file": "apps/VCSM/src/state/actors/assertActorId.js",
         "layer": "module",
         "owner": "VCSM:state",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "brand",
+        "id": "module:apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js#brand",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+        "layer": "module",
+        "owner": "apps",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "CitizenInviteEmail",
+        "id": "module:apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx#CitizenInviteEmail",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "layer": "module",
+        "owner": "apps",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "LeadConfirmationEmail",
+        "id": "module:apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx#LeadConfirmationEmail",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "layer": "module",
+        "owner": "apps",
+        "consumerCount": 0,
+        "isBarrelTarget": false,
+        "status": "UNUSED_EXPORT",
+        "confidence": "HIGH",
+        "evidence": [
+          "no incoming CALLS edges from any consumer in barrel-resolved callgraph"
+        ]
+      },
+      {
+        "symbol": "ReviewRequestEmail",
+        "id": "module:apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx#ReviewRequestEmail",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+        "layer": "module",
+        "owner": "apps",
         "consumerCount": 0,
         "isBarrelTarget": false,
         "status": "UNUSED_EXPORT",

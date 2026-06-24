@@ -13,8 +13,8 @@ vi.mock("@/shared/utils/resolveRealm", () => ({
   PUBLIC_REALM_ID: "realm-public-001",
 }));
 
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 import { publishMenuUpdateAsPostController } from "../publishMenuUpdateAsPost.controller";
@@ -23,7 +23,7 @@ import {
   hasRecentMenuUpdatePostDAL,
 } from "@/features/profiles/kinds/vport/dal/menu/vportMenuPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const BASE_ARGS = {
   identityActorId: "actor-user-owner-1",
@@ -37,7 +37,7 @@ const BASE_ARGS = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  assertSessionOwnsVportActorController.mockResolvedValue({ ok: true });
+  assertSessionOwnsActorController.mockResolvedValue({ ok: true });
   hasRecentMenuUpdatePostDAL.mockResolvedValue(false);
   resolveVportRestaurantNameDAL.mockResolvedValue("Restaurant Vport");
   createSystemPost.mockResolvedValue({ id: "post-menu-1" });
@@ -48,13 +48,13 @@ describe("publishMenuUpdateAsPostController", () => {
     await expect(
       publishMenuUpdateAsPostController({ ...BASE_ARGS, identityActorId: null })
     ).rejects.toThrow("identityActorId required");
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
     expect(createSystemPost).not.toHaveBeenCalled();
   });
 
   it("checks ownership before dedup or post creation", async () => {
     await publishMenuUpdateAsPostController(BASE_ARGS);
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: "actor-vport-restaurant-1",
     });
     expect(hasRecentMenuUpdatePostDAL).toHaveBeenCalledWith({
@@ -63,7 +63,7 @@ describe("publishMenuUpdateAsPostController", () => {
   });
 
   it("does not create a post when ownership fails", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(new Error("not owner"));
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
     await expect(publishMenuUpdateAsPostController(BASE_ARGS)).rejects.toThrow("not owner");
     expect(hasRecentMenuUpdatePostDAL).not.toHaveBeenCalled();
     expect(createSystemPost).not.toHaveBeenCalled();

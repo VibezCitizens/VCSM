@@ -9,8 +9,12 @@
 
 .ch-featured-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 0.85rem;
+  /* Match the homepage provider grid (.hp-providers-row) so directory and
+     country-hub cards render at the same column width and gap as home.
+     Keep auto-fill (not auto-fit) so a single result — e.g. a city page with
+     one provider — stays card-sized instead of stretching full width. */
+  grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
+  gap: 0.74rem;
 }
 
 /* ── Service grid ─────────────────────────────────────────── */

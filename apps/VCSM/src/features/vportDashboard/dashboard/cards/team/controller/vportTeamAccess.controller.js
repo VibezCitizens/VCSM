@@ -7,7 +7,7 @@ import {
   deleteTeamMemberByIdDAL,
 } from "@/features/vportDashboard/dashboard/cards/team/dal/vportTeam.write.dal";
 import { searchActorsAdapter } from "@/features/actors/adapters/actors.adapter";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 import { useIdentitySelectionStore } from '@/features/identity/adapters/identity.adapter';
 
@@ -57,7 +57,7 @@ export async function getTeamAccessController(actorId, callerActorId) {
     // === vport) is the only way to reach this dashboard, so the actor gate's user-kind
     // requirement (ELEK-004) cannot be satisfied here. The session gate verifies the
     // authenticated user owns this vport via actor_owners.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     if (!actorId) return [];
     const profileId = await resolveProfileId(actorId);
     return fetchTeamMembersByProfileId(profileId);
@@ -69,7 +69,7 @@ export async function getTeamAccessController(actorId, callerActorId) {
 
 export async function addTeamMemberController(actorId, { memberActorId, role, displayName }, callerActorId) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     if (!memberActorId) throw new Error("Member actor is required.");
     if (!VALID_ROLES.includes(role)) throw new Error(`Invalid role. Must be: ${VALID_ROLES.join(", ")}`);
     if (String(actorId) === String(memberActorId)) throw new Error("Cannot add yourself as a team member.");
@@ -92,7 +92,7 @@ export async function addTeamMemberController(actorId, { memberActorId, role, di
 
 export async function updateTeamMemberRoleController(actorId, { resourceId, role }, callerActorId) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     if (!resourceId) throw new Error("Resource ID is required.");
     if (!VALID_ROLES.includes(role)) throw new Error("Invalid role.");
 
@@ -114,7 +114,7 @@ export async function updateTeamMemberRoleController(actorId, { resourceId, role
 
 export async function setTeamMemberStatusController(actorId, { resourceId, status }, callerActorId) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     if (!resourceId) throw new Error("Resource ID is required.");
     if (!["active", "inactive"].includes(status)) throw new Error("Status must be active or inactive.");
 
@@ -140,7 +140,7 @@ export async function setTeamMemberStatusController(actorId, { resourceId, statu
 
 export async function removeTeamMemberController(actorId, { resourceId }, callerActorId) {
   try {
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
     if (!resourceId) throw new Error("Resource ID is required.");
 
     const profileId = await resolveProfileId(actorId);

@@ -28,6 +28,7 @@ import {
   DirectoryPageTemplate,
   CountryHubTemplate
 } from "@/features/directories/adapters/directories.adapter";
+import { buildHomepageProviderCard } from "@/data/repositories/homepage.repo";
 import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 import {
   listLiveProviderCountries,
@@ -56,26 +57,6 @@ function groupCitiesByState(cities, countrySlug) {
   return order.map((k) => map.get(k));
 }
 
-function toHubCard(item, countrySlug) {
-  const p = item.provider;
-  return {
-    id: p.id,
-    href: countryProviderPath(countrySlug, p.slug),
-    name: p.displayName,
-    category: item.serviceLabel ?? "",
-    categoryKey: p.primaryServiceSlug ?? "",
-    city: p.primaryCityName ?? null,
-    stateCode: p.primaryRegionCode ?? null,
-    primaryCountryCode: p.primaryCountryCode ?? null,
-    rating: p.ratingAvg ?? 0,
-    reviewCount: p.reviewCount ?? 0,
-    responseTimeP50Minutes: p.responseTimeP50Minutes ?? null,
-    verified: p.claimStatus === "claimed",
-    avatarUrl: p.avatarUrl ?? null,
-    logoUrl: p.logoUrl ?? null
-  };
-}
-
 export function renderCountryPage(graph) {
   const services = listServices();
   const allProviders = listProvidersByCountry(graph.country.code);
@@ -85,10 +66,12 @@ export function renderCountryPage(graph) {
     (city) => listProvidersByCountryCitySlug(graph.country.code, city.slug).length > 0
   );
 
-  // Featured — max 6 cards
-  const featuredProviders = allProviders.slice(0, 6).map((item) =>
-    toHubCard(item, graph.country.slug)
-  );
+  // Featured — max 3 cards, built with the shared homepage card builder
+  // so country-hub cards render identically to the homepage cards.
+  const featuredProviders = allProviders
+    .slice(0, 3)
+    .map((item) => buildHomepageProviderCard(item.provider))
+    .filter(Boolean);
 
   // Cities grouped by state with provider counts, state name, and state-level aggregates
   const rawGroups = groupCitiesByState(liveCities, graph.country.slug);

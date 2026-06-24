@@ -1,4 +1,4 @@
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import listBookingResourceServicesByResourceIdDAL from "@/features/booking/dal/listBookingResourceServicesByResourceId.dal";
 import readVportServicesByActorDAL from "@/features/booking/dal/readVportServicesByActor.dal";
@@ -30,7 +30,7 @@ export async function setResourceSlotDurationController({
     throw new Error("Booking resource not found.");
   }
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId,
     targetActorId: resource.owner_actor_id,
   });

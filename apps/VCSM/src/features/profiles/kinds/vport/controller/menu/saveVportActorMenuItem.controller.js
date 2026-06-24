@@ -7,6 +7,7 @@ import readVportActorMenuCategoriesDAL from "@/features/profiles/kinds/vport/dal
 import { createVportMenuItemMediaDAL } from "@/features/profiles/kinds/vport/dal/menu/createVportMenuItemMedia.dal";
 import { createMediaAssetController } from "@/features/media/adapters/media.adapter";
 import { resolveVcsmAppId } from '@/features/media/adapters/mediaAppId.adapter'
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 import { VportActorMenuItemModel } from "@/features/profiles/kinds/vport/model/menu/VportActorMenuItem.model";
 
@@ -32,6 +33,10 @@ export async function saveVportActorMenuItemController({
   if (!actorId) {
     throw new Error("saveVportActorMenuItemController: actorId is required");
   }
+
+  // Bind the operation to the authenticated session's ownership of this vport
+  // actor before any read/write (parity with DELETE menu controllers).
+  await assertSessionOwnsActorController({ targetActorId: actorId });
 
   if (!categoryId) {
     throw new Error("saveVportActorMenuItemController: categoryId is required");

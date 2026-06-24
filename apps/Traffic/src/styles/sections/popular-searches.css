@@ -52,88 +52,6 @@
   color: rgba(200, 211, 244, 0.86);
 }
 
-/* ── Trending section ─────────────────────────────────────── */
-
-.homepage-trending-section {
-  background: linear-gradient(180deg, rgba(22, 23, 34, 0.34), rgba(22, 23, 34, 0));
-  border-radius: 12px;
-  padding: 0.2rem 0.25rem 0.3rem;
-}
-
-/* Polish trending-section override */
-.homepage-trending-section {
-  padding: 0.9rem 0.95rem;
-  border-radius: 16px;
-  background: rgba(15, 18, 31, 0.58);
-  border: 1px solid rgba(129, 149, 208, 0.16);
-}
-
-.homepage-trending-groups {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem 1.2rem;
-}
-
-/* Polish trending-groups override */
-.homepage-trending-groups {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.homepage-trending-group {
-  display: grid;
-  gap: 0.6rem;
-}
-
-/* Polish trending-group override */
-.homepage-trending-group {
-  gap: 0.5rem;
-  padding: 0.68rem 0.72rem;
-  border-radius: 12px;
-  border: 1px solid rgba(129, 149, 208, 0.14);
-  background: rgba(10, 13, 24, 0.56);
-}
-
-.homepage-trending-group-head {
-  display: grid;
-  gap: 0.28rem;
-}
-
-.homepage-trending-group-head--cities {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-}
-
-.homepage-country-select-wrap {
-  min-width: 128px;
-}
-
-.homepage-country-select {
-  width: 100%;
-  min-height: 32px;
-  padding: 0 1.7rem 0 0.68rem;
-  border-radius: var(--traffic-radius-pill);
-  border: 1px solid rgba(129, 149, 208, 0.24);
-  background: rgba(12, 14, 25, 0.88);
-  color: rgba(224, 232, 255, 0.92);
-  font-size: 0.76rem;
-  font-family: var(--traffic-font-sans);
-  outline: none;
-}
-
-.homepage-country-select:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
-}
-
-.homepage-trending-title {
-  margin: 0;
-  font-family: var(--traffic-font-sans);
-  font-size: 0.93rem;
-  font-weight: 600;
-  color: rgba(242, 246, 255, 0.94);
-}
-
 /* ── Directory links ──────────────────────────────────────── */
 
 .homepage-directory-links {
@@ -181,4 +99,39 @@
   color: #fff;
   border-bottom-color: rgba(112, 165, 247, 0.55);
   transform: translateX(1px);
+}
+
+/* ── Directory landing: Browse-by-country chip row (TRAZE-DIRECTORY-001) ── */
+.directory-country-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.directory-country-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--traffic-radius-pill, 999px);
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface-input);
+  color: var(--vc-text);
+  text-decoration: none;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.directory-country-chip:hover {
+  border-color: var(--vc-border-strong, rgba(255, 255, 255, 0.2));
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.directory-country-flag {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.directory-country-name {
+  font-size: 0.85rem;
+  font-weight: 600;
 }

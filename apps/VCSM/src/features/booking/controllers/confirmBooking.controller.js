@@ -1,5 +1,5 @@
 import { captureVcsmError } from "@/services/monitoring/vcsmMonitoring";
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import getBookingByIdDAL from "@/features/booking/dal/getBookingById.dal";
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import updateBookingStatusDAL from "@/features/booking/dal/updateBookingStatus.dal";
@@ -31,7 +31,7 @@ export async function confirmBookingController({
     throw new Error("Booking resource not found.");
   }
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId,
     targetActorId: resource.owner_actor_id,
   });

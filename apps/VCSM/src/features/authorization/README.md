@@ -43,20 +43,18 @@ adapters/authorization.adapter.js    ← public surface — import from here onl
 
 ## Status
 
-**Implemented but NOT adopted** (recorded by IDENTITY-BOUNDARY-002, 2026-06-08).
+**Canonical app-layer ownership authority** (adopted by IDENTITY-BOUNDARY-005).
 
-The controllers, DALs, and model are fully implemented — but **no production code
-imports this feature**. The only importers are internal (controller → dal,
-adapter → controller) plus two SPIDER-MAN tests asserting other features do not
-import it. Live ownership gates still exist elsewhere — notably
-`features/booking/controllers/assertActorOwnsVportActor.controller.js` — and
-`vc.actor_owners` is read directly across 35+ files (settings/vports,
+This feature now owns all app-layer actor ownership assertions. The former booking
+compatibility wrappers have been removed, and every caller imports
+`assertActorOwnsActorController` / `assertSessionOwnsActorController` (and the
+read-only `readActorStatusController`) from `adapters/authorization.adapter.js`.
+`vc.actor_owners` is still read directly across legacy DALs (settings/vports,
 vportDashboard, profiles/kinds/vport, wanders, notifications, upload, portfolio,
-reviews).
+reviews) — consolidating those reads remains future work.
 
-Do **not** edit authorization behavior, wire callers, or delete this feature until
-the adoption/freeze decision ticket (IDENTITY-BOUNDARY-003). Do **not** add new
-`vc.actor_owners` readers outside this feature.
+Do **not** add new `vc.actor_owners` readers outside this feature, and do **not**
+reintroduce ownership assertions into other features' adapters (e.g. booking).
 
 > Drift note (not changed by this ticket): the Layer Map above lists
 > `assertActorCanManageActor` and `resolveActorOwnerActor`, which do not exist in

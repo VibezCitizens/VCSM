@@ -3,14 +3,14 @@
  *
  * Security invariant (ELEK-003):
  * publishBarbershopPortfolioUpdateAsPostController must require callerActorId
- * and assert ownership via assertSessionOwnsVportActorController before calling
+ * and assert ownership via assertSessionOwnsActorController before calling
  * createSystemPost.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@/features/booking/adapters/booking.adapter', () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock('@/features/authorization/adapters/authorization.adapter', () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }))
 
 vi.mock('@/features/profiles/kinds/vport/dal/barbershop/vportBarbershopPost.read.dal', () => ({
@@ -27,7 +27,7 @@ vi.mock('@/shared/utils/resolveRealm', () => ({
 }))
 
 import { publishBarbershopPortfolioUpdateAsPostController } from '../publishBarbershopPortfolioUpdateAsPost.controller'
-import { assertSessionOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
+import { assertSessionOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 import {
   resolveVportBarbershopNameDAL,
   hasRecentBarbershopPortfolioPostDAL,
@@ -46,7 +46,7 @@ describe('publishBarbershopPortfolioUpdateAsPostController — null guards', () 
     await expect(
       publishBarbershopPortfolioUpdateAsPostController({ actorId: ACTOR_ID })
     ).rejects.toThrow('publishBarbershopPortfolioUpdateAsPost: callerActorId required')
-    expect(assertSessionOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(createSystemPost).not.toHaveBeenCalled()
   })
 
@@ -63,7 +63,7 @@ describe('publishBarbershopPortfolioUpdateAsPostController — null guards', () 
 describe('publishBarbershopPortfolioUpdateAsPostController — ownership gate blocks unauthorized caller', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockRejectedValue(
+    assertSessionOwnsActorController.mockRejectedValue(
       new Error('Actor does not own this vport actor.')
     )
   })
@@ -84,7 +84,7 @@ describe('publishBarbershopPortfolioUpdateAsPostController — ownership gate bl
 describe('publishBarbershopPortfolioUpdateAsPostController — legitimate owner publishes', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true })
     hasRecentBarbershopPortfolioPostDAL.mockResolvedValue(false)
     resolveVportBarbershopNameDAL.mockResolvedValue('Sharp Cuts')
     createSystemPost.mockResolvedValue({ id: 'post-abc' })
@@ -97,7 +97,7 @@ describe('publishBarbershopPortfolioUpdateAsPostController — legitimate owner 
       portfolioTitle: 'Summer Fades',
       mediaUrl: 'https://cdn.example.com/img.jpg',
     })
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: ACTOR_ID,
     })
     expect(createSystemPost).toHaveBeenCalledWith(

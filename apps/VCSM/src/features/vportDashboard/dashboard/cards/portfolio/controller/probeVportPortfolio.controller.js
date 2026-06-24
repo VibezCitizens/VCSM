@@ -1,7 +1,7 @@
 import { readVportProfileByActorIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { readVportProfileActorAccessDAL } from "@/features/vportDashboard/dal/read/vportProfileActorAccess.read.dal";
 import { readActorOwnersByActorIdDAL } from "@/features/vportDashboard/dal/read/actorOwners.read.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 export async function probeVportPortfolioController({ actorId, identity, userId }) {
@@ -12,7 +12,7 @@ export async function probeVportPortfolioController({ actorId, identity, userId 
     // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): the active actor is
     // the VPORT itself, so ownership is resolved from the auth session via actor_owners
     // rather than trusting identity.actorId from the UI.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
 
     const result = {};
 

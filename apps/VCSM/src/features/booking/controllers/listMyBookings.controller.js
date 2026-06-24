@@ -2,10 +2,10 @@ import listBookingsByCustomerDAL from "@/features/booking/dal/listBookingsByCust
 import { mapBookingRows } from "@/features/booking/model/booking.model";
 import { fetchActorSummaries } from "@hydration";
 
-export async function listMyBookingsController({ actorId } = {}) {
+export async function listMyBookingsController({ actorId, startsAtFrom = null, startsAtTo = null } = {}) {
   if (!actorId) throw new Error("listMyBookingsController: actorId is required");
 
-  const raw = await listBookingsByCustomerDAL({ actorId });
+  const raw = await listBookingsByCustomerDAL({ actorId, startsAtFrom, startsAtTo });
   const bookings = mapBookingRows(raw);
 
   const ownerIds = [...new Set(bookings.map((b) => b.ownerActorId).filter(Boolean))];

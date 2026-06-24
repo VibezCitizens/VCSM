@@ -1,25 +1,25 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "writeSurfaceCount": 491,
+  "writeSurfaceCount": 500,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.619Z",
+    "generatedAt": "2026-06-24T06:36:27.092Z",
     "writeSurfaces": [
       {
-        "operation": "insert",
+        "operation": "rpc",
         "schema": "answers",
-        "table": "answers",
-        "rpc": null,
+        "table": null,
+        "rpc": "get_published_question",
         "functionName": null,
-        "function": "createModerationAnswerRow",
+        "function": "getPublishedQuestion",
         "confidence": "HIGH",
         "evidence": [
-          "Supabase write call extracted from AST"
+          "RPC call extracted from AST"
         ],
         "owner": "Traffic:answers",
         "ownerKind": "feature",
@@ -27,19 +27,19 @@
         "root": "apps/Traffic",
         "feature": "answers",
         "layer": "dal",
-        "path": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js",
-        "file": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js"
+        "path": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+        "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js"
       },
       {
-        "operation": "update",
+        "operation": "rpc",
         "schema": "answers",
-        "table": "answers",
-        "rpc": null,
+        "table": null,
+        "rpc": "list_published_answers_for_question",
         "functionName": null,
-        "function": "updateAnswerModerationRow",
+        "function": "listPublishedAnswersForQuestion",
         "confidence": "HIGH",
         "evidence": [
-          "Supabase write call extracted from AST"
+          "RPC call extracted from AST"
         ],
         "owner": "Traffic:answers",
         "ownerKind": "feature",
@@ -47,19 +47,19 @@
         "root": "apps/Traffic",
         "feature": "answers",
         "layer": "dal",
-        "path": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js",
-        "file": "apps/Traffic/src/features/answers/dal/moderationAnswers.dal.js"
+        "path": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+        "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js"
       },
       {
-        "operation": "update",
+        "operation": "rpc",
         "schema": "answers",
-        "table": "questions",
-        "rpc": null,
+        "table": null,
+        "rpc": "list_published_questions",
         "functionName": null,
-        "function": "updateQuestionModerationRow",
+        "function": "listPublishedQuestions",
         "confidence": "HIGH",
         "evidence": [
-          "Supabase write call extracted from AST"
+          "RPC call extracted from AST"
         ],
         "owner": "Traffic:answers",
         "ownerKind": "feature",
@@ -67,19 +67,19 @@
         "root": "apps/Traffic",
         "feature": "answers",
         "layer": "dal",
-        "path": "apps/Traffic/src/features/answers/dal/moderationQuestions.dal.js",
-        "file": "apps/Traffic/src/features/answers/dal/moderationQuestions.dal.js"
+        "path": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js",
+        "file": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js"
       },
       {
-        "operation": "insert",
+        "operation": "rpc",
         "schema": "answers",
-        "table": "questions",
-        "rpc": null,
+        "table": null,
+        "rpc": "submit_question",
         "functionName": null,
         "function": "createQuestionRow",
         "confidence": "HIGH",
         "evidence": [
-          "Supabase write call extracted from AST"
+          "RPC call extracted from AST"
         ],
         "owner": "Traffic:answers",
         "ownerKind": "feature",
@@ -89,6 +89,26 @@
         "layer": "dal",
         "path": "apps/Traffic/src/features/answers/dal/questions.write.dal.js",
         "file": "apps/Traffic/src/features/answers/dal/questions.write.dal.js"
+      },
+      {
+        "operation": "rpc",
+        "schema": "answers",
+        "table": null,
+        "rpc": "submit_answer",
+        "functionName": null,
+        "function": "submitAnswerRow",
+        "confidence": "HIGH",
+        "evidence": [
+          "RPC call extracted from AST"
+        ],
+        "owner": "Traffic:answers",
+        "ownerKind": "feature",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "layer": "dal",
+        "path": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js",
+        "file": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js"
       },
       {
         "operation": "edge_function",
@@ -130,6 +150,26 @@
         "layer": "dal",
         "path": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
         "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js"
+      },
+      {
+        "operation": "rpc",
+        "schema": "traffic",
+        "table": null,
+        "rpc": "search_public_providers",
+        "functionName": null,
+        "function": "searchPublicProviders",
+        "confidence": "HIGH",
+        "evidence": [
+          "RPC call extracted from AST"
+        ],
+        "owner": "Traffic:search",
+        "ownerKind": "feature",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "search",
+        "layer": "dal",
+        "path": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js",
+        "file": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js"
       },
       {
         "operation": "edge_function_file",
@@ -2218,6 +2258,26 @@
       },
       {
         "operation": "rpc",
+        "schema": null,
+        "table": null,
+        "rpc": "submit_business_claim",
+        "functionName": null,
+        "function": "submitBusinessClaim",
+        "confidence": "HIGH",
+        "evidence": [
+          "RPC call extracted from AST"
+        ],
+        "owner": "VCSM:claim",
+        "ownerKind": "feature",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "layer": "dal",
+        "path": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+        "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js"
+      },
+      {
+        "operation": "rpc",
         "schema": "identity",
         "table": null,
         "rpc": "search_actor_directory",
@@ -3758,26 +3818,6 @@
         "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js"
       },
       {
-        "operation": "upsert",
-        "schema": null,
-        "table": "locksmith_service_areas",
-        "rpc": null,
-        "functionName": null,
-        "function": "dalUpsertLocksmithServiceArea",
-        "confidence": "HIGH",
-        "evidence": [
-          "Supabase write call extracted from AST"
-        ],
-        "owner": "VCSM:profiles",
-        "ownerKind": "feature",
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "profiles",
-        "layer": "dal",
-        "path": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js",
-        "file": "apps/VCSM/src/features/profiles/kinds/vport/dal/locksmith/locksmithServiceAreas.write.dal.js"
-      },
-      {
         "operation": "delete",
         "schema": null,
         "table": "locksmith_service_details",
@@ -4960,6 +5000,46 @@
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/bookings/dal/insertVportBooking.write.dal.js"
       },
       {
+        "operation": "rpc",
+        "schema": null,
+        "table": null,
+        "rpc": "approve_fuel_price_submission_batch",
+        "functionName": null,
+        "function": "approveFuelPriceSubmissionBatchDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "RPC call extracted from AST"
+        ],
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "layer": "dal",
+        "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
+      },
+      {
+        "operation": "rpc",
+        "schema": null,
+        "table": null,
+        "rpc": "reject_fuel_price_submission_batch",
+        "functionName": null,
+        "function": "rejectFuelPriceSubmissionBatchDAL",
+        "confidence": "HIGH",
+        "evidence": [
+          "RPC call extracted from AST"
+        ],
+        "owner": "VCSM:vportDashboard",
+        "ownerKind": "feature",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "layer": "dal",
+        "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js"
+      },
+      {
         "operation": "insert",
         "schema": null,
         "table": "fuel_price_history",
@@ -4978,66 +5058,6 @@
         "layer": "dal",
         "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js",
         "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal.js"
-      },
-      {
-        "operation": "insert",
-        "schema": null,
-        "table": "fuel_price_submission_reviews",
-        "rpc": null,
-        "functionName": null,
-        "function": "createFuelPriceSubmissionReviewDAL",
-        "confidence": "HIGH",
-        "evidence": [
-          "Supabase write call extracted from AST"
-        ],
-        "owner": "VCSM:vportDashboard",
-        "ownerKind": "feature",
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "vportDashboard",
-        "layer": "dal",
-        "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-      },
-      {
-        "operation": "update",
-        "schema": null,
-        "table": "fuel_price_submissions",
-        "rpc": null,
-        "functionName": null,
-        "function": "updateFuelPriceSubmissionStatusDAL",
-        "confidence": "HIGH",
-        "evidence": [
-          "Supabase write call extracted from AST"
-        ],
-        "owner": "VCSM:vportDashboard",
-        "ownerKind": "feature",
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "vportDashboard",
-        "layer": "dal",
-        "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
-      },
-      {
-        "operation": "update",
-        "schema": null,
-        "table": "fuel_price_submission_reviews",
-        "rpc": null,
-        "functionName": null,
-        "function": "markFuelPriceSubmissionReviewAppliedDAL",
-        "confidence": "HIGH",
-        "evidence": [
-          "Supabase write call extracted from AST"
-        ],
-        "owner": "VCSM:vportDashboard",
-        "ownerKind": "feature",
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "feature": "vportDashboard",
-        "layer": "dal",
-        "path": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js",
-        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceReviews.write.dal.js"
       },
       {
         "operation": "update",
@@ -5700,6 +5720,158 @@
         "layer": "module",
         "path": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js",
         "file": "apps/VCSM/src/services/monitoring/vcsmMonitoring.js"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx"
+      },
+      {
+        "operation": "edge_function_file",
+        "schema": null,
+        "table": null,
+        "rpc": null,
+        "functionName": "_shared",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function source file exists"
+        ],
+        "owner": "apps",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "ownerKind": "edge-function",
+        "layer": "edge-function",
+        "path": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx"
       },
       {
         "operation": "edge_function_file",

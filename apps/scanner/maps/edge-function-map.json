@@ -1,15 +1,127 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "edgeFunctionCount": 52,
+  "edgeFunctionCount": 59,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.624Z",
+    "generatedAt": "2026-06-24T06:36:27.098Z",
     "edgeFunctions": [
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/brand/tokens.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/render/renderEmail.js",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
+      {
+        "function": "_shared",
+        "caller": null,
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "route": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+        "file": "apps/VCSM/supabase/functions/_shared/emails/templates/ReviewRequestEmail.jsx",
+        "source": "edge-function-file",
+        "confidence": "HIGH",
+        "evidence": [
+          "edge function file exists"
+        ]
+      },
       {
         "function": "_shared/securityHeaders",
         "caller": null,
@@ -22,21 +134,6 @@
         "confidence": "HIGH",
         "evidence": [
           "edge function file exists"
-        ]
-      },
-      {
-        "function": "/api/answers/questions",
-        "caller": "submitQuestion",
-        "appId": "Traffic",
-        "root": "apps/Traffic",
-        "feature": "answers",
-        "engine": null,
-        "route": null,
-        "file": "apps/Traffic/src/features/answers/hooks/useSubmitQuestion.js",
-        "source": "fetch-mutation",
-        "confidence": "HIGH",
-        "evidence": [
-          "mutation fetch extracted from AST"
         ]
       },
       {

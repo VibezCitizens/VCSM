@@ -1,17 +1,17 @@
 # Traffic Scanner Readiness Report
 
-Generated: 2026-06-08T13:39:06.997Z
+Generated: 2026-06-24T06:36:32.074Z
 
 | Area | Count |
 |---|---:|
-| Features | 7 |
-| Routes | 51 |
-| Writes | 6 |
-| RPCs | 1 |
-| Edge functions | 3 |
-| Tests | 10 |
-| Dependencies | 47 |
-| Source files | 224 |
+| Features | 9 |
+| Routes | 59 |
+| Writes | 8 |
+| RPCs | 7 |
+| Edge functions | 2 |
+| Tests | 11 |
+| Dependencies | 55 |
+| Source files | 251 |
 
 ## Inventory
 
@@ -23,13 +23,15 @@ Generated: 2026-06-08T13:39:06.997Z
 
 ## Features
 
-- answers: 41 source files, 0 tests
+- answers: 46 source files, 0 tests
 - categories: 2 source files, 0 tests
-- conversion: 8 source files, 0 tests
-- directories: 14 source files, 0 tests
-- home: 15 source files, 0 tests
+- conversion: 10 source files, 0 tests
+- directories: 12 source files, 0 tests
+- home: 14 source files, 0 tests
+- legal: 4 source files, 0 tests
 - providers: 15 source files, 0 tests
 - reviews: 2 source files, 0 tests
+- search: 3 source files, 0 tests
 
 ## Engine Usage
 
@@ -37,7 +39,7 @@ Generated: 2026-06-08T13:39:06.997Z
 
 ## Unresolved Aliases
 
-- @/features/answers/controller/readAnswerPage.controller
+- None
 
 ## Limitations
 

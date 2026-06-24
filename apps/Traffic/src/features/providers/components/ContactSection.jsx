@@ -24,10 +24,18 @@ function buildAddressLines(address, locationText, cityName, regionCode, postalCo
   const state = String(address.state ?? regionCode ?? "").trim();
   const zip = String(address.postal_code ?? address.zip ?? postalCode ?? "").trim();
 
-  const lines = [];
-  if (street) lines.push(street);
-
   const cityLine = [city, state, zip].filter(Boolean).join(", ");
+
+  // Some records store the city/state in the street field too (e.g. address_text
+  // = "San Antonio, TX"), which would otherwise duplicate the city/state/zip
+  // line. Only show the street line when it adds something cityLine doesn't.
+  const norm = (value) => value.toLowerCase().replace(/\s+/g, " ").trim();
+  const streetIsRedundant =
+    Boolean(street && cityLine) &&
+    (norm(cityLine) === norm(street) || norm(cityLine).startsWith(`${norm(street)},`));
+
+  const lines = [];
+  if (street && !streetIsRedundant) lines.push(street);
   if (cityLine) lines.push(cityLine);
 
   if (!lines.length && locationText) lines.push(locationText);

@@ -5,6 +5,7 @@ import { useTrafficLanguage } from "@/lib/language";
 
 const SUPPORT_EMAIL = "support@vibezcitizens.com";
 const TERMS_URL = "/terms";
+const PRIVACY_URL = "/privacy";
 
 function buildReportMailto(providerName, providerSlug) {
   const subject = encodeURIComponent(`Report listing: ${providerName}`);
@@ -14,31 +15,18 @@ function buildReportMailto(providerName, providerSlug) {
   return `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
 }
 
-function buildClaimMailto(providerName, providerSlug) {
-  const subject = encodeURIComponent(`Claim listing: ${providerName}`);
-  const body = encodeURIComponent(
-    `I am the owner or authorized representative of:\n\nBusiness name: ${providerName}\nListing ID: ${providerSlug}\n\nI would like to claim and manage this listing on the platform.\n\nMy contact information:\n[Please include your name, role, and contact details]`
-  );
-  return `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
-}
-
-export function ProviderDataDisclaimer({ providerName, providerSlug, claimStatus }) {
+export function ProviderDataDisclaimer({ providerName, providerSlug }) {
   const { t } = useTrafficLanguage();
 
-  const isClaimed = claimStatus === "claimed";
+  // Informational/legal disclaimer only. The ownership/claim CTA lives in the
+  // TrazeAccountCta "Own this business?" panel on the provider page — keeping it
+  // here too produced a duplicate ownership CTA (BUG-TRAZE-CLAIM-CTA-REDUNDANCY).
   const reportHref = buildReportMailto(providerName, providerSlug);
-  const claimHref = buildClaimMailto(providerName, providerSlug);
 
   return (
     <div className="pro-data-disclaimer">
       <p className="pro-data-disclaimer-text">
         {t("disclaimer.profileData")}
-        {" "}
-        {!isClaimed ? (
-          <a className="pro-data-disclaimer-link" href={claimHref}>
-            {t("disclaimer.ownerClaim")}
-          </a>
-        ) : null}
       </p>
 
       <div className="pro-data-disclaimer-actions">
@@ -51,6 +39,10 @@ export function ProviderDataDisclaimer({ providerName, providerSlug, claimStatus
         <span className="pro-data-disclaimer-sep" aria-hidden="true">·</span>
         <Link className="pro-data-disclaimer-terms" href={TERMS_URL}>
           {t("homepage.terms")}
+        </Link>
+        <span className="pro-data-disclaimer-sep" aria-hidden="true">·</span>
+        <Link className="pro-data-disclaimer-terms" href={PRIVACY_URL}>
+          {t("homepage.privacy")}
         </Link>
       </div>
     </div>

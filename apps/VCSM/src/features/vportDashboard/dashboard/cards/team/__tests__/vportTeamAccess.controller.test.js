@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 vi.mock("@/features/vportDashboard/dal/read/vportProfile.read.dal", () => ({
@@ -23,7 +23,7 @@ vi.mock("@/features/actors/adapters/actors.adapter", () => ({
   searchActorsAdapter: vi.fn(),
 }));
 
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { readVportProfileByActorIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { fetchTeamMembersByProfileId } from "@/features/vportDashboard/dashboard/cards/team/dal/vportTeam.read.dal";
 import {
@@ -65,7 +65,7 @@ function staffRow(overrides = {}) {
 describe("vportTeamAccess.controller — scoped write DAL calls", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    assertSessionOwnsVportActorController.mockResolvedValue({ ok: true });
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
     readVportProfileByActorIdDAL.mockResolvedValue({ id: PROFILE_ID });
     fetchTeamMembersByProfileId.mockResolvedValue([ownerRow(), staffRow()]);
   });
@@ -75,7 +75,7 @@ describe("vportTeamAccess.controller — scoped write DAL calls", () => {
 
     await updateTeamMemberRoleController(ACTOR_ID, { resourceId: RESOURCE_ID, role: "manager" }, CALLER_ID);
 
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: ACTOR_ID,
     });
     expect(updateTeamMemberRoleDAL).toHaveBeenCalledWith({
@@ -110,7 +110,7 @@ describe("vportTeamAccess.controller — scoped write DAL calls", () => {
   });
 
   it("does not call write DALs when ownership fails", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(new Error("not owner"));
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
 
     await expect(
       updateTeamMemberRoleController(ACTOR_ID, { resourceId: RESOURCE_ID, role: "manager" }, "attacker")

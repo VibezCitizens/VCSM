@@ -2,6 +2,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore — resolved via deno.json import map at Deno runtime; VS Code TS server does not resolve npm: specifiers
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
+// @ts-ignore — resolved via deno.json import map at Deno runtime; VS Code TS server does not resolve npm: specifiers
+import React from "react";
+import { renderEmail } from "../_shared/emails/render/renderEmail.js";
+import { LeadConfirmationEmail } from "../_shared/emails/templates/LeadConfirmationEmail.jsx";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -315,8 +319,9 @@ async function sendLeadConfirmationEmail({
   provider,
   providerProfileUrl,
 }: SendParams): Promise<void> {
-  const htmlBody = buildLeadConfirmationHtml({ displayName, provider, providerProfileUrl });
-  const textBody = buildLeadConfirmationText({ displayName, provider, providerProfileUrl });
+  const { html: htmlBody, text: textBody } = await renderEmail(
+    React.createElement(LeadConfirmationEmail, { displayName, provider, providerProfileUrl }),
+  );
 
   await sesClient.send(
     new SendEmailCommand({

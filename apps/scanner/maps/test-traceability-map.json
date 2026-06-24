@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "testTraceabilityCount": 110,
+  "testTraceabilityCount": 126,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.246Z",
+    "generatedAt": "2026-06-24T06:36:27.849Z",
     "testTraceability": [
       {
         "test": "apps/Traffic/src/data/dal/trazeCategories.read.dal.js",
@@ -71,7 +71,11 @@
         "path": [
           "dal:apps/Traffic/src/data/dal/vportDataset.read.dal.js#normalizeCountryCode",
           "dal:apps/Traffic/src/data/dal/vportDataset.read.dal.js#readPublicTrazeProviderIndexRows",
-          "module:apps/Traffic/src/data/connectors/supabase.client.js#getSupabaseClient"
+          "dal:apps/Traffic/src/data/dal/vportDataset.read.dal.js#buildPageQuery",
+          "module:apps/Traffic/src/data/connectors/supabase.client.js#getSupabaseClient",
+          "module:apps/Traffic/src/lib/env.js#shouldRequireLiveProviderIndex",
+          "module:apps/Traffic/src/lib/env.js#getBuildBranchName",
+          "module:apps/Traffic/src/lib/env.js#isPreviewBuild"
         ],
         "writes": [],
         "rpcs": [],
@@ -220,6 +224,14 @@
             "evidence": [
               "test declaration extracted from AST"
             ]
+          },
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
           }
         ],
         "path": [
@@ -241,19 +253,11 @@
         ]
       },
       {
-        "test": "apps/Traffic/src/features/directories/components/ProviderListItem.jsx",
+        "test": "apps/Traffic/src/lib/countryDisplay.js",
         "appId": "Traffic",
         "root": "apps/Traffic",
-        "feature": "directories",
+        "feature": null,
         "declarations": [
-          {
-            "call": "test",
-            "name": null,
-            "confidence": "HIGH",
-            "evidence": [
-              "test declaration extracted from AST"
-            ]
-          },
           {
             "call": "test",
             "name": null,
@@ -264,70 +268,10 @@
           }
         ],
         "path": [
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#resolveProviderHref",
+          "module:apps/Traffic/src/lib/countryDisplay.js#flagEmoji",
+          "module:apps/Traffic/src/lib/countryDisplay.js#getCountryBadge",
           "module:apps/Traffic/src/data/repositories/geo.repo.js#getCountryByCode",
-          "module:apps/Traffic/src/data/repositories/geo.repo.js#listCountries",
-          "module:apps/Traffic/src/lib/paths.js#countryProviderPath",
-          "module:apps/Traffic/src/lib/paths.js#safe",
-          "module:apps/Traffic/src/lib/paths.js#providerPath",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#getAvatarColor",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#getInitials",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#formatRating",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#formatResponseTime",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#toTitleCase",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#normalizeRegion",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#normalizeLocationText",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#formatProviderLocation",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#escapeRegex",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#shouldShowBio",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItem.jsx#ProviderListItem",
-          "component:apps/Traffic/src/features/directories/components/ProviderListItemFooter.jsx#ProviderListItemFooter",
-          "module:apps/Traffic/src/lib/analytics.js#trackProviderCardClick",
-          "module:apps/Traffic/src/lib/analytics.js#trackEvent",
-          "module:apps/Traffic/src/lib/analytics.js#beacon",
-          "module:apps/Traffic/src/lib/analytics.js#cleanString",
-          "module:apps/Traffic/src/lib/analytics.js#compactPayload",
-          "module:apps/Traffic/src/lib/analytics.js#cleanNumber",
-          "module:apps/Traffic/src/lib/analytics.js#gtag",
-          "module:apps/Traffic/src/lib/language.js#useTrafficLanguage",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#getPublicReviewSummaryForProvider",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#buildFallbackFromStats",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#normalizeReviewSummary",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#buildTrustBadge",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#toCount",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#toNumber",
-          "module:apps/Traffic/src/lib/slugs.js#normalizeSlug",
-          "module:apps/Traffic/src/lib/slugs.js#toSafeString",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#buildSummaryFromLiveReviews",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#toIsoOrNull",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#toStarBuckets",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#fetchLiveProviderReviews",
-          "dal:apps/Traffic/src/data/dal/providerProfile.read.dal.js#fetchProviderReviews",
-          "dal:apps/Traffic/src/data/dal/providerProfile.read.dal.js#client",
-          "module:apps/Traffic/src/data/connectors/supabase.client.js#getSupabaseClient",
-          "dal:apps/Traffic/src/data/dal/providerProfile.read.dal.js#devWarn",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#fetchLiveProviderSummary",
-          "dal:apps/Traffic/src/data/dal/providerProfile.read.dal.js#fetchProviderReviewSummary",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#getPublicReviewSummaryByActorId",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#fetchPublicReviewSummary",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#fetchPublicReviewSummaries",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#buildEndpoint",
-          "module:apps/Traffic/src/lib/env.js#getPublicReviewSummaryApiUrl",
-          "module:apps/Traffic/src/lib/env.js#getPlatformOrigin",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#collectCacheTags",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#normalizeCacheTag",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#normalizeReviewSummary",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#normalizeRatingBreakdown",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#readStarCount",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#toIntegerOrNull",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#toIsoOrNull",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#toNumberOrNull",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#readRows",
-          "module:apps/Traffic/src/data/connectors/publicReviewSummary.connector.js#rowMatchesFilters",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#buildProviderCacheTag",
-          "module:apps/Traffic/src/data/repositories/reviewSummary.repo.js#getPublicReviewSummaryByProfileSlug",
-          "module:apps/Traffic/src/data/repositories/service.repo.js#getServiceById",
-          "module:apps/Traffic/src/data/repositories/service.repo.js#listServices"
+          "module:apps/Traffic/src/data/repositories/geo.repo.js#listCountries"
         ],
         "writes": [],
         "rpcs": [],
@@ -356,6 +300,31 @@
           "module:apps/Traffic/src/lib/geo/clientMarket.js#countryFromLocale",
           "module:apps/Traffic/src/lib/geo/clientMarket.js#getBrowserCountryCode",
           "module:apps/Traffic/src/lib/geo/clientMarket.js#findLiveCountryByCode"
+        ],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/Traffic/src/lib/safeMediaSrc.js",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "module:apps/Traffic/src/lib/safeMediaSrc.js#safeMediaSrc"
         ],
         "writes": [],
         "rpcs": [],
@@ -537,6 +506,32 @@
         ]
       },
       {
+        "test": "apps/VCSM/src/app/routes/RouteErrorBoundary.jsx",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "module:apps/VCSM/src/app/routes/RouteErrorBoundary.jsx#isChunkLoadError",
+          "module:apps/VCSM/src/app/routes/RouteErrorBoundary.jsx#shouldAutoReloadOnce"
+        ],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
         "test": "apps/VCSM/src/bootstrap/bootstrap.hydrate.controller.js",
         "appId": "VCSM",
         "root": "apps/VCSM",
@@ -558,6 +553,339 @@
         ],
         "writes": [],
         "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.js#toSortedIdList",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.js#getVportFeatureTests",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/testResult.js#buildTestId",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.js#runVportFeatureGroup",
+          "controller:apps/VCSM/src/features/vport/controllers/getVportServiceCatalog.controller.js#getVportServiceCatalogController",
+          "dal:apps/VCSM/src/features/vport/dal/readVportServiceCatalogByType.dal.js#readVportServiceCatalogByTypeDAL",
+          "dal:apps/VCSM/src/features/vport/dal/readVportServiceCatalogByType.dal.js#buildTypeCandidates",
+          "dal:apps/VCSM/src/features/vport/dal/readVportServiceCatalogByType.dal.js#toCategoryKey",
+          "model:apps/VCSM/src/features/vport/models/vportServiceCatalog.model.js#mapVportServiceCatalogRows",
+          "dal:apps/VCSM/src/features/vport/dal/vport.core.dal.js#listMyVports",
+          "dal:apps/VCSM/src/features/vport/dal/vport.core.dal.js#raise",
+          "dal:apps/VCSM/src/features/vport/dal/vport.core.dal.js#requireUser",
+          "dal:apps/VCSM/src/features/vport/dal/vport.read.vportRecords.dal.js#listMyVports",
+          "dal:apps/VCSM/src/features/vport/dal/vport.read.vportRecords.dal.js#requireUser",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#extractImportSpecifiers",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#failWithData",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#getRootDomain",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#getVportEntries",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureSourceIndex.js#getFeatureSourceEntries",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureSourceIndex.js#buildEntries",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureSourceIndex.js#normalizePath",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureSourceIndex.js#toFeatureName",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#getVportSource",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#isCrossFeatureBoundaryViolation",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#trimAudit",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#withVportFeatureContext",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#ensureVportFeatureContext",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#getState",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#ensureActorContext",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#ensureActorOwnerLink",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#readOwnerLink",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isPermissionDenied",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#coerceText",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isUniqueViolation",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#ensureProfileRow",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#buildProfileCandidates",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#sanitizeUsernameCandidate",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isMissingColumn",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#ensureUserActor",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#createUserActorViaLegacyRpc",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#normalizeRpcPayload",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#normalizeActor",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js#readUserActor",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isMissingRpc",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/ensureAuthContext.js#ensureAuthContext",
+          "module:apps/VCSM/src/dev/diagnostics/groups/vportFeature.group.helpers.js#isPolicyOrRpc",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isRlsDenied",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#makeSkipped",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.js#auditFeature",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/codeLineCounter.js#countCodeLines",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/codeLineCounter.js#createScannerState",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/codeLineCounter.js#scanLineHasCode",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#checkFileNaming",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#detectLayer",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#extractImports",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#getRelativeDepth",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#isValidCrossFeatureImport",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#parseFeatureFromSpecifier",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureAudit.helpers.js#summarizeTopDirectories",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#buildFeatureFileMetrics",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#getLineStatus",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#inferRoleFromPath",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#getPathParts",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#getFeatureRelativePath",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#summarizeByDirectory",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#toOrderedObject",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/featureFileMetrics.js#summarizeByRole",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isMissingRelation",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/timedTest.js#runDiagnosticsTests",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/timedTest.js#runTimedDiagnosticsTest",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#toDiagnosticsError",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isForeignKeyViolation",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/supabaseAssert.js#isSeedMissingError",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/testResult.js#createResult",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/testResult.js#cleanUndefined",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/timedTest.js#nowMs",
+          "module:apps/VCSM/src/dev/diagnostics/helpers/timedTest.js#settleSuccess"
+        ],
+        "writes": [
+          {
+            "operation": "rpc",
+            "schema": "vc",
+            "table": null,
+            "rpc": "create_actor_for_user",
+            "functionName": null,
+            "function": "createUserActorViaLegacyRpc",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:dev",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+            "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js"
+          },
+          {
+            "operation": "upsert",
+            "schema": null,
+            "table": "profiles",
+            "rpc": null,
+            "functionName": null,
+            "function": "ensureProfileRow",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase write call extracted from AST"
+            ],
+            "owner": "VCSM:dev",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+            "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js"
+          },
+          {
+            "operation": "upsert",
+            "schema": "vc",
+            "table": "actor_owners",
+            "rpc": null,
+            "functionName": null,
+            "function": "ensureActorOwnerLink",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase write call extracted from AST"
+            ],
+            "owner": "VCSM:dev",
+            "ownerKind": "app-area",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "layer": "module",
+            "path": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+            "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js"
+          },
+          {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "create_vport",
+            "functionName": null,
+            "function": "createVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:vport",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js"
+          },
+          {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "soft_delete_vport",
+            "functionName": null,
+            "function": "softDeleteVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:vport",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js"
+          },
+          {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "hard_delete_vport",
+            "functionName": null,
+            "function": "hardDeleteVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:vport",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js"
+          },
+          {
+            "operation": "rpc",
+            "schema": null,
+            "table": null,
+            "rpc": "restore_vport",
+            "functionName": null,
+            "function": "restoreVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "RPC call extracted from AST"
+            ],
+            "owner": "VCSM:vport",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js"
+          },
+          {
+            "operation": "update",
+            "schema": null,
+            "table": "profiles",
+            "rpc": null,
+            "functionName": null,
+            "function": "updateVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "Supabase write call extracted from AST"
+            ],
+            "owner": "VCSM:vport",
+            "ownerKind": "feature",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "layer": "dal",
+            "path": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js"
+          }
+        ],
+        "rpcs": [
+          {
+            "rpc": "create_actor_for_user",
+            "schema": "vc",
+            "file": "apps/VCSM/src/dev/diagnostics/helpers/ensureActorContext.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "engine": null,
+            "caller": "createUserActorViaLegacyRpc",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          },
+          {
+            "rpc": "create_vport",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "engine": null,
+            "caller": "createVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          },
+          {
+            "rpc": "hard_delete_vport",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "engine": null,
+            "caller": "hardDeleteVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          },
+          {
+            "rpc": "restore_vport",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "engine": null,
+            "caller": "restoreVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          },
+          {
+            "rpc": "soft_delete_vport",
+            "schema": null,
+            "file": "apps/VCSM/src/features/vport/dal/vport.core.dal.js",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": "vport",
+            "engine": null,
+            "caller": "softDeleteVport",
+            "confidence": "HIGH",
+            "evidence": [
+              "rpc() extracted from AST"
+            ]
+          }
+        ],
         "confidence": "MEDIUM",
         "evidence": [
           "test symbols linked to call path"
@@ -1451,14 +1779,14 @@
         ]
       },
       {
-        "test": "apps/VCSM/src/features/booking/controllers/__tests__/assertActorOwnsVportActor.controller.test.js",
+        "test": "apps/VCSM/src/features/authorization/controllers/__tests__/assertActorOwnsActor.controller.test.js",
         "appId": "VCSM",
         "root": "apps/VCSM",
-        "feature": "booking",
+        "feature": "authorization",
         "declarations": [
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — self ownership short-circuit (user-kind)",
+            "name": "assertActorOwnsActorController — self ownership short-circuit (user-kind)",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1482,7 +1810,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — ELEK-004: vport-kind self-match is rejected",
+            "name": "assertActorOwnsActorController — ELEK-004: vport-kind self-match is rejected",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1498,7 +1826,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — requester validation",
+            "name": "assertActorOwnsActorController — requester validation",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1530,7 +1858,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — actor_owners DB verification",
+            "name": "assertActorOwnsActorController — actor_owners DB verification",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1562,7 +1890,7 @@
           },
           {
             "call": "describe",
-            "name": "assertActorOwnsVportActorController — target actor void check",
+            "name": "assertActorOwnsActorController — target actor void check",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -1668,6 +1996,61 @@
           "component:apps/VCSM/src/features/chat/conversation/components/MessageMedia.jsx#TimestampChip",
           "component:apps/VCSM/src/shared/components/ActorLink.jsx#ActorLink",
           "component:apps/VCSM/src/features/chat/conversation/components/MessageList.jsx#onResize"
+        ],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/claim/dal/providerLookup.read.dal.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "dal:apps/VCSM/src/features/claim/dal/providerLookup.read.dal.js#isUuid",
+          "dal:apps/VCSM/src/features/claim/dal/providerLookup.read.dal.js#fetchClaimableProvider"
+        ],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/claim/model/claim.model.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "model:apps/VCSM/src/features/claim/model/claim.model.js#parseClaimParams",
+          "model:apps/VCSM/src/features/claim/model/claim.model.js#buildClaimReturnPath",
+          "model:apps/VCSM/src/features/claim/model/claim.model.js#resolveCitizenActorId",
+          "model:apps/VCSM/src/features/claim/model/claim.model.js#mapClaimError",
+          "model:apps/VCSM/src/features/claim/model/claim.model.js#validateClaimForm"
         ],
         "writes": [],
         "rpcs": [],
@@ -2405,7 +2788,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when actorId is missing",
+            "name": "does not call assertSessionOwnsActorController when actorId is missing",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2429,7 +2812,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when identityActorId is missing",
+            "name": "does not call assertSessionOwnsActorController when identityActorId is missing",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2485,7 +2868,7 @@
           },
           {
             "call": "it",
-            "name": "calls assertActorOwnsVportActorController with correct requestActorId and targetActorId",
+            "name": "calls assertSessionOwnsActorController with correct requestActorId and targetActorId",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2834,7 +3217,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when actorId is missing",
+            "name": "does not call assertSessionOwnsActorController when actorId is missing",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2890,7 +3273,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when rateType is invalid",
+            "name": "does not call assertSessionOwnsActorController when rateType is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -2954,7 +3337,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when meta is invalid",
+            "name": "does not call assertSessionOwnsActorController when meta is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -3010,7 +3393,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when buyRate is invalid",
+            "name": "does not call assertSessionOwnsActorController when buyRate is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -3066,7 +3449,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when sellRate is invalid",
+            "name": "does not call assertSessionOwnsActorController when sellRate is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -3130,7 +3513,7 @@
           },
           {
             "call": "it",
-            "name": "does not call assertActorOwnsVportActorController when currency is invalid",
+            "name": "does not call assertSessionOwnsActorController when currency is invalid",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -3186,7 +3569,7 @@
           },
           {
             "call": "it",
-            "name": "calls assertActorOwnsVportActorController with named object params",
+            "name": "calls assertSessionOwnsActorController with named object params",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6644,6 +7027,85 @@
         ]
       },
       {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/fuelPriceBatch.model.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "groupSubmissionsIntoBatches",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "groups rows into one entry per submission_batch_id",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "orders newest batch first by latest submission time",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "computes submittedAtMin / submittedAtMax for a multi-fuel batch",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "falls back to submission id when batch id is missing (no row dropped)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns [] for empty / non-array input",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "attachSubmittersToBatches",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "attaches resolved submitter identity by actorId",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
+        ]
+      },
+      {
         "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/gasErrorMessages.model.test.js",
         "appId": "VCSM",
         "root": "apps/VCSM",
@@ -6771,6 +7233,109 @@
           {
             "call": "it",
             "name": "does not export DAL internals through the card barrel",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/gasPrices.model.batchMessages.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "buildBatchApproveMessage",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "Case A — all approved applied, nothing stale",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "Case B — some stale-skipped, explains the gap",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "omits the skip clause when staleSkippedCount is 0",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "uses singular nouns for a count of 1",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "coerces missing / null / undefined counts to 0 without throwing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "coerces numeric strings (defensive — RPC counts are numbers)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "buildBatchRejectMessage",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "formats the rejected count (plural)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "uses singular for a count of 1",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "defaults to 0 when no count is provided",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -6979,6 +7544,124 @@
           {
             "call": "it",
             "name": "throws when pending submissions DAL errors",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/normalizeFuelUnitForDb.model.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "normalizeFuelUnitForDb",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "maps 'gallon' -> 'gal'",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "passes DB-supported values through unchanged",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/reviewFuelPriceBatch.controller.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "approveFuelPriceBatchController",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "maps RPC counts and invalidates official + pending caches on success",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "surfaces stale_skipped_count from the RPC (Scenario B)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns not_owner when the RPC raises 42501 (Scenario C)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns missing_batch and never calls the DAL when batch id is absent",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "rejectFuelPriceBatchController",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "maps rejected_count and invalidates only the pending cache",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns not_owner on 42501",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7249,6 +7932,140 @@
         ]
       },
       {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPriceBatchReview.write.dal.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "approveFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "resolves profileId internally and calls the RPC with profile + batch + reason",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "never forwards a caller-supplied profileId (actor-first)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns an error when the profile cannot be resolved",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "throws when submissionBatchId is missing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "rejectFuelPriceSubmissionBatchDAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "calls the reject RPC and unwraps rejected_count",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPrices.write.dal.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "upsertVportFuelPriceDAL — unit normalization (owner price update path)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "persists 'gal' when the UI sends 'gallon'",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "passes through 'liter' and 'kwh' unchanged",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "describe",
+            "name": "updateFuelPriceUnitForActorDAL — unit toggle path (the reported crash)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "persists 'gal' when the toggle sends 'gallon'",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "persists 'liter' unchanged",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
+        ]
+      },
+      {
         "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/__tests__/vportFuelPriceSubmissions.read.dal.test.js",
         "appId": "VCSM",
         "root": "apps/VCSM",
@@ -7314,6 +8131,22 @@
           {
             "call": "it",
             "name": "inserts the expected fields",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "normalizes unit 'gallon' to 'gal' (submissions CHECK only accepts gal)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "passes through allowed units unchanged",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7391,7 +8224,7 @@
         "declarations": [
           {
             "call": "describe",
-            "name": "vportLeads.controller — ownership gate rejects unauthorized caller",
+            "name": "vportLeads.controller — ownership gate rejects unauthorized session",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7408,6 +8241,14 @@
           {
             "call": "it",
             "name": "countNewVportLeadsController rejects and does not call any DAL",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "countContactedVportLeadsController rejects and does not call any DAL",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7447,7 +8288,23 @@
           },
           {
             "call": "it",
-            "name": "listVportLeadsController calls readVportBusinessCardLeadsByProfileDAL with resolved profileId",
+            "name": "listVportLeadsController gates the session, then reads via resolved profileId",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "listVportLeadsController forwards statusGroup to the read DAL (lazy active/contacted split)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "countContactedVportLeadsController gates the session then reads the contacted head count",
             "confidence": "HIGH",
             "evidence": [
               "test declaration extracted from AST"
@@ -7612,6 +8469,69 @@
         "confidence": "MEDIUM",
         "evidence": [
           "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/schedule/__tests__/loadDaySchedule.controller.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "loadDayScheduleController — deleted team member filtering",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "excludes a deleted/inactive team member resource from the lanes",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "still renders the active barber lane",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "hides the primary 'Default calendar' lane when staff/barber lanes exist",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "keeps the primary lane for a solo vport with no staff resources",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "only validates the member actor ids that are present",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "LOW",
+        "evidence": [
+          "test declarations found without resolved call path"
         ]
       },
       {
@@ -7967,6 +8887,79 @@
           "model:apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/model/vportSettingsValidation.model.js#hasCompleteAddress",
           "model:apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/model/vportSettingsValidation.model.js#getAddressValidationError",
           "model:apps/VCSM/src/features/vportDashboard/dashboard/cards/settings/model/vportSettingsValidation.model.js#normalizePhoneDigits"
+        ],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeam.read.dal.test.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "declarations": [
+          {
+            "call": "describe",
+            "name": "fetchTeamMembersByProfileId — orphan member filtering",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "returns [] without querying when profileId is missing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "counts an active barber whose actor is still valid",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "does not count a deleted/voided barber",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "does not count a member whose actor record is missing",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "keeps a staff resource with a null member_actor_id (manual, non-linked)",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          },
+          {
+            "call": "it",
+            "name": "aligns totals with loadDaySchedule filtering: only valid + null-member rows remain",
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "dal:apps/VCSM/src/features/vportDashboard/dashboard/cards/team/__tests__/vportTeam.read.dal.test.js#makeBuilder"
         ],
         "writes": [],
         "rpcs": [],
@@ -8791,6 +9784,31 @@
         ]
       },
       {
+        "test": "apps/VCSM/src/shared/lib/safeMediaSrc.js",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "module:apps/VCSM/src/shared/lib/safeMediaSrc.js#safeMediaSrc"
+        ],
+        "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
         "test": "apps/VCSM/src/shared/lib/vport/dashboardVportDetails.model.js",
         "appId": "VCSM",
         "root": "apps/VCSM",
@@ -8929,6 +9947,221 @@
           "module:apps/VCSM/src/sw.js#setupProdCaching"
         ],
         "writes": [],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "module:apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx#isHttpUrl",
+          "module:apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx#CitizenInviteEmail",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx#CTAButton",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx#EmailHeading",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx#EmailText",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx#VibezLayout"
+        ],
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/CitizenInviteEmail.jsx"
+          }
+        ],
+        "rpcs": [],
+        "confidence": "MEDIUM",
+        "evidence": [
+          "test symbols linked to call path"
+        ]
+      },
+      {
+        "test": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": null,
+        "declarations": [
+          {
+            "call": "test",
+            "name": null,
+            "confidence": "HIGH",
+            "evidence": [
+              "test declaration extracted from AST"
+            ]
+          }
+        ],
+        "path": [
+          "module:apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx#isHttpUrl",
+          "module:apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx#LeadConfirmationEmail",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx#CTAButton",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx#Divider",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx#EmailHeading",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx#EmailText",
+          "component:apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx#VibezLayout"
+        ],
+        "writes": [
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/CTAButton.jsx"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/EmailText.jsx"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/components/VibezLayout.jsx"
+          },
+          {
+            "operation": "edge_function_file",
+            "schema": null,
+            "table": null,
+            "rpc": null,
+            "functionName": "_shared",
+            "confidence": "HIGH",
+            "evidence": [
+              "edge function source file exists"
+            ],
+            "owner": "apps",
+            "appId": "VCSM",
+            "root": "apps/VCSM",
+            "feature": null,
+            "ownerKind": "edge-function",
+            "layer": "edge-function",
+            "path": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx",
+            "file": "apps/VCSM/supabase/functions/_shared/emails/templates/LeadConfirmationEmail.jsx"
+          }
+        ],
         "rpcs": [],
         "confidence": "MEDIUM",
         "evidence": [

@@ -1,6 +1,5 @@
 import {
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
   isSupportedLocale,
   normalizeLocale,
   stripLocaleFromPathname
@@ -32,36 +31,32 @@ export function withLocalePath(locale, path) {
   return `/${normalizedLocale}${cleanPath}`;
 }
 
-export function buildLocalizedAlternates(path, options = {}) {
+// SEO consolidation (TICKET-TRAZE-SEO-REMEDIATION-001): the /en and /es route
+// trees render byte-identical English SSR HTML — the Spanish dictionary applies
+// only after client hydration (see lib/language.js), so crawlers receive English
+// for every locale variant. Emitting per-locale self-canonicals plus an
+// en/es/x-default hreflang cluster therefore produced duplicate English URLs and
+// advertised Spanish content that is never server-rendered. Until Spanish is
+// server-rendered, every locale variant consolidates to the single unprefixed
+// English canonical and no hreflang cluster is emitted. The `options` argument
+// (formerly { locale }) is intentionally ignored and retained only so existing
+// call sites keep type-compatibility.
+export function buildLocalizedAlternates(path) {
   const basePath = normalizeLocalePath(path);
-  const locale = options.locale && isSupportedLocale(options.locale)
-    ? options.locale
-    : getLocaleFromPath(path);
-  const canonicalPath = locale ? withLocalePath(locale, basePath) : basePath;
-
-  const languages = Object.fromEntries(
-    SUPPORTED_LOCALES.map((entryLocale) => [
-      entryLocale,
-      buildCanonical(withLocalePath(entryLocale, basePath))
-    ])
-  );
-
-  languages["x-default"] = buildCanonical(basePath);
 
   return {
     basePath,
-    canonicalPath,
-    canonical: buildCanonical(canonicalPath),
-    languages
+    canonicalPath: basePath,
+    canonical: buildCanonical(basePath),
+    languages: undefined
   };
 }
 
 export function listLocalizedSitemapPaths(path) {
-  const basePath = normalizeLocalePath(path);
-  return [
-    { locale: null, path: basePath },
-    ...SUPPORTED_LOCALES.map((locale) => ({ locale, path: withLocalePath(locale, basePath) }))
-  ];
+  // Only the unprefixed English URL is canonical/indexable (see
+  // buildLocalizedAlternates); the /en and /es variants consolidate to it, so the
+  // sitemap lists the base path only — no duplicate locale URLs.
+  return [{ locale: null, path: normalizeLocalePath(path) }];
 }
 
 export function routeLocaleToOpenGraphLocale(routeLocale, fallback = "en_US") {

@@ -23,21 +23,16 @@
 
 /* ── min-width: 761px and max-width: 920px ────────────────── */
 
-@media (min-width: 761px) and (max-width: 920px) {
-  .hp-cat-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .homepage-trending-groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 /* ── min-width: 520px ─────────────────────────────────────── */
 
 @media (min-width: 520px) {
   .pro-lead-quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* When only one action button renders, let it span the full width
+     instead of sitting at 50% in the two-column grid. */
+  .pro-lead-quick-actions > :only-child {
+    grid-column: 1 / -1;
   }
 }
 
@@ -46,10 +41,6 @@
 @media (max-width: 1180px) {
   .homepage-grid-providers--top {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .homepage-trending-groups {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -63,10 +54,6 @@
 
   .homepage-hero-visual {
     display: none;
-  }
-
-  .homepage-trending-groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .country-selector__atlas-shell {
@@ -341,15 +328,6 @@
     align-items: flex-start;
   }
 
-  /* category grid + trending */
-  .hp-cat-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .homepage-trending-groups {
-    grid-template-columns: 1fr;
-  }
-
   /* polish responsive */
   .homepage-hero {
     padding-top: 1.45rem;
@@ -361,8 +339,7 @@
   }
 
   .homepage-directory-surface,
-  .homepage-directory-surface-soft,
-  .homepage-trending-section {
+  .homepage-directory-surface-soft {
     padding: 0.8rem;
     border-radius: 13px;
   }
@@ -409,9 +386,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .hp-providers-row,
-  .hp-cat-grid,
-  .homepage-trending-groups {
+  .hp-providers-row {
     grid-template-columns: 1fr;
   }
 }

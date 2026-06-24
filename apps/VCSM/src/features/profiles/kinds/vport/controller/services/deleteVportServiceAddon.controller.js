@@ -1,7 +1,7 @@
 // src/features/profiles/kinds/vport/controller/services/deleteVportServiceAddon.controller.js
 
 import deleteVportServiceAddonDal from "@/features/profiles/kinds/vport/dal/services/deleteVportServiceAddon.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 export default async function deleteVportServiceAddonController({
   callerActorId,
@@ -22,7 +22,7 @@ export default async function deleteVportServiceAddonController({
 
   // Session-derived ownership (IDENTITY-BOUNDARY-006 / ELEK-004): resolved from the auth
   // session via actor_owners, so it holds whether acting as a user or as the VPORT.
-  await assertSessionOwnsVportActorController({ targetActorId });
+  await assertSessionOwnsActorController({ targetActorId });
 
   await deleteVportServiceAddonDal({
     actorId: targetActorId,

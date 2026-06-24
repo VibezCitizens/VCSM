@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "featureCount": 71,
+  "featureCount": 74,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:02.379Z",
+    "generatedAt": "2026-06-24T06:36:26.850Z",
     "root": "/Users/vcsm/Desktop/VCSM",
     "features": [
       {
@@ -18,9 +18,9 @@
         "root": "apps/Traffic",
         "kind": "platform-area",
         "path": "apps/Traffic/src/app",
-        "sourceFileCount": 61,
+        "sourceFileCount": 69,
         "layerCounts": {
-          "module": 61
+          "module": 69
         },
         "tests": 0,
         "status": "active"
@@ -32,15 +32,15 @@
         "root": "apps/Traffic",
         "kind": "feature",
         "path": "apps/Traffic/src/features/answers",
-        "sourceFileCount": 41,
+        "sourceFileCount": 46,
         "layerCounts": {
           "adapter": 1,
-          "component": 13,
+          "component": 16,
           "controller": 3,
-          "dal": 8,
-          "hook": 3,
+          "dal": 9,
+          "hook": 5,
           "model": 9,
-          "screen": 4
+          "screen": 3
         },
         "tests": 0,
         "status": "active"
@@ -67,10 +67,10 @@
         "root": "apps/Traffic",
         "kind": "feature",
         "path": "apps/Traffic/src/features/conversion",
-        "sourceFileCount": 8,
+        "sourceFileCount": 10,
         "layerCounts": {
           "adapter": 1,
-          "component": 2,
+          "component": 4,
           "controller": 1,
           "dal": 1,
           "hook": 1,
@@ -87,10 +87,10 @@
         "root": "apps/Traffic",
         "kind": "feature",
         "path": "apps/Traffic/src/features/directories",
-        "sourceFileCount": 14,
+        "sourceFileCount": 12,
         "layerCounts": {
           "adapter": 1,
-          "component": 9,
+          "component": 7,
           "dal": 1,
           "module": 3
         },
@@ -104,10 +104,25 @@
         "root": "apps/Traffic",
         "kind": "feature",
         "path": "apps/Traffic/src/features/home",
-        "sourceFileCount": 15,
+        "sourceFileCount": 14,
         "layerCounts": {
           "adapter": 1,
-          "component": 14
+          "component": 13
+        },
+        "tests": 0,
+        "status": "active"
+      },
+      {
+        "feature": "legal",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "kind": "feature",
+        "path": "apps/Traffic/src/features/legal",
+        "sourceFileCount": 4,
+        "layerCounts": {
+          "adapter": 1,
+          "screen": 3
         },
         "tests": 0,
         "status": "active"
@@ -145,15 +160,31 @@
         "status": "active"
       },
       {
+        "feature": "search",
+        "app": "Traffic",
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "kind": "feature",
+        "path": "apps/Traffic/src/features/search",
+        "sourceFileCount": 3,
+        "layerCounts": {
+          "component": 1,
+          "dal": 1,
+          "module": 1
+        },
+        "tests": 0,
+        "status": "active"
+      },
+      {
         "feature": "shared",
         "app": "Traffic",
         "appId": "Traffic",
         "root": "apps/Traffic",
         "kind": "shared",
         "path": "apps/Traffic/src/shared",
-        "sourceFileCount": 13,
+        "sourceFileCount": 17,
         "layerCounts": {
-          "component": 13
+          "component": 17
         },
         "tests": 0,
         "status": "active"
@@ -177,9 +208,9 @@
         "root": "apps/VCSM",
         "kind": "platform-area",
         "path": "apps/VCSM/src/app",
-        "sourceFileCount": 38,
+        "sourceFileCount": 39,
         "layerCounts": {
-          "module": 32,
+          "module": 33,
           "component": 3,
           "hook": 3
         },
@@ -251,14 +282,14 @@
         "root": "apps/VCSM",
         "kind": "feature",
         "path": "apps/VCSM/src/features/authorization",
-        "sourceFileCount": 6,
+        "sourceFileCount": 8,
         "layerCounts": {
           "adapter": 1,
-          "controller": 2,
+          "controller": 4,
           "dal": 2,
           "model": 1
         },
-        "tests": 0,
+        "tests": 1,
         "status": "active"
       },
       {
@@ -287,16 +318,16 @@
         "root": "apps/VCSM",
         "kind": "feature",
         "path": "apps/VCSM/src/features/booking",
-        "sourceFileCount": 68,
+        "sourceFileCount": 65,
         "layerCounts": {
           "adapter": 1,
-          "controller": 16,
+          "controller": 13,
           "dal": 23,
           "hook": 16,
           "model": 11,
           "module": 1
         },
-        "tests": 1,
+        "tests": 0,
         "status": "active"
       },
       {
@@ -338,6 +369,46 @@
           "screen": 11,
           "model": 1,
           "state": 1
+        },
+        "tests": 0,
+        "status": "active"
+      },
+      {
+        "feature": "claim",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "kind": "feature",
+        "path": "apps/VCSM/src/features/claim",
+        "sourceFileCount": 14,
+        "layerCounts": {
+          "adapter": 1,
+          "component": 6,
+          "controller": 2,
+          "dal": 2,
+          "hook": 1,
+          "model": 1,
+          "screen": 1
+        },
+        "tests": 0,
+        "status": "active"
+      },
+      {
+        "feature": "claimOnboarding",
+        "app": "VCSM",
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "kind": "feature",
+        "path": "apps/VCSM/src/features/claimOnboarding",
+        "sourceFileCount": 10,
+        "layerCounts": {
+          "adapter": 1,
+          "component": 3,
+          "controller": 1,
+          "dal": 1,
+          "hook": 1,
+          "model": 2,
+          "screen": 1
         },
         "tests": 0,
         "status": "active"
@@ -554,7 +625,7 @@
         "root": "apps/VCSM",
         "kind": "feature",
         "path": "apps/VCSM/src/features/notifications",
-        "sourceFileCount": 47,
+        "sourceFileCount": 48,
         "layerCounts": {
           "adapter": 1,
           "hook": 5,
@@ -562,7 +633,7 @@
           "dal": 4,
           "module": 8,
           "model": 2,
-          "screen": 22,
+          "screen": 23,
           "component": 1
         },
         "tests": 0,
@@ -653,12 +724,12 @@
         "root": "apps/VCSM",
         "kind": "feature",
         "path": "apps/VCSM/src/features/public",
-        "sourceFileCount": 64,
+        "sourceFileCount": 65,
         "layerCounts": {
           "adapter": 2,
           "screen": 10,
           "controller": 6,
-          "dal": 11,
+          "dal": 12,
           "hook": 9,
           "module": 14,
           "model": 5,
@@ -776,18 +847,6 @@
         "status": "active"
       },
       {
-        "feature": "vgrid",
-        "app": "VCSM",
-        "appId": "VCSM",
-        "root": "apps/VCSM",
-        "kind": "feature",
-        "path": "apps/VCSM/src/features/vgrid",
-        "sourceFileCount": 0,
-        "layerCounts": {},
-        "tests": 0,
-        "status": "active"
-      },
-      {
         "feature": "void",
         "app": "VCSM",
         "appId": "VCSM",
@@ -835,18 +894,18 @@
         "root": "apps/VCSM",
         "kind": "feature",
         "path": "apps/VCSM/src/features/vportDashboard",
-        "sourceFileCount": 201,
+        "sourceFileCount": 218,
         "layerCounts": {
           "adapter": 1,
-          "component": 41,
-          "module": 45,
-          "controller": 23,
-          "dal": 33,
-          "hook": 27,
-          "model": 23,
+          "component": 43,
+          "module": 47,
+          "controller": 25,
+          "dal": 38,
+          "hook": 28,
+          "model": 28,
           "screen": 8
         },
-        "tests": 20,
+        "tests": 28,
         "status": "active"
       },
       {
@@ -896,9 +955,9 @@
         "root": "apps/VCSM",
         "kind": "services",
         "path": "apps/VCSM/src/services",
-        "sourceFileCount": 17,
+        "sourceFileCount": 18,
         "layerCounts": {
-          "module": 16,
+          "module": 17,
           "dal": 1
         },
         "tests": 0,
@@ -911,10 +970,10 @@
         "root": "apps/VCSM",
         "kind": "shared",
         "path": "apps/VCSM/src/shared",
-        "sourceFileCount": 47,
+        "sourceFileCount": 49,
         "layerCounts": {
           "component": 19,
-          "module": 20,
+          "module": 22,
           "hook": 5,
           "model": 2,
           "style": 1

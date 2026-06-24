@@ -1,6 +1,6 @@
 import { findBarberVportForUserDAL } from "@/features/join/dal/barberVport.read.dal";
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from "@/features/join/dal/joinInvite.dal";
-import { assertActorOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 export async function loadQrJoin(token) {
   if (!token) return null;
@@ -18,7 +18,7 @@ export async function findCurrentUserBarberVport({ readCurrentAuthUserDAL } = {}
 
 export async function acceptQrJoin(token, barberVportActorId, callerActorId) {
   if (!callerActorId) throw new Error("acceptQrJoin: callerActorId required");
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId: callerActorId,
     targetActorId: barberVportActorId,
   });
@@ -54,7 +54,7 @@ export async function createBarberVportAndAcceptQr(token, vportName, { createVpo
     directoryVisible: true,
   });
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId: callerActorId,
     targetActorId: vportResult.actorId,
   });

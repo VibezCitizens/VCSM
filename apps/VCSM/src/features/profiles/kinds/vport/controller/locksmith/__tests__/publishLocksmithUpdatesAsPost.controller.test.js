@@ -15,8 +15,8 @@ vi.mock("@/shared/utils/resolveRealm", () => ({
   PUBLIC_REALM_ID: "realm-public-001",
 }));
 
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: vi.fn(),
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: vi.fn(),
 }));
 
 import { publishLocksmithServiceAreaUpdateAsPostController } from "../publishLocksmithServiceAreaUpdateAsPost.controller";
@@ -29,14 +29,14 @@ import {
   hasRecentLocksmithPortfolioPostDAL,
 } from "@/features/profiles/kinds/vport/dal/locksmith/vportLocksmithPost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const identityActorId = "actor-user-owner-1";
 const actorId = "actor-vport-locksmith-1";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  assertSessionOwnsVportActorController.mockResolvedValue({ ok: true });
+  assertSessionOwnsActorController.mockResolvedValue({ ok: true });
   resolveVportLocksmithNameDAL.mockResolvedValue("Locksmith Vport");
   hasRecentLocksmithServiceAreaPostDAL.mockResolvedValue(false);
   hasRecentLocksmithHoursPostDAL.mockResolvedValue(false);
@@ -56,7 +56,7 @@ describe("locksmith publish controllers", () => {
       area: { label: "Austin" },
     });
 
-    expect(assertSessionOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: actorId,
     });
     expect(createSystemPost).toHaveBeenCalledWith(
@@ -65,7 +65,7 @@ describe("locksmith publish controllers", () => {
   });
 
   it("hours publish does not create a post when ownership fails", async () => {
-    assertSessionOwnsVportActorController.mockRejectedValue(new Error("not owner"));
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
     await expect(
       publishLocksmithHoursUpdateAsPostController({
         identityActorId,

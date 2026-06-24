@@ -1,6 +1,6 @@
 # Scanner AST Readiness Report
 
-Generated: 2026-06-08T13:39:06.995Z
+Generated: 2026-06-24T06:36:32.070Z
 
 ## Accuracy Upgrade
 
@@ -17,11 +17,11 @@ Generated: 2026-06-08T13:39:06.995Z
 
 | Output | Count |
 |---|---:|
-| Dependencies | 385 |
-| Routes | 243 |
-| Writes | 491 |
-| RPCs | 73 |
-| Edge functions | 52 |
+| Dependencies | 404 |
+| Routes | 253 |
+| Writes | 500 |
+| RPCs | 82 |
+| Edge functions | 59 |
 | Engine candidates | 17 |
 
 ## Consumer Readiness

@@ -1,6 +1,6 @@
 import listBookingResourcesByOwnerActorIdDAL from "@/features/booking/dal/listBookingResourcesByOwnerActorId.dal";
 import { mapBookingResourceRows } from "@/features/booking/model/bookingResource.model";
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 export async function listOwnerBookingResourcesController({
   requestActorId,
@@ -14,7 +14,7 @@ export async function listOwnerBookingResourcesController({
     throw new Error("listOwnerBookingResourcesController: ownerActorId is required");
   }
 
-  await assertActorOwnsVportActorController({ requestActorId, targetActorId: ownerActorId });
+  await assertActorOwnsActorController({ requestActorId, targetActorId: ownerActorId });
 
   const rows = await listBookingResourcesByOwnerActorIdDAL({
     ownerActorId,

@@ -41,8 +41,8 @@ vi.mock("@/features/vportDashboard/dal/read/listVportBookingsForProfileDay.read.
 vi.mock("@/features/vportDashboard/dal/read/vportServices.read.dal", () => ({
   listVportServicesByProfileIdDAL: mockListServices,
 }));
-vi.mock("@/features/booking/adapters/booking.adapter", () => ({
-  assertSessionOwnsVportActorController: mockAssertOwns,
+vi.mock("@/features/authorization/adapters/authorization.adapter", () => ({
+  assertSessionOwnsActorController: mockAssertOwns,
 }));
 vi.mock("@/services/monitoring/vcsmMonitoring", () => ({
   captureVcsmError: mockCapture,

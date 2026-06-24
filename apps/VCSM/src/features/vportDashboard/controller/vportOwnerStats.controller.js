@@ -4,7 +4,7 @@ import {
   listVportResourcesByProfileIdDAL,
   listVportStaffResourcesByProfileIdDAL,
 } from "@/features/vportDashboard/dal/read/vportResource.read.dal";
-import { assertSessionOwnsVportActorController } from "@/features/booking/adapters/booking.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 function todayRange() {
@@ -34,7 +34,7 @@ export async function loadOwnerQuickStatsController({ actorId, callerActorId } =
     // reaching this dashboard is the VPORT itself, so the actor gate's user-kind
     // requirement cannot be satisfied. The session gate verifies the authenticated
     // user owns this vport via actor_owners, without trusting any UI-passed actor id.
-    await assertSessionOwnsVportActorController({ targetActorId: actorId });
+    await assertSessionOwnsActorController({ targetActorId: actorId });
 
     const profile = await readVportProfileByActorIdDAL({ actorId });
     if (!profile?.id) throw new Error("Could not resolve vport profile.");

@@ -1,19 +1,19 @@
 # Scanner Callgraph Validation Report
 
-Generated: 2026-06-08T13:39:06.995Z
+Generated: 2026-06-24T06:36:32.071Z
 
 ## Validation Results
 
 | Area | Count | Status |
 |---|---:|---|
-| Call graph nodes | 7552 | PASS |
-| Call graph edges | 9850 | PASS |
-| Route execution paths | 243 | PASS |
-| Write execution paths | 491 | PASS |
-| RPC execution paths | 73 | PASS |
-| Edge execution paths | 52 | PASS |
-| Test traceability paths | 110 | PASS |
-| Security paths | 616 | PASS |
+| Call graph nodes | 7688 | PASS |
+| Call graph edges | 10129 | PASS |
+| Route execution paths | 253 | PASS |
+| Write execution paths | 559 | PASS |
+| RPC execution paths | 82 | PASS |
+| Edge execution paths | 118 | PASS |
+| Test traceability paths | 126 | PASS |
+| Security paths | 699 | PASS |
 | Engine execution paths | 29 | PASS |
 
 ## Scope Fixtures

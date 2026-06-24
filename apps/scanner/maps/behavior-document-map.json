@@ -1,14 +1,14 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "MEDIUM",
-  "behaviorDocumentCoverageCount": 1113,
+  "behaviorDocumentCoverageCount": 1122,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:04.978Z",
+    "generatedAt": "2026-06-24T06:36:30.047Z",
     "documents": [
       {
         "behaviorId": "BEH-ACTORS-ACTORS-001",
@@ -2251,6 +2251,21 @@
         ]
       },
       {
+        "behaviorId": "BEH-AUTHORIZATION-AUTHORIZATION-003",
+        "behaviorName": "Read Actor Status",
+        "feature": "authorization",
+        "module": "authorization",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
         "behaviorId": "BEH-BLOCK-BLOCK-001",
         "behaviorName": "Block Actions",
         "feature": "block",
@@ -3255,76 +3270,6 @@
       },
       {
         "behaviorId": "BEH-BOOKING-BOOKING-002",
-        "behaviorName": "Assert Actor Owns Vport Actor",
-        "feature": "booking",
-        "module": "booking",
-        "documents": [
-          {
-            "document": "ARCHITECTURE.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/ARCHITECTURE.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "BEHAVIOR.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/BEHAVIOR.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "CURRENT_STATUS.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/CURRENT_STATUS.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "README.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/README.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "SECURITY.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/SECURITY.md",
-            "coverage": "COMPLETE"
-          }
-        ],
-        "coverage": "PARTIAL",
-        "missing": []
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-003",
-        "behaviorName": "Assert Session Owns Vport Actor",
-        "feature": "booking",
-        "module": "booking",
-        "documents": [
-          {
-            "document": "ARCHITECTURE.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/ARCHITECTURE.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "BEHAVIOR.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/BEHAVIOR.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "CURRENT_STATUS.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/CURRENT_STATUS.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "README.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/README.md",
-            "coverage": "COMPLETE"
-          },
-          {
-            "document": "SECURITY.md",
-            "file": "ZZnotforproduction/APPS/VCSM/features/booking/SECURITY.md",
-            "coverage": "COMPLETE"
-          }
-        ],
-        "coverage": "PARTIAL",
-        "missing": []
-      },
-      {
-        "behaviorId": "BEH-BOOKING-BOOKING-004",
         "behaviorName": "Booking Availability",
         "feature": "booking",
         "module": "booking",
@@ -3359,7 +3304,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-005",
+        "behaviorId": "BEH-BOOKING-BOOKING-003",
         "behaviorName": "Booking Context Resolver",
         "feature": "booking",
         "module": "booking",
@@ -3394,7 +3339,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-006",
+        "behaviorId": "BEH-BOOKING-BOOKING-004",
         "behaviorName": "Booking History",
         "feature": "booking",
         "module": "booking",
@@ -3429,7 +3374,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-007",
+        "behaviorId": "BEH-BOOKING-BOOKING-005",
         "behaviorName": "Booking Ops",
         "feature": "booking",
         "module": "booking",
@@ -3464,7 +3409,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-008",
+        "behaviorId": "BEH-BOOKING-BOOKING-006",
         "behaviorName": "Booking Service Profiles",
         "feature": "booking",
         "module": "booking",
@@ -3499,7 +3444,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-009",
+        "behaviorId": "BEH-BOOKING-BOOKING-007",
         "behaviorName": "Booking Services",
         "feature": "booking",
         "module": "booking",
@@ -3534,7 +3479,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-010",
+        "behaviorId": "BEH-BOOKING-BOOKING-008",
         "behaviorName": "Cancel Booking",
         "feature": "booking",
         "module": "booking",
@@ -3569,7 +3514,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-011",
+        "behaviorId": "BEH-BOOKING-BOOKING-009",
         "behaviorName": "Confirm Booking",
         "feature": "booking",
         "module": "booking",
@@ -3604,7 +3549,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-012",
+        "behaviorId": "BEH-BOOKING-BOOKING-010",
         "behaviorName": "Create Booking",
         "feature": "booking",
         "module": "booking",
@@ -3639,7 +3584,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-013",
+        "behaviorId": "BEH-BOOKING-BOOKING-011",
         "behaviorName": "Ensure Owner Booking Resource",
         "feature": "booking",
         "module": "booking",
@@ -3674,7 +3619,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-014",
+        "behaviorId": "BEH-BOOKING-BOOKING-012",
         "behaviorName": "Get Booking Service Profiles",
         "feature": "booking",
         "module": "booking",
@@ -3709,7 +3654,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-015",
+        "behaviorId": "BEH-BOOKING-BOOKING-013",
         "behaviorName": "Get Resource Availability",
         "feature": "booking",
         "module": "booking",
@@ -3744,7 +3689,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-016",
+        "behaviorId": "BEH-BOOKING-BOOKING-014",
         "behaviorName": "Insert Availability Exceptions",
         "feature": "booking",
         "module": "booking",
@@ -3779,7 +3724,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-017",
+        "behaviorId": "BEH-BOOKING-BOOKING-015",
         "behaviorName": "Insert Availability Rules",
         "feature": "booking",
         "module": "booking",
@@ -3814,7 +3759,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-018",
+        "behaviorId": "BEH-BOOKING-BOOKING-016",
         "behaviorName": "Insert Bookings",
         "feature": "booking",
         "module": "booking",
@@ -3849,7 +3794,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-019",
+        "behaviorId": "BEH-BOOKING-BOOKING-017",
         "behaviorName": "Insert Resources",
         "feature": "booking",
         "module": "booking",
@@ -3884,7 +3829,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-020",
+        "behaviorId": "BEH-BOOKING-BOOKING-018",
         "behaviorName": "Insert Service Booking Profiles",
         "feature": "booking",
         "module": "booking",
@@ -3919,7 +3864,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-021",
+        "behaviorId": "BEH-BOOKING-BOOKING-019",
         "behaviorName": "Invalidate Booking Availability",
         "feature": "booking",
         "module": "booking",
@@ -3954,7 +3899,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-022",
+        "behaviorId": "BEH-BOOKING-BOOKING-020",
         "behaviorName": "List Booking Service Profiles By Service Ids",
         "feature": "booking",
         "module": "booking",
@@ -3989,7 +3934,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-023",
+        "behaviorId": "BEH-BOOKING-BOOKING-021",
         "behaviorName": "List My Bookings",
         "feature": "booking",
         "module": "booking",
@@ -4024,7 +3969,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-024",
+        "behaviorId": "BEH-BOOKING-BOOKING-022",
         "behaviorName": "List Owner Booking Resources",
         "feature": "booking",
         "module": "booking",
@@ -4059,7 +4004,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-025",
+        "behaviorId": "BEH-BOOKING-BOOKING-023",
         "behaviorName": "Location Resources",
         "feature": "booking",
         "module": "booking",
@@ -4094,7 +4039,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-026",
+        "behaviorId": "BEH-BOOKING-BOOKING-024",
         "behaviorName": "Manage Availability",
         "feature": "booking",
         "module": "booking",
@@ -4129,7 +4074,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-027",
+        "behaviorId": "BEH-BOOKING-BOOKING-025",
         "behaviorName": "Normalize Duration Minutes",
         "feature": "booking",
         "module": "booking",
@@ -4164,7 +4109,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-028",
+        "behaviorId": "BEH-BOOKING-BOOKING-026",
         "behaviorName": "Normalize Ids",
         "feature": "booking",
         "module": "booking",
@@ -4199,7 +4144,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-029",
+        "behaviorId": "BEH-BOOKING-BOOKING-027",
         "behaviorName": "Normalize Service Ids",
         "feature": "booking",
         "module": "booking",
@@ -4234,7 +4179,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-030",
+        "behaviorId": "BEH-BOOKING-BOOKING-028",
         "behaviorName": "Organization Locations",
         "feature": "booking",
         "module": "booking",
@@ -4269,7 +4214,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-031",
+        "behaviorId": "BEH-BOOKING-BOOKING-029",
         "behaviorName": "Organization Workspace",
         "feature": "booking",
         "module": "booking",
@@ -4304,7 +4249,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-032",
+        "behaviorId": "BEH-BOOKING-BOOKING-030",
         "behaviorName": "Owner Booking Resources",
         "feature": "booking",
         "module": "booking",
@@ -4339,7 +4284,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-033",
+        "behaviorId": "BEH-BOOKING-BOOKING-031",
         "behaviorName": "Pick Primary Or First",
         "feature": "booking",
         "module": "booking",
@@ -4374,7 +4319,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-034",
+        "behaviorId": "BEH-BOOKING-BOOKING-032",
         "behaviorName": "Qr Links",
         "feature": "booking",
         "module": "booking",
@@ -4409,7 +4354,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-035",
+        "behaviorId": "BEH-BOOKING-BOOKING-033",
         "behaviorName": "Read Vport Services By Actor",
         "feature": "booking",
         "module": "booking",
@@ -4444,7 +4389,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-036",
+        "behaviorId": "BEH-BOOKING-BOOKING-034",
         "behaviorName": "Resolve Vport Profile Id",
         "feature": "booking",
         "module": "booking",
@@ -4479,7 +4424,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-037",
+        "behaviorId": "BEH-BOOKING-BOOKING-035",
         "behaviorName": "Resource Service Overrides",
         "feature": "booking",
         "module": "booking",
@@ -4514,7 +4459,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-038",
+        "behaviorId": "BEH-BOOKING-BOOKING-036",
         "behaviorName": "Set Availability Exception",
         "feature": "booking",
         "module": "booking",
@@ -4549,7 +4494,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-039",
+        "behaviorId": "BEH-BOOKING-BOOKING-037",
         "behaviorName": "Set Availability Rule",
         "feature": "booking",
         "module": "booking",
@@ -4584,7 +4529,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-040",
+        "behaviorId": "BEH-BOOKING-BOOKING-038",
         "behaviorName": "Set Resource Slot Duration",
         "feature": "booking",
         "module": "booking",
@@ -4619,7 +4564,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-041",
+        "behaviorId": "BEH-BOOKING-BOOKING-039",
         "behaviorName": "Update Availability Exceptions",
         "feature": "booking",
         "module": "booking",
@@ -4654,7 +4599,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-042",
+        "behaviorId": "BEH-BOOKING-BOOKING-040",
         "behaviorName": "Update Availability Rules",
         "feature": "booking",
         "module": "booking",
@@ -4689,7 +4634,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-043",
+        "behaviorId": "BEH-BOOKING-BOOKING-041",
         "behaviorName": "Update Bookings",
         "feature": "booking",
         "module": "booking",
@@ -4724,7 +4669,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-044",
+        "behaviorId": "BEH-BOOKING-BOOKING-042",
         "behaviorName": "Update Service Booking Profiles",
         "feature": "booking",
         "module": "booking",
@@ -4759,7 +4704,7 @@
         "missing": []
       },
       {
-        "behaviorId": "BEH-BOOKING-BOOKING-045",
+        "behaviorId": "BEH-BOOKING-BOOKING-043",
         "behaviorName": "Upsert Resource Services",
         "feature": "booking",
         "module": "booking",
@@ -6978,6 +6923,96 @@
         ],
         "coverage": "PARTIAL",
         "missing": [
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-001",
+        "behaviorName": "Claim Profile",
+        "feature": "claim",
+        "module": "claim",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-002",
+        "behaviorName": "Resolve Provider",
+        "feature": "claim",
+        "module": "claim",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-003",
+        "behaviorName": "Rpc Submit Business Claim",
+        "feature": "claim",
+        "module": "claim",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIM-CLAIM-004",
+        "behaviorName": "Submit Claim",
+        "feature": "claim",
+        "module": "claim",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-001",
+        "behaviorName": "Claim Approval Discovery",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-CLAIMONBOARDING-CLAIMONBOARDING-002",
+        "behaviorName": "Load Approved Claim Vports",
+        "feature": "claimOnboarding",
+        "module": "claimOnboarding",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
           "README.md"
         ]
       },
@@ -9441,12 +9476,17 @@
         "behaviorName": "Flyer Editor",
         "feature": "flyerBuilder",
         "module": "flyerBuilder",
-        "documents": [],
-        "coverage": "MISSING",
+        "documents": [
+          {
+            "document": "SECURITY.md",
+            "file": "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
+            "coverage": "COMPLETE"
+          }
+        ],
+        "coverage": "PARTIAL",
         "missing": [
           "ARCHITECTURE.md",
           "BEHAVIOR.md",
-          "SECURITY.md",
           "CURRENT_STATUS.md",
           "README.md"
         ]
@@ -9456,12 +9496,17 @@
         "behaviorName": "Save Flyer Public Details Ctrl",
         "feature": "flyerBuilder",
         "module": "flyerBuilder",
-        "documents": [],
-        "coverage": "MISSING",
+        "documents": [
+          {
+            "document": "SECURITY.md",
+            "file": "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
+            "coverage": "COMPLETE"
+          }
+        ],
+        "coverage": "PARTIAL",
         "missing": [
           "ARCHITECTURE.md",
           "BEHAVIOR.md",
-          "SECURITY.md",
           "CURRENT_STATUS.md",
           "README.md"
         ]
@@ -9471,12 +9516,17 @@
         "behaviorName": "Upload Flyer Image Ctrl",
         "feature": "flyerBuilder",
         "module": "flyerBuilder",
-        "documents": [],
-        "coverage": "MISSING",
+        "documents": [
+          {
+            "document": "SECURITY.md",
+            "file": "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
+            "coverage": "COMPLETE"
+          }
+        ],
+        "coverage": "PARTIAL",
         "missing": [
           "ARCHITECTURE.md",
           "BEHAVIOR.md",
-          "SECURITY.md",
           "CURRENT_STATUS.md",
           "README.md"
         ]
@@ -9486,12 +9536,17 @@
         "behaviorName": "Upsert Profile Public Details",
         "feature": "flyerBuilder",
         "module": "flyerBuilder",
-        "documents": [],
-        "coverage": "MISSING",
+        "documents": [
+          {
+            "document": "SECURITY.md",
+            "file": "ZZnotforproduction/APPS/VCSM/features/flyerBuilder/SECURITY.md",
+            "coverage": "COMPLETE"
+          }
+        ],
+        "coverage": "PARTIAL",
         "missing": [
           "ARCHITECTURE.md",
           "BEHAVIOR.md",
-          "SECURITY.md",
           "CURRENT_STATUS.md",
           "README.md"
         ]
@@ -18583,21 +18638,6 @@
       },
       {
         "behaviorId": "BEH-PROFILES-KINDS-125",
-        "behaviorName": "Upsert Locksmith Service Areas",
-        "feature": "profiles",
-        "module": "kinds",
-        "documents": [],
-        "coverage": "MISSING",
-        "missing": [
-          "ARCHITECTURE.md",
-          "BEHAVIOR.md",
-          "SECURITY.md",
-          "CURRENT_STATUS.md",
-          "README.md"
-        ]
-      },
-      {
-        "behaviorId": "BEH-PROFILES-KINDS-126",
         "behaviorName": "Upsert Locksmith Service Details",
         "feature": "profiles",
         "module": "kinds",
@@ -18612,7 +18652,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-127",
+        "behaviorId": "BEH-PROFILES-KINDS-126",
         "behaviorName": "Upsert Rates",
         "feature": "profiles",
         "module": "kinds",
@@ -18627,7 +18667,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-128",
+        "behaviorId": "BEH-PROFILES-KINDS-127",
         "behaviorName": "Upsert Services",
         "feature": "profiles",
         "module": "kinds",
@@ -18642,7 +18682,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-129",
+        "behaviorId": "BEH-PROFILES-KINDS-128",
         "behaviorName": "Upsert Vport Rate",
         "feature": "profiles",
         "module": "kinds",
@@ -18657,7 +18697,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-130",
+        "behaviorId": "BEH-PROFILES-KINDS-129",
         "behaviorName": "Upsert Vport Services",
         "feature": "profiles",
         "module": "kinds",
@@ -18672,7 +18712,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-131",
+        "behaviorId": "BEH-PROFILES-KINDS-130",
         "behaviorName": "Username Profile Redirect",
         "feature": "profiles",
         "module": "kinds",
@@ -18687,7 +18727,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-132",
+        "behaviorId": "BEH-PROFILES-KINDS-131",
         "behaviorName": "Vport Actor Id By Vport Id",
         "feature": "profiles",
         "module": "kinds",
@@ -18702,7 +18742,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-133",
+        "behaviorId": "BEH-PROFILES-KINDS-132",
         "behaviorName": "Vport Actor Menu",
         "feature": "profiles",
         "module": "kinds",
@@ -18717,7 +18757,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-134",
+        "behaviorId": "BEH-PROFILES-KINDS-133",
         "behaviorName": "Vport Actor Menu Categories Mutations",
         "feature": "profiles",
         "module": "kinds",
@@ -18732,7 +18772,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-135",
+        "behaviorId": "BEH-PROFILES-KINDS-134",
         "behaviorName": "Vport Actor Menu Items Mutations",
         "feature": "profiles",
         "module": "kinds",
@@ -18747,7 +18787,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-136",
+        "behaviorId": "BEH-PROFILES-KINDS-135",
         "behaviorName": "Vport Actor Menu Manage State",
         "feature": "profiles",
         "module": "kinds",
@@ -18762,7 +18802,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-137",
+        "behaviorId": "BEH-PROFILES-KINDS-136",
         "behaviorName": "Vport Booking Mutations",
         "feature": "profiles",
         "module": "kinds",
@@ -18777,7 +18817,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-138",
+        "behaviorId": "BEH-PROFILES-KINDS-137",
         "behaviorName": "Vport Booking View",
         "feature": "profiles",
         "module": "kinds",
@@ -18792,7 +18832,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-139",
+        "behaviorId": "BEH-PROFILES-KINDS-138",
         "behaviorName": "Vport Content Pages",
         "feature": "profiles",
         "module": "kinds",
@@ -18807,7 +18847,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-140",
+        "behaviorId": "BEH-PROFILES-KINDS-139",
         "behaviorName": "Vport Dashboard Details",
         "feature": "profiles",
         "module": "kinds",
@@ -18822,7 +18862,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-141",
+        "behaviorId": "BEH-PROFILES-KINDS-140",
         "behaviorName": "Vport Owner Quick Stats",
         "feature": "profiles",
         "module": "kinds",
@@ -18837,7 +18877,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-142",
+        "behaviorId": "BEH-PROFILES-KINDS-141",
         "behaviorName": "Vport Portfolio",
         "feature": "profiles",
         "module": "kinds",
@@ -18852,7 +18892,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-143",
+        "behaviorId": "BEH-PROFILES-KINDS-142",
         "behaviorName": "Vport Profile Actions",
         "feature": "profiles",
         "module": "kinds",
@@ -18867,7 +18907,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-144",
+        "behaviorId": "BEH-PROFILES-KINDS-143",
         "behaviorName": "Vport Profile By Slug",
         "feature": "profiles",
         "module": "kinds",
@@ -18882,7 +18922,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-145",
+        "behaviorId": "BEH-PROFILES-KINDS-144",
         "behaviorName": "Vport Profile Ops",
         "feature": "profiles",
         "module": "kinds",
@@ -18897,7 +18937,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-146",
+        "behaviorId": "BEH-PROFILES-KINDS-145",
         "behaviorName": "Vport Public Booking",
         "feature": "profiles",
         "module": "kinds",
@@ -18912,7 +18952,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-147",
+        "behaviorId": "BEH-PROFILES-KINDS-146",
         "behaviorName": "Vport Public Content",
         "feature": "profiles",
         "module": "kinds",
@@ -18927,7 +18967,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-148",
+        "behaviorId": "BEH-PROFILES-KINDS-147",
         "behaviorName": "Vport Public Content Page",
         "feature": "profiles",
         "module": "kinds",
@@ -18942,7 +18982,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-149",
+        "behaviorId": "BEH-PROFILES-KINDS-148",
         "behaviorName": "Vport Rates",
         "feature": "profiles",
         "module": "kinds",
@@ -18957,7 +18997,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-150",
+        "behaviorId": "BEH-PROFILES-KINDS-149",
         "behaviorName": "Vport Review Compose",
         "feature": "profiles",
         "module": "kinds",
@@ -18972,7 +19012,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-151",
+        "behaviorId": "BEH-PROFILES-KINDS-150",
         "behaviorName": "Vport Review List",
         "feature": "profiles",
         "module": "kinds",
@@ -18987,7 +19027,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-152",
+        "behaviorId": "BEH-PROFILES-KINDS-151",
         "behaviorName": "Vport Review Mine",
         "feature": "profiles",
         "module": "kinds",
@@ -19002,7 +19042,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-153",
+        "behaviorId": "BEH-PROFILES-KINDS-152",
         "behaviorName": "Vport Reviews",
         "feature": "profiles",
         "module": "kinds",
@@ -19017,7 +19057,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-154",
+        "behaviorId": "BEH-PROFILES-KINDS-153",
         "behaviorName": "Vport Services",
         "feature": "profiles",
         "module": "kinds",
@@ -19032,7 +19072,7 @@
         ]
       },
       {
-        "behaviorId": "BEH-PROFILES-KINDS-155",
+        "behaviorId": "BEH-PROFILES-KINDS-154",
         "behaviorName": "Vport Type",
         "feature": "profiles",
         "module": "kinds",
@@ -26072,7 +26112,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-005",
-        "behaviorName": "After Submit Suggestion",
+        "behaviorName": "Approve Fuel Price Batch",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26147,7 +26187,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-010",
-        "behaviorName": "Count New Vport Leads",
+        "behaviorName": "Count Contacted Vport Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26162,7 +26202,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-011",
-        "behaviorName": "Create Owner Booking",
+        "behaviorName": "Count New Vport Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26177,7 +26217,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-012",
-        "behaviorName": "Create Schedule Booking",
+        "behaviorName": "Create Owner Booking",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26192,7 +26232,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-013",
-        "behaviorName": "Create Vport Public Booking",
+        "behaviorName": "Create Schedule Booking",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26207,7 +26247,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-014",
-        "behaviorName": "Decline Team Request",
+        "behaviorName": "Create Vport Public Booking",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26222,7 +26262,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-015",
-        "behaviorName": "Delete Business Card Leads",
+        "behaviorName": "Customer Search",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26237,7 +26277,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-016",
-        "behaviorName": "Delete Resources",
+        "behaviorName": "Decline Team Request",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26252,7 +26292,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-017",
-        "behaviorName": "Delete Vport Lead",
+        "behaviorName": "Delete Business Card Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26267,7 +26307,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-018",
-        "behaviorName": "Exchange Rate Editor",
+        "behaviorName": "Delete Resources",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26282,7 +26322,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-019",
-        "behaviorName": "Fast Count New Vport Leads",
+        "behaviorName": "Delete Vport Lead",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26297,7 +26337,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-020",
-        "behaviorName": "Fetch Barbershop Invite",
+        "behaviorName": "Exchange Rate Editor",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26312,7 +26352,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-021",
-        "behaviorName": "Find Eligible Barbers",
+        "behaviorName": "Fast Count New Vport Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26327,7 +26367,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-022",
-        "behaviorName": "Fuel Label",
+        "behaviorName": "Fetch Barbershop Invite",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26342,7 +26382,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-023",
-        "behaviorName": "Gas Unit Toggle",
+        "behaviorName": "Find Eligible Barbers",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26357,7 +26397,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-024",
-        "behaviorName": "Get Barber Team Requests",
+        "behaviorName": "Fuel Label",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26372,7 +26412,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-025",
-        "behaviorName": "Get Team Access",
+        "behaviorName": "Gas Unit Toggle",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26387,7 +26427,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-026",
-        "behaviorName": "Get Team Members",
+        "behaviorName": "Get Barber Team Requests",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26402,7 +26442,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-027",
-        "behaviorName": "Get Vport Gas Prices",
+        "behaviorName": "Get Team Access",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26417,7 +26457,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-028",
-        "behaviorName": "Get Vport Resource Availability",
+        "behaviorName": "Get Team Members",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26432,7 +26472,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-029",
-        "behaviorName": "Insert Bookings",
+        "behaviorName": "Get Vport Gas Prices",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26447,7 +26487,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-030",
-        "behaviorName": "Insert Fuel Price History",
+        "behaviorName": "Get Vport Resource Availability",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26462,7 +26502,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-031",
-        "behaviorName": "Insert Fuel Price Submission Reviews",
+        "behaviorName": "Insert Bookings",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26477,7 +26517,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-032",
-        "behaviorName": "Insert Fuel Price Submissions",
+        "behaviorName": "Insert Fuel Price History",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26492,7 +26532,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-033",
-        "behaviorName": "Insert Resources",
+        "behaviorName": "Insert Fuel Price Submissions",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26507,7 +26547,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-034",
-        "behaviorName": "Is Active Owner",
+        "behaviorName": "Insert Resources",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26522,7 +26562,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-035",
-        "behaviorName": "List Vport Booking Resources",
+        "behaviorName": "Is Active Owner",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26537,7 +26577,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-036",
-        "behaviorName": "List Vport Leads",
+        "behaviorName": "List Vport Booking Resources",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26552,7 +26592,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-037",
-        "behaviorName": "Load Day Schedule",
+        "behaviorName": "List Vport Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26567,7 +26607,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-038",
-        "behaviorName": "Locksmith Dashboard",
+        "behaviorName": "Load Day Schedule",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26582,7 +26622,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-039",
-        "behaviorName": "Map Payload To Row",
+        "behaviorName": "Load Team Availability Day",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26597,7 +26637,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-040",
-        "behaviorName": "Mark Vport Lead Contacted",
+        "behaviorName": "Local Date Key",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26612,7 +26652,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-041",
-        "behaviorName": "Normalize Row",
+        "behaviorName": "Locksmith Dashboard",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26627,7 +26667,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-042",
-        "behaviorName": "Owner Pending Suggestions",
+        "behaviorName": "Map Payload To Row",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26642,7 +26682,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-043",
-        "behaviorName": "Portfolio Item Submit",
+        "behaviorName": "Mark Vport Lead Contacted",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26657,7 +26697,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-044",
-        "behaviorName": "Portfolio Media Upload",
+        "behaviorName": "Normalize Row",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26672,7 +26712,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-045",
-        "behaviorName": "Probe Vport Portfolio",
+        "behaviorName": "Notify Fuel Price Submission Batch",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26687,7 +26727,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-046",
-        "behaviorName": "Publish Fuel Price Update As Post",
+        "behaviorName": "Portfolio Item Submit",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26702,7 +26742,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-047",
-        "behaviorName": "Quick Booking Modal",
+        "behaviorName": "Portfolio Media Upload",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26717,7 +26757,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-048",
-        "behaviorName": "Remove Team Member",
+        "behaviorName": "Probe Vport Portfolio",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26732,7 +26772,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-049",
-        "behaviorName": "Reschedule Booking",
+        "behaviorName": "Publish Fuel Price Update As Post",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26747,7 +26787,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-050",
-        "behaviorName": "Reschedule Schedule Booking",
+        "behaviorName": "Quick Booking Modal",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26762,7 +26802,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-051",
-        "behaviorName": "Resolve Profile Id",
+        "behaviorName": "Reject Fuel Price Batch",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26777,7 +26817,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-052",
-        "behaviorName": "Resolve Vport Actor From Profile Id",
+        "behaviorName": "Remove Team Member",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26792,7 +26832,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-053",
-        "behaviorName": "Review Fuel Price Suggestion",
+        "behaviorName": "Reschedule Booking",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26807,7 +26847,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-054",
-        "behaviorName": "Role Of",
+        "behaviorName": "Reschedule Schedule Booking",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26822,7 +26862,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-055",
-        "behaviorName": "Safe Arr",
+        "behaviorName": "Resolve Profile Id",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26837,7 +26877,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-056",
-        "behaviorName": "Safe Obj",
+        "behaviorName": "Resolve Vport Actor From Profile Id",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26852,7 +26892,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-057",
-        "behaviorName": "Save Vport Public Details By Actor Id",
+        "behaviorName": "Review Fuel Price Batch",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26867,7 +26907,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-058",
-        "behaviorName": "Save Vport Settings",
+        "behaviorName": "Role Of",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26882,7 +26922,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-059",
-        "behaviorName": "Search Team Candidates",
+        "behaviorName": "Rpc Approve Fuel Price Submission Batch",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26897,7 +26937,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-060",
-        "behaviorName": "Send Team Request",
+        "behaviorName": "Rpc Reject Fuel Price Submission Batch",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26912,7 +26952,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-061",
-        "behaviorName": "Set Team Member Status",
+        "behaviorName": "Safe Arr",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26927,7 +26967,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-062",
-        "behaviorName": "Settings Save Coordinator",
+        "behaviorName": "Safe Obj",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26942,7 +26982,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-063",
-        "behaviorName": "Shift Date Key",
+        "behaviorName": "Save Vport Public Details By Actor Id",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26957,7 +26997,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-064",
-        "behaviorName": "Show Toast",
+        "behaviorName": "Save Vport Settings",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26972,7 +27012,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-065",
-        "behaviorName": "Submit Bulk Fuel Prices",
+        "behaviorName": "Search Team Candidates",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -26987,7 +27027,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-066",
-        "behaviorName": "Submit Citizen Fuel Price Suggestion",
+        "behaviorName": "Send Team Request",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27002,7 +27042,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-067",
-        "behaviorName": "Submit Fuel Price Suggestion",
+        "behaviorName": "Set Team Member Status",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27017,7 +27057,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-068",
-        "behaviorName": "Submit Owner Fuel Price Update",
+        "behaviorName": "Settings Save Coordinator",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27032,7 +27072,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-069",
-        "behaviorName": "To Team Candidate Row",
+        "behaviorName": "Shift Date Key",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27047,7 +27087,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-070",
-        "behaviorName": "Today Key",
+        "behaviorName": "Show Toast",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27062,7 +27102,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-071",
-        "behaviorName": "Update Booking Status",
+        "behaviorName": "Submit Bulk Fuel Prices",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27077,7 +27117,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-072",
-        "behaviorName": "Update Business Card Leads",
+        "behaviorName": "Submit Citizen Fuel Price Suggestion",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27092,7 +27132,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-073",
-        "behaviorName": "Update Fuel Price Submission Reviews",
+        "behaviorName": "Submit Fuel Price Suggestion",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27107,7 +27147,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-074",
-        "behaviorName": "Update Fuel Price Submissions",
+        "behaviorName": "Submit Owner Fuel Price Update",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27122,7 +27162,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-075",
-        "behaviorName": "Update Fuel Prices",
+        "behaviorName": "Team Availability Today",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27137,7 +27177,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-076",
-        "behaviorName": "Update Portfolio Media",
+        "behaviorName": "To Team Candidate Row",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27152,7 +27192,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-077",
-        "behaviorName": "Update Resources",
+        "behaviorName": "Today Key",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27167,7 +27207,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-078",
-        "behaviorName": "Update Schedule Booking Status",
+        "behaviorName": "Update Booking Status",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27182,7 +27222,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-079",
-        "behaviorName": "Update Station Fuel Unit",
+        "behaviorName": "Update Business Card Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27197,7 +27237,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-080",
-        "behaviorName": "Update Team Member Role",
+        "behaviorName": "Update Fuel Prices",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27212,7 +27252,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-081",
-        "behaviorName": "Upsert Fuel Prices",
+        "behaviorName": "Update Portfolio Media",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27227,7 +27267,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-082",
-        "behaviorName": "Upsert Profile Public Details",
+        "behaviorName": "Update Resources",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27242,7 +27282,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-083",
-        "behaviorName": "Vport Booking Actions",
+        "behaviorName": "Update Schedule Booking Status",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27257,7 +27297,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-084",
-        "behaviorName": "Vport Booking Ops",
+        "behaviorName": "Update Station Fuel Unit",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27272,7 +27312,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-085",
-        "behaviorName": "Vport Gas Prices",
+        "behaviorName": "Update Team Member Role",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27287,7 +27327,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-086",
-        "behaviorName": "Vport Leads",
+        "behaviorName": "Upsert Fuel Prices",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27302,7 +27342,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-087",
-        "behaviorName": "Vport Owner Schedule",
+        "behaviorName": "Upsert Profile Public Details",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27317,7 +27357,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-088",
-        "behaviorName": "Vport Portfolio Probe",
+        "behaviorName": "Vport Booking Actions",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27332,7 +27372,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-089",
-        "behaviorName": "Vport Reviews",
+        "behaviorName": "Vport Booking Ops",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27347,7 +27387,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-090",
-        "behaviorName": "Vport Services",
+        "behaviorName": "Vport Gas Prices",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27362,7 +27402,7 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-091",
-        "behaviorName": "Vport Team",
+        "behaviorName": "Vport Leads",
         "feature": "vportDashboard",
         "module": "dashboard",
         "documents": [],
@@ -27377,6 +27417,81 @@
       },
       {
         "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-092",
+        "behaviorName": "Vport Owner Schedule",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-093",
+        "behaviorName": "Vport Portfolio Probe",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-094",
+        "behaviorName": "Vport Reviews",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-095",
+        "behaviorName": "Vport Services",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-096",
+        "behaviorName": "Vport Team",
+        "feature": "vportDashboard",
+        "module": "dashboard",
+        "documents": [],
+        "coverage": "MISSING",
+        "missing": [
+          "ARCHITECTURE.md",
+          "BEHAVIOR.md",
+          "SECURITY.md",
+          "CURRENT_STATUS.md",
+          "README.md"
+        ]
+      },
+      {
+        "behaviorId": "BEH-VPORTDASHBOARD-DASHBOARD-097",
         "behaviorName": "Vport Team Access",
         "feature": "vportDashboard",
         "module": "dashboard",

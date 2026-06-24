@@ -23,13 +23,21 @@ const BOOKING_SELECT = [
   "profiles!profile_id(actor_id,name)",
 ].join(",");
 
-export async function listBookingsByCustomerDAL({ actorId, limit = 60 } = {}) {
+export async function listBookingsByCustomerDAL({ actorId, startsAtFrom = null, startsAtTo = null, limit = 60 } = {}) {
   if (!actorId) throw new Error("listBookingsByCustomerDAL: actorId is required");
 
-  const { data, error } = await vportClient
+  let query = vportClient
     .from("bookings")
     .select(BOOKING_SELECT)
-    .eq("customer_actor_id", actorId)
+    .eq("customer_actor_id", actorId);
+
+  // Optional window: `startsAtFrom` (>=) keeps current-month + upcoming bookings;
+  // `startsAtTo` (<) selects previous (older-than-current-month) appointments,
+  // which the citizen loads on demand via the "Previous appointments" pill.
+  if (startsAtFrom) query = query.gte("starts_at", startsAtFrom);
+  if (startsAtTo)   query = query.lt("starts_at", startsAtTo);
+
+  const { data, error } = await query
     .order("starts_at", { ascending: false })
     .limit(limit);
 

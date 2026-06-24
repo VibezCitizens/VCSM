@@ -1,15 +1,27 @@
 {
   "version": 1,
   "scannerVersion": "1.1.0",
-  "generatedAt": "2026-06-08T13:39:06.449Z",
+  "generatedAt": "2026-06-24T06:36:31.492Z",
   "root": "/Users/vcsm/Desktop/VCSM",
-  "scanDurationMs": 6492,
+  "scanDurationMs": 7583,
   "confidence": "HIGH",
-  "rpcExecutionPathCount": 73,
+  "rpcExecutionPathCount": 82,
   "data": {
     "version": 1,
-    "generatedAt": "2026-06-08T13:39:03.246Z",
+    "generatedAt": "2026-06-24T06:36:27.849Z",
     "rpcExecutionPaths": [
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "rpc": "approve_fuel_price_submission_batch",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "caller": "approveFuelPriceSubmissionBatchDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
       {
         "appId": "VCSM",
         "root": "apps/VCSM",
@@ -347,6 +359,18 @@
         ]
       },
       {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "rpc": "get_published_question",
+        "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+        "caller": "getPublishedQuestion",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
         "appId": null,
         "root": "engines/reviews",
         "feature": null,
@@ -479,6 +503,30 @@
         ]
       },
       {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "rpc": "list_published_answers_for_question",
+        "file": "apps/Traffic/src/features/answers/dal/answerDetail.read.dal.js",
+        "caller": "listPublishedAnswersForQuestion",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "rpc": "list_published_questions",
+        "file": "apps/Traffic/src/features/answers/dal/publishedQuestions.read.dal.js",
+        "caller": "listPublishedQuestions",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
         "appId": "VCSM",
         "root": "apps/VCSM",
         "feature": "profiles",
@@ -557,6 +605,18 @@
         "rpc": "refresh_actor_directory_row",
         "file": "apps/wentrex/src/features/identity/dal/refreshActorDirectory.dal.js",
         "caller": "refreshActorDirectoryRow",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "vportDashboard",
+        "rpc": "reject_fuel_price_submission_batch",
+        "file": "apps/VCSM/src/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceBatchReview.write.dal.js",
+        "caller": "rejectFuelPriceSubmissionBatchDAL",
         "confidence": "LOW",
         "evidence": [
           "RPC discovered without route execution path"
@@ -683,6 +743,18 @@
         ]
       },
       {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "search",
+        "rpc": "search_public_providers",
+        "file": "apps/Traffic/src/features/search/dal/searchProviders.read.dal.js",
+        "caller": "searchPublicProviders",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
         "appId": null,
         "root": "engines/chat",
         "feature": null,
@@ -757,6 +829,18 @@
       {
         "appId": "Traffic",
         "root": "apps/Traffic",
+        "feature": "answers",
+        "rpc": "submit_answer",
+        "file": "apps/Traffic/src/features/answers/dal/submitAnswer.write.dal.js",
+        "caller": "submitAnswerRow",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
         "feature": "conversion",
         "rpc": "submit_business_card_lead",
         "file": "apps/Traffic/src/features/conversion/dal/submitProviderLead.write.dal.js",
@@ -773,6 +857,30 @@
         "rpc": "submit_business_card_lead",
         "file": "apps/VCSM/src/features/public/vportBusinessCard/dal/vportBusinessCardLead.write.dal.js",
         "caller": "createVportBusinessCardLeadDAL",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "VCSM",
+        "root": "apps/VCSM",
+        "feature": "claim",
+        "rpc": "submit_business_claim",
+        "file": "apps/VCSM/src/features/claim/dal/submitBusinessClaim.write.dal.js",
+        "caller": "submitBusinessClaim",
+        "confidence": "LOW",
+        "evidence": [
+          "RPC discovered without route execution path"
+        ]
+      },
+      {
+        "appId": "Traffic",
+        "root": "apps/Traffic",
+        "feature": "answers",
+        "rpc": "submit_question",
+        "file": "apps/Traffic/src/features/answers/dal/questions.write.dal.js",
+        "caller": "createQuestionRow",
         "confidence": "LOW",
         "evidence": [
           "RPC discovered without route execution path"

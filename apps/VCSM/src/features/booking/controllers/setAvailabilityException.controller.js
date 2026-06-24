@@ -1,7 +1,7 @@
 import getBookingResourceByIdDAL from "@/features/booking/dal/getBookingResourceById.dal";
 import getAvailabilityExceptionByIdDAL from "@/features/booking/dal/getAvailabilityExceptionById.dal";
 import upsertAvailabilityExceptionDAL from "@/features/booking/dal/upsertAvailabilityException.dal";
-import assertActorOwnsVportActorController from "@/features/booking/controllers/assertActorOwnsVportActor.controller";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { mapAvailabilityExceptionRow } from "@/features/booking/model/bookingAvailability.model";
 
 export async function setAvailabilityExceptionController({
@@ -34,7 +34,7 @@ export async function setAvailabilityExceptionController({
     throw new Error("Booking resource not found.");
   }
 
-  await assertActorOwnsVportActorController({
+  await assertActorOwnsActorController({
     requestActorId,
     targetActorId: resource.owner_actor_id,
   });

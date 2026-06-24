@@ -12,7 +12,7 @@ function buildDescription(question, answer) {
     return question.body.replace(/\s+/g, " ").slice(0, 155);
   }
 
-  return "Public expert answers from TRAZE.";
+  return "Public answers from TRAZE.";
 }
 
 export function mapTopicRowsToTopicList(rows = []) {

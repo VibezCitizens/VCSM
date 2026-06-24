@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import {
   listCountryCityServiceStaticParams,
-  listCountryProviderStaticParams,
   listCountryServiceHubStaticParams,
   listNeighborhoodServiceStaticParams
 } from "@/data/repositories/staticParams.repo";
@@ -65,17 +64,16 @@ export function generateStaticParams() {
     service: entry.service,
   }));
 
-  const countryProvider = listCountryProviderStaticParams().map((entry) => ({
-    city: entry.country,
-    segment: "pro",
-    service: entry.providerSlug,
-  }));
-
+  // Provider pages (/<country>/pro/<slug>) are owned exclusively by the dedicated
+  // (seo)/[city]/pro/[providerSlug] route. Generating segment:"pro" params here too
+  // produced the SAME static paths from two routes, so parallel export workers
+  // overwrote each other's HTML non-deterministically (divergent metadata,
+  // breadcrumbs, and a leaking placeholder description). Not generating them here
+  // makes provider output deterministic (TICKET-TRAZE-SEO-REMEDIATION-001 — G/C2).
   const combined = dedupeParamTriples([
     ...globalCountryCityService,
     ...countryServiceHubs,
     ...legacyLocalityService,
-    ...countryProvider,
   ]);
 
   // Taxonomy fallback: when Supabase is unavailable at build time, all provider-based

@@ -96,6 +96,28 @@ export function buildPlatformFollowLink(providerSlug, vcsmSlug, surface = "provi
 }
 
 /**
+ * Build a Vibez Citizens sign-up link for the unclaimed-provider account prompt.
+ * @returns {string}
+ */
+export function buildPlatformRegisterLink() {
+  return buildUrl("/register", {
+    intent: "business-interaction",
+    source: TRAFFIC_SOURCE
+  });
+}
+
+/**
+ * Build a Vibez Citizens log-in link for the unclaimed-provider account prompt.
+ * @returns {string}
+ */
+export function buildPlatformLoginLink() {
+  return buildUrl("/login", {
+    intent: "business-interaction",
+    source: TRAFFIC_SOURCE
+  });
+}
+
+/**
  * Build a claim link for unclaimed providers.
  * Returns null if the provider already has a VCSM actor (claimed and linked).
  * @param {string} providerSlug

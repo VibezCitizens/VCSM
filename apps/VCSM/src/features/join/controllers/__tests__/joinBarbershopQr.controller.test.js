@@ -4,7 +4,7 @@
  * Security invariants:
  *
  * (pre-existing) acceptQrJoin must require callerActorId and assert ownership via
- * assertActorOwnsVportActorController before calling acceptJoinResourceDAL.
+ * assertActorOwnsActorController before calling acceptJoinResourceDAL.
  *
  * ELEK-001: acceptQrJoin must verify resource state (meta.status === "pending_onboarding"
  * and member_actor_id === null) AFTER ownership assertion and BEFORE calling acceptJoinResourceDAL.
@@ -14,8 +14,8 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@/features/booking/adapters/booking.adapter', () => ({
-  assertActorOwnsVportActorController: vi.fn(),
+vi.mock('@/features/authorization/adapters/authorization.adapter', () => ({
+  assertActorOwnsActorController: vi.fn(),
 }))
 
 vi.mock('@/features/join/dal/joinInvite.dal', () => ({
@@ -28,7 +28,7 @@ vi.mock('@/features/join/dal/barberVport.read.dal', () => ({
 }))
 
 import { acceptQrJoin } from '../joinBarbershopQr.controller'
-import { assertActorOwnsVportActorController } from '@/features/booking/adapters/booking.adapter'
+import { assertActorOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 import { fetchJoinResourceByIdDAL, acceptJoinResourceDAL } from '@/features/join/dal/joinInvite.dal'
 
 const TOKEN = 'token-abc'
@@ -50,7 +50,7 @@ describe('acceptQrJoin — null guard', () => {
     await expect(
       acceptQrJoin(TOKEN, BARBER_VPORT_ACTOR_ID, null)
     ).rejects.toThrow('acceptQrJoin: callerActorId required')
-    expect(assertActorOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertActorOwnsActorController).not.toHaveBeenCalled()
     expect(acceptJoinResourceDAL).not.toHaveBeenCalled()
   })
 
@@ -58,7 +58,7 @@ describe('acceptQrJoin — null guard', () => {
     await expect(
       acceptQrJoin(TOKEN, BARBER_VPORT_ACTOR_ID, undefined)
     ).rejects.toThrow('acceptQrJoin: callerActorId required')
-    expect(assertActorOwnsVportActorController).not.toHaveBeenCalled()
+    expect(assertActorOwnsActorController).not.toHaveBeenCalled()
     expect(acceptJoinResourceDAL).not.toHaveBeenCalled()
   })
 })
@@ -68,7 +68,7 @@ describe('acceptQrJoin — null guard', () => {
 describe('acceptQrJoin — ownership gate blocks unauthorized caller', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertActorOwnsVportActorController.mockRejectedValue(
+    assertActorOwnsActorController.mockRejectedValue(
       new Error('Actor does not own this vport actor.')
     )
   })
@@ -77,7 +77,7 @@ describe('acceptQrJoin — ownership gate blocks unauthorized caller', () => {
     await expect(
       acceptQrJoin(TOKEN, BARBER_VPORT_ACTOR_ID, 'actor-attacker-999')
     ).rejects.toThrow('Actor does not own this vport actor.')
-    expect(assertActorOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertActorOwnsActorController).toHaveBeenCalledWith({
       requestActorId: 'actor-attacker-999',
       targetActorId: BARBER_VPORT_ACTOR_ID,
     })
@@ -90,7 +90,7 @@ describe('acceptQrJoin — ownership gate blocks unauthorized caller', () => {
 describe('acceptQrJoin — ELEK-001: resource state guard rejects used or claimed tokens', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertActorOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertActorOwnsActorController.mockResolvedValue({ ok: true })
   })
 
   it('throws "join resource not found" when fetchJoinResourceByIdDAL returns null', async () => {
@@ -143,7 +143,7 @@ describe('acceptQrJoin — ELEK-001: resource state guard rejects used or claime
 describe('acceptQrJoin — ELEK-001: concurrent/second accept returns stable error', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertActorOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertActorOwnsActorController.mockResolvedValue({ ok: true })
     // DAL-level guard: update matched no rows (token already used or race lost)
     acceptJoinResourceDAL.mockRejectedValue(new Error('join resource is no longer available'))
     fetchJoinResourceByIdDAL.mockResolvedValue(PENDING_RESOURCE)
@@ -161,14 +161,14 @@ describe('acceptQrJoin — ELEK-001: concurrent/second accept returns stable err
 describe('acceptQrJoin — ownership gate passes for legitimate owner with valid resource state', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    assertActorOwnsVportActorController.mockResolvedValue({ ok: true })
+    assertActorOwnsActorController.mockResolvedValue({ ok: true })
     fetchJoinResourceByIdDAL.mockResolvedValue(PENDING_RESOURCE)
     acceptJoinResourceDAL.mockResolvedValue({ id: TOKEN, member_actor_id: BARBER_VPORT_ACTOR_ID })
   })
 
   it('calls acceptJoinResourceDAL when ownership passes and resource is pending', async () => {
     const result = await acceptQrJoin(TOKEN, BARBER_VPORT_ACTOR_ID, CALLER_ACTOR_ID)
-    expect(assertActorOwnsVportActorController).toHaveBeenCalledWith({
+    expect(assertActorOwnsActorController).toHaveBeenCalledWith({
       requestActorId: CALLER_ACTOR_ID,
       targetActorId: BARBER_VPORT_ACTOR_ID,
     })

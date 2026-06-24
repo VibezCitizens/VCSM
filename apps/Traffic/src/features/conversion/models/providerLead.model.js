@@ -1,5 +1,6 @@
 const DEFAULT_MESSAGE = "Hi, I'm interested in your services.";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function toText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -74,6 +75,16 @@ export function validateProviderLeadDraft(draft) {
 
   if (!draft.name) {
     fieldErrors.name = "Name is required.";
+  }
+
+  if (!draft.phone) {
+    fieldErrors.phone = "Phone is required.";
+  }
+
+  if (!draft.email) {
+    fieldErrors.email = "Email is required.";
+  } else if (!EMAIL_RE.test(draft.email)) {
+    fieldErrors.email = "Enter a valid email.";
   }
 
   if (!draft.message) {

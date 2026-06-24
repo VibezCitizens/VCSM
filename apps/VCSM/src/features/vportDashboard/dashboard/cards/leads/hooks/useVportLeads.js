@@ -7,7 +7,7 @@ import {
 } from "@/features/vportDashboard/dashboard/cards/leads/controller/vportLeads.controller";
 
 // Identity Contract §1.3: caller ownership is derived from the auth session inside
-// the controller (assertSessionOwnsVportActorController). The UI never passes a
+// the controller (assertSessionOwnsActorController). The UI never passes a
 // caller actor id for authorization.
 //
 // Data flow (TICKET-LEADS-CONTACTED-LAZY-LOAD-001):
