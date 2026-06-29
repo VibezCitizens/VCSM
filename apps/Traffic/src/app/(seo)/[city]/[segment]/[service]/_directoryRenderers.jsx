@@ -2,6 +2,7 @@ import { DirectoryPageTemplate } from "@/features/directories/adapters/directori
 import { LIVE_DATA_STATUS } from "@/data/connectors/unifiedDataset";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
+import { keepGeneratedLinks } from "@/seo/generatedPaths";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { listLocalitiesByCity } from "@/data/repositories/city.repo";
 import { getLocaleForCountryCode } from "@/data/repositories/geo.repo";
@@ -47,7 +48,7 @@ export function renderCountryServiceHubPage(graph) {
       }))
   );
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     { label: `All services in ${graph.country.name}`, href: countryPath(graph.country.slug) },
     ...graph.activeCities.map((city) => ({
       label: `${graph.service.name} in ${city.name}`,
@@ -58,7 +59,7 @@ export function renderCountryServiceHubPage(graph) {
       label: item.provider.displayName,
       href: countryProviderPath(graph.country.slug, item.provider.slug)
     }))
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),
@@ -118,7 +119,7 @@ export function renderCountryCityServicePage(graph) {
     { label: graph.service.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     ...localities.map((locality) => ({
       label: `${graph.service.name} in ${locality.name}`,
       href: countryCityLocalityServicePath(graph.country.slug, graph.city.slug, locality.slug, graph.service.slug)
@@ -150,7 +151,7 @@ export function renderCountryCityServicePage(graph) {
       label: `${graph.service.name} across ${graph.country.name}`,
       href: countryServiceHubPath(graph.country.slug, graph.service.slug)
     }
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),
@@ -216,7 +217,7 @@ export function renderLegacyLocalityServicePage(graph) {
     { label: graph.locality.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     ...otherLocalities.map((locality) => ({
       label: `${graph.service.name} in ${locality.name}`,
       href: countryCityLocalityServicePath(graph.country.slug, graph.city.slug, locality.slug, graph.service.slug)
@@ -236,7 +237,7 @@ export function renderLegacyLocalityServicePage(graph) {
       href: countryCityServicePath(graph.country.slug, graph.city.slug, graph.service.slug)
     },
     { label: "Legacy locality URL", href: neighborhoodServicePath(graph.city.slug, graph.locality.slug, graph.service.slug) }
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),

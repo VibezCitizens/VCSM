@@ -1,4 +1,5 @@
 import { dedupeInternalLinks } from "@/seo/internalLinks";
+import { keepGeneratedLinks } from "@/seo/generatedPaths";
 import { listSpecialtiesByService } from "@/features/providers/dal/provider.read.dal";
 import {
   cityServicePath,
@@ -9,7 +10,10 @@ import {
 } from "@/lib/paths";
 
 export function buildProviderRelatedLinks({ provider, country, city, citySlug, locality, cityCategoryHref, services, providerServices }) {
-  return dedupeInternalLinks([
+  // keepGeneratedLinks drops any related link whose target page is not actually
+  // emitted by the static export (TICKET-TRAZE-PHANTOM-LINKS-001), so a provider
+  // never advertises a city/service/locality page that 404s.
+  return keepGeneratedLinks(dedupeInternalLinks([
     ...(city && locality
       ? services.map((service) => ({
           label: `${service.name} in ${locality.name}`,
@@ -54,5 +58,5 @@ export function buildProviderRelatedLinks({ provider, country, city, citySlug, l
           href: cityServicePath(city.slug, service.slug)
         }))
       : [])
-  ]);
+  ]));
 }
