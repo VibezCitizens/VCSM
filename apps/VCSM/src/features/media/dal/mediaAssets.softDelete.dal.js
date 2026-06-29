@@ -49,6 +49,7 @@ export async function softDeleteMediaAssetDAL(assetId, deletedByActorId) {
       updated_at:          now,
     })
     .eq('id', assetId)
+    .eq('owner_actor_id', deletedByActorId) // V06C-M2 defense-in-depth: only the owning actor's asset
     .select(SOFT_DELETE_PROJECTION)
     .single()
 

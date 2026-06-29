@@ -35,14 +35,6 @@ export const metadata = buildHomepageMetadata();
 // No hardcoded default city — the homepage is location-neutral on first load.
 // The client-side search panel handles city selection (including geolocation).
 
-function buildClaimLandingLink(verticalId = null) {
-  const url = new URL("/claim-profile", getPlatformOrigin());
-  url.searchParams.set("source", "traffic");
-  url.searchParams.set("surface", "homepage");
-  if (verticalId) url.searchParams.set("vertical", verticalId);
-  return url.toString();
-}
-
 function buildMainPlatformLink() {
   const url = new URL("/", getPlatformOrigin());
   url.searchParams.set("source", "traffic");
@@ -80,7 +72,6 @@ export default async function TrafficHomePage() {
     )
   ];
 
-  const claimHref = buildClaimLandingLink();
   const mainPlatformHref = buildMainPlatformLink();
 
   return (
@@ -95,7 +86,7 @@ export default async function TrafficHomePage() {
       <HomepageTopProvidersSection
         countryGroups={countryGroups}
         stats={homepageData.stats}
-        claimHref={claimHref}
+        claimSurface="homepage"
         directoryHref="/top-providers"
       />
 
@@ -113,7 +104,6 @@ export default async function TrafficHomePage() {
       />
 
       <HomepageCtaFooter
-        claimHref={claimHref}
         mainPlatformHref={mainPlatformHref}
         directoryHref="/categories"
       />

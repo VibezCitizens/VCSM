@@ -61,6 +61,22 @@ describe("qrcode SPIDER-MAN coverage", () => {
     expect(buildMenuShortDisplayUrl("marias menu")).toBe("/profile/marias%20menu/menu");
   });
 
+  it("rejects UUID-prefixed legacy slugs in every QR URL builder (V14A-L2)", () => {
+    const uuidPrefixed = "550e8400-e29b-41d4-a716-446655440000-marias-menu";
+
+    expect(isQrSafeSlug(uuidPrefixed)).toBe(false);
+    expect(buildMenuQrUrl(uuidPrefixed)).toBe("");
+    expect(buildReviewsQrUrl(uuidPrefixed)).toBe("");
+    expect(buildBusinessCardQrUrl(uuidPrefixed)).toBe("");
+    expect(buildMenuShortDisplayUrl(uuidPrefixed)).toBe("");
+
+    // A hyphenated slug that is NOT UUID-prefixed remains safe (no over-rejection).
+    expect(isQrSafeSlug("marias-restaurant-laredo-tx")).toBe(true);
+    expect(buildMenuQrUrl("marias-restaurant-laredo-tx")).toBe(
+      "/profile/marias-restaurant-laredo-tx/menu"
+    );
+  });
+
   it("does not render the low-level QR component for empty values", () => {
     expect(QrCode({ value: "" })).toBeNull();
     expect(QrCode({ value: "   " })).toBeNull();

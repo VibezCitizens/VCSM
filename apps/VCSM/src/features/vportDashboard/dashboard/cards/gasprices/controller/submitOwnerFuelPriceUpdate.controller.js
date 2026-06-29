@@ -3,7 +3,7 @@ import { upsertVportFuelPriceDAL } from "@/features/vportDashboard/dashboard/car
 import { createVportFuelPriceHistoryDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal";
 import { mapVportFuelPriceRow } from "@/features/vportDashboard/dashboard/cards/gasprices/model/vportFuelPrice.model";
 import { mapVportStationPriceSettingsRow } from "@/features/vportDashboard/dashboard/cards/gasprices/model/vportStationPriceSettings.model";
-import { checkVportOwnershipController } from "@/features/vportDashboard/controller/checkVportOwnership.controller";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { FuelPriceCacheService } from "@/features/vportDashboard/dashboard/cards/gasprices/services/fuelPriceCache.service";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
@@ -26,8 +26,12 @@ export async function submitOwnerFuelPriceUpdateController({
     const price = Number(proposedPrice);
     if (!Number.isFinite(price)) return { ok: false, reason: "invalid_number" };
 
-    const isOwner = await checkVportOwnershipController({ callerActorId: actorId, targetActorId });
-    if (!isOwner) return { ok: false, reason: "not_owner" };
+    // V03A-H2: session-derived ownership via actor_owners (replaces the self-grantable checkVportOwnership write gate).
+    try {
+      await assertSessionOwnsActorController({ targetActorId });
+    } catch {
+      return { ok: false, reason: "not_owner" };
+    }
 
     if (settings.requireSanityForSuggestion && (price < settings.minPrice || price > settings.maxPrice)) {
       return { ok: false, reason: "out_of_range" };

@@ -67,6 +67,24 @@ export function useRegister() {
 
   const isWandersFlow = Boolean(navState.wandersFlow)
 
+  // TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-2): when email confirmation is on,
+  // signUp returns no session and the owner must verify before continuing. Carry the
+  // validated claim return path through the email link (via emailRedirectTo) so
+  // /auth/callback can return to the exact claim instead of /explore. Only the
+  // whitelisted /claim-profile return path is forwarded; every other signup keeps
+  // Supabase's default redirect untouched.
+  const claimReturnPath = useMemo(() => {
+    const from = navState.from
+    return typeof from === 'string' && from.startsWith('/claim-profile') && isSafeAuthReturnPath(from)
+      ? from
+      : null
+  }, [navState.from])
+
+  const emailRedirectTo = useMemo(() => {
+    if (!claimReturnPath || typeof window === 'undefined') return null
+    return `${window.location.origin}/auth/callback?next=${encodeURIComponent(claimReturnPath)}`
+  }, [claimReturnPath])
+
   const passwordValidation = useMemo(
     () => evaluateRegisterPasswordRules(form.password),
     [form.password]
@@ -143,11 +161,14 @@ export function useRegister() {
         password: form.password,
         isWandersFlow,
         citizenInviteCode,
+        emailRedirectTo,
       })
 
       // No session yet — user must verify email before continuing.
+      // TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-2): preserve the claim return
+      // path so a same-browser manual login after verification still restores it.
       if (result?.requiresEmailConfirm) {
-        navigate('/verify-email', { replace: true, state: { email: form.email } })
+        navigate('/verify-email', { replace: true, state: { email: form.email, from: claimReturnPath } })
         return true
       }
 
@@ -185,7 +206,7 @@ export function useRegister() {
       submittingRef.current = false
       setLoading(false)
     }
-  }, [canSubmit, termsAccepted, form.email, form.password, goOnboarding, isWandersFlow])
+  }, [canSubmit, termsAccepted, form.email, form.password, goOnboarding, isWandersFlow, citizenInviteCode, emailRedirectTo, claimReturnPath])
 
   const handleSubmit = useCallback(async (event) => {
     if (event?.preventDefault) event.preventDefault()

@@ -1,7 +1,7 @@
 import { readVportProfileByActorIdDAL } from "@/features/vportDashboard/dal/read/vportProfile.read.dal";
 import { upsertVportPublicDetailsDAL } from "@/features/vportDashboard/dashboard/cards/settings/dal/vportPublicDetails.write.dal";
 import { resolveVportCity } from "@/features/vportDashboard/dal/read/vportCities.read.dal";
-import { checkVportOwnershipController } from "@/features/vportDashboard/controller/checkVportOwnership.controller";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 // VPORT-DASHBOARD-OWNERSHIP-CONSISTENCY-001: authorize the active VPORT actor through
@@ -61,9 +61,13 @@ export async function saveVportPublicDetailsByActorIdController(actorId, payload
     if (!actorId) throw new Error("saveVportPublicDetailsByActorId: actorId required");
     if (!requestActorId) throw new Error("saveVportPublicDetailsByActorId: requestActorId required");
 
-    // Ownership check: verify the caller owns the target vport actor before any read or write.
-    const isOwner = await checkVportOwnershipController({ callerActorId: requestActorId, targetActorId: actorId });
-    if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
+    // Ownership check (V03A-H2): session-derived ownership of the target vport actor
+    // before any read or write (replaces the self-grantable checkVportOwnership write gate).
+    try {
+      await assertSessionOwnsActorController({ targetActorId: actorId });
+    } catch {
+      throw new Error(OWNERSHIP_DENIED_MESSAGE);
+    }
 
     const vportProfile = await readVportProfileByActorIdDAL({ actorId });
     const profileId = vportProfile?.id ?? null;

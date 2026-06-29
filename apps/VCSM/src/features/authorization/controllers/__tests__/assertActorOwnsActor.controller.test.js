@@ -29,9 +29,14 @@ vi.mock('@/features/authorization/dal/actorOwners.read.dal', () => ({
   readOwnerLinkBySessionDAL: vi.fn(),
 }))
 
+vi.mock('@/features/auth/adapters/authSession.adapter', () => ({
+  readCurrentAuthUser: vi.fn(),
+}))
+
 import { assertActorOwnsActorController } from '../assertActorOwnsActor.controller'
 import { readActorByIdDAL } from '@/features/authorization/dal/actors.read.dal'
 import { readOwnerLinkByProfileDAL } from '@/features/authorization/dal/actorOwners.read.dal'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
 
 // ─── self ownership ───────────────────────────────────────────────────────────
 
@@ -42,6 +47,8 @@ describe('assertActorOwnsActorController — self ownership short-circuit (user-
     readActorByIdDAL.mockResolvedValue({
       id: 'actor-abc', kind: 'user', is_void: false, profile_id: 'prof-1',
     })
+    // V02-H1: session bind passes when requester profile_id === session user id
+    readCurrentAuthUser.mockResolvedValue({ id: 'prof-1' })
   })
 
   it('resolves { ok: true, mode: "self" } when requestActorId === targetActorId and actor is user-kind', async () => {
@@ -106,13 +113,15 @@ describe('assertActorOwnsActorController — requester validation', () => {
     ).rejects.toThrow('Only actor owners can manage this booking resource.')
   })
 
-  it('rejects when requester has no profile_id', async () => {
+  it('rejects when requester profile_id does not match the session (null profile_id)', async () => {
+    // V02-H1: a null profile_id cannot equal the session user id → session bind rejects.
     readActorByIdDAL.mockResolvedValue({
       id: 'actor-2', kind: 'user', is_void: false, profile_id: null,
     })
+    readCurrentAuthUser.mockResolvedValue({ id: 'prof-1' })
     await expect(
       assertActorOwnsActorController({ requestActorId: 'actor-2', targetActorId: 'actor-99' })
-    ).rejects.toThrow('Requester actor is missing profile ownership identity.')
+    ).rejects.toThrow('Requester actor is not bound to the authenticated session.')
   })
 })
 
@@ -125,6 +134,8 @@ describe('assertActorOwnsActorController — actor_owners DB verification', () =
     readActorByIdDAL.mockResolvedValue({
       id: 'actor-2', kind: 'user', is_void: false, profile_id: 'prof-1',
     })
+    // V02-H1: session bind passes (profile_id === session user id)
+    readCurrentAuthUser.mockResolvedValue({ id: 'prof-1' })
   })
 
   it('rejects void ownerLink (ownership was deactivated)', async () => {
@@ -161,6 +172,8 @@ describe('assertActorOwnsActorController — target actor void check', () => {
     readActorByIdDAL.mockResolvedValueOnce({
       id: 'actor-2', kind: 'user', is_void: false, profile_id: 'prof-1',
     })
+    // V02-H1: session bind passes (profile_id === session user id)
+    readCurrentAuthUser.mockResolvedValue({ id: 'prof-1' })
     readOwnerLinkByProfileDAL.mockResolvedValue({ id: 'link-1', is_void: false })
   })
 
@@ -193,5 +206,60 @@ describe('assertActorOwnsActorController — target actor void check', () => {
       assertActorOwnsActorController({ requestActorId: 'actor-2', targetActorId: 'actor-99' })
     ).rejects.toThrow('Actor does not own this vport actor.')
     expect(readActorByIdDAL).toHaveBeenCalledTimes(1)
+  })
+})
+
+// ─── V02-H1: session binding ──────────────────────────────────────────────────
+
+describe('assertActorOwnsActorController — V02-H1 session binding', () => {
+  beforeEach(() => { vi.clearAllMocks() })
+
+  it('rejects the self-shortcut when requester profile_id !== session user id', async () => {
+    // The zero-check self-shortcut must NOT grant: a forged self-match on a
+    // user-kind actor the session does not own is now rejected (V02-H1 (a)).
+    readActorByIdDAL.mockResolvedValue({
+      id: 'actor-victim', kind: 'user', is_void: false, profile_id: 'victim-uid',
+    })
+    readCurrentAuthUser.mockResolvedValue({ id: 'attacker-uid' })
+
+    await expect(
+      assertActorOwnsActorController({ requestActorId: 'actor-victim', targetActorId: 'actor-victim' })
+    ).rejects.toThrow('Requester actor is not bound to the authenticated session.')
+  })
+
+  it('grants the self-shortcut only when requester profile_id === session user id', async () => {
+    readActorByIdDAL.mockResolvedValue({
+      id: 'actor-me', kind: 'user', is_void: false, profile_id: 'my-uid',
+    })
+    readCurrentAuthUser.mockResolvedValue({ id: 'my-uid' })
+
+    const result = await assertActorOwnsActorController({
+      requestActorId: 'actor-me', targetActorId: 'actor-me',
+    })
+    expect(result).toEqual({ ok: true, mode: 'self' })
+  })
+
+  it('rejects the owner path before the actor_owners query when not session-bound (V02-H1 (b))', async () => {
+    readActorByIdDAL.mockResolvedValue({
+      id: 'actor-2', kind: 'user', is_void: false, profile_id: 'real-owner-uid',
+    })
+    readCurrentAuthUser.mockResolvedValue({ id: 'attacker-uid' })
+
+    await expect(
+      assertActorOwnsActorController({ requestActorId: 'actor-2', targetActorId: 'actor-99' })
+    ).rejects.toThrow('Requester actor is not bound to the authenticated session.')
+    expect(readOwnerLinkByProfileDAL).not.toHaveBeenCalled()
+  })
+
+  it('rejects when there is no authenticated session', async () => {
+    readActorByIdDAL.mockResolvedValue({
+      id: 'actor-2', kind: 'user', is_void: false, profile_id: 'prof-1',
+    })
+    readCurrentAuthUser.mockResolvedValue(null)
+
+    await expect(
+      assertActorOwnsActorController({ requestActorId: 'actor-2', targetActorId: 'actor-99' })
+    ).rejects.toThrow('No authenticated session.')
+    expect(readOwnerLinkByProfileDAL).not.toHaveBeenCalled()
   })
 })

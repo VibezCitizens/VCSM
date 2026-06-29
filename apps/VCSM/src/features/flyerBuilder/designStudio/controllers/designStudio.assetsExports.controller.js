@@ -2,6 +2,8 @@ import { uploadMediaController } from '@media'
 import {
   dalListDesignExportsByDocument,
   dalListDesignRenderJobsByExportIds,
+  dalReadDesignPageById,
+  dalReadDesignPageVersionById,
 } from "@/features/flyerBuilder/designStudio/dal/designStudio.read.dal";
 import {
   dalCreateDesignAsset,
@@ -66,6 +68,24 @@ export async function ctrlQueueDesignExport({
   format,
 }) {
   await requireDesignDocumentOwnerAccess({ ownerActorId, documentId });
+
+  // Bind the nested resources to the gated document before queueing — mirror
+  // ctrlSaveDesignPageScene. The document gate alone does not stop a caller from
+  // supplying a foreign pageId/versionId (V09-M1). Reject cross-document refs
+  // before any write. (Durable boundary stays 09-DB-2: RLS + render worker.)
+  const pageRow = await dalReadDesignPageById(pageId);
+  if (!pageRow) throw new Error("Page not found.");
+  if (String(pageRow.document_id) !== String(documentId)) {
+    throw new Error("Page does not belong to this document.");
+  }
+
+  if (versionId) {
+    const versionRow = await dalReadDesignPageVersionById(versionId);
+    if (!versionRow) throw new Error("Page version not found.");
+    if (String(versionRow.page_id) !== String(pageId)) {
+      throw new Error("Page version does not belong to this page.");
+    }
+  }
 
   const safeFormat = ["png", "pdf"].includes(format) ? format : "png";
   const now = new Date().toISOString();

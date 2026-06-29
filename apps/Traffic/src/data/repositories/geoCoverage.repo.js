@@ -1,5 +1,5 @@
 import { getCityBySlug } from "@/data/repositories/city.repo";
-import { getCountryByCode, getRegionByCode } from "@/data/repositories/geo.repo";
+import { getCountryByCode, getAnyCountryByCode, getRegionByCode } from "@/data/repositories/geo.repo";
 import {
   listProviders,
   listServicesForProvider,
@@ -125,11 +125,12 @@ function findCityFallback(countryCode, citySlug, stateCode) {
 
 function createCountryEntry(countryCode) {
   const country = getCountryByCode(countryCode);
+  const display = getAnyCountryByCode(countryCode);
   return {
     countryCode,
     countrySlug: country?.slug ?? countryCode.toLowerCase(),
-    countryName: country?.name ?? countryCode,
-    countryNameEs: country?.nameEs ?? country?.name ?? countryCode,
+    countryName: display?.name ?? countryCode,
+    countryNameEs: display?.nameEs ?? display?.name ?? countryCode,
     stateCodes: new Set(),
     citySlugs: new Set(),
     categories: new Set(),
@@ -142,12 +143,13 @@ function createCountryEntry(countryCode) {
 
 function createStateEntry(countryCode, stateCode) {
   const country = getCountryByCode(countryCode);
+  const display = getAnyCountryByCode(countryCode);
   const region = country ? getRegionByCode(country.id, stateCode) : null;
   return {
     countryCode,
     countrySlug: country?.slug ?? countryCode.toLowerCase(),
-    countryName: country?.name ?? countryCode,
-    countryNameEs: country?.nameEs ?? country?.name ?? countryCode,
+    countryName: display?.name ?? countryCode,
+    countryNameEs: display?.nameEs ?? display?.name ?? countryCode,
     stateCode,
     stateName: region?.name ?? stateCode,
     citySlugs: new Set(),
@@ -161,12 +163,13 @@ function createStateEntry(countryCode, stateCode) {
 
 function createCityEntry(countryCode, citySlug, provider) {
   const country = getCountryByCode(countryCode);
+  const display = getAnyCountryByCode(countryCode);
   const stateCode = normalizeStateCode(provider.primaryRegionCode);
   return {
     countryCode,
     countrySlug: country?.slug ?? countryCode.toLowerCase(),
-    countryName: country?.name ?? countryCode,
-    countryNameEs: country?.nameEs ?? country?.name ?? countryCode,
+    countryName: display?.name ?? countryCode,
+    countryNameEs: display?.nameEs ?? display?.name ?? countryCode,
     stateCode,
     stateName: stateCode && country ? (getRegionByCode(country.id, stateCode)?.name ?? stateCode) : null,
     cityName: provider.primaryCityName ?? titleizeSlug(citySlug),

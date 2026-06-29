@@ -42,7 +42,8 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 /**
  * Returns true when a slug is safe to encode into a QR code or public URL.
- * Rejects null, empty strings, and raw UUIDs.
+ * Rejects null, empty strings, bare UUIDs, and UUID-prefixed legacy slugs
+ * ("<uuid>-name") — all of which would embed a raw UUID into a public URL.
  *
  * Import this in view components instead of declaring UUID_RE locally — it is
  * the single source of truth for the QR safe-slug contract (VENOM V-006).
@@ -52,7 +53,17 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  */
 export function isQrSafeSlug(slug) {
   const value = String(slug ?? "").trim();
-  return !!value && !UUID_RE.test(value);
+  if (!value) return false;
+  // Reject a bare UUID, and a UUID-prefixed legacy slug ("<uuid>-name") — both
+  // would embed a raw UUID into a public/QR URL (V14A-L2). The prefix test mirrors
+  // the canonical pattern in actorSlug.isCanonicalSlug / extractActorIdFromSlug
+  // (a UUID is exactly 36 chars, so char 36 must be the '-' separator), reusing
+  // the existing UUID_RE.
+  if (UUID_RE.test(value)) return false;
+  if (value.length > 36 && value[36] === "-" && UUID_RE.test(value.slice(0, 36))) {
+    return false;
+  }
+  return true;
 }
 
 /**

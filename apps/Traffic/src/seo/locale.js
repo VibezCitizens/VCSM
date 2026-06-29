@@ -1,5 +1,4 @@
 import {
-  DEFAULT_LOCALE,
   isSupportedLocale,
   normalizeLocale,
   stripLocaleFromPathname
@@ -57,10 +56,4 @@ export function listLocalizedSitemapPaths(path) {
   // buildLocalizedAlternates); the /en and /es variants consolidate to it, so the
   // sitemap lists the base path only — no duplicate locale URLs.
   return [{ locale: null, path: normalizeLocalePath(path) }];
-}
-
-export function routeLocaleToOpenGraphLocale(routeLocale, fallback = "en_US") {
-  if (routeLocale === "es") return "es_ES";
-  if (routeLocale === DEFAULT_LOCALE) return "en_US";
-  return fallback;
 }

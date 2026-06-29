@@ -19,6 +19,15 @@ export function getCountryByCode(countryCode) {
   return listCountries().find((country) => country.code === String(countryCode ?? "").toUpperCase()) ?? null;
 }
 
+// Resolve a country across the FULL taxonomy, including inactive ones. Use this
+// only for DISPLAY (rendering a country's real name when it already has live
+// data), never for availability/targeting gating — that stays on the active-only
+// getCountryByCode. Without this, an inactive country (e.g. CA) renders as its
+// raw code instead of "Canada".
+export function getAnyCountryByCode(countryCode) {
+  return COUNTRIES.find((country) => country.code === String(countryCode ?? "").toUpperCase()) ?? null;
+}
+
 export function getCountryById(countryId) {
   return listCountries().find((country) => country.id === countryId) ?? null;
 }

@@ -1,4 +1,4 @@
-import { checkVportOwnershipController } from '@/features/vportDashboard/adapters/vportDashboard.adapter'
+import { assertSessionOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 import {
   dalGetActorSocialSettings,
   dalUpdateActorSocialSettings,
@@ -6,8 +6,15 @@ import {
   invalidateActorSocialPublicPolicyCache,
 } from '@/features/social/adapters/social.adapter'
 
-// VPORT-DASHBOARD-OWNERSHIP-CONSISTENCY-001: authorize the active VPORT actor through
-// the same vportDashboard ownership surface the gas dashboard uses, with VPORT-safe wording.
+// V12A-M2 (TICKET-SETTINGS-VPORT-CANONICAL-OWNERBIND-001): authorize the VPORT social
+// settings read/update through the canonical session-derived ownership gate
+// (assertSessionOwnsActorController), replacing the navigation-grade hybrid
+// checkVportOwnershipController whose self-grant path (V03A-H2 lineage) accepted a
+// caller-supplied actorId equality as proof of ownership. This delegated social write
+// has NO owner_user_id DAL backstop, so the canonical session-derived gate is the only
+// app-layer authority here; it never trusts caller-supplied ids. DiD only; durable
+// boundary = social RLS (12A-DB-5, 06B-owned, Phase 15). callerActorId is retained
+// (vestigial) for signature stability; ownership no longer depends on it.
 const OWNERSHIP_DENIED_MESSAGE = 'Only owners or managers can manage this VPORT.'
 
 const ALLOWED_PATCH_KEYS = new Set([
@@ -24,8 +31,11 @@ export async function ctrlGetVportSocialSettings({ vportActorId, callerActorId }
   if (!vportActorId)  throw new Error('ctrlGetVportSocialSettings: vportActorId required')
   if (!callerActorId) throw new Error('ctrlGetVportSocialSettings: callerActorId required')
 
-  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId })
-  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE)
+  try {
+    await assertSessionOwnsActorController({ targetActorId: vportActorId })
+  } catch {
+    throw new Error(OWNERSHIP_DENIED_MESSAGE)
+  }
 
   return dalGetActorSocialSettings(vportActorId)
 }
@@ -42,8 +52,11 @@ export async function ctrlUpdateVportSocialSettings({ vportActorId, patch, calle
     throw new Error(`ctrlUpdateVportSocialSettings: invalid patch keys: ${invalidKeys.join(', ')}`)
   }
 
-  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId })
-  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE)
+  try {
+    await assertSessionOwnsActorController({ targetActorId: vportActorId })
+  } catch {
+    throw new Error(OWNERSHIP_DENIED_MESSAGE)
+  }
 
   const result = await dalUpdateActorSocialSettings({ actorId: vportActorId, patch })
 

@@ -48,8 +48,19 @@ function normalizeUrl(value) {
   const raw = asText(value);
   if (!raw) return "";
 
-  if (raw.startsWith("/") || raw.startsWith("data:") || raw.startsWith("blob:")) {
+  // Scheme allowlist — mirrors the canonical safeMediaSrc. This branch previously
+  // returned any "/", "data:", or "blob:" value verbatim, letting data:text/html
+  // (and other non-image data: URLs) and protocol-relative "//host" reach a live
+  // <a href> sink (V14A-L1). Allow only root-relative "/x" (not "//host"), blob:,
+  // and data:image/; drop everything else in this class.
+  if (raw.startsWith("/")) {
+    return raw.startsWith("//") ? "" : raw;
+  }
+  if (raw.startsWith("blob:") || /^data:image\//i.test(raw)) {
     return raw;
+  }
+  if (raw.startsWith("data:")) {
+    return "";
   }
 
   const candidate = /^[a-z][a-z0-9+\-.]*:\/\//i.test(raw) ? raw : `https://${raw}`;

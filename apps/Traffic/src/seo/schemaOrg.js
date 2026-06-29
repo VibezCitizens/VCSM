@@ -1,4 +1,32 @@
 import { buildCanonical } from "@/seo/canonical";
+import { getSiteOrigin } from "@/lib/env";
+
+const SITE_NAME = "Traze";
+
+export function buildOrganizationSchema() {
+  const origin = getSiteOrigin();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${origin}/#organization`,
+    name: SITE_NAME,
+    url: origin
+  };
+}
+
+export function buildWebSiteSchema() {
+  const origin = getSiteOrigin();
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${origin}/#website`,
+    name: SITE_NAME,
+    url: origin,
+    publisher: {
+      "@id": `${origin}/#organization`
+    }
+  };
+}
 
 export function buildBreadcrumbSchema(items) {
   return {
@@ -193,5 +221,68 @@ export function buildArticleSchema(args) {
           }
         : undefined,
     about: (args.about ?? []).filter(Boolean)
+  };
+}
+
+// Canonical QAPage builder (TICKET-TRAZE-SEO-QAPAGE-001). Single source of truth
+// for QAPage JSON-LD across both answer routes (build-time SEO answer pages and
+// community published questions), replacing two divergent emitters.
+//
+// Input is a normalized shape:
+//   question: { name, text, url, dateCreated?, dateModified?, datePublished? }
+//   answers:  [{ text, url?, dateCreated?, datePublished?, authorName?, isAccepted? }]
+//
+// Returns null when there are no answers with text, so an answerless QAPage is
+// never emitted (Google flags those as incomplete).
+const QA_ORG_AUTHOR_NAME = "TRAZE";
+
+function buildAnswerAuthor(authorName) {
+  const name = String(authorName ?? "").trim();
+  // The platform's generic fallback name represents the organization, not a
+  // person — emit Organization to avoid a Person/identity mismatch.
+  if (!name || name === QA_ORG_AUTHOR_NAME) {
+    return { "@type": "Organization", name: QA_ORG_AUTHOR_NAME, url: getSiteOrigin() };
+  }
+  // Person name only. The source expert_profile_slug is unreliable (often a
+  // display name with spaces, not a slug), so building a /pro/ URL produced
+  // invalid, non-resolving links — omit it rather than emit a broken URL.
+  return { "@type": "Person", name };
+}
+
+function buildQAAnswerNode(answer) {
+  return {
+    "@type": "Answer",
+    text: answer.text,
+    ...(answer.dateCreated ? { dateCreated: answer.dateCreated } : {}),
+    ...(answer.datePublished ? { datePublished: answer.datePublished } : {}),
+    ...(answer.url ? { url: answer.url } : {}),
+    author: buildAnswerAuthor(answer.authorName)
+  };
+}
+
+export function buildQAPageSchema({ question, answers = [] } = {}) {
+  if (!question?.name) return null;
+
+  const published = (answers ?? []).filter((answer) => answer && answer.text);
+  if (!published.length) return null;
+
+  const accepted = published.find((answer) => answer.isAccepted) ?? null;
+  const suggested = published.filter((answer) => answer !== accepted);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "QAPage",
+    mainEntity: {
+      "@type": "Question",
+      name: question.name,
+      text: question.text || question.name,
+      ...(question.dateCreated ? { dateCreated: question.dateCreated } : {}),
+      ...(question.dateModified ? { dateModified: question.dateModified } : {}),
+      ...(question.datePublished ? { datePublished: question.datePublished } : {}),
+      url: question.url,
+      answerCount: published.length,
+      ...(accepted ? { acceptedAnswer: buildQAAnswerNode(accepted) } : {}),
+      ...(suggested.length ? { suggestedAnswer: suggested.map(buildQAAnswerNode) } : {})
+    }
   };
 }

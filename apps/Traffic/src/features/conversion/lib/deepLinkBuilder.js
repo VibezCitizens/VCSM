@@ -120,6 +120,10 @@ export function buildPlatformLoginLink() {
 /**
  * Build a claim link for unclaimed providers.
  * Returns null if the provider already has a VCSM actor (claimed and linked).
+ *
+ * TICKET-TRAZE-CLAIM-LANDING-001 — points at the VCSM /claim-business landing.
+ * The provider slug flows straight into the claim form (no search step), while
+ * referenceless global CTAs land on the search-first experience.
  * @param {string} providerSlug
  * @param {string|null} [vcsmActorId]
  * @returns {string|null}
@@ -129,7 +133,7 @@ export function buildPlatformClaimLink(providerSlug, vcsmActorId, surface = "pro
     return null;
   }
 
-  return buildUrl("/claim-profile", {
+  return buildUrl("/claim-business", {
     ...withTrafficAttribution(
       {
         provider: providerSlug,

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTrafficLanguage } from "@/lib/language";
+import { buildClaimLandingLink } from "@/lib/claimLinks";
 import HomepageProviderFilterTabs from "@/features/home/components/HomepageProviderFilterTabs";
 import HomepageCountryGroup from "@/features/home/components/HomepageCountryGroup";
 
@@ -18,11 +19,16 @@ function buildStatsLine(stats, lang) {
 export default function HomepageTopProvidersSection({
   countryGroups = [],
   stats = [],
-  claimHref = "/claim-profile",
+  claimSurface = "homepage",
   directoryHref = "/top-providers"
 }) {
   const { lang, t } = useTrafficLanguage();
   const [activeCode, setActiveCode] = useState("ALL");
+
+  // TICKET-TRAZE-CLAIM-LANDING-002 — locale-aware global claim CTA
+  // (EN /claim-business · ES /reclamar-negocio), resolved on the client from
+  // the current language. `claimSurface` preserves attribution per entry point.
+  const claimHref = buildClaimLandingLink(lang, { surface: claimSurface });
 
   const liveGroups = countryGroups.filter((g) => g.providers.length > 0);
   const visibleGroups = activeCode === "ALL"

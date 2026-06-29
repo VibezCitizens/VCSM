@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { resolveAuthCallbackController } from '@/features/auth/callback/controllers/authCallback.controller'
+import { isSafeAuthReturnPath } from '@/features/auth/shared/model/authInputValidation.model'
 import { captureFrontendError } from '@/services/monitoring/monitoringClient'
 
 export function useAuthCallback() {
@@ -38,7 +39,15 @@ export function useAuthCallback() {
         // Email verification: session established.
         // Recovery links are handled exclusively by AuthProvider's PASSWORD_RECOVERY
         // event handler — not from this callback. This path is email confirmation only.
-        navigate('/explore', { replace: true })
+        // TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-2): honor a whitelist-validated
+        // `next` carried by the confirmation link (set via signUp emailRedirectTo) so
+        // claimants return to the exact claim flow; everyone else defaults to /explore.
+        const nextParam =
+          typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search).get('next')
+            : null
+        const dest = isSafeAuthReturnPath(nextParam) ? nextParam : '/explore'
+        navigate(dest, { replace: true })
       } catch (err) {
         if (!alive) return
         setError('Something went wrong. Please try logging in.')

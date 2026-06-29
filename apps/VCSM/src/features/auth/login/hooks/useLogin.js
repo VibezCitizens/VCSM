@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { signInWithPassword } from '@/features/auth/login/controllers/login.controller'
 import { ensureProfileDiscoverable } from '@/features/auth/login/controllers/profile.controller'
 import { hydrateAuthSession } from '@/features/auth/session/controllers/authSession.controller'
-import { isSafeAuthReturnPath } from '@/features/auth/shared/model/authInputValidation.model'
+import { isSafeAuthReturnPath, deriveClaimReturnPathFromSearch } from '@/features/auth/shared/model/authInputValidation.model'
 import { debugLoginEvent, debugLoginError } from '@debuggers/identity'
 import { captureFrontendError } from '@/services/monitoring/monitoringClient'
 
@@ -91,14 +91,20 @@ export function useLogin(navigate, location) {
       setCooldownSeconds(0)
 
       const rawFrom = location?.state?.from
-      const from =
+      const stateFrom =
         typeof rawFrom === 'string'
           ? rawFrom
           : (rawFrom && typeof rawFrom === 'object' && typeof rawFrom.pathname === 'string'
               ? rawFrom.pathname + (rawFrom.search || '')
               : null)
 
-      const dest = isSafeAuthReturnPath(from) ? from : '/CentralFeed'
+      // TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-1): restoration priority —
+      // (1) validated router state.from, (2) claim context reconstructed from the
+      // URL query for cross-app sign-in, (3) default feed. Both candidates are
+      // whitelist-validated, so no untrusted redirect target can reach navigate().
+      const safeStateFrom = isSafeAuthReturnPath(stateFrom) ? stateFrom : null
+      const dest =
+        safeStateFrom || deriveClaimReturnPathFromSearch(location?.search) || '/CentralFeed'
 
       debugLoginEvent('LOGIN_REDIRECT', { phase: 'nav', status: 'success', message: `Navigating to ${dest}` })
 

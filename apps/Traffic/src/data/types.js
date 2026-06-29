@@ -17,6 +17,7 @@
  * @property {string} code
  * @property {string} slug
  * @property {string} name
+ * @property {string} [nameEs] - Spanish name. Use when country.defaultLocale.startsWith("es").
  * @property {"state"|"province"|"department"|"county"|"emirate"|"union_territory"} type
  * @property {boolean} isActive
  */

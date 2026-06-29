@@ -12,6 +12,8 @@ import TrazeGeoCoverageFallback from "@/shared/components/TrazeGeoCoverageFallba
 import ExpansionRoadmap from "@/shared/components/ExpansionRoadmap";
 import TrazeSpotlightCarousel from "@/shared/components/TrazeSpotlightCarousel";
 
+const DEFAULT_VIEW_ALTITUDE = 2.15;
+
 const ISO_NUMERIC_TO_ALPHA2 = {
   "840": "US",
   "484": "MX",
@@ -104,6 +106,9 @@ export default function TrazeGeoCoverageGlobe({
     coverage?.countries?.[0]?.countryCode ?? null
   );
   const [activeStateCode, setActiveStateCode] = useState(null);
+  // Camera altitude drives point sizing so dots keep a roughly constant
+  // on-screen size instead of swallowing whole countries when zoomed in.
+  const [zoomAltitude, setZoomAltitude] = useState(DEFAULT_VIEW_ALTITUDE);
 
   const countries = coverage?.countries ?? [];
   const cities = coverage?.cities ?? [];
@@ -200,7 +205,7 @@ export default function TrazeGeoCoverageGlobe({
       {
         lat: activeCountry.lat,
         lng: activeCountry.lng,
-        altitude: 2.15
+        altitude: DEFAULT_VIEW_ALTITUDE
       },
       duration
     );
@@ -215,6 +220,34 @@ export default function TrazeGeoCoverageGlobe({
     const timer = window.setTimeout(() => syncGlobeView(0), 120);
     return () => window.clearTimeout(timer);
   }, [ReactGlobe, activeCountry, dims.height, dims.width, geoJson]);
+
+  // Keep dot size proportional to zoom: track the camera altitude on every
+  // controls change (throttled to one read per frame) so pointRadius can scale.
+  useEffect(() => {
+    if (!ReactGlobe || !geoJson || !dims.width || !dims.height || !globeRef.current) {
+      return undefined;
+    }
+
+    const controls = globeRef.current.controls?.();
+    if (!controls) return undefined;
+
+    let frame = null;
+    const handleChange = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        const altitude = globeRef.current?.pointOfView?.()?.altitude;
+        if (altitude == null) return;
+        setZoomAltitude((prev) => (Math.abs(prev - altitude) > 0.01 ? altitude : prev));
+      });
+    };
+
+    controls.addEventListener("change", handleChange);
+    return () => {
+      controls.removeEventListener("change", handleChange);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [ReactGlobe, geoJson, dims.height, dims.width]);
 
   useEffect(() => {
     if (!detectWebGL()) {
@@ -410,8 +443,14 @@ export default function TrazeGeoCoverageGlobe({
                 pointLng="lng"
                 pointAltitude={(point) => point.citySlug ? 0.055 : 0.035}
                 pointRadius={(point) => {
-                  if (!point.citySlug) return 0.28 + Math.sqrt(point.providerCount ?? 1) * 0.08;
-                  return 0.22 + Math.sqrt((point.providerCount ?? 1) / maxCityProviders) * 0.42;
+                  // Shrink dots as the camera gets closer so a point never
+                  // grows to cover an entire country. Capped at 1x so they
+                  // stay at their designed size when viewing the full globe.
+                  const zoomScale = Math.min(1, zoomAltitude / DEFAULT_VIEW_ALTITUDE);
+                  const base = point.citySlug
+                    ? 0.22 + Math.sqrt((point.providerCount ?? 1) / maxCityProviders) * 0.42
+                    : 0.28 + Math.sqrt(point.providerCount ?? 1) * 0.08;
+                  return base * zoomScale;
                 }}
                 pointColor={(point) =>
                   point.citySlug

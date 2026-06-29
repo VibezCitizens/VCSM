@@ -10,12 +10,14 @@ import ClaimProviderSummary from '@/features/claim/components/ClaimProviderSumma
 import ClaimAuthPrompt from '@/features/claim/components/ClaimAuthPrompt'
 import ClaimForm from '@/features/claim/components/ClaimForm'
 import ClaimMessageCard from '@/features/claim/components/ClaimMessageCard'
+import ClaimBusinessSearch from '@/features/claim/components/ClaimBusinessSearch'
 
 export default function ClaimProfileScreen() {
   const {
     status,
     provider,
     providerLabel,
+    landingLang,
     form,
     fieldErrors,
     submitError,
@@ -25,6 +27,8 @@ export default function ClaimProfileScreen() {
     goRegister,
     goLogin,
     goOnboarding,
+    goCreateBusiness,
+    goSelectProvider,
   } = useClaimProfile()
 
   if (status === 'loading') {
@@ -37,6 +41,22 @@ export default function ClaimProfileScreen() {
     )
   }
 
+  if (status === 'landing') {
+    return (
+      <ClaimLayout>
+        <ClaimBusinessSearch
+          lang={landingLang}
+          onSelectProvider={goSelectProvider}
+          onCreateBusiness={goCreateBusiness}
+          onLogin={goLogin}
+        />
+      </ClaimLayout>
+    )
+  }
+
+  // Defensive: no current path produces `invalid` (missing provider now → landing,
+  // and an unknown provider stays on the best-effort flow → rejected by the RPC).
+  // Retained so a stray invalid state never renders a blank screen.
   if (status === 'invalid') {
     return (
       <ClaimLayout>

@@ -20,6 +20,8 @@ import {
 } from "../dal/postReactions.write.dal";
 
 import { fetchPostByIdDAL, checkPostExistsDAL } from "../dal/post.read.dal";
+import { readPostActorOwnerLinkDAL } from "../dal/postActorOwnership.read.dal";
+import { readCurrentAuthUser } from "@/features/auth/adapters/authSession.adapter";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 const VALID_REACTIONS = ["like", "dislike"];
@@ -51,6 +53,14 @@ export async function togglePostReactionController({
   if (!VALID_REACTIONS.includes(reaction)) {
     throw new Error(`Invalid reaction: ${reaction}`);
   }
+
+  // V06A-M1: session-derived, kind-agnostic authorship bind — the session must own
+  // `actorId` (any kind) before any write (mirrors createPostController). Defense-in-depth
+  // only; the durable boundary is the post-interaction RLS WITH CHECK (06A-DB-1, Phase 15).
+  const user = await readCurrentAuthUser();
+  if (!user) throw new Error("togglePostReaction: not authenticated");
+  const ownerLink = await readPostActorOwnerLinkDAL({ actorId, userId: user.id });
+  if (!ownerLink) throw new Error("togglePostReaction: actor not owned by session user");
 
   // ============================================================
   // 0️⃣ GUARD — reject interactions on deleted posts

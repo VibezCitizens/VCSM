@@ -20,9 +20,14 @@ export async function dalUpdateRegisterUser({ client, email, password, citizenIn
   return data
 }
 
-export async function dalSignUpRegisterUser({ client, email, password, citizenInviteCode = null }) {
+export async function dalSignUpRegisterUser({ client, email, password, citizenInviteCode = null, emailRedirectTo = null }) {
   const c = resolveClient(client)
-  const options = citizenInviteCode ? { data: { citizen_invite_code: citizenInviteCode } } : {}
+  // TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-2): forward emailRedirectTo so the
+  // confirmation link returns the claimant to the exact claim flow. Omitted when
+  // null, preserving Supabase's default (Site URL) redirect for normal signups.
+  const options = {}
+  if (citizenInviteCode) options.data = { citizen_invite_code: citizenInviteCode }
+  if (emailRedirectTo) options.emailRedirectTo = emailRedirectTo
   const { data, error } = await c.auth.signUp({ email, password, options })
   if (error) throw error
   return data

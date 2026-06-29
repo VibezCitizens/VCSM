@@ -127,7 +127,7 @@ function filterTopProviders(providers, { query, country, location, activeFilter 
 export default function TopProvidersDiscoveryClient({
   providers = [],
   stats = [],
-  claimHref = "/claim-profile",
+  claimSurface = "top-providers",
   locationOptions = [],
   countryOptions = [],
   initialCountryCode = "",
@@ -235,7 +235,7 @@ export default function TopProvidersDiscoveryClient({
       <HomepageTopProvidersSection
         providers={filteredProviders}
         stats={stats}
-        claimHref={claimHref}
+        claimSurface={claimSurface}
         scopeLabel={selectedCountry?.name ?? (country || null)}
         requireCountry={requireCountry}
       />

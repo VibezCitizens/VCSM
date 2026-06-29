@@ -13,6 +13,11 @@ export default function VerifyEmailRequiredScreen({ email: emailProp }) {
 
   const email = emailProp || location.state?.email || null
 
+  // TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-2): preserve the claim return path
+  // through the auto-redirect to /login so a same-browser manual login (rather than
+  // clicking the email link) still restores the claim. useLogin re-validates it.
+  const returnTo = typeof location.state?.from === 'string' ? location.state.from : null
+
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS)
 
   useEffect(() => {
@@ -20,14 +25,14 @@ export default function VerifyEmailRequiredScreen({ email: emailProp }) {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(interval)
-          navigate('/login', { replace: true })
+          navigate('/login', { replace: true, state: returnTo ? { from: returnTo } : undefined })
           return 0
         }
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(interval)
-  }, [navigate])
+  }, [navigate, returnTo])
 
   return (
     <div
