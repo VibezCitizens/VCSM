@@ -11,6 +11,19 @@ import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollo
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
 import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
+import { readSocialActorOwnerLinkDAL } from '@/features/social/friend/request/dal/socialActorOwnership.read.dal'
+
+// 🔒 OWNERSHIP GATE (V06B-M1): session-derived, kind-agnostic owner-bind on the
+// acting actor. Mirrors createPostController; vc.actor_owners is the canonical
+// authority (a session user owns user-kind AND vport-kind actors). DiD only; the
+// durable boundary is vc.social_follow_requests / vc.actor_follows RLS (Phase 15).
+async function assertSessionOwnsActingActor(actingActorId, ctrlName) {
+  const user = await readCurrentAuthUser()
+  if (!user) throw new Error(`${ctrlName}: not authenticated`)
+  const owner = await readSocialActorOwnerLinkDAL({ actorId: actingActorId, userId: user.id })
+  if (!owner) throw new Error(`${ctrlName}: actor not owned by session user`)
+}
 
 /**
  * ============================================================
@@ -31,6 +44,10 @@ export async function ctrlSendFollowRequest({
   if (requesterActorId === targetActorId) {
     throw new Error('Cannot follow yourself')
   }
+
+  // 🔒 V06B-M1: bind the acting actor (requester). Closes the previously ungated
+  // send path; assertingActorId is intentionally not added (no signature change).
+  await assertSessionOwnsActingActor(requesterActorId, 'ctrlSendFollowRequest')
 
   const { isBlocked } = await ctrlGetBlockStatus({
     actorId: requesterActorId,
@@ -75,9 +92,14 @@ export async function ctrlAcceptFollowRequest({
   if (!requesterActorId || !targetActorId) {
     throw new Error('ctrlAcceptFollowRequest: missing actor ids')
   }
-  if (!assertingActorId || assertingActorId !== targetActorId) {
-    throw new Error('ctrlAcceptFollowRequest: session actor does not own this request')
+  // assertingActorId retained (vestigial) for API compatibility — presence contract
+  // preserved (the prior gate also threw when it was absent); authorization is the
+  // session bind below.
+  if (!assertingActorId) {
+    throw new Error('ctrlAcceptFollowRequest: assertingActorId required')
   }
+  // 🔒 V06B-M1: bind the acting actor (inbox owner = targetActorId).
+  await assertSessionOwnsActingActor(targetActorId, 'ctrlAcceptFollowRequest')
 
   const status = await dalGetRequestStatus({
     requesterActorId,
@@ -125,9 +147,13 @@ export async function ctrlDeclineFollowRequest({
   if (!requesterActorId || !targetActorId) {
     throw new Error('ctrlDeclineFollowRequest: missing actor ids')
   }
-  if (!assertingActorId || assertingActorId !== targetActorId) {
-    throw new Error('ctrlDeclineFollowRequest: session actor does not own this request')
+  // assertingActorId retained (vestigial) for API compatibility — presence contract
+  // preserved; authorization is the session bind below.
+  if (!assertingActorId) {
+    throw new Error('ctrlDeclineFollowRequest: assertingActorId required')
   }
+  // 🔒 V06B-M1: bind the acting actor (inbox owner = targetActorId).
+  await assertSessionOwnsActingActor(targetActorId, 'ctrlDeclineFollowRequest')
 
   const status = await dalGetRequestStatus({
     requesterActorId,
@@ -155,9 +181,13 @@ export async function ctrlCancelFollowRequest({
   if (!requesterActorId || !targetActorId) {
     throw new Error('ctrlCancelFollowRequest: missing actor ids')
   }
-  if (!assertingActorId || assertingActorId !== requesterActorId) {
-    throw new Error('ctrlCancelFollowRequest: session actor does not own this request')
+  // assertingActorId retained (vestigial) for API compatibility — presence contract
+  // preserved; authorization is the session bind below.
+  if (!assertingActorId) {
+    throw new Error('ctrlCancelFollowRequest: assertingActorId required')
   }
+  // 🔒 V06B-M1: bind the acting actor (requester).
+  await assertSessionOwnsActingActor(requesterActorId, 'ctrlCancelFollowRequest')
 
   const status = await dalGetRequestStatus({
     requesterActorId,
@@ -189,10 +219,14 @@ export async function ctrlListIncomingRequests({
 }) {
   if (!targetActorId) return []
 
-  // 🔒 OWNERSHIP GATE (V-SUB-003): session actor must own this inbox.
-  if (!assertingActorId || assertingActorId !== targetActorId) {
-    throw new Error('session actor does not own this inbox')
+  // assertingActorId retained (vestigial) for API compatibility — presence contract
+  // preserved (the prior gate also threw when it was absent).
+  if (!assertingActorId) {
+    throw new Error('ctrlListIncomingRequests: assertingActorId required')
   }
+  // 🔒 OWNERSHIP GATE (V06B-M1): session-derived owner-bind on the inbox owner
+  // (targetActorId). Replaces the prior caller-equality check.
+  await assertSessionOwnsActingActor(targetActorId, 'ctrlListIncomingRequests')
 
   return dalListIncomingPendingRequests({
     targetActorId,

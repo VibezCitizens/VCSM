@@ -3,10 +3,11 @@
 // ============================================================
 
 import { useCallback, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import '@/features/profiles/styles/profiles-friends-modern.css'
 
+import { useIdentity } from '@/features/identity/adapters/identity.adapter'
 import { useActorSummary } from '@/state/actors/useActorSummary'
 import ActorLink from '@/shared/components/ActorLink'
 
@@ -16,8 +17,12 @@ import { useSaveTopFriendRanks } from '@/features/profiles/kinds/citizen/tabs/fr
 
 export default function TopFriendsRankEditor() {
   const navigate = useNavigate()
-  const { id } = useParams()
-  const ownerActorId = id
+  // V05B-M1: the editor edits YOUR OWN Top-Friends list, so the owner is the
+  // authenticated session actor — never the route `:id`. Deriving it from the
+  // session removes the URL-trusted owner (route `:id` already equals the session
+  // actor for every legitimate owner, so this is behavior-preserving).
+  const { identity } = useIdentity()
+  const ownerActorId = identity?.actorId
 
   const [showPicker, setShowPicker] = useState(false)
   const [localActorIds, setLocalActorIds] = useState(null)

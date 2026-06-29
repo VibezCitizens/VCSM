@@ -1,5 +1,6 @@
 // [CITIZEN_ONLY] — user actors only
 import { saveFriendRanks } from '@/features/profiles/kinds/citizen/dal/friends/friendRanks.write.dal'
+import { assertActorOwnsActorController } from '@/features/authorization/adapters/authorization.adapter'
 
 function normalizeIds(friendActorIds = [], maxCount = 10) {
   const safeMaxCount = Math.max(1, Math.min(10, Number(maxCount || 10)))
@@ -26,6 +27,25 @@ export async function saveTopFriendRanksController({
     return {
       ok: false,
       error: { message: 'Missing ownerActorId' },
+      data: { actorIds: [] },
+    }
+  }
+
+  // V05B-M1: canonical USER-ONLY session bind. The Top-Friends owner is always a
+  // citizen (user-kind) actor; the editor previously trusted the route `:id` as the
+  // write owner. The self-form (requestActorId === targetActorId) proves the
+  // authenticated session owns `ownerActorId` (vc.actors.profile_id === auth.uid())
+  // before the write reaches saveFriendRanks → vc.save_friend_ranks. Defense-in-depth
+  // over the RPC's own vc.is_actor_owner guard (durable boundary 05B-DB-1).
+  try {
+    await assertActorOwnsActorController({
+      requestActorId: ownerActorId,
+      targetActorId: ownerActorId,
+    })
+  } catch {
+    return {
+      ok: false,
+      error: { message: 'not_owner' },
       data: { actorIds: [] },
     }
   }

@@ -43,6 +43,11 @@ vi.mock('@/features/CentralFeed/adapters/feedCache.adapter', () => ({
   invalidateFeedFollowCache: vi.fn(),
 }))
 
+vi.mock('@/features/auth/adapters/authSession.adapter', () => ({ readCurrentAuthUser: vi.fn() }))
+vi.mock('@/features/social/friend/request/dal/socialActorOwnership.read.dal', () => ({
+  readSocialActorOwnerLinkDAL: vi.fn(),
+}))
+
 import {
   ctrlAcceptFollowRequest,
   ctrlDeclineFollowRequest,
@@ -62,61 +67,71 @@ import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollo
 import { publishVcsmNotification } from '@/features/notifications/adapters/notifications.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
 import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
+import { readSocialActorOwnerLinkDAL } from '@/features/social/friend/request/dal/socialActorOwnership.read.dal'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 
+const USER      = 'user-session-111'
 const REQUESTER = 'actor-requester-aaa-111'
 const TARGET    = 'actor-target-bbb-222'
-const ATTACKER  = 'actor-attacker-zzz-999'
+
+// V06B-M1: grant session ownership of the acting actor (kind-agnostic). The acting
+// actor differs per controller (target/inbox for accept/decline/list, requester for
+// cancel/send); the granted link is returned regardless of which actorId is read.
+function grantSession() {
+  readCurrentAuthUser.mockResolvedValue({ id: USER })
+  readSocialActorOwnerLinkDAL.mockResolvedValue({ actor_id: 'owned', is_void: false })
+}
+function denyOwnership() {
+  readCurrentAuthUser.mockResolvedValue({ id: USER })
+  readSocialActorOwnerLinkDAL.mockResolvedValue(null)
+}
 
 // ─── ctrlAcceptFollowRequest — assertingActorId gate (existing, must not regress) ──
 
-describe('ctrlAcceptFollowRequest — ownership gate (assertingActorId)', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+describe('ctrlAcceptFollowRequest — [V06B-M1] session-derived ownership gate (inbox = targetActorId)', () => {
+  beforeEach(() => { vi.clearAllMocks(); grantSession() })
 
-  it('throws when assertingActorId is null', async () => {
+  it('throws when unauthenticated (no session user)', async () => {
+    readCurrentAuthUser.mockResolvedValue(null)
     await expect(
-      ctrlAcceptFollowRequest({
-        requesterActorId: REQUESTER,
-        targetActorId:    TARGET,
-        assertingActorId: null,
-      })
-    ).rejects.toThrow('session actor does not own this request')
+      ctrlAcceptFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET, assertingActorId: TARGET })
+    ).rejects.toThrow('not authenticated')
   })
 
-  it('throws when assertingActorId does not match targetActorId', async () => {
+  it('throws when the session does not own targetActorId (inbox)', async () => {
+    denyOwnership()
     await expect(
-      ctrlAcceptFollowRequest({
-        requesterActorId: REQUESTER,
-        targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
-      })
-    ).rejects.toThrow('session actor does not own this request')
+      ctrlAcceptFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET, assertingActorId: TARGET })
+    ).rejects.toThrow('actor not owned by session user')
+  })
+
+  it('binds ownership on the target (inbox) actor', async () => {
+    dalGetRequestStatus.mockResolvedValue('pending')
+    dalInsertFollow.mockResolvedValue(true)
+    dalUpdateRequestStatus.mockResolvedValue(true)
+    await ctrlAcceptFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET, assertingActorId: TARGET })
+    expect(readSocialActorOwnerLinkDAL).toHaveBeenCalledWith({ actorId: TARGET, userId: USER })
   })
 
   it('does not call dalGetRequestStatus when ownership gate rejects', async () => {
+    denyOwnership()
     await expect(
-      ctrlAcceptFollowRequest({
-        requesterActorId: REQUESTER,
-        targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
-      })
+      ctrlAcceptFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET, assertingActorId: TARGET })
     ).rejects.toThrow()
     expect(dalGetRequestStatus).not.toHaveBeenCalled()
   })
 
   it('does not call dalInsertFollow when ownership gate rejects', async () => {
+    denyOwnership()
     await expect(
-      ctrlAcceptFollowRequest({
-        requesterActorId: REQUESTER,
-        targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
-      })
+      ctrlAcceptFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET, assertingActorId: TARGET })
     ).rejects.toThrow()
     expect(dalInsertFollow).not.toHaveBeenCalled()
   })
 
-  it('proceeds when assertingActorId matches targetActorId', async () => {
+  it('proceeds when the session owns targetActorId', async () => {
     dalGetRequestStatus.mockResolvedValue('pending')
     dalInsertFollow.mockResolvedValue(true)
     dalUpdateRequestStatus.mockResolvedValue(true)
@@ -144,6 +159,7 @@ describe('ctrlAcceptFollowRequest — ownership gate (assertingActorId)', () => 
 describe('ctrlAcceptFollowRequest — successful accept: DAL + cache + notification', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    grantSession()
     dalGetRequestStatus.mockResolvedValue('pending')
     dalInsertFollow.mockResolvedValue(true)
     dalUpdateRequestStatus.mockResolvedValue(true)
@@ -199,31 +215,33 @@ describe('ctrlAcceptFollowRequest — successful accept: DAL + cache + notificat
 
 // ─── ctrlDeclineFollowRequest — assertingActorId gate ────────────────────────
 
-describe('ctrlDeclineFollowRequest — ownership gate (assertingActorId)', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+describe('ctrlDeclineFollowRequest — [V06B-M1] session-derived ownership gate (inbox = targetActorId)', () => {
+  beforeEach(() => { vi.clearAllMocks(); grantSession() })
 
-  it('throws when assertingActorId does not match targetActorId', async () => {
+  it('throws when the session does not own targetActorId (inbox)', async () => {
+    denyOwnership()
     await expect(
       ctrlDeclineFollowRequest({
         requesterActorId: REQUESTER,
         targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
+        assertingActorId: TARGET,
       })
-    ).rejects.toThrow('session actor does not own this request')
+    ).rejects.toThrow('actor not owned by session user')
   })
 
   it('does not call dalUpdateRequestStatus when ownership gate rejects', async () => {
+    denyOwnership()
     await expect(
       ctrlDeclineFollowRequest({
         requesterActorId: REQUESTER,
         targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
+        assertingActorId: TARGET,
       })
     ).rejects.toThrow()
     expect(dalUpdateRequestStatus).not.toHaveBeenCalled()
   })
 
-  it('proceeds and returns true when assertingActorId matches targetActorId', async () => {
+  it('proceeds and returns true when the session owns targetActorId', async () => {
     dalGetRequestStatus.mockResolvedValue('pending')
     dalUpdateRequestStatus.mockResolvedValue(true)
     const result = await ctrlDeclineFollowRequest({
@@ -235,6 +253,7 @@ describe('ctrlDeclineFollowRequest — ownership gate (assertingActorId)', () =>
   })
 
   it('writes status: declined on successful decline', async () => {
+    grantSession()
     dalGetRequestStatus.mockResolvedValue('pending')
     dalUpdateRequestStatus.mockResolvedValue(true)
     await ctrlDeclineFollowRequest({
@@ -252,31 +271,40 @@ describe('ctrlDeclineFollowRequest — ownership gate (assertingActorId)', () =>
 
 // ─── ctrlCancelFollowRequest — assertingActorId gate ─────────────────────────
 
-describe('ctrlCancelFollowRequest — ownership gate (assertingActorId)', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+describe('ctrlCancelFollowRequest — [V06B-M1] session-derived ownership gate (requesterActorId)', () => {
+  beforeEach(() => { vi.clearAllMocks(); grantSession() })
 
-  it('throws when assertingActorId does not match requesterActorId', async () => {
+  it('throws when the session does not own requesterActorId', async () => {
+    denyOwnership()
     await expect(
       ctrlCancelFollowRequest({
         requesterActorId: REQUESTER,
         targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
+        assertingActorId: REQUESTER,
       })
-    ).rejects.toThrow('session actor does not own this request')
+    ).rejects.toThrow('actor not owned by session user')
+  })
+
+  it('binds ownership on the requester actor', async () => {
+    dalGetRequestStatus.mockResolvedValue('pending')
+    dalUpdateRequestStatus.mockResolvedValue(true)
+    await ctrlCancelFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET, assertingActorId: REQUESTER })
+    expect(readSocialActorOwnerLinkDAL).toHaveBeenCalledWith({ actorId: REQUESTER, userId: USER })
   })
 
   it('does not call dalUpdateRequestStatus when ownership gate rejects', async () => {
+    denyOwnership()
     await expect(
       ctrlCancelFollowRequest({
         requesterActorId: REQUESTER,
         targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
+        assertingActorId: REQUESTER,
       })
     ).rejects.toThrow()
     expect(dalUpdateRequestStatus).not.toHaveBeenCalled()
   })
 
-  it('proceeds when assertingActorId matches requesterActorId', async () => {
+  it('proceeds when the session owns requesterActorId', async () => {
     dalGetRequestStatus.mockResolvedValue('pending')
     dalUpdateRequestStatus.mockResolvedValue(true)
     const result = await ctrlCancelFollowRequest({
@@ -309,57 +337,41 @@ describe('ctrlCancelFollowRequest — ownership gate (assertingActorId)', () => 
 // supplying their targetActorId — no session ownership verification is performed.
 // Tracking: VENOM V-SUB-003 / HIGH / BLOCKED 2026-05-27
 
-describe('ctrlListIncomingRequests — [V-SUB-003 REGRESSION] ownership gate: assertingActorId', () => {
+describe('ctrlListIncomingRequests — [V06B-M1] session-derived ownership gate (inbox = targetActorId)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    grantSession()
     dalListIncomingPendingRequests.mockResolvedValue([])
   })
 
-  it('throws when assertingActorId is null (unauthenticated)', async () => {
+  it('throws when unauthenticated (no session user)', async () => {
+    readCurrentAuthUser.mockResolvedValue(null)
     await expect(
-      ctrlListIncomingRequests({
-        targetActorId:    TARGET,
-        assertingActorId: null,
-      })
-    ).rejects.toThrow('session actor does not own this inbox')
+      ctrlListIncomingRequests({ targetActorId: TARGET, assertingActorId: TARGET })
+    ).rejects.toThrow('not authenticated')
   })
 
-  it('throws when assertingActorId is undefined (missing from call site)', async () => {
+  it('throws when the session does not own the inbox (targetActorId)', async () => {
+    denyOwnership()
     await expect(
-      ctrlListIncomingRequests({
-        targetActorId: TARGET,
-        // assertingActorId intentionally omitted
-      })
-    ).rejects.toThrow('session actor does not own this inbox')
-  })
-
-  it('throws when assertingActorId does not match targetActorId (unauthorized inbox read)', async () => {
-    await expect(
-      ctrlListIncomingRequests({
-        targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
-      })
-    ).rejects.toThrow('session actor does not own this inbox')
+      ctrlListIncomingRequests({ targetActorId: TARGET, assertingActorId: TARGET })
+    ).rejects.toThrow('actor not owned by session user')
   })
 
   it('does not call dalListIncomingPendingRequests when ownership gate rejects', async () => {
+    denyOwnership()
     await expect(
-      ctrlListIncomingRequests({
-        targetActorId:    TARGET,
-        assertingActorId: ATTACKER,
-      })
+      ctrlListIncomingRequests({ targetActorId: TARGET, assertingActorId: TARGET })
     ).rejects.toThrow()
     expect(dalListIncomingPendingRequests).not.toHaveBeenCalled()
   })
 
-  it('proceeds when assertingActorId matches targetActorId (authentic owner)', async () => {
+  it('proceeds when the session owns the inbox (authentic owner)', async () => {
     dalListIncomingPendingRequests.mockResolvedValue([
       { requester_actor_id: REQUESTER, target_actor_id: TARGET, status: 'pending' },
     ])
-    const result = await ctrlListIncomingRequests({
-      targetActorId:    TARGET,
-      assertingActorId: TARGET,
-    })
+    const result = await ctrlListIncomingRequests({ targetActorId: TARGET, assertingActorId: TARGET })
+    expect(readSocialActorOwnerLinkDAL).toHaveBeenCalledWith({ actorId: TARGET, userId: USER })
     expect(Array.isArray(result)).toBe(true)
     expect(result).toHaveLength(1)
   })
@@ -380,7 +392,7 @@ describe('ctrlListIncomingRequests — guard and DAL forwarding', () => {
 // ─── ctrlSendFollowRequest — guards ──────────────────────────────────────────
 
 describe('ctrlSendFollowRequest — guard: missing actor ids', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => { vi.clearAllMocks(); grantSession() })
 
   it('throws when requesterActorId is missing', async () => {
     await expect(
@@ -408,9 +420,36 @@ describe('ctrlSendFollowRequest — guard: missing actor ids', () => {
   })
 })
 
+describe('ctrlSendFollowRequest — [V06B-M1] session-derived ownership gate (requesterActorId; previously ungated)', () => {
+  beforeEach(() => { vi.clearAllMocks(); grantSession(); ctrlGetBlockStatus.mockResolvedValue({ isBlocked: false }) })
+
+  it('throws when the session does not own requesterActorId', async () => {
+    denyOwnership()
+    await expect(
+      ctrlSendFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET })
+    ).rejects.toThrow('actor not owned by session user')
+  })
+
+  it('does not call dalUpsertPendingRequest when ownership gate rejects', async () => {
+    denyOwnership()
+    await expect(
+      ctrlSendFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET })
+    ).rejects.toThrow()
+    expect(dalUpsertPendingRequest).not.toHaveBeenCalled()
+  })
+
+  it('binds ownership on the requester actor before the block check', async () => {
+    dalGetRequestStatus.mockResolvedValue(null)
+    dalUpsertPendingRequest.mockResolvedValue(true)
+    await ctrlSendFollowRequest({ requesterActorId: REQUESTER, targetActorId: TARGET })
+    expect(readSocialActorOwnerLinkDAL).toHaveBeenCalledWith({ actorId: REQUESTER, userId: USER })
+  })
+})
+
 describe('ctrlSendFollowRequest — idempotency', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    grantSession()
     ctrlGetBlockStatus.mockResolvedValue({ isBlocked: false })
   })
 

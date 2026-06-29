@@ -109,6 +109,7 @@ vi.mock(
   "@/features/authorization/adapters/authorization.adapter",
   () => ({
     assertSessionOwnsActorController: vi.fn(),
+    assertActorOwnsActorController: vi.fn(),
   })
 );
 
@@ -123,7 +124,7 @@ import { createFuelPriceSubmissionDAL } from "@/features/vportDashboard/dashboar
 import { fetchPendingFuelPriceSubmissionsDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmissions.read.dal";
 import { upsertVportFuelPriceDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPrices.write.dal";
 import { createVportFuelPriceHistoryDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal";
-import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
+import { assertSessionOwnsActorController, assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -175,6 +176,10 @@ beforeEach(() => {
 
   // Default: session ownership passes (for owner path tests that don't override)
   assertSessionOwnsActorController.mockResolvedValue({ ok: true });
+
+  // Default: citizen submitter session bind passes (V03C-M1); citizen-path tests
+  // that exercise the forged-actor rejection override this explicitly.
+  assertActorOwnsActorController.mockResolvedValue({ ok: true, mode: "self" });
 });
 
 // ---------------------------------------------------------------------------
@@ -363,6 +368,69 @@ describe("submitFuelPriceSuggestionController — citizen path (ownerUpdate: fal
     });
 
     expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
+  });
+
+  // V03C-M1 — submitter session bind (USER-ONLY self-form)
+  it("calls assertActorOwnsActorController in self-form with the submitter actor (V03C-M1)", async () => {
+    await submitFuelPriceSuggestionController({
+      ...baseArgs,
+      ownerUpdate: false,
+    });
+
+    expect(assertActorOwnsActorController).toHaveBeenCalledOnce();
+    expect(assertActorOwnsActorController).toHaveBeenCalledWith({
+      requestActorId: CITIZEN_ACTOR_ID,
+      targetActorId: CITIZEN_ACTOR_ID,
+    });
+  });
+
+  it("rejects a forged actorId with { ok: false, reason: 'not_submitter' } (V03C-M1)", async () => {
+    // Submitter actor is not bound to the authenticated session → bind throws.
+    assertActorOwnsActorController.mockRejectedValue(
+      new Error("Requester actor is not bound to the authenticated session.")
+    );
+
+    const result = await submitFuelPriceSuggestionController({
+      ...baseArgs,
+      ownerUpdate: false,
+    });
+
+    expect(result).toEqual({ ok: false, reason: "not_submitter" });
+  });
+
+  it("does NOT call createFuelPriceSubmissionDAL when the submitter bind fails (V03C-M1)", async () => {
+    assertActorOwnsActorController.mockRejectedValue(new Error("not bound"));
+
+    await submitFuelPriceSuggestionController({
+      ...baseArgs,
+      ownerUpdate: false,
+    });
+
+    expect(createFuelPriceSubmissionDAL).not.toHaveBeenCalled();
+    expect(FuelPriceCacheService.invalidatePendingSubmissions).not.toHaveBeenCalled();
+  });
+
+  it("legitimate submitter (bind passes) creates the submission (V03C-M1)", async () => {
+    assertActorOwnsActorController.mockResolvedValue({ ok: true, mode: "self" });
+
+    const result = await submitFuelPriceSuggestionController({
+      ...baseArgs,
+      ownerUpdate: false,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.submission).toBeDefined();
+    expect(createFuelPriceSubmissionDAL).toHaveBeenCalledOnce();
+  });
+
+  it("does NOT call assertActorOwnsActorController on the owner path (V03C-M1)", async () => {
+    await submitFuelPriceSuggestionController({
+      ...baseArgs,
+      ownerUpdate: true,
+    });
+
+    expect(assertActorOwnsActorController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).toHaveBeenCalledOnce();
   });
 
   it("calls createFuelPriceSubmissionDAL with targetActorId (actor-first) and correct args", async () => {

@@ -49,6 +49,11 @@ vi.mock('@/features/block', () => ({
   ctrlGetBlockStatus: vi.fn(),
 }))
 
+vi.mock('@/features/auth/adapters/authSession.adapter', () => ({ readCurrentAuthUser: vi.fn() }))
+vi.mock('@/features/social/friend/request/dal/socialActorOwnership.read.dal', () => ({
+  readSocialActorOwnerLinkDAL: vi.fn(),
+}))
+
 import { ctrlSubscribe } from '../follow.controller'
 import { dalInsertFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { ctrlGetFollowRelationshipState } from '@/features/social/friend/subscribe/controllers/getFollowRelationshipState.controller'
@@ -57,14 +62,23 @@ import { publishVcsmNotification } from '@/features/notifications/adapters/notif
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
 import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
+import { readSocialActorOwnerLinkDAL } from '@/features/social/friend/request/dal/socialActorOwnership.read.dal'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 
+const USER = 'user-session-111'
 const FOLLOWER = 'actor-follower-aaa-111'
 const FOLLOWED = 'actor-followed-bbb-222'
-const ATTACKER = 'actor-attacker-zzz-999'
+
+// V06B-M1: session-derived ownership grant on the follower actor.
+function grantSession() {
+  readCurrentAuthUser.mockResolvedValue({ id: USER })
+  readSocialActorOwnerLinkDAL.mockResolvedValue({ actor_id: FOLLOWER, is_void: false })
+}
 
 function setupPublicNotFollowing() {
+  grantSession()
   ctrlGetBlockStatus.mockResolvedValue({ isBlocked: false })
   ctrlGetFollowRelationshipState.mockResolvedValue({
     state: 'not_following',
@@ -137,7 +151,7 @@ describe('ctrlSubscribe — guard: self-follow prevention', () => {
 // and reach the block check. Intent unchanged — tests that blocked actors are rejected.
 
 describe('ctrlSubscribe — guard: blocked actor', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => { vi.clearAllMocks(); grantSession() })
 
   it('throws when isBlocked is true', async () => {
     ctrlGetBlockStatus.mockResolvedValue({ isBlocked: true })
@@ -169,65 +183,48 @@ describe('ctrlSubscribe — guard: blocked actor', () => {
 // followerActorId before any follow action is executed.
 // Tracking: VENOM V-SUB-001 / BLOCKED 2026-05-27
 
-describe('ctrlSubscribe — [V-SUB-001 REGRESSION] ownership gate: assertingActorId', () => {
+describe('ctrlSubscribe — [V06B-M1] session-derived ownership gate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setupPublicNotFollowing()
   })
 
-  it('throws when assertingActorId is null (unauthenticated caller)', async () => {
+  it('throws when unauthenticated (no session user)', async () => {
+    readCurrentAuthUser.mockResolvedValue(null)
     await expect(
-      ctrlSubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: null,
-      })
-    ).rejects.toThrow('session actor does not match follower')
+      ctrlSubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
+    ).rejects.toThrow('not authenticated')
   })
 
-  it('throws when assertingActorId is undefined (missing from call site)', async () => {
+  it('throws when the session does not own followerActorId (spoofed follow)', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlSubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        // assertingActorId intentionally omitted
-      })
-    ).rejects.toThrow('session actor does not match follower')
+      ctrlSubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
+    ).rejects.toThrow('actor not owned by session user')
   })
 
-  it('throws when assertingActorId belongs to a different actor (spoofed follow)', async () => {
-    await expect(
-      ctrlSubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
-    ).rejects.toThrow('session actor does not match follower')
+  it('binds ownership on the follower actor', async () => {
+    await ctrlSubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
+    expect(readSocialActorOwnerLinkDAL).toHaveBeenCalledWith({ actorId: FOLLOWER, userId: USER })
   })
 
   it('does not call dalInsertFollow when ownership gate rejects', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlSubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
+      ctrlSubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     ).rejects.toThrow()
     expect(dalInsertFollow).not.toHaveBeenCalled()
   })
 
   it('does not call publishVcsmNotification when ownership gate rejects', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlSubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
+      ctrlSubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     ).rejects.toThrow()
     expect(publishVcsmNotification).not.toHaveBeenCalled()
   })
 
-  it('proceeds when assertingActorId matches followerActorId (authentic caller)', async () => {
+  it('proceeds when the session owns followerActorId (authentic caller)', async () => {
     const result = await ctrlSubscribe({
       followerActorId: FOLLOWER,
       followedActorId: FOLLOWED,
@@ -242,6 +239,7 @@ describe('ctrlSubscribe — [V-SUB-001 REGRESSION] ownership gate: assertingActo
 describe('ctrlSubscribe — already following: short-circuit return', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    grantSession()
     ctrlGetBlockStatus.mockResolvedValue({ isBlocked: false })
     ctrlGetFollowRelationshipState.mockResolvedValue({
       state: 'following',
@@ -287,6 +285,7 @@ describe('ctrlSubscribe — already following: short-circuit return', () => {
 describe('ctrlSubscribe — private account: sends follow request', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    grantSession()
     ctrlGetBlockStatus.mockResolvedValue({ isBlocked: false })
     ctrlGetFollowRelationshipState.mockResolvedValue({
       state: 'not_following',

@@ -11,7 +11,7 @@ export function useProfileView({
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: queryKeys.profileView(viewerActorId, profileActorId, canViewContent),
     queryFn: () => getProfileView({ viewerActorId, profileActorId, canViewContent }),
-    enabled: canViewContent !== undefined && !!profileActorId && !!viewerActorId,
+    enabled: canViewContent === true && !!profileActorId && !!viewerActorId,
     staleTime: 60_000,
     gcTime: 300_000,
     placeholderData: keepPreviousData,

@@ -6,6 +6,7 @@ import {
   readFriendRankRows,
 } from "@/features/profiles/kinds/citizen/dal/friends/friends.read.dal";
 import { reconcileFriendRanks } from "@/features/profiles/kinds/citizen/dal/friends/friendRanks.reconcile.dal";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 function normalizeRankIds(rows = [], limit = 10) {
   const safeLimit = Math.max(1, Math.min(10, Number(limit || 10)));
@@ -44,6 +45,17 @@ export async function getTopFriendActorIdsController({
 
     if (reconcile) {
       try {
+        // V05B-M2: reconcile RE-SAVES through vc.save_friend_ranks (a write), so the
+        // reconcile branch ONLY is session-bound. The owner is always a citizen
+        // (user-kind) actor — canonical USER-ONLY self-form. A non-owner throws here
+        // and cleanly degrades to the ungated public read below (reconcile never
+        // writes for a foreign owner). The reconcile===false read path is NEVER gated,
+        // so viewing other citizens' PUBLIC Top-Friends lists keeps working.
+        await assertActorOwnsActorController({
+          requestActorId: ownerActorId,
+          targetActorId: ownerActorId,
+        });
+
         rankRows = await reconcileFriendRanks(ownerActorId, {
           autofill,
           maxCount: safeLimit,
