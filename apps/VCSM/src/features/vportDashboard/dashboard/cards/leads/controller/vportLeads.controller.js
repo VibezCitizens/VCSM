@@ -78,10 +78,11 @@ export async function countNewVportLeadsController(actorId) {
   }
 }
 
-export async function fastCountNewVportLeadsController(actorId, profileId) {
-  if (!actorId || !profileId) return 0;
+export async function fastCountNewVportLeadsController(actorId) {
+  if (!actorId) return 0;
   try {
     await assertSessionOwnsActorController({ targetActorId: actorId });
+    const profileId = await resolveProfileId(actorId);
     return readNewLeadsCountByProfileDAL(profileId);
   } catch (error) {
     captureVcsmError({ feature: 'vportDashboard', module: 'leads.vportLeads.controller', severity: 'error', message: `fastCountNewVportLeadsController: ${error?.message ?? 'unknown'}`, error_name: error?.name, operation: 'fastCountNewVportLeads', is_handled: false, context: { dbErrorCode: error?.code ?? null } })

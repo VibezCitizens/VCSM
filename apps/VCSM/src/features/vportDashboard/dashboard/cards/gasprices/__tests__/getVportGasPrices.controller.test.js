@@ -47,6 +47,21 @@ vi.mock(
   })
 );
 
+vi.mock(
+  "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal",
+  () => ({
+    fetchSubmitterSummariesDAL: vi.fn(),
+  })
+);
+
+// V03C-L1: pending review queue + submitter identity are owner-gated.
+vi.mock(
+  "@/features/authorization/adapters/authorization.adapter",
+  () => ({
+    assertSessionOwnsActorController: vi.fn(),
+  })
+);
+
 // ---------------------------------------------------------------------------
 // Imported mocks (for assertions)
 // ---------------------------------------------------------------------------
@@ -54,6 +69,8 @@ vi.mock(
 import { fetchVportFuelPricesDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPrices.read.dal";
 import { fetchPendingFuelPriceSubmissionsDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmissions.read.dal";
 import { fetchVportStationPriceSettingsDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportStationPriceSettings.read.dal";
+import { fetchSubmitterSummariesDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -80,6 +97,9 @@ beforeEach(() => {
 
   fetchVportFuelPricesDAL.mockResolvedValue({ data: OFFICIAL_ROWS, error: null });
   fetchPendingFuelPriceSubmissionsDAL.mockResolvedValue({ data: PENDING_ROWS, error: null });
+  fetchSubmitterSummariesDAL.mockResolvedValue([]);
+  // Default: caller owns the station (owner branch) unless a test overrides.
+  assertSessionOwnsActorController.mockResolvedValue({ ok: true });
 });
 
 // ---------------------------------------------------------------------------
@@ -91,8 +111,8 @@ describe("getVportGasPricesController", () => {
     await expect(getVportGasPricesController({})).rejects.toThrow("actorId required");
   });
 
-  describe("pendingSubmissions — always loaded", () => {
-    it("returns pendingSubmissions even when showCommunitySuggestion is false", async () => {
+  describe("pendingSubmissions — owner-gated (V03C-L1)", () => {
+    it("owner: returns pendingSubmissions even when showCommunitySuggestion is false", async () => {
       fetchVportStationPriceSettingsDAL.mockResolvedValue({
         data: { showCommunitySuggestion: false },
         error: null,
@@ -100,11 +120,12 @@ describe("getVportGasPricesController", () => {
 
       const res = await getVportGasPricesController({ actorId: ACTOR_ID });
 
+      expect(assertSessionOwnsActorController).toHaveBeenCalledWith({ targetActorId: ACTOR_ID });
       expect(fetchPendingFuelPriceSubmissionsDAL).toHaveBeenCalledOnce();
       expect(res.pendingSubmissions).toEqual(PENDING_ROWS);
     });
 
-    it("returns pendingSubmissions when showCommunitySuggestion is true", async () => {
+    it("owner: returns pendingSubmissions when showCommunitySuggestion is true", async () => {
       fetchVportStationPriceSettingsDAL.mockResolvedValue({
         data: { showCommunitySuggestion: true },
         error: null,
@@ -116,7 +137,7 @@ describe("getVportGasPricesController", () => {
       expect(res.pendingSubmissions).toEqual(PENDING_ROWS);
     });
 
-    it("returns empty pendingSubmissions when DAL returns no rows", async () => {
+    it("owner: returns empty pendingSubmissions when DAL returns no rows", async () => {
       fetchVportStationPriceSettingsDAL.mockResolvedValue({
         data: { showCommunitySuggestion: false },
         error: null,
@@ -126,6 +147,51 @@ describe("getVportGasPricesController", () => {
       const res = await getVportGasPricesController({ actorId: ACTOR_ID });
 
       expect(res.pendingSubmissions).toEqual([]);
+    });
+
+    it("owner: hydrates submitter summaries and returns pendingBatches", async () => {
+      fetchVportStationPriceSettingsDAL.mockResolvedValue({
+        data: { showCommunitySuggestion: false },
+        error: null,
+      });
+
+      const res = await getVportGasPricesController({ actorId: ACTOR_ID });
+
+      expect(fetchSubmitterSummariesDAL).toHaveBeenCalledOnce();
+      expect(Array.isArray(res.pendingBatches)).toBe(true);
+    });
+
+    it("non-owner: ownership denial does NOT throw; pending arrays empty; submitter hydration skipped", async () => {
+      assertSessionOwnsActorController.mockRejectedValue(
+        new Error("Session user does not own this vport actor.")
+      );
+      fetchVportStationPriceSettingsDAL.mockResolvedValue({
+        data: { showCommunitySuggestion: false },
+        error: null,
+      });
+
+      const res = await getVportGasPricesController({ actorId: ACTOR_ID });
+
+      expect(res.pendingSubmissions).toEqual([]);
+      expect(res.pendingBatches).toEqual([]);
+      expect(fetchSubmitterSummariesDAL).not.toHaveBeenCalled();
+    });
+
+    it("non-owner: still receives official prices and community suggestion", async () => {
+      assertSessionOwnsActorController.mockRejectedValue(new Error("denied"));
+      fetchVportStationPriceSettingsDAL.mockResolvedValue({
+        data: { showCommunitySuggestion: true },
+        error: null,
+      });
+
+      const res = await getVportGasPricesController({ actorId: ACTOR_ID });
+
+      expect(res.official).toEqual(OFFICIAL_ROWS);
+      expect(res.settings).toMatchObject({ showCommunitySuggestion: true });
+      expect(res.communitySuggestionByFuelKey["regular"]).toMatchObject({
+        fuelKey: "regular",
+        proposedPrice: 1.87,
+      });
     });
   });
 

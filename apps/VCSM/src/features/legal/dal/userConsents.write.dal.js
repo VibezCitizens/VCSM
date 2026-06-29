@@ -42,11 +42,11 @@ export async function dalRecordLegalAcceptance({
       locale: locale ?? null,
       user_agent: userAgent ?? null,
     })
-    // Idempotent guard — silently ignores duplicate (user_id, legal_document_id,
-    // consent_version) rows. Activates fully once DB-LEGAL-002 UNIQUE constraint lands;
-    // safe to call now — onConflict is a no-op until the constraint exists.
-    .onConflict('user_id, legal_document_id, consent_version')
-    .ignoreDuplicates()
+    // Plain insert — NOT upsert. supabase-js v2 has no .onConflict()/.ignoreDuplicates()
+    // builder methods (those are .upsert() options), and the live DB has no UNIQUE
+    // constraint on (user_id, legal_document_id, consent_version) — only the PK on id —
+    // so an upsert conflict target would raise 42P10. The consent gate only writes
+    // documents the user has not yet accepted, so duplicates do not occur in normal flow.
     .select('id, accepted_at')
     .maybeSingle()
 
