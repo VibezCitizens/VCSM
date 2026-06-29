@@ -122,12 +122,13 @@ export const COUNTRIES = [
   {
     id: "country-ca",
     code: "CA",
-    slug: "canada",
+    slug: "ca",
+    aliases: ["canada"],
     name: "Canada",
     nameEs: "Canadá",
     defaultLocale: "en-CA",
     defaultCurrencyCode: "CAD",
-    isActive: false
+    isActive: true
   },
   {
     id: "country-gb",
@@ -206,46 +207,49 @@ export const COUNTRIES = [
 /** @type {Region[]} */
 export const REGIONS = [
   // ── US states (active) ──────────────────────────────────────────────────────
-  { id: "region-us-ca",   countryId: "country-us", code: "CA",   slug: "california",        name: "California",            type: "state",      isActive: true },
-  { id: "region-us-fl",   countryId: "country-us", code: "FL",   slug: "florida",            name: "Florida",               type: "state",      isActive: true },
-  { id: "region-us-tx",   countryId: "country-us", code: "TX",   slug: "texas",              name: "Texas",                 type: "state",      isActive: true },
-  { id: "region-us-ny",   countryId: "country-us", code: "NY",   slug: "new-york",           name: "New York",              type: "state",      isActive: true },
-  { id: "region-us-az",   countryId: "country-us", code: "AZ",   slug: "arizona",            name: "Arizona",               type: "state",      isActive: true },
-  { id: "region-us-nm",   countryId: "country-us", code: "NM",   slug: "new-mexico",         name: "New Mexico",            type: "state",      isActive: true },
-  { id: "region-us-nv",   countryId: "country-us", code: "NV",   slug: "nevada",             name: "Nevada",                type: "state",      isActive: true },
-  { id: "region-us-il",   countryId: "country-us", code: "IL",   slug: "illinois",           name: "Illinois",              type: "state",      isActive: true },
-  { id: "region-us-wa",   countryId: "country-us", code: "WA",   slug: "washington",         name: "Washington",            type: "state",      isActive: true },
-  { id: "region-us-co",   countryId: "country-us", code: "CO",   slug: "colorado",           name: "Colorado",              type: "state",      isActive: true },
+  { id: "region-us-ca",   countryId: "country-us", code: "CA",   slug: "california",        name: "California",            nameEs: "California",            type: "state",      isActive: true },
+  { id: "region-us-fl",   countryId: "country-us", code: "FL",   slug: "florida",            name: "Florida",               nameEs: "Florida",               type: "state",      isActive: true },
+  { id: "region-us-tx",   countryId: "country-us", code: "TX",   slug: "texas",              name: "Texas",                 nameEs: "Texas",                 type: "state",      isActive: true },
+  { id: "region-us-ny",   countryId: "country-us", code: "NY",   slug: "new-york",           name: "New York",              nameEs: "Nueva York",            type: "state",      isActive: true },
+  { id: "region-us-az",   countryId: "country-us", code: "AZ",   slug: "arizona",            name: "Arizona",               nameEs: "Arizona",               type: "state",      isActive: true },
+  { id: "region-us-nm",   countryId: "country-us", code: "NM",   slug: "new-mexico",         name: "New Mexico",            nameEs: "Nuevo México",          type: "state",      isActive: true },
+  { id: "region-us-nv",   countryId: "country-us", code: "NV",   slug: "nevada",             name: "Nevada",                nameEs: "Nevada",                type: "state",      isActive: true },
+  { id: "region-us-il",   countryId: "country-us", code: "IL",   slug: "illinois",           name: "Illinois",              nameEs: "Illinois",              type: "state",      isActive: true },
+  { id: "region-us-wa",   countryId: "country-us", code: "WA",   slug: "washington",         name: "Washington",            nameEs: "Washington",            type: "state",      isActive: true },
+  { id: "region-us-co",   countryId: "country-us", code: "CO",   slug: "colorado",           name: "Colorado",              nameEs: "Colorado",              type: "state",      isActive: true },
 
   // ── Mexico states (active) ──────────────────────────────────────────────────
-  { id: "region-mx-cdmx", countryId: "country-mx", code: "CDMX", slug: "ciudad-de-mexico",   name: "Ciudad de México",      type: "state",      isActive: true },
-  { id: "region-mx-nl",   countryId: "country-mx", code: "NL",   slug: "nuevo-leon",         name: "Nuevo León",            type: "state",      isActive: true },
-  { id: "region-mx-bc",   countryId: "country-mx", code: "BC",   slug: "baja-california",    name: "Baja California",       type: "state",      isActive: true },
-  { id: "region-mx-jal",  countryId: "country-mx", code: "JAL",  slug: "jalisco",            name: "Jalisco",               type: "state",      isActive: true },
-  { id: "region-mx-qr",   countryId: "country-mx", code: "QR",   slug: "quintana-roo",       name: "Quintana Roo",          type: "state",      isActive: true },
-  { id: "region-mx-chi",  countryId: "country-mx", code: "CHI",  slug: "chihuahua",          name: "Chihuahua",             type: "state",      isActive: true },
-  { id: "region-mx-tam",  countryId: "country-mx", code: "TAM",  slug: "tamaulipas",         name: "Tamaulipas",            type: "state",      isActive: true },
-  { id: "region-mx-son",  countryId: "country-mx", code: "SON",  slug: "sonora",             name: "Sonora",                type: "state",      isActive: true },
-  { id: "region-mx-pue",  countryId: "country-mx", code: "PUE",  slug: "puebla",             name: "Puebla",                type: "state",      isActive: true },
+  { id: "region-mx-cdmx", countryId: "country-mx", code: "CDMX", slug: "ciudad-de-mexico",   name: "Ciudad de México",      nameEs: "Ciudad de México",      type: "state",      isActive: true },
+  { id: "region-mx-nl",   countryId: "country-mx", code: "NL",   slug: "nuevo-leon",         name: "Nuevo León",            nameEs: "Nuevo León",            type: "state",      isActive: true },
+  { id: "region-mx-bc",   countryId: "country-mx", code: "BC",   slug: "baja-california",    name: "Baja California",       nameEs: "Baja California",       type: "state",      isActive: true },
+  { id: "region-mx-jal",  countryId: "country-mx", code: "JAL",  slug: "jalisco",            name: "Jalisco",               nameEs: "Jalisco",               type: "state",      isActive: true },
+  { id: "region-mx-qr",   countryId: "country-mx", code: "QR",   slug: "quintana-roo",       name: "Quintana Roo",          nameEs: "Quintana Roo",          type: "state",      isActive: true },
+  { id: "region-mx-chi",  countryId: "country-mx", code: "CHI",  slug: "chihuahua",          name: "Chihuahua",             nameEs: "Chihuahua",             type: "state",      isActive: true },
+  { id: "region-mx-tam",  countryId: "country-mx", code: "TAM",  slug: "tamaulipas",         name: "Tamaulipas",            nameEs: "Tamaulipas",            type: "state",      isActive: true },
+  { id: "region-mx-son",  countryId: "country-mx", code: "SON",  slug: "sonora",             name: "Sonora",                nameEs: "Sonora",                type: "state",      isActive: true },
+  { id: "region-mx-pue",  countryId: "country-mx", code: "PUE",  slug: "puebla",             name: "Puebla",                nameEs: "Puebla",                type: "state",      isActive: true },
 
   // ── Central America (active) ─────────────────────────────────────────────────
-  { id: "region-gt-gt",   countryId: "country-gt", code: "GT",   slug: "guatemala",          name: "Guatemala",             type: "department", isActive: true },
-  { id: "region-bz-bz",   countryId: "country-bz", code: "BZ",   slug: "belize-district",    name: "Belize District",       type: "department", isActive: true },
-  { id: "region-hn-fm",   countryId: "country-hn", code: "FM",   slug: "francisco-morazan",  name: "Francisco Morazán",     type: "department", isActive: true },
-  { id: "region-sv-ss",   countryId: "country-sv", code: "SS",   slug: "san-salvador",       name: "San Salvador",          type: "department", isActive: true },
-  { id: "region-ni-mg",   countryId: "country-ni", code: "MG",   slug: "managua",            name: "Managua",               type: "department", isActive: true },
-  { id: "region-cr-sj",   countryId: "country-cr", code: "SJ",   slug: "san-jose",           name: "San José",              type: "province",   isActive: true },
-  { id: "region-pa-pa",   countryId: "country-pa", code: "PA",   slug: "panama-province",    name: "Panama Province",       type: "province",   isActive: true },
+  { id: "region-gt-gt",   countryId: "country-gt", code: "GT",   slug: "guatemala",          name: "Guatemala",             nameEs: "Guatemala",             type: "department", isActive: true },
+  { id: "region-bz-bz",   countryId: "country-bz", code: "BZ",   slug: "belize-district",    name: "Belize District",       nameEs: "Distrito de Belice",    type: "department", isActive: true },
+  { id: "region-hn-fm",   countryId: "country-hn", code: "FM",   slug: "francisco-morazan",  name: "Francisco Morazán",     nameEs: "Francisco Morazán",     type: "department", isActive: true },
+  { id: "region-sv-ss",   countryId: "country-sv", code: "SS",   slug: "san-salvador",       name: "San Salvador",          nameEs: "San Salvador",          type: "department", isActive: true },
+  { id: "region-ni-mg",   countryId: "country-ni", code: "MG",   slug: "managua",            name: "Managua",               nameEs: "Managua",               type: "department", isActive: true },
+  { id: "region-cr-sj",   countryId: "country-cr", code: "SJ",   slug: "san-jose",           name: "San José",              nameEs: "San José",              type: "province",   isActive: true },
+  { id: "region-pa-pa",   countryId: "country-pa", code: "PA",   slug: "panama-province",    name: "Panama Province",       nameEs: "Provincia de Panamá",   type: "province",   isActive: true },
+
+  // ── Canada provinces (active) ────────────────────────────────────────────────
+  { id: "region-ca-sk",   countryId: "country-ca", code: "SK",   slug: "saskatchewan",       name: "Saskatchewan",          nameEs: "Saskatchewan",          type: "province",   isActive: true },
 
   // ── Inactive regions (kept for FK compatibility) ──────────────────────────────
-  { id: "region-ca-on",   countryId: "country-ca", code: "ON",   slug: "ontario",            name: "Ontario",               type: "province",   isActive: false },
-  { id: "region-gb-eng",  countryId: "country-gb", code: "ENG",  slug: "england",            name: "England",               type: "county",     isActive: false },
-  { id: "region-es-md",   countryId: "country-es", code: "MD",   slug: "madrid",             name: "Comunidad de Madrid",   type: "department", isActive: false },
-  { id: "region-fr-idf",  countryId: "country-fr", code: "IDF",  slug: "ile-de-france",      name: "Ile-de-France",         type: "department", isActive: false },
-  { id: "region-de-be",   countryId: "country-de", code: "BE",   slug: "berlin",             name: "Berlin",                type: "state",      isActive: false },
-  { id: "region-ae-du",   countryId: "country-ae", code: "DU",   slug: "dubai",              name: "Dubai",                 type: "emirate",    isActive: false },
-  { id: "region-br-sp",   countryId: "country-br", code: "SP",   slug: "sao-paulo",          name: "Sao Paulo",             type: "state",      isActive: false },
-  { id: "region-in-mh",   countryId: "country-in", code: "MH",   slug: "maharashtra",        name: "Maharashtra",           type: "state",      isActive: false }
+  { id: "region-ca-on",   countryId: "country-ca", code: "ON",   slug: "ontario",            name: "Ontario",               nameEs: "Ontario",               type: "province",   isActive: false },
+  { id: "region-gb-eng",  countryId: "country-gb", code: "ENG",  slug: "england",            name: "England",               nameEs: "Inglaterra",            type: "county",     isActive: false },
+  { id: "region-es-md",   countryId: "country-es", code: "MD",   slug: "madrid",             name: "Comunidad de Madrid",   nameEs: "Comunidad de Madrid",   type: "department", isActive: false },
+  { id: "region-fr-idf",  countryId: "country-fr", code: "IDF",  slug: "ile-de-france",      name: "Ile-de-France",         nameEs: "Isla de Francia",       type: "department", isActive: false },
+  { id: "region-de-be",   countryId: "country-de", code: "BE",   slug: "berlin",             name: "Berlin",                nameEs: "Berlín",                type: "state",      isActive: false },
+  { id: "region-ae-du",   countryId: "country-ae", code: "DU",   slug: "dubai",              name: "Dubai",                 nameEs: "Dubái",                 type: "emirate",    isActive: false },
+  { id: "region-br-sp",   countryId: "country-br", code: "SP",   slug: "sao-paulo",          name: "Sao Paulo",             nameEs: "São Paulo",             type: "state",      isActive: false },
+  { id: "region-in-mh",   countryId: "country-in", code: "MH",   slug: "maharashtra",        name: "Maharashtra",           nameEs: "Maharashtra",           type: "state",      isActive: false }
 ];
 
 // ─── Cities ───────────────────────────────────────────────────────────────────

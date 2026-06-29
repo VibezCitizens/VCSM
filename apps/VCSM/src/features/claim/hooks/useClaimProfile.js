@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useIdentity } from '@/features/identity/adapters/identity.adapter'
+import { useLocale } from '@/platform/i18n/useLocale.jsx'
 import { captureFrontendError } from '@/services/monitoring/monitoringClient'
 
 import { resolveProviderController } from '@/features/claim/controllers/resolveProvider.controller'
@@ -20,6 +21,7 @@ import {
   buildClaimReturnPath,
   resolveCitizenActorId,
   EMPTY_CLAIM_FORM,
+  TRAZE_DIRECTORY_URL,
 } from '@/features/claim/model/claim.model'
 
 export function useClaimProfile() {
@@ -27,6 +29,16 @@ export function useClaimProfile() {
   const location = useLocation()
   const { user, loading: authLoading } = useAuth()
   const { identity, identityLoading, availableActors } = useIdentity()
+  const { locale } = useLocale()
+
+  // Landing language: the localized /reclamar-negocio · /claim-business slugs
+  // pin the language; any other entry (e.g. /claim-profile) follows the app locale.
+  const landingLang = useMemo(() => {
+    const path = location.pathname || ''
+    if (path.includes('reclamar-negocio')) return 'es'
+    if (path.includes('claim-business')) return 'en'
+    return locale === 'es' ? 'es' : 'en'
+  }, [location.pathname, locale])
 
   const params = useMemo(() => parseClaimParams(location.search), [location.search])
   const hasProviderParam = Boolean(params.providerSlug || params.providerId)
@@ -73,7 +85,10 @@ export function useClaimProfile() {
 
   const status = useMemo(() => {
     if (authLoading || identityLoading || providerLoading) return 'loading'
-    if (!hasProviderParam) return 'invalid'
+    // No provider reference → public claim/create landing (global TRAZE CTAs).
+    // A bad/unknown provider is NOT landing: it keeps the existing best-effort
+    // flow and is rejected authoritatively by the submit RPC.
+    if (!hasProviderParam) return 'landing'
     if (confirmation) return 'submitted'
     if (alreadyClaimed) return 'already_claimed'
     if (!user) return 'needs_auth'
@@ -103,6 +118,29 @@ export function useClaimProfile() {
   const goOnboarding = useCallback(() => {
     navigate('/onboarding', { state: { from: returnPath } })
   }, [navigate, returnPath])
+
+  // Landing-mode action: send owners into the existing business-creation funnel
+  // (/register?intent=vport is the canonical VCSM "create a Vport" entry — see
+  // HowToCreateVportScreen). Source attribution is preserved when present.
+  const goCreateBusiness = useCallback(() => {
+    const suffix = params.source ? `&source=${encodeURIComponent(params.source)}` : ''
+    navigate(`/register?intent=vport${suffix}`)
+  }, [navigate, params.source])
+
+  // Landing-mode action: the owner picked their existing business from search.
+  // Hand off to the referenced claim flow (/claim-profile?provider=…) which owns
+  // submission. source attribution is preserved (defaulting to traffic).
+  const goSelectProvider = useCallback((selected) => {
+    const slug = selected?.slug || null
+    const id = slug ? null : selected?.id || null
+    if (!slug && !id) return
+    const path = buildClaimReturnPath({
+      providerSlug: slug,
+      providerId: id,
+      source: params.source || 'traffic',
+    })
+    navigate(path)
+  }, [navigate, params.source])
 
   const handleSubmit = useCallback(async () => {
     if (submittingRef.current) return
@@ -152,6 +190,7 @@ export function useClaimProfile() {
     status,
     provider,
     providerLabel,
+    landingLang,
     source: params.source,
     form,
     fieldErrors,
@@ -163,5 +202,8 @@ export function useClaimProfile() {
     goRegister,
     goLogin,
     goOnboarding,
+    goCreateBusiness,
+    goSelectProvider,
+    directoryUrl: TRAZE_DIRECTORY_URL,
   }
 }

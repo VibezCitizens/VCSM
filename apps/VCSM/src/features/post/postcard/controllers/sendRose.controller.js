@@ -17,6 +17,8 @@ import {
 } from "@/features/post/postcard/dal/postReactions.read.dal";
 
 import { fetchPostByIdDAL, checkPostExistsDAL } from "@/features/post/postcard/dal/post.read.dal";
+import { readPostActorOwnerLinkDAL } from "@/features/post/postcard/dal/postActorOwnership.read.dal";
+import { readCurrentAuthUser } from "@/features/auth/adapters/authSession.adapter";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
 /**
@@ -40,6 +42,14 @@ export async function sendRoseController({
   if (!qty || qty <= 0) {
     throw new Error("sendRose: qty must be > 0");
   }
+
+  // V06A-M1: session-derived, kind-agnostic authorship bind — the session must own
+  // `actorId` (any kind) before any write (mirrors createPostController). Defense-in-depth
+  // only; the durable boundary is the post-interaction RLS WITH CHECK (06A-DB-1, Phase 15).
+  const user = await readCurrentAuthUser();
+  if (!user) throw new Error("sendRose: not authenticated");
+  const ownerLink = await readPostActorOwnerLinkDAL({ actorId, userId: user.id });
+  if (!ownerLink) throw new Error("sendRose: actor not owned by session user");
 
   // ============================================================
   // 0️⃣ GUARD — reject interactions on deleted posts

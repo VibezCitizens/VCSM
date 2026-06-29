@@ -1,6 +1,6 @@
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { getCityBySlug } from "@/data/repositories/city.repo";
-import { getCountryByCode, getCountryById } from "@/data/repositories/geo.repo";
+import { getAnyCountryByCode, getCountryById } from "@/data/repositories/geo.repo";
 import {
   listProviders,
   listServicesForProvider
@@ -55,7 +55,10 @@ function formatLocationText(provider) {
 }
 
 export function buildHomepageProviderCard(provider) {
-  const country = getCountryByCode(provider.primaryCountryCode);
+  // Resolve across the full taxonomy so providers in a country with live data but
+  // isActive:false (e.g. CA → "Canada") still appear, named correctly, on the
+  // homepage like every other country.
+  const country = getAnyCountryByCode(provider.primaryCountryCode);
   if (!country) return null;
 
   const stats = getProviderStats(provider.id);

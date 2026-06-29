@@ -2,6 +2,8 @@
 
 import { listPostComments, readPostCommentActorIdDAL } from "../dal/postComments.read.dal";
 import { createComment } from "../dal/comments.dal";
+import { readPostActorOwnerLinkDAL } from "@/features/post/postcard/dal/postActorOwnership.read.dal";
+import { readCurrentAuthUser } from "@/features/auth/adapters/authSession.adapter";
 import { checkPostExistsController, fetchPostActorIdController } from "@/features/post/postcard/adapters/postcard.adapter";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
 
@@ -48,6 +50,13 @@ export async function loadCommentThread(postId) {
  * - Returns raw comment row + replies placeholder
  */
 export async function createRootComment({ postId, actorId, content }) {
+  // V06A-M1: session-derived, kind-agnostic authorship bind before the comment write
+  // (mirrors createPostController). DiD only; durable boundary = RLS (06A-DB-1, Phase 15).
+  const user = await readCurrentAuthUser();
+  if (!user) throw new Error("createRootComment: not authenticated");
+  const ownerLink = await readPostActorOwnerLinkDAL({ actorId, userId: user.id });
+  if (!ownerLink) throw new Error("createRootComment: actor not owned by session user");
+
   const postExists = await checkPostExistsController(postId);
   if (!postExists) throw new Error("This post is no longer available.");
 
@@ -89,6 +98,12 @@ export async function createReplyComment({
   content,
 }) {
   if (!postId || !actorId || !parentCommentId) return null;
+
+  // V06A-M1: session-derived, kind-agnostic authorship bind before the reply write.
+  const user = await readCurrentAuthUser();
+  if (!user) throw new Error("createReplyComment: not authenticated");
+  const ownerLink = await readPostActorOwnerLinkDAL({ actorId, userId: user.id });
+  if (!ownerLink) throw new Error("createReplyComment: actor not owned by session user");
 
   const postExists = await checkPostExistsController(postId);
   if (!postExists) throw new Error("This post is no longer available.");

@@ -1,20 +1,28 @@
 import { readVportBusinessCardSettingsDAL } from "@/features/settings/vports/dal/vports.read.dal";
 import { setVportBusinessCardSettingsDAL } from "@/features/settings/vports/dal/vports.write.dal";
-import { checkVportOwnershipController } from "@/features/vportDashboard/adapters/vportDashboard.adapter";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
-// VPORT-DASHBOARD-OWNERSHIP-CONSISTENCY-001: this card now authorizes the active
-// VPORT actor through the same vportDashboard ownership surface the gas dashboard
-// uses (checkVportOwnershipController), instead of the booking.adapter ownership
-// assertion. This grants the active VPORT-kind actor self-management (matching the
-// gas card) and surfaces VPORT-safe wording instead of the booking-resource error.
+// V12A-M2 (TICKET-SETTINGS-VPORT-CANONICAL-OWNERBIND-001): authorize VPORT settings
+// reads/mutations through the canonical session-derived ownership gate
+// (assertSessionOwnsActorController), replacing the navigation-grade hybrid
+// checkVportOwnershipController whose self-grant path (V03A-H2 lineage) accepted a
+// caller-supplied actorId equality as proof of ownership. The canonical gate resolves
+// ownership from the Supabase auth session → vc.actor_owners → target VPORT and never
+// trusts caller-supplied ids, so the self-grant is structurally unreachable.
+// Legitimate user-owner and active-vport self-management are preserved. DiD only;
+// durable boundary = vport.profiles RLS (12A-DB-2, Phase 15). callerActorId is retained
+// (vestigial) for signature stability; ownership no longer depends on it.
 const OWNERSHIP_DENIED_MESSAGE = "Only owners or managers can manage this VPORT.";
 
 export async function ctrlGetVportBusinessCardSettings({ vportId, callerActorId, vportActorId }) {
   if (!vportId) return null;
   if (!callerActorId) throw new Error("ctrlGetVportBusinessCardSettings: callerActorId required");
   if (!vportActorId)  throw new Error("ctrlGetVportBusinessCardSettings: vportActorId required");
-  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId });
-  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
+  try {
+    await assertSessionOwnsActorController({ targetActorId: vportActorId });
+  } catch {
+    throw new Error(OWNERSHIP_DENIED_MESSAGE);
+  }
   return readVportBusinessCardSettingsDAL(vportId);
 }
 
@@ -38,9 +46,12 @@ export async function ctrlSetVportBusinessCardSettings({ vportId, settings, call
   if (!vportActorId)  throw new Error("ctrlSetVportBusinessCardSettings: vportActorId required");
   if (!settings || typeof settings !== "object") throw new Error("ctrlSetVportBusinessCardSettings: settings required");
 
-  // Controller-layer ownership gate — mirrors the guard in ctrlSetVportDirectoryVisible.
-  const isOwner = await checkVportOwnershipController({ callerActorId, targetActorId: vportActorId });
-  if (!isOwner) throw new Error(OWNERSHIP_DENIED_MESSAGE);
+  // V12A-M2: canonical session-derived ownership gate (mirrors ctrlSetVportDirectoryVisible).
+  try {
+    await assertSessionOwnsActorController({ targetActorId: vportActorId });
+  } catch {
+    throw new Error(OWNERSHIP_DENIED_MESSAGE);
+  }
 
   return setVportBusinessCardSettingsDAL(vportId, settings);
 }

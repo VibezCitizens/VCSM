@@ -9,7 +9,15 @@ export const QUALITY_THRESHOLDS = {
 };
 
 export const SITEMAP_QUALITY_THRESHOLDS = {
-  countryMinProviders: 1,
+  // Country hubs require >=2 providers to be index/sitemap-eligible (raised from 1):
+  // a single-provider country is a thin top-level landing page and the broadest
+  // hub should not have the loosest quality bar. Mirrors countryCityMinProviders.
+  // This gate only affects the "country" pageType (isDirectoryPageQualityEligible
+  // case "country") — robots + sitemap inclusion. Page generation still uses
+  // QUALITY_THRESHOLDS.countryMinProviders (=1), so a 1-provider country page still
+  // renders (noindex) for that single provider's discoverability
+  // (TICKET-TRAZE-SEO-THIN-HUBS-001).
+  countryMinProviders: 2,
   countryServiceMinProviders: 3,
   countryServiceMinCities: 2,
   countryCityMinProviders: 2,
@@ -117,4 +125,20 @@ export function isNeighborhoodServiceIndexable(providerCount) {
 
 export function isNeighborhoodSpecialtyIndexable(providerCount) {
   return providerCount >= QUALITY_THRESHOLDS.neighborhoodSpecialtyMinProviders;
+}
+
+// Global aggregator index pages (/categories, /top-providers) are not bound to a
+// single provider set — their SEO value is aggregating MULTIPLE live countries.
+// With 0 live countries they are empty, and with exactly 1 they are a thin
+// duplicate of that single country's own /<country>/categories|top-providers
+// page, so both cases emit noindex. The >=2 bar is derived from the existing
+// multi-unit aggregation rule countryServiceMinCities (a country-service hub must
+// aggregate >=2 cities to justify existing); a global page must likewise aggregate
+// >=2 countries. Deterministic, build-time only, no runtime fetch.
+export const AGGREGATOR_MIN_LIVE_COUNTRIES = 2;
+
+export function getAggregatorIndexRobots(liveCountryCount) {
+  return toCount(liveCountryCount) >= AGGREGATOR_MIN_LIVE_COUNTRIES
+    ? DIRECTORY_INDEX_ROBOTS
+    : DIRECTORY_NOINDEX_ROBOTS;
 }

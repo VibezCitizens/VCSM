@@ -5,6 +5,11 @@
 
 export const CLAIM_PATH = '/claim-profile'
 
+// Public TRAZE directory (apps/Traffic). Used by the global claim landing mode
+// to send owners back to search for an existing business listing. Matches
+// Traffic's canonical DEFAULT_SITE_ORIGIN (apps/Traffic/src/lib/env.js).
+export const TRAZE_DIRECTORY_URL = 'https://traze.vibezcitizens.com/directory'
+
 export const ROLE_OPTIONS = [
   { value: 'owner', label: 'Owner' },
   { value: 'manager', label: 'Manager' },

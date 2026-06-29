@@ -69,6 +69,29 @@ export function isSafeAuthReturnPath(path) {
   )
 }
 
+// TICKET-TRAZE-CLAIM-AUTH-CONTEXT-FIX-001 (BUG-1): cross-app claim sign-in.
+// Traffic links existing owners to /login?intent=claim-profile&provider=<slug>&source=traffic.
+// A hard cross-application navigation cannot carry React Router state, so when
+// location.state.from is absent the claim return path must be reconstructed from
+// the URL query. Only the claim-profile intent is honored, and the synthesized
+// path is run back through isSafeAuthReturnPath — query params can never produce
+// an arbitrary or open redirect.
+export function deriveClaimReturnPathFromSearch(search) {
+  const params = new URLSearchParams(typeof search === 'string' ? search : '')
+  if (params.get('intent') !== 'claim-profile') return null
+
+  const provider = (params.get('provider') || '').trim()
+  const source = (params.get('source') || '').trim()
+
+  const out = new URLSearchParams()
+  if (provider) out.set('provider', provider)
+  if (source) out.set('source', source)
+
+  const qs = out.toString()
+  const path = qs ? `/claim-profile?${qs}` : '/claim-profile'
+  return isSafeAuthReturnPath(path) ? path : null
+}
+
 // FINDING-002: only UUID-format invite codes are forwarded. Anything else becomes null.
 export function isValidInviteCode(value) {
   if (!value || typeof value !== 'string') return false

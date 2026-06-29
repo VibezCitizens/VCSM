@@ -165,6 +165,10 @@
           /^\/wanders(\/|$)/.test(path) ||
           // legal
           /^\/legal(\/|$)/.test(path) ||
+          // claim / create business landing (public, no auth required — TRAZE handoff)
+          path === '/claim-profile' ||
+          path === '/claim-business' ||
+          path === '/reclamar-negocio' ||
           // static public pages
           path === '/about' ||
           path === '/contact' ||

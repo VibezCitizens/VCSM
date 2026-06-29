@@ -4,6 +4,7 @@
 
 const COUNTRY_TO_CURRENCY = {
   US: "USD",
+  CA: "CAD",
   MX: "MXN",
   GT: "GTQ",
   BZ: "BZD",

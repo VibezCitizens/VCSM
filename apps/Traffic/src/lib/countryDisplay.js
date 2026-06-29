@@ -1,4 +1,4 @@
-import { getCountryByCode } from "@/data/repositories/geo.repo";
+import { getAnyCountryByCode } from "@/data/repositories/geo.repo";
 
 // Regional-indicator flag emoji for any ISO 3166-1 alpha-2 code (e.g. "SV" → 🇸🇻).
 // Computed, not hardcoded, so it works for every country code.
@@ -35,7 +35,7 @@ export function getCountryBadge(countryCode, lang = "en") {
   const code = String(countryCode ?? "").trim().toUpperCase();
   if (!code) return null;
 
-  const country = getCountryByCode(code);
+  const country = getAnyCountryByCode(code);
   const name = country
     ? (lang === "es" && country.nameEs ? country.nameEs : country.name)
     : code; // unknown name → show the raw code

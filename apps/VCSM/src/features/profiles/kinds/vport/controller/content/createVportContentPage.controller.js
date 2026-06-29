@@ -2,6 +2,7 @@
 
 import createVportContentPageDAL, { readContentPageSlugsByPrefixDAL } from "@/features/profiles/kinds/vport/dal/content/createVportContentPage.dal";
 import VportContentPageModel from "@/features/profiles/kinds/vport/model/content/VportContentPage.model";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 const VALID_CATEGORIES = ["guide", "faq", "emergency", "tips", "educational"];
 
@@ -42,7 +43,14 @@ export async function createVportContentPageController({
   if (!callerActorId) throw new Error("createVportContentPageController: callerActorId is required");
   if (!title?.trim()) throw new Error("Title is required.");
 
-  if (String(callerActorId) !== String(actorId)) {
+  // V05C1-M1: session-derived ownership of the target vport actor (replaces the
+  // caller-equality self-grant). assertSessionOwnsActorController derives identity
+  // from the session via vc.actor_owners; the error text is preserved on denial.
+  try {
+    await assertSessionOwnsActorController({
+      targetActorId: actorId,
+    });
+  } catch {
     throw new Error("Only the actor owner can manage this content.");
   }
 

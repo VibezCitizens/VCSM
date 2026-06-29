@@ -19,22 +19,12 @@ import { getPlatformOrigin } from "@/lib/env";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { LanguageProvider, useTrafficLanguage } from "@/lib/language";
 import { localeFromPathname, switchLocalePath, withLocale } from "@/lib/i18n";
+import { buildClaimLandingLink } from "@/lib/claimLinks";
 import {
   readStoredTrazeLocation,
   TRAZE_LOCATION_CHANGE_EVENT,
   validateStoredTrazeLocation
 } from "@/lib/trazeLocationStorage";
-
-function claimHref() {
-  try {
-    const url = new URL("/claim-profile", getPlatformOrigin());
-    url.searchParams.set("source", "traffic");
-    url.searchParams.set("surface", "header");
-    return url.toString();
-  } catch {
-    return "/claim-profile";
-  }
-}
 
 const NAV_LINKS = [
   { labelKey: "shell.nav.home", key: "home", Icon: Home },
@@ -179,7 +169,7 @@ function TrafficDrawer({ open, onClose, navHrefs, pathname, lang, setLang, route
           <LanguageToggle lang={lang} setLang={setLang} pathname={pathname} router={router} t={t} />
         </section>
 
-        <a className="traffic-drawer-cta" href={claimHref()} target="_blank" rel="noreferrer">
+        <a className="traffic-drawer-cta" href={buildClaimLandingLink(lang, { surface: "header" })} target="_blank" rel="noreferrer">
           {t("shell.claimProfile")}
           <ExternalLink size={16} />
         </a>

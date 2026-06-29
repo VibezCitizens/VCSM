@@ -4,7 +4,7 @@ import {
 } from "@/data/connectors/unifiedDataset";
 import { getProviderStats } from "@/data/repositories/aggregate.repo";
 import { getCityById, getCityBySlug } from "@/data/repositories/city.repo";
-import { getCountryByCode, listCountries } from "@/data/repositories/geo.repo";
+import { getCountryByCode, getAnyCountryByCode, listCountries } from "@/data/repositories/geo.repo";
 import { normalizeSlug, slugEquals } from "@/lib/slugs";
 
 function sortByRank(items) {
@@ -256,12 +256,15 @@ export function listLiveProviderCountries() {
     if (!countryCode) continue;
 
     const country = getCountryByCode(countryCode);
+    // Display name resolves across the full taxonomy so a country with live data
+    // but isActive:false (e.g. CA → "Canada") still shows its real name.
+    const displayCountry = getAnyCountryByCode(countryCode);
     const key = countryCode;
     const current = grouped.get(key) ?? {
       countryCode,
       countrySlug: country?.slug ?? countryCode.toLowerCase(),
-      name: country?.name ?? countryCode,
-      nameEs: country?.nameEs ?? country?.name ?? countryCode,
+      name: displayCountry?.name ?? countryCode,
+      nameEs: displayCountry?.nameEs ?? displayCountry?.name ?? countryCode,
       providerCount: 0,
       citySlugs: new Set()
     };

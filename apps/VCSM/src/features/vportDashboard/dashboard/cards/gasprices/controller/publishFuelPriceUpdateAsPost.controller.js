@@ -4,7 +4,7 @@ import {
 } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPricePost.read.dal";
 import { createSystemPost } from "@/features/upload/adapters/posts.adapter";
 import { PUBLIC_REALM_ID } from "@/shared/utils/resolveRealm";
-import { checkVportOwnershipController } from "@/features/vportDashboard/controller/checkVportOwnership.controller";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 const DEDUP_WINDOW_MS = 60 * 60 * 1000;
@@ -45,12 +45,12 @@ export async function publishFuelPriceUpdateAsPostController({ actorId, updatedF
     const realmId = PUBLIC_REALM_ID;
     if (!realmId) return { published: false, status: "skipped", reason: "missing_public_realm" };
 
-    // ✅ SECURITY (F-002): verify actorId is a legitimate VPORT owner via actor_owners.
-    const isValidVport = await checkVportOwnershipController({
-      callerActorId: actorId,
-      targetActorId: actorId,
-    });
-    if (!isValidVport) return { published: false, status: "failed", reason: "not_owner" };
+    // V03A-H2: session-derived ownership via actor_owners (replaces the self-grantable checkVportOwnership write gate).
+    try {
+      await assertSessionOwnsActorController({ targetActorId: actorId });
+    } catch {
+      return { published: false, status: "failed", reason: "not_owner" };
+    }
 
     // ✅ INPUT VALIDATION (F-010): filter to entries with a known fuelKey and a
     // finite non-negative price.

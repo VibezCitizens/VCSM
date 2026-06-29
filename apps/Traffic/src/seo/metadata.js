@@ -1,5 +1,5 @@
 import { buildCanonical } from "@/seo/canonical";
-import { buildLocalizedAlternates, routeLocaleToOpenGraphLocale } from "@/seo/locale";
+import { buildLocalizedAlternates } from "@/seo/locale";
 
 // Default TRAZE social-share image (1200x630, public/og-default.png). Emitted on
 // every page unless a caller passes its own openGraphImages, so og:image /
@@ -56,7 +56,13 @@ function baseMetadata(args) {
       description,
       url: canonical,
       type: openGraphType,
-      locale: args.openGraphLocale ?? routeLocaleToOpenGraphLocale(args.routeLocale, args.locale ?? "en_US"),
+      // og:locale matches the server-rendered language. SSR HTML is English on
+      // every route and every country (<html lang="en">, English titles, canonical,
+      // sitemap; no hreflang) until true SSR localization exists. The route locale
+      // ("es" on /es) and the country-derived fallback (e.g. "es-MX" on the
+      // canonical /mx page) previously advertised non-English locales over English
+      // HTML, so og:locale is pinned to en_US (TICKET-TRAZE-LANG-SIGNAL-CLEANUP-001).
+      locale: "en_US",
       siteName: args.siteName ?? "TRAZE",
       images: socialImages,
       ...openGraphExtras

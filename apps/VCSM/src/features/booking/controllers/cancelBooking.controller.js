@@ -56,6 +56,17 @@ export async function cancelBookingController({
       requestActorId,
       targetActorId: resource.owner_actor_id,
     });
+  } else {
+    // V08A-M1: session-bind the customer-cancel path. Caller-equality alone
+    // (customer_actor_id === requestActorId) is client-controlled; verify the
+    // session owns the booking's customer actor via the canonical Batch-A gate
+    // (self-form: requester === target === the user-kind customer actor).
+    // assertSessionOwnsActorController is intentionally NOT used here — it is
+    // vport-only and the customer is a user/citizen actor.
+    await assertActorOwnsActorController({
+      requestActorId: booking.customer_actor_id,
+      targetActorId: booking.customer_actor_id,
+    });
   }
 
   const updated = await updateBookingStatusDAL({

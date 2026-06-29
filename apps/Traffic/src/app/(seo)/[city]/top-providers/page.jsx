@@ -2,12 +2,15 @@ import { notFound, redirect } from "next/navigation";
 import { getHomepageLiveDirectoryData } from "@/data/repositories/homepage.repo";
 import {
   listLiveProviderCountries,
-  listLiveProviderLocationOptions
+  listLiveProviderLocationOptions,
+  listProvidersByCountry
 } from "@/data/repositories/provider.repo";
 import { getCountryBySlug, listCountries } from "@/data/repositories/geo.repo";
 import { TopProvidersDiscoveryClient } from "@/features/providers/adapters/providers.adapter";
-import { getPlatformOrigin } from "@/lib/env";
+import { countryProviderPath } from "@/lib/paths";
+import { isProviderIndexable } from "@/seo/qualityGuards";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
+import SeoCrawlLinks from "@/shared/components/SeoCrawlLinks";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 
 export function generateStaticParams() {
@@ -34,15 +37,28 @@ export async function generateMetadata({ params }) {
   return generateMetadataForLocale({ params: resolvedParams });
 }
 
-function buildClaimHref() {
-  try {
-    const url = new URL("/claim-profile", getPlatformOrigin());
-    url.searchParams.set("source", "traffic");
-    url.searchParams.set("surface", "top-providers");
-    return url.toString();
-  } catch {
-    return "/claim-profile";
-  }
+// SSR-crawlable provider links (TICKET-TRAZE-SEO-TOP-PROVIDERS-SSR-LINKS-001).
+// The interactive listing (TopProvidersDiscoveryClient) is client-rendered, so
+// the per-country surface emitted 0 crawlable provider anchors in SSR. This adds
+// a real <a href> index of every indexable provider in the country, ranked
+// deterministically. Mirrors the global /top-providers crawl-link pattern; only
+// indexable providers are linked so every anchor resolves to a generated page.
+function buildCountryProviderCrawlGroups(country) {
+  const links = listProvidersByCountry(country.code)
+    .filter((item) => isProviderIndexable(item.provider))
+    .sort((a, b) => {
+      const reviewDelta = Number(b.stats?.reviewCount ?? 0) - Number(a.stats?.reviewCount ?? 0);
+      if (reviewDelta !== 0) return reviewDelta;
+      const ratingDelta = Number(b.stats?.ratingAvg ?? 0) - Number(a.stats?.ratingAvg ?? 0);
+      if (ratingDelta !== 0) return ratingDelta;
+      return String(a.provider.slug).localeCompare(String(b.provider.slug));
+    })
+    .map((item) => ({
+      href: countryProviderPath(country.slug, item.provider.slug),
+      label: item.provider.displayName
+    }));
+
+  return [{ heading: `All providers in ${country.name}`, links }];
 }
 
 export default async function CountryTopProvidersPage({ params }) {
@@ -74,11 +90,15 @@ export default async function CountryTopProvidersPage({ params }) {
       <TopProvidersDiscoveryClient
         providers={data.providers}
         stats={data.stats}
-        claimHref={buildClaimHref()}
+        claimSurface="top-providers"
         locationOptions={locationOptions}
         countryOptions={allCountries}
         initialCountryCode={country.code}
         requireCountry
+      />
+      <SeoCrawlLinks
+        title={`Browse providers in ${country.name}`}
+        groups={buildCountryProviderCrawlGroups(country)}
       />
     </TrazePageShell>
   );

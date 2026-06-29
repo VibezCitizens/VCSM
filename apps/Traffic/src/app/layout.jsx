@@ -2,6 +2,8 @@ import "./globals.css";
 import { listLiveProviderCountries } from "@/data/repositories/provider.repo";
 import { AppShell } from "@/shared/components/AppShell";
 import TrazePublicFooter from "@/shared/components/TrazePublicFooter";
+import { JsonLdScript } from "@/shared/components/JsonLdScript";
+import { buildOrganizationSchema, buildWebSiteSchema } from "@/seo/schemaOrg";
 
 export const viewport = {
   width: "device-width",
@@ -50,6 +52,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="traffic-theme">
+        <JsonLdScript id="schema-organization" schema={buildOrganizationSchema()} />
+        <JsonLdScript id="schema-website" schema={buildWebSiteSchema()} />
         <AppShell countryOptions={countryOptions}>
           <main>
             {children}

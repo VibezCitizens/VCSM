@@ -161,7 +161,11 @@ serve(async (req: Request) => {
   );
 
   if (alreadyExists) {
-    return json({ ok: false, code: "USER_ALREADY_REGISTERED" }, 200);
+    // Account-enumeration hardening (V13-L1): an already-registered email must be
+    // INDISTINGUISHABLE from a fresh invite. Do not create an invite row or send an
+    // email to an existing account; return the SAME uniform success the real-invite
+    // path returns. The prior `USER_ALREADY_REGISTERED` differential is removed.
+    return json({ ok: true }, 200);
   }
 
   let resolvedActorId: string | null = null;
@@ -282,6 +286,27 @@ serve(async (req: Request) => {
     return json({ ok: false, code: "ACTOR_LOOKUP_FAILED" }, 500);
   }
 
+  // Per-inviter abuse throttle (V13-L1): cap concurrent ACTIVE pending email invites
+  // from a single inviter to bound email-bombing. Uses only columns this function
+  // already writes (inviter_actor_id, invite_channel, status, expires_at) — no schema
+  // assumption — and FAILS OPEN on query error so a transient/DB issue never blocks a
+  // legitimate inviter. The rejection references only the inviter, never the target,
+  // so it leaks nothing about account existence.
+  const MAX_ACTIVE_PENDING_EMAIL_INVITES = 20;
+  const throttleNowIso = new Date().toISOString();
+  const { count: activePendingInvites, error: throttleError } = await adminClient
+    .schema("vc")
+    .from("vibe_invites")
+    .select("id", { count: "exact", head: true })
+    .eq("inviter_actor_id", resolvedActorId)
+    .eq("invite_channel", "email")
+    .eq("status", "pending")
+    .gt("expires_at", throttleNowIso);
+
+  if (!throttleError && (activePendingInvites ?? 0) >= MAX_ACTIVE_PENDING_EMAIL_INVITES) {
+    return json({ ok: false, code: "RATE_LIMITED" }, 200);
+  }
+
   const inviteCode = makeInviteCode();
   const inviteLink = `https://vibezcitizens.com/register?invite_code=${inviteCode}`;
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -371,9 +396,8 @@ serve(async (req: Request) => {
       { onConflict: "actor_id,step_key" },
     );
 
-  return json({
-    ok: true,
-    invite_id: inviteRow.id,
-    invite_code: inviteCode,
-  }, 200);
+  // Uniform success body — must match the already-registered short-circuit above so
+  // the response cannot be used to enumerate accounts (V13-L1). invite_id/invite_code
+  // are not consumed by any client (useInvite branches only on `ok`).
+  return json({ ok: true }, 200);
 });

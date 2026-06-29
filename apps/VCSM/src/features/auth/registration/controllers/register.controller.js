@@ -52,14 +52,14 @@ function isStaleJwtSubjectError(error) {
   return message.includes('user from sub claim in jwt does not exist')
 }
 
-async function signUpRegisterUserWithRecovery({ isWandersFlow, email, password, citizenInviteCode }) {
+async function signUpRegisterUserWithRecovery({ isWandersFlow, email, password, citizenInviteCode, emailRedirectTo }) {
   const client = resolveRegisterClient(isWandersFlow)
   try {
-    return await dalSignUpRegisterUser({ client, email, password, citizenInviteCode })
+    return await dalSignUpRegisterUser({ client, email, password, citizenInviteCode, emailRedirectTo })
   } catch (error) {
     if (!isStaleJwtSubjectError(error)) throw error
     await dalSignOutRegisterSession({ client })
-    return dalSignUpRegisterUser({ client, email, password, citizenInviteCode })
+    return dalSignUpRegisterUser({ client, email, password, citizenInviteCode, emailRedirectTo })
   }
 }
 
@@ -91,6 +91,7 @@ export async function ctrlRegisterAccount({
   password,
   isWandersFlow = false,
   citizenInviteCode = null,
+  emailRedirectTo = null,
 }) {
   const normalizedEmail = validateEmail(email)
   const nowIso = new Date().toISOString()
@@ -127,7 +128,7 @@ export async function ctrlRegisterAccount({
 
   let authData
   try {
-    authData = await signUpRegisterUserWithRecovery({ isWandersFlow, email: normalizedEmail, password, citizenInviteCode })
+    authData = await signUpRegisterUserWithRecovery({ isWandersFlow, email: normalizedEmail, password, citizenInviteCode, emailRedirectTo })
   } catch (error) {
     captureVcsmError({
       feature: 'auth',

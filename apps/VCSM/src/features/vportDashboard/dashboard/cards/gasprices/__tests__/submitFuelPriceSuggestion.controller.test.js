@@ -106,9 +106,9 @@ vi.mock(
 );
 
 vi.mock(
-  "@/features/vportDashboard/controller/checkVportOwnership.controller",
+  "@/features/authorization/adapters/authorization.adapter",
   () => ({
-    checkVportOwnershipController: vi.fn(),
+    assertSessionOwnsActorController: vi.fn(),
   })
 );
 
@@ -123,7 +123,7 @@ import { createFuelPriceSubmissionDAL } from "@/features/vportDashboard/dashboar
 import { fetchPendingFuelPriceSubmissionsDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmissions.read.dal";
 import { upsertVportFuelPriceDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPrices.write.dal";
 import { createVportFuelPriceHistoryDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceHistory.write.dal";
-import { checkVportOwnershipController } from "@/features/vportDashboard/controller/checkVportOwnership.controller";
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -173,8 +173,8 @@ beforeEach(() => {
     error: null,
   });
 
-  // Default: ownership check returns true (for owner path tests that don't override)
-  checkVportOwnershipController.mockResolvedValue(true);
+  // Default: session ownership passes (for owner path tests that don't override)
+  assertSessionOwnsActorController.mockResolvedValue({ ok: true });
 });
 
 // ---------------------------------------------------------------------------
@@ -241,21 +241,24 @@ describe("submitFuelPriceSuggestionController — input guards", () => {
 // ---------------------------------------------------------------------------
 
 describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)", () => {
-  it("calls checkVportOwnershipController with correct args", async () => {
+  it("calls assertSessionOwnsActorController with the target vport actor (V03A-H2)", async () => {
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
+
     await submitFuelPriceSuggestionController({
       ...baseArgs,
       ownerUpdate: true,
     });
 
-    expect(checkVportOwnershipController).toHaveBeenCalledOnce();
-    expect(checkVportOwnershipController).toHaveBeenCalledWith({
-      callerActorId: CITIZEN_ACTOR_ID,
+    // Session-derived ownership: only the target vport actor is passed — no
+    // caller-supplied actor id (the prior self-grantable checkVportOwnership gate).
+    expect(assertSessionOwnsActorController).toHaveBeenCalledOnce();
+    expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: TARGET_ACTOR_ID,
     });
   });
 
   it("returns { ok: false, reason: 'not_owner' } when ownership check fails", async () => {
-    checkVportOwnershipController.mockResolvedValue(false);
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
 
     const result = await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -266,7 +269,7 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
   });
 
   it("does NOT call upsertVportFuelPriceDAL when ownership check fails", async () => {
-    checkVportOwnershipController.mockResolvedValue(false);
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
 
     await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -277,7 +280,7 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
   });
 
   it("does NOT call cache service when ownership check fails", async () => {
-    checkVportOwnershipController.mockResolvedValue(false);
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
 
     await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -288,7 +291,7 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
   });
 
   it("calls upsertVportFuelPriceDAL with targetActorId (actor-first) when ownership is confirmed", async () => {
-    checkVportOwnershipController.mockResolvedValue(true);
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
 
     await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -311,7 +314,7 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
   });
 
   it("calls FuelPriceCacheService.invalidateOfficialPrices(targetActorId) after successful owner write", async () => {
-    checkVportOwnershipController.mockResolvedValue(true);
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
 
     await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -324,7 +327,7 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
 
   it("returns { ok: true, official: <mapped_row> } on success", async () => {
     const mappedRow = { fuelKey: FUEL_KEY, price: PROPOSED_PRICE };
-    checkVportOwnershipController.mockResolvedValue(true);
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
     upsertVportFuelPriceDAL.mockResolvedValue({ data: mappedRow, error: null });
 
     const result = await submitFuelPriceSuggestionController({
@@ -337,7 +340,7 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
   });
 
   it("does NOT call createFuelPriceSubmissionDAL on the owner path", async () => {
-    checkVportOwnershipController.mockResolvedValue(true);
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
 
     await submitFuelPriceSuggestionController({
       ...baseArgs,
@@ -353,13 +356,13 @@ describe("submitFuelPriceSuggestionController — owner path (ownerUpdate: true)
 // ---------------------------------------------------------------------------
 
 describe("submitFuelPriceSuggestionController — citizen path (ownerUpdate: false)", () => {
-  it("does NOT call checkVportOwnershipController on the citizen path", async () => {
+  it("does NOT call assertSessionOwnsActorController on the citizen path", async () => {
     await submitFuelPriceSuggestionController({
       ...baseArgs,
       ownerUpdate: false,
     });
 
-    expect(checkVportOwnershipController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
   });
 
   it("calls createFuelPriceSubmissionDAL with targetActorId (actor-first) and correct args", async () => {
@@ -468,7 +471,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
     // Full owner write success — mirrors the slug route where resolvedActorId
     // flows through VportProfileTabContent → VportGasPricesView → hook → controller.
     getVportProfileIdByActorDAL.mockResolvedValue(RESOLVED_PROFILE_ID);
-    checkVportOwnershipController.mockResolvedValue(true);
+    assertSessionOwnsActorController.mockResolvedValue({ ok: true });
     upsertVportFuelPriceDAL.mockResolvedValue({
       data: { fuelKey: FUEL_KEY, price: PROPOSED_PRICE },
       error: null,
@@ -502,7 +505,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
 
     expect(result).toEqual({ ok: false, reason: "profile_not_found" });
     // Neither ownership check nor any write should fire
-    expect(checkVportOwnershipController).not.toHaveBeenCalled();
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled();
     expect(upsertVportFuelPriceDAL).not.toHaveBeenCalled();
     expect(createFuelPriceSubmissionDAL).not.toHaveBeenCalled();
     expect(createVportFuelPriceHistoryDAL).not.toHaveBeenCalled();
@@ -523,7 +526,7 @@ describe("submitFuelPriceSuggestionController — VENOM-GAS-002 slug route regre
   it("non-owner is still blocked even when profile resolves correctly", async () => {
     // Security gate must hold: profile found, but caller is not an owner.
     getVportProfileIdByActorDAL.mockResolvedValue(RESOLVED_PROFILE_ID);
-    checkVportOwnershipController.mockResolvedValue(false);
+    assertSessionOwnsActorController.mockRejectedValue(new Error("not owner"));
 
     const result = await submitFuelPriceSuggestionController({
       ...baseArgs,

@@ -2,13 +2,14 @@
 
 import { getPlatformOrigin } from "@/lib/env";
 import { useTrafficLanguage } from "@/lib/language";
+import { claimLandingPath } from "@/lib/claimLinks";
 
 /**
  * Account-handoff CTA shared by the homepage/global surfaces and provider pages.
  *
  * Hands business owners off to their Vibez Citizens account so they can claim
  * or manage a profile. The PRIMARY button always carries claim/listing intent
- * (/claim-profile); the SECONDARY button is a plain sign-in that still carries
+ * (/claim-business); the SECONDARY button is a plain sign-in that still carries
  * intent params (/login?intent=claim-profile). The two never resolve to the same
  * plain login URL.
  *
@@ -32,12 +33,17 @@ function buildPlatformLink(path, params) {
 }
 
 export default function TrazeAccountCta({ variant = "global", providerSlug = null }) {
-  const { t } = useTrafficLanguage();
+  const { t, lang } = useTrafficLanguage();
   const isProvider = variant === "provider" && Boolean(providerSlug);
 
+  // TICKET-TRAZE-CLAIM-LANDING-001 — claim CTAs route through the VCSM
+  // /claim-business landing. A provider slug flows straight into the claim form;
+  // the global (referenceless) CTA opens the search-first landing.
+  // TICKET-TRAZE-CLAIM-LANDING-002 — the global CTA is locale-aware
+  // (EN /claim-business · ES /reclamar-negocio). The provider CTA is unchanged.
   const claimHref = isProvider
-    ? buildPlatformLink("/claim-profile", { provider: providerSlug, source: "traffic" })
-    : buildPlatformLink("/claim-profile", { source: "traffic" });
+    ? buildPlatformLink("/claim-business", { provider: providerSlug, source: "traffic" })
+    : buildPlatformLink(claimLandingPath(lang), { source: "traffic" });
 
   const signInHref = isProvider
     ? buildPlatformLink("/login", { intent: "claim-profile", provider: providerSlug, source: "traffic" })
