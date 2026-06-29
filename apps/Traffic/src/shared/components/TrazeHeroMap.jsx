@@ -1,15 +1,17 @@
 "use client";
 
-import { MapPin, Scissors, Key, Utensils, Fuel } from "lucide-react";
+import { MapPin, Scissors, Key, Utensils, Fuel, Coins } from "lucide-react";
 import { useTrafficLanguage } from "@/lib/language";
 
 /**
  * TrazeHeroMap — shared hero visual.
  *
- * Dotted radar field with a pulsing center pin and four floating service
- * chips (Barber, Locksmith, Restaurant, Gas). Purely decorative; rendered
- * inside `.homepage-hero-visual` (aria-hidden, hidden below 980px). Shared by
- * the homepage and directory hubs so both heroes use the same visual language.
+ * Dotted radar field with a pulsing center pin and five floating service
+ * chips (Barber, Locksmith, Restaurant, Gas, Money Exchange). Purely
+ * decorative; rendered inside `.homepage-hero-visual` (aria-hidden, hidden
+ * below 980px). Shared by the homepage and directory hubs so both heroes use
+ * the same visual language. The Coins icon matches TrazeCategoryCard's
+ * exchange iconography.
  */
 export default function TrazeHeroMap() {
   const { t } = useTrafficLanguage();
@@ -44,6 +46,9 @@ export default function TrazeHeroMap() {
       </div>
       <div className="homepage-hero-chip homepage-hero-chip--4">
         <Fuel size={12} /> Gas
+      </div>
+      <div className="homepage-hero-chip homepage-hero-chip--5">
+        <Coins size={12} /> {t("homepage.moneyExchange")}
       </div>
     </div>
   );

@@ -1,4 +1,7 @@
-import { createQuestionRow } from "@/features/answers/dal/questions.write.dal";
+import {
+  createQuestionRow,
+  invokeQuestionConfirmation
+} from "@/features/answers/dal/questions.write.dal";
 import { buildQuestionSubmission } from "@/features/answers/models/questionSubmission.model";
 
 export async function submitQuestion(input = {}) {
@@ -23,6 +26,15 @@ export async function submitQuestion(input = {}) {
       }
     };
   }
+
+  // Fire-and-forget confirmation email. Only attempted when an email was given;
+  // the DAL guards and never throws, and we deliberately do NOT await, so a slow
+  // or failing email can never block or fail the question submission.
+  void invokeQuestionConfirmation({
+    email: submission.value.askerEmail,
+    name: submission.value.askerName,
+    title: submission.value.title
+  });
 
   return {
     ok: true,

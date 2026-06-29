@@ -59,3 +59,30 @@ export async function createQuestionRow(input) {
     error: row ? null : new Error("Question could not be submitted.")
   };
 }
+
+// Best-effort confirmation email. Mirrors the provider-lead confirmation flow
+// (features/conversion/dal/submitProviderLead.write.dal.js → invokeProviderLeadConfirmation):
+// it runs AFTER the question row is committed, only when the asker supplied an
+// email, and NEVER throws — a failure here must not affect question submission.
+// Invokes the Edge Function by name only (no VCSM app import); Traffic stays
+// static-export safe. No delete/remove link is sent (no token RPC exists yet).
+export async function invokeQuestionConfirmation({ email, name, title } = {}) {
+  if (!email) return false;
+
+  const client = getAnswersWriteClient();
+  if (!client) return false;
+
+  try {
+    await client.functions.invoke("send-question-confirmation", {
+      body: {
+        email,
+        name: name || undefined,
+        title: title || undefined,
+        source: "answers"
+      }
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}

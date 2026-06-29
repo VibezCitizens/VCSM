@@ -13,20 +13,9 @@ import {
   readTrazeServicesByCategory
 } from "@/data/dal/trazeCategories.read.dal";
 import { SERVICES } from "@/data/connectors/taxonomyDataset";
+import { SERVICE_KEY_ALIASES, getServiceBySlug } from "@/data/repositories/service.repo";
 
 const SERVICE_SLUG_TO_ES = new Map(SERVICES.map((s) => [s.slug, s.nameEs]));
-
-// Service keys that come from Supabase provider data don't always match taxonomy slugs exactly.
-const SERVICE_KEY_ALIASES = {
-  barbershop: "barber",
-  "barber-shop": "barber",
-  exchange: "money-exchange",
-  "currency-exchange": "money-exchange",
-  gas: "gas-station",
-  fuel: "gas-station",
-  hairdresser: "barber",
-  salon: "barber"
-};
 
 function lookupNameEs(key) {
   const k = String(key ?? "").trim().toLowerCase();
@@ -47,6 +36,15 @@ function toNumber(value, fallback = 0) {
 
 function normalizeKey(value) {
   return toText(value).toLowerCase();
+}
+
+// Collapse provider-data category aliases onto their canonical taxonomy slug so
+// inconsistent business_type values don't surface as duplicate category cards
+// (e.g. "barber" + "barbershop" -> one "Barber" card; "exchange" -> "money-exchange";
+// "gas" -> "gas-station"). Keys without an alias are returned hyphen-normalized.
+function canonicalCategoryKey(categoryKey) {
+  const norm = normalizeKey(categoryKey).replace(/_/g, "-");
+  return SERVICE_KEY_ALIASES[norm] ?? norm;
 }
 
 function vportKeyFromSlug(value) {
@@ -95,14 +93,17 @@ function normalizeService(row) {
   };
 }
 
-function createCategory(row) {
-  const categoryKey = toText(row?.category_key);
+function createCategory(row, canonicalKey = null) {
+  const categoryKey = canonicalKey || toText(row?.category_key);
   const providerCount = toNumber(row?.provider_count);
+  // Prefer the canonical taxonomy label so a collapsed bucket reads "Barber"
+  // regardless of which alias row (barber / barbershop) created it.
+  const taxonomyService = getServiceBySlug(categoryKey);
 
   return {
     categoryKey,
-    categoryLabel: toText(row?.category_label) || categoryKey,
-    categoryLabelEs: row?.category_label_es ?? lookupNameEs(categoryKey) ?? null,
+    categoryLabel: taxonomyService?.name || toText(row?.category_label) || categoryKey,
+    categoryLabelEs: taxonomyService?.nameEs ?? row?.category_label_es ?? lookupNameEs(categoryKey) ?? null,
     categoryDescription: row?.category_description ?? null,
     categoryDescriptionEs: row?.category_description_es ?? null,
     services: [],
@@ -123,9 +124,10 @@ function groupCategoryRows(rows) {
     const categoryKey = toText(row?.category_key);
     if (!categoryKey) continue;
 
-    const lookupKey = normalizeKey(categoryKey);
+    // Group by the canonical key so aliased duplicates merge into one card.
+    const lookupKey = canonicalCategoryKey(categoryKey);
     if (!categories.has(lookupKey)) {
-      categories.set(lookupKey, createCategory(row));
+      categories.set(lookupKey, createCategory(row, lookupKey));
     }
 
     const category = categories.get(lookupKey);

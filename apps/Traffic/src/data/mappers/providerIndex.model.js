@@ -110,6 +110,25 @@ function safeStr(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+// Only trust media hosted on our own CDN. Seed intake harvests ephemeral,
+// hotlink-protected third-party photo URLs (e.g. Google Places
+// lh3.googleusercontent.com/gps-cs-s/...) that fail to load cross-origin from
+// the static site. Anything not on the platform CDN resolves to null so the
+// card renders its branded icon fallback instead of a broken image.
+function cdnMediaUrl(value) {
+  const url = safeStr(value);
+  if (!url) return null;
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol !== "https:") return null;
+    const onPlatformCdn =
+      hostname === "cdn.vibezcitizens.com" || hostname.endsWith(".vibezcitizens.com");
+    return onPlatformCdn ? url : null;
+  } catch {
+    return null;
+  }
+}
+
 function normalizeKey(value) {
   return safeStr(value)
     .toLowerCase()
@@ -261,9 +280,9 @@ export function mapProviderIndexRowToProvider(row) {
     vcsmActorId: null,
     vcsmSlug: source === "vport" ? slug : null,
     claimedAt: source === "vport" && row.created_at ? new Date(row.created_at).toISOString() : null,
-    avatarUrl: safeStr(row.avatar_url) || null,
-    bannerUrl: safeStr(row.banner_url) || null,
-    logoUrl: safeStr(row.logo_url) || null,
+    avatarUrl: cdnMediaUrl(row.avatar_url),
+    bannerUrl: cdnMediaUrl(row.banner_url),
+    logoUrl: cdnMediaUrl(row.logo_url),
     locationText: resolveLocationText({ cityName, regionCode, addressText: addressLine1 }),
     cityId: null,
     primaryCityName: cityName,

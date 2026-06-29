@@ -5,6 +5,7 @@ import { useTrafficLanguage } from "@/lib/language";
 import { useQuestionAnswers } from "@/features/answers/hooks/useQuestionAnswers";
 import { AnswerSubmitForm } from "@/features/answers/components/AnswerSubmitForm";
 import { AnswerDetailNotFound } from "@/features/answers/components/AnswerDetailNotFound";
+import { QuestionRemovalRequestPanel } from "@/features/answers/components/QuestionRemovalRequestPanel";
 
 function formatDate(value, lang) {
   if (!value) return null;
@@ -140,6 +141,13 @@ export function QuestionAnswerWorkspace({
       ) : null}
 
       {questionResolved ? <AnswerSubmitForm questionSlug={slug} /> : null}
+
+      {/* Creator self-removal is offered only for community questions (those
+          submitted through Traffic, which carry a stored asker email). The
+          actual authorization happens server-side via the emailed token. */}
+      {showQuestionFallback && question ? (
+        <QuestionRemovalRequestPanel slug={slug} />
+      ) : null}
 
       <div className="answers-detail__back">
         <Link href="/answers">{t("answers.backToAnswers")}</Link>
