@@ -27,7 +27,6 @@ import vportModel, {
   getVportBySlug,
   getVportsByIds,
   listMyVports as listMyVportsModel,
-  updateVport,
 } from "@/features/vport/vport.public";
 import { listMyVports as listMyVportsRecords } from "@/features/vport/dal/vport.read.vportRecords.dal";
 
@@ -168,7 +167,6 @@ export async function runVportFeatureGroup({ onTestUpdate, shared }) {
         hasGetVportByIdFn: typeof getVportById === "function",
         hasGetVportBySlugFn: typeof getVportBySlug === "function",
         hasGetVportsByIdsFn: typeof getVportsByIds === "function",
-        hasUpdateVportFn: typeof updateVport === "function",
         hasDefaultModelExport: typeof vportModel === "object",
       }),
     },

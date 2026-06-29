@@ -180,54 +180,6 @@ export async function getVportsByIds(ids = []) {
   return uniq.map((id) => byId.get(id)).filter(Boolean);
 }
 
-export async function updateVport(
-  vportId,
-  {
-    name,
-    slug,
-    avatarUrl,
-    avatar_url,
-    bannerUrl,
-    banner_url,
-    bio,
-    is_active,
-  } = {}
-) {
-  await requireUser();
-
-  const patch = {};
-  if (name !== undefined) patch.name = ensureString(name).trim();
-  if (slug !== undefined) patch.slug = normalizeSlug(slug);
-
-  if (avatarUrl !== undefined) patch.avatar_url = avatarUrl ?? null;
-  if (avatar_url !== undefined) patch.avatar_url = avatar_url ?? patch.avatar_url ?? null;
-
-  if (bannerUrl !== undefined) patch.banner_url = bannerUrl ?? null;
-  if (banner_url !== undefined) patch.banner_url = banner_url ?? patch.banner_url ?? null;
-
-  if (bio !== undefined) patch.bio = bio ?? null;
-  if (is_active !== undefined) patch.is_active = !!is_active;
-
-  if (Object.keys(patch).length === 0) return getVportById(vportId);
-
-  const SELECT = "id,name,slug,avatar_url,banner_url,bio,is_active,created_at,updated_at,actor_id";
-
-  const { data, error } = await vportSchema
-    .from("profiles")
-    .update(patch)
-    .eq("id", vportId)
-    .select(SELECT)
-    .single();
-
-  if (error) raise("Failed to update Vport", { error });
-
-  if (data?.actor_id) {
-    Promise.resolve(refreshVcActorDirectory(data.actor_id)).catch(() => {})
-  }
-
-  return data;
-}
-
 export async function softDeleteVport(vportId) {
   if (!vportId) raise("softDeleteVport: vportId is required");
 
@@ -285,7 +237,6 @@ export default {
   getVportById,
   getVportBySlug,
   getVportsByIds,
-  updateVport,
   softDeleteVport,
   restoreVport,
   hardDeleteVport,

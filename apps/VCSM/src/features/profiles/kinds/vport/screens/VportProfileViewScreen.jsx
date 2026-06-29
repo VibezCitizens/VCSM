@@ -73,7 +73,9 @@ export default function VportProfileViewScreen({
   const { actorId: routeSlug } = useParams();
   const { publicDetails, isLoading: publicDetailsLoading } = useVportProfileBySlug(routeSlug);
 
-  useActorSeoMeta(profile ?? null, publicDetails ?? null);
+  // V05A-M2: gate SEO head-write on the visibility decision — never write a denied
+  // profile's bio/name into <title>/<meta description>/JSON-LD.
+  useActorSeoMeta(gate.canView ? profile : null, gate.canView ? publicDetails : null);
 
   const isOwner = useMemo(
     () => deriveVportIsOwner({ viewerActorId, profileActorId }),

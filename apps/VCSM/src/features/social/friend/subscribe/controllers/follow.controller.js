@@ -8,6 +8,8 @@ import { publishVcsmNotification } from '@/features/notifications/adapters/notif
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
 import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedCache.adapter'
 import { ctrlGetBlockStatus } from '@/features/block'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
+import { readSocialActorOwnerLinkDAL } from '@/features/social/friend/request/dal/socialActorOwnership.read.dal'
 
 export async function ctrlSubscribe({
   followerActorId,
@@ -22,10 +24,23 @@ export async function ctrlSubscribe({
     throw new Error('Cannot follow yourself')
   }
 
-  // 🔒 OWNERSHIP GATE (V-SUB-001): session actor must match claimed follower
-  if (!assertingActorId || assertingActorId !== followerActorId) {
-    throw new Error('session actor does not match follower')
+  // assertingActorId retained (vestigial) for API compatibility — no longer drives
+  // authorization, but its presence contract is preserved (the prior gate also threw
+  // when it was absent).
+  if (!assertingActorId) {
+    throw new Error('ctrlSubscribe: assertingActorId required')
   }
+
+  // 🔒 OWNERSHIP GATE (V06B-M1): session-derived, kind-agnostic owner-bind on the
+  // acting actor (the follower). Replaces the prior caller-equality check (which was
+  // vacuous on the toggle path, where assertingActorId === followerActorId). Mirrors
+  // createPostController; vc.actor_owners is the canonical authority. DiD only; the
+  // durable boundary is vc.actor_follows RLS (Phase 15). assertingActorId retained
+  // (vestigial) for API compatibility.
+  const user = await readCurrentAuthUser()
+  if (!user) throw new Error('ctrlSubscribe: not authenticated')
+  const owner = await readSocialActorOwnerLinkDAL({ actorId: followerActorId, userId: user.id })
+  if (!owner) throw new Error('ctrlSubscribe: actor not owned by session user')
 
   const { isBlocked } = await ctrlGetBlockStatus({
     actorId: followerActorId,

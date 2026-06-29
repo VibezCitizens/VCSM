@@ -84,7 +84,9 @@ export default function ActorProfileViewScreen({ viewerActorId, profileActorId, 
     canViewContent,
   });
 
-  useActorSeoMeta(profile ?? null);
+  // V05A-M2: gate SEO head-write on the visibility decision — never write a denied
+  // profile's bio/name into <title>/<meta description>/JSON-LD.
+  useActorSeoMeta(gate.canView ? profile : null);
 
   // Use server profile when available; seed while loading for instant header.
   const displayProfile = profile ?? seedProfile;

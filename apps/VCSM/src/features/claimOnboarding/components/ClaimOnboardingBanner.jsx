@@ -2,6 +2,7 @@
 // onboarding. Self-gating: renders nothing unless the owner has an approved,
 // connected claim they have not acknowledged. Mounted in RootLayout.
 
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useClaimApprovalDiscovery } from '@/features/claimOnboarding/hooks/useClaimApprovalDiscovery'
 import { CLAIM_ONBOARDING_PATH } from '@/features/claimOnboarding/model/claimOnboardingRoute'
@@ -11,6 +12,17 @@ export default function ClaimOnboardingBanner() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
+  // Show only on the route where the banner first appeared; once the owner
+  // navigates anywhere else, hide it for the rest of the session. The banner is
+  // mounted once in RootLayout, so this ref/state survives route changes.
+  const initialPathRef = useRef(pathname)
+  const [navigatedAway, setNavigatedAway] = useState(false)
+
+  useEffect(() => {
+    if (pathname !== initialPathRef.current) setNavigatedAway(true)
+  }, [pathname])
+
+  if (navigatedAway) return null
   if (!pending.length) return null
   if (pathname === CLAIM_ONBOARDING_PATH) return null
 

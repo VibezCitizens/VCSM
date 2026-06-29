@@ -185,6 +185,7 @@
 .homepage-hero-chip--2 { top:  9%; right: 3%; }
 .homepage-hero-chip--3 { bottom: 19%; left:  3%; }
 .homepage-hero-chip--4 { bottom: 19%; right: 3%; }
+.homepage-hero-chip--5 { bottom: 4%; left: 50%; transform: translateX(-50%); }
 
 /* Polish chip override */
 .homepage-hero-chip {

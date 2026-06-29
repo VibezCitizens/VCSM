@@ -1,39 +1,41 @@
 /**
  * Regression tests — ctrlUnsubscribe (unsubscribe.controller)
  *
- * Security invariants (VENOM V-SUB-002 / SPIDER-MAN):
- *
- * V-SUB-002 (CRITICAL — ownership gate):
- *   ctrlUnsubscribe must verify that the session actor matches followerActorId
- *   before executing any unfollow action. An attacker calling this with a
- *   victim's followerActorId will force-unfollow the victim and immediately
- *   invalidate their feed cache — revoking access to private posts the victim
- *   legitimately follows. This is a privacy-critical write gate.
- *   ⚠️  Tests in the "[V-SUB-002 REGRESSION]" block WILL FAIL until
- *       assertingActorId ownership gate is added to ctrlUnsubscribe.
+ * Security invariant (VENOM V-SUB-002 → V06B-M1):
+ *   ctrlUnsubscribe must verify the authenticated SESSION owns followerActorId
+ *   before executing any unfollow action. An attacker calling this with a victim's
+ *   followerActorId would force-unfollow the victim and invalidate their feed cache
+ *   (revoking access to private posts). The original caller-equality gate
+ *   (assertingActorId === followerActorId) was vacuous on the live toggle path; the
+ *   gate is now session-derived & kind-agnostic via readCurrentAuthUser() +
+ *   readSocialActorOwnerLinkDAL (vc.actor_owners). DiD; durable boundary = RLS.
+ *   assertingActorId is retained (vestigial) for API compatibility.
  *
  * Run: npx vitest run src/features/social/friend/subscribe/controllers/__tests__/unsubscribe.controller.test.js
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+vi.mock('@/features/auth/adapters/authSession.adapter', () => ({ readCurrentAuthUser: vi.fn() }))
+vi.mock('@/features/social/friend/request/dal/socialActorOwnership.read.dal', () => ({
+  readSocialActorOwnerLinkDAL: vi.fn(),
+}))
 vi.mock('@/features/social/friend/request/dal/actorFollows.dal', () => ({
   dalDeactivateFollow: vi.fn(),
 }))
-
 vi.mock('@/features/social/friend/request/dal/followRequests.dal', () => ({
   dalUpdateRequestStatus: vi.fn(),
 }))
-
 vi.mock('@/features/social/friend/subscribe/dal/subscriberCount.dal', () => ({
   invalidateFollowerCount: vi.fn(),
 }))
-
 vi.mock('@/features/CentralFeed/adapters/feedCache.adapter', () => ({
   invalidateFeedFollowCache: vi.fn(),
 }))
 
 import { ctrlUnsubscribe } from '../unsubscribe.controller'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
+import { readSocialActorOwnerLinkDAL } from '@/features/social/friend/request/dal/socialActorOwnership.read.dal'
 import { dalDeactivateFollow } from '@/features/social/friend/request/dal/actorFollows.dal'
 import { dalUpdateRequestStatus } from '@/features/social/friend/request/dal/followRequests.dal'
 import { invalidateFollowerCount } from '@/features/social/friend/subscribe/dal/subscriberCount.dal'
@@ -41,19 +43,23 @@ import { invalidateFeedFollowCache } from '@/features/CentralFeed/adapters/feedC
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 
+const USER = 'user-session-111'
 const FOLLOWER = 'actor-follower-aaa-111'
 const FOLLOWED = 'actor-followed-bbb-222'
-const ATTACKER = 'actor-attacker-zzz-999'
 
+function grantSession() {
+  readCurrentAuthUser.mockResolvedValue({ id: USER })
+  readSocialActorOwnerLinkDAL.mockResolvedValue({ actor_id: FOLLOWER, is_void: false })
+}
 function setupSuccessfulWrites() {
   dalDeactivateFollow.mockResolvedValue(true)
   dalUpdateRequestStatus.mockResolvedValue(true)
 }
 
-// ─── guard: missing actor IDs ─────────────────────────────────────────────────
+// ─── guard: missing actor IDs (throws before the ownership gate) ────────────────
 
 describe('ctrlUnsubscribe — guard: missing actor ids', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => { vi.clearAllMocks(); grantSession() })
 
   it('throws when followerActorId is null', async () => {
     await expect(
@@ -88,86 +94,58 @@ describe('ctrlUnsubscribe — guard: missing actor ids', () => {
   })
 })
 
-// ─── [V-SUB-002 REGRESSION] ownership gate ───────────────────────────────────
-// ⚠️  These tests WILL FAIL until assertingActorId is added to ctrlUnsubscribe.
-//
-// Privacy blast radius: a spoofed ctrlUnsubscribe call with victim's
-// followerActorId causes invalidateFeedFollowCache(victim) to fire,
-// immediately revoking victim's access to all private posts they follow.
-//
-// Tracking: VENOM V-SUB-002 / CRITICAL / BLOCKED 2026-05-27
+// ─── [V06B-M1] session-derived ownership gate ──────────────────────────────────
+// Privacy blast radius: a spoofed ctrlUnsubscribe call with a victim's
+// followerActorId must NOT bust the victim's feed cache. Ownership is now decided by
+// the session (readCurrentAuthUser + readSocialActorOwnerLinkDAL), not a caller id.
 
-describe('ctrlUnsubscribe — [V-SUB-002 REGRESSION] ownership gate: assertingActorId', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    setupSuccessfulWrites()
+describe('ctrlUnsubscribe — [V06B-M1] session-derived ownership gate', () => {
+  beforeEach(() => { vi.clearAllMocks(); grantSession(); setupSuccessfulWrites() })
+
+  it('throws when unauthenticated (no session user)', async () => {
+    readCurrentAuthUser.mockResolvedValue(null)
+    await expect(
+      ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
+    ).rejects.toThrow('not authenticated')
   })
 
-  it('throws when assertingActorId is null (unauthenticated caller)', async () => {
+  it('throws when the session does not own followerActorId (spoofed unfollow)', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlUnsubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: null,
-      })
-    ).rejects.toThrow('session actor does not match follower')
-  })
-
-  it('throws when assertingActorId is undefined (missing from call site)', async () => {
-    await expect(
-      ctrlUnsubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        // assertingActorId intentionally omitted
-      })
-    ).rejects.toThrow('session actor does not match follower')
-  })
-
-  it('throws when assertingActorId belongs to a different actor (spoofed unfollow)', async () => {
-    await expect(
-      ctrlUnsubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
-    ).rejects.toThrow('session actor does not match follower')
+      ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
+    ).rejects.toThrow('actor not owned by session user')
   })
 
   it('does not call dalDeactivateFollow when ownership gate rejects', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlUnsubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
+      ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     ).rejects.toThrow()
     expect(dalDeactivateFollow).not.toHaveBeenCalled()
   })
 
   it('does not call dalUpdateRequestStatus when ownership gate rejects', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlUnsubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
+      ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     ).rejects.toThrow()
     expect(dalUpdateRequestStatus).not.toHaveBeenCalled()
   })
 
   it('does not call invalidateFeedFollowCache when ownership gate rejects (privacy-critical)', async () => {
+    readSocialActorOwnerLinkDAL.mockResolvedValue(null)
     await expect(
-      ctrlUnsubscribe({
-        followerActorId: FOLLOWER,
-        followedActorId: FOLLOWED,
-        assertingActorId: ATTACKER,
-      })
+      ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     ).rejects.toThrow()
-    // Privacy: victim's feed cache must not be busted by an attacker's spoofed call
     expect(invalidateFeedFollowCache).not.toHaveBeenCalled()
   })
 
-  it('proceeds when assertingActorId matches followerActorId (authentic caller)', async () => {
+  it('binds ownership on the follower actor (not the followed)', async () => {
+    await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
+    expect(readSocialActorOwnerLinkDAL).toHaveBeenCalledWith({ actorId: FOLLOWER, userId: USER })
+  })
+
+  it('proceeds when the session owns followerActorId (authentic caller)', async () => {
     const result = await ctrlUnsubscribe({
       followerActorId: FOLLOWER,
       followedActorId: FOLLOWED,
@@ -180,17 +158,10 @@ describe('ctrlUnsubscribe — [V-SUB-002 REGRESSION] ownership gate: assertingAc
 // ─── successful unsubscribe flow ──────────────────────────────────────────────
 
 describe('ctrlUnsubscribe — successful unsubscribe: DAL writes + cache bust', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    setupSuccessfulWrites()
-  })
+  beforeEach(() => { vi.clearAllMocks(); grantSession(); setupSuccessfulWrites() })
 
   it('calls dalDeactivateFollow with correct actor ids', async () => {
-    await ctrlUnsubscribe({
-      followerActorId: FOLLOWER,
-      followedActorId: FOLLOWED,
-      assertingActorId: FOLLOWER,
-    })
+    await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     expect(dalDeactivateFollow).toHaveBeenCalledWith({
       followerActorId: FOLLOWER,
       followedActorId: FOLLOWED,
@@ -198,11 +169,7 @@ describe('ctrlUnsubscribe — successful unsubscribe: DAL writes + cache bust', 
   })
 
   it('calls dalUpdateRequestStatus with status: revoked', async () => {
-    await ctrlUnsubscribe({
-      followerActorId: FOLLOWER,
-      followedActorId: FOLLOWED,
-      assertingActorId: FOLLOWER,
-    })
+    await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     expect(dalUpdateRequestStatus).toHaveBeenCalledWith({
       requesterActorId: FOLLOWER,
       targetActorId: FOLLOWED,
@@ -211,39 +178,23 @@ describe('ctrlUnsubscribe — successful unsubscribe: DAL writes + cache bust', 
   })
 
   it('runs both DAL writes (deactivate + revoke) exactly once each', async () => {
-    await ctrlUnsubscribe({
-      followerActorId: FOLLOWER,
-      followedActorId: FOLLOWED,
-      assertingActorId: FOLLOWER,
-    })
+    await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     expect(dalDeactivateFollow).toHaveBeenCalledTimes(1)
     expect(dalUpdateRequestStatus).toHaveBeenCalledTimes(1)
   })
 
   it('calls invalidateFollowerCount for the followed actor', async () => {
-    await ctrlUnsubscribe({
-      followerActorId: FOLLOWER,
-      followedActorId: FOLLOWED,
-      assertingActorId: FOLLOWER,
-    })
+    await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     expect(invalidateFollowerCount).toHaveBeenCalledWith(FOLLOWED)
   })
 
   it('calls invalidateFeedFollowCache for the follower actor (revokes private post access)', async () => {
-    await ctrlUnsubscribe({
-      followerActorId: FOLLOWER,
-      followedActorId: FOLLOWED,
-      assertingActorId: FOLLOWER,
-    })
+    await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     expect(invalidateFeedFollowCache).toHaveBeenCalledWith(FOLLOWER)
   })
 
   it('returns true on success', async () => {
-    const result = await ctrlUnsubscribe({
-      followerActorId: FOLLOWER,
-      followedActorId: FOLLOWED,
-      assertingActorId: FOLLOWER,
-    })
+    const result = await ctrlUnsubscribe({ followerActorId: FOLLOWER, followedActorId: FOLLOWED, assertingActorId: FOLLOWER })
     expect(result).toBe(true)
   })
 })

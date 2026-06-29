@@ -7,6 +7,7 @@ import { mapFuelPriceSubmissionRow } from "@/features/vportDashboard/dashboard/c
 import { mapVportStationPriceSettingsRow } from "@/features/vportDashboard/dashboard/cards/gasprices/model/vportStationPriceSettings.model";
 import { FuelPriceCacheService } from "@/features/vportDashboard/dashboard/cards/gasprices/services/fuelPriceCache.service";
 import { publishVcsmNotification } from "@/features/notifications/adapters/notifications.adapter";
+import { assertActorOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
 
 export async function submitCitizenFuelPriceSuggestionController({
@@ -27,6 +28,20 @@ export async function submitCitizenFuelPriceSuggestionController({
     const settings = mapVportStationPriceSettingsRow(settingsRow);
     const price = Number(proposedPrice);
     if (!Number.isFinite(price)) return { ok: false, reason: "invalid_number" };
+
+    // V03C-M1: canonical USER-ONLY session bind. The submitter (actorId) is written
+    // into submitted_by_actor_id, so it must be proven to belong to the authenticated
+    // session before any actorId-dependent read (dedup) or write. The self-form
+    // (requestActorId === targetActorId) verifies the caller controls actorId via the
+    // authorization feature's session bind — closing the app-layer gap that previously
+    // left submitter integrity resting solely on the DB RLS WITH CHECK. Mirrors the
+    // owner-path gate (V03A-H2) but uses the user-only helper because the submitter is
+    // always a user-kind citizen actor.
+    try {
+      await assertActorOwnsActorController({ requestActorId: actorId, targetActorId: actorId });
+    } catch {
+      return { ok: false, reason: "not_submitter" };
+    }
 
     if (settings.requireSanityForSuggestion) {
       if (price < settings.minPrice || price > settings.maxPrice) {

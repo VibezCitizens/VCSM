@@ -124,6 +124,17 @@ export async function createBookingController({
       throw new Error("Only citizens can book appointments. Switch to your citizen profile to reserve.");
     }
 
+    // V03B-M1: session-bind the citizen actor. The kind/void checks above only prove
+    // requestActorId is *a* citizen — they do NOT prove the authenticated session owns
+    // it. The canonical user-only self-form binds requestActorId to the session
+    // (asserts vc.actors.profile_id === auth.uid()) so a forged/victim citizen actorId
+    // cannot be attributed as customer_actor_id / created_by_actor_id. DiD only; the
+    // durable boundary is vport.bookings RLS (03B-DB-1, Phase 15).
+    await assertActorOwnsActorController({
+      requestActorId,
+      targetActorId: requestActorId,
+    });
+
     // Session-bind: customer_actor_id must always equal the verified requestActorId for
     // public bookings. Reject any caller-supplied customerActorId to prevent actor injection.
     customerActorId = requestActorId;

@@ -8,7 +8,7 @@ import { getServiceBySlug } from "@/data/repositories/service.repo";
 import { countryServiceHubPath } from "@/lib/paths";
 import { CategoriesDiscoveryClient } from "@/features/categories/adapters/categories.adapter";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
-import SeoCrawlLinks from "@/shared/components/SeoCrawlLinks";
+import SeoCrawlLinksLocalized from "@/shared/components/SeoCrawlLinksLocalized";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 import { getAggregatorIndexRobots } from "@/seo/qualityGuards";
 
@@ -32,24 +32,43 @@ export const metadata = buildCategoriesMetadata();
 // straight from the generated static-param set (never a 404).
 function buildCategoriesCrawlGroups(countries) {
   const countryNameBySlug = new Map(countries.map((country) => [country.countrySlug, country.name]));
+  const countryNameEsBySlug = new Map(
+    countries.map((country) => [country.countrySlug, country.nameEs ?? country.name])
+  );
 
+  // EN labels feed the SSR HTML (crawlable, lang=en invariant); ES labels are
+  // swapped in client-side on /es routes by SeoCrawlLinksLocalized. hrefs are
+  // shared by both languages.
   const countryLinks = countries.map((country) => ({
     href: `/${country.countrySlug}/categories`,
-    label: `Service categories in ${country.name}`
+    label: `Service categories in ${country.name}`,
+    labelEs: `Categorías de servicio en ${country.nameEs ?? country.name}`
   }));
 
   const serviceHubLinks = listCountryServiceHubStaticParams().map((entry) => {
-    const serviceName = getServiceBySlug(entry.service)?.name ?? entry.service;
+    const service = getServiceBySlug(entry.service);
+    const serviceName = service?.name ?? entry.service;
+    const serviceNameEs = service?.nameEs ?? serviceName;
     const countryName = countryNameBySlug.get(entry.country) ?? entry.country;
+    const countryNameEs = countryNameEsBySlug.get(entry.country) ?? countryName;
     return {
       href: countryServiceHubPath(entry.country, entry.service),
-      label: `${serviceName} in ${countryName}`
+      label: `${serviceName} in ${countryName}`,
+      labelEs: `${serviceNameEs} en ${countryNameEs}`
     };
   });
 
   return [
-    { heading: "Browse categories by country", links: countryLinks },
-    { heading: "Popular services by country", links: serviceHubLinks }
+    {
+      heading: "Browse categories by country",
+      headingEs: "Explorar categorías por país",
+      links: countryLinks
+    },
+    {
+      heading: "Popular services by country",
+      headingEs: "Servicios populares por país",
+      links: serviceHubLinks
+    }
   ];
 }
 
@@ -70,9 +89,11 @@ export default async function CategoriesPage() {
         categoriesByCountryCode={Object.fromEntries(entries)}
         locationOptions={locationOptions}
       />
-      <SeoCrawlLinks
+      <SeoCrawlLinksLocalized
         title="Explore service categories"
+        titleEs="Explora categorías de servicios"
         groups={buildCategoriesCrawlGroups(countries)}
+        muted
       />
     </TrazePageShell>
   );
