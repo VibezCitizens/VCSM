@@ -37,8 +37,13 @@ function fireLeadOwnerNotification({ result }) {
   return publishLeadNotificationDAL({ leadId });
 }
 
-function fireLeadConfirmationEmail({ email, name, vportName, providerProfileUrl, source }) {
-  sendLeadConfirmationEmailDAL({ email, name, vportName, providerProfileUrl, source });
+function fireLeadConfirmationEmail({ leadId }) {
+  // Forward ONLY the committed leadId. The send-lead-confirmation Edge function
+  // is the trust boundary: it derives recipient + provider + canonical URL from
+  // the lead row (mirrors the publish-lead-notification bridge). The app no
+  // longer treats caller-supplied email/vportName/providerProfileUrl as
+  // authoritative for the confirmation email.
+  sendLeadConfirmationEmailDAL({ leadId });
 }
 
 export async function submitVportBusinessCardLeadController({
@@ -49,8 +54,6 @@ export async function submitVportBusinessCardLeadController({
   message,
   source = "business_card",
   userAgent = null,
-  vportName = null,
-  providerProfileUrl = null,
 } = {}) {
   const slugKey = String(slug || "").trim().toLowerCase();
   if (!slugKey) throw toLeadError("Card unavailable.");
@@ -77,13 +80,7 @@ export async function submitVportBusinessCardLeadController({
       userAgent,
     });
 
-    fireLeadConfirmationEmail({
-      email: validation.payload.email,
-      name: validation.payload.name,
-      vportName,
-      providerProfileUrl,
-      source,
-    });
+    fireLeadConfirmationEmail({ leadId: result?.lead_id ?? null });
 
     // Lead row is already committed above, so awaiting this does not block lead
     // creation — it lets us surface a structured diagnostic (never thrown).

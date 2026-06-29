@@ -8,6 +8,7 @@ import { hideLaunchSplash } from "@/shared/lib/hideLaunchSplash";
 import { appendIOSProdDebugLog } from "@/shared/lib/iosProdDebugger";
 import { useIdentity } from "@/features/identity/adapters/identity.adapter";
 import { ClaimOnboardingBanner } from "@/features/claimOnboarding/adapters/claimOnboarding.adapter";
+import { PendingClaimResume } from "@/features/claim/adapters/claim.adapter";
 
 export default function RootLayout() {
   const { pathname } = useLocation();
@@ -80,6 +81,11 @@ export default function RootLayout() {
 
   return (
     <div className={rootClassName}>
+      {/* TICKET-TRAZE-CLAIM-RESUME-001 — render-null; resumes a pending claim
+          after auth + onboarding. RootLayout renders only past CompleteProfileGate,
+          so the user is already authenticated + onboarded here. */}
+      <PendingClaimResume />
+
       {!hideTopNav && <TopNav />}
 
       <main className={mainClass}>

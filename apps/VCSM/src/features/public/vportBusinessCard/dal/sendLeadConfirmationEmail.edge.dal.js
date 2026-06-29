@@ -1,15 +1,11 @@
 import { supabase } from "@/services/supabase/supabaseClient";
 
-export function sendLeadConfirmationEmailDAL({ email, name, vportName, providerProfileUrl, source }) {
-  if (!email) return;
+export function sendLeadConfirmationEmailDAL({ leadId }) {
+  if (!leadId) return;
   supabase.functions
     .invoke("send-lead-confirmation", {
       body: {
-        email,
-        name,
-        vportName,
-        providerProfileUrl: providerProfileUrl || undefined,
-        source: source || "vport_card",
+        leadId: String(leadId),
       },
     })
     .catch(() => {
