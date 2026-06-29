@@ -10,6 +10,7 @@ import {
 } from "@/features/vportDashboard/dashboard/cards/gasprices/model/fuelPriceBatch.model";
 import { fetchSubmitterSummariesDAL } from "@/features/vportDashboard/dashboard/cards/gasprices/dal/vportFuelPriceSubmitters.read.dal";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
+import { assertSessionOwnsActorController } from "@/features/authorization/adapters/authorization.adapter";
 
 export async function getVportGasPricesController({ actorId, fuelKey = null }) {
   try {
@@ -47,21 +48,43 @@ export async function getVportGasPricesController({ actorId, fuelKey = null }) {
         }, {})
       : {};
 
-    // Group pending submissions into one card per citizen submission batch, then
-    // hydrate the submitting citizen's display identity (actorId-keyed only).
-    const groupedBatches = groupSubmissionsIntoBatches(pending);
-    const submitterIds = groupedBatches
-      .map((b) => b.submittedByActorId)
-      .filter(Boolean);
-    const submitterSummaries = await fetchSubmitterSummariesDAL({ actorIds: submitterIds });
-    const pendingBatches = attachSubmittersToBatches(groupedBatches, submitterSummaries);
+    // V03C-L1 (TICKET-GASPRICES-PENDINGREAD-GATE-001): the pending review queue and
+    // submitter display identity are owner-only moderation state. Gate them on
+    // session ownership of the (always-vport) station actor — the same vport-only
+    // session-derived helper already used by the gas write controllers
+    // (submitOwnerFuelPriceUpdate / updateStationFuelUnit). The catch is scoped to
+    // the ownership assertion ONLY: ownership denial degrades to the public branch
+    // (no throw) so settings + official prices + community suggestion still return;
+    // any real DAL failure in the owner branch below still propagates as before.
+    let isOwner = false;
+    try {
+      await assertSessionOwnsActorController({ targetActorId: actorId });
+      isOwner = true;
+    } catch {
+      isOwner = false;
+    }
+
+    let pendingSubmissions = [];
+    let pendingBatches = [];
+
+    if (isOwner) {
+      // Group pending submissions into one card per citizen submission batch, then
+      // hydrate the submitting citizen's display identity (actorId-keyed only).
+      const groupedBatches = groupSubmissionsIntoBatches(pending);
+      const submitterIds = groupedBatches
+        .map((b) => b.submittedByActorId)
+        .filter(Boolean);
+      const submitterSummaries = await fetchSubmitterSummariesDAL({ actorIds: submitterIds });
+      pendingSubmissions = pending;
+      pendingBatches = attachSubmittersToBatches(groupedBatches, submitterSummaries);
+    }
 
     return {
       actorId,
       settings,
       official,
       communitySuggestionByFuelKey: latestPendingByFuelKey,
-      pendingSubmissions: pending,
+      pendingSubmissions,
       pendingBatches,
     };
   } catch (error) {

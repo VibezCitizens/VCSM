@@ -31,7 +31,19 @@ export function useAuthCallback() {
               breadcrumbs: [{ type: 'auth', message: 'auth_callback_failed' }],
             })
           } else {
-            navigate('/login', { replace: true, state: { emailConfirmed: true } })
+            // TICKET-TRAZE-CLAIM-CREATE-ACCOUNT-E2E-001 (GAP-4): preserve a
+            // whitelist-validated claim `next` so an expired/replayed callback
+            // with no session still lets the claimant resume after manual login.
+            // Non-claim callbacks keep the existing /login behavior unchanged.
+            const nextParam =
+              typeof window !== 'undefined'
+                ? new URLSearchParams(window.location.search).get('next')
+                : null
+            const from = isSafeAuthReturnPath(nextParam) ? nextParam : null
+            navigate('/login', {
+              replace: true,
+              state: from ? { emailConfirmed: true, from } : { emailConfirmed: true },
+            })
           }
           return
         }

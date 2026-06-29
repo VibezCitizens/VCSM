@@ -5,6 +5,27 @@ import {
   listModerationActionsForActorOnObjectsDAL,
 } from "@/features/moderation/dal/moderationActions.dal";
 import { captureVcsmError } from '@/services/monitoring/vcsmMonitoring';
+import { readCurrentAuthUser } from "@/features/auth/adapters/authSession.adapter";
+import { readModerationActorOwnerLinkDAL } from "@/features/moderation/dal/moderationActorOwnership.read.dal";
+
+// V11-M2 (TICKET-MODERATION-ACTORBIND-001): canonical KIND-AGNOSTIC
+// session→vc.actor_owners owner-bind on the acting (suppressing) actor. Personal
+// suppression writes an actor_id-keyed moderation.actions row; the acting actor is
+// the active identity actor and may be a user OR a vport, so neither kind-specific
+// helper fits (assertSessionOwns = vport-only, assertActorOwns = user-only). This
+// verifies the authenticated session owns actorId via vc.actor_owners before any
+// write — closing the prior gap where actorId was trusted from the caller (replay
+// could pollute any victim's hidden set). Defense-in-depth over the durable
+// boundary 11-DB-3 (moderation.actions INSERT RLS).
+async function assertSessionOwnsActingActor(actorId) {
+  const sessionUser = await readCurrentAuthUser();
+  if (
+    !sessionUser ||
+    !(await readModerationActorOwnerLinkDAL({ actorId, userId: sessionUser.id }))
+  ) {
+    throw new Error("moderation: session does not own the acting actor");
+  }
+}
 
 /* ============================================================
    CONTROLLER: commentVisibility
@@ -94,6 +115,8 @@ export async function hideCommentForActor({
   if (!actorId) throw new Error("hideCommentForActor: actorId required");
   if (!commentId) throw new Error("hideCommentForActor: commentId required");
 
+  await assertSessionOwnsActingActor(actorId);
+
   try {
     await insertModerationActionDAL({
       actorId,
@@ -124,6 +147,8 @@ export async function unhideCommentForActor({
 }) {
   if (!actorId) throw new Error("unhideCommentForActor: actorId required");
   if (!commentId) throw new Error("unhideCommentForActor: commentId required");
+
+  await assertSessionOwnsActingActor(actorId);
 
   try {
     await insertModerationActionDAL({

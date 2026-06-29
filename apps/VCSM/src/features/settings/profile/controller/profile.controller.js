@@ -10,6 +10,7 @@ import { fetchProfile } from '@/features/settings/profile/dal/profile.read.dal'
 import { updateProfile } from '@/features/settings/profile/dal/profile.write.dal'
 import { mapProfileToView, mapProfileUpdate } from '@/features/settings/profile/model/profile.model'
 import { dalReadActorIdByProfileId, dalReadActorIdByVportId } from '@/features/settings/profile/dal/actorIdBySubject.read.dal'
+import { readCurrentAuthUser } from '@/features/auth/adapters/authSession.adapter'
 import { useActorStore } from '@hydration'
 
 export async function loadProfileCore({ subjectId, mode }) {
@@ -26,6 +27,21 @@ export async function saveProfileCore({
   refreshVcActorDirectory,
 }) {
   if (!subjectId) throw new Error('saveProfile: subjectId missing')
+
+  // V12A-M1: account-level session bind for the user-profile text write. `subjectId`
+  // is `public.profiles.id` (= auth.users.id), session-derived at the hook but a
+  // trusted param below it; re-verify it against the authenticated session BEFORE any
+  // side effect (upload/payload/write) so a forged/victim subjectId cannot overwrite
+  // another user's profile. User-only — the vport path is bound by the DAL
+  // `owner_user_id = auth.uid()` filter and is intentionally untouched. Defense-in-depth
+  // over the durable `public.profiles` UPDATE RLS boundary (12A-DB-1). Mirrors the
+  // account-level session-equality precedent in recordLegalAcceptance (V12C).
+  if (mode === 'user') {
+    const sessionUser = await readCurrentAuthUser()
+    if (!sessionUser || String(sessionUser.id) !== String(subjectId)) {
+      throw new Error('saveProfile: subjectId must match the authenticated session')
+    }
+  }
 
   // Clean permanent URLs for DB writes
   let nextPhotoUrl = draft.photoUrl?.split('?')[0] || null

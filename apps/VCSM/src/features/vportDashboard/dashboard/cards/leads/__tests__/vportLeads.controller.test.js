@@ -98,7 +98,7 @@ describe('vportLeads.controller — ownership gate rejects unauthorized session'
 
   it('fastCountNewVportLeadsController rejects and does not call any DAL', async () => {
     await expect(
-      fastCountNewVportLeadsController(VPORT_ID, 'profile-abc')
+      fastCountNewVportLeadsController(VPORT_ID)
     ).rejects.toThrow()
     expect(readVportProfileByActorIdDAL).not.toHaveBeenCalled()
     expect(readNewLeadsCountByProfileDAL).not.toHaveBeenCalled()
@@ -170,10 +170,11 @@ describe('vportLeads.controller — legitimate owner routes to correct DAL', () 
     expect(result).toEqual({ count: 5, resolvedProfileId: 'profile-abc' })
   })
 
-  it('fastCountNewVportLeadsController gates ownership before reading cached profile count', async () => {
+  it('fastCountNewVportLeadsController gates ownership then reads via resolved profileId', async () => {
     readNewLeadsCountByProfileDAL.mockResolvedValue(3)
-    // Signature is (actorId, profileId); ownership is gated via the session gate.
-    const result = await fastCountNewVportLeadsController(VPORT_ID, 'profile-abc')
+    // Signature is (actorId); ownership is gated via the session gate and the
+    // profileId is derived server-side from the gated actor.
+    const result = await fastCountNewVportLeadsController(VPORT_ID)
     expect(assertSessionOwnsActorController).toHaveBeenCalledWith({
       targetActorId: VPORT_ID,
     })
@@ -181,9 +182,10 @@ describe('vportLeads.controller — legitimate owner routes to correct DAL', () 
     expect(result).toBe(3)
   })
 
-  it('fastCountNewVportLeadsController returns 0 for missing identity or profile scope', async () => {
-    // Signature is (actorId, profileId); a falsy profileId short-circuits to 0.
-    const result = await fastCountNewVportLeadsController(VPORT_ID, null)
+  it('fastCountNewVportLeadsController returns 0 for missing identity', async () => {
+    // Signature is (actorId); a falsy actorId short-circuits to 0 before the gate.
+    const result = await fastCountNewVportLeadsController(null)
+    expect(assertSessionOwnsActorController).not.toHaveBeenCalled()
     expect(readNewLeadsCountByProfileDAL).not.toHaveBeenCalled()
     expect(result).toBe(0)
   })
