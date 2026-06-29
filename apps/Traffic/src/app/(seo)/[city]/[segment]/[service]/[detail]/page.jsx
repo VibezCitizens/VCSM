@@ -10,6 +10,7 @@ import { buildDirectoryMetadata } from "@/seo/metadata";
 import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
+import { keepGeneratedLinks } from "@/seo/generatedPaths";
 import {
   countryCityLocalityServicePath,
   countryCityLocalityServiceSpecialtyPath,
@@ -142,7 +143,7 @@ export default async function CountryCityLocalityServicePage({ params }) {
     { label: graph.locality.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     ...otherLocalities.map((locality) => ({
       label: `${graph.service.name} in ${locality.name}`,
       href: countryCityLocalityServicePath(graph.country.slug, graph.city.slug, locality.slug, graph.service.slug)
@@ -173,7 +174,7 @@ export default async function CountryCityLocalityServicePage({ params }) {
       label: "Legacy locality URL",
       href: neighborhoodServicePath(graph.city.slug, graph.locality.slug, graph.service.slug)
     }
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),

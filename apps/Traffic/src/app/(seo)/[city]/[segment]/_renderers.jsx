@@ -10,6 +10,7 @@ import {
 import { getPriceAggregate } from "@/data/repositories/aggregate.repo";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
+import { keepGeneratedLinks } from "@/seo/generatedPaths";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { isCountryServiceIndexable } from "@/seo/qualityGuards";
 import {
@@ -69,7 +70,7 @@ export function renderCountryCityPage(graph) {
     { label: graph.city.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     ...cityServices.map((service) => ({
       label: `${service.name} in ${graph.city.name}`,
       href: countryCityServicePath(graph.country.slug, graph.city.slug, service.slug)
@@ -88,7 +89,7 @@ export function renderCountryCityPage(graph) {
       label: `Legacy city URL (${graph.city.slug})`,
       href: cityPath(graph.city.slug)
     }
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),
@@ -147,7 +148,7 @@ export function renderLegacyCityServicePage(graph) {
     { label: graph.service.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     ...localities.map((locality) => ({
       label: `${graph.service.name} in ${locality.name}`,
       href: countryCityLocalityServicePath(graph.country.slug, graph.city.slug, locality.slug, graph.service.slug)
@@ -198,7 +199,7 @@ export function renderLegacyCityServicePage(graph) {
       label: `Legacy locality path (${graph.city.slug}/${locality.slug}/${graph.service.slug})`,
       href: neighborhoodServicePath(graph.city.slug, locality.slug, graph.service.slug)
     }))
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),

@@ -11,6 +11,7 @@ import {
 import { listCountryServiceHubStaticParams } from "@/data/repositories/staticParams.repo";
 import { buildDirectoryPageModel } from "@/data/mappers/pageModel.model";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
+import { keepGeneratedLinks } from "@/seo/generatedPaths";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { isCountryServiceIndexable } from "@/seo/qualityGuards";
 import {
@@ -186,7 +187,7 @@ export function renderLegacyCityPage(graph) {
     { label: graph.city.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     {
       label: `Canonical city page in ${graph.country.name}`,
       href: countryCityPath(graph.country.slug, graph.city.slug)
@@ -218,7 +219,7 @@ export function renderLegacyCityPage(graph) {
       label: `Legacy locality URL (${graph.city.slug}/${locality.slug}/...)`,
       href: neighborhoodServicePath(graph.city.slug, locality.slug, services[0]?.slug ?? "")
     }))
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),

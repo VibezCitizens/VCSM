@@ -23,6 +23,10 @@ import {
   EMPTY_CLAIM_FORM,
   TRAZE_DIRECTORY_URL,
 } from '@/features/claim/model/claim.model'
+import {
+  savePendingClaimIntent,
+  clearPendingClaimIntent,
+} from '@/features/claim/model/pendingClaimIntent'
 
 export function useClaimProfile() {
   const navigate = useNavigate()
@@ -96,6 +100,28 @@ export function useClaimProfile() {
     return 'ready'
   }, [authLoading, identityLoading, providerLoading, hasProviderParam, confirmation, alreadyClaimed, user, citizenActorId])
 
+  // TICKET-TRAZE-CLAIM-RESUME-001: persist the claim target as soon as we know the
+  // user is not yet ready to submit (logged out, unconfirmed, or not onboarded), so
+  // usePendingClaimResume can return them here after auth + onboarding even if the
+  // email redirect or onboarding state.from chain drops the path. Saved early and
+  // only cleared on submit / already-claimed / expiry — never on landing on the feed.
+  useEffect(() => {
+    if (!hasProviderParam) return
+    if (status === 'needs_auth' || status === 'needs_onboarding') {
+      savePendingClaimIntent({
+        providerSlug: params.providerSlug,
+        providerId: params.providerId,
+        source: params.source,
+        returnPath,
+      })
+    }
+  }, [status, hasProviderParam, params.providerSlug, params.providerId, params.source, returnPath])
+
+  // Stop resuming a target that is no longer claimable.
+  useEffect(() => {
+    if (status === 'already_claimed') clearPendingClaimIntent()
+  }, [status])
+
   const providerLabel =
     provider?.display_name || params.providerSlug || 'this business'
 
@@ -163,9 +189,18 @@ export function useClaimProfile() {
       if (!result.ok) {
         if (result.fieldErrors) setFieldErrors(result.fieldErrors)
         setSubmitError(result.message)
+        // TICKET-TRAZE-CLAIM-RESUME-001: terminal outcomes mean the target is no
+        // longer claimable by this user (gone / already claimed / already submitted)
+        // — drop the durable intent so the resume effect stops returning here.
+        if (['PROVIDER_NOT_FOUND', 'PROVIDER_ALREADY_CLAIMED', 'DUPLICATE_PENDING_CLAIM'].includes(result.code)) {
+          clearPendingClaimIntent()
+        }
         return
       }
 
+      // TICKET-TRAZE-CLAIM-RESUME-001: claim submitted — the funnel is complete,
+      // so drop the durable intent (prevents any further auto-resume).
+      clearPendingClaimIntent()
       setConfirmation({ claimId: result.data.claimId })
     } catch (error) {
       captureFrontendError(error, {

@@ -3,6 +3,7 @@
 import { useTrafficLanguage } from "@/lib/language";
 import { countryCityServicePath, countryServiceHubPath } from "@/lib/paths";
 import { getServiceBySlug } from "@/data/repositories/service.repo";
+import { isCountryServiceIndexable } from "@/seo/qualityGuards";
 import TrazeCategoryCard from "@/shared/components/TrazeCategoryCard";
 
 function getCategoryLabel(cat, lang) {
@@ -26,22 +27,31 @@ function getCategoryRouteKey(cat) {
 
 function getCategoryHref(cat, defaultCountrySlug, defaultCitySlug) {
   const routeKey = getCategoryRouteKey(cat);
-
-  // Only build a directory route when the key maps to a real taxonomy service.
-  // Unknown / uncategorized keys (e.g. "other") have no [service] page and would
-  // 404, so fall back to the categories filter page instead.
   const service = routeKey ? getServiceBySlug(routeKey) : null;
-  if (!service) {
-    return `/categories?filter=${encodeURIComponent(routeKey || cat.categoryKey || "")}`;
-  }
 
-  if (!defaultCountrySlug) return `/categories?filter=${encodeURIComponent(service.slug)}`;
+  // The filtered categories view lists a category's providers, so any category
+  // without a live country-service hub — an unmapped/uncategorized bucket
+  // (e.g. "other") or a thin service below the hub gate — links to that filter
+  // view (country-scoped when a country is selected) instead of a phantom hub.
+  // The filter key matches CategoriesDiscoveryClient's category resolution:
+  // taxonomy slug for mapped services, raw category key otherwise.
+  const filterKey = service ? service.slug : (cat.categoryKey || routeKey || "");
+  const filterBase = defaultCountrySlug ? `/${defaultCountrySlug}/categories` : "/categories";
+  const filterHref = `${filterBase}?filter=${encodeURIComponent(filterKey)}`;
+
+  if (!service || !defaultCountrySlug) return filterHref;
 
   if (defaultCitySlug) {
     return countryCityServicePath(defaultCountrySlug, defaultCitySlug, service.slug);
   }
 
-  return countryServiceHubPath(defaultCountrySlug, service.slug);
+  // The country-service hub only exists when it clears the SAME gate static
+  // generation uses (>=3 providers across >=2 cities, isCountryServiceIndexable).
+  // Below that the hub page is never exported, so linking it 404s.
+  if (isCountryServiceIndexable(cat.providerCount, cat.cityCount)) {
+    return countryServiceHubPath(defaultCountrySlug, service.slug);
+  }
+  return filterHref;
 }
 
 /**
@@ -105,16 +115,19 @@ export default function HomepageCategoryGrid({
         <div className="hp-cat-grid">
           {visibleCategories.map((cat) => {
             const catLabel = getCategoryLabel(cat, lang);
-            const isLive   = cat.isLive === true;
             const href     = getCategoryHref(cat, defaultCountrySlug, defaultCitySlug);
+            // A live category with no safe destination (unmapped / "other")
+            // renders via the inactive, non-clickable tile path rather than a
+            // dead link.
+            const clickable = cat.isLive === true && Boolean(href);
 
             return (
               <TrazeCategoryCard
                 key={cat.categoryKey}
                 categoryKey={cat.categoryKey}
                 label={catLabel}
-                isLive={isLive}
-                href={href}
+                isLive={clickable}
+                href={href ?? ""}
                 lang={lang}
               />
             );

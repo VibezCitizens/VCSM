@@ -7,6 +7,7 @@ import { listCountryServiceHubStaticParams } from "@/data/repositories/staticPar
 import { getServiceBySlug } from "@/data/repositories/service.repo";
 import { countryServiceHubPath } from "@/lib/paths";
 import { CategoriesDiscoveryClient } from "@/features/categories/adapters/categories.adapter";
+import { buildProvidersByCountryCode } from "@/features/categories/lib/categoryProviders";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import SeoCrawlLinksLocalized from "@/shared/components/SeoCrawlLinksLocalized";
 import { buildDirectoryMetadata } from "@/seo/metadata";
@@ -87,6 +88,7 @@ export default async function CategoriesPage() {
       <CategoriesDiscoveryClient
         countries={countries}
         categoriesByCountryCode={Object.fromEntries(entries)}
+        providersByCountryCode={buildProvidersByCountryCode(countries)}
         locationOptions={locationOptions}
       />
       <SeoCrawlLinksLocalized

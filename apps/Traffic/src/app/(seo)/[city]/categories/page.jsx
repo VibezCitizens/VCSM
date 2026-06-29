@@ -6,6 +6,7 @@ import {
 } from "@/data/repositories/provider.repo";
 import { getCountryBySlug, listCountries } from "@/data/repositories/geo.repo";
 import { CategoriesDiscoveryClient } from "@/features/categories/adapters/categories.adapter";
+import { listCategoryProviderCardsByCountryCode } from "@/features/categories/lib/categoryProviders";
 import { TrazePageShell } from "@/shared/components/TrazePageShell";
 import { buildDirectoryMetadata } from "@/seo/metadata";
 
@@ -57,6 +58,7 @@ export default async function CountryCategoriesPage({ params }) {
       <CategoriesDiscoveryClient
         countries={allCountries}
         categoriesByCountryCode={{ [country.code]: categories }}
+        providersByCountryCode={{ [country.code]: listCategoryProviderCardsByCountryCode(country.code) }}
         locationOptions={locationOptions}
         initialCountryCode={country.code}
         preferCountryRoute

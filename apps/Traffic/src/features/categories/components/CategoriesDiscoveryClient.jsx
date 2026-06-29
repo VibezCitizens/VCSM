@@ -6,6 +6,7 @@ import TrazeSearchBar from "@/shared/components/TrazeSearchBar";
 import TrazeHeroMap from "@/shared/components/TrazeHeroMap";
 import { TRAZE_SCREEN_SEARCH } from "@/config/trazeScreenSearch.config";
 import { HomepageCategoryGrid } from "@/features/home/adapters/home.adapter";
+import HomepageProviderCard from "@/features/home/components/HomepageProviderCard";
 import { findLiveCountryByCode, getBrowserCountryCode } from "@/lib/geo/clientMarket";
 import { withLocale } from "@/lib/i18n";
 import { useTrafficLanguage } from "@/lib/language";
@@ -107,6 +108,7 @@ function readInitialCountryCode(countries) {
 export default function CategoriesDiscoveryClient({
   countries = [],
   categoriesByCountryCode = {},
+  providersByCountryCode = {},
   locationOptions = [],
   initialCountryCode = "",
   preferCountryRoute = false
@@ -120,6 +122,9 @@ export default function CategoriesDiscoveryClient({
   const selectedCountry = countries.find((country) => country.countryCode === selectedCountryCode) ?? null;
   const categories = selectedCountryCode
     ? (categoriesByCountryCode[selectedCountryCode] ?? [])
+    : [];
+  const providers = selectedCountryCode
+    ? (providersByCountryCode[selectedCountryCode] ?? [])
     : [];
 
   useEffect(() => {
@@ -166,6 +171,47 @@ export default function CategoriesDiscoveryClient({
     () => filterCategories(categories, query, activeFilter),
     [categories, query, activeFilter]
   );
+
+  // When a single category is selected (via a card click → ?filter=<key>), the
+  // view lists that category's providers instead of looping the card back to
+  // itself. Recognized services match by category key OR service key; unmapped
+  // buckets (e.g. "other") match providers whose bucketKey collapsed to "other".
+  const activeCategory = useMemo(() => {
+    const needle = normalizeSlug(activeFilter);
+    if (!needle) return null;
+    return (
+      categories.find((category) => normalizeSlug(category.categoryKey) === needle) ??
+      categories.find((category) =>
+        (category.services ?? []).some((service) => normalizeSlug(service.serviceKey) === needle)
+      ) ??
+      null
+    );
+  }, [categories, activeFilter]);
+
+  const activeProviders = useMemo(() => {
+    if (!activeCategory) return [];
+    return providers.filter((provider) => provider.bucketKey === activeCategory.categoryKey);
+  }, [providers, activeCategory]);
+
+  const activeCategoryLabel = activeCategory
+    ? (lang === "es" && activeCategory.categoryLabelEs
+        ? activeCategory.categoryLabelEs
+        : activeCategory.categoryLabel)
+    : "";
+
+  function clearFilter() {
+    setQuery("");
+    setActiveFilter("");
+    writeUrlParams({
+      query: "",
+      filter: "",
+      countryCode: selectedCountryCode,
+      countrySlug: selectedCountry?.countrySlug,
+      preferCountryRoute,
+      router,
+      lang
+    });
+  }
 
   function handleSearch(payload) {
     const nextCountry = payload.location?.countryCode ?? selectedCountryCode;
@@ -222,24 +268,53 @@ export default function CategoriesDiscoveryClient({
         </div>
       </section>
 
-      <HomepageCategoryGrid
-        categories={filteredCategories}
-        defaultCountrySlug={selectedCountry?.countrySlug ?? ""}
-        defaultCitySlug={null}
-        showHeading={false}
-        showEmptyState
-        emptyQuery={selectedCountryCode ? emptyQuery : ""}
-        emptyTitle={
-          selectedCountryCode
-            ? null
-            : t("directory.selectCountryTitle")
-        }
-        emptyDescription={
-          selectedCountryCode
-            ? null
-            : t("directory.selectCountryDescription")
-        }
-      />
+      {selectedCountryCode && activeCategory ? (
+        <section className="homepage-section homepage-section--divider homepage-directory-surface-soft traze-page-card">
+          <div className="homepage-section-heading">
+            <h2 className="section-title">
+              {activeCategoryLabel}
+              {selectedCountry?.name ? ` · ${selectedCountry.name}` : ""}
+            </h2>
+            <p>
+              <button type="button" className="traze-section-link" onClick={clearFilter}>
+                {t("directory.serviceCategories")}
+              </button>
+            </p>
+          </div>
+
+          {activeProviders.length > 0 ? (
+            <div className="ch-featured-grid">
+              {activeProviders.map((provider) => (
+                <HomepageProviderCard key={provider.id} provider={provider} lang={lang} />
+              ))}
+            </div>
+          ) : (
+            <div className="homepage-empty-state">
+              <h3 className="homepage-card-title">{t("homepage.noLiveCategories")}</h3>
+              <p className="homepage-meta-note">{t("homepage.categoriesPending")}</p>
+            </div>
+          )}
+        </section>
+      ) : (
+        <HomepageCategoryGrid
+          categories={filteredCategories}
+          defaultCountrySlug={selectedCountry?.countrySlug ?? ""}
+          defaultCitySlug={null}
+          showHeading={false}
+          showEmptyState
+          emptyQuery={selectedCountryCode ? emptyQuery : ""}
+          emptyTitle={
+            selectedCountryCode
+              ? null
+              : t("directory.selectCountryTitle")
+          }
+          emptyDescription={
+            selectedCountryCode
+              ? null
+              : t("directory.selectCountryDescription")
+          }
+        />
+      )}
     </>
   );
 }

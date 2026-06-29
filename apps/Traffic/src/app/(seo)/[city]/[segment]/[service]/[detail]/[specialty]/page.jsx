@@ -17,6 +17,7 @@ import { buildDirectoryMetadata } from "@/seo/metadata";
 import { getDirectoryRobotsForQuality } from "@/seo/qualityGuards";
 import { buildBreadcrumbSchema, buildDirectoryItemListSchema } from "@/seo/schemaOrg";
 import { dedupeInternalLinks } from "@/seo/internalLinks";
+import { keepGeneratedLinks } from "@/seo/generatedPaths";
 import {
   countryCityLocalityServicePath,
   countryCityLocalityServiceSpecialtyPath,
@@ -174,7 +175,7 @@ export default async function CountryCityLocalityServiceSpecialtyPage({ params }
     { label: graph.specialty.name }
   ];
 
-  const relatedLinks = dedupeInternalLinks([
+  const relatedLinks = keepGeneratedLinks(dedupeInternalLinks([
     {
       label: `All ${graph.service.name} in ${graph.locality.name}`,
       href: countryCityLocalityServicePath(
@@ -235,7 +236,7 @@ export default async function CountryCityLocalityServiceSpecialtyPage({ params }
         graph.specialty.slug
       )
     }
-  ]);
+  ]));
 
   const schema = [
     buildBreadcrumbSchema(breadcrumbs),
